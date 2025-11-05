@@ -1,6 +1,9 @@
 import { defineMikroOrmCliConfig, Modules } from "@medusajs/framework/utils"
-import * as entities from "./src/models"
+import TaxProvider from "#models/tax-provider"
+import TaxRateRule from "#models/tax-rate-rule"
+import TaxRate from "#models/tax-rate"
+import TaxRegion from "#models/tax-region"
 
 export default defineMikroOrmCliConfig(Modules.TAX, {
-  entities: Object.values(entities),
+  entities: [TaxProvider, TaxRateRule, TaxRate, TaxRegion],
 })

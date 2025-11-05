@@ -19,8 +19,11 @@ import {
   MedusaError,
   ModulesSdkUtils,
 } from "@medusajs/framework/utils"
-import { TaxProvider, TaxRate, TaxRateRule, TaxRegion } from "@models"
-import { TaxProviderService } from "@services"
+import TaxProvider from "#models/tax-provider"
+import TaxRate from "#models/tax-rate"
+import TaxRateRule from "#models/tax-rate-rule"
+import TaxRegion from "#models/tax-region"
+import TaxProviderService from "#services/tax-provider"
 
 type InjectedDependencies = {
   baseRepository: DAL.RepositoryService

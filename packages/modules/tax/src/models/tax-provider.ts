@@ -1,5 +1,5 @@
 import { model } from "@medusajs/framework/utils"
-import { TaxRegion } from "@models"
+import TaxRegion from "#models/tax-region"
 
 const TaxProvider = model.define("TaxProvider", {
   id: model.id().primaryKey(),

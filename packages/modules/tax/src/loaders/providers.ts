@@ -9,8 +9,12 @@ import {
 import { asFunction, asValue, Lifetime } from "@medusajs/framework/awilix"
 
 import { MedusaError } from "@medusajs/framework/utils"
-import * as providers from "../providers"
-import TaxProviderService from "../services/tax-provider"
+import SystemTaxService from "#providers/system"
+import TaxProviderService from "#services/tax-provider"
+
+const providers = {
+  SystemTaxService,
+}
 
 const PROVIDER_REGISTRATION_KEY = "tax_providers" as const
 

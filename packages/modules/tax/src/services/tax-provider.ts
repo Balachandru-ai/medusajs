@@ -1,7 +1,7 @@
 import { DAL, ITaxProvider, Logger, TaxTypes } from "@medusajs/framework/types"
 import { ModulesSdkUtils } from "@medusajs/framework/utils"
 
-import TaxProvider from "../models/tax-provider"
+import TaxProvider from "#models/tax-provider"
 
 type InjectedDependencies = {
   logger?: Logger
