@@ -11,6 +11,10 @@
     "#loaders/*": {
       "types": "./dist/loaders/*.d.ts",
       "default": "./dist/loaders/*.js"
+    },
+    "#services/*": {
+      "types": "./dist/services/*.d.ts",
+      "default": "./dist/services/*.js"
     }
   },
   "files": [

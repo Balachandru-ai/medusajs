@@ -12,6 +12,10 @@
       "types": "./dist/loaders/*.d.ts",
       "default": "./dist/loaders/*.js"
     },
+    "#services/*": {
+      "types": "./dist/services/*.d.ts",
+      "default": "./dist/services/*.js"
+    },
     "#types/*": {
       "types": "./dist/types/*.d.ts",
       "default": "./dist/types/*.js"
