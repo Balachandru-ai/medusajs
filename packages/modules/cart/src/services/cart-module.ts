@@ -38,7 +38,7 @@ import {
   CreateShippingMethodDTO,
   UpdateLineItemDTO,
   UpdateShippingMethodTaxLineDTO,
-} from "@types"
+} from "#types/index"
 
 type InjectedDependencies = {
   baseRepository: DAL.RepositoryService
