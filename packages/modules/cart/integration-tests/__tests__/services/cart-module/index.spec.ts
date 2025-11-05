@@ -2,7 +2,7 @@ import { ICartModuleService } from "@medusajs/framework/types"
 import { BigNumber, Module, Modules } from "@medusajs/framework/utils"
 import { moduleIntegrationTestRunner } from "@medusajs/test-utils"
 import { CheckConstraintViolationException } from "@medusajs/framework/mikro-orm/core"
-import { CartModuleService } from "@services"
+import CartModuleService from "#services/cart-module"
 
 jest.setTimeout(50000)
 
