@@ -11,7 +11,7 @@ import {
 } from "@medusajs/framework/types"
 
 import { MedusaService } from "@medusajs/framework/utils"
-import { Currency } from "@models"
+import Currency from "#models/currency"
 
 type InjectedDependencies = {
   baseRepository: DAL.RepositoryService

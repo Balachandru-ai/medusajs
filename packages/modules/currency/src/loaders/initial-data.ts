@@ -7,7 +7,7 @@ import {
   ContainerRegistrationKeys,
   defaultCurrencies,
 } from "@medusajs/framework/utils"
-import { Currency } from "@models"
+import Currency from "#models/currency"
 
 export default async ({
   container,

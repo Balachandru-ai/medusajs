@@ -1,6 +1,6 @@
 import { ICurrencyModuleService } from "@medusajs/framework/types"
 import { Module, Modules } from "@medusajs/framework/utils"
-import { CurrencyModuleService } from "@services"
+import CurrencyModuleService from "#services/currency-module-service"
 import { moduleIntegrationTestRunner } from "@medusajs/test-utils"
 
 jest.setTimeout(100000)

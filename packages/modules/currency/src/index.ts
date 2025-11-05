@@ -1,4 +1,4 @@
-import { CurrencyModuleService } from "@services"
+import CurrencyModuleService from "#services/currency-module-service"
 import initialDataLoader from "./loaders/initial-data"
 import { Module, Modules } from "@medusajs/framework/utils"
 
