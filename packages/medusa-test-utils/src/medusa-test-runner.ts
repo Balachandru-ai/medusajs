@@ -20,6 +20,7 @@ import {
   syncLinks,
 } from "./medusa-test-runner-utils"
 import { waitWorkflowExecutions } from "./medusa-test-runner-utils/wait-workflow-executions"
+import { ulid } from "ulid"
 
 export interface MedusaSuiteOptions {
   dbConnection: any // knex instance
@@ -84,8 +85,7 @@ class MedusaTestRunner {
 
   constructor(config: TestRunnerConfig) {
     const tempName = parseInt(process.env.JEST_WORKER_ID || "1")
-    const moduleName =
-      config.moduleName ?? Math.random().toString(36).substring(7)
+    const moduleName = config.moduleName ?? ulid()
     this.dbName =
       config.dbName ??
       `medusa-${moduleName.toLowerCase()}-integration-${tempName}`
