@@ -945,12 +945,8 @@ moduleIntegrationTestRunner<IOrderModuleService>({
           relations: ["items"],
         })
 
-        console.log(JSON.stringify(changedOrder.summary, null, 2))
-
         // @ts-ignore
-        expect(changedOrder.summary?.pending_difference.numeric).toEqual(
-          -9
-        )
+        expect(changedOrder.summary?.pending_difference.numeric).toEqual(-9)
       })
     })
   },

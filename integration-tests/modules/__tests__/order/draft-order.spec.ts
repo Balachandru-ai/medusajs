@@ -280,6 +280,7 @@ medusaIntegrationTestRunner({
                       rate: 2,
                     }),
                   ],
+                  adjustments: [],
                   unit_price: 3000,
                   quantity: 2,
                   raw_quantity: expect.objectContaining({

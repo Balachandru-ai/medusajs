@@ -226,6 +226,11 @@ async function loadItemAdjustments(manager, orders) {
   const itemsIdMap = new Map<string, any>(items.map((i) => [i.item.id, i.item]))
 
   const params = items.map((i) => {
+    // preinitialise all items so an empty array is returned for ones without adjustments
+    if (!i.item.adjustments.isInitialized()) {
+      i.item.adjustments.initialized = true
+    }
+
     if (!i.version) {
       throw new Error("Item version is required to load adjustments")
     }
@@ -242,9 +247,6 @@ async function loadItemAdjustments(manager, orders) {
   for (const adjustment of adjustments) {
     const item = itemsIdMap.get(adjustment.item_id)
     if (item) {
-      if (!item.adjustments.isInitialized()) {
-        item.adjustments.initialized = true
-      }
       item.adjustments.add(adjustment)
     }
   }

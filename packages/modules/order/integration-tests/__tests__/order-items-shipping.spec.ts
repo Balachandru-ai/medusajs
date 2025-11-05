@@ -1004,13 +1004,13 @@ moduleIntegrationTestRunner<IOrderModuleService>({
             expect.arrayContaining([
               expect.objectContaining({
                 id: itemOne.id,
-                // adjustments: [],
+                adjustments: [],
               }),
             ])
           )
 
           expect(order.items.length).toBe(1)
-          expect(order.items[0].adjustments).toBeUndefined()
+          expect(order.items[0].adjustments.length).toBe(0)
         })
 
         it("should update line item adjustments for an order", async () => {
