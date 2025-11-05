@@ -1,5 +1,5 @@
 import { InferEntityType, PromotionRuleDTO } from "@medusajs/framework/types"
-import { PromotionRule } from "@models"
+import PromotionRule from "#models/promotion-rule"
 
 export interface CreatePromotionRuleValueDTO {
   value: any

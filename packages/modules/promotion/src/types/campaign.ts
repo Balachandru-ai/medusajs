@@ -1,5 +1,5 @@
 import { InferEntityType, PromotionDTO } from "@medusajs/framework/types"
-import { Promotion } from "@models"
+import Promotion from "#models/promotion"
 
 export interface CreateCampaignDTO {
   name: string

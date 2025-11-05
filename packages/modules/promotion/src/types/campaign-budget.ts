@@ -3,7 +3,7 @@ import {
   CampaignBudgetTypeValues,
   InferEntityType,
 } from "@medusajs/framework/types"
-import { Campaign } from "@models"
+import Campaign from "#models/campaign"
 
 export interface CreateCampaignBudgetDTO {
   type?: CampaignBudgetTypeValues

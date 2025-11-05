@@ -10,8 +10,11 @@ import {
   PromotionType,
 } from "@medusajs/framework/utils"
 import { InferEntityType } from "@medusajs/types"
-import { Promotion } from "@models"
-import { CreateApplicationMethodDTO, UpdateApplicationMethodDTO } from "@types"
+import Promotion from "#models/promotion"
+import {
+  CreateApplicationMethodDTO,
+  UpdateApplicationMethodDTO,
+} from "#types/application-method"
 
 export const allowedAllocationTargetTypes: string[] = [
   ApplicationMethodTargetType.SHIPPING_METHODS,

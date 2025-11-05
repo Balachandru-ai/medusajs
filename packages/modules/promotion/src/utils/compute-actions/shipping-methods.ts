@@ -11,7 +11,7 @@ import {
   MathBN,
   MedusaError,
 } from "@medusajs/framework/utils"
-import { Promotion } from "@models"
+import Promotion from "#models/promotion"
 import { areRulesValidForContext } from "../validations"
 import { sortShippingLineByPriceAscending } from "./sort-by-price"
 import { computeActionForBudgetExceeded } from "./usage"

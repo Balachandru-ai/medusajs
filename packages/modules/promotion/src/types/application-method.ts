@@ -7,7 +7,7 @@ import {
   PromotionDTO,
 } from "@medusajs/framework/types"
 
-import { Promotion } from "@models"
+import Promotion from "#models/promotion"
 
 export interface CreateApplicationMethodDTO {
   type: ApplicationMethodTypeValues

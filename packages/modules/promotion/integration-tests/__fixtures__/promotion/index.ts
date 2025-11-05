@@ -9,7 +9,7 @@ import {
   toMikroORMEntity,
 } from "@medusajs/framework/utils"
 import { SqlEntityManager } from "@medusajs/framework/mikro-orm/postgresql"
-import { Promotion } from "@models"
+import Promotion from "#models/promotion"
 import { defaultPromotionsData } from "./data"
 
 export * from "./data"

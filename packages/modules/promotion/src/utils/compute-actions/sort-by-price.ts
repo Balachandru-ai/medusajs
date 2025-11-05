@@ -1,7 +1,7 @@
 import { MathBN } from "@medusajs/framework/utils"
 import {
-    ComputeActionItemLine,
-    ComputeActionShippingLine,
+  ComputeActionItemLine,
+  ComputeActionShippingLine,
 } from "@medusajs/types"
 
 export function sortLineItemByPriceAscending(

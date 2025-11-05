@@ -13,7 +13,7 @@ import {
   MedusaError,
   ApplicationMethodTargetType as TargetType,
 } from "@medusajs/framework/utils"
-import { Promotion } from "@models"
+import Promotion from "#models/promotion"
 import { areRulesValidForContext } from "../validations"
 import { sortLineItemByPriceAscending } from "./sort-by-price"
 import { computeActionForBudgetExceeded } from "./usage"

@@ -12,7 +12,7 @@ import {
   ComputedActions,
   MathBN,
 } from "@medusajs/framework/utils"
-import { Promotion } from "@models"
+import Promotion from "#models/promotion"
 
 /**
  * Compute the action for a budget exceeded.

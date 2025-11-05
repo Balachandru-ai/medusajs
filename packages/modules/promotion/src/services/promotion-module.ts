@@ -34,37 +34,39 @@ import {
   toMikroORMEntity,
   transformPropertiesToBigNumber,
 } from "@medusajs/framework/utils"
-import {
-  ApplicationMethod,
-  Campaign,
-  CampaignBudget,
-  CampaignBudgetUsage,
-  Promotion,
-  PromotionRule,
-  PromotionRuleValue,
-} from "@models"
+import ApplicationMethod from "#models/application-method"
+import Campaign from "#models/campaign"
+import CampaignBudget from "#models/campaign-budget"
+import CampaignBudgetUsage from "#models/campaign-budget-usage"
+import Promotion from "#models/promotion"
+import PromotionRule from "#models/promotion-rule"
+import PromotionRuleValue from "#models/promotion-rule-value"
 import {
   ApplicationMethodRuleTypes,
-  CreateApplicationMethodDTO,
-  CreateCampaignBudgetDTO,
-  CreateCampaignDTO,
-  CreatePromotionDTO,
   CreatePromotionRuleDTO,
+} from "#types/promotion-rule"
+import {
+  CreateApplicationMethodDTO,
   UpdateApplicationMethodDTO,
+} from "#types/application-method"
+import {
+  CreateCampaignBudgetDTO,
   UpdateCampaignBudgetDTO,
-  UpdateCampaignDTO,
-  UpdatePromotionDTO,
-} from "@types"
+} from "#types/campaign-budget"
+import { CreateCampaignDTO, UpdateCampaignDTO } from "#types/campaign"
+import { CreatePromotionDTO, UpdatePromotionDTO } from "#types/promotion"
 import {
   allowedAllocationForQuantity,
-  areRulesValidForContext,
-  ComputeActionUtils,
   validateApplicationMethodAttributes,
+} from "#utils/validations/application-method"
+import {
+  areRulesValidForContext,
   validatePromotionRuleAttributes,
-} from "@utils"
+} from "#utils/validations/promotion-rule"
+import { ComputeActionUtils } from "#utils/index"
 import { joinerConfig } from "../joiner-config"
-import { CreatePromotionRuleValueDTO } from "../types/promotion-rule-value"
-import { buildPromotionRuleQueryFilterFromContext } from "../utils/compute-actions/build-promotion-rule-query-filter-from-context"
+import { CreatePromotionRuleValueDTO } from "#types/promotion-rule-value"
+import { buildPromotionRuleQueryFilterFromContext } from "#utils/compute-actions/build-promotion-rule-query-filter-from-context"
 
 type InjectedDependencies = {
   baseRepository: DAL.RepositoryService

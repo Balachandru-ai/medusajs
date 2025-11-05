@@ -13,7 +13,7 @@ import {
 } from "@medusajs/framework/utils"
 import { areRulesValidForContext } from "../validations"
 import { computeActionForBudgetExceeded } from "./usage"
-import { Promotion } from "@models"
+import Promotion from "#models/promotion"
 
 export type EligibleItem = {
   item_id: string

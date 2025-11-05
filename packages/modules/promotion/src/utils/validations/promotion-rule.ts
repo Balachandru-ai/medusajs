@@ -13,8 +13,8 @@ import {
   isString,
   pickValueFromObject,
 } from "@medusajs/framework/utils"
-import { PromotionRule } from "@models"
-import { CreatePromotionRuleDTO } from "@types"
+import PromotionRule from "#models/promotion-rule"
+import { CreatePromotionRuleDTO } from "#types/promotion-rule"
 
 export function validatePromotionRuleAttributes(
   promotionRulesData: CreatePromotionRuleDTO[]
