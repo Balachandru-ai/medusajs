@@ -1,5 +1,5 @@
 import { ModuleExports } from "@medusajs/framework/types"
-import Loader from "./loaders"
+import Loader from "#loaders/index"
 import RedisEventBusService from "./services/event-bus-redis"
 
 const service = RedisEventBusService
@@ -11,5 +11,5 @@ const moduleDefinition: ModuleExports = {
 }
 
 export default moduleDefinition
-export * from "./initialize"
-export * from "./types"
+export * from "#initialize/index"
+export * from "#types/index"

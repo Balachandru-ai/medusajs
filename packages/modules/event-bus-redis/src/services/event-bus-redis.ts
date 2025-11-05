@@ -11,7 +11,7 @@ import {
 } from "@medusajs/framework/utils"
 import { BulkJobOptions, Queue, Worker } from "bullmq"
 import { Redis } from "ioredis"
-import { BullJob, EventBusRedisModuleOptions, Options } from "../types"
+import { BullJob, EventBusRedisModuleOptions, Options } from "#types/index"
 
 type InjectedDependencies = {
   logger: Logger

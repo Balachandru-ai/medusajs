@@ -2,7 +2,7 @@ import { LoaderOptions } from "@medusajs/framework/types"
 import { asValue } from "@medusajs/framework/awilix"
 import Redis from "ioredis"
 import { EOL } from "os"
-import { EventBusRedisModuleOptions } from "../types"
+import { EventBusRedisModuleOptions } from "#types/index"
 
 export default async ({
   container,

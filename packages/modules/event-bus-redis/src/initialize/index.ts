@@ -5,7 +5,7 @@ import {
   InternalModuleDeclaration,
 } from "@medusajs/framework/types"
 import { Modules } from "@medusajs/framework/utils"
-import { EventBusRedisModuleOptions } from "../types"
+import { EventBusRedisModuleOptions } from "#types/index"
 
 export const initialize = async (
   options?: EventBusRedisModuleOptions | ExternalModuleDeclaration
