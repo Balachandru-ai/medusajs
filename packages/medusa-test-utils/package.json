@@ -1,6 +1,6 @@
 {
   "name": "@medusajs/test-utils",
-  "version": "2.11.2",
+  "version": "2.11.3",
   "description": "Test utils for Medusa",
   "main": "dist/index.js",
   "repository": {
@@ -25,18 +25,18 @@
   "author": "Medusa",
   "license": "MIT",
   "devDependencies": {
-    "@medusajs/framework": "2.11.2"
+    "@medusajs/framework": "2.11.3"
   },
   "dependencies": {
     "@types/express": "^4.17.21",
     "axios": "^1.13.1",
     "express": "^4.21.0",
     "get-port": "^5.1.1",
-    "randomatic": "^3.1.1"
+    "ulid": "^2.3.0"
   },
   "peerDependencies": {
-    "@medusajs/framework": "2.11.2",
-    "@medusajs/medusa": "2.11.2"
+    "@medusajs/framework": "2.11.3",
+    "@medusajs/medusa": "2.11.3"
   },
   "peerDependenciesMeta": {
     "@medusajs/medusa": {
