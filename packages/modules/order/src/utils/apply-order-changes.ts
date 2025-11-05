@@ -77,7 +77,7 @@ export async function applyChangesToOrder(
       const orderItem = isExistingItem ? (item.detail as any) : item
       const itemId = isExistingItem ? orderItem.item_id : item.id
 
-      let itemToUpsert = {
+      const itemToUpsert = {
         id: orderItem.version === version ? orderItem.id : undefined,
         item_id: itemId,
         order_id: order.id,

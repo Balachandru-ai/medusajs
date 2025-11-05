@@ -19,10 +19,6 @@ import {
   WorkflowData,
   WorkflowResponse,
 } from "@medusajs/framework/workflows-sdk"
-import {
-  getActionsToComputeFromPromotionsStep,
-  prepareAdjustmentsFromPromotionActionsStep,
-} from "../../.."
 import { useQueryGraphStep } from "../../../common"
 import { previewOrderChangeStep } from "../../steps/preview-order-change"
 import {
@@ -153,70 +149,13 @@ export const orderEditUpdateItemQuantityWorkflow = createWorkflow(
       orderChange,
     })
 
-    const actionsToComputeItemsInput = transform(
-      { order, items: input.items },
-      ({ order, items }) => {
-        const itemsToComputeFor = order.items.map((item) => {
-          const updatedItem = items.find((i) => i.id === item.id)
-
-          const itemTotals = getLineItemTotals(
-            {
-              id: item.id,
-              unit_price: item.unit_price,
-              quantity: updatedItem?.quantity ?? item.quantity,
-              is_tax_inclusive: item.is_tax_inclusive,
-              tax_lines: item.tax_lines,
-              adjustments: item.adjustments,
-              detail: item.detail,
-            },
-            {}
-          )
-
-          return {
-            id: item.id,
-            quantity: updatedItem?.quantity ?? item.quantity,
-            subtotal: itemTotals.subtotal,
-            original_total: itemTotals.original_total,
-            is_discountable: item.is_discountable,
-            adjustments: item.adjustments,
-            product: { id: item.product_id },
-          }
-        })
-
-        return {
-          currency_code: order.currency_code,
-          items: itemsToComputeFor,
-        } as ComputeActionContext
-      }
-    )
-
-    const orderPromotions = transform({ order }, ({ order }) => {
-      return order.promotions.map((p) => p.code).filter((p) => p !== undefined)
-    })
-
-    const actions = getActionsToComputeFromPromotionsStep({
-      computeActionContext: actionsToComputeItemsInput,
-      promotionCodesToApply: orderPromotions,
-    })
-
-    const { lineItemAdjustmentsToCreate, lineItemAdjustmentIdsToRemove } =
-      prepareAdjustmentsFromPromotionActionsStep({ actions })
-
     const orderChangeActionInput = transform(
       {
         order,
         orderChange,
         items: input.items,
-        lineItemAdjustmentsToCreate,
-        lineItemAdjustmentIdsToRemove,
       },
-      ({
-        order,
-        orderChange,
-        items,
-        lineItemAdjustmentsToCreate,
-        lineItemAdjustmentIdsToRemove,
-      }) => {
+      ({ order, orderChange, items }) => {
         const itemsUpdates = items.map((item) => {
           const existing = order?.items?.find(
             (exItem) => exItem.id === item.id
@@ -238,26 +177,9 @@ export const orderEditUpdateItemQuantityWorkflow = createWorkflow(
               unit_price: item.unit_price,
               compare_at_unit_price: item.compare_at_unit_price,
               quantity_diff: quantityDiff,
-              // adjustments_to_create: lineItemAdjustmentsToCreate.filter(
-              //   (adjustment) => adjustment.item_id === item.id
-              // ),
-              // adjustments_to_remove: lineItemAdjustmentIdsToRemove.filter(
-              //   (adjustmentId) => adjustmentId === item.id
-              // ),
             },
           }
         })
-
-        // const itemAdjustmentsUpdate = {
-        //   order_change_id: orderChange.id,
-        //   order_id: order.id,
-        //   version: orderChange.version,
-        //   action: ChangeActionType.ITEM_ADJUSTMENTS_REPLACE,
-        //   details: {
-        //     adjustments_to_create: lineItemAdjustmentsToCreate,
-        //     adjustments_to_remove: lineItemAdjustmentIdsToRemove,
-        //   },
-        // }
 
         return [...itemsUpdates]
       }

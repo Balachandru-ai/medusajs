@@ -175,13 +175,6 @@ export const requestOrderEditRequestWorkflow = createWorkflow(
       }
     )
 
-    // computeAdjustmentsForPreviewWorkflow.runAsStep({
-    //   input: {
-    //     order,
-    //     orderChange,
-    //   },
-    // })
-
     emitEventStep({
       eventName: OrderEditWorkflowEvents.REQUESTED,
       data: eventData,

@@ -19,7 +19,7 @@ import { previewOrderChangeStep } from "../../steps/preview-order-change"
 import { createOrderChangeActionsWorkflow } from "../create-order-change-actions"
 
 /**
- * The data to validate that new items can be added to an order edit.
+ * The data to compute adjustments for an order edit.
  */
 export type ComputeAdjustmentsForPreviewWorkflowInput = {
   /**
