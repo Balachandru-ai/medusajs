@@ -1,4 +1,7 @@
-import { processPaymentWorkflow } from "@medusajs/core-flows"
+import {
+  processPaymentWorkflow,
+  processPaymentWorkflowId,
+} from "@medusajs/core-flows"
 import {
   IPaymentModuleService,
   ProviderWebhookPayload,
@@ -49,7 +52,8 @@ export default async function paymentWebhookhandler({
     return
   }
 
-  await processPaymentWorkflow(container).run({ input: processedEvent })
+  const wfEngine = container.resolve(Modules.WORKFLOW_ENGINE)
+  await wfEngine.run(processPaymentWorkflowId, { input: processedEvent })
 }
 
 export const config: SubscriberConfig = {
