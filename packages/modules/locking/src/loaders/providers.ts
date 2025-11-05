@@ -8,19 +8,19 @@ import {
   ContainerRegistrationKeys,
   getProviderRegistrationKey,
 } from "@medusajs/framework/utils"
-import { LockingProviderService } from "@services"
+import LockingProviderService from "#services/locking-provider"
 import {
   LockingDefaultProvider,
   LockingIdentifiersRegistrationName,
   LockingProviderRegistrationPrefix,
-} from "@types"
+} from "#types/index"
 import {
   Lifetime,
   aliasTo,
   asFunction,
   asValue,
 } from "@medusajs/framework/awilix"
-import { InMemoryLockingProvider } from "../providers/in-memory"
+import { InMemoryLockingProvider } from "#providers/in-memory"
 
 const registrationFn = async (klass, container, { id }) => {
   const key = LockingProviderService.getRegistrationIdentifier(klass)

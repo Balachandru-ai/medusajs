@@ -4,7 +4,7 @@ import {
   Logger,
 } from "@medusajs/framework/types"
 import { MedusaError } from "@medusajs/framework/utils"
-import { LockingProviderRegistrationPrefix } from "../types"
+import { LockingProviderRegistrationPrefix } from "#types/index"
 
 type InjectedDependencies = {
   [key: `lp_${string}`]: ILockingProvider

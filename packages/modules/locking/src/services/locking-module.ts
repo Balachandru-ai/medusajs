@@ -5,7 +5,7 @@ import {
   Logger,
 } from "@medusajs/types"
 import { EntityManager } from "@medusajs/framework/mikro-orm/core"
-import { LockingDefaultProvider } from "@types"
+import { LockingDefaultProvider } from "#types/index"
 import LockingProviderService from "./locking-provider"
 
 type InjectedDependencies = {
