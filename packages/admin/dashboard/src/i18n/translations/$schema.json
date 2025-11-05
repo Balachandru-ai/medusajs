@@ -2022,6 +2022,21 @@
             "successToast": {
               "type": "string"
             },
+            "variantImages": {
+              "type": "string"
+            },
+            "showAvailableImages": {
+              "type": "string"
+            },
+            "availableImages": {
+              "type": "string"
+            },
+            "selectToAdd": {
+              "type": "string"
+            },
+            "removeSelected": {
+              "type": "string"
+            },
             "deleteWarning_zero": {
               "type": "string"
             },
@@ -2056,19 +2071,6 @@
               "type": "string"
             },
             "deleteWarningWithThumbnail_other": {
-            "variantImages": {
-              "type": "string"
-            },
-            "showAvailableImages": {
-              "type": "string"
-            },
-            "availableImages": {
-              "type": "string"
-            },
-            "selectToAdd": {
-              "type": "string"
-            },
-            "removeSelected": {
               "type": "string"
             }
           },
