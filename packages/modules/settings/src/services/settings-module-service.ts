@@ -14,7 +14,8 @@ import {
   MedusaError,
   MedusaService,
 } from "@medusajs/framework/utils"
-import { ViewConfiguration, UserPreference } from "@/models"
+import { ViewConfiguration } from "#models/view-configuration"
+import { UserPreference } from "#models/user-preference"
 
 type InjectedDependencies = {
   baseRepository: DAL.RepositoryService

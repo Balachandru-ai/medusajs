@@ -1,4 +1,4 @@
-import { SettingsModuleService } from "@/services"
+import SettingsModuleService from "#services/settings-module-service"
 import { Module } from "@medusajs/framework/utils"
 import { Modules } from "@medusajs/utils"
 

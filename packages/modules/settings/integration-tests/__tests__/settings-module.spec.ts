@@ -183,8 +183,12 @@ moduleIntegrationTestRunner<SettingsTypes.ISettingsModuleService>({
           })
           // Verify old filters are gone
           expect(updatedConfig.configuration.filters.status).toBeUndefined()
-          expect(updatedConfig.configuration.filters.collection_id).toBeUndefined()
-          expect(updatedConfig.configuration.filters.price_range).toBeUndefined()
+          expect(
+            updatedConfig.configuration.filters.collection_id
+          ).toBeUndefined()
+          expect(
+            updatedConfig.configuration.filters.price_range
+          ).toBeUndefined()
         })
 
         it("should remove filters when explicitly set to empty object", async () => {
@@ -373,7 +377,10 @@ moduleIntegrationTestRunner<SettingsTypes.ISettingsModuleService>({
 
           // Products view should not be affected
           const productView = await service.retrieveViewConfiguration(view3.id)
-          expect(productView.configuration.visible_columns).toEqual(["id", "title"])
+          expect(productView.configuration.visible_columns).toEqual([
+            "id",
+            "title",
+          ])
         })
 
         it("should return empty array when no views match selector", async () => {
