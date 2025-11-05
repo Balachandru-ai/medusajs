@@ -869,7 +869,7 @@ moduleIntegrationTestRunner<IOrderModuleService>({
         )
       })
 
-      it.only("should create an order change, update items, and have the pending difference updated", async function () {
+      it("should create an order change, update items, and have the pending difference updated", async function () {
         const createdOrder = await service.createOrders({
           email: "foo@bar.com",
           items: [
