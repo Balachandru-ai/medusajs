@@ -12,7 +12,7 @@ import { moduleIntegrationTestRunner } from "@medusajs/test-utils"
 import { setTimeout } from "timers/promises"
 import { ulid } from "ulid"
 import "../__fixtures__"
-import { TestDatabase } from "#utils/database"
+import { TestDatabase } from "../utils/index"
 
 jest.setTimeout(20000)
 
