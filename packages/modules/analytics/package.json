@@ -36,6 +36,8 @@
   "scripts": {
     "watch": "yarn run -T tsc --build --watch",
     "watch:test": "yarn run -T tsc --build tsconfig.spec.json --watch",
+    "build": "yarn run -T rimraf dist && yarn run -T tsc --build",
+    "test": "../../../node_modules/.bin/jest --bail --passWithNoTests --forceExit --testPathPattern=src",
     "test:integration": "../../../node_modules/.bin/jest --passWithNoTests --forceExit --testPathPattern=\"integration-tests/__tests__/.*\\.ts\""
   },
   "devDependencies": {
