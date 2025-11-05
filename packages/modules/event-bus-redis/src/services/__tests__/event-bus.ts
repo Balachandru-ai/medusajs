@@ -10,8 +10,6 @@ import RedisEventBusService from "../event-bus-redis"
 //   maxRetriesPerRequest: 0,
 // })
 
-jest.genMockFromModule("bullmq")
-jest.genMockFromModule("ioredis")
 jest.mock("bullmq")
 jest.mock("ioredis")
 

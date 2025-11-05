@@ -7,6 +7,8 @@ export const removeImageFromVariantsStepId = "remove-image-from-variants"
 /**
  * This step removes an image from one or more product variants.
  *
+ * @since 2.11.2
+ *
  * @example
  * const data = removeImageFromVariantsStep({
  *   image_id: "img_123",

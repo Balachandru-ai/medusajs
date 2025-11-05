@@ -1,5 +1,27 @@
 # @medusajs/payment
 
+## 2.11.3
+
+### Patch Changes
+
+- [#13910](https://github.com/medusajs/medusa/pull/13910) [`224ab39a81e8d3cf3d6fa3ff5eee82541f64728d`](https://github.com/medusajs/medusa/commit/224ab39a81e8d3cf3d6fa3ff5eee82541f64728d) Thanks [@adrien2p](https://github.com/adrien2p)! - chore(): Dependencies cleanup and improvements
+
+- [#13914](https://github.com/medusajs/medusa/pull/13914) [`7c72e7bae960088df1efca1cba7275d95ecdaf12`](https://github.com/medusajs/medusa/commit/7c72e7bae960088df1efca1cba7275d95ecdaf12) Thanks [@sradevski](https://github.com/sradevski)! - Minor fixes to medusa payments provider
+
+- Updated dependencies [[`28c3ea68f5634792848f146ac6af5b27c848bf21`](https://github.com/medusajs/medusa/commit/28c3ea68f5634792848f146ac6af5b27c848bf21), [`224ab39a81e8d3cf3d6fa3ff5eee82541f64728d`](https://github.com/medusajs/medusa/commit/224ab39a81e8d3cf3d6fa3ff5eee82541f64728d), [`afb40d437b3cc4ceb015df70985b2f005f40eaff`](https://github.com/medusajs/medusa/commit/afb40d437b3cc4ceb015df70985b2f005f40eaff), [`37563987b8fe75c9acfe62957a33e8398977647a`](https://github.com/medusajs/medusa/commit/37563987b8fe75c9acfe62957a33e8398977647a), [`13d7d15be594ca413785eebe8f86b47c36cb9830`](https://github.com/medusajs/medusa/commit/13d7d15be594ca413785eebe8f86b47c36cb9830)]:
+  - @medusajs/framework@2.11.3
+
+## 2.11.2
+
+### Patch Changes
+
+- [#13781](https://github.com/medusajs/medusa/pull/13781) [`cc2614ded7f83cdbe7e7f7f809d05f5ab6059fe4`](https://github.com/medusajs/medusa/commit/cc2614ded7f83cdbe7e7f7f809d05f5ab6059fe4) Thanks [@peterlgh7](https://github.com/peterlgh7)! - add Medusa Cloud Email provider
+
+- [#13772](https://github.com/medusajs/medusa/pull/13772) [`ef7b9b937562144d1f077a16ceb8279c84f3b6af`](https://github.com/medusajs/medusa/commit/ef7b9b937562144d1f077a16ceb8279c84f3b6af) Thanks [@sradevski](https://github.com/sradevski)! - Add a medusa payments provider
+
+- Updated dependencies [[`85b1f3d43aa8d8e0269a545ef7867733fd0eb8e2`](https://github.com/medusajs/medusa/commit/85b1f3d43aa8d8e0269a545ef7867733fd0eb8e2)]:
+  - @medusajs/framework@2.11.2
+
 ## 2.11.1
 
 ### Patch Changes

@@ -1,5 +1,45 @@
 # @medusajs/framework
 
+## 2.11.3
+
+### Patch Changes
+
+- [#13948](https://github.com/medusajs/medusa/pull/13948) [`28c3ea68f5634792848f146ac6af5b27c848bf21`](https://github.com/medusajs/medusa/commit/28c3ea68f5634792848f146ac6af5b27c848bf21) Thanks [@peterlgh7](https://github.com/peterlgh7)! - fix typo in opentelemetry-resources.ts name
+
+- [#13910](https://github.com/medusajs/medusa/pull/13910) [`224ab39a81e8d3cf3d6fa3ff5eee82541f64728d`](https://github.com/medusajs/medusa/commit/224ab39a81e8d3cf3d6fa3ff5eee82541f64728d) Thanks [@adrien2p](https://github.com/adrien2p)! - chore(): Dependencies cleanup and improvements
+
+- [#13940](https://github.com/medusajs/medusa/pull/13940) [`afb40d437b3cc4ceb015df70985b2f005f40eaff`](https://github.com/medusajs/medusa/commit/afb40d437b3cc4ceb015df70985b2f005f40eaff) Thanks [@adrien2p](https://github.com/adrien2p)! - chore(): Cleanup and organize deps
+
+- [#13932](https://github.com/medusajs/medusa/pull/13932) [`37563987b8fe75c9acfe62957a33e8398977647a`](https://github.com/medusajs/medusa/commit/37563987b8fe75c9acfe62957a33e8398977647a) Thanks [@adrien2p](https://github.com/adrien2p)! - chore(): Fix dependencies vulnerabilities
+
+- [#13898](https://github.com/medusajs/medusa/pull/13898) [`13d7d15be594ca413785eebe8f86b47c36cb9830`](https://github.com/medusajs/medusa/commit/13d7d15be594ca413785eebe8f86b47c36cb9830) Thanks [@carlos-r-l-rodrigues](https://github.com/carlos-r-l-rodrigues)! - chore(modules-sdk): parallel migrations
+
+- Updated dependencies [[`42b270ed2df09474f528d8d23816e0affcf4bd25`](https://github.com/medusajs/medusa/commit/42b270ed2df09474f528d8d23816e0affcf4bd25), [`224ab39a81e8d3cf3d6fa3ff5eee82541f64728d`](https://github.com/medusajs/medusa/commit/224ab39a81e8d3cf3d6fa3ff5eee82541f64728d), [`afb40d437b3cc4ceb015df70985b2f005f40eaff`](https://github.com/medusajs/medusa/commit/afb40d437b3cc4ceb015df70985b2f005f40eaff), [`e66f7cf59e516f12e5446e191e9fdd1aede9c8ab`](https://github.com/medusajs/medusa/commit/e66f7cf59e516f12e5446e191e9fdd1aede9c8ab), [`37563987b8fe75c9acfe62957a33e8398977647a`](https://github.com/medusajs/medusa/commit/37563987b8fe75c9acfe62957a33e8398977647a), [`516e217dbb848b71810e006c4eab914a40d7ecfc`](https://github.com/medusajs/medusa/commit/516e217dbb848b71810e006c4eab914a40d7ecfc), [`13d7d15be594ca413785eebe8f86b47c36cb9830`](https://github.com/medusajs/medusa/commit/13d7d15be594ca413785eebe8f86b47c36cb9830)]:
+  - @medusajs/types@2.11.3
+  - @medusajs/cli@2.11.3
+  - @medusajs/deps@2.11.3
+  - @medusajs/modules-sdk@2.11.3
+  - @medusajs/orchestration@2.11.3
+  - @medusajs/telemetry@2.11.3
+  - @medusajs/utils@2.11.3
+  - @medusajs/workflows-sdk@2.11.3
+
+## 2.11.2
+
+### Patch Changes
+
+- [#13869](https://github.com/medusajs/medusa/pull/13869) [`85b1f3d43aa8d8e0269a545ef7867733fd0eb8e2`](https://github.com/medusajs/medusa/commit/85b1f3d43aa8d8e0269a545ef7867733fd0eb8e2) Thanks [@adrien2p](https://github.com/adrien2p)! - feat(index): Add support for API end points to interact with the index module
+
+- Updated dependencies [[`cc2614ded7f83cdbe7e7f7f809d05f5ab6059fe4`](https://github.com/medusajs/medusa/commit/cc2614ded7f83cdbe7e7f7f809d05f5ab6059fe4), [`01ee437926f0a4ec587510c65f8282620bf72d3f`](https://github.com/medusajs/medusa/commit/01ee437926f0a4ec587510c65f8282620bf72d3f), [`25a20ca95f702dfb8a34fe9e4f3c565a47c2655e`](https://github.com/medusajs/medusa/commit/25a20ca95f702dfb8a34fe9e4f3c565a47c2655e), [`ec4443287601f5fe1544b305873f3aa151ed1bd7`](https://github.com/medusajs/medusa/commit/ec4443287601f5fe1544b305873f3aa151ed1bd7), [`47572816778e21432d0201f4b2642a765c86fdbc`](https://github.com/medusajs/medusa/commit/47572816778e21432d0201f4b2642a765c86fdbc), [`66bbe39a8ee812ae88b7f06f7d911b8254b1c87e`](https://github.com/medusajs/medusa/commit/66bbe39a8ee812ae88b7f06f7d911b8254b1c87e), [`c9701c70da33bb81aca1560ac5b96ea53fb61060`](https://github.com/medusajs/medusa/commit/c9701c70da33bb81aca1560ac5b96ea53fb61060), [`6d7ba778f5ace76350ac6f249b855b21fb43a03e`](https://github.com/medusajs/medusa/commit/6d7ba778f5ace76350ac6f249b855b21fb43a03e), [`85b1f3d43aa8d8e0269a545ef7867733fd0eb8e2`](https://github.com/medusajs/medusa/commit/85b1f3d43aa8d8e0269a545ef7867733fd0eb8e2), [`1defb3c29bfe018fd5f89b5a9e27fc8a31d72cdd`](https://github.com/medusajs/medusa/commit/1defb3c29bfe018fd5f89b5a9e27fc8a31d72cdd)]:
+  - @medusajs/types@2.11.2
+  - @medusajs/utils@2.11.2
+  - @medusajs/modules-sdk@2.11.2
+  - @medusajs/orchestration@2.11.2
+  - @medusajs/workflows-sdk@2.11.2
+  - @medusajs/cli@2.11.2
+  - @medusajs/deps@2.11.2
+  - @medusajs/telemetry@2.11.2
+
 ## 2.11.1
 
 ### Patch Changes

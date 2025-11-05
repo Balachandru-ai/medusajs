@@ -52,28 +52,6 @@
  *       type: string
  *       title: order
  *       description: The field to sort the data by. By default, the sort order is ascending. To change the order to descending, prefix the field name with `-`.
- *   - name: promotion_type
- *     in: query
- *     description: The promotion type to retrieve rules for.
- *     required: false
- *     schema:
- *       type: string
- *       title: promotion_type
- *       description: The promotion type to retrieve rules for.
- *       enum:
- *         - standard
- *         - buyget
- *   - name: application_method_type
- *     in: query
- *     description: The application method type to retrieve rules for.
- *     required: false
- *     schema:
- *       type: string
- *       title: application_method_type
- *       description: The application method type to retrieve rules for.
- *       enum:
- *         - fixed
- *         - percentage
  *   - name: with_deleted
  *     in: query
  *     description: Whether to include deleted records in the result.
@@ -88,8 +66,41 @@
  *     required: false
  *     schema:
  *       type: string
- *       title: application_method_target_type
  *       description: The application method target type to retrieve rules for.
+ *   - name: q
+ *     in: query
+ *     description: Apply a search query on the rule values' searchable properties.
+ *     required: false
+ *     schema:
+ *       type: string
+ *       title: q
+ *       description: Apply a search query on the rule values' searchable properties.
+ *   - name: value
+ *     in: query
+ *     required: false
+ *     schema:
+ *       oneOf:
+ *         - type: string
+ *           title: value
+ *           description: Filter by a specific rule value.
+ *         - type: array
+ *           description: Filter by multiple rule values.
+ *           items:
+ *             type: string
+ *             title: value
+ *             description: A rule value.
+ *   - name: fields
+ *     in: query
+ *     description: Comma-separated fields that should be included in the returned data. If a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default
+ *       fields. Without prefix it will replace the entire default fields.
+ *     required: false
+ *     schema:
+ *       type: string
+ *       title: fields
+ *       description: Comma-separated fields that should be included in the returned data. If a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default
+ *         fields. Without prefix it will replace the entire default fields.
+ *       externalDocs:
+ *         url: "#select-fields-and-relations"
  * security:
  *   - api_token: []
  *   - cookie_auth: []

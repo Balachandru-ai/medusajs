@@ -3,13 +3,14 @@ import {
   container,
   logger,
   MedusaAppLoader,
+  Migrator,
 } from "@medusajs/framework"
+import { asValue } from "@medusajs/framework/awilix"
 import { MedusaAppOutput, MedusaModule } from "@medusajs/framework/modules-sdk"
 import { ContainerRegistrationKeys, Modules } from "@medusajs/framework/utils"
 import { initDb, TestDatabaseUtils } from "@medusajs/test-utils"
 import { IndexTypes, ModulesSdkTypes } from "@medusajs/types"
 import { Configuration } from "@utils"
-import { asValue } from "@medusajs/framework/awilix"
 import path from "path"
 import { setTimeout } from "timers/promises"
 import { EventBusServiceMock } from "../__fixtures__"
@@ -49,6 +50,10 @@ const beforeAll_ = async () => {
     medusaAppLoader = new MedusaAppLoader()
 
     // Migrations
+
+    const migrator = new Migrator({ container })
+    await migrator.ensureMigrationsTable()
+
     await medusaAppLoader.runModulesMigrations()
     const linkPlanner = await medusaAppLoader.getLinksExecutionPlanner()
     const plan = await linkPlanner.createPlan()

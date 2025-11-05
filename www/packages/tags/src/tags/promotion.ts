@@ -36,18 +36,6 @@ export const promotion = [
     "path": "https://docs.medusajs.com/resources/references/medusa-workflows/steps/getActionsToComputeFromPromotionsStep"
   },
   {
-    "title": "getPromotionCodesToApply",
-    "path": "https://docs.medusajs.com/resources/references/medusa-workflows/steps/getPromotionCodesToApply"
-  },
-  {
-    "title": "prepareAdjustmentsFromPromotionActionsStep",
-    "path": "https://docs.medusajs.com/resources/references/medusa-workflows/steps/prepareAdjustmentsFromPromotionActionsStep"
-  },
-  {
-    "title": "updateCartPromotionsStep",
-    "path": "https://docs.medusajs.com/resources/references/medusa-workflows/steps/updateCartPromotionsStep"
-  },
-  {
     "title": "addShippingMethodToCartWorkflow",
     "path": "https://docs.medusajs.com/resources/references/medusa-workflows/addShippingMethodToCartWorkflow"
   },

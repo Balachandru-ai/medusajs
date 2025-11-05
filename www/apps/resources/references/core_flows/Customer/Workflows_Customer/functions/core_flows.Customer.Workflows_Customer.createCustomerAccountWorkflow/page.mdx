@@ -21,10 +21,10 @@ This workflow creates a customer and attaches it to an auth identity. It's used 
 You can create an auth identity first using the [Retrieve Registration JWT Token API Route](https://docs.medusajs.com/api/store#auth\_postactor\_typeauth\_provider\_register).
 Learn more about basic authentication flows in [this documentation](https://docs.medusajs.com/resources/commerce-modules/auth/authentication-route).
 
-You can use this workflow within your customizations or your own custom workflows, allowing you to 
+You can use this workflow within your customizations or your own custom workflows, allowing you to
 register or create customer accounts within your custom flows.
 
-<SourceCodeLink link="https://github.com/medusajs/medusa/blob/675091b4a5ad30101bf69d3459c3673d80c9f46f/packages/core/core-flows/src/customer/workflows/create-customer-account.ts#L54" />
+<SourceCodeLink link="https://github.com/medusajs/medusa/blob/96b2df170752a0d66628a84c46397a24ca9502da/packages/core/core-flows/src/customer/workflows/create-customer-account.ts#L54" />
 
 ## Examples
 
@@ -153,7 +153,7 @@ const myWorkflow = createWorkflow(
 
 ## Steps
 
-<WorkflowDiagram workflow={{"name":"createCustomerAccountWorkflow","steps":[{"type":"step","name":"validateCustomerAccountCreation","description":"This step validates the input data for creating a customer account.\nThe step throws an error if:\n\n- The email is missing\n- A customer with the email already exists and has an account\n- A guest customer with the email already exists","link":"../../../Steps_Customer/functions/core_flows.Customer.Steps_Customer.validateCustomerAccountCreation/page.mdx","depth":1},{"type":"workflow","name":"createCustomersWorkflow","description":"Create one or more customers.","link":"../core_flows.Customer.Workflows_Customer.createCustomersWorkflow/page.mdx","depth":2},{"type":"step","name":"setAuthAppMetadataStep","description":"This step sets the `app_metadata` property of an auth identity. This is useful to\nassociate a user (whether it's an admin user or customer) with an auth identity\nthat allows them to authenticate into Medusa.\n\nYou can learn more about auth identites in \n[this documentation](https://docs.medusajs.com/resources/commerce-modules/auth/auth-identity-and-actor-types).\n\nTo use this for a custom actor type, check out [this guide](https://docs.medusajs.com/resources/commerce-modules/auth/create-actor-type)\nthat explains how to create a custom `manager` actor type and manage its users.","link":"../../../../Auth/Steps_Auth/functions/core_flows.Auth.Steps_Auth.setAuthAppMetadataStep/page.mdx","depth":3}]}} />
+<WorkflowDiagram workflow={{"name":"createCustomerAccountWorkflow","steps":[{"type":"step","name":"validateCustomerAccountCreation","description":"This step validates the input data for creating a customer account.\nThe step throws an error if:\n\n- The email is missing\n- A customer with the email already exists and has an account\n- A guest customer with the email already exists","link":"../../../Steps_Customer/functions/core_flows.Customer.Steps_Customer.validateCustomerAccountCreation/page.mdx","depth":1},{"type":"workflow","name":"createCustomersWorkflow","description":"Create one or more customers.","link":"../core_flows.Customer.Workflows_Customer.createCustomersWorkflow/page.mdx","depth":2},{"type":"step","name":"setAuthAppMetadataStep","description":"This step sets the `app_metadata` property of an auth identity. This is useful to\nassociate a user (whether it's an admin user or customer) with an auth identity\nthat allows them to authenticate into Medusa.\n\nYou can learn more about auth identites in\n[this documentation](https://docs.medusajs.com/resources/commerce-modules/auth/auth-identity-and-actor-types).\n\nTo use this for a custom actor type, check out [this guide](https://docs.medusajs.com/resources/commerce-modules/auth/create-actor-type)\nthat explains how to create a custom `manager` actor type and manage its users.","link":"../../../../Auth/Steps_Auth/functions/core_flows.Auth.Steps_Auth.setAuthAppMetadataStep/page.mdx","depth":3}]}} />
 
 ## Input
 
@@ -167,11 +167,7 @@ const myWorkflow = createWorkflow(
 
 This section lists the events that are either triggered by the `emitEventStep` in the workflow, or by another workflow executed within this workflow.
 
-:::note
-
 The `emitEventStep` only emits the event after the workflow has finished successfully. So, even if it's executed in the middle of the workflow, it won't actually emit the event until the workflow has completed successfully. If the workflow fails, it won't emit the event at all.
-
-:::
 
 You can listen to these events in a subscriber, as explained in the [Subscribers](https://docs.medusajs.com/learn/fundamentals/events-and-subscribers) documentation.
 

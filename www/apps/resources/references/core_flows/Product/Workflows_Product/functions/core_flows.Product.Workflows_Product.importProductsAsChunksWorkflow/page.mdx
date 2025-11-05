@@ -23,7 +23,7 @@ For example, you can import products from another system.
 The workflow only starts the import, but you'll have to confirm it using the [Workflow Engine](https://docs.medusajs.com/resources/infrastructure-modules/workflow-engine).
 The below example shows how to confirm the import.
 
-<SourceCodeLink link="https://github.com/medusajs/medusa/blob/675091b4a5ad30101bf69d3459c3673d80c9f46f/packages/core/core-flows/src/product/workflows/import-products-as-chunks.ts#L91" />
+<SourceCodeLink link="https://github.com/medusajs/medusa/blob/96b2df170752a0d66628a84c46397a24ca9502da/packages/core/core-flows/src/product/workflows/import-products-as-chunks.ts#L91" />
 
 ## Examples
 
@@ -153,7 +153,7 @@ import {
   importProductsAsChunksWorkflowId,
   waitConfirmationProductImportStepId,
 } from "@medusajs/core-flows"
-import { IWorkflowEngineService } from "@medusajs/framework/types"
+import type { IWorkflowEngineService } from "@medusajs/framework/types"
 import { Modules, TransactionHandlerType } from "@medusajs/framework/utils"
 import { StepResponse } from "@medusajs/framework/workflows-sdk"
 

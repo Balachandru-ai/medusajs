@@ -1,6 +1,5 @@
 import LocalEventBusService from "../event-bus-local"
 
-jest.genMockFromModule("events")
 jest.mock("events")
 
 const loggerMock = {

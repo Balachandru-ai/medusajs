@@ -30,7 +30,8 @@
 			"url": "The URL of the product image",
 			"metadata": "Holds custom data in key-value pairs.",
 			"rank": "The rank of the product image among its sibling images.",
-			"product": "The associated product.\n\n@expandable"
+			"product": "The associated product.\n\n@expandable",
+			"variants": "The associated variants.\n\n@expandable"
 		},
 		"deprecated": {
 			"is_deprecated": false
@@ -84,7 +85,9 @@
 			"metadata": "Holds custom data in key-value pairs.",
 			"variant_rank": "The variant's rank among its siblings.",
 			"product": "The associated product.\n\n@expandable",
-			"options": "The associated options.\n\n@expandable"
+			"options": "The associated options.\n\n@expandable",
+			"thumbnail": "The thumbnail of the product variant",
+			"images": "The associated images.\n\n@expandable"
 		},
 		"deprecated": {
 			"is_deprecated": false
@@ -155,6 +158,18 @@
 		},
 		"deprecated": {
 			"is_deprecated": false
+		}
+	},
+	"ProductVariantProductImage": {
+		"filePath": "packages/modules/product/src/models/product-variant-product-image.ts",
+		"properties": {
+			"id": "The ID of the association between product variant and product image.",
+			"variant": "The associated variant.\n\n@expandable",
+			"image": "The associated image.\n\n@expandable"
+		},
+		"deprecated": {
+			"is_deprecated": false,
+			"since": "2.11.2"
 		}
 	}
 }

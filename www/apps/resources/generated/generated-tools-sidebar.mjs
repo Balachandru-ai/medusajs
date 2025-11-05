@@ -865,6 +865,22 @@ const generatedgeneratedToolsSidebarSidebar = {
                   "loaded": true,
                   "isPathHref": true,
                   "type": "ref",
+                  "title": "Implement Product Rentals",
+                  "path": "https://docs.medusajs.com/resources/how-to-tutorials/tutorials/product-rentals",
+                  "children": []
+                },
+                {
+                  "loaded": true,
+                  "isPathHref": true,
+                  "type": "ref",
+                  "title": "Megamenu and Category Banner",
+                  "path": "https://docs.medusajs.com/resources/how-to-tutorials/tutorials/category-images",
+                  "children": []
+                },
+                {
+                  "loaded": true,
+                  "isPathHref": true,
+                  "type": "ref",
                   "title": "Saved Payment Methods",
                   "path": "https://docs.medusajs.com/resources/how-to-tutorials/tutorials/saved-payment-methods",
                   "children": []

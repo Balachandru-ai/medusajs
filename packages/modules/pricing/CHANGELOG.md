@@ -1,5 +1,25 @@
 # @medusajs/pricing
 
+## 2.11.3
+
+### Patch Changes
+
+- [#13910](https://github.com/medusajs/medusa/pull/13910) [`224ab39a81e8d3cf3d6fa3ff5eee82541f64728d`](https://github.com/medusajs/medusa/commit/224ab39a81e8d3cf3d6fa3ff5eee82541f64728d) Thanks [@adrien2p](https://github.com/adrien2p)! - chore(): Dependencies cleanup and improvements
+
+- Updated dependencies [[`28c3ea68f5634792848f146ac6af5b27c848bf21`](https://github.com/medusajs/medusa/commit/28c3ea68f5634792848f146ac6af5b27c848bf21), [`224ab39a81e8d3cf3d6fa3ff5eee82541f64728d`](https://github.com/medusajs/medusa/commit/224ab39a81e8d3cf3d6fa3ff5eee82541f64728d), [`afb40d437b3cc4ceb015df70985b2f005f40eaff`](https://github.com/medusajs/medusa/commit/afb40d437b3cc4ceb015df70985b2f005f40eaff), [`37563987b8fe75c9acfe62957a33e8398977647a`](https://github.com/medusajs/medusa/commit/37563987b8fe75c9acfe62957a33e8398977647a), [`13d7d15be594ca413785eebe8f86b47c36cb9830`](https://github.com/medusajs/medusa/commit/13d7d15be594ca413785eebe8f86b47c36cb9830)]:
+  - @medusajs/framework@2.11.3
+
+## 2.11.2
+
+### Patch Changes
+
+- [#13852](https://github.com/medusajs/medusa/pull/13852) [`f055bfd723e47b381a780b23dc230203b989088c`](https://github.com/medusajs/medusa/commit/f055bfd723e47b381a780b23dc230203b989088c) Thanks [@olivermrbl](https://github.com/olivermrbl)! - fix(pricing): Update store + list price preferences
+
+- [#13899](https://github.com/medusajs/medusa/pull/13899) [`0f79f22ebc35b3e4d8151789b92c932f014de85e`](https://github.com/medusajs/medusa/commit/0f79f22ebc35b3e4d8151789b92c932f014de85e) Thanks [@adrien2p](https://github.com/adrien2p)! - fix(pricing): update price list prices perf issues
+
+- Updated dependencies [[`85b1f3d43aa8d8e0269a545ef7867733fd0eb8e2`](https://github.com/medusajs/medusa/commit/85b1f3d43aa8d8e0269a545ef7867733fd0eb8e2)]:
+  - @medusajs/framework@2.11.2
+
 ## 2.11.1
 
 ### Patch Changes

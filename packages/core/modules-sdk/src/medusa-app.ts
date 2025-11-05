@@ -1,3 +1,4 @@
+import { asValue } from "@medusajs/deps/awilix"
 import { RemoteFetchDataCallback } from "@medusajs/orchestration"
 import {
   ConfigModule,
@@ -21,6 +22,7 @@ import {
   createMedusaContainer,
   discoverFeatureFlagsFromDir,
   dynamicImport,
+  executeWithConcurrency,
   FeatureFlag,
   GraphQLUtils,
   isObject,
@@ -33,7 +35,6 @@ import {
   promiseAll,
   registerFeatureFlag,
 } from "@medusajs/utils"
-import { asValue } from "@medusajs/deps/awilix"
 import { Link } from "./link"
 import {
   MedusaModule,
@@ -501,12 +502,14 @@ async function MedusaApp_({
     modulesNames: string[]
     action?: "run" | "revert" | "generate"
   }) => {
-    const moduleResolutions = modulesNames.map((moduleName) => {
-      return {
-        moduleName,
-        resolution: MedusaModule.getModuleResolutions(moduleName),
+    const moduleResolutions = Array.from(new Set(modulesNames)).map(
+      (moduleName) => {
+        return {
+          moduleName,
+          resolution: MedusaModule.getModuleResolutions(moduleName),
+        }
       }
-    })
+    )
 
     const missingModules = moduleResolutions
       .filter(({ resolution }) => !resolution)
@@ -524,7 +527,7 @@ async function MedusaApp_({
       throw error
     }
 
-    for (const { resolution: moduleResolution } of moduleResolutions) {
+    const run = async ({ resolution: moduleResolution }) => {
       if (
         !moduleResolution.options?.database &&
         moduleResolution.moduleDeclaration?.scope === MODULE_SCOPE.INTERNAL
@@ -554,6 +557,12 @@ async function MedusaApp_({
         await MedusaModule.migrateGenerate(migrationOptions)
       }
     }
+
+    const concurrency = parseInt(process.env.DB_MIGRATION_CONCURRENCY ?? "1")
+    await executeWithConcurrency(
+      moduleResolutions.map((a) => () => run(a)),
+      concurrency
+    )
   }
 
   const runMigrations: RunMigrationFn = async (): Promise<void> => {

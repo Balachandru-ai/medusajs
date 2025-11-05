@@ -20,6 +20,7 @@ erDiagram
 	Product }|--|{ ProductCategory : categories
 	ProductCategory ||--|| ProductCategory : category_children
 	ProductCollection ||--|| Product : products
+	ProductImage }|--|{ ProductVariant : variants
 	ProductOption ||--|| ProductOptionValue : values
 	ProductOptionValue }|--|{ ProductVariant : variants
 	ProductType ||--|| Product : products
@@ -37,3 +38,4 @@ erDiagram
 - [ProductTag](../../product_models/variables/product_models.ProductTag/page.mdx)
 - [ProductType](../../product_models/variables/product_models.ProductType/page.mdx)
 - [ProductVariant](../../product_models/variables/product_models.ProductVariant/page.mdx)
+- [ProductVariantProductImage](../../product_models/variables/product_models.ProductVariantProductImage/page.mdx)
