@@ -174,7 +174,7 @@ medusaIntegrationTestRunner({
 
         expect(error.response.status).toEqual(400)
         expect(error.response.data.message).toEqual(
-          "You can't delete yourself"
+          "A user cannot delete itself"
         )
       })
 

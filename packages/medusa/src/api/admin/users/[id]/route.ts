@@ -81,7 +81,7 @@ export const DELETE = async (
   if (actor_id === id) {
     throw new MedusaError(
       MedusaError.Types.NOT_ALLOWED,
-      "You can't delete yourself"
+      "A user cannot delete itself"
     )
   }
 
