@@ -21,12 +21,10 @@ import {
   MedusaContext,
   MedusaService,
 } from "@medusajs/framework/utils"
-import {
-  Customer,
-  CustomerAddress,
-  CustomerGroup,
-  CustomerGroupCustomer,
-} from "@models"
+import Customer from "#models/customer"
+import CustomerAddress from "#models/address"
+import CustomerGroup from "#models/customer-group"
+import CustomerGroupCustomer from "#models/customer-group-customer"
 import { joinerConfig } from "../joiner-config"
 
 type InjectedDependencies = {

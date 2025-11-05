@@ -1,6 +1,6 @@
 import { model } from "@medusajs/framework/utils"
 import Customer from "./customer"
-import { CustomerGroupCustomer } from "@models"
+import CustomerGroupCustomer from "#models/customer-group-customer"
 
 const CustomerGroup = model
   .define("CustomerGroup", {
