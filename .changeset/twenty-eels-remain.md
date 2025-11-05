@@ -1,6 +1,6 @@
 ---
 "@medusajs/utils": patch
-"@medusajs/medusa-test-utils": patch
+"@medusajs/test-utils": patch
 ---
 
 fix(): Index integration tests flackyness
