@@ -34,16 +34,9 @@
       },
       "description": "The space from the edges of the screen.",
       "tsType": {
-        "name": "union",
-        "raw": "string \\| number",
-        "elements": [
-          {
-            "name": "string"
-          },
-          {
-            "name": "number"
-          }
-        ]
+        "name": "Offset",
+        "elements": [],
+        "raw": "Offset"
       },
       "required": false
     },
