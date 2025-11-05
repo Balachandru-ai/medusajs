@@ -1,5 +1,7 @@
-import { BaseRepository, getLinkRepository } from "@repositories"
-import { LinkService, getModuleService } from "@services"
+import { MikroOrmBaseRepository as BaseRepository } from "@medusajs/framework/utils"
+import { getLinkRepository } from "#repositories/link"
+import LinkService from "#services/link"
+import { getModuleService } from "#services/dynamic-service-class"
 
 import {
   InternalModuleDeclaration,

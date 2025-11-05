@@ -4,7 +4,7 @@ import {
   ModuleJoinerConfig,
 } from "@medusajs/framework/types"
 import { isDefined } from "@medusajs/framework/utils"
-import { LinkModuleService } from "@services"
+import LinkModuleService from "#services/link-module-service"
 
 export function getModuleService(
   joinerConfig: ModuleJoinerConfig

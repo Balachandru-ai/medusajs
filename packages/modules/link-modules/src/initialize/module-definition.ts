@@ -3,8 +3,11 @@ import {
   ModuleExports,
   ModuleJoinerConfig,
 } from "@medusajs/framework/types"
-import { getModuleService, getReadOnlyModuleService } from "@services"
-import { getLoaders } from "../loaders"
+import {
+  getModuleService,
+  getReadOnlyModuleService,
+} from "#services/dynamic-service-class"
+import { getLoaders } from "#loaders/index"
 
 export function getLinkModuleDefinition(
   joinerConfig: ModuleJoinerConfig,

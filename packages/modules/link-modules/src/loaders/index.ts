@@ -4,7 +4,7 @@ import {
   ModuleLoaderFunction,
 } from "@medusajs/framework/types"
 
-import { generateEntity } from "../utils"
+import { generateEntity } from "#utils/generate-entity"
 import { connectionLoader } from "./connection"
 import { containerLoader } from "./container"
 

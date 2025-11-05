@@ -19,10 +19,10 @@ import {
   simpleHash,
   toPascalCase,
 } from "@medusajs/framework/utils"
-import * as linkDefinitions from "../definitions"
-import { MigrationsExecutionPlanner } from "../migration"
-import { InitializeModuleInjectableDependencies } from "../types"
-import { generateGraphQLSchema } from "../utils"
+import * as linkDefinitions from "#definitions/index"
+import { MigrationsExecutionPlanner } from "#migration/index"
+import { InitializeModuleInjectableDependencies } from "#types/index"
+import { generateGraphQLSchema } from "#utils/generate-schema"
 import { getLinkModuleDefinition } from "./module-definition"
 
 export const initialize = async (

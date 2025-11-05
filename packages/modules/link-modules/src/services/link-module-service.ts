@@ -23,7 +23,7 @@ import {
   Modules,
   ModulesSdkUtils,
 } from "@medusajs/framework/utils"
-import { LinkService } from "@services"
+import LinkService from "#services/link"
 
 type InjectedDependencies = {
   baseRepository: DAL.RepositoryService

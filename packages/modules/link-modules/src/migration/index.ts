@@ -18,7 +18,7 @@ import {
   DatabaseSchema,
   PostgreSqlDriver,
 } from "@medusajs/framework/mikro-orm/postgresql"
-import { generateEntity } from "../utils"
+import { generateEntity } from "#utils/generate-entity"
 
 /**
  * The migrations execution planner creates a plan of SQL queries
