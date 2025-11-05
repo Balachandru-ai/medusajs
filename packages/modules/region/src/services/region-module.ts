@@ -26,8 +26,9 @@ import {
   promiseAll,
   removeUndefined,
 } from "@medusajs/framework/utils"
-import { Country, Region } from "@models"
-import { UpdateRegionInput } from "@types"
+import Country from "#models/country"
+import Region from "#models/region"
+import { UpdateRegionInput } from "#types/index"
 
 type InjectedDependencies = {
   baseRepository: DAL.RepositoryService

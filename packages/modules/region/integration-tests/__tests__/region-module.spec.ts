@@ -1,7 +1,7 @@
 import { IRegionModuleService } from "@medusajs/framework/types"
 import { Module, Modules } from "@medusajs/framework/utils"
 import { moduleIntegrationTestRunner } from "@medusajs/test-utils"
-import { RegionModuleService } from "@services"
+import RegionModuleService from "#services/region-module"
 
 jest.setTimeout(30000)
 

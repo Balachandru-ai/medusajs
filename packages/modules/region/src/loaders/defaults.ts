@@ -7,7 +7,7 @@ import {
   ContainerRegistrationKeys,
   DefaultsUtils,
 } from "@medusajs/framework/utils"
-import { Country } from "@models"
+import Country from "#models/country"
 
 export default async ({ container }: LoaderOptions): Promise<void> => {
   // TODO: Add default logger to the container when running tests
