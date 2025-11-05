@@ -651,28 +651,8 @@ medusaIntegrationTestRunner({
             retries: 5,
             waitSeconds: 1.5,
           }
-        ).catch(async (error) => {
-          console.log(error)
-          const allData = await dbConnection.raw(`SELECT * FROM index_data`)
-          const allCatData = await promiseAll([
-            dbConnection.raw(`SELECT * FROM cat_product`),
-            dbConnection.raw(`SELECT * FROM cat_productvariant`),
-            dbConnection.raw(`SELECT * FROM cat_price`),
-            dbConnection.raw(`SELECT * FROM cat_brand`),
-            dbConnection.raw(`SELECT * FROM cat_linkproductproductbrandbrand`),
-          ])
-          console.log(`
-          all data
-          ----
+        )
 
-        ${JSON.stringify(allData.rows, null, 2)}
-
-          all cat data
-          ----
-
-          ${JSON.stringify(allCatData, null, 2)}
-        `)
-        })
         expect(resultset.data.length).toEqual(1)
       })
     })
