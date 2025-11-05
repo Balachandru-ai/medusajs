@@ -37,14 +37,12 @@ export const processProductOptionsForImportStep = createStep(
 
     for (const product of data.products) {
       if (product.options && product.options.length > 0) {
-        // Create the product options
         const createdOptions = await productService.createProductOptions(
           product.options
         )
 
         createdOptionIds.push(...createdOptions.map((opt) => opt.id))
 
-        // Build a map of option title to option ID
         const optionTitleToIdMap = new Map<string, string>()
         createdOptions.forEach((option) => {
           optionTitleToIdMap.set(option.title, option.id)
@@ -72,7 +70,6 @@ export const processProductOptionsForImportStep = createStep(
       Modules.PRODUCT
     )
 
-    // Delete created options (compensation)
     await productService.deleteProductOptions(createdOptionIds)
   }
 )
