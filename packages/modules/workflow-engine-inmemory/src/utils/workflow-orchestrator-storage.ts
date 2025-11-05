@@ -25,9 +25,9 @@ import {
   TransactionState,
   TransactionStepState,
 } from "@medusajs/framework/utils"
-import { WorkflowOrchestratorService } from "@services"
+import { WorkflowOrchestratorService } from "#services/workflow-orchestrator"
 import { type CronExpression, parseExpression } from "cron-parser"
-import { WorkflowExecution } from "../models/workflow-execution"
+import { WorkflowExecution } from "#models/workflow-execution"
 
 const THIRTY_MINUTES_IN_MS = 1000 * 60 * 30
 

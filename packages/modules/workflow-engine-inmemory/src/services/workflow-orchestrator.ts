@@ -24,9 +24,9 @@ import {
   resolveValue,
   ReturnWorkflow,
 } from "@medusajs/framework/workflows-sdk"
-import { WorkflowOrchestratorCancelOptions } from "@types"
+import { WorkflowOrchestratorCancelOptions } from "#types/index"
 import { ulid } from "ulid"
-import { InMemoryDistributedTransactionStorage } from "../utils"
+import { InMemoryDistributedTransactionStorage } from "#utils/index"
 
 export type WorkflowOrchestratorRunOptions<T> = Omit<
   FlowRunOptions<T>,

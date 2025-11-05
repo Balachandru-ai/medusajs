@@ -22,9 +22,9 @@ import type {
   UnwrapWorkflowInputDataType,
 } from "@medusajs/framework/workflows-sdk"
 import { SqlEntityManager } from "@medusajs/framework/mikro-orm/postgresql"
-import { WorkflowExecution } from "@models"
-import { WorkflowOrchestratorService } from "@services"
-import { WorkflowOrchestratorCancelOptions } from "@types"
+import { WorkflowExecution } from "#models/workflow-execution"
+import { WorkflowOrchestratorService } from "#services/workflow-orchestrator"
+import { WorkflowOrchestratorCancelOptions } from "#types/index"
 
 type InjectedDependencies = {
   manager: SqlEntityManager
