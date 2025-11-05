@@ -22,6 +22,7 @@ import {
 } from "../steps"
 import { updateCartPromotionsStep } from "../steps/update-cart-promotions"
 import { cartFieldsForRefreshSteps } from "../utils/fields"
+import { refreshPaymentCollectionForCartWorkflow } from "./refresh-payment-collection"
 
 /**
  * The details of the promotion updates on a cart.
@@ -152,6 +153,10 @@ export const updateCartPromotionsWorkflow = createWorkflow(
         action: PromotionActions.REPLACE,
       })
     )
+
+    refreshPaymentCollectionForCartWorkflow.runAsStep({
+        input: { cart },
+    })
 
     releaseLockStep({
       key: cart.id,
