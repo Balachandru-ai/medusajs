@@ -27,7 +27,8 @@ import {
   promiseAll,
 } from "@medusajs/framework/utils"
 import { joinerConfig } from "../joiner-config"
-import { StockLocation, StockLocationAddress } from "../models"
+import StockLocation from "#models/stock-location"
+import StockLocationAddress from "#models/stock-location-address"
 
 type InjectedDependencies = {
   [Modules.EVENT_BUS]: IEventBusService

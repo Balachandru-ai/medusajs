@@ -1,5 +1,5 @@
 import { model } from "@medusajs/framework/utils"
-import { StockLocation } from "@models"
+import StockLocation from "#models/stock-location"
 
 const StockLocationAddress = model
   .define("StockLocationAddress", {

@@ -2,7 +2,7 @@ import { moduleIntegrationTestRunner } from "@medusajs/test-utils"
 
 import { IStockLocationService } from "@medusajs/framework/types"
 import { Module, Modules } from "@medusajs/framework/utils"
-import { StockLocationModuleService } from "../../src/services"
+import StockLocationModuleService from "#services/stock-location-module"
 
 jest.setTimeout(100000)
 
