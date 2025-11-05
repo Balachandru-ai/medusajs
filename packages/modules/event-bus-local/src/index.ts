@@ -1,5 +1,5 @@
 import { ModuleExports } from "@medusajs/framework/types"
-import Loader from "./loaders"
+import Loader from "#loaders/index"
 import LocalEventBus from "./services/event-bus-local"
 
 export const service = LocalEventBus
@@ -11,4 +11,4 @@ const moduleDefinition: ModuleExports = {
 }
 
 export default moduleDefinition
-export * from "./initialize"
+export * from "#initialize/index"

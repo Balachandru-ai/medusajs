@@ -3,6 +3,16 @@
   "version": "2.11.3",
   "description": "Local Event Bus Module for Medusa",
   "main": "dist/index.js",
+  "imports": {
+    "#initialize/*": {
+      "types": "./dist/initialize/*.d.ts",
+      "default": "./dist/initialize/*.js"
+    },
+    "#loaders/*": {
+      "types": "./dist/loaders/*.d.ts",
+      "default": "./dist/loaders/*.js"
+    }
+  },
   "files": [
     "dist",
     "!dist/**/__tests__",
