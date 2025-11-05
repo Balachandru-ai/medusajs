@@ -54,15 +54,13 @@ import {
   PaymentSessionStatus,
   promiseAll,
 } from "@medusajs/framework/utils"
-import {
-  AccountHolder,
-  Capture,
-  Payment,
-  PaymentCollection,
-  PaymentSession,
-  Refund,
-  RefundReason,
-} from "@models"
+import AccountHolder from "#models/account-holder"
+import Capture from "#models/capture"
+import Payment from "#models/payment"
+import PaymentCollection from "#models/payment-collection"
+import PaymentSession from "#models/payment-session"
+import Refund from "#models/refund"
+import RefundReason from "#models/refund-reason"
 import { joinerConfig } from "../joiner-config"
 import PaymentProviderService from "./payment-provider"
 

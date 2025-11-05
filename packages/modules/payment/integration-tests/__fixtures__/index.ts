@@ -1,7 +1,9 @@
 import { EntityName } from "@medusajs/framework/mikro-orm/core"
 import { SqlEntityManager } from "@medusajs/framework/mikro-orm/postgresql"
 
-import { Payment, PaymentSession, PaymentCollection } from "@models"
+import Payment from "#models/payment"
+import PaymentSession from "#models/payment-session"
+import PaymentCollection from "#models/payment-collection"
 
 import {
   defaultPaymentCollectionData,

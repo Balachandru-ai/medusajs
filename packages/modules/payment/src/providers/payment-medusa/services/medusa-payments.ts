@@ -41,22 +41,22 @@ import {
   PaymentActions,
   PaymentSessionStatus,
 } from "@medusajs/framework/utils"
-import { MedusaPaymentsOptions } from "../types"
 import {
   getAmountFromSmallestUnit,
   getSmallestUnit,
 } from "../utils/get-smallest-unit"
 import {
-  CreateAccountHolderRequest,
   CreatePaymentRequest,
-  MedusaAccountHolder,
   MedusaPayment,
+  RefundPaymentRequest,
+  MedusaRefund,
+  MedusaAccountHolder,
+  CreateAccountHolderRequest,
+  UpdateAccountHolderRequest,
   MedusaPaymentMethod,
   MedusaPaymentMethodSession,
-  MedusaRefund,
-  RefundPaymentRequest,
-  UpdateAccountHolderRequest,
-} from "../types/medusa-payments"
+} from "#providers/payment-medusa/types/medusa-payments"
+import { MedusaPaymentsOptions } from "#providers/payment-medusa/types/index"
 
 type HandledErrorType = { retry: true } | { retry: false; data: any }
 class CloudServiceError extends Error {

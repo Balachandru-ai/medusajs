@@ -34,7 +34,7 @@ import {
   WebhookActionResult,
 } from "@medusajs/framework/types"
 import { ModulesSdkUtils } from "@medusajs/framework/utils"
-import { PaymentProvider } from "@models"
+import PaymentProvider from "#models/payment-provider"
 
 type InjectedDependencies = {
   logger?: Logger

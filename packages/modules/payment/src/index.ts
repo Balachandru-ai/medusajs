@@ -1,5 +1,5 @@
-import { PaymentModuleService } from "@services"
-import loadProviders from "./loaders/providers"
+import PaymentModuleService from "#services/payment-module"
+import loadProviders from "#loaders/providers"
 import { Module, Modules } from "@medusajs/framework/utils"
 
 export default Module(Modules.PAYMENT, {
@@ -7,4 +7,4 @@ export default Module(Modules.PAYMENT, {
   loaders: [loadProviders],
 })
 
-export { PaymentModuleOptions } from "./types"
+export { PaymentModuleOptions } from "#types/index"

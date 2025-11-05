@@ -1,1 +1,1 @@
-export { MedusaPaymentsProvider } from "./services/medusa-payments"
+export { MedusaPaymentsProvider } from "#providers/payment-medusa/services/medusa-payments"

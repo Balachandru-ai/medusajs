@@ -8,8 +8,9 @@ import {
 } from "@medusajs/framework/types"
 import { MedusaError } from "@medusajs/framework/utils"
 
-import { PaymentProviderService } from "@services"
-import * as providers from "../providers"
+import PaymentProviderService from "#services/payment-provider"
+import * as providers from "#providers/payment-medusa/index"
+import { SystemPaymentProvider } from "#providers/system"
 
 const PROVIDER_REGISTRATION_KEY = "payment_providers"
 
@@ -52,7 +53,7 @@ export default async ({
     }
   }
 >): Promise<void> => {
-  await registrationFn(providers.SystemPaymentProvider, container, {
+  await registrationFn(SystemPaymentProvider, container, {
     id: "default",
   })
 
