@@ -1,5 +1,5 @@
-import { FulfillmentModuleService } from "@services"
-import loadProviders from "./loaders/providers"
+import FulfillmentModuleService from "#services/fulfillment-module-service"
+import loadProviders from "#loaders/providers"
 import { Module, Modules } from "@medusajs/framework/utils"
 
 export default Module(Modules.FULFILLMENT, {
@@ -8,4 +8,4 @@ export default Module(Modules.FULFILLMENT, {
 })
 
 // Module options types
-export { FulfillmentModuleOptions } from "./types"
+export { FulfillmentModuleOptions } from "#types/index"

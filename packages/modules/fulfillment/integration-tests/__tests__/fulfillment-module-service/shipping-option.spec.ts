@@ -12,7 +12,7 @@ import {
   MockEventBusService,
   moduleIntegrationTestRunner,
 } from "@medusajs/test-utils"
-import { FulfillmentProviderService } from "@services"
+import FulfillmentProviderService from "#services/fulfillment-provider"
 import { resolve } from "path"
 import {
   buildExpectedEventMessageShape,

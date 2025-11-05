@@ -12,7 +12,7 @@ import {
 } from "../../__fixtures__"
 import { FulfillmentEvents, Modules } from "@medusajs/framework/utils"
 import { resolve } from "path"
-import { FulfillmentProviderService } from "@services"
+import FulfillmentProviderService from "#services/fulfillment-provider"
 import { FulfillmentProviderServiceFixtures } from "../../__fixtures__/providers"
 
 jest.setTimeout(100000)

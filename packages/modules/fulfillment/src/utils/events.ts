@@ -1,12 +1,10 @@
-import {
-  Fulfillment,
-  FulfillmentSet,
-  GeoZone,
-  ServiceZone,
-  ShippingOption,
-  ShippingOptionRule,
-  ShippingOptionType,
-} from "@models"
+import { Fulfillment } from "#models/fulfillment"
+import { FulfillmentSet } from "#models/fulfillment-set"
+import { GeoZone } from "#models/geo-zone"
+import { ServiceZone } from "#models/service-zone"
+import { ShippingOption } from "#models/shipping-option"
+import { ShippingOptionRule } from "#models/shipping-option-rule"
+import { ShippingOptionType } from "#models/shipping-option-type"
 import { Context, InferEntityType } from "@medusajs/framework/types"
 import {
   CommonEvents,

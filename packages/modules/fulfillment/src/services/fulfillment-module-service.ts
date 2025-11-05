@@ -36,20 +36,18 @@ import {
   promiseAll,
 } from "@medusajs/framework/utils"
 import { isObject } from "@medusajs/utils"
-import {
-  Fulfillment,
-  FulfillmentProvider,
-  FulfillmentSet,
-  GeoZone,
-  ServiceZone,
-  ShippingOption,
-  ShippingOptionRule,
-  ShippingOptionType,
-  ShippingProfile,
-} from "@models"
-import { isContextValid, Rule, validateAndNormalizeRules } from "@utils"
+import { Fulfillment } from "#models/fulfillment"
+import { FulfillmentProvider } from "#models/fulfillment-provider"
+import { FulfillmentSet } from "#models/fulfillment-set"
+import { GeoZone } from "#models/geo-zone"
+import { ServiceZone } from "#models/service-zone"
+import { ShippingOption } from "#models/shipping-option"
+import { ShippingOptionRule } from "#models/shipping-option-rule"
+import { ShippingOptionType } from "#models/shipping-option-type"
+import { ShippingProfile } from "#models/shipping-profile"
+import { isContextValid, Rule, validateAndNormalizeRules } from "#utils/utils"
 import { joinerConfig } from "../joiner-config"
-import { UpdateShippingOptionsInput } from "../types/service"
+import { UpdateShippingOptionsInput } from "#types/service"
 import FulfillmentProviderService from "./fulfillment-provider"
 
 const generateMethodForModels = {

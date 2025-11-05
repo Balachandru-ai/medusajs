@@ -1,4 +1,4 @@
-import { InMemoryCacheService } from "../index"
+import { InMemoryCacheService } from "../inmemory-cache"
 
 jest.setTimeout(40000)
 

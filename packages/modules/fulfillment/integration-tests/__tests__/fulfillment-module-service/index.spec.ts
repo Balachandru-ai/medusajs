@@ -4,7 +4,8 @@ import {
   IFulfillmentModuleService,
 } from "@medusajs/framework/types"
 import { Module, Modules } from "@medusajs/framework/utils"
-import { FulfillmentModuleService, FulfillmentProviderService } from "@services"
+import FulfillmentModuleService from "#services/fulfillment-module-service"
+import FulfillmentProviderService from "#services/fulfillment-provider"
 import {
   initModules,
   moduleIntegrationTestRunner,

@@ -18,7 +18,7 @@ import {
   ModulesSdkUtils,
   promiseAll,
 } from "@medusajs/framework/utils"
-import { FulfillmentProvider } from "@models"
+import { FulfillmentProvider } from "#models/fulfillment-provider"
 
 type InjectedDependencies = {
   logger?: Logger

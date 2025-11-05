@@ -9,8 +9,8 @@ import {
   lowerCaseFirst,
   promiseAll,
 } from "@medusajs/framework/utils"
-import { FulfillmentProviderService } from "@services"
-import { FulfillmentIdentifiersRegistrationName } from "@types"
+import FulfillmentProviderService from "#services/fulfillment-provider"
+import { FulfillmentIdentifiersRegistrationName } from "#types/index"
 import { Lifetime, asFunction, asValue } from "@medusajs/framework/awilix"
 
 const registrationFn = async (klass, container, pluginOptions) => {
