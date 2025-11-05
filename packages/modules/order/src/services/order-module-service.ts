@@ -3116,6 +3116,21 @@ export default class OrderModuleService
       this.orderShippingService_.softDelete(orderShippingIds, sharedContext)
     )
 
+    // Order Credit Lines
+    const orderCreditLines = await this.orderCreditLineService_.list(
+      {
+        order_id: order.id,
+        version: currentVersion,
+      },
+      { select: ["id", "version"] },
+      sharedContext
+    )
+    const orderCreditLineIds = orderCreditLines.map((cl) => cl.id)
+
+    updatePromises.push(
+      this.orderCreditLineService_.softDelete(orderCreditLineIds, sharedContext)
+    )
+
     // Order
     updatePromises.push(
       this.orderService_.update(
@@ -3218,6 +3233,21 @@ export default class OrderModuleService
 
     updatePromises.push(
       this.orderShippingService_.softDelete(orderShippingIds, sharedContext)
+    )
+
+    // Order Credit Lines
+    const orderCreditLines = await this.orderCreditLineService_.list(
+      {
+        order_id: order.id,
+        version: currentVersion,
+      },
+      { select: ["id", "version"] },
+      sharedContext
+    )
+    const orderCreditLineIds = orderCreditLines.map((cl) => cl.id)
+
+    updatePromises.push(
+      this.orderCreditLineService_.softDelete(orderCreditLineIds, sharedContext)
     )
 
     // Order
@@ -3487,7 +3517,7 @@ export default class OrderModuleService
       shippingMethodsToUpsert,
       summariesToUpsert,
       orderToUpdate,
-      creditLinesToCreate,
+      creditLinesToUpsert,
     } = await applyChangesToOrder(orders, actionsMap, {
       addActionReferenceToObject: true,
       includeTaxLinesAndAdjustementsToPreview: async (...args) => {
@@ -3505,7 +3535,7 @@ export default class OrderModuleService
       orderItems,
       _orderSummaryUpdate,
       orderShippingMethods,
-      createdOrderCreditLines,
+      orderCreditLines,
     ] = await promiseAll([
       orderToUpdate.length
         ? this.orderService_.update(orderToUpdate, sharedContext)
@@ -3525,9 +3555,9 @@ export default class OrderModuleService
             sharedContext
           )
         : null,
-      creditLinesToCreate.length
-        ? this.orderCreditLineService_.create(
-            creditLinesToCreate,
+      creditLinesToUpsert.length
+        ? this.orderCreditLineService_.upsert(
+            creditLinesToUpsert,
             sharedContext
           )
         : null,
@@ -3536,7 +3566,7 @@ export default class OrderModuleService
     return {
       items: orderItems ?? [],
       shipping_methods: orderShippingMethods ?? [],
-      credit_lines: createdOrderCreditLines ?? ([] as any),
+      credit_lines: orderCreditLines ?? ([] as any),
     }
   }
 

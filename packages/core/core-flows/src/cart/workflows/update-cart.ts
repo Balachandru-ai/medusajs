@@ -24,6 +24,7 @@ import {
   findOrCreateCustomerStep,
   findSalesChannelStep,
   updateCartsStep,
+  validateCartStep,
 } from "../steps"
 import { validateSalesChannelStep } from "../steps/validate-sales-channel"
 import { refreshCartItemsWorkflow } from "./refresh-cart-items"
@@ -110,6 +111,8 @@ export const updateCartWorkflow = createWorkflow(
         isList: false,
       },
     }).config({ name: "get-cart" })
+
+    validateCartStep({ cart: cartToUpdate })
 
     const cartDataInput = transform(
       { input, cartToUpdate },

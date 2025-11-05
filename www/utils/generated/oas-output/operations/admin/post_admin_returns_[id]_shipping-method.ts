@@ -32,7 +32,7 @@
  *   content:
  *     application/json:
  *       schema:
- *         $ref: "#/components/schemas/AdminPostReturnsShippingReqSchema"
+ *         $ref: "#/components/schemas/AdminAddReturnShipping"
  * x-codeSamples:
  *   - lang: JavaScript
  *     label: JS SDK

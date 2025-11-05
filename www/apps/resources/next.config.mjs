@@ -286,6 +286,27 @@ const nextConfig = {
   experimental: {
     optimizePackageImports: ["@medusajs/icons", "@medusajs/ui", "elkjs"],
   },
+  rewrites: async () => {
+    return {
+      beforeFiles: [
+        {
+          source: "/:path*/index.html.md",
+          destination: "/md-content/:path*",
+        },
+        {
+          source: "/:path*",
+          has: [
+            {
+              type: "header",
+              key: "Accept",
+              value: ".*(text/markdown|text/plain).*",
+            },
+          ],
+          destination: "/md-content/:path*",
+        },
+      ],
+    }
+  },
 }
 
 const withBundleAnalyzer = bundleAnalyzer({

@@ -77,6 +77,7 @@ interface DataTableProps<TData> {
   rowHref?: (row: TData) => string
   emptyState?: DataTableEmptyStateProps
   heading?: string
+  headingLevel?: "h1" | "h2" | "h3"
   subHeading?: string
   prefix?: string
   pageSize?: number
@@ -117,6 +118,7 @@ export const DataTable = <TData,>({
   enableFilterMenu,
   rowHref,
   heading,
+  headingLevel = "h1",
   subHeading,
   prefix,
   pageSize = 10,
@@ -384,7 +386,7 @@ export const DataTable = <TData,>({
           <div className="flex items-center gap-x-4">
             {shouldRenderHeading && (
               <div>
-                {heading && <Heading>{heading}</Heading>}
+                {heading && <Heading level={headingLevel}>{heading}</Heading>}
                 {subHeading && (
                   <Text size="small" className="text-ui-fg-subtle">
                     {subHeading}

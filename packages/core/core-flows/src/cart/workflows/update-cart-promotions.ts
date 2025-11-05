@@ -18,6 +18,7 @@ import {
   prepareAdjustmentsFromPromotionActionsStep,
   removeLineItemAdjustmentsStep,
   removeShippingMethodAdjustmentsStep,
+  validateCartStep,
 } from "../steps"
 import { updateCartPromotionsStep } from "../steps/update-cart-promotions"
 import { cartFieldsForRefreshSteps } from "../utils/fields"
@@ -95,6 +96,8 @@ export const updateCartPromotionsWorkflow = createWorkflow(
     const cart = transform({ fetchCart, input }, ({ fetchCart, input }) => {
       return input.cart ?? fetchCart
     })
+
+    validateCartStep({ cart })
 
     acquireLockStep({
       key: cart.id,

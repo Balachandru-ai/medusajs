@@ -135,13 +135,6 @@ class OasKindGenerator extends FunctionKindGenerator {
     },
   ]
   readonly RESPONSE_TYPE_NAMES = ["MedusaResponse"]
-  readonly FIELD_QUERY_PARAMS = ["fields", "expand"]
-  readonly PAGINATION_QUERY_PARAMS = [
-    "limit",
-    "offset",
-    "order",
-    "with_deleted",
-  ]
 
   /**
    * This map collects tags of all the generated OAS, then, once the generation process finishes,
@@ -358,13 +351,13 @@ class OasKindGenerator extends FunctionKindGenerator {
     })
 
     oas.parameters?.push(...queryParameters)
-    if (requestSchema && Object.keys(requestSchema).length > 0) {
+    if (!this.oasSchemaHelper.isSchemaEmpty(requestSchema)) {
       oas.requestBody = {
         content: {
           "application/json": {
             schema:
-              this.oasSchemaHelper.namedSchemaToReference(requestSchema) ||
-              this.oasSchemaHelper.schemaChildrenToRefs(requestSchema),
+              this.oasSchemaHelper.namedSchemaToReference(requestSchema!) ||
+              this.oasSchemaHelper.schemaChildrenToRefs(requestSchema!),
           },
         },
       }
@@ -617,10 +610,7 @@ class OasKindGenerator extends FunctionKindGenerator {
 
     parametersUpdated = updatedRequestSchema?.wasUpdated || parametersUpdated
 
-    if (
-      !updatedRequestSchema?.schema ||
-      Object.keys(updatedRequestSchema.schema).length === 0
-    ) {
+    if (this.oasSchemaHelper.isSchemaEmpty(updatedRequestSchema?.schema)) {
       // if there's no request schema, remove it from the OAS
       delete oas.requestBody
     } else {
@@ -630,10 +620,10 @@ class OasKindGenerator extends FunctionKindGenerator {
           "application/json": {
             schema:
               this.oasSchemaHelper.namedSchemaToReference(
-                updatedRequestSchema.schema
+                updatedRequestSchema!.schema!
               ) ||
               this.oasSchemaHelper.schemaChildrenToRefs(
-                updatedRequestSchema.schema
+                updatedRequestSchema!.schema!
               ),
           },
         },
@@ -1224,53 +1214,6 @@ class OasKindGenerator extends FunctionKindGenerator {
     const requestType = this.checker.getTypeFromTypeNode(
       node.parameters[0].type
     ) as ts.TypeReference
-    // TODO for now I'll use the type for validatedQuery until
-    // we have an actual approach to infer query types
-    const querySymbol = requestType.getProperty("validatedQuery")
-    if (querySymbol) {
-      const { shouldAddFields, shouldAddPagination } =
-        this.shouldAddQueryParams(node)
-      const queryType = this.checker.getTypeOfSymbol(querySymbol)
-      const queryTypeName = this.checker.typeToString(queryType)
-      queryType.getProperties().forEach((property) => {
-        const propertyName = property.getName()
-        // if this is a field / pagination query parameter and
-        // they're not used in the route, don't add them.
-        if (
-          (this.FIELD_QUERY_PARAMS.includes(propertyName) &&
-            !shouldAddFields) ||
-          (this.PAGINATION_QUERY_PARAMS.includes(propertyName) &&
-            !shouldAddPagination)
-        ) {
-          return
-        }
-        const propertyType = this.checker.getTypeOfSymbol(property)
-        const descriptionOptions: SchemaDescriptionOptions = {
-          typeStr: propertyName,
-          parentName: tagName,
-          rawParentName: queryTypeName,
-          node: property.valueDeclaration,
-          symbol: property,
-          nodeType: propertyType,
-        }
-        queryParameters.push(
-          this.getParameterObject({
-            name: propertyName,
-            type: "query",
-            description: this.getSchemaDescription(descriptionOptions),
-            required: this.isRequired(property),
-            schema: this.typeToSchema({
-              itemType: propertyType,
-              title: propertyName,
-              descriptionOptions,
-              context: "query",
-              saveSchema: !forUpdate,
-              symbol: property,
-            }),
-          })
-        )
-      })
-    }
 
     const requestTypeArguments =
       requestType.typeArguments || requestType.aliasTypeArguments
@@ -2760,18 +2703,6 @@ class OasKindGenerator extends FunctionKindGenerator {
       })
       // write to the file
       writeFileSync(areaYamlPath, stringify(areaYaml))
-    }
-  }
-
-  shouldAddQueryParams(node: FunctionNode): {
-    shouldAddFields: boolean
-    shouldAddPagination: boolean
-  } {
-    const fnText = node.getText()
-
-    return {
-      shouldAddFields: fnText.includes(`req.queryConfig.fields`),
-      shouldAddPagination: fnText.includes(`req.queryConfig.pagination`),
     }
   }
 

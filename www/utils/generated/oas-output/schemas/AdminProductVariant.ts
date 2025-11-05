@@ -12,6 +12,7 @@
  *   - barcode
  *   - ean
  *   - upc
+ *   - thumbnail
  *   - allow_backorder
  *   - manage_inventory
  *   - hs_code
@@ -142,6 +143,15 @@
  *     description: The variant's inventory items.
  *     items:
  *       $ref: "#/components/schemas/AdminProductVariantInventoryItemLink"
+ *   images:
+ *     type: array
+ *     description: The variant's images.
+ *     items:
+ *       $ref: "#/components/schemas/AdminProductImage"
+ *   thumbnail:
+ *     type: string
+ *     title: thumbnail
+ *     description: The variant's thumbnail.
  * 
 */
 

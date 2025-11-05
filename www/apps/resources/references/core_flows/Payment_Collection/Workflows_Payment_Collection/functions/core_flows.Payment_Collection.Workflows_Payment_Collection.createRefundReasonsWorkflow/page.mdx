@@ -19,7 +19,7 @@ This workflow creates one or more refund reasons. It's used by the
 You can use this workflow within your own customizations or custom workflows, allowing you
 to create refund reasons in your custom flows.
 
-<SourceCodeLink link="https://github.com/medusajs/medusa/blob/675091b4a5ad30101bf69d3459c3673d80c9f46f/packages/core/core-flows/src/payment-collection/workflows/create-refund-reasons.ts#L46" />
+<SourceCodeLink link="https://github.com/medusajs/medusa/blob/147ce2fdc35366e591f552404ec949f6a5b92a11/packages/core/core-flows/src/payment-collection/workflows/create-refund-reasons.ts#L40" />
 
 ## Examples
 
@@ -41,7 +41,8 @@ export async function POST(
     .run({
       input: {
         data: [{
-          label: "damaged",
+          label: "Damaged",
+          code: "damaged"
         }]
       }
     })
@@ -68,7 +69,8 @@ export default async function handleOrderPlaced({
     .run({
       input: {
         data: [{
-          label: "damaged",
+          label: "Damaged",
+          code: "damaged"
         }]
       }
     })
@@ -95,7 +97,8 @@ export default async function myCustomJob(
     .run({
       input: {
         data: [{
-          label: "damaged",
+          label: "Damaged",
+          code: "damaged"
         }]
       }
     })
@@ -123,7 +126,8 @@ const myWorkflow = createWorkflow(
       .runAsStep({
         input: {
           data: [{
-            label: "damaged",
+            label: "Damaged",
+            code: "damaged"
           }]
         }
       })
@@ -140,7 +144,7 @@ const myWorkflow = createWorkflow(
 
 ## Input
 
-<TypeList types={[{"name":"CreateRefundReasonsWorkflowInput","type":"[CreateRefundReasonsWorkflowInput](../../../../types/core_flows.CreateRefundReasonsWorkflowInput/page.mdx)","optional":false,"defaultValue":"","description":"The data to create refund reasons.","expandable":false,"children":[{"name":"data","type":"[CreateRefundReasonDTO](../../../../../payment/interfaces/payment.CreateRefundReasonDTO/page.mdx)[]","description":"The refund reasons to create.","optional":false,"defaultValue":"","expandable":false,"children":[{"name":"label","type":"`string`","description":"The label of the refund reason","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"description","type":"`null` \\| `string`","description":"The description of the refund reason","optional":true,"defaultValue":"","expandable":false,"children":[]},{"name":"metadata","type":"`null` \\| `Record<string, unknown>`","description":"The metadata of the refund reason","optional":true,"defaultValue":"","expandable":false,"children":[]}]}]}]} expandUrl="https://docs.medusajs.com/learn/fundamentals/data-models/manage-relationships#retrieve-records-of-relation" openedLevel={1} sectionTitle="createRefundReasonsWorkflow"/>
+<TypeList types={[{"name":"CreateRefundReasonsWorkflowInput","type":"[CreateRefundReasonsWorkflowInput](../../../../types/core_flows.CreateRefundReasonsWorkflowInput/page.mdx)","optional":false,"defaultValue":"","description":"The data to create refund reasons.","expandable":false,"children":[{"name":"data","type":"[CreateRefundReasonDTO](../../../../../payment/interfaces/payment.CreateRefundReasonDTO/page.mdx)[]","description":"The refund reasons to create.","optional":false,"defaultValue":"","expandable":false,"children":[{"name":"label","type":"`string`","description":"The label of the refund reason","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"code","type":"`string`","description":"The code of the refund reason","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"description","type":"`null` \\| `string`","description":"The description of the refund reason","optional":true,"defaultValue":"","expandable":false,"children":[]},{"name":"metadata","type":"`null` \\| `Record<string, unknown>`","description":"The metadata of the refund reason","optional":true,"defaultValue":"","expandable":false,"children":[]}]}]}]} expandUrl="https://docs.medusajs.com/learn/fundamentals/data-models/manage-relationships#retrieve-records-of-relation" openedLevel={1} sectionTitle="createRefundReasonsWorkflow"/>
 
 ## Output
 

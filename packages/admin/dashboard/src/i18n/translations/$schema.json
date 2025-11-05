@@ -491,6 +491,12 @@
         "idCopiedToClipboard": {
           "type": "string"
         },
+        "editVariantImages": {
+          "type": "string"
+        },
+        "editImages": {
+          "type": "string"
+        },
         "addReason": {
           "type": "string"
         },
@@ -571,6 +577,8 @@
         "continue",
         "continueWithEmail",
         "idCopiedToClipboard",
+        "editVariantImages",
+        "editImages",
         "addReason",
         "addNote",
         "reset",
@@ -1965,6 +1973,9 @@
             "editHint": {
               "type": "string"
             },
+            "manageImageVariants": {
+              "type": "string"
+            },
             "makeThumbnail": {
               "type": "string"
             },
@@ -2045,12 +2056,26 @@
               "type": "string"
             },
             "deleteWarningWithThumbnail_other": {
+            "variantImages": {
+              "type": "string"
+            },
+            "showAvailableImages": {
+              "type": "string"
+            },
+            "availableImages": {
+              "type": "string"
+            },
+            "selectToAdd": {
+              "type": "string"
+            },
+            "removeSelected": {
               "type": "string"
             }
           },
           "required": [
             "label",
             "editHint",
+            "manageImageVariants",
             "makeThumbnail",
             "uploadImagesLabel",
             "uploadImagesHint",
@@ -2061,7 +2086,57 @@
             "downloadImageLabel",
             "deleteImageLabel",
             "emptyState",
-            "successToast"
+            "successToast",
+            "variantImages",
+            "showAvailableImages",
+            "availableImages",
+            "selectToAdd",
+            "removeSelected"
+          ],
+          "additionalProperties": false
+        },
+        "variantMedia": {
+          "type": "object",
+          "properties": {
+            "label": {
+              "type": "string"
+            },
+            "manageVariants": {
+              "type": "string"
+            },
+            "addToMultipleVariants": {
+              "type": "string"
+            },
+            "manageVariantsDescription": {
+              "type": "string"
+            },
+            "successToast": {
+              "type": "string"
+            },
+            "emptyState": {
+              "type": "object",
+              "properties": {
+                "header": {
+                  "type": "string"
+                },
+                "description": {
+                  "type": "string"
+                },
+                "action": {
+                  "type": "string"
+                }
+              },
+              "required": ["header", "description", "action"],
+              "additionalProperties": false
+            }
+          },
+          "required": [
+            "label",
+            "manageVariants",
+            "addToMultipleVariants",
+            "manageVariantsDescription",
+            "successToast",
+            "emptyState"
           ],
           "additionalProperties": false
         },
@@ -2831,6 +2906,7 @@
         "editOptions",
         "editPrices",
         "media",
+        "variantMedia",
         "discountableHint",
         "noSalesChannels",
         "deleteVariantWarning",
@@ -5198,6 +5274,12 @@
             "trackingNumber": {
               "type": "string"
             },
+            "trackingUrl": {
+              "type": "string"
+            },
+            "labelUrl": {
+              "type": "string"
+            },
             "addTracking": {
               "type": "string"
             },
@@ -5214,6 +5296,8 @@
           "required": [
             "title",
             "trackingNumber",
+            "trackingUrl",
+            "labelUrl",
             "addTracking",
             "sendNotification",
             "sendNotificationHint",

@@ -43,7 +43,7 @@ post:
     content:
       application/json:
         schema:
-          $ref: ../components/schemas/AdminTransferOrder.yaml
+          $ref: ../components/schemas/AdminRequestOrderTransfer.yaml
   x-codeSamples:
     - lang: JavaScript
       label: JS SDK

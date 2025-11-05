@@ -4,11 +4,14 @@ import {
 } from "@medusajs/framework/http"
 
 import { linkSalesChannelsToStockLocationWorkflow } from "@medusajs/core-flows"
-import { HttpTypes, LinkMethodRequest } from "@medusajs/framework/types"
+import { HttpTypes } from "@medusajs/framework/types"
 import { refetchStockLocation } from "../../helpers"
 
 export const POST = async (
-  req: AuthenticatedMedusaRequest<LinkMethodRequest>,
+  req: AuthenticatedMedusaRequest<
+    HttpTypes.AdminBatchLink,
+    HttpTypes.SelectParams
+  >,
   res: MedusaResponse<HttpTypes.AdminStockLocationResponse>
 ) => {
   const { id } = req.params

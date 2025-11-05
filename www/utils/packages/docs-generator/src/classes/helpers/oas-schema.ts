@@ -228,7 +228,10 @@ class OasSchemaHelper {
     return clonedSchema
   }
 
-  isSchemaEmpty(schema: OpenApiSchema): boolean {
+  isSchemaEmpty(schema?: OpenApiSchema): boolean {
+    if (!schema || !Object.keys(schema).length) {
+      return true
+    }
     switch (schema.type) {
       case "object":
         const isPropertiesEmpty =

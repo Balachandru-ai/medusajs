@@ -7,7 +7,10 @@ import { refetchBatchVariants, remapVariantResponse } from "../../../helpers"
 import { HttpTypes } from "@medusajs/framework/types"
 
 export const POST = async (
-  req: AuthenticatedMedusaRequest<HttpTypes.AdminBatchProductVariantRequest>,
+  req: AuthenticatedMedusaRequest<
+    HttpTypes.AdminBatchProductVariantRequest,
+    HttpTypes.SelectParams
+  >,
   res: MedusaResponse<HttpTypes.AdminBatchProductVariantResponse>
 ) => {
   const productId = req.params.id

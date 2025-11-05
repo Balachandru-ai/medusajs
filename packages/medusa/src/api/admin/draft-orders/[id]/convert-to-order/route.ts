@@ -3,7 +3,10 @@ import { MedusaRequest, MedusaResponse } from "@medusajs/framework/http"
 import { ContainerRegistrationKeys } from "@medusajs/framework/utils"
 import { HttpTypes } from "@medusajs/types"
 
-export const POST = async (req: MedusaRequest, res: MedusaResponse) => {
+export const POST = async (
+  req: MedusaRequest<HttpTypes.AdminDraftOrderParams>, 
+  res: MedusaResponse<HttpTypes.AdminOrderResponse>
+) => {
   const query = req.scope.resolve(ContainerRegistrationKeys.QUERY)
 
   await convertDraftOrderWorkflow(req.scope).run({

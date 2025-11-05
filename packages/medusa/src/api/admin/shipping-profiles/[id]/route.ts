@@ -9,13 +9,9 @@ import {
   MedusaResponse,
 } from "@medusajs/framework/http"
 import { refetchShippingProfile } from "../helpers"
-import {
-  AdminGetShippingProfileParamsType,
-  AdminUpdateShippingProfileType,
-} from "../validators"
 
 export const GET = async (
-  req: AuthenticatedMedusaRequest<AdminGetShippingProfileParamsType>,
+  req: AuthenticatedMedusaRequest<HttpTypes.SelectParams>,
   res: MedusaResponse<HttpTypes.AdminShippingProfileResponse>
 ) => {
   const shippingProfile = await refetchShippingProfile(
@@ -52,7 +48,10 @@ export const DELETE = async (
 }
 
 export const POST = async (
-  req: AuthenticatedMedusaRequest<AdminUpdateShippingProfileType>,
+  req: AuthenticatedMedusaRequest<
+    HttpTypes.AdminUpdateShippingProfile,
+    HttpTypes.SelectParams
+  >,
   res: MedusaResponse<HttpTypes.AdminShippingProfileResponse>
 ) => {
   const { id } = req.params

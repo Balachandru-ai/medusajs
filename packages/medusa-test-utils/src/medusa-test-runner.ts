@@ -1,4 +1,6 @@
+import { asValue } from "@medusajs/framework/awilix"
 import { logger } from "@medusajs/framework/logger"
+import { Migrator } from "@medusajs/framework/migrations"
 import { MedusaAppOutput } from "@medusajs/framework/modules-sdk"
 import { MedusaContainer } from "@medusajs/framework/types"
 import {
@@ -7,7 +9,6 @@ import {
   getResolvedPlugins,
   mergePluginModules,
 } from "@medusajs/framework/utils"
-import { asValue } from "@medusajs/framework/awilix"
 import { dbTestUtilFactory, getDatabaseURL } from "./database"
 import {
   applyEnvVarsToProcess,
@@ -19,6 +20,7 @@ import {
   syncLinks,
 } from "./medusa-test-runner-utils"
 import { waitWorkflowExecutions } from "./medusa-test-runner-utils/wait-workflow-executions"
+import { ulid } from "ulid"
 
 export interface MedusaSuiteOptions {
   dbConnection: any // knex instance
@@ -83,8 +85,7 @@ class MedusaTestRunner {
 
   constructor(config: TestRunnerConfig) {
     const tempName = parseInt(process.env.JEST_WORKER_ID || "1")
-    const moduleName =
-      config.moduleName ?? Math.random().toString(36).substring(7)
+    const moduleName = config.moduleName ?? ulid()
     this.dbName =
       config.dbName ??
       `medusa-${moduleName.toLowerCase()}-integration-${tempName}`
@@ -177,6 +178,9 @@ class MedusaTestRunner {
     }
 
     await this.initializeDatabase()
+
+    const migrator = new Migrator({ container })
+    await migrator.ensureMigrationsTable()
 
     logger.info(
       `Migrating database with core migrations and links ${this.dbName}`

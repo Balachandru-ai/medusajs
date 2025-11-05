@@ -33,7 +33,7 @@
  *   content:
  *     application/json:
  *       schema:
- *         $ref: "#/components/schemas/AdminPostClaimsShippingReqSchema"
+ *         $ref: "#/components/schemas/AdminClaimAddOutboundShipping"
  * x-codeSamples:
  *   - lang: JavaScript
  *     label: JS SDK

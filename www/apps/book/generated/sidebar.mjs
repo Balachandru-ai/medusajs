@@ -1057,11 +1057,21 @@ export const generatedSidebars = [
             "loaded": true,
             "isPathHref": true,
             "type": "link",
+            "path": "/learn/fundamentals/admin/translations",
+            "title": "Translations",
+            "children": [],
+            "chapterTitle": "4.6. Translations",
+            "number": "4.6."
+          },
+          {
+            "loaded": true,
+            "isPathHref": true,
+            "type": "link",
             "path": "/learn/fundamentals/admin/constraints",
             "title": "Constraints",
             "children": [],
-            "chapterTitle": "4.6. Constraints",
-            "number": "4.6."
+            "chapterTitle": "4.7. Constraints",
+            "number": "4.7."
           },
           {
             "loaded": true,
@@ -1070,8 +1080,8 @@ export const generatedSidebars = [
             "path": "/learn/fundamentals/admin/tips",
             "title": "Tips",
             "children": [],
-            "chapterTitle": "4.7. Tips",
-            "number": "4.7."
+            "chapterTitle": "4.8. Tips",
+            "number": "4.8."
           }
         ],
         "chapterTitle": "4. Admin Development",
@@ -1117,7 +1127,18 @@ export const generatedSidebars = [
             "type": "link",
             "title": "Medusa Configuations",
             "path": "/learn/configurations/medusa-config",
-            "children": [],
+            "children": [
+              {
+                "loaded": true,
+                "isPathHref": true,
+                "type": "link",
+                "title": "Asymmetric Encryption",
+                "path": "/learn/configurations/medusa-config/asymmetric-encryption",
+                "children": [],
+                "chapterTitle": "6.2.1. Asymmetric Encryption",
+                "number": "6.2.1."
+              }
+            ],
             "chapterTitle": "6.2. Medusa Configuations",
             "number": "6.2."
           },
@@ -1290,9 +1311,9 @@ export const generatedSidebars = [
             "isPathHref": true,
             "type": "link",
             "path": "/learn/production/worker-mode",
-            "title": "Worker Mode",
+            "title": "Worker Modes",
             "children": [],
-            "chapterTitle": "8.2. Worker Mode",
+            "chapterTitle": "8.2. Worker Modes",
             "number": "8.2."
           },
           {
@@ -1345,6 +1366,27 @@ export const generatedSidebars = [
             "children": [],
             "chapterTitle": "9.2. Release Notes",
             "number": "9.2."
+          },
+          {
+            "loaded": true,
+            "isPathHref": true,
+            "type": "link",
+            "path": "/learn/codemods",
+            "title": "Codemods",
+            "children": [
+              {
+                "loaded": true,
+                "isPathHref": true,
+                "type": "link",
+                "title": "Replace Imports (v2.11.0+)",
+                "path": "/learn/codemods/replace-imports",
+                "children": [],
+                "chapterTitle": "9.3.1. Replace Imports (v2.11.0+)",
+                "number": "9.3.1."
+              }
+            ],
+            "chapterTitle": "9.3. Codemods",
+            "number": "9.3."
           }
         ],
         "chapterTitle": "9. Upgrade",

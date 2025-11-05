@@ -6,7 +6,6 @@ import {
   refetchEntity,
 } from "@medusajs/framework/http"
 import {
-  AdminCreateRefundReason,
   HttpTypes,
   PaginatedResponse,
   RefundReasonResponse,
@@ -34,7 +33,10 @@ export const GET = async (
 }
 
 export const POST = async (
-  req: AuthenticatedMedusaRequest<AdminCreateRefundReason>,
+  req: AuthenticatedMedusaRequest<
+    HttpTypes.AdminCreateRefundReason,
+    HttpTypes.AdminRefundReasonParams
+  >,
   res: MedusaResponse<RefundReasonResponse>
 ) => {
   const {

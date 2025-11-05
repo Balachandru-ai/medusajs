@@ -36,7 +36,10 @@ export const GET = async (
 }
 
 export const POST = async (
-  req: AuthenticatedMedusaRequest<HttpTypes.AdminCreateInvite>,
+  req: AuthenticatedMedusaRequest<
+    HttpTypes.AdminCreateInvite,
+    HttpTypes.SelectParams
+  >,
   res: MedusaResponse<HttpTypes.AdminInviteResponse>
 ) => {
   const workflow = createInvitesWorkflow(req.scope)

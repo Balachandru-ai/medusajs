@@ -116,6 +116,10 @@
  *     description: The variant's rank among its siblings.
  *   calculated_price:
  *     $ref: "#/components/schemas/BaseCalculatedPriceSet"
+ *   thumbnail:
+ *     type: string
+ *     title: thumbnail
+ *     description: The variant's thumbnail.
  * required:
  *   - options
  *   - length
@@ -123,6 +127,7 @@
  *   - id
  *   - created_at
  *   - updated_at
+ *   - thumbnail
  *   - width
  *   - weight
  *   - height
@@ -131,12 +136,12 @@
  *   - mid_code
  *   - material
  *   - deleted_at
- *   - sku
- *   - barcode
  *   - manage_inventory
  *   - allow_backorder
  *   - ean
  *   - upc
+ *   - barcode
+ *   - sku
  * 
 */
 
