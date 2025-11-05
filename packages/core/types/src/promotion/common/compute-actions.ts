@@ -94,7 +94,7 @@ export interface RemoveItemAdjustmentAction {
    * The associated item's ID.
    */
   item_id: string
-  
+
   /**
    * The promotion's description.
    */
@@ -254,7 +254,7 @@ export interface ComputeActionContext extends Record<string, unknown> {
 
   /**
    * The cart's email
-   * 
+   *
    * @since 2.11.0
    */
   email?: string
@@ -279,8 +279,4 @@ export interface ComputeActionOptions {
    * automatically. If not provided, the automatic promotions are applied.
    */
   prevent_auto_promotions?: boolean
-  /**
-   * Whether to apply inactive and expired promotions.
-   */
-  force_all?: boolean
 }

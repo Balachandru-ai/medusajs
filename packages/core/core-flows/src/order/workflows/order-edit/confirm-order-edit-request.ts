@@ -9,7 +9,7 @@ import {
   deduplicate,
   MathBN,
   OrderChangeStatus,
-  OrderEditWorkflowEvents
+  OrderEditWorkflowEvents,
 } from "@medusajs/framework/utils"
 import {
   createStep,
@@ -264,18 +264,6 @@ export const confirmOrderEditRequestWorkflow = createWorkflow(
 
     deleteReservationsByLineItemsStep(toRemoveReservationLineItemIds)
     reserveInventoryStep(formatedInventoryItems)
-
-    // const promoCodes = transform({ refreshedOrder }, ({ refreshedOrder }) => {
-    //   return refreshedOrder.promotions.map((p) => p.code)
-    // })
-
-    // refreshDraftOrderAdjustmentsWorkflow.runAsStep({
-    //   input: {
-    //     order: refreshedOrder,
-    //     promo_codes: promoCodes,
-    //     action: PromotionActions.REPLACE,
-    //   },
-    // })
 
     createOrUpdateOrderPaymentCollectionWorkflow.runAsStep({
       input: {

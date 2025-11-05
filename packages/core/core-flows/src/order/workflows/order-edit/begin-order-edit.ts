@@ -101,20 +101,10 @@ export const beginOrderEditOrderWorkflow = createWorkflow(
         created_by: input.created_by,
         description: input.description,
         internal_note: input.internal_note,
-        metadata: {
-          force_all_promotions: false,
-        },
       }
     })
 
     const orderChange = createOrderChangeStep(orderChangeInput)
-
-    // computeAdjustmentsForPreviewWorkflow.runAsStep({
-    //   input: {
-    //     order,
-    //     orderChange,
-    //   },
-    // })
 
     return new WorkflowResponse(orderChange)
   }

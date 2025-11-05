@@ -3554,7 +3554,6 @@ export default class OrderModuleService
       _orderSummaryUpdate,
       orderShippingMethods,
       orderCreditLines,
-      // orderLineItemAdjustments,
     ] = await promiseAll([
       orderToUpdate.length
         ? this.orderService_.update(orderToUpdate, sharedContext)
