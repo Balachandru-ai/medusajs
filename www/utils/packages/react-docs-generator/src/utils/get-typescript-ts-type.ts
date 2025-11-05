@@ -43,6 +43,20 @@ function convertTypeToTsType(type: ts.Type, level = 1): TsType | null {
       return null
     }
 
+    // Sort elements to put undefined at the end
+    elements.sort((a, b) => {
+      const aIsUndefined = a.name === "undefined"
+      const bIsUndefined = b.name === "undefined"
+
+      if (aIsUndefined && !bIsUndefined) {
+        return 1
+      }
+      if (!aIsUndefined && bIsUndefined) {
+        return -1
+      }
+      return 0
+    })
+
     return {
       name: "union",
       raw: undefined,

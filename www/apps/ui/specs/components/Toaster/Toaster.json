@@ -13,9 +13,6 @@
         "name": "union",
         "elements": [
           {
-            "name": "undefined"
-          },
-          {
             "name": "literal",
             "value": "\"top-left\""
           },
@@ -38,6 +35,9 @@
           {
             "name": "literal",
             "value": "\"bottom-right\""
+          },
+          {
+            "name": "undefined"
           }
         ]
       },
@@ -64,13 +64,13 @@
         "name": "union",
         "elements": [
           {
-            "name": "undefined"
-          },
-          {
             "name": "string"
           },
           {
             "name": "number"
+          },
+          {
+            "name": "undefined"
           }
         ]
       },
