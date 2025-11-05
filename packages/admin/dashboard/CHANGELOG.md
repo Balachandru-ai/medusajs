@@ -1,5 +1,23 @@
 # @medusajs/dashboard
 
+## 2.11.3
+
+### Patch Changes
+
+- [#13910](https://github.com/medusajs/medusa/pull/13910) [`224ab39a81e8d3cf3d6fa3ff5eee82541f64728d`](https://github.com/medusajs/medusa/commit/224ab39a81e8d3cf3d6fa3ff5eee82541f64728d) Thanks [@adrien2p](https://github.com/adrien2p)! - chore(): Dependencies cleanup and improvements
+
+- [#13940](https://github.com/medusajs/medusa/pull/13940) [`afb40d437b3cc4ceb015df70985b2f005f40eaff`](https://github.com/medusajs/medusa/commit/afb40d437b3cc4ceb015df70985b2f005f40eaff) Thanks [@adrien2p](https://github.com/adrien2p)! - chore(): Cleanup and organize deps
+
+- [#13958](https://github.com/medusajs/medusa/pull/13958) [`c6556d1256e4d0c1e001069a7ada4a902c6bbe86`](https://github.com/medusajs/medusa/commit/c6556d1256e4d0c1e001069a7ada4a902c6bbe86) Thanks [@NicolasGorga](https://github.com/NicolasGorga)! - Inlude missing Shipping Profile Id and Product Sales Channel 1 columns to product import CSV template
+
+- [#13949](https://github.com/medusajs/medusa/pull/13949) [`0426568569a2d6b2a0bd61c9378787e258221610`](https://github.com/medusajs/medusa/commit/0426568569a2d6b2a0bd61c9378787e258221610) Thanks [@NicolasGorga](https://github.com/NicolasGorga)! - Update problematic dependency array of InfiniteList useEffect to avoid infinite loop.
+
+- Updated dependencies [[`224ab39a81e8d3cf3d6fa3ff5eee82541f64728d`](https://github.com/medusajs/medusa/commit/224ab39a81e8d3cf3d6fa3ff5eee82541f64728d), [`afb40d437b3cc4ceb015df70985b2f005f40eaff`](https://github.com/medusajs/medusa/commit/afb40d437b3cc4ceb015df70985b2f005f40eaff), [`37563987b8fe75c9acfe62957a33e8398977647a`](https://github.com/medusajs/medusa/commit/37563987b8fe75c9acfe62957a33e8398977647a)]:
+  - @medusajs/admin-shared@2.11.3
+  - @medusajs/icons@2.11.3
+  - @medusajs/js-sdk@2.11.3
+  - @medusajs/ui@4.0.27
+
 ## 2.11.2
 
 ### Patch Changes
