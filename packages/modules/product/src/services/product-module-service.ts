@@ -1993,7 +1993,14 @@ export default class ProductModuleService
       sharedContext
     )
 
-    return productsWithOptions
+    const productIdOrder = new Map(productIds.map((id, index) => [id, index]))
+
+    const orderedProductsWithOptions = [...productsWithOptions].sort(
+      (a, b) =>
+        (productIdOrder.get(a.id) ?? 0) - (productIdOrder.get(b.id) ?? 0)
+    )
+
+    return orderedProductsWithOptions
   }
 
   @InjectTransactionManager()
