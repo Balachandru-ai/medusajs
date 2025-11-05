@@ -4,11 +4,11 @@ import {
   ModuleProvider,
   ModulesSdkTypes,
 } from "@medusajs/framework/types"
-import { FileProviderService } from "@services"
+import FileProviderService from "#services/file-provider-service"
 import {
   FileProviderIdentifierRegistrationName,
   FileProviderRegistrationPrefix,
-} from "@types"
+} from "#types/index"
 import { asFunction, asValue, Lifetime } from "@medusajs/framework/awilix"
 
 const registrationFn = async (klass, container, pluginOptions) => {
