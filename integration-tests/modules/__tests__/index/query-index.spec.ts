@@ -112,15 +112,15 @@ medusaIntegrationTestRunner({
   testSuite: ({ getContainer, dbConnection, api, dbConfig }) => {
     let appContainer
 
-    beforeAll(() => {
-      appContainer = getContainer()
-    })
-
-    afterAll(() => {
-      process.env.ENABLE_INDEX_MODULE = "false"
-    })
-
     describe("Index engine - Query.index", () => {
+      beforeAll(() => {
+        appContainer = getContainer()
+      })
+
+      afterAll(() => {
+        process.env.ENABLE_INDEX_MODULE = "false"
+      })
+
       beforeEach(async () => {
         await createAdminUser(dbConnection, adminHeaders, appContainer)
       })
@@ -134,7 +134,7 @@ medusaIntegrationTestRunner({
           name: "Medusa Brand",
         })
 
-        await link.create({
+        const [createdLink] = await link.create({
           [Modules.PRODUCT]: {
             product_id: products.find((p) => p.title === "Extra product").id,
           },
@@ -166,6 +166,14 @@ medusaIntegrationTestRunner({
             )
           ),
           waitForIndexedEntities(dbConnection, "Brand", [brand.id]),
+          waitForIndexedEntities(
+            dbConnection,
+            "ProductProductBrandBrand",
+            [createdLink.id],
+            {
+              isLink: true,
+            }
+          ),
         ])
 
         const resultset = await fetchAndRetry(
@@ -584,7 +592,7 @@ medusaIntegrationTestRunner({
           name: "Medusa Brand",
         })
 
-        await link.create({
+        const [createdLink] = await link.create({
           [Modules.PRODUCT]: {
             product_id: products.find((p) => p.title === "Extra product").id,
           },
@@ -616,6 +624,14 @@ medusaIntegrationTestRunner({
             )
           ),
           waitForIndexedEntities(dbConnection, "Brand", [brand.id]),
+          waitForIndexedEntities(
+            dbConnection,
+            "ProductProductBrandBrand",
+            [createdLink.id],
+            {
+              isLink: true,
+            }
+          ),
         ])
 
         const resultset = await fetchAndRetry(
@@ -636,6 +652,7 @@ medusaIntegrationTestRunner({
             waitSeconds: 1.5,
           }
         )
+
         expect(resultset.data.length).toEqual(1)
       })
     })
