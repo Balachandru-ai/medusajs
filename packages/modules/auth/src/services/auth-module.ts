@@ -18,7 +18,8 @@ import {
   MedusaError,
   MedusaService,
 } from "@medusajs/framework/utils"
-import { AuthIdentity, ProviderIdentity } from "@models"
+import { AuthIdentity } from "#models/auth-identity"
+import { ProviderIdentity } from "#models/provider-identity"
 import { joinerConfig } from "../joiner-config"
 import AuthProviderService from "./auth-provider"
 

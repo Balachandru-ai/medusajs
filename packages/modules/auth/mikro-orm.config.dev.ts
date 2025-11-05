@@ -1,6 +1,7 @@
-import * as entities from "./src/models"
+import AuthIdentity from "./src/models/auth-identity"
+import ProviderIdentity from "./src/models/provider-identity"
 import { defineMikroOrmCliConfig, Modules } from "@medusajs/framework/utils"
 
 export default defineMikroOrmCliConfig(Modules.AUTH, {
-  entities: Object.values(entities),
+  entities: [AuthIdentity, ProviderIdentity],
 })

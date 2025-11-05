@@ -1,3 +1,4 @@
+import { AuthProviderRegistrationPrefix } from "#types/index"
 import {
   AuthenticationInput,
   AuthenticationResponse,
@@ -5,7 +6,6 @@ import {
   AuthTypes,
   Logger,
 } from "@medusajs/framework/types"
-import { AuthProviderRegistrationPrefix } from "@types"
 
 type InjectedDependencies = {
   [

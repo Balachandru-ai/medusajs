@@ -1,14 +1,14 @@
 import {
+  AuthIdentifiersRegistrationName,
+  AuthProviderRegistrationPrefix,
+} from "#types/index"
+import { asFunction, asValue, Lifetime } from "@medusajs/framework/awilix"
+import { moduleProviderLoader } from "@medusajs/framework/modules-sdk"
+import {
   LoaderOptions,
   ModuleProvider,
   ModulesSdkTypes,
 } from "@medusajs/framework/types"
-import { asFunction, asValue, Lifetime } from "@medusajs/framework/awilix"
-import { moduleProviderLoader } from "@medusajs/framework/modules-sdk"
-import {
-  AuthIdentifiersRegistrationName,
-  AuthProviderRegistrationPrefix,
-} from "@types"
 
 const registrationFn = async (klass, container, pluginOptions) => {
   container.register({

@@ -1,4 +1,4 @@
-import { AuthModuleService } from "@services"
+import AuthModuleService from "#services/auth-module"
 import loadProviders from "./loaders/providers"
 import { Module, Modules } from "@medusajs/framework/utils"
 
