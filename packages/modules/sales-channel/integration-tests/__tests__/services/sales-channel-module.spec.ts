@@ -1,6 +1,6 @@
 import { ISalesChannelModuleService } from "@medusajs/framework/types"
 import { Module, Modules } from "@medusajs/framework/utils"
-import { SalesChannelModuleService } from "@services"
+import SalesChannelModuleService from "#services/sales-channel-module"
 import { moduleIntegrationTestRunner } from "@medusajs/test-utils"
 
 jest.setTimeout(30000)

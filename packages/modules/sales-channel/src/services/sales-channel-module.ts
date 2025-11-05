@@ -22,8 +22,8 @@ import {
   promiseAll,
 } from "@medusajs/framework/utils"
 
-import { SalesChannel } from "@models"
-import { UpdateSalesChanneInput } from "@types"
+import SalesChannel from "#models/sales-channel"
+import { UpdateSalesChanneInput } from "#types/index"
 import { joinerConfig } from "../joinfer-config"
 
 type InjectedDependencies = {
