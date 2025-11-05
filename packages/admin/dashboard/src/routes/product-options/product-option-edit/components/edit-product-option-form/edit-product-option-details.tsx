@@ -1,5 +1,6 @@
 import { Input } from "@medusajs/ui"
-import { UseFormReturn } from "react-hook-form"
+import { useEffect } from "react"
+import { UseFormReturn, useWatch } from "react-hook-form"
 import { useTranslation } from "react-i18next"
 
 import { Form } from "../../../../../components/common/form"
@@ -14,6 +15,40 @@ export const EditProductOptionDetails = ({
   form,
 }: EditProductOptionDetailsProps) => {
   const { t } = useTranslation()
+
+  const values = useWatch({
+    control: form.control,
+    name: "values",
+  })
+
+  const valueRanks = useWatch({
+    control: form.control,
+    name: "value_ranks",
+  })
+
+  useEffect(() => {
+    if (!values || !valueRanks) {
+      return
+    }
+
+    const validValueSet = new Set(values)
+    const currentRanks = { ...valueRanks }
+    let hasStaleEntries = false
+
+    Object.keys(currentRanks).forEach((key) => {
+      if (!validValueSet.has(key)) {
+        delete currentRanks[key]
+        hasStaleEntries = true
+      }
+    })
+
+    if (hasStaleEntries) {
+      form.setValue("value_ranks", currentRanks, {
+        shouldDirty: true,
+        shouldTouch: true,
+      })
+    }
+  }, [values, valueRanks, form])
 
   return (
     <div className="flex flex-col gap-y-4">

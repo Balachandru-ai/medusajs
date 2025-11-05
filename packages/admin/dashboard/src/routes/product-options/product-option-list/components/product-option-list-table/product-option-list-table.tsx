@@ -1,18 +1,10 @@
-import {
-  Container,
-  createDataTableColumnHelper,
-  toast,
-  usePrompt,
-} from "@medusajs/ui"
+import { Container, createDataTableColumnHelper, toast, usePrompt, } from "@medusajs/ui"
 import { useTranslation } from "react-i18next"
 import { DataTable } from "../../../../../components/data-table"
 
 import { keepPreviousData } from "@tanstack/react-query"
 import { useCallback, useMemo } from "react"
-import {
-  useDeleteProductOptionLazy,
-  useProductOptions,
-} from "../../../../../hooks/api/product-options"
+import { useDeleteProductOptionLazy, useProductOptions, } from "../../../../../hooks/api/product-options"
 import { useProductOptionTableColumns } from "../../../../../hooks/table/columns/use-product-option-table-columns"
 import { useProductOptionTableFilters } from "../../../../../hooks/table/filters"
 import { useProductOptionTableQuery } from "../../../../../hooks/table/query/use-product-option-table-query"
@@ -121,9 +113,7 @@ const useColumns = () => {
               icon: <PencilSquare />,
               label: t("actions.edit"),
               onClick: () =>
-                navigate(
-                  `/settings/product-options/${ctx.row.original.id}/edit`
-                ),
+                navigate(`/product-options/${ctx.row.original.id}/edit`),
             },
           ],
           [
