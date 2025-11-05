@@ -10,7 +10,7 @@ import {
   toCamelCase,
   upperCaseFirst,
 } from "@medusajs/framework/utils"
-import { type CachingModuleService } from "@services"
+import type CachingModuleService from "#services/cache-module"
 import type { InjectedDependencies } from "@types"
 import stringify from "fast-json-stable-stringify"
 import { CacheInvalidationParser, EntityReference } from "./parser"

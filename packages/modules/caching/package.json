@@ -3,6 +3,12 @@
   "version": "2.11.3",
   "description": "Caching Module for Medusa",
   "main": "dist/index.js",
+  "imports": {
+    "#services/*": {
+      "types": "./dist/services/*.d.ts",
+      "default": "./dist/services/*.js"
+    }
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/medusajs/medusa",
@@ -22,8 +28,7 @@
   "scripts": {
     "watch": "yarn run -T tsc --build --watch",
     "watch:test": "yarn run -T tsc --build tsconfig.spec.json --watch",
-    "resolve:aliases": "yarn run -T tsc --showConfig -p tsconfig.json > tsconfig.resolved.json && yarn run -T tsc-alias -p tsconfig.resolved.json && yarn run -T rimraf tsconfig.resolved.json",
-    "build": "yarn run -T rimraf dist && yarn run -T tsc --build && npm run resolve:aliases",
+    "build": "yarn run -T rimraf dist && yarn run -T tsc --build",
     "test": "../../../node_modules/.bin/jest --passWithNoTests --bail --forceExit --testPathPattern=src",
     "test:integration": "../../../node_modules/.bin/jest --passWithNoTests --forceExit --testPathPattern=\"integration-tests/__tests__/.*\\.ts\""
   },

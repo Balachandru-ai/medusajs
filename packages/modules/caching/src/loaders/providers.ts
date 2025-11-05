@@ -4,7 +4,7 @@ import {
   ContainerRegistrationKeys,
   getProviderRegistrationKey,
 } from "@medusajs/framework/utils"
-import { CachingProviderService } from "@services"
+import CachingProviderService from "#services/cache-provider"
 import {
   CachingDefaultProvider,
   CachingIdentifiersRegistrationName,

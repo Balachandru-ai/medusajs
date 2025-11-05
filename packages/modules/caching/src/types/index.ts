@@ -7,7 +7,7 @@ import type {
   ModuleServiceInitializeOptions,
 } from "@medusajs/framework/types"
 import { Modules } from "@medusajs/framework/utils"
-import { default as CacheProviderService } from "../services/cache-provider"
+import { default as CacheProviderService } from "#services/cache-provider"
 
 export const CachingDefaultProvider = "default_provider"
 export const CachingIdentifiersRegistrationName = "caching_providers_identifier"
