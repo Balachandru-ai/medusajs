@@ -6,8 +6,8 @@ import {
 } from "@medusajs/framework/utils"
 import { Formula, OnInit } from "@medusajs/framework/mikro-orm/core"
 
-import InventoryItem from "../models/inventory-item"
-import InventoryLevel from "../models/inventory-level"
+import InventoryItem from "#models/inventory-item"
+import InventoryLevel from "#models/inventory-level"
 
 function applyHook() {
   const MikroORMEntity = toMikroORMEntity(InventoryLevel)

@@ -5,7 +5,7 @@ import {
   mikroOrmBaseRepositoryFactory,
 } from "@medusajs/framework/utils"
 import { SqlEntityManager } from "@medusajs/framework/mikro-orm/postgresql"
-import { InventoryLevel } from "@models"
+import InventoryLevel from "#models/inventory-level"
 
 export class InventoryLevelRepository extends mikroOrmBaseRepositoryFactory(
   InventoryLevel

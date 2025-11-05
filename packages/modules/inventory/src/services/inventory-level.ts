@@ -1,9 +1,9 @@
 import { Context } from "@medusajs/framework/types"
 import { BigNumber, ModulesSdkUtils } from "@medusajs/framework/utils"
-import { applyEntityHooks } from "../utils/apply-decorators"
+import { applyEntityHooks } from "#utils/apply-decorators"
 
-import { InventoryLevel } from "@models"
-import { InventoryLevelRepository } from "@repositories"
+import InventoryLevel from "#models/inventory-level"
+import { InventoryLevelRepository } from "#repositories/inventory-level"
 
 type InjectedDependencies = {
   inventoryLevelRepository: InventoryLevelRepository

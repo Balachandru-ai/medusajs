@@ -1,4 +1,8 @@
-import { IInventoryService, InventoryItemDTO, ReservationItemDTO } from "@medusajs/framework/types"
+import {
+  IInventoryService,
+  InventoryItemDTO,
+  ReservationItemDTO,
+} from "@medusajs/framework/types"
 import {
   BigNumber,
   CommonEvents,
@@ -11,7 +15,7 @@ import {
   MockEventBusService,
   moduleIntegrationTestRunner,
 } from "@medusajs/test-utils"
-import { InventoryModuleService } from "../../src/services"
+import InventoryModuleService from "#services/inventory-module"
 
 jest.setTimeout(100000)
 
@@ -625,8 +629,10 @@ moduleIntegrationTestRunner<IInventoryService>({
         })
 
         it("should adjust inventory levels accordingly when removing reservations by id", async () => {
-          const reservationItem = (await service.listReservationItems({ location_id: "location-1"}))[0]
-          
+          const reservationItem = (
+            await service.listReservationItems({ location_id: "location-1" })
+          )[0]
+
           const inventoryLevelBefore =
             await service.retrieveInventoryLevelByItemAndLocation(
               inventoryItem.id,

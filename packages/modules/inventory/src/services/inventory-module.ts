@@ -26,9 +26,11 @@ import {
   MedusaService,
   partitionArray,
 } from "@medusajs/framework/utils"
-import { InventoryItem, InventoryLevel, ReservationItem } from "@models"
+import InventoryItem from "#models/inventory-item"
+import InventoryLevel from "#models/inventory-level"
+import ReservationItem from "#models/reservation-item"
 import { joinerConfig } from "../joiner-config"
-import { applyEntityHooks } from "../utils/apply-decorators"
+import { applyEntityHooks } from "#utils/apply-decorators"
 import InventoryLevelService from "./inventory-level"
 
 type InjectedDependencies = {
