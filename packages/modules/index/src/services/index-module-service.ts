@@ -23,16 +23,17 @@ import {
   promiseAll,
   toMikroORMEntity,
 } from "@medusajs/framework/utils"
-import { IndexData, IndexMetadata, IndexRelation, IndexSync } from "@models"
-import { schemaObjectRepresentationPropertiesToOmit } from "@types"
-import {
-  buildSchemaObjectRepresentation,
-  Configuration,
-  defaultSchema,
-  gqlSchemaToTypes,
-  IndexMetadataStatus,
-} from "@utils"
-import { baseGraphqlSchema } from "../utils/base-graphql-schema"
+import IndexData from "#models/index-data"
+import IndexMetadata from "#models/index-metadata"
+import IndexRelation from "#models/index-relation"
+import IndexSync from "#models/index-sync"
+import { schemaObjectRepresentationPropertiesToOmit } from "#types/index"
+import { buildSchemaObjectRepresentation } from "#utils/build-config"
+import { Configuration } from "#utils/sync/configuration"
+import { defaultSchema } from "#utils/default-schema"
+import { gqlSchemaToTypes } from "#utils/gql-to-types"
+import { IndexMetadataStatus } from "#utils/index-metadata-status"
+import { baseGraphqlSchema } from "#utils/base-graphql-schema"
 import { DataSynchronizer } from "./data-synchronizer"
 
 type InjectedDependencies = {

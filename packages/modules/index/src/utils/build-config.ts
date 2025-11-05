@@ -12,7 +12,7 @@ import {
   kebabCase,
   lowerCaseFirst,
 } from "@medusajs/framework/utils"
-import { schemaObjectRepresentationPropertiesToOmit } from "@types"
+import { schemaObjectRepresentationPropertiesToOmit } from "#types/index"
 import { baseGraphqlSchema } from "./base-graphql-schema"
 
 export const CustomDirectives = {
@@ -845,7 +845,9 @@ function processEntity(
           ]
           intermediateEntityObjectRepresentationRef.moduleConfig =
             intermediateEntityModule
-          if (!intermediateEntityObjectRepresentationRef.fields.includes("id")) {
+          if (
+            !intermediateEntityObjectRepresentationRef.fields.includes("id")
+          ) {
             intermediateEntityObjectRepresentationRef.fields.push("id")
           }
 

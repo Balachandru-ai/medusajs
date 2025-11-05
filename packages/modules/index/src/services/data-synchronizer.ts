@@ -13,7 +13,8 @@ import {
   RemoteQueryFunction,
   SchemaObjectEntityRepresentation,
 } from "@medusajs/types"
-import { IndexMetadataStatus, Orchestrator } from "@utils"
+import { IndexMetadataStatus } from "#utils/index-metadata-status"
+import { Orchestrator } from "#utils/sync/orchestrator"
 import { setTimeout } from "timers/promises"
 export class DataSynchronizer {
   #container: Record<string, any>

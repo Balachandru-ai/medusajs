@@ -1,7 +1,7 @@
 import { asValue } from "@medusajs/framework/awilix"
 import { container, logger } from "@medusajs/framework"
 import type { IndexTypes } from "@medusajs/types"
-import { Orchestrator } from "@utils"
+import { Orchestrator } from "#utils/sync/orchestrator"
 
 function creatingFakeLockingModule() {
   return {

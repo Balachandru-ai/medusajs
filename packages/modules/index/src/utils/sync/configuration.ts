@@ -1,10 +1,10 @@
 import { simpleHash } from "@medusajs/framework/utils"
 import { IndexTypes, InferEntityType, Logger } from "@medusajs/types"
-import { IndexMetadata } from "@models"
-import { schemaObjectRepresentationPropertiesToOmit } from "@types"
-import { DataSynchronizer } from "../../services/data-synchronizer"
-import { IndexMetadataService } from "../../services/index-metadata"
-import { IndexSyncService } from "../../services/index-sync"
+import IndexMetadata from "#models/index-metadata"
+import { schemaObjectRepresentationPropertiesToOmit } from "#types/index"
+import { DataSynchronizer } from "#services/data-synchronizer"
+import { IndexMetadataService } from "#services/index-metadata"
+import { IndexSyncService } from "#services/index-sync"
 import { IndexMetadataStatus } from "../index-metadata-status"
 
 export class Configuration {

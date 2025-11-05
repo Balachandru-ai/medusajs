@@ -1,6 +1,6 @@
 import { IndexTypes } from "@medusajs/framework/types"
 import { SqlEntityManager } from "@medusajs/framework/mikro-orm/postgresql"
-import { schemaObjectRepresentationPropertiesToOmit } from "@types"
+import { schemaObjectRepresentationPropertiesToOmit } from "#types/index"
 import { getPivotTableName, normalizeTableName } from "./normalze-table-name"
 
 export async function createPartitions(

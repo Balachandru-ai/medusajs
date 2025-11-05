@@ -1,5 +1,5 @@
 import { model } from "@medusajs/framework/utils"
-import { IndexMetadataStatus } from "../utils/index-metadata-status"
+import { IndexMetadataStatus } from "#utils/index-metadata-status"
 
 const IndexMetadata = model
   .define("IndexMetadata", {

@@ -15,7 +15,8 @@ import {
   toMikroORMEntity,
 } from "@medusajs/framework/utils"
 import { initDb, TestDatabaseUtils } from "@medusajs/test-utils"
-import { IndexData, IndexRelation } from "@models"
+import IndexData from "#models/index-data"
+import IndexRelation from "#models/index-relation"
 import * as path from "path"
 import { setTimeout } from "timers/promises"
 import { EventBusServiceMock } from "../__fixtures__"

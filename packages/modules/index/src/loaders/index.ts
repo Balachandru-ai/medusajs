@@ -1,7 +1,7 @@
 import { asClass, asValue } from "@medusajs/framework/awilix"
-import { PostgresProvider } from "../services/postgres-provider"
+import { PostgresProvider } from "#services/postgres-provider"
 import { MikroOrmBaseRepository as BaseRepository } from "@medusajs/framework/utils"
-import { IndexModuleService } from "@services"
+import IndexModuleService from "#services/index-module-service"
 import { LoaderOptions } from "@medusajs/framework/types"
 
 export default async ({ container, options }: LoaderOptions): Promise<void> => {

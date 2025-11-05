@@ -23,10 +23,12 @@ import {
   EntityRepository,
   SqlEntityManager,
 } from "@medusajs/framework/mikro-orm/postgresql"
-import { IndexData, IndexRelation } from "@models"
-import { createPartitions, QueryBuilder } from "../utils"
-import { flattenObjectKeys } from "../utils/flatten-object-keys"
-import { normalizeFieldsSelection } from "../utils/normalize-fields-selection"
+import IndexData from "#models/index-data"
+import IndexRelation from "#models/index-relation"
+import { createPartitions } from "#utils/create-partitions"
+import { QueryBuilder } from "#utils/query-builder"
+import { flattenObjectKeys } from "#utils/flatten-object-keys"
+import { normalizeFieldsSelection } from "#utils/normalize-fields-selection"
 
 type InjectedDependencies = {
   manager: EntityManager

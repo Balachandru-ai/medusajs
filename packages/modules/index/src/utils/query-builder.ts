@@ -6,7 +6,7 @@ import {
   unflattenObjectKeys,
 } from "@medusajs/framework/utils"
 import { Knex } from "@medusajs/framework/mikro-orm/knex"
-import { OrderBy, QueryFormat, QueryOptions, Select } from "@types"
+import { OrderBy, QueryFormat, QueryOptions, Select } from "#types/index"
 import { getPivotTableName, normalizeTableName } from "./normalze-table-name"
 
 const AND_OPERATOR = "$and"

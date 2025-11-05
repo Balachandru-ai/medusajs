@@ -1,4 +1,4 @@
-import { RedisCacheService } from "../index"
+import { RedisCacheService } from "../redis-cache"
 
 const redisClientMock = {
   set: jest.fn(),

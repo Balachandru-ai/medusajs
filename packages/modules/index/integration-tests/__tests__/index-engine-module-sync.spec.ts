@@ -15,8 +15,11 @@ import {
   toMikroORMEntity,
 } from "@medusajs/framework/utils"
 import { initDb, TestDatabaseUtils } from "@medusajs/test-utils"
-import { IndexData, IndexMetadata, IndexRelation, IndexSync } from "@models"
-import { IndexMetadataStatus } from "@utils"
+import IndexData from "#models/index-data"
+import IndexMetadata from "#models/index-metadata"
+import IndexRelation from "#models/index-relation"
+import IndexSync from "#models/index-sync"
+import { IndexMetadataStatus } from "#utils/index-metadata-status"
 import * as path from "path"
 import { setTimeout } from "timers/promises"
 import { EventBusServiceMock } from "../__fixtures__"
