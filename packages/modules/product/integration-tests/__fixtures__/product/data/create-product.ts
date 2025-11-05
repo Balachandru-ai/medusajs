@@ -1,6 +1,6 @@
 import { ProductTypes } from "@medusajs/framework/types"
 import { ProductStatus, toHandle } from "@medusajs/framework/utils"
-import { ProductImage } from "@models"
+import ProductImage from "#models/product-image"
 import faker from "faker"
 
 export const buildProductOnlyData = ({

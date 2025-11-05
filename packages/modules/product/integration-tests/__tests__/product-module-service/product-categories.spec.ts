@@ -4,10 +4,9 @@ import {
   ProductStatus,
   toMikroORMEntity,
 } from "@medusajs/framework/utils"
-import { Product, ProductCategory } from "@models"
-import {
-  moduleIntegrationTestRunner,
-} from "@medusajs/test-utils"
+import Product from "#models/product"
+import ProductCategory from "#models/product-category"
+import { moduleIntegrationTestRunner } from "@medusajs/test-utils"
 import { productCategoriesRankData } from "../../__fixtures__/product-category/data"
 
 jest.setTimeout(30000)
@@ -397,7 +396,6 @@ moduleIntegrationTestRunner<IProductModuleService>({
           )
         })
 
-
         it("should append rank from an existing category depending on parent", async () => {
           await service.createProductCategories({
             name: "New Category",
@@ -473,7 +471,6 @@ moduleIntegrationTestRunner<IProductModuleService>({
           productCategoryZeroOne = categories[4]
           productCategoryZeroTwo = categories[5]
         })
-
 
         it("should update the name of the category successfully", async () => {
           await service.updateProductCategories(productCategoryZero.id, {
@@ -629,7 +626,6 @@ moduleIntegrationTestRunner<IProductModuleService>({
           productCategoryOne = categories[1]
           productCategoryTwo = categories[2]
         })
-
 
         it("should throw an error when an id does not exist", async () => {
           let error

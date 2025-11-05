@@ -4,7 +4,8 @@ import {
   ProductStatus,
   toMikroORMEntity,
 } from "@medusajs/framework/utils"
-import { Product, ProductOption } from "@models"
+import Product from "#models/product"
+import ProductOption from "#models/product-option"
 import { moduleIntegrationTestRunner } from "@medusajs/test-utils"
 
 jest.setTimeout(30000)

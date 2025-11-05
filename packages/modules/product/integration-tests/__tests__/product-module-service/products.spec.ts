@@ -4,16 +4,14 @@ import {
   ProductTagDTO,
 } from "@medusajs/framework/types"
 import { kebabCase, Modules, ProductStatus } from "@medusajs/framework/utils"
-import {
-  Product,
-  ProductCategory,
-  ProductCollection,
-  ProductImage,
-  ProductType,
-} from "@models"
+import Product from "#models/product"
+import ProductCategory from "#models/product-category"
+import ProductCollection from "#models/product-collection"
+import ProductImage from "#models/product-image"
+import ProductType from "#models/product-type"
 
 import { moduleIntegrationTestRunner } from "@medusajs/test-utils"
-import { UpdateProductInput } from "@types"
+import { UpdateProductInput } from "#types/update-product-input"
 import {
   buildProductAndRelationsData,
   createCollections,

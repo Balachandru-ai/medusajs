@@ -10,19 +10,17 @@ import {
   ModulesSdkTypes,
   ProductTypes,
 } from "@medusajs/framework/types"
-import {
-  Product,
-  ProductCategory,
-  ProductCollection,
-  ProductImage,
-  ProductOption,
-  ProductOptionValue,
-  ProductTag,
-  ProductType,
-  ProductVariant,
-  ProductVariantProductImage,
-} from "@models"
-import { ProductCategoryService } from "@services"
+import Product from "#models/product"
+import ProductCategory from "#models/product-category"
+import ProductCollection from "#models/product-collection"
+import ProductImage from "#models/product-image"
+import ProductOption from "#models/product-option"
+import ProductOptionValue from "#models/product-option-value"
+import ProductTag from "#models/product-tag"
+import ProductType from "#models/product-type"
+import ProductVariant from "#models/product-variant"
+import ProductVariantProductImage from "#models/product-variant-product-image"
+import ProductCategoryService from "#services/product-category"
 
 import {
   arrayDifference,
@@ -47,7 +45,7 @@ import {
   toHandle,
 } from "@medusajs/framework/utils"
 import { EntityManager } from "@mikro-orm/core"
-import { ProductRepository } from "../repositories"
+import { ProductRepository } from "#repositories/product"
 import {
   UpdateCategoryInput,
   UpdateCollectionInput,
@@ -57,9 +55,9 @@ import {
   UpdateTagInput,
   UpdateTypeInput,
   VariantImageInputArray,
-} from "../types"
+} from "#types/index"
 import { joinerConfig } from "./../joiner-config"
-import { eventBuilders } from "../utils/events"
+import { eventBuilders } from "#utils/events"
 
 type InjectedDependencies = {
   baseRepository: DAL.RepositoryService

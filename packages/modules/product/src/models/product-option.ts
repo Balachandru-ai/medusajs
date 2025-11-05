@@ -1,6 +1,6 @@
 import { model } from "@medusajs/framework/utils"
-import { Product } from "./index"
-import ProductOptionValue from "./product-option-value"
+import Product from "#models/product"
+import ProductOptionValue from "#models/product-option-value"
 
 const ProductOption = model
   .define("ProductOption", {

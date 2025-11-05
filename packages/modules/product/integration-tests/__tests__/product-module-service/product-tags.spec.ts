@@ -4,17 +4,15 @@ import {
   ProductStatus,
   toMikroORMEntity,
 } from "@medusajs/framework/utils"
-import { Product, ProductTag } from "@models"
-import {
-  moduleIntegrationTestRunner,
-} from "@medusajs/test-utils"
+import Product from "#models/product"
+import ProductTag from "#models/product-tag"
+import { moduleIntegrationTestRunner } from "@medusajs/test-utils"
 
 jest.setTimeout(30000)
 
 moduleIntegrationTestRunner<IProductModuleService>({
   moduleName: Modules.PRODUCT,
   testSuite: ({ MikroOrmWrapper, service }) => {
-
     describe("ProductModuleService product tags", () => {
       let tagOne: ProductTag
       let tagTwo: ProductTag
@@ -289,7 +287,6 @@ moduleIntegrationTestRunner<IProductModuleService>({
           const productTag = await service.retrieveProductTag(tagId)
 
           expect(productTag.value).toEqual("UK")
-
         })
 
         it("should throw an error when an id does not exist", async () => {
@@ -322,7 +319,6 @@ moduleIntegrationTestRunner<IProductModuleService>({
           })
 
           expect(productTag[0]?.value).toEqual("UK")
-
         })
       })
 
@@ -367,7 +363,6 @@ moduleIntegrationTestRunner<IProductModuleService>({
 
           const newTag = productTags.find((t) => t.value === "new")!
           const updatedTag = productTags.find((t) => t.value === "updated")!
-
         })
       })
     })

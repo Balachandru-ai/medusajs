@@ -1,5 +1,5 @@
 import { IProductModuleService } from "@medusajs/framework/types"
-import { ProductType } from "@models"
+import ProductType from "#models/product-type"
 import { moduleIntegrationTestRunner } from "@medusajs/test-utils"
 import { Modules, toMikroORMEntity } from "@medusajs/framework/utils"
 

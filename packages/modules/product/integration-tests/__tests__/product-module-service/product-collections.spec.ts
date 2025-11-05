@@ -4,10 +4,9 @@ import {
   ProductStatus,
   toMikroORMEntity,
 } from "@medusajs/framework/utils"
-import {
-  moduleIntegrationTestRunner,
-} from "@medusajs/test-utils"
-import { Product, ProductCollection } from "@models"
+import { moduleIntegrationTestRunner } from "@medusajs/test-utils"
+import Product from "#models/product"
+import ProductCollection from "#models/product-collection"
 import { createCollections } from "../../__fixtures__/product"
 
 jest.setTimeout(30000)
@@ -276,12 +275,10 @@ moduleIntegrationTestRunner<IProductModuleService>({
 
           expect(collections).toHaveLength(0)
         })
-
       })
 
       describe("updateCollections", () => {
         const collectionId = "test-1"
-
 
         it("should update the value of the collection successfully", async () => {
           await service.upsertProductCollections([
@@ -478,7 +475,6 @@ moduleIntegrationTestRunner<IProductModuleService>({
             })
           )
         })
-
       })
     })
   },

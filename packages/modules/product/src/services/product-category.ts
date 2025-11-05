@@ -19,9 +19,9 @@ import {
   registerInternalServiceEventSubscriber,
 } from "@medusajs/framework/utils"
 import { EntityManager, EventType } from "@mikro-orm/core"
-import { ProductCategory } from "@models"
-import { ProductCategoryRepository } from "@repositories"
-import { UpdateCategoryInput } from "@types"
+import ProductCategory from "#models/product-category"
+import { ProductCategoryRepository } from "#repositories/product-category"
+import { UpdateCategoryInput } from "#types/index"
 
 type InjectedDependencies = {
   productCategoryRepository: DAL.TreeRepositoryService

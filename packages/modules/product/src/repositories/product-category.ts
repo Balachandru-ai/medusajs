@@ -11,8 +11,8 @@ import {
   FindOptions as MikroOptions,
 } from "@medusajs/framework/mikro-orm/core"
 import { SqlEntityManager } from "@medusajs/framework/mikro-orm/postgresql"
-import { ProductCategory } from "@models"
-import { UpdateCategoryInput } from "@types"
+import ProductCategory from "#models/product-category"
+import { UpdateCategoryInput } from "#types/index"
 
 // eslint-disable-next-line max-len
 export class ProductCategoryRepository extends DALUtils.MikroOrmBaseTreeRepository<

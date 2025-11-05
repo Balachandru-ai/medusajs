@@ -1,16 +1,14 @@
 import { defineJoinerConfig, Modules } from "@medusajs/framework/utils"
-import {
-  Product,
-  ProductCategory,
-  ProductCollection,
-  ProductImage,
-  ProductOption,
-  ProductOptionValue,
-  ProductTag,
-  ProductType,
-  ProductVariant,
-} from "@models"
-import { default as schema } from "./schema"
+import Product from "#models/product"
+import ProductCategory from "#models/product-category"
+import ProductCollection from "#models/product-collection"
+import ProductImage from "#models/product-image"
+import ProductOption from "#models/product-option"
+import ProductOptionValue from "#models/product-option-value"
+import ProductTag from "#models/product-tag"
+import ProductType from "#models/product-type"
+import ProductVariant from "#models/product-variant"
+import { default as schema } from "#schema/index"
 
 export const joinerConfig = defineJoinerConfig(Modules.PRODUCT, {
   schema,

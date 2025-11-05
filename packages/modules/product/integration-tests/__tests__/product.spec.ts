@@ -1,4 +1,6 @@
-import { Product, ProductCategory, ProductCollection } from "@models"
+import Product from "#models/product"
+import ProductCategory from "#models/product-category"
+import ProductCollection from "#models/product-collection"
 import {
   assignCategoriesToProduct,
   buildProductOnlyData,
@@ -21,11 +23,9 @@ import {
 } from "@medusajs/framework/utils"
 import { moduleIntegrationTestRunner } from "@medusajs/test-utils"
 import { SqlEntityManager } from "@medusajs/framework/mikro-orm/postgresql"
-import {
-  ProductCategoryService,
-  ProductModuleService,
-  ProductService,
-} from "@services"
+import ProductCategoryService from "#services/product-category"
+import ProductModuleService from "#services/product-module-service"
+import { ProductService } from "#services/product-service"
 import {
   categoriesData,
   productsData,

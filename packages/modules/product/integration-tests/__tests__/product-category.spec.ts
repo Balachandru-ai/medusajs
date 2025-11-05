@@ -1,4 +1,4 @@
-import { ProductCategoryService } from "@services"
+import ProductCategoryService from "#services/product-category"
 
 import { moduleIntegrationTestRunner } from "@medusajs/test-utils"
 import {

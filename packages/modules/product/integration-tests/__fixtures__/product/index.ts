@@ -4,14 +4,12 @@ import {
   toMikroORMEntity,
 } from "@medusajs/framework/utils"
 import { SqlEntityManager } from "@medusajs/framework/mikro-orm/postgresql"
-import {
-  ProductImage,
-  Product,
-  ProductCategory,
-  ProductCollection,
-  ProductType,
-  ProductVariant,
-} from "@models"
+import ProductImage from "#models/product-image"
+import Product from "#models/product"
+import ProductCategory from "#models/product-category"
+import ProductCollection from "#models/product-collection"
+import ProductType from "#models/product-type"
+import ProductVariant from "#models/product-variant"
 
 import ProductOption from "../../../src/models/product-option"
 import { InferEntityType } from "@medusajs/types"

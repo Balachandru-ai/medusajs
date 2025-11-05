@@ -1,4 +1,5 @@
-import { Product, ProductOption } from "@models"
+import Product from "#models/product"
+import ProductOption from "#models/product-option"
 
 import { Context, DAL, InferEntityType } from "@medusajs/framework/types"
 import {
