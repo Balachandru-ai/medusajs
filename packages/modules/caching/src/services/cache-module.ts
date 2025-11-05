@@ -5,7 +5,7 @@ import type {
   Logger,
 } from "@medusajs/framework/types"
 import { GraphQLUtils, MedusaError } from "@medusajs/framework/utils"
-import { CachingDefaultProvider, InjectedDependencies } from "@types"
+import { CachingDefaultProvider, InjectedDependencies } from "#types/index"
 import CacheProviderService from "./cache-provider"
 
 const ONE_HOUR_IN_SECOND = 60 * 60

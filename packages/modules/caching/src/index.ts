@@ -9,4 +9,4 @@ export default Module(Modules.CACHING, {
 })
 
 // Module options types
-export { CachingModuleOptions } from "./types"
+export { CachingModuleOptions } from "#types/index"

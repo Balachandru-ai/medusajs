@@ -4,7 +4,7 @@ import {
   Logger,
 } from "@medusajs/framework/types"
 import { MedusaError } from "@medusajs/framework/utils"
-import { CachingProviderRegistrationPrefix } from "../types"
+import { CachingProviderRegistrationPrefix } from "#types/index"
 
 type InjectedDependencies = {
   [key: `cp_${string}`]: ICachingProviderService

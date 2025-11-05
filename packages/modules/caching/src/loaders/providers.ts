@@ -10,7 +10,7 @@ import {
   CachingIdentifiersRegistrationName,
   CachingModuleOptions,
   CachingProviderRegistrationPrefix,
-} from "@types"
+} from "#types/index"
 import { aliasTo, asFunction, asValue, Lifetime } from "awilix"
 import { MemoryCachingProvider } from "../providers/memory-cache"
 import { DefaultCacheStrategy } from "../utils/strategy"

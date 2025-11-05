@@ -1,6 +1,6 @@
 import NodeCache from "node-cache"
 import type { ICachingProviderService, Logger } from "@medusajs/framework/types"
-import { MemoryCacheModuleOptions } from "@types"
+import { MemoryCacheModuleOptions } from "#types/index"
 
 const THREE_HUNDRED_MB = 300 * 1024 * 1024
 
