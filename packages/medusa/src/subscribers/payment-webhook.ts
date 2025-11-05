@@ -1,7 +1,4 @@
-import {
-  processPaymentWorkflow,
-  processPaymentWorkflowId,
-} from "@medusajs/core-flows"
+import { processPaymentWorkflowId } from "@medusajs/core-flows"
 import {
   IPaymentModuleService,
   ProviderWebhookPayload,
