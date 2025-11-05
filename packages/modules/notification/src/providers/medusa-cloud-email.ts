@@ -1,6 +1,6 @@
 import { Logger, NotificationTypes } from "@medusajs/framework/types"
 import { AbstractNotificationProviderService } from "@medusajs/framework/utils"
-import { MedusaCloudEmailOptions } from "@types"
+import { MedusaCloudEmailOptions } from "#types/index"
 
 export class MedusaCloudEmailNotificationProvider extends AbstractNotificationProviderService {
   static identifier = "notification-medusa-cloud-email"

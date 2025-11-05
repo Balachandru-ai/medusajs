@@ -6,14 +6,14 @@ import {
   lowerCaseFirst,
   promiseAll,
 } from "@medusajs/framework/utils"
-import { NotificationProvider } from "@models"
-import { NotificationProviderService } from "@services"
+import { NotificationProvider } from "#models/notification-provider"
+import NotificationProviderService from "#services/notification-provider"
 import {
   NotificationIdentifiersRegistrationName,
   NotificationModuleOptions,
   NotificationProviderRegistrationPrefix,
-} from "@types"
-import { MedusaCloudEmailNotificationProvider } from "../providers/medusa-cloud-email"
+} from "#types/index"
+import { MedusaCloudEmailNotificationProvider } from "#providers/medusa-cloud-email"
 
 const validateCloudOptions = (options: NotificationModuleOptions["cloud"]) => {
   const { api_key, endpoint, environment_handle, sandbox_handle } =

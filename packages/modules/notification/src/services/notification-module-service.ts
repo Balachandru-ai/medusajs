@@ -18,7 +18,7 @@ import {
   NotificationStatus,
   promiseAll,
 } from "@medusajs/framework/utils"
-import { Notification } from "@models"
+import { Notification } from "#models/notification"
 import NotificationProviderService from "./notification-provider"
 
 type InjectedDependencies = {

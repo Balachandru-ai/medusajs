@@ -1,6 +1,7 @@
-import * as entities from "./src/models"
+import { NotificationProvider } from "#models/notification-provider"
+import { Notification } from "#models/notification"
 import { defineMikroOrmCliConfig, Modules } from "@medusajs/framework/utils"
 
 export default defineMikroOrmCliConfig(Modules.NOTIFICATION, {
-  entities: Object.values(entities),
+  entities: [NotificationProvider, Notification],
 })

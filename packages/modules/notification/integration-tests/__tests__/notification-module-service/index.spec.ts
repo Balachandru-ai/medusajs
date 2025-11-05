@@ -11,7 +11,7 @@ import {
   MockEventBusService,
   moduleIntegrationTestRunner,
 } from "@medusajs/test-utils"
-import { NotificationModuleService } from "@services"
+import NotificationModuleService from "#services/notification-module-service"
 import { resolve } from "path"
 
 let moduleOptions = {

@@ -5,8 +5,8 @@ import {
   NotificationTypes,
 } from "@medusajs/framework/types"
 import { ModulesSdkUtils } from "@medusajs/framework/utils"
-import { NotificationProvider } from "@models"
-import { NotificationProviderRegistrationPrefix } from "@types"
+import { NotificationProvider } from "#models/notification-provider"
+import { NotificationProviderRegistrationPrefix } from "#types/index"
 
 type InjectedDependencies = {
   logger?: Logger
