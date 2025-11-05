@@ -55,7 +55,7 @@ medusaIntegrationTestRunner({
     })
 
     describe("Draft Orders - Admin", () => {
-      it.only("should create a draft order", async () => {
+      it("should create a draft order", async () => {
         const region = await regionModuleService.createRegions({
           name: "US",
           currency_code: "usd",
@@ -234,11 +234,6 @@ medusaIntegrationTestRunner({
           "/admin/draft-orders",
           payload,
           adminHeaders
-        )
-
-        console.log(
-          "RESPONSE",
-          JSON.stringify(response.data.draft_order.items, null, 2)
         )
 
         expect(response.data).toEqual(
