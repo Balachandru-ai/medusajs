@@ -5,4 +5,4 @@ export default Module(Modules.PRICING, {
   service: PricingModuleService,
 })
 
-export * from "./types"
+export * from "#types/index"

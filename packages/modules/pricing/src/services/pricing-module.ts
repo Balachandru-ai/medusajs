@@ -50,7 +50,7 @@ import PriceRule from "#models/price-rule"
 import Price from "#models/price"
 import PricePreference from "#models/price-preference"
 
-import { ServiceTypes } from "#types/index"
+import * as ServiceTypes from "#types/services/index"
 import { validatePriceListDates } from "#utils/validate-price-list-dates"
 
 import { Collection } from "@medusajs/framework/mikro-orm/core"
