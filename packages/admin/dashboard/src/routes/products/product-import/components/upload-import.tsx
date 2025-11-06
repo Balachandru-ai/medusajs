@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { FileType, FileUpload, RejectedFile } from "../../../../components/common/file-upload"
+import { FileType, FileUpload } from "../../../../components/common/file-upload"
 import { Hint } from "@medusajs/ui"
 import { useTranslation } from "react-i18next"
 
@@ -48,7 +48,7 @@ export const UploadImport = ({
           }
           onUploaded(files[0].file)
         }}
-        maxFileSize={0}
+        maxFileSize={Infinity}
       />
 
       {error && (

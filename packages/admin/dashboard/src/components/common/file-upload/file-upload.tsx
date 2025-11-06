@@ -19,7 +19,7 @@ export interface FileUploadProps {
   hint?: string
   hasError?: boolean
   formats: string[]
-  maxFileSize?: number // in bytes, defaults to 1MB. Disable by setting to 0.
+  maxFileSize?: number // in bytes, defaults to 1MB. Set to Infinity to disable.
   onUploaded: (files: FileType[], rejectedFiles?: RejectedFile[]) => void
 }
 
@@ -76,9 +76,10 @@ export const FileUpload = ({
     const fileList = Array.from(files)
     const validFiles: FileType[] = []
     const rejectedFiles: RejectedFile[] = []
+    const normalizedMaxFileSize = Math.min(maxFileSize, Infinity)
 
     fileList.forEach((file) => {
-      if (file.size > maxFileSize && maxFileSize !== 0) {
+      if (file.size > normalizedMaxFileSize) {
         rejectedFiles.push({ file, reason: "size" })
         return
       }
@@ -92,9 +93,7 @@ export const FileUpload = ({
       })
     })
 
-    if (validFiles.length > 0 || rejectedFiles.length > 0) {
-      onUploaded(validFiles, rejectedFiles)
-    }
+    onUploaded(validFiles, rejectedFiles)
   }
 
   const handleDrop = (event: DragEvent) => {
