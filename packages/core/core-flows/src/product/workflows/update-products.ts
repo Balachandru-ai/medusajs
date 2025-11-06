@@ -1,4 +1,4 @@
-import { updateProductsStep } from "../steps/update-products"
+import { updateProductsStep } from "#product/steps/update-products"
 
 import {
   AdditionalData,
@@ -24,7 +24,7 @@ import { createRemoteLinkStep } from "#common/steps/create-remote-links"
 import { dismissRemoteLinkStep } from "#common/steps/dismiss-remote-links"
 import { emitEventStep } from "#common/steps/emit-event"
 import { useRemoteQueryStep } from "#common/steps/use-remote-query"
-import { upsertVariantPricesWorkflow } from "./upsert-variant-prices"
+import { upsertVariantPricesWorkflow } from "#product/workflows/upsert-variant-prices"
 
 /**
  * Update products that match a specified selector, along with custom data that's passed to the workflow's hooks.

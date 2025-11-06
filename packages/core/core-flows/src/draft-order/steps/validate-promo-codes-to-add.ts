@@ -3,7 +3,7 @@ import type { PromotionDTO } from "@medusajs/framework/types"
 import {
   throwIfCodesAreInactive,
   throwIfCodesAreMissing,
-} from "../utils/validation"
+} from "#draft-order/utils/validation"
 
 export const validatePromoCodesToAddId = "validate-promo-codes-to-add"
 

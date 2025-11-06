@@ -22,8 +22,8 @@ import {
 import { createRemoteLinkStep } from "#common/steps/create-remote-links"
 import { emitEventStep } from "#common/steps/emit-event"
 import { associateProductsWithSalesChannelsStep } from "#sales-channel/steps/associate-products-with-channels"
-import { createProductsStep } from "../steps/create-products"
-import { createProductVariantsWorkflow } from "./create-product-variants"
+import { createProductsStep } from "#product/steps/create-products"
+import { createProductVariantsWorkflow } from "#product/workflows/create-product-variants"
 
 /**
  * The product's data to validate.

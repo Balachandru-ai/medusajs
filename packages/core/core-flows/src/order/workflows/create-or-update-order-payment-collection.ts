@@ -14,7 +14,7 @@ import {
 import { useQueryGraphStep } from "#common/steps/use-query-graph"
 import { updatePaymentCollectionStep } from "#payment-collection/steps/update-payment-collection"
 import { cancelPaymentCollectionWorkflow } from "#payment-collection/workflows/cancel-payment-collection"
-import { createOrderPaymentCollectionWorkflow } from "./create-order-payment-collection"
+import { createOrderPaymentCollectionWorkflow } from "#order/workflows/create-order-payment-collection"
 
 /**
  * The details of the order payment collection to create or update.

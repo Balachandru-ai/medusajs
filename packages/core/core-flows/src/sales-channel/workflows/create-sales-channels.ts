@@ -10,7 +10,7 @@ import {
   transform,
 } from "@medusajs/framework/workflows-sdk"
 import { emitEventStep } from "#common/steps/emit-event"
-import { createSalesChannelsStep } from "../steps/create-sales-channels"
+import { createSalesChannelsStep } from "#sales-channel/steps/create-sales-channels"
 
 /**
  * The data to create sales channels.

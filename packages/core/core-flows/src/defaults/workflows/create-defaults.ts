@@ -3,7 +3,7 @@ import {
   WorkflowResponse,
 } from "@medusajs/framework/workflows-sdk"
 import { createDefaultSalesChannelStep } from "#sales-channel/steps/create-default-sales-channel"
-import { createDefaultStoreStep } from "../steps/create-default-store"
+import { createDefaultStoreStep } from "#defaults/steps/create-default-store"
 
 export const createDefaultsWorkflowID = "create-defaults"
 /**

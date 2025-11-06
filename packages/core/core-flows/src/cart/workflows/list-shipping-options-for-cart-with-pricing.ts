@@ -22,8 +22,8 @@ import { useQueryGraphStep } from "#common/steps/use-query-graph"
 import { validatePresenceOfStep } from "#common/steps/validate-presence-of"
 import { useRemoteQueryStep } from "#common/steps/use-remote-query"
 import { calculateShippingOptionsPricesStep } from "#fulfillment/steps/calculate-shipping-options-prices"
-import { cartFieldsForCalculateShippingOptionsPrices } from "../utils/fields"
-import { shippingOptionsContextResult } from "../utils/schemas"
+import { cartFieldsForCalculateShippingOptionsPrices } from "#cart/utils/fields"
+import { shippingOptionsContextResult } from "#cart/utils/schemas"
 
 const COMMON_OPTIONS_FIELDS = [
   "id",

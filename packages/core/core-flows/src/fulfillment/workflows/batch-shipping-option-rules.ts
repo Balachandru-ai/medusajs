@@ -14,7 +14,7 @@ import {
 } from "@medusajs/framework/workflows-sdk"
 import { createShippingOptionRulesStep } from "#fulfillment/steps/create-shipping-option-rules"
 import { deleteShippingOptionRulesStep } from "#fulfillment/steps/delete-shipping-option-rules"
-import { updateShippingOptionRulesStep } from "../steps/update-shipping-option-rules"
+import { updateShippingOptionRulesStep } from "#fulfillment/steps/update-shipping-option-rules"
 
 /**
  * The data to manage the shipping option rules in bulk.

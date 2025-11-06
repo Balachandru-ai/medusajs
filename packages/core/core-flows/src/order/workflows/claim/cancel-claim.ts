@@ -16,8 +16,8 @@ import {
 import { useRemoteQueryStep } from "#common/steps/use-remote-query"
 import { deleteReservationsByLineItemsStep } from "#reservation/steps/delete-reservations-by-line-items"
 import { cancelOrderClaimStep } from "#order/steps/claim/cancel-claim"
-import { throwIfIsCancelled } from "../../utils/order-validation"
-import { cancelReturnWorkflow } from "../return/cancel-return"
+import { throwIfIsCancelled } from "#order/utils/order-validation"
+import { cancelReturnWorkflow } from "#order/workflows/return/cancel-return"
 
 /**
  * The data to validate the cancelation of a confirmed order claim.

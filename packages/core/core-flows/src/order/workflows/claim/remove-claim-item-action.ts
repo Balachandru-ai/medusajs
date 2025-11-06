@@ -20,8 +20,8 @@ import { previewOrderChangeStep } from "#order/steps/preview-order-change"
 import {
   throwIfIsCancelled,
   throwIfOrderChangeIsNotActive,
-} from "../../utils/order-validation"
-import { refreshClaimShippingWorkflow } from "./refresh-shipping"
+} from "#order/utils/order-validation"
+import { refreshClaimShippingWorkflow } from "#order/workflows/claim/refresh-shipping"
 
 /**
  * The data to validate that claim items can be removed.

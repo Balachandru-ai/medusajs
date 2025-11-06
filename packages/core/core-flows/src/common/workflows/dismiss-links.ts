@@ -4,7 +4,7 @@ import {
   WorkflowResponse,
   createWorkflow,
 } from "@medusajs/framework/workflows-sdk"
-import { dismissRemoteLinkStep } from "../steps/dismiss-remote-links"
+import { dismissRemoteLinkStep } from "#common/steps/dismiss-remote-links"
 
 export const dismissLinksWorkflowId = "dismiss-link"
 /**

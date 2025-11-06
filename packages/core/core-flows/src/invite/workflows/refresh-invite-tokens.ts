@@ -8,7 +8,7 @@ import {
 
 import { InviteWorkflowEvents } from "@medusajs/framework/utils"
 import { emitEventStep } from "#common/steps/emit-event"
-import { refreshInviteTokensStep } from "../steps/refresh-invite-tokens"
+import { refreshInviteTokensStep } from "#invite/steps/refresh-invite-tokens"
 
 export const refreshInviteTokensWorkflowId = "refresh-invite-tokens-workflow"
 /**

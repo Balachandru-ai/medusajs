@@ -18,13 +18,13 @@ import {
   transform,
 } from "@medusajs/framework/workflows-sdk"
 import { useQueryGraphStep } from "#common/steps/use-query-graph"
-import { previewOrderChangeStep } from "../../steps/preview-order-change"
+import { previewOrderChangeStep } from "#order/steps/preview-order-change"
 import {
   throwIfIsCancelled,
   throwIfOrderChangeIsNotActive,
-} from "../../utils/order-validation"
-import { createOrderChangeActionsWorkflow } from "../create-order-change-actions"
-import { fieldsToRefreshOrderEdit } from "./utils/fields"
+} from "#order/utils/order-validation"
+import { createOrderChangeActionsWorkflow } from "#order/workflows/create-order-change-actions"
+import { fieldsToRefreshOrderEdit } from "#order/workflows/order-edit/utils/fields"
 
 /**
  * The data to validate that the quantity of an existing item in an order can be updated in an order edit.

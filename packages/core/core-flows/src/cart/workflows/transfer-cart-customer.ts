@@ -14,7 +14,7 @@ import { useQueryGraphStep } from "#common/steps/use-query-graph"
 import { acquireLockStep } from "#locking/steps/acquire-lock"
 import { releaseLockStep } from "#locking/steps/release-lock"
 import { updateCartsStep } from "#cart/steps/update-carts"
-import { refreshCartItemsWorkflow } from "./refresh-cart-items"
+import { refreshCartItemsWorkflow } from "#cart/workflows/refresh-cart-items"
 
 /**
  * The cart ownership transfer details.

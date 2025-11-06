@@ -11,9 +11,9 @@ import {
   transform,
 } from "@medusajs/framework/workflows-sdk"
 import { useRemoteQueryStep } from "#common/steps/use-remote-query"
-import { createOrderClaimsStep } from "../../steps/claim/create-claims"
-import { createOrderChangeStep } from "../../steps/create-order-change"
-import { throwIfIsCancelled } from "../../utils/order-validation"
+import { createOrderClaimsStep } from "#order/steps/claim/create-claims"
+import { createOrderChangeStep } from "#order/steps/create-order-change"
+import { throwIfIsCancelled } from "#order/utils/order-validation"
 
 /**
  * The data to validate that an order can have a claim

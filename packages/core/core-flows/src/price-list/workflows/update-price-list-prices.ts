@@ -8,9 +8,9 @@ import {
   createWorkflow,
   parallelize,
 } from "@medusajs/framework/workflows-sdk"
-import { updatePriceListPricesStep } from "../steps/update-price-list-prices"
-import { validatePriceListsStep } from "../steps/validate-price-lists"
-import { validateVariantPriceLinksStep } from "../steps/validate-variant-price-links"
+import { updatePriceListPricesStep } from "#price-list/steps/update-price-list-prices"
+import { validatePriceListsStep } from "#price-list/steps/validate-price-lists"
+import { validateVariantPriceLinksStep } from "#price-list/steps/validate-variant-price-links"
 
 /**
  * The data to update the prices of price lists.

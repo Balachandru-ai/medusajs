@@ -13,7 +13,7 @@ import {
 } from "@medusajs/framework/types"
 import { createInventoryLevelsStep } from "#inventory/steps/create-inventory-levels"
 import { updateInventoryLevelsStep } from "#inventory/steps/update-inventory-levels"
-import { deleteInventoryLevelsWorkflow } from "./delete-inventory-levels"
+import { deleteInventoryLevelsWorkflow } from "#inventory/workflows/delete-inventory-levels"
 
 /**
  * The data to manage the inventory levels in bulk.

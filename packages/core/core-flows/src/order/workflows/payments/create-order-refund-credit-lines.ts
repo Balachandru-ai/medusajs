@@ -11,10 +11,10 @@ import {
   WorkflowData,
 } from "@medusajs/framework/workflows-sdk"
 import { useQueryGraphStep } from "#common/steps/use-query-graph"
-import { confirmOrderChanges } from "../../steps/confirm-order-changes"
-import { createOrderChangeStep } from "../../steps/create-order-change"
-import { throwIfOrderIsCancelled } from "../../utils/order-validation"
-import { createOrderChangeActionsWorkflow } from "../create-order-change-actions"
+import { confirmOrderChanges } from "#order/steps/confirm-order-changes"
+import { createOrderChangeStep } from "#order/steps/create-order-change"
+import { throwIfOrderIsCancelled } from "#order/utils/order-validation"
+import { createOrderChangeActionsWorkflow } from "#order/workflows/create-order-change-actions"
 
 /**
  * This step validates that an order refund credit line can be issued

@@ -1,6 +1,6 @@
 import { createStep } from "@medusajs/framework/workflows-sdk"
 import type { PromotionDTO } from "@medusajs/framework/types"
-import { throwIfCodesAreMissing } from "../utils/validation"
+import { throwIfCodesAreMissing } from "#draft-order/utils/validation"
 
 export const validatePromoCodesToRemoveId = "validate-promo-codes-to-remove"
 

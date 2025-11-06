@@ -11,9 +11,9 @@ import {
   transform,
 } from "@medusajs/framework/workflows-sdk"
 import { useQueryGraphStep } from "#common/steps/use-query-graph"
-import { createOrderChangeStep } from "../../steps/create-order-change"
-import { throwIfOrderIsCancelled } from "../../utils/order-validation"
-import { fieldsToRefreshOrderEdit } from "./utils/fields"
+import { createOrderChangeStep } from "#order/steps/create-order-change"
+import { throwIfOrderIsCancelled } from "#order/utils/order-validation"
+import { fieldsToRefreshOrderEdit } from "#order/workflows/order-edit/utils/fields"
 
 /**
  * The data to validate that an order-edit can be requested for an order.

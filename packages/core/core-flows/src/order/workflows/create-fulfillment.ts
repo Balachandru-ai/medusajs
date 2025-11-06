@@ -35,12 +35,12 @@ import { adjustInventoryLevelsStep } from "#inventory/steps/adjust-inventory-lev
 import { deleteReservationsStep } from "#reservation/steps/delete-reservations"
 import { updateReservationsStep } from "#reservation/steps/update-reservations"
 import { registerOrderFulfillmentStep } from "#order/steps/register-fulfillment"
-import { buildReservationsMap } from "../utils/build-reservations-map"
+import { buildReservationsMap } from "#order/utils/build-reservations-map"
 import {
   throwIfItemsAreNotGroupedByShippingRequirement,
   throwIfItemsDoesNotExistsInOrder,
   throwIfOrderIsCancelled,
-} from "../utils/order-validation"
+} from "#order/utils/order-validation"
 
 type OrderItemWithVariantDTO = OrderLineItemDTO & {
   variant?: ProductVariantDTO & {

@@ -21,9 +21,9 @@ import { previewOrderChangeStep } from "#order/steps/preview-order-change"
 import {
   throwIfIsCancelled,
   throwIfOrderChangeIsNotActive,
-} from "../../utils/order-validation"
-import { removeExchangeShippingMethodWorkflow } from "./remove-exchange-shipping-method"
-import { refreshExchangeShippingWorkflow } from "./refresh-shipping"
+} from "#order/utils/order-validation"
+import { removeExchangeShippingMethodWorkflow } from "#order/workflows/exchange/remove-exchange-shipping-method"
+import { refreshExchangeShippingWorkflow } from "#order/workflows/exchange/refresh-shipping"
 
 /**
  * The data to validate that an outbound item can be removed from an exchange.

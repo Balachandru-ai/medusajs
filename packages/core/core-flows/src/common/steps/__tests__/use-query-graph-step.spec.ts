@@ -3,8 +3,8 @@ import { asFunction, createContainer } from "@medusajs/framework/awilix"
 import { ContainerRegistrationKeys } from "@medusajs/framework/utils"
 import { createWorkflow, WorkflowResponse } from "@medusajs/workflows-sdk"
 import { expectTypeOf } from "expect-type"
-import { FixtureEntryPoints } from "../__fixtures__/remote-query"
-import { useQueryGraphStep } from "../use-query-graph"
+import { FixtureEntryPoints } from "#common/steps/__fixtures__/remote-query"
+import { useQueryGraphStep } from "#common/steps/use-query-graph"
 
 describe("useQueryGraphStep", () => {
   let container!: MedusaContainer

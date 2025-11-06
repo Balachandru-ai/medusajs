@@ -16,8 +16,8 @@ import {
 import { useRemoteQueryStep } from "#common/steps/use-remote-query"
 import { deleteReservationsByLineItemsStep } from "#reservation/steps/delete-reservations-by-line-items"
 import { cancelOrderExchangeStep } from "#order/steps/exchange/cancel-exchange"
-import { throwIfIsCancelled } from "../../utils/order-validation"
-import { cancelReturnWorkflow } from "../return/cancel-return"
+import { throwIfIsCancelled } from "#order/utils/order-validation"
+import { cancelReturnWorkflow } from "#order/workflows/return/cancel-return"
 
 /**
  * The data to validate that an exchange can be canceled.

@@ -11,9 +11,9 @@ import { v4 as uid } from "uuid"
 
 import { emitEventStep } from "#common/steps/emit-event"
 import { useRemoteQueryStep } from "#common/steps/use-remote-query"
-import { createOrderChangeStep } from "../../steps/create-order-change"
-import { throwIfOrderIsCancelled } from "../../utils/order-validation"
-import { createOrderChangeActionsWorkflow } from "../create-order-change-actions"
+import { createOrderChangeStep } from "#order/steps/create-order-change"
+import { throwIfOrderIsCancelled } from "#order/utils/order-validation"
+import { createOrderChangeActionsWorkflow } from "#order/workflows/create-order-change-actions"
 import {
   ChangeActionType,
   MedusaError,

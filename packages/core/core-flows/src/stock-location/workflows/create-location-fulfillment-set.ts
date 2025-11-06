@@ -5,7 +5,7 @@ import {
   transform,
 } from "@medusajs/framework/workflows-sdk"
 import { createFulfillmentSets } from "#fulfillment/steps/create-fulfillment-set"
-import { associateFulfillmentSetsWithLocationStep } from "../steps/associate-locations-with-fulfillment-sets"
+import { associateFulfillmentSetsWithLocationStep } from "#stock-location/steps/associate-locations-with-fulfillment-sets"
 
 export const createLocationFulfillmentSetWorkflowId =
   "create-location-fulfillment-set"

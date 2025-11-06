@@ -13,7 +13,7 @@ import {
 } from "@medusajs/framework/workflows-sdk"
 import { useRemoteQueryStep } from "#common/steps/use-remote-query"
 import { createOrderChangeStep } from "#order/steps/create-order-change"
-import { throwIfIsCancelled } from "../../utils/order-validation"
+import { throwIfIsCancelled } from "#order/utils/order-validation"
 
 /**
  * The data to validate that a return can be received.

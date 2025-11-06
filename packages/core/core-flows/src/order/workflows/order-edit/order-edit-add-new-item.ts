@@ -13,15 +13,15 @@ import {
   transform,
 } from "@medusajs/framework/workflows-sdk"
 import { useQueryGraphStep } from "#common/steps/use-query-graph"
-import { previewOrderChangeStep } from "../../steps/preview-order-change"
+import { previewOrderChangeStep } from "#order/steps/preview-order-change"
 import {
   throwIfIsCancelled,
   throwIfOrderChangeIsNotActive,
-} from "../../utils/order-validation"
-import { addOrderLineItemsWorkflow } from "../add-line-items"
-import { createOrderChangeActionsWorkflow } from "../create-order-change-actions"
-import { updateOrderTaxLinesWorkflow } from "../update-tax-lines"
-import { fieldsToRefreshOrderEdit } from "./utils/fields"
+} from "#order/utils/order-validation"
+import { addOrderLineItemsWorkflow } from "#order/workflows/add-line-items"
+import { createOrderChangeActionsWorkflow } from "#order/workflows/create-order-change-actions"
+import { updateOrderTaxLinesWorkflow } from "#order/workflows/update-tax-lines"
+import { fieldsToRefreshOrderEdit } from "#order/workflows/order-edit/utils/fields"
 
 /**
  * The data to validate that new items can be added to an order edit.

@@ -7,7 +7,7 @@ import {
 } from "@medusajs/framework/workflows-sdk"
 import type { BigNumberInput } from "@medusajs/framework/types"
 import { confirmInventoryStep } from "#cart/steps/confirm-inventory"
-import { prepareConfirmInventoryInput } from "../utils/prepare-confirm-inventory-input"
+import { prepareConfirmInventoryInput } from "#cart/utils/prepare-confirm-inventory-input"
 
 /**
  * The details of the cart items with inventory result computed for the specified input.

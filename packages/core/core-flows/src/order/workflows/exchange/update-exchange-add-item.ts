@@ -20,8 +20,8 @@ import { updateOrderChangeActionsStep } from "#order/steps/update-order-change-a
 import {
   throwIfIsCancelled,
   throwIfOrderChangeIsNotActive,
-} from "../../utils/order-validation"
-import { refreshExchangeShippingWorkflow } from "./refresh-shipping"
+} from "#order/utils/order-validation"
+import { refreshExchangeShippingWorkflow } from "#order/workflows/exchange/refresh-shipping"
 
 /**
  * The data to validate that an outbound or new item in an exchange can be updated.

@@ -15,12 +15,12 @@ import { releaseLockStep } from "#locking/steps/release-lock"
 import { addShippingMethodToCartStep } from "#cart/steps/add-shipping-method-to-cart"
 import { removeShippingMethodFromCartStep } from "#cart/steps/remove-shipping-method-from-cart"
 import { validateCartShippingOptionsStep } from "#cart/steps/validate-cart-shipping-options"
-import { validateCartStep } from "../steps/validate-cart"
-import { validateAndReturnShippingMethodsDataStep } from "../steps/validate-shipping-methods-data"
-import { validateCartShippingOptionsPriceStep } from "../steps/validate-shipping-options-price"
-import { cartFieldsForRefreshSteps } from "../utils/fields"
-import { listShippingOptionsForCartWithPricingWorkflow } from "./list-shipping-options-for-cart-with-pricing"
-import { refreshCartItemsWorkflow } from "./refresh-cart-items"
+import { validateCartStep } from "#cart/steps/validate-cart"
+import { validateAndReturnShippingMethodsDataStep } from "#cart/steps/validate-shipping-methods-data"
+import { validateCartShippingOptionsPriceStep } from "#cart/steps/validate-shipping-options-price"
+import { cartFieldsForRefreshSteps } from "#cart/utils/fields"
+import { listShippingOptionsForCartWithPricingWorkflow } from "#cart/workflows/list-shipping-options-for-cart-with-pricing"
+import { refreshCartItemsWorkflow } from "#cart/workflows/refresh-cart-items"
 
 /**
  * The data to add a shipping method to a cart.

@@ -18,7 +18,7 @@ import { deleteReturnsStep } from "#order/steps/return/delete-returns"
 import {
   throwIfIsCancelled,
   throwIfOrderChangeIsNotActive,
-} from "../../utils/order-validation"
+} from "#order/utils/order-validation"
 
 /**
  * The data to validate that a requested return can be canceled.

@@ -9,9 +9,9 @@ import {
   parallelize,
   transform,
 } from "@medusajs/framework/workflows-sdk"
-import { createPriceListPricesWorkflow } from "./create-price-list-prices"
-import { removePriceListPricesWorkflow } from "./remove-price-list-prices"
-import { updatePriceListPricesWorkflow } from "./update-price-list-prices"
+import { createPriceListPricesWorkflow } from "#price-list/workflows/create-price-list-prices"
+import { removePriceListPricesWorkflow } from "#price-list/workflows/remove-price-list-prices"
+import { updatePriceListPricesWorkflow } from "#price-list/workflows/update-price-list-prices"
 
 /**
  * The data to manage a price list's prices.

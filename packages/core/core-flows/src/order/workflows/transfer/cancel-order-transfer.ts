@@ -19,7 +19,7 @@ import { deleteOrderChangesStep } from "#order/steps/delete-order-changes"
 import {
   throwIfIsCancelled,
   throwIfOrderChangeIsNotActive,
-} from "../../utils/order-validation"
+} from "#order/utils/order-validation"
 
 /**
  * The details of the order transfer cancellation to validate.

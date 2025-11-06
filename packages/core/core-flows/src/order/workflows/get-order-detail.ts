@@ -10,7 +10,7 @@ import { useQueryGraphStep } from "#common/steps/use-query-graph"
 import {
   getLastFulfillmentStatus,
   getLastPaymentStatus,
-} from "../utils/aggregate-status"
+} from "#order/utils/aggregate-status"
 
 /**
  * The data to retrieve an order's details.

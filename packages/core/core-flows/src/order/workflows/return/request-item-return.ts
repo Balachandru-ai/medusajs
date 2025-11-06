@@ -19,10 +19,10 @@ import {
   throwIfIsCancelled,
   throwIfItemsDoesNotExistsInOrder,
   throwIfOrderChangeIsNotActive,
-} from "../../utils/order-validation"
-import { validateReturnReasons } from "../../utils/validate-return-reason"
-import { createOrderChangeActionsWorkflow } from "../create-order-change-actions"
-import { refreshReturnShippingWorkflow } from "./refresh-shipping"
+} from "#order/utils/order-validation"
+import { validateReturnReasons } from "#order/utils/validate-return-reason"
+import { createOrderChangeActionsWorkflow } from "#order/workflows/create-order-change-actions"
+import { refreshReturnShippingWorkflow } from "#order/workflows/return/refresh-shipping"
 /**
  * The data to validate that items can be added to a return.
  */

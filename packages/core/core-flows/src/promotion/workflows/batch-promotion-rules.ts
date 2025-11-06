@@ -13,9 +13,9 @@ import {
   parallelize,
   transform,
 } from "@medusajs/framework/workflows-sdk"
-import { deletePromotionRulesWorkflowStep } from "../steps/delete-promotion-rules-workflow"
-import { createPromotionRulesWorkflow } from "./create-promotion-rules"
-import { updatePromotionRulesWorkflow } from "./update-promotion-rules"
+import { deletePromotionRulesWorkflowStep } from "#promotion/steps/delete-promotion-rules-workflow"
+import { createPromotionRulesWorkflow } from "#promotion/workflows/create-promotion-rules"
+import { updatePromotionRulesWorkflow } from "#promotion/workflows/update-promotion-rules"
 
 /**
  * The data to manage a promotion's rules.

@@ -14,7 +14,7 @@ import {
 import { emitEventStep } from "#common/steps/emit-event"
 import { updatePriceSetsStep } from "#pricing/steps/update-price-sets"
 import { updateProductVariantsStep } from "#product/steps/update-product-variants"
-import { getVariantPricingLinkStep } from "../steps/get-variant-pricing-link"
+import { getVariantPricingLinkStep } from "#product/steps/get-variant-pricing-link"
 
 /**
  * The data to update one or more product variants, along with custom data that's passed to the workflow's hooks.

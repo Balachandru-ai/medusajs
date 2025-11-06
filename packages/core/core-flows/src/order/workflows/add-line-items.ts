@@ -23,7 +23,7 @@ import { confirmVariantInventoryWorkflow } from "#cart/workflows/confirm-variant
 import { getVariantsAndItemsWithPrices } from "#cart/workflows/get-variants-and-items-with-prices"
 import { useQueryGraphStep } from "#common/steps/use-query-graph"
 import { createOrderLineItemsStep } from "#order/steps/create-line-items"
-import { productVariantsFields } from "../utils/fields"
+import { productVariantsFields } from "#order/utils/fields"
 
 /**
  * The created order line items.

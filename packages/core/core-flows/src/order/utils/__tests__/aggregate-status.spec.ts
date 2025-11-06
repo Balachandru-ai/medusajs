@@ -2,7 +2,7 @@ import { MathBN, MEDUSA_EPSILON } from "@medusajs/framework/utils"
 import {
   getLastFulfillmentStatus,
   getLastPaymentStatus,
-} from "../aggregate-status"
+} from "#order/utils/aggregate-status"
 
 describe("Aggregate Order Status", () => {
   it("should return aggregated payment collection status", () => {

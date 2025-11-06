@@ -4,7 +4,7 @@ import {
   WorkflowResponse,
   createWorkflow,
 } from "@medusajs/framework/workflows-sdk"
-import { updateShippingProfilesStep } from "../steps/update-shipping-profiles"
+import { updateShippingProfilesStep } from "#fulfillment/steps/update-shipping-profiles"
 
 /**
  * The updated shipping profiles.

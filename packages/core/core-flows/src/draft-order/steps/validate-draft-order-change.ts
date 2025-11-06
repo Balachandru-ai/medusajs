@@ -1,7 +1,7 @@
 import { createStep } from "@medusajs/framework/workflows-sdk"
 import type { OrderChangeDTO, OrderDTO } from "@medusajs/framework/types"
 import { throwIfOrderChangeIsNotActive } from "#order/utils/order-validation"
-import { throwIfNotDraftOrder } from "../utils/validation"
+import { throwIfNotDraftOrder } from "#draft-order/utils/validation"
 
 /**
  * The details of the draft order and its change to validate.

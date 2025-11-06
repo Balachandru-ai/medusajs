@@ -6,7 +6,7 @@ import {
   transform,
 } from "@medusajs/framework/workflows-sdk"
 import { setAuthAppMetadataStep } from "#auth/steps/set-auth-app-metadata"
-import { createUsersWorkflow } from "./create-users"
+import { createUsersWorkflow } from "#user/workflows/create-users"
 
 /**
  * The details of the user account to create.

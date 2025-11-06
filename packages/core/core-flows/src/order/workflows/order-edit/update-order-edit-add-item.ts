@@ -19,8 +19,8 @@ import { updateOrderChangeActionsStep } from "#order/steps/update-order-change-a
 import {
   throwIfIsCancelled,
   throwIfOrderChangeIsNotActive,
-} from "../../utils/order-validation"
-import { fieldsToRefreshOrderEdit } from "./utils/fields"
+} from "#order/utils/order-validation"
+import { fieldsToRefreshOrderEdit } from "#order/workflows/order-edit/utils/fields"
 
 /**
  * The data to validate that a new item can be updated in an order edit.

@@ -8,7 +8,7 @@ import {
 } from "@medusajs/framework/workflows-sdk"
 import { setAuthAppMetadataStep } from "#auth/steps/set-auth-app-metadata"
 import { useRemoteQueryStep } from "#common/steps/use-remote-query"
-import { deleteCustomersWorkflow } from "./delete-customers"
+import { deleteCustomersWorkflow } from "#customer/workflows/delete-customers"
 
 export type RemoveCustomerAccountWorkflowInput = {
   customerId: string

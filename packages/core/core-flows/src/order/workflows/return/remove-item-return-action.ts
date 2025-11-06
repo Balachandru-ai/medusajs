@@ -21,10 +21,10 @@ import { previewOrderChangeStep } from "#order/steps/preview-order-change"
 import {
   throwIfIsCancelled,
   throwIfOrderChangeIsNotActive,
-} from "../../utils/order-validation"
-import { removeReturnShippingMethodWorkflow } from "./remove-return-shipping-method"
-import { updateReturnWorkflow } from "./update-return"
-import { refreshReturnShippingWorkflow } from "./refresh-shipping"
+} from "#order/utils/order-validation"
+import { removeReturnShippingMethodWorkflow } from "#order/workflows/return/remove-return-shipping-method"
+import { updateReturnWorkflow } from "#order/workflows/return/update-return"
+import { refreshReturnShippingWorkflow } from "#order/workflows/return/refresh-shipping"
 
 /**
  * The data to validate that a return item can be removed.

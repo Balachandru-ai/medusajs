@@ -27,11 +27,11 @@ import { getVariantPriceSetsStep } from "#cart/steps/get-variant-price-sets"
 import {
   cartFieldsForPricingContext,
   productVariantsFields,
-} from "../utils/fields"
+} from "#cart/utils/fields"
 import {
   prepareLineItemData,
   PrepareLineItemDataInput,
-} from "../utils/prepare-line-item-data"
+} from "#cart/utils/prepare-line-item-data"
 
 interface GetVariantsAndItemsWithPricesWorkflowInput {
   cart: Partial<CartDTO> & {

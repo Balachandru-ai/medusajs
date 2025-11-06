@@ -19,8 +19,8 @@ import { prepareAdjustmentsFromPromotionActionsStep } from "#cart/steps/prepare-
 import { removeLineItemAdjustmentsStep } from "#cart/steps/remove-line-item-adjustments"
 import { removeShippingMethodAdjustmentsStep } from "#cart/steps/remove-shipping-method-adjustments"
 import { validateCartStep } from "#cart/steps/validate-cart"
-import { updateCartPromotionsStep } from "../steps/update-cart-promotions"
-import { cartFieldsForRefreshSteps } from "../utils/fields"
+import { updateCartPromotionsStep } from "#cart/steps/update-cart-promotions"
+import { cartFieldsForRefreshSteps } from "#cart/utils/fields"
 
 /**
  * The details of the promotion updates on a cart.

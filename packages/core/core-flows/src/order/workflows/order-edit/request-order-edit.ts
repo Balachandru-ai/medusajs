@@ -16,12 +16,12 @@ import {
 import { emitEventStep } from "#common/steps/emit-event"
 import { useQueryGraphStep } from "#common/steps/use-query-graph"
 import { previewOrderChangeStep } from "#order/steps/preview-order-change"
-import { updateOrderChangesStep } from "../../steps/update-order-changes"
+import { updateOrderChangesStep } from "#order/steps/update-order-changes"
 import {
   throwIfIsCancelled,
   throwIfOrderChangeIsNotActive,
-} from "../../utils/order-validation"
-import { fieldsToRefreshOrderEdit } from "./utils/fields"
+} from "#order/utils/order-validation"
+import { fieldsToRefreshOrderEdit } from "#order/workflows/order-edit/utils/fields"
 
 function getOrderChangesData({
   input,

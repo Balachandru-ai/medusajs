@@ -30,13 +30,13 @@ import { createRemoteLinkStep } from "#common/steps/create-remote-links"
 import { emitEventStep } from "#common/steps/emit-event"
 import { useRemoteQueryStep } from "#common/steps/use-remote-query"
 import { createReturnFulfillmentWorkflow } from "#fulfillment/workflows/create-return-fulfillment"
-import { createCompleteReturnStep } from "../../steps/return/create-complete-return"
-import { receiveReturnStep } from "../../steps/return/receive-return"
+import { createCompleteReturnStep } from "#order/steps/return/create-complete-return"
+import { receiveReturnStep } from "#order/steps/return/receive-return"
 import {
   throwIfItemsDoesNotExistsInOrder,
   throwIfOrderIsCancelled,
-} from "../../utils/order-validation"
-import { validateReturnReasons } from "../../utils/validate-return-reason"
+} from "#order/utils/order-validation"
+import { validateReturnReasons } from "#order/utils/validate-return-reason"
 
 function prepareShippingMethodData({
   orderId,

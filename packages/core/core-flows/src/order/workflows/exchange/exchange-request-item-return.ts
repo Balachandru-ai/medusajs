@@ -21,18 +21,18 @@ import {
   WorkflowResponse,
 } from "@medusajs/framework/workflows-sdk"
 import { useRemoteQueryStep } from "#common/steps/use-remote-query"
-import { updateOrderExchangesStep } from "../../steps/exchange/update-order-exchanges"
-import { previewOrderChangeStep } from "../../steps/preview-order-change"
-import { createReturnsStep } from "../../steps/return/create-returns"
-import { updateOrderChangesStep } from "../../steps/update-order-changes"
+import { updateOrderExchangesStep } from "#order/steps/exchange/update-order-exchanges"
+import { previewOrderChangeStep } from "#order/steps/preview-order-change"
+import { createReturnsStep } from "#order/steps/return/create-returns"
+import { updateOrderChangesStep } from "#order/steps/update-order-changes"
 import {
   throwIfIsCancelled,
   throwIfItemsDoesNotExistsInOrder,
   throwIfManagedItemsNotStockedAtReturnLocation,
   throwIfOrderChangeIsNotActive,
-} from "../../utils/order-validation"
-import { createOrderChangeActionsWorkflow } from "../create-order-change-actions"
-import { refreshExchangeShippingWorkflow } from "./refresh-shipping"
+} from "#order/utils/order-validation"
+import { createOrderChangeActionsWorkflow } from "#order/workflows/create-order-change-actions"
+import { refreshExchangeShippingWorkflow } from "#order/workflows/exchange/refresh-shipping"
 
 /**
  * The data to validate that items can be returned as part of an exchange.

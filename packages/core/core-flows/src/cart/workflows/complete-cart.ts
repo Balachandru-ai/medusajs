@@ -32,16 +32,16 @@ import { registerUsageStep } from "#promotion/steps/register-usage"
 import { updateCartsStep } from "#cart/steps/update-carts"
 import { validateCartPaymentsStep } from "#cart/steps/validate-cart-payments"
 import { validateShippingStep } from "#cart/steps/validate-shipping"
-import { compensatePaymentIfNeededStep } from "../steps/compensate-payment-if-needed"
-import { reserveInventoryStep } from "../steps/reserve-inventory"
-import { completeCartFields } from "../utils/fields"
-import { prepareConfirmInventoryInput } from "../utils/prepare-confirm-inventory-input"
+import { compensatePaymentIfNeededStep } from "#cart/steps/compensate-payment-if-needed"
+import { reserveInventoryStep } from "#cart/steps/reserve-inventory"
+import { completeCartFields } from "#cart/utils/fields"
+import { prepareConfirmInventoryInput } from "#cart/utils/prepare-confirm-inventory-input"
 import {
   prepareAdjustmentsData,
   prepareLineItemData,
   PrepareLineItemDataInput,
   prepareTaxLinesData,
-} from "../utils/prepare-line-item-data"
+} from "#cart/utils/prepare-line-item-data"
 /**
  * The data to complete a cart and place an order.
  */

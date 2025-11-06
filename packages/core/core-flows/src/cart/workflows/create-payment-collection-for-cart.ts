@@ -16,8 +16,8 @@ import { createRemoteLinkStep } from "#common/steps/create-remote-links"
 import { useRemoteQueryStep } from "#common/steps/use-remote-query"
 import { acquireLockStep } from "#locking/steps/acquire-lock"
 import { releaseLockStep } from "#locking/steps/release-lock"
-import { createPaymentCollectionsStep } from "../steps/create-payment-collection"
-import { validateCartStep } from "../steps/validate-cart"
+import { createPaymentCollectionsStep } from "#cart/steps/create-payment-collection"
+import { validateCartStep } from "#cart/steps/validate-cart"
 
 /**
  * The details of the cart to validate its payment collection.

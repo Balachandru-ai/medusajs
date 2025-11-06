@@ -29,7 +29,7 @@ import { registerOrderShipmentStep } from "#order/steps/register-shipment"
 import {
   throwIfItemsDoesNotExistsInOrder,
   throwIfOrderIsCancelled,
-} from "../utils/order-validation"
+} from "#order/utils/order-validation"
 
 type OrderItemWithVariantDTO = OrderLineItemDTO & {
   variant?: ProductVariantDTO & {

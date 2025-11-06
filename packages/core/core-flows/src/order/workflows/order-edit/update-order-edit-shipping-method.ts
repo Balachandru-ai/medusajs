@@ -21,10 +21,10 @@ import { useQueryGraphStep } from "#common/steps/use-query-graph"
 import { useRemoteQueryStep } from "#common/steps/use-remote-query"
 import { updateOrderChangeActionsStep } from "#order/steps/update-order-change-actions"
 import { updateOrderShippingMethodsStep } from "#order/steps/update-shipping-methods"
-import { previewOrderChangeStep } from "../../steps/preview-order-change"
-import { throwIfOrderChangeIsNotActive } from "../../utils/order-validation"
-import { prepareShippingMethodUpdate } from "../../utils/prepare-shipping-method"
-import { fieldsToRefreshOrderEdit } from "./utils/fields"
+import { previewOrderChangeStep } from "#order/steps/preview-order-change"
+import { throwIfOrderChangeIsNotActive } from "#order/utils/order-validation"
+import { prepareShippingMethodUpdate } from "#order/utils/prepare-shipping-method"
+import { fieldsToRefreshOrderEdit } from "#order/workflows/order-edit/utils/fields"
 
 /**
  * The data to validate that an order edit's shipping method can be updated.

@@ -11,9 +11,9 @@ import {
   transform,
 } from "@medusajs/framework/workflows-sdk"
 import { useRemoteQueryStep } from "#common/steps/use-remote-query"
-import { createOrderChangeStep } from "../../steps/create-order-change"
-import { createOrderExchangesStep } from "../../steps/exchange/create-exchange"
-import { throwIfOrderIsCancelled } from "../../utils/order-validation"
+import { createOrderChangeStep } from "#order/steps/create-order-change"
+import { createOrderExchangesStep } from "#order/steps/exchange/create-exchange"
+import { throwIfOrderIsCancelled } from "#order/utils/order-validation"
 
 /**
  * The data to validate that an exchange can be requested for an order.

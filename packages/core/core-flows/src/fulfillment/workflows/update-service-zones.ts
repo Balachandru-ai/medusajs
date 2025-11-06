@@ -7,7 +7,7 @@ import {
   WorkflowResponse,
   createWorkflow,
 } from "@medusajs/framework/workflows-sdk"
-import { updateServiceZonesStep } from "../steps/update-service-zones"
+import { updateServiceZonesStep } from "#fulfillment/steps/update-service-zones"
 
 /**
  * The updated service zones.

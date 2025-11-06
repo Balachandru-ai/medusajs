@@ -26,8 +26,8 @@ import { findOrCreateCustomerStep } from "#cart/steps/find-or-create-customer"
 import { findSalesChannelStep } from "#cart/steps/find-sales-channel"
 import { updateCartsStep } from "#cart/steps/update-carts"
 import { validateCartStep } from "#cart/steps/validate-cart"
-import { validateSalesChannelStep } from "../steps/validate-sales-channel"
-import { refreshCartItemsWorkflow } from "./refresh-cart-items"
+import { validateSalesChannelStep } from "#cart/steps/validate-sales-channel"
+import { refreshCartItemsWorkflow } from "#cart/workflows/refresh-cart-items"
 
 /**
  * The data to update the cart, along with custom data that's passed to the workflow's hooks.

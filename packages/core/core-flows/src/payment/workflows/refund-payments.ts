@@ -9,7 +9,7 @@ import {
 } from "@medusajs/framework/workflows-sdk"
 import { useQueryGraphStep } from "#common/steps/use-query-graph"
 import { addOrderTransactionStep } from "#order/steps/add-order-transaction"
-import { refundPaymentsStep } from "../steps/refund-payments"
+import { refundPaymentsStep } from "#payment/steps/refund-payments"
 
 /**
  * The data to validate whether the refund is valid for the payment.

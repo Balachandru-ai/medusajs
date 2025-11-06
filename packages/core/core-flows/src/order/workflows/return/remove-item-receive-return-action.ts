@@ -19,7 +19,7 @@ import { previewOrderChangeStep } from "#order/steps/preview-order-change"
 import {
   throwIfIsCancelled,
   throwIfOrderChangeIsNotActive,
-} from "../../utils/order-validation"
+} from "#order/utils/order-validation"
 
 /**
  * The data to validate that a return receival's item can be removed.

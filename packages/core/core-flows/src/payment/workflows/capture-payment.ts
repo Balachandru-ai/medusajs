@@ -10,7 +10,7 @@ import {
 import { emitEventStep } from "#common/steps/emit-event"
 import { useRemoteQueryStep } from "#common/steps/use-remote-query"
 import { addOrderTransactionStep } from "#order/steps/add-order-transaction"
-import { capturePaymentStep } from "../steps/capture-payment"
+import { capturePaymentStep } from "#payment/steps/capture-payment"
 
 /**
  * The data to capture a payment.

@@ -14,12 +14,12 @@ import {
   transform,
 } from "@medusajs/framework/workflows-sdk"
 import { useRemoteQueryStep } from "#common/steps/use-remote-query"
-import { previewOrderChangeStep } from "../../steps/preview-order-change"
+import { previewOrderChangeStep } from "#order/steps/preview-order-change"
 import {
   throwIfIsCancelled,
   throwIfOrderChangeIsNotActive,
-} from "../../utils/order-validation"
-import { createOrderChangeActionsWorkflow } from "../create-order-change-actions"
+} from "#order/utils/order-validation"
+import { createOrderChangeActionsWorkflow } from "#order/workflows/create-order-change-actions"
 
 /**
  * The data to validate that claim items can be added to a claim.

@@ -14,11 +14,11 @@ import {
 } from "@medusajs/framework/workflows-sdk"
 import { useRemoteQueryStep } from "#common/steps/use-remote-query"
 import { updateReturnsStep } from "#order/steps/return/update-returns"
-import { previewOrderChangeStep } from "../../steps/preview-order-change"
+import { previewOrderChangeStep } from "#order/steps/preview-order-change"
 import {
   throwIfIsCancelled,
   throwIfOrderChangeIsNotActive,
-} from "../../utils/order-validation"
+} from "#order/utils/order-validation"
 
 /**
  * The data to validate that a return can be updated.

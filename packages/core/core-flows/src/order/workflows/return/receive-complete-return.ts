@@ -8,11 +8,11 @@ import {
 import { useRemoteQueryStep } from "#common/steps/use-remote-query"
 
 import type { ReturnDTO } from "@medusajs/framework/types"
-import { receiveReturnStep } from "../../steps/return/receive-return"
+import { receiveReturnStep } from "#order/steps/return/receive-return"
 import {
   throwIfIsCancelled,
   throwIfItemsDoesNotExistsInReturn,
-} from "../../utils/order-validation"
+} from "#order/utils/order-validation"
 
 /**
  * The data to validate that a return can be received and completed.

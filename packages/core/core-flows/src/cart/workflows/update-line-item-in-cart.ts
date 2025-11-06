@@ -29,16 +29,16 @@ import { deleteLineItemsWorkflow } from "#line-item/workflows/delete-line-items"
 import { updateLineItemsStepWithSelector } from "#line-item/steps/update-line-items"
 import { acquireLockStep } from "#locking/steps/acquire-lock"
 import { releaseLockStep } from "#locking/steps/release-lock"
-import { validateCartStep } from "../steps/validate-cart"
-import { validateVariantPricesStep } from "../steps/validate-variant-prices"
+import { validateCartStep } from "#cart/steps/validate-cart"
+import { validateVariantPricesStep } from "#cart/steps/validate-variant-prices"
 import {
   cartFieldsForPricingContext,
   productVariantsFields,
-} from "../utils/fields"
-import { requiredVariantFieldsForInventoryConfirmation } from "../utils/prepare-confirm-inventory-input"
-import { pricingContextResult } from "../utils/schemas"
-import { confirmVariantInventoryWorkflow } from "./confirm-variant-inventory"
-import { refreshCartItemsWorkflow } from "./refresh-cart-items"
+} from "#cart/utils/fields"
+import { requiredVariantFieldsForInventoryConfirmation } from "#cart/utils/prepare-confirm-inventory-input"
+import { pricingContextResult } from "#cart/utils/schemas"
+import { confirmVariantInventoryWorkflow } from "#cart/workflows/confirm-variant-inventory"
+import { refreshCartItemsWorkflow } from "#cart/workflows/refresh-cart-items"
 
 const cartFields = cartFieldsForPricingContext.concat(["items.*"])
 const variantFields = productVariantsFields.concat(["calculated_price.*"])

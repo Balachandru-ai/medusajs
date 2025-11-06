@@ -3,7 +3,7 @@ import {
   WorkflowResponse,
   createWorkflow,
 } from "@medusajs/framework/workflows-sdk"
-import { removePriceListPricesStep } from "../steps/remove-price-list-prices"
+import { removePriceListPricesStep } from "#price-list/steps/remove-price-list-prices"
 
 /**
  * The data to remove prices from price lists.

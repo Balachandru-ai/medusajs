@@ -3,7 +3,7 @@ import { AdditionalData } from "@medusajs/types"
 import { refreshCartItemsWorkflow } from "#cart/workflows/refresh-cart-items"
 import { acquireLockStep } from "#locking/steps/acquire-lock"
 import { releaseLockStep } from "#locking/steps/release-lock"
-import { deleteLineItemsStep } from "../steps/delete-line-items"
+import { deleteLineItemsStep } from "#line-item/steps/delete-line-items"
 
 /**
  * The data to delete line items from a cart.

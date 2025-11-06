@@ -18,8 +18,8 @@ import { deleteOrderShippingMethods } from "#order/steps/delete-order-shipping-m
 import {
   throwIfIsCancelled,
   throwIfOrderChangeIsNotActive,
-} from "../../utils/order-validation"
-import { fieldsToRefreshOrderEdit } from "./utils/fields"
+} from "#order/utils/order-validation"
+import { fieldsToRefreshOrderEdit } from "#order/workflows/order-edit/utils/fields"
 
 /**
  * The data to validate that a requested order edit can be canceled.

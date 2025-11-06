@@ -13,9 +13,9 @@ import {
   transform,
   when,
 } from "@medusajs/framework/workflows-sdk"
-import { createProductsWorkflow } from "./create-products"
-import { deleteProductsWorkflow } from "./delete-products"
-import { updateProductsWorkflow } from "./update-products"
+import { createProductsWorkflow } from "#product/workflows/create-products"
+import { deleteProductsWorkflow } from "#product/workflows/delete-products"
+import { updateProductsWorkflow } from "#product/workflows/update-products"
 
 /**
  * The products to manage.

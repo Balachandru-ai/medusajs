@@ -7,7 +7,7 @@ import {
   WorkflowResponse,
   createWorkflow,
 } from "@medusajs/framework/workflows-sdk"
-import { updateTaxRegionsStep } from "../steps/update-tax-regions"
+import { updateTaxRegionsStep } from "#tax/steps/update-tax-regions"
 
 /**
  * The tax regions to update.

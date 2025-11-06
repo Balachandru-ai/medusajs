@@ -9,7 +9,7 @@ import {
   transform,
 } from "@medusajs/framework/workflows-sdk"
 import { useRemoteQueryStep } from "#common/steps/use-remote-query"
-import { updateFulfillmentWorkflow } from "./update-fulfillment"
+import { updateFulfillmentWorkflow } from "#fulfillment/workflows/update-fulfillment"
 
 export const validateFulfillmentDeliverabilityStepId =
   "validate-fulfillment-deliverability"

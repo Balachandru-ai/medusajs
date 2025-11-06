@@ -9,7 +9,7 @@ import { useRemoteQueryStep } from "#common/steps/use-remote-query"
 import { createOrUpdateOrderPaymentCollectionWorkflow } from "#order/workflows/create-or-update-order-payment-collection"
 import { previewOrderChangeStep } from "#order/steps/preview-order-change"
 import { updateOrderChangesStep } from "#order/steps/update-order-changes"
-import { validateDraftOrderChangeStep } from "../steps/validate-draft-order-change"
+import { validateDraftOrderChangeStep } from "#draft-order/steps/validate-draft-order-change"
 import { acquireLockStep } from "#locking/steps/acquire-lock"
 import { releaseLockStep } from "#locking/steps/release-lock"
 

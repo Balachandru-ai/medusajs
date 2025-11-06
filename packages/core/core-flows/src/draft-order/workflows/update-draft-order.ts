@@ -18,7 +18,7 @@ import { emitEventStep } from "#common/steps/emit-event"
 import { useRemoteQueryStep } from "#common/steps/use-remote-query"
 import { previewOrderChangeStep } from "#order/steps/preview-order-change"
 import { registerOrderChangesStep } from "#order/steps/register-order-changes"
-import { validateDraftOrderStep } from "../steps/validate-draft-order"
+import { validateDraftOrderStep } from "#draft-order/steps/validate-draft-order"
 import { acquireLockStep } from "#locking/steps/acquire-lock"
 import { releaseLockStep } from "#locking/steps/release-lock"
 

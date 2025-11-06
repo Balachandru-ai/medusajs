@@ -8,9 +8,9 @@ import {
   createWorkflow,
   parallelize,
 } from "@medusajs/framework/workflows-sdk"
-import { createRemoteLinkStep } from "../steps/create-remote-links"
-import { dismissRemoteLinkStep } from "../steps/dismiss-remote-links"
-import { updateRemoteLinksStep } from "../steps/update-remote-links"
+import { createRemoteLinkStep } from "#common/steps/create-remote-links"
+import { dismissRemoteLinkStep } from "#common/steps/dismiss-remote-links"
+import { updateRemoteLinksStep } from "#common/steps/update-remote-links"
 
 export const batchLinksWorkflowId = "batch-links"
 /**

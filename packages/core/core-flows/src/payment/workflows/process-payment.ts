@@ -3,8 +3,8 @@ import { PaymentActions } from "@medusajs/utils"
 import { createWorkflow, when } from "@medusajs/workflows-sdk"
 import { useQueryGraphStep } from "#common/steps/use-query-graph"
 import { authorizePaymentSessionStep } from "#payment/steps/authorize-payment-session"
-import { completeCartAfterPaymentStep } from "../steps/complete-cart-after-payment"
-import { capturePaymentWorkflow } from "./capture-payment"
+import { completeCartAfterPaymentStep } from "#payment/steps/complete-cart-after-payment"
+import { capturePaymentWorkflow } from "#payment/workflows/capture-payment"
 
 /**
  * The data to process a payment from a webhook action.

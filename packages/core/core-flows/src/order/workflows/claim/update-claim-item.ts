@@ -20,7 +20,7 @@ import { updateOrderChangeActionsStep } from "#order/steps/update-order-change-a
 import {
   throwIfIsCancelled,
   throwIfOrderChangeIsNotActive,
-} from "../../utils/order-validation"
+} from "#order/utils/order-validation"
 
 /**
  * The data to validate that a claim's item can be updated.

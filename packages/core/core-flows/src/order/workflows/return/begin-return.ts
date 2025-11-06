@@ -13,7 +13,7 @@ import {
 import { useRemoteQueryStep } from "#common/steps/use-remote-query"
 import { createOrderChangeStep } from "#order/steps/create-order-change"
 import { createReturnsStep } from "#order/steps/return/create-returns"
-import { throwIfOrderIsCancelled } from "../../utils/order-validation"
+import { throwIfOrderIsCancelled } from "#order/utils/order-validation"
 
 /**
  * The data to validate that a return can be created for an order.

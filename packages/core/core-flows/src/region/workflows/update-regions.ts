@@ -11,7 +11,7 @@ import {
 import { emitEventStep } from "#common/steps/emit-event"
 import { updatePricePreferencesWorkflow } from "#pricing/workflows/update-price-preferences"
 import { updateRegionsStep } from "#region/steps/update-regions"
-import { setRegionsPaymentProvidersStep } from "../steps/set-regions-payment-providers"
+import { setRegionsPaymentProvidersStep } from "#region/steps/set-regions-payment-providers"
 
 export const updateRegionsWorkflowId = "update-regions"
 /**

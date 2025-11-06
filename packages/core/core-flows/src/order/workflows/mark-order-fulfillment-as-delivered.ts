@@ -23,11 +23,11 @@ import {
 import { emitEventStep } from "#common/steps/emit-event"
 import { useQueryGraphStep } from "#common/steps/use-query-graph"
 import { markFulfillmentAsDeliveredWorkflow } from "#fulfillment/workflows/mark-fulfillment-as-delivered"
-import { registerOrderDeliveryStep } from "../steps/register-delivery"
+import { registerOrderDeliveryStep } from "#order/steps/register-delivery"
 import {
   throwIfItemsDoesNotExistsInOrder,
   throwIfOrderIsCancelled,
-} from "../utils/order-validation"
+} from "#order/utils/order-validation"
 
 type OrderItemWithVariantDTO = OrderLineItemDTO & {
   variant?: ProductVariantDTO & {

@@ -14,15 +14,15 @@ import {
   transform,
 } from "@medusajs/framework/workflows-sdk"
 import { useRemoteQueryStep } from "#common/steps/use-remote-query"
-import { previewOrderChangeStep } from "../../steps/preview-order-change"
+import { previewOrderChangeStep } from "#order/steps/preview-order-change"
 import {
   throwIfIsCancelled,
   throwIfOrderChangeIsNotActive,
-} from "../../utils/order-validation"
-import { addOrderLineItemsWorkflow } from "../add-line-items"
-import { createOrderChangeActionsWorkflow } from "../create-order-change-actions"
-import { updateOrderTaxLinesWorkflow } from "../update-tax-lines"
-import { refreshClaimShippingWorkflow } from "./refresh-shipping"
+} from "#order/utils/order-validation"
+import { addOrderLineItemsWorkflow } from "#order/workflows/add-line-items"
+import { createOrderChangeActionsWorkflow } from "#order/workflows/create-order-change-actions"
+import { updateOrderTaxLinesWorkflow } from "#order/workflows/update-tax-lines"
+import { refreshClaimShippingWorkflow } from "#order/workflows/claim/refresh-shipping"
 
 /**
  * The data to validate adding new items to a claim.

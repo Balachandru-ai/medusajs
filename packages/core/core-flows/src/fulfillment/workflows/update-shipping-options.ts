@@ -8,8 +8,8 @@ import {
 } from "@medusajs/framework/workflows-sdk"
 import { setShippingOptionsPricesStep } from "#fulfillment/steps/set-shipping-options-prices"
 import { upsertShippingOptionsStep } from "#fulfillment/steps/upsert-shipping-options"
-import { validateFulfillmentProvidersStep } from "../steps/validate-fulfillment-providers"
-import { validateShippingOptionPricesStep } from "../steps/validate-shipping-option-prices"
+import { validateFulfillmentProvidersStep } from "#fulfillment/steps/validate-fulfillment-providers"
+import { validateShippingOptionPricesStep } from "#fulfillment/steps/validate-shipping-option-prices"
 import { ShippingOptionPriceType } from "@medusajs/framework/utils"
 
 /**

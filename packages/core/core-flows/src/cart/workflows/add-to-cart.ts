@@ -24,22 +24,22 @@ import { releaseLockStep } from "#locking/steps/release-lock"
 import { createLineItemsStep } from "#cart/steps/create-line-items"
 import { getLineItemActionsStep } from "#cart/steps/get-line-item-actions"
 import { updateLineItemsStep } from "#cart/steps/update-line-items"
-import { validateCartStep } from "../steps/validate-cart"
-import { validateLineItemPricesStep } from "../steps/validate-line-item-prices"
+import { validateCartStep } from "#cart/steps/validate-cart"
+import { validateLineItemPricesStep } from "#cart/steps/validate-line-item-prices"
 import {
   cartFieldsForPricingContext,
   productVariantsFields,
-} from "../utils/fields"
-import { requiredVariantFieldsForInventoryConfirmation } from "../utils/prepare-confirm-inventory-input"
+} from "#cart/utils/fields"
+import { requiredVariantFieldsForInventoryConfirmation } from "#cart/utils/prepare-confirm-inventory-input"
 import {
   prepareLineItemData,
   PrepareLineItemDataInput,
   PrepareVariantLineItemInput,
-} from "../utils/prepare-line-item-data"
-import { pricingContextResult } from "../utils/schemas"
-import { confirmVariantInventoryWorkflow } from "./confirm-variant-inventory"
-import { getVariantsAndItemsWithPrices } from "./get-variants-and-items-with-prices"
-import { refreshCartItemsWorkflow } from "./refresh-cart-items"
+} from "#cart/utils/prepare-line-item-data"
+import { pricingContextResult } from "#cart/utils/schemas"
+import { confirmVariantInventoryWorkflow } from "#cart/workflows/confirm-variant-inventory"
+import { getVariantsAndItemsWithPrices } from "#cart/workflows/get-variants-and-items-with-prices"
+import { refreshCartItemsWorkflow } from "#cart/workflows/refresh-cart-items"
 
 const cartFields = ["completed_at"].concat(cartFieldsForPricingContext)
 

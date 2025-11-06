@@ -7,7 +7,7 @@ import {
   WorkflowData,
   WorkflowResponse,
 } from "@medusajs/framework/workflows-sdk"
-import { createRefundReasonStep } from "../steps/create-refund-reasons"
+import { createRefundReasonStep } from "#payment-collection/steps/create-refund-reasons"
 
 /**
  * The data to create refund reasons.

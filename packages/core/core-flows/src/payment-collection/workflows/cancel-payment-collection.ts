@@ -8,8 +8,8 @@ import {
   transform,
 } from "@medusajs/framework/workflows-sdk"
 import { useQueryGraphStep } from "#common/steps/use-query-graph"
-import { updatePaymentCollectionStep } from "../steps/update-payment-collection"
-import { paymentCollectionCancelPaymentStep } from "../steps/cancel-payment"
+import { updatePaymentCollectionStep } from "#payment-collection/steps/update-payment-collection"
+import { paymentCollectionCancelPaymentStep } from "#payment-collection/steps/cancel-payment"
 
 const validatePaymentCollectionCancellationStep = createStep(
   "validate-payment-collection-cancellation",

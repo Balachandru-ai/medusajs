@@ -8,9 +8,9 @@ import {
 } from "@medusajs/framework/workflows-sdk"
 import { createShippingOptionsPriceSetsStep } from "#fulfillment/steps/add-shipping-options-prices"
 import { upsertShippingOptionsStep } from "#fulfillment/steps/upsert-shipping-options"
-import { setShippingOptionsPriceSetsStep } from "../steps/set-shipping-options-price-sets"
-import { validateFulfillmentProvidersStep } from "../steps/validate-fulfillment-providers"
-import { validateShippingOptionPricesStep } from "../steps/validate-shipping-option-prices"
+import { setShippingOptionsPriceSetsStep } from "#fulfillment/steps/set-shipping-options-price-sets"
+import { validateFulfillmentProvidersStep } from "#fulfillment/steps/validate-fulfillment-providers"
+import { validateShippingOptionPricesStep } from "#fulfillment/steps/validate-shipping-option-prices"
 
 /**
  * The data to create the shipping options.

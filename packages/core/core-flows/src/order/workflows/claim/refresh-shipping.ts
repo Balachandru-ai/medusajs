@@ -7,7 +7,7 @@ import {
   when,
 } from "@medusajs/framework/workflows-sdk"
 
-import { maybeRefreshShippingMethodsWorkflow } from "../maybe-refresh-shipping-methods"
+import { maybeRefreshShippingMethodsWorkflow } from "#order/workflows/maybe-refresh-shipping-methods"
 import { useQueryGraphStep } from "#common/steps/use-query-graph"
 
 /**

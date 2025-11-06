@@ -24,9 +24,9 @@ import { updateOrderChangeActionsStep } from "#order/steps/update-order-change-a
 import {
   throwIfIsCancelled,
   throwIfOrderChangeIsNotActive,
-} from "../../utils/order-validation"
-import { validateReturnReasons } from "../../utils/validate-return-reason"
-import { refreshReturnShippingWorkflow } from "./refresh-shipping"
+} from "#order/utils/order-validation"
+import { validateReturnReasons } from "#order/utils/validate-return-reason"
+import { refreshReturnShippingWorkflow } from "#order/workflows/return/refresh-shipping"
 
 /**
  * The data to validate that an item in a return can be updated.

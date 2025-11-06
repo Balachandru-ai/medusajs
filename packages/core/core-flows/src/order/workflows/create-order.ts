@@ -29,8 +29,8 @@ import { getVariantsAndItemsWithPrices } from "#cart/workflows/get-variants-and-
 import { useQueryGraphStep } from "#common/steps/use-query-graph"
 import { refreshDraftOrderAdjustmentsWorkflow } from "#draft-order/workflows/refresh-draft-order-adjustments"
 import { createOrdersStep } from "#order/steps/create-orders"
-import { productVariantsFields } from "../utils/fields"
-import { updateOrderTaxLinesWorkflow } from "./update-tax-lines"
+import { productVariantsFields } from "#order/utils/fields"
+import { updateOrderTaxLinesWorkflow } from "#order/workflows/update-tax-lines"
 
 function prepareLineItems(data) {
   const items = (data.input.items ?? []).map((item) => {

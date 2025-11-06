@@ -21,8 +21,8 @@ import { previewOrderChangeStep } from "#order/steps/preview-order-change"
 import {
   throwIfIsCancelled,
   throwIfOrderChangeIsNotActive,
-} from "../../utils/order-validation"
-import { removeClaimShippingMethodWorkflow } from "./remove-claim-shipping-method"
+} from "#order/utils/order-validation"
+import { removeClaimShippingMethodWorkflow } from "#order/workflows/claim/remove-claim-shipping-method"
 
 /**
  * The data to validate that outbound (new) items can be removed from a claim.

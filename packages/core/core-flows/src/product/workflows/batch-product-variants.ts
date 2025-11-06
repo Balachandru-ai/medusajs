@@ -12,9 +12,9 @@ import {
   UpdateProductVariantWorkflowInputDTO,
   CreateProductVariantWorkflowInputDTO,
 } from "@medusajs/framework/types"
-import { createProductVariantsWorkflow } from "./create-product-variants"
-import { updateProductVariantsWorkflow } from "./update-product-variants"
-import { deleteProductVariantsWorkflow } from "./delete-product-variants"
+import { createProductVariantsWorkflow } from "#product/workflows/create-product-variants"
+import { updateProductVariantsWorkflow } from "#product/workflows/update-product-variants"
+import { deleteProductVariantsWorkflow } from "#product/workflows/delete-product-variants"
 
 /**
  * The product variants to manage.

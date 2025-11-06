@@ -11,7 +11,7 @@ import {
 import { useQueryGraphStep } from "#common/steps/use-query-graph"
 import { getItemTaxLinesStep } from "#tax/steps/get-item-tax-lines"
 import { validateCartStep } from "#cart/steps/validate-cart"
-import { upsertTaxLinesForItemsStep } from "../steps/upsert-tax-lines-for-items"
+import { upsertTaxLinesForItemsStep } from "#cart/steps/upsert-tax-lines-for-items"
 
 const cartFields = [
   "id",

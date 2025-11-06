@@ -6,7 +6,7 @@ import {
 } from "@medusajs/framework/workflows-sdk"
 import { emitEventStep } from "#common/steps/emit-event"
 import { removeRemoteLinkStep } from "#common/steps/remove-remote-links"
-import { deleteSalesChannelsStep } from "../steps/delete-sales-channels"
+import { deleteSalesChannelsStep } from "#sales-channel/steps/delete-sales-channels"
 import { canDeleteSalesChannelsOrThrowStep } from "#sales-channel/steps/can-delete-sales-channels"
 
 /**

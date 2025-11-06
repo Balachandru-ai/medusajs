@@ -4,7 +4,7 @@ import {
   WorkflowResponse,
   createWorkflow,
 } from "@medusajs/framework/workflows-sdk"
-import { updateRemoteLinksStep } from "../steps/update-remote-links"
+import { updateRemoteLinksStep } from "#common/steps/update-remote-links"
 
 export const updateLinksWorkflowId = "update-link"
 /**

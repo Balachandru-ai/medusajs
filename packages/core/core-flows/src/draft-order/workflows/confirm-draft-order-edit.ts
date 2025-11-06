@@ -23,7 +23,7 @@ import { createOrUpdateOrderPaymentCollectionWorkflow } from "#order/workflows/c
 import { previewOrderChangeStep } from "#order/steps/preview-order-change"
 import { confirmOrderChanges } from "#order/steps/confirm-order-changes"
 import { deleteReservationsByLineItemsStep } from "#reservation/steps/delete-reservations-by-line-items"
-import { validateDraftOrderChangeStep } from "../steps/validate-draft-order-change"
+import { validateDraftOrderChangeStep } from "#draft-order/steps/validate-draft-order-change"
 import { acquireLockStep } from "#locking/steps/acquire-lock"
 import { releaseLockStep } from "#locking/steps/release-lock"
 

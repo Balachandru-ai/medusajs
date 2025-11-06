@@ -19,8 +19,8 @@ import {
   throwIfIsCancelled,
   throwIfItemsDoesNotExistsInReturn,
   throwIfOrderChangeIsNotActive,
-} from "../../utils/order-validation"
-import { createOrderChangeActionsWorkflow } from "../create-order-change-actions"
+} from "#order/utils/order-validation"
+import { createOrderChangeActionsWorkflow } from "#order/workflows/create-order-change-actions"
 
 /**
  * The data to validate that a return request can have its items dismissed.

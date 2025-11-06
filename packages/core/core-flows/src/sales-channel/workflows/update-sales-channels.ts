@@ -11,7 +11,7 @@ import {
   transform,
 } from "@medusajs/framework/workflows-sdk"
 import { emitEventStep } from "#common/steps/emit-event"
-import { updateSalesChannelsStep } from "../steps/update-sales-channels"
+import { updateSalesChannelsStep } from "#sales-channel/steps/update-sales-channels"
 
 /**
  * The data to update sales channels.

@@ -15,9 +15,9 @@ import {
 } from "@medusajs/framework/workflows-sdk"
 import { useQueryGraphStep } from "#common/steps/use-query-graph"
 import { deleteOrderShippingMethods } from "#order/steps/delete-order-shipping-methods"
-import { deleteOrderChangeActionsStep } from "../../steps/delete-order-change-actions"
-import { previewOrderChangeStep } from "../../steps/preview-order-change"
-import { throwIfOrderChangeIsNotActive } from "../../utils/order-validation"
+import { deleteOrderChangeActionsStep } from "#order/steps/delete-order-change-actions"
+import { previewOrderChangeStep } from "#order/steps/preview-order-change"
+import { throwIfOrderChangeIsNotActive } from "#order/utils/order-validation"
 
 /**
  * The data to validate that a shipping method can be removed from an order edit.

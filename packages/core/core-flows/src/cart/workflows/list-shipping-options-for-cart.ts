@@ -8,7 +8,7 @@ import {
 import { useQueryGraphStep } from "#common/steps/use-query-graph"
 import { useRemoteQueryStep } from "#common/steps/use-remote-query"
 import { validatePresenceOfStep } from "#common/steps/validate-presence-of"
-import { cartFieldsForPricingContext } from "../utils/fields"
+import { cartFieldsForPricingContext } from "#cart/utils/fields"
 import {
   AdditionalData,
   ListShippingOptionsForCartWorkflowInput,
@@ -21,7 +21,7 @@ import {
 import {
   pricingContextResult,
   shippingOptionsContextResult,
-} from "../utils/schemas"
+} from "#cart/utils/schemas"
 
 export const listShippingOptionsForCartWorkflowId =
   "list-shipping-options-for-cart"

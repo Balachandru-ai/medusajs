@@ -8,7 +8,7 @@ import {
   createWorkflow,
 } from "@medusajs/framework/workflows-sdk"
 
-import { updateInventoryLevelsStep } from "../steps/update-inventory-levels"
+import { updateInventoryLevelsStep } from "#inventory/steps/update-inventory-levels"
 
 /**
  * The data to update the inventory levels.

@@ -15,7 +15,7 @@ import {
 } from "@medusajs/framework/workflows-sdk"
 import { useRemoteQueryStep } from "#common/steps/use-remote-query"
 import { updatePromotionsStep } from "#promotion/steps/update-promotions"
-import { updatePromotionsStatusWorkflow } from "./update-promotions-status"
+import { updatePromotionsStatusWorkflow } from "#promotion/workflows/update-promotions-status"
 
 /**
  * The data to update one or more promotions, along with custom data that's passed to the workflow's hooks.

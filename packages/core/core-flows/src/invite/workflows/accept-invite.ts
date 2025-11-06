@@ -11,7 +11,7 @@ import { setAuthAppMetadataStep } from "#auth/steps/set-auth-app-metadata"
 import { emitEventStep } from "#common/steps/emit-event"
 import { createUsersWorkflow } from "#user/workflows/create-users"
 import { deleteInvitesStep } from "#invite/steps/delete-invites"
-import { validateTokenStep } from "../steps/validate-token"
+import { validateTokenStep } from "#invite/steps/validate-token"
 
 export const acceptInviteWorkflowId = "accept-invite-workflow"
 /**

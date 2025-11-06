@@ -14,7 +14,7 @@ import {
 
 import { useQueryGraphStep } from "#common/steps/use-query-graph"
 import { updateStockLocationsStep } from "#stock-location/steps/update-stock-locations"
-import { upsertStockLocationAddressesStep } from "../steps/upsert-stock-location-addresses"
+import { upsertStockLocationAddressesStep } from "#stock-location/steps/upsert-stock-location-addresses"
 
 /**
  * The data to update the stock locations.

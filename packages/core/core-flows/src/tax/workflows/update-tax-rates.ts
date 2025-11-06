@@ -16,7 +16,7 @@ import {
 import { createTaxRateRulesStep } from "#tax/steps/create-tax-rate-rules"
 import { deleteTaxRateRulesStep } from "#tax/steps/delete-tax-rate-rules"
 import { updateTaxRatesStep } from "#tax/steps/update-tax-rates"
-// import { setTaxRateRulesWorkflow } from "./set-tax-rate-rules"
+// import { setTaxRateRulesWorkflow } from "#tax/workflows/set-tax-rate-rules"
 
 /**
  * The data to update tax rates.

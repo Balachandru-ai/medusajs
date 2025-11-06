@@ -11,8 +11,8 @@ import { emitEventStep } from "#common/steps/emit-event"
 import { removeRemoteLinkStep } from "#common/steps/remove-remote-links"
 import { useQueryGraphStep } from "#common/steps/use-query-graph"
 import { deleteInventoryItemWorkflow } from "#inventory/workflows/delete-inventory-items"
-import { deleteProductsStep } from "../steps/delete-products"
-import { getProductsStep } from "../steps/get-products"
+import { deleteProductsStep } from "#product/steps/delete-products"
+import { getProductsStep } from "#product/steps/get-products"
 
 /**
  * The data to delete one or more products.

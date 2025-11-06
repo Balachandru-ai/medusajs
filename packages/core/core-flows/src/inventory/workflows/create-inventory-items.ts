@@ -7,7 +7,7 @@ import {
 import { createInventoryItemsStep } from "#inventory/steps/create-inventory-items"
 
 import type { InventoryTypes } from "@medusajs/framework/types"
-import { createInventoryLevelsWorkflow } from "./create-inventory-levels"
+import { createInventoryLevelsWorkflow } from "#inventory/workflows/create-inventory-levels"
 
 /**
  * The inventory level to create.

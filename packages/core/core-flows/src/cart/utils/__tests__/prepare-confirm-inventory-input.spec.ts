@@ -1,6 +1,6 @@
 import type { ConfirmVariantInventoryWorkflowInputDTO } from "@medusajs/framework/types"
 import { MedusaError } from "@medusajs/framework/utils"
-import { prepareConfirmInventoryInput } from "../prepare-confirm-inventory-input"
+import { prepareConfirmInventoryInput } from "#cart/utils/prepare-confirm-inventory-input"
 
 describe("prepareConfirmInventoryInput", () => {
   it("should use the quantity from the itemsToUpdate", () => {

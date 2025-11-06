@@ -14,8 +14,8 @@ import { acquireLockStep } from "#locking/steps/acquire-lock"
 import { releaseLockStep } from "#locking/steps/release-lock"
 import { removeShippingMethodFromCartStep } from "#cart/steps/remove-shipping-method-from-cart"
 import { validateCartStep } from "#cart/steps/validate-cart"
-import { updateShippingMethodsStep } from "../steps/update-shipping-methods"
-import { listShippingOptionsForCartWithPricingWorkflow } from "./list-shipping-options-for-cart-with-pricing"
+import { updateShippingMethodsStep } from "#cart/steps/update-shipping-methods"
+import { listShippingOptionsForCartWithPricingWorkflow } from "#cart/workflows/list-shipping-options-for-cart-with-pricing"
 
 /**
  * The details of the cart to refresh.

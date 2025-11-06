@@ -32,14 +32,14 @@ import { useRemoteQueryStep } from "#common/steps/use-remote-query"
 import { createReturnFulfillmentWorkflow } from "#fulfillment/workflows/create-return-fulfillment"
 import { previewOrderChangeStep } from "#order/steps/preview-order-change"
 import { updateReturnsStep } from "#order/steps/return/update-returns"
-import { createOrderClaimItemsFromActionsStep } from "../../steps/claim/create-claim-items-from-actions"
-import { confirmOrderChanges } from "../../steps/confirm-order-changes"
-import { createReturnItemsFromActionsStep } from "../../steps/return/create-return-items-from-actions"
+import { createOrderClaimItemsFromActionsStep } from "#order/steps/claim/create-claim-items-from-actions"
+import { confirmOrderChanges } from "#order/steps/confirm-order-changes"
+import { createReturnItemsFromActionsStep } from "#order/steps/return/create-return-items-from-actions"
 import {
   throwIfIsCancelled,
   throwIfOrderChangeIsNotActive,
-} from "../../utils/order-validation"
-import { createOrUpdateOrderPaymentCollectionWorkflow } from "../create-or-update-order-payment-collection"
+} from "#order/utils/order-validation"
+import { createOrUpdateOrderPaymentCollectionWorkflow } from "#order/workflows/create-or-update-order-payment-collection"
 
 function getUpdateReturnData({ returnId }: { returnId: string }) {
   return transform({ returnId }, ({ returnId }) => {

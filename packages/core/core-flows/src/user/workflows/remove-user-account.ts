@@ -7,7 +7,7 @@ import {
 } from "@medusajs/framework/workflows-sdk"
 import { setAuthAppMetadataStep } from "#auth/steps/set-auth-app-metadata"
 import { useRemoteQueryStep } from "#common/steps/use-remote-query"
-import { deleteUsersWorkflow } from "./delete-users"
+import { deleteUsersWorkflow } from "#user/workflows/delete-users"
 
 /**
  * The data to remove a user account.

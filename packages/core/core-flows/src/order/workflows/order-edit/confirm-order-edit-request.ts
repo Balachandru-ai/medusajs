@@ -26,13 +26,13 @@ import { useQueryGraphStep } from "#common/steps/use-query-graph"
 import { useRemoteQueryStep } from "#common/steps/use-remote-query"
 import { deleteReservationsByLineItemsStep } from "#reservation/steps/delete-reservations-by-line-items"
 import { previewOrderChangeStep } from "#order/steps/preview-order-change"
-import { confirmOrderChanges } from "../../steps/confirm-order-changes"
+import { confirmOrderChanges } from "#order/steps/confirm-order-changes"
 import {
   throwIfIsCancelled,
   throwIfOrderChangeIsNotActive,
-} from "../../utils/order-validation"
-import { createOrUpdateOrderPaymentCollectionWorkflow } from "../create-or-update-order-payment-collection"
-import { fieldsToRefreshOrderEdit } from "./utils/fields"
+} from "#order/utils/order-validation"
+import { createOrUpdateOrderPaymentCollectionWorkflow } from "#order/workflows/create-or-update-order-payment-collection"
+import { fieldsToRefreshOrderEdit } from "#order/workflows/order-edit/utils/fields"
 
 /**
  * The data to validate that a requested order edit can be confirmed.

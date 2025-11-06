@@ -18,9 +18,9 @@ import {
   transform,
 } from "@medusajs/framework/workflows-sdk"
 import { useQueryGraphStep } from "#common/steps/use-query-graph"
-import { confirmOrderChanges } from "../steps/confirm-order-changes"
-import { createOrderChangeStep } from "../steps/create-order-change"
-import { createOrderChangeActionsWorkflow } from "./create-order-change-actions"
+import { confirmOrderChanges } from "#order/steps/confirm-order-changes"
+import { createOrderChangeStep } from "#order/steps/create-order-change"
+import { createOrderChangeActionsWorkflow } from "#order/workflows/create-order-change-actions"
 
 export const validateOrderCreditLinesStep = createStep(
   "validate-order-credit-lines",

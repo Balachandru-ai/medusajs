@@ -22,7 +22,7 @@ import { useQueryGraphStep } from "#common/steps/use-query-graph"
 import { previewOrderChangeStep } from "#order/steps/preview-order-change"
 import { registerOrderChangesStep } from "#order/steps/register-order-changes"
 import { updateOrdersStep } from "#order/steps/update-orders"
-import { throwIfOrderIsCancelled } from "../utils/order-validation"
+import { throwIfOrderIsCancelled } from "#order/utils/order-validation"
 
 /**
  * The data to validate the order update.

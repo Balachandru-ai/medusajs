@@ -20,7 +20,7 @@ import { declineOrderChangeStep } from "#order/steps/decline-order-change"
 import {
   throwIfIsCancelled,
   throwIfOrderChangeIsNotActive,
-} from "../../utils/order-validation"
+} from "#order/utils/order-validation"
 
 /**
  * The details of the order transfer decline to validate.

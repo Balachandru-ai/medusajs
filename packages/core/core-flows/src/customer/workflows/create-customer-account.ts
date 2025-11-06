@@ -6,8 +6,8 @@ import {
   WorkflowResponse,
 } from "@medusajs/framework/workflows-sdk"
 import { setAuthAppMetadataStep } from "#auth/steps/set-auth-app-metadata"
-import { validateCustomerAccountCreation } from "../steps/validate-customer-account-creation"
-import { createCustomersWorkflow } from "./create-customers"
+import { validateCustomerAccountCreation } from "#customer/steps/validate-customer-account-creation"
+import { createCustomersWorkflow } from "#customer/workflows/create-customers"
 
 /**
  * The details of the customer account to create.

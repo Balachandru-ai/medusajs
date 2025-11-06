@@ -22,8 +22,8 @@ import { createLinksWorkflow } from "#common/workflows/create-links"
 import { validateInventoryItems } from "#inventory/steps/validate-inventory-items"
 import { createInventoryItemsWorkflow } from "#inventory/workflows/create-inventory-items"
 import { createPriceSetsStep } from "#pricing/steps/create-price-sets"
-import { createProductVariantsStep } from "../steps/create-product-variants"
-import { createVariantPricingLinkStep } from "../steps/create-variant-pricing-link"
+import { createProductVariantsStep } from "#product/steps/create-product-variants"
+import { createVariantPricingLinkStep } from "#product/steps/create-variant-pricing-link"
 
 /**
  *

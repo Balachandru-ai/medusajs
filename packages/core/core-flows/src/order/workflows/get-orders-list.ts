@@ -10,7 +10,7 @@ import { useRemoteQueryStep } from "#common/steps/use-remote-query"
 import {
   getLastFulfillmentStatus,
   getLastPaymentStatus,
-} from "../utils/aggregate-status"
+} from "#order/utils/aggregate-status"
 
 /**
  * The retrieved list of orders. If you passed pagination configurations in the

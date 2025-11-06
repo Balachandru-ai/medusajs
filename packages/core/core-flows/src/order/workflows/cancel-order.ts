@@ -26,10 +26,10 @@ import { useQueryGraphStep } from "#common/steps/use-query-graph"
 import { updatePaymentCollectionStep } from "#payment-collection/steps/update-payment-collection"
 import { cancelPaymentStep } from "#payment/steps/cancel-payment"
 import { deleteReservationsByLineItemsStep } from "#reservation/steps/delete-reservations-by-line-items"
-import { cancelOrdersStep } from "../steps/cancel-orders"
-import { throwIfOrderIsCancelled } from "../utils/order-validation"
-import { createOrderRefundCreditLinesWorkflow } from "./payments/create-order-refund-credit-lines"
-import { refundCapturedPaymentsWorkflow } from "./payments/refund-captured-payments"
+import { cancelOrdersStep } from "#order/steps/cancel-orders"
+import { throwIfOrderIsCancelled } from "#order/utils/order-validation"
+import { createOrderRefundCreditLinesWorkflow } from "#order/workflows/payments/create-order-refund-credit-lines"
+import { refundCapturedPaymentsWorkflow } from "#order/workflows/payments/refund-captured-payments"
 
 /**
  * The data to validate the order's cancelation.
