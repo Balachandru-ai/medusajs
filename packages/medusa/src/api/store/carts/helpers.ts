@@ -18,9 +18,8 @@ export const refetchCart = async (
     fields.some((field) => field.includes("items.variant.inventory_quantity"))
 
   // Remove inventory_quantity from fields before fetching (it's computed, not stored)
-  // and ensure items.variant is included if not already presents
   const fieldsToFetch = withInventoryQuantity
-    ? [...fields.filter((field) => !field.includes("items.variant.inventory_quantity"))]
+    ? fields.filter((field) => !field.includes("items.variant.inventory_quantity"))
     : fields
 
   const remoteQuery = scope.resolve(ContainerRegistrationKeys.REMOTE_QUERY)
