@@ -12,7 +12,7 @@ export const processProductOptionsForImportStepId =
 
 export type ProcessProductOptionsForImportInput = {
   products: (Omit<UpdateProductWorkflowInputDTO, "option_ids"> & {
-    options: ProductTypes.CreateProductOptionDTO[]
+    options?: ProductTypes.CreateProductOptionDTO[]
   })[]
 }
 
@@ -32,32 +32,52 @@ export const processProductOptionsForImportStep = createStep(
       Modules.PRODUCT
     )
 
-    const createdOptionIds: string[] = []
     const processedProducts: UpdateProductWorkflowInputDTO[] = []
 
-    for (const product of data.products) {
-      if (product.options?.length) {
-        const createdOptions = await productService.createProductOptions(
-          product.options
-        )
+    const allOptions: ProductTypes.CreateProductOptionDTO[] = []
+    const productIndices: number[] = [] // Maps option index to product index
 
-        createdOptionIds.push(...createdOptions.map((opt) => opt.id))
+    data.products.forEach((product, index) => {
+      (product.options ?? []).forEach((option) => {
+        allOptions.push(option)
+        productIndices.push(index)
+      })
+    })
 
-        const optionTitleToIdMap = new Map<string, string>()
-        createdOptions.forEach((option) => {
-          optionTitleToIdMap.set(option.title, option.id)
-        })
+    const createdOptions =
+      allOptions.length > 0
+        ? await productService.createProductOptions(allOptions)
+        : []
+    const createdOptionIds = createdOptions.map((opt) => opt.id)
 
+    const productOptionsMap = new Map<
+      number,
+      ProductTypes.ProductOptionDTO[]
+    >()
+    createdOptions.forEach((option, index) => {
+      const productIndex = productIndices[index]
+      if (!productOptionsMap.has(productIndex)) {
+        productOptionsMap.set(productIndex, [])
+      }
+      productOptionsMap.get(productIndex)!.push(option)
+    })
+
+    data.products.forEach((product, index) => {
+      const createdOptionsForProduct = productOptionsMap.get(index)
+
+      if (createdOptionsForProduct && createdOptionsForProduct.length) {
         // Transform product to use option_ids instead of options
         const transformedProduct: any = deepCopy(product)
         delete transformedProduct.options
-        transformedProduct.option_ids = createdOptions.map((opt) => opt.id)
+        transformedProduct.option_ids = createdOptionsForProduct.map(
+          (opt) => opt.id
+        )
 
         processedProducts.push(transformedProduct)
       } else {
         processedProducts.push(product)
       }
-    }
+    })
 
     return new StepResponse(processedProducts, createdOptionIds)
   },
