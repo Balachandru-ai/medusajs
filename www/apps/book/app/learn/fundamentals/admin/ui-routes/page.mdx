@@ -105,10 +105,83 @@ export default CustomPage
 
 The configuration object is created using `defineRouteConfig` from the Medusa Framework. It accepts the following properties:
 
-- `label`: the sidebar item’s label.
+- `label`: the sidebar item's label.
 - `icon`: an optional React component used as an icon in the sidebar.
+- `rank`: an optional number to order the route among sibling routes. Routes are sorted in ascending order (lower ranks appear first). Routes without a rank appear after routes with ranks.
 
 The above example adds a new sidebar item with the label `Custom Route` and an icon from the [Medusa UI Icons package](!ui!/icons/overview).
+
+### Order UI Routes by Rank
+
+When you have multiple custom UI routes, you can control their order in the sidebar using the `rank` property. Routes are sorted in ascending order, meaning routes with lower rank values appear first.
+
+For example:
+
+```tsx title="src/admin/routes/analytics/page.tsx"
+import { defineRouteConfig } from "@medusajs/admin-sdk"
+import { ChartBar } from "@medusajs/icons"
+import { Container, Heading } from "@medusajs/ui"
+
+const AnalyticsPage = () => {
+  return (
+    <Container className="divide-y p-0">
+      <div className="flex items-center justify-between px-6 py-4">
+        <Heading level="h2">Analytics Dashboard</Heading>
+      </div>
+    </Container>
+  )
+}
+
+export const config = defineRouteConfig({
+  label: "Analytics",
+  icon: ChartBar,
+  rank: 1,
+})
+
+export default AnalyticsPage
+```
+
+```tsx title="src/admin/routes/reports/page.tsx"
+import { defineRouteConfig } from "@medusajs/admin-sdk"
+import { DocumentText } from "@medusajs/icons"
+import { Container, Heading } from "@medusajs/ui"
+
+const ReportsPage = () => {
+  return (
+    <Container className="divide-y p-0">
+      <div className="flex items-center justify-between px-6 py-4">
+        <Heading level="h2">Reports</Heading>
+      </div>
+    </Container>
+  )
+}
+
+export const config = defineRouteConfig({
+  label: "Reports",
+  icon: DocumentText,
+  rank: 2,
+})
+
+export default ReportsPage
+```
+
+In the sidebar, "Analytics" will appear before "Reports" because it has a lower rank (1 < 2).
+
+Routes without a `rank` property will appear after all routes with ranks:
+
+```tsx title="src/admin/routes/other/page.tsx"
+export const config = defineRouteConfig({
+  label: "Other Page",
+  icon: TagSolid,
+  // No rank - will appear after ranked routes
+})
+```
+
+<Note>
+
+The `rank` property also works for nested routes. Nested routes are sorted by their own rank values independently of their parent's rank.
+
+</Note>
 
 ### Nested UI Routes
 
@@ -174,6 +247,24 @@ export default NestedOrdersPage
 ```
 
 The `nested` property passed to `defineRouteConfig` specifies which route this custom route is nested under. This route will now show in the sidebar under the existing "Orders" sidebar item.
+
+You can also use the `rank` property to control the order of multiple custom routes nested under the same parent route:
+
+```tsx title="src/admin/routes/orders/insights/page.tsx"
+export const config = defineRouteConfig({
+  label: "Order Insights",
+  nested: "/orders",
+  rank: 1, // Will appear first
+})
+```
+
+```tsx title="src/admin/routes/orders/reports/page.tsx"
+export const config = defineRouteConfig({
+  label: "Order Reports",
+  nested: "/orders",
+  rank: 2, // Will appear second
+})
+```
 
 ---
 
