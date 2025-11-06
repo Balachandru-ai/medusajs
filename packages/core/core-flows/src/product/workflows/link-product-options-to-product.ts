@@ -10,6 +10,7 @@ import {
   createProductOptionsStep,
   linkProductOptionsToProductStep,
 } from "../steps"
+import { isString } from "@medusajs/framework/utils"
 
 /**
  * The data to add/remove one or more product options to/from a product.
@@ -61,7 +62,7 @@ export const linkProductOptionsToProductWorkflow = createWorkflow(
   linkProductOptionsToProductWorkflowId,
   (input: WorkflowData<LinkProductOptionsToProductWorkflowInput>) => {
     const optionsToCreate = transform({ input }, ({ input }) => {
-      return (input.add ?? []).filter((option) => !(typeof option === "string"))
+      return (input.add ?? []).filter((option) => !isString(option))
     }) as ProductTypes.CreateProductOptionDTO[]
 
     const createdIds = when(
@@ -80,7 +81,7 @@ export const linkProductOptionsToProductWorkflow = createWorkflow(
       { input, createdIds },
       ({ input, createdIds }) => {
         return (input.add ?? [])
-          .filter((option) => typeof option === "string")
+          .filter((option) => isString(option))
           .concat(createdIds ? createdIds : [])
       }
     )
