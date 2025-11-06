@@ -1,5 +1,5 @@
 import { model } from "@medusajs/framework/utils"
-import Refund from "./refund"
+import Refund from "#models/refund"
 
 const RefundReason = model.define("RefundReason", {
   id: model.id({ prefix: "refr" }).primaryKey(),

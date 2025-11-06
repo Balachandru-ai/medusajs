@@ -5,21 +5,25 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "imports": {
+    "#loaders/*": {
+      "types": "./dist/loaders/*.d.ts",
+      "default": "./dist/loaders/*.js"
+    },
+    "#migrations/*": {
+      "types": "./dist/migrations/*.d.ts",
+      "default": "./dist/migrations/*.js"
+    },
     "#models/*": {
-      "default": "./dist/models/*.js",
-      "types": "./dist/models/*.d.ts"
+      "types": "./dist/models/*.d.ts",
+      "default": "./dist/models/*.js"
     },
     "#services/*": {
-      "default": "./dist/services/*.js",
-      "types": "./dist/services/*.d.ts"
-    },
-    "#repositories/*": {
-      "default": "./dist/repositories/*.js",
-      "types": "./dist/repositories/*.d.ts"
+      "types": "./dist/services/*.d.ts",
+      "default": "./dist/services/*.js"
     },
     "#types/*": {
-      "default": "./dist/types/*.js",
-      "types": "./dist/types/*.d.ts"
+      "types": "./dist/types/*.d.ts",
+      "default": "./dist/types/*.js"
     }
   },
   "files": [

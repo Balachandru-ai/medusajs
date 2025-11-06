@@ -1,5 +1,5 @@
 import { model } from "@medusajs/framework/utils"
-import Region from "./region"
+import Region from "#models/region"
 
 export default model
   .define(

@@ -1,9 +1,9 @@
 import { model } from "@medusajs/framework/utils"
-import { OrderExchangeItem } from "./exchange-item"
-import { Order } from "./order"
-import { OrderShipping } from "./order-shipping-method"
-import { Return } from "./return"
-import { OrderTransaction } from "./transaction"
+import { OrderExchangeItem } from "#models/exchange-item"
+import { Order } from "#models/order"
+import { OrderShipping } from "#models/order-shipping-method"
+import { Return } from "#models/return"
+import { OrderTransaction } from "#models/transaction"
 
 const _OrderExchange = model
   .define("OrderExchange", {

@@ -1,5 +1,5 @@
 import { model } from "@medusajs/framework/utils"
-import InventoryItem from "./inventory-item"
+import InventoryItem from "#models/inventory-item"
 
 const ReservationItem = model
   .define("ReservationItem", {

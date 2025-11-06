@@ -1,6 +1,6 @@
 import { model } from "@medusajs/framework/utils"
 
-import { ShippingOption } from "./shipping-option"
+import { ShippingOption } from "#models/shipping-option"
 
 export const ShippingProfile = model
   .define("shipping_profile", {

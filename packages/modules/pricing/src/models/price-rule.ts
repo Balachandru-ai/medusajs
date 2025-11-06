@@ -1,5 +1,5 @@
 import { model, PricingRuleOperator } from "@medusajs/framework/utils"
-import Price from "./price"
+import Price from "#models/price"
 
 const PriceRule = model
   .define("PriceRule", {

@@ -1,6 +1,6 @@
 import { model } from "@medusajs/framework/utils"
 
-import { OrderChange } from "./order-change"
+import { OrderChange } from "#models/order-change"
 
 const _OrderChangeAction = model
   .define("OrderChangeAction", {

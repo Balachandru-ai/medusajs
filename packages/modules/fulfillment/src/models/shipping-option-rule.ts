@@ -1,5 +1,5 @@
 import { model, RuleOperator } from "@medusajs/framework/utils"
-import { ShippingOption } from "./shipping-option"
+import { ShippingOption } from "#models/shipping-option"
 
 export const ShippingOptionRule = model.define("shipping_option_rule", {
   id: model.id({ prefix: "sorul" }).primaryKey(),

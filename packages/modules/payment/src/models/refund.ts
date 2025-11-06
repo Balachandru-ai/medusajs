@@ -1,6 +1,6 @@
 import { model } from "@medusajs/framework/utils"
-import Payment from "./payment"
-import RefundReason from "./refund-reason"
+import Payment from "#models/payment"
+import RefundReason from "#models/refund-reason"
 
 const Refund = model
   .define("Refund", {

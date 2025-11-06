@@ -1,5 +1,5 @@
 import { model } from "@medusajs/framework/utils"
-import PriceList from "./price-list"
+import PriceList from "#models/price-list"
 
 const PriceListRule = model
   .define("PriceListRule", {

@@ -1,6 +1,6 @@
 import { model } from "@medusajs/framework/utils"
-import TaxRateRule from "./tax-rate-rule"
-import TaxRegion from "./tax-region"
+import TaxRateRule from "#models/tax-rate-rule"
+import TaxRegion from "#models/tax-region"
 
 const TaxRate = model
   .define("TaxRate", {

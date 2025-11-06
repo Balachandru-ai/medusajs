@@ -1,7 +1,7 @@
 import {
   CreateLineItemAdjustmentDTO,
   UpdateLineItemAdjustmentDTO,
-} from "./line-item-adjustment"
+} from "#types/line-item-adjustment"
 
 export interface CreateCartDTO {
   region_id?: string

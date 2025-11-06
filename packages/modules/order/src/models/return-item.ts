@@ -1,7 +1,7 @@
 import { model } from "@medusajs/framework/utils"
-import { OrderLineItem } from "./line-item"
-import { Return } from "./return"
-import { ReturnReason } from "./return-reason"
+import { OrderLineItem } from "#models/line-item"
+import { Return } from "#models/return"
+import { ReturnReason } from "#models/return-reason"
 
 const _ReturnItem = model
   .define(

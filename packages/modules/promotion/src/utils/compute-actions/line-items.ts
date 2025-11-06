@@ -14,9 +14,9 @@ import {
   ApplicationMethodTargetType as TargetType,
 } from "@medusajs/framework/utils"
 import Promotion from "#models/promotion"
-import { areRulesValidForContext } from "../validations"
-import { sortLineItemByPriceAscending } from "./sort-by-price"
-import { computeActionForBudgetExceeded } from "./usage"
+import { areRulesValidForContext } from "#utils/validations/promotion-rule"
+import { sortLineItemByPriceAscending } from "#utils/compute-actions/sort-by-price"
+import { computeActionForBudgetExceeded } from "#utils/compute-actions/usage"
 
 function validateContext(
   contextKey: string,

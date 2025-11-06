@@ -1,11 +1,11 @@
 import { model, OrderStatus } from "@medusajs/framework/utils"
 import { Return } from "#models/return"
-import { OrderAddress } from "./address"
-import { OrderCreditLine } from "./credit-line"
-import { OrderItem } from "./order-item"
-import { OrderShipping } from "./order-shipping-method"
-import { OrderSummary } from "./order-summary"
-import { OrderTransaction } from "./transaction"
+import { OrderAddress } from "#models/address"
+import { OrderCreditLine } from "#models/credit-line"
+import { OrderItem } from "#models/order-item"
+import { OrderShipping } from "#models/order-shipping-method"
+import { OrderSummary } from "#models/order-summary"
+import { OrderTransaction } from "#models/transaction"
 
 const _Order = model
   .define("Order", {

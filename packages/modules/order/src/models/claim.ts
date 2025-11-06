@@ -1,9 +1,9 @@
 import { ClaimType, model } from "@medusajs/framework/utils"
-import { OrderClaimItem } from "./claim-item"
-import { Order } from "./order"
-import { OrderShipping } from "./order-shipping-method"
-import { Return } from "./return"
-import { OrderTransaction } from "./transaction"
+import { OrderClaimItem } from "#models/claim-item"
+import { Order } from "#models/order"
+import { OrderShipping } from "#models/order-shipping-method"
+import { Return } from "#models/return"
+import { OrderTransaction } from "#models/transaction"
 
 const _OrderClaim = model
   .define("OrderClaim", {

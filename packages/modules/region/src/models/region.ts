@@ -1,5 +1,5 @@
 import { model } from "@medusajs/framework/utils"
-import RegionCountry from "./country"
+import RegionCountry from "#models/country"
 
 export default model.define("region", {
   id: model.id({ prefix: "reg" }).primaryKey(),

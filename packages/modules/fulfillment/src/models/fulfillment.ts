@@ -1,10 +1,10 @@
 import { model } from "@medusajs/framework/utils"
 
-import { FulfillmentAddress } from "./address"
-import { FulfillmentItem } from "./fulfillment-item"
-import { FulfillmentLabel } from "./fulfillment-label"
-import { FulfillmentProvider } from "./fulfillment-provider"
-import { ShippingOption } from "./shipping-option"
+import { FulfillmentAddress } from "#models/address"
+import { FulfillmentItem } from "#models/fulfillment-item"
+import { FulfillmentLabel } from "#models/fulfillment-label"
+import { FulfillmentProvider } from "#models/fulfillment-provider"
+import { ShippingOption } from "#models/shipping-option"
 
 export const Fulfillment = model
   .define("fulfillment", {

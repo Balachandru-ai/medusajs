@@ -1,6 +1,6 @@
 import { model } from "@medusajs/framework/utils"
-import { OrderLineItemAdjustment } from "./line-item-adjustment"
-import { OrderLineItemTaxLine } from "./line-item-tax-line"
+import { OrderLineItemAdjustment } from "#models/line-item-adjustment"
+import { OrderLineItemTaxLine } from "#models/line-item-tax-line"
 
 const _OrderLineItem = model
   .define("OrderLineItem", {

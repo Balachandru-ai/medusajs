@@ -1,6 +1,6 @@
 import { model } from "@medusajs/framework/utils"
-import { OrderShippingMethodAdjustment } from "./shipping-method-adjustment"
-import { OrderShippingMethodTaxLine } from "./shipping-method-tax-line"
+import { OrderShippingMethodAdjustment } from "#models/shipping-method-adjustment"
+import { OrderShippingMethodTaxLine } from "#models/shipping-method-tax-line"
 
 const _OrderShippingMethod = model
   .define("OrderShippingMethod", {

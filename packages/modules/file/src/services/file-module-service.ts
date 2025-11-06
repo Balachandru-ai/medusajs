@@ -12,7 +12,7 @@ import {
 } from "@medusajs/framework/types"
 
 import { joinerConfig } from "../joiner-config"
-import FileProviderService from "./file-provider-service"
+import FileProviderService from "#services/file-provider-service"
 import { MedusaError } from "@medusajs/framework/utils"
 
 type InjectedDependencies = {

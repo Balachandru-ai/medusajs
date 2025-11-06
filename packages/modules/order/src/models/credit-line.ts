@@ -1,5 +1,5 @@
 import { model } from "@medusajs/framework/utils"
-import { Order } from "./order"
+import { Order } from "#models/order"
 
 const OrderCreditLine_ = model
   .define("OrderCreditLine", {

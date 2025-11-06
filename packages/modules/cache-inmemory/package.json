@@ -4,9 +4,17 @@
   "description": "In-memory Cache Module for Medusa",
   "main": "dist/index.js",
   "imports": {
+    "#initialize/*": {
+      "types": "./dist/initialize/*.d.ts",
+      "default": "./dist/initialize/*.js"
+    },
     "#services/*": {
       "types": "./dist/services/*.d.ts",
       "default": "./dist/services/*.js"
+    },
+    "#types/*": {
+      "types": "./dist/types/*.d.ts",
+      "default": "./dist/types/*.js"
     }
   },
   "repository": {

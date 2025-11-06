@@ -1,9 +1,9 @@
 import { model } from "@medusajs/framework/utils"
-import { OrderClaim } from "./claim"
-import { OrderExchange } from "./exchange"
-import { Order } from "./order"
-import { Return } from "./return"
-import { OrderShippingMethod } from "./shipping-method"
+import { OrderClaim } from "#models/claim"
+import { OrderExchange } from "#models/exchange"
+import { Order } from "#models/order"
+import { Return } from "#models/return"
+import { OrderShippingMethod } from "#models/shipping-method"
 
 const _OrderShipping = model
   .define("OrderShipping", {

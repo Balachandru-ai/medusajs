@@ -4,6 +4,14 @@
   "description": "Caching Module for Medusa",
   "main": "dist/index.js",
   "imports": {
+    "#loaders/*": {
+      "types": "./dist/loaders/*.d.ts",
+      "default": "./dist/loaders/*.js"
+    },
+    "#providers/*": {
+      "types": "./dist/providers/*.d.ts",
+      "default": "./dist/providers/*.js"
+    },
     "#services/*": {
       "types": "./dist/services/*.d.ts",
       "default": "./dist/services/*.js"

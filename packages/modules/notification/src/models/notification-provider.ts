@@ -1,5 +1,5 @@
 import { model } from "@medusajs/framework/utils"
-import { Notification } from "./notification"
+import { Notification } from "#models/notification"
 
 export const NotificationProvider = model.define("notificationProvider", {
   id: model.id({ prefix: "notpro" }).primaryKey(),

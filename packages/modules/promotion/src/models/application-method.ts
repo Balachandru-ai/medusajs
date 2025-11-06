@@ -1,6 +1,6 @@
 import { PromotionUtils, model } from "@medusajs/framework/utils"
-import Promotion from "./promotion"
-import PromotionRule from "./promotion-rule"
+import Promotion from "#models/promotion"
+import PromotionRule from "#models/promotion-rule"
 
 const ApplicationMethod = model
   .define(

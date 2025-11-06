@@ -107,7 +107,7 @@ import { registerDelivery } from "#services/actions/register-delivery"
 import { registerFulfillment } from "#services/actions/register-fulfillment"
 import { registerShipment } from "#services/actions/register-shipment"
 
-import OrderService from "./order-service"
+import OrderService from "#services/order-service"
 
 type InjectedDependencies = {
   baseRepository: DAL.RepositoryService

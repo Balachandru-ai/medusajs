@@ -1,6 +1,6 @@
 import { model } from "@medusajs/framework/utils"
-import Customer from "./customer"
-import CustomerGroup from "./customer-group"
+import Customer from "#models/customer"
+import CustomerGroup from "#models/customer-group"
 
 const CustomerGroupCustomer = model.define("CustomerGroupCustomer", {
   id: model.id({ prefix: "cusgc" }).primaryKey(),

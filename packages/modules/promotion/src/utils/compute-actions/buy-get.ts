@@ -11,8 +11,8 @@ import {
   MedusaError,
   PromotionType,
 } from "@medusajs/framework/utils"
-import { areRulesValidForContext } from "../validations"
-import { computeActionForBudgetExceeded } from "./usage"
+import { areRulesValidForContext } from "#utils/validations/promotion-rule"
+import { computeActionForBudgetExceeded } from "#utils/compute-actions/usage"
 import Promotion from "#models/promotion"
 
 export type EligibleItem = {

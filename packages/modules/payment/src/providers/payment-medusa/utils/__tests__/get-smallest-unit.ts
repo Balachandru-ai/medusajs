@@ -1,4 +1,4 @@
-import { getSmallestUnit } from "../get-smallest-unit"
+import { getSmallestUnit } from "#providers/payment-medusa/utils/get-smallest-unit"
 
 describe("getSmallestUnit", () => {
   it("should convert an amount to the format required by Stripe based on currency", () => {

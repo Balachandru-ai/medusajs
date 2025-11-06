@@ -1,5 +1,5 @@
 import { ICacheService } from "@medusajs/framework/types"
-import { CacheRecord, InMemoryCacheModuleOptions } from "../types"
+import { CacheRecord, InMemoryCacheModuleOptions } from "#types/index"
 
 const DEFAULT_TTL = 30 // seconds
 

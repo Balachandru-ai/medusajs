@@ -1,5 +1,5 @@
 import { model } from "@medusajs/framework/utils"
-import CampaignBudget from "./campaign-budget"
+import CampaignBudget from "#models/campaign-budget"
 
 /**
  * @since 2.11.0

@@ -1,6 +1,6 @@
 import { ICacheService } from "@medusajs/framework/types"
 import { Redis } from "ioredis"
-import { RedisCacheModuleOptions } from "../types"
+import { RedisCacheModuleOptions } from "#types/index"
 
 const DEFAULT_NAMESPACE = "medusa"
 const DEFAULT_CACHE_TIME = 30 // 30 seconds

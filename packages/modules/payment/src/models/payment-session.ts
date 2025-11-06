@@ -1,6 +1,6 @@
 import { model, PaymentSessionStatus } from "@medusajs/framework/utils"
-import Payment from "./payment"
-import PaymentCollection from "./payment-collection"
+import Payment from "#models/payment"
+import PaymentCollection from "#models/payment-collection"
 
 const PaymentSession = model
   .define("PaymentSession", {

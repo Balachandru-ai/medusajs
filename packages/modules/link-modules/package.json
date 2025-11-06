@@ -9,6 +9,10 @@
       "types": "./dist/definitions/*.d.ts",
       "default": "./dist/definitions/*.js"
     },
+    "#definitions/readonly/*": {
+      "types": "./dist/definitions/readonly/*.d.ts",
+      "default": "./dist/definitions/readonly/*.js"
+    },
     "#initialize/*": {
       "types": "./dist/initialize/*.d.ts",
       "default": "./dist/initialize/*.js"

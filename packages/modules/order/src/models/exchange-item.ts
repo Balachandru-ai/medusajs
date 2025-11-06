@@ -1,6 +1,6 @@
 import { model } from "@medusajs/framework/utils"
-import { OrderExchange } from "./exchange"
-import { OrderLineItem } from "./line-item"
+import { OrderExchange } from "#models/exchange"
+import { OrderLineItem } from "#models/line-item"
 
 const _OrderExchangeItem = model
   .define("OrderExchangeItem", {

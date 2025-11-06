@@ -2,7 +2,7 @@ import { model } from "@medusajs/framework/utils"
 import Product from "#models/product"
 import ProductImage from "#models/product-image"
 import ProductOptionValue from "#models/product-option-value"
-import ProductVariantProductImage from "./product-variant-product-image"
+import ProductVariantProductImage from "#models/product-variant-product-image"
 
 const ProductVariant = model
   .define("ProductVariant", {

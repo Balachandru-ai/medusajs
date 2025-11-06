@@ -31,7 +31,7 @@ import InventoryLevel from "#models/inventory-level"
 import ReservationItem from "#models/reservation-item"
 import { joinerConfig } from "../joiner-config"
 import { applyEntityHooks } from "#utils/apply-decorators"
-import InventoryLevelService from "./inventory-level"
+import InventoryLevelService from "#services/inventory-level"
 
 type InjectedDependencies = {
   baseRepository: DAL.RepositoryService

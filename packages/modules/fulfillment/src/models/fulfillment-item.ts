@@ -1,6 +1,6 @@
 import { model } from "@medusajs/framework/utils"
 
-import { Fulfillment } from "./fulfillment"
+import { Fulfillment } from "#models/fulfillment"
 
 export const FulfillmentItem = model
   .define("fulfillment_item", {

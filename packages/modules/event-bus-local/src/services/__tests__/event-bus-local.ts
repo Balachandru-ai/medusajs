@@ -1,4 +1,4 @@
-import LocalEventBusService from "../event-bus-local"
+import LocalEventBusService from "#services/event-bus-local"
 
 jest.mock("events")
 

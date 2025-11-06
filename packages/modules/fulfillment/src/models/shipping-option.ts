@@ -1,11 +1,11 @@
 import { model, ShippingOptionPriceType } from "@medusajs/framework/utils"
 
-import { Fulfillment } from "./fulfillment"
-import { FulfillmentProvider } from "./fulfillment-provider"
-import { ServiceZone } from "./service-zone"
-import { ShippingOptionRule } from "./shipping-option-rule"
-import { ShippingOptionType } from "./shipping-option-type"
-import { ShippingProfile } from "./shipping-profile"
+import { Fulfillment } from "#models/fulfillment"
+import { FulfillmentProvider } from "#models/fulfillment-provider"
+import { ServiceZone } from "#models/service-zone"
+import { ShippingOptionRule } from "#models/shipping-option-rule"
+import { ShippingOptionType } from "#models/shipping-option-type"
+import { ShippingProfile } from "#models/shipping-profile"
 
 export const ShippingOption = model
   .define("shipping_option", {

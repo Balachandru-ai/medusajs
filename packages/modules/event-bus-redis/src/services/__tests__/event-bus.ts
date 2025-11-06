@@ -1,7 +1,7 @@
 import { Logger } from "@medusajs/framework/types"
 import { Queue, Worker } from "bullmq"
 import { Redis } from "ioredis"
-import RedisEventBusService from "../event-bus-redis"
+import RedisEventBusService from "#services/event-bus-redis"
 
 // const redisURL = "redis://localhost:6379"
 // const client = new Redis(6379, redisURL, {

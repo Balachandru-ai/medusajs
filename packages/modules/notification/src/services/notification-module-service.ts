@@ -19,7 +19,7 @@ import {
   promiseAll,
 } from "@medusajs/framework/utils"
 import { Notification } from "#models/notification"
-import NotificationProviderService from "./notification-provider"
+import NotificationProviderService from "#services/notification-provider"
 
 type InjectedDependencies = {
   logger?: Logger

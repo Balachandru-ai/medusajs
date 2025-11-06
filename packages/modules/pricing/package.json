@@ -25,6 +25,10 @@
       "types": "./dist/types/*.d.ts",
       "default": "./dist/types/*.js"
     },
+    "#types/services/*": {
+      "types": "./dist/types/services/*.d.ts",
+      "default": "./dist/types/services/*.js"
+    },
     "#utils/*": {
       "types": "./dist/utils/*.d.ts",
       "default": "./dist/utils/*.js"

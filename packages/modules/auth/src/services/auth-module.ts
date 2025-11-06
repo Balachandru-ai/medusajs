@@ -21,7 +21,7 @@ import {
 import { AuthIdentity } from "#models/auth-identity"
 import { ProviderIdentity } from "#models/provider-identity"
 import { joinerConfig } from "../joiner-config"
-import AuthProviderService from "./auth-provider"
+import AuthProviderService from "#services/auth-provider"
 
 type InjectedDependencies = {
   baseRepository: DAL.RepositoryService

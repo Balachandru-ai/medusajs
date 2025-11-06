@@ -1,7 +1,7 @@
 import { model } from "@medusajs/framework/utils"
 
-import { OrderLineItem } from "./line-item"
-import { Order } from "./order"
+import { OrderLineItem } from "#models/line-item"
+import { Order } from "#models/order"
 
 const _OrderItem = model
   .define("OrderItem", {

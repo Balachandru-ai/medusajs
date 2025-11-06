@@ -1,6 +1,6 @@
 import { model } from "@medusajs/framework/utils"
-import ProductVariant from "./product-variant"
-import ProductImage from "./product-image"
+import ProductVariant from "#models/product-variant"
+import ProductImage from "#models/product-image"
 
 /**
  * @since 2.11.2

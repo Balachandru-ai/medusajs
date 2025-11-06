@@ -1,7 +1,12 @@
 import { Logger } from "@medusajs/framework/types"
 
-export * as ServiceTypes from "./services"
-export * from "./services"
+import * as AddressServiceTypes from "./services/address"
+import * as CustomerGroupServiceTypes from "./services/customer-group-customer"
+
+export const ServiceTypes = {
+  ...AddressServiceTypes,
+  ...CustomerGroupServiceTypes,
+}
 
 export type InitializeModuleInjectableDependencies = {
   logger?: Logger

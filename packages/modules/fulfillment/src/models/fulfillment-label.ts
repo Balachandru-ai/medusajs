@@ -1,6 +1,6 @@
 import { model } from "@medusajs/framework/utils"
 
-import { Fulfillment } from "./fulfillment"
+import { Fulfillment } from "#models/fulfillment"
 
 export const FulfillmentLabel = model.define("fulfillment_label", {
   id: model.id({ prefix: "fulla" }).primaryKey(),

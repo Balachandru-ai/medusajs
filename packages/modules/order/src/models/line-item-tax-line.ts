@@ -1,5 +1,5 @@
 import { model } from "@medusajs/framework/utils"
-import { OrderLineItem } from "./line-item"
+import { OrderLineItem } from "#models/line-item"
 
 const _OrderLineItemTaxLine = model
   .define("OrderLineItemTaxLine", {

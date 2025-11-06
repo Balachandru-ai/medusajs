@@ -1,5 +1,5 @@
 import { model } from "@medusajs/framework/utils"
-import Customer from "./customer"
+import Customer from "#models/customer"
 
 const CustomerAddress = model
   .define("CustomerAddress", {

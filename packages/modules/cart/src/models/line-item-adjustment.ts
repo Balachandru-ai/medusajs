@@ -1,5 +1,5 @@
 import { model } from "@medusajs/framework/utils"
-import LineItem from "./line-item"
+import LineItem from "#models/line-item"
 
 const LineItemAdjustment = model
   .define(

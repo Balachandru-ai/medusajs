@@ -6,7 +6,7 @@ import {
 } from "@medusajs/types"
 import { EntityManager } from "@medusajs/framework/mikro-orm/core"
 import { LockingDefaultProvider } from "#types/index"
-import LockingProviderService from "./locking-provider"
+import LockingProviderService from "#services/locking-provider"
 
 type InjectedDependencies = {
   manager: EntityManager

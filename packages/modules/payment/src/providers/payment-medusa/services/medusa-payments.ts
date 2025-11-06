@@ -44,7 +44,7 @@ import {
 import {
   getAmountFromSmallestUnit,
   getSmallestUnit,
-} from "../utils/get-smallest-unit"
+} from "#providers/payment-medusa/utils/get-smallest-unit"
 import {
   CreatePaymentRequest,
   MedusaPayment,

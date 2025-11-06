@@ -1,5 +1,5 @@
 import { model } from "@medusajs/framework/utils"
-import StoreCurrency from "./currency"
+import StoreCurrency from "#models/currency"
 
 const Store = model
   .define("Store", {

@@ -1,5 +1,5 @@
 import { model } from "@medusajs/framework/utils"
-import Payment from "./payment"
+import Payment from "#models/payment"
 
 const Capture = model
   .define("Capture", {

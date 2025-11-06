@@ -1,7 +1,7 @@
 import { model } from "@medusajs/framework/utils"
-import Cart from "./cart"
-import ShippingMethodAdjustment from "./shipping-method-adjustment"
-import ShippingMethodTaxLine from "./shipping-method-tax-line"
+import Cart from "#models/cart"
+import ShippingMethodAdjustment from "#models/shipping-method-adjustment"
+import ShippingMethodTaxLine from "#models/shipping-method-tax-line"
 
 const ShippingMethod = model
   .define(

@@ -11,7 +11,7 @@ import {
   TextProperty,
 } from "@medusajs/framework/utils"
 
-import { ServiceZone } from "./service-zone"
+import { ServiceZone } from "#models/service-zone"
 
 export type GeoZoneSchema = {
   id: PrimaryKeyModifier<string, IdProperty>

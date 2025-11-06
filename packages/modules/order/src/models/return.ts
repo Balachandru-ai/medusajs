@@ -1,10 +1,10 @@
 import { model, ReturnStatus } from "@medusajs/framework/utils"
-import { OrderClaim } from "./claim"
-import { OrderExchange } from "./exchange"
-import { Order } from "./order"
-import { OrderShipping } from "./order-shipping-method"
-import { ReturnItem } from "./return-item"
-import { OrderTransaction } from "./transaction"
+import { OrderClaim } from "#models/claim"
+import { OrderExchange } from "#models/exchange"
+import { Order } from "#models/order"
+import { OrderShipping } from "#models/order-shipping-method"
+import { ReturnItem } from "#models/return-item"
+import { OrderTransaction } from "#models/transaction"
 
 const _Return = model
   .define("Return", {

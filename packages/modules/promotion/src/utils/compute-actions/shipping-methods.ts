@@ -12,9 +12,9 @@ import {
   MedusaError,
 } from "@medusajs/framework/utils"
 import Promotion from "#models/promotion"
-import { areRulesValidForContext } from "../validations"
-import { sortShippingLineByPriceAscending } from "./sort-by-price"
-import { computeActionForBudgetExceeded } from "./usage"
+import { areRulesValidForContext } from "#utils/validations/promotion-rule"
+import { sortShippingLineByPriceAscending } from "#utils/compute-actions/sort-by-price"
+import { computeActionForBudgetExceeded } from "#utils/compute-actions/usage"
 
 export function getComputedActionsForShippingMethods(
   promotion: PromotionTypes.PromotionDTO | InferEntityType<typeof Promotion>,

@@ -28,6 +28,14 @@
     "#utils/*": {
       "types": "./dist/utils/*.d.ts",
       "default": "./dist/utils/*.js"
+    },
+    "#utils/compute-actions/*": {
+      "types": "./dist/utils/compute-actions/*.d.ts",
+      "default": "./dist/utils/compute-actions/*.js"
+    },
+    "#utils/validations/*": {
+      "types": "./dist/utils/validations/*.d.ts",
+      "default": "./dist/utils/validations/*.js"
     }
   },
   "files": [

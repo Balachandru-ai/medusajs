@@ -13,7 +13,7 @@ import {
 import type CachingModuleService from "#services/cache-module"
 import type { InjectedDependencies } from "#types/index"
 import stringify from "fast-json-stable-stringify"
-import { CacheInvalidationParser, EntityReference } from "./parser"
+import { CacheInvalidationParser, EntityReference } from "#utils/parser"
 
 export class DefaultCacheStrategy implements ICachingStrategy {
   #cacheInvalidationParser: CacheInvalidationParser

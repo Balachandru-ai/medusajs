@@ -1,5 +1,5 @@
 import { model } from "@medusajs/framework/utils"
-import ShippingMethod from "./shipping-method"
+import ShippingMethod from "#models/shipping-method"
 
 const ShippingMethodAdjustment = model
   .define(

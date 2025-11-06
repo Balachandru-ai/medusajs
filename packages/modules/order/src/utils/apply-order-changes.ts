@@ -13,7 +13,7 @@ import {
   isDefined,
   MathBN,
 } from "@medusajs/framework/utils"
-import { calculateOrderChange } from "./calculate-order-change"
+import { calculateOrderChange } from "#utils/calculate-order-change"
 
 export interface ApplyOrderChangeDTO extends OrderChangeActionDTO {
   id: string

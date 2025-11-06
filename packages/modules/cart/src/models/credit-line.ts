@@ -1,5 +1,5 @@
 import { model } from "@medusajs/framework/utils"
-import Cart from "./cart"
+import Cart from "#models/cart"
 
 const CreditLine = model
   .define("CreditLine", {

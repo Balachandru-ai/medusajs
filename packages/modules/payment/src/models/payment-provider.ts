@@ -1,5 +1,5 @@
 import { model } from "@medusajs/framework/utils"
-import PaymentCollection from "./payment-collection"
+import PaymentCollection from "#models/payment-collection"
 
 const PaymentProvider = model.define("PaymentProvider", {
   id: model.id().primaryKey(),

@@ -11,7 +11,7 @@ import { OrderShippingMethod } from "#models/shipping-method"
 import { OrderTransaction } from "#models/transaction"
 
 import { defineJoinerConfig, Modules } from "@medusajs/framework/utils"
-import { default as schema } from "./schema"
+import { default as schema } from "#schema/index"
 
 export const joinerConfig = defineJoinerConfig(Modules.ORDER, {
   schema,

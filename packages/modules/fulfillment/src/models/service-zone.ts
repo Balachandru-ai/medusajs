@@ -11,9 +11,9 @@ import {
   TextProperty,
 } from "@medusajs/framework/utils"
 
-import { FulfillmentSet } from "./fulfillment-set"
-import { GeoZone } from "./geo-zone"
-import { ShippingOption } from "./shipping-option"
+import { FulfillmentSet } from "#models/fulfillment-set"
+import { GeoZone } from "#models/geo-zone"
+import { ShippingOption } from "#models/shipping-option"
 
 export type ServiceZoneSchema = {
   id: PrimaryKeyModifier<string, IdProperty>

@@ -1,6 +1,6 @@
 import { model } from "@medusajs/framework/utils"
 
-import { ServiceZone } from "./service-zone"
+import { ServiceZone } from "#models/service-zone"
 
 export const FulfillmentSet = model
   .define("fulfillment_set", {

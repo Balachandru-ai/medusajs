@@ -15,7 +15,7 @@ import {
   retryIntervalStep2InvokeMock,
   workflowRetryIntervalId,
 } from "../__fixtures__/workflow_retry_interval"
-import { TestDatabase } from "../utils/index"
+import { TestDatabase } from "#utils/index"
 
 jest.setTimeout(60000) // Increase timeout for async retries
 

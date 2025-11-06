@@ -3,10 +3,10 @@ import {
   DMLEntitySchemaBuilder,
   model,
 } from "@medusajs/framework/utils"
-import { OrderClaim } from "./claim"
-import { OrderExchange } from "./exchange"
-import { Order } from "./order"
-import { Return } from "./return"
+import { OrderClaim } from "#models/claim"
+import { OrderExchange } from "#models/exchange"
+import { Order } from "#models/order"
+import { Return } from "#models/return"
 
 const _OrderTransaction = model
   .define("OrderTransaction", {

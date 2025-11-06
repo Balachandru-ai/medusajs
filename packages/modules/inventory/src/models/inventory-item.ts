@@ -1,6 +1,6 @@
 import { model } from "@medusajs/framework/utils"
-import InventoryLevel from "./inventory-level"
-import ReservationItem from "./reservation-item"
+import InventoryLevel from "#models/inventory-level"
+import ReservationItem from "#models/reservation-item"
 
 const InventoryItem = model
   .define("InventoryItem", {

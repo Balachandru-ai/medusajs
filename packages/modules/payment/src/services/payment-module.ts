@@ -62,7 +62,7 @@ import PaymentSession from "#models/payment-session"
 import Refund from "#models/refund"
 import RefundReason from "#models/refund-reason"
 import { joinerConfig } from "../joiner-config"
-import PaymentProviderService from "./payment-provider"
+import PaymentProviderService from "#services/payment-provider"
 
 type InjectedDependencies = {
   logger?: Logger

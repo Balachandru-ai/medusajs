@@ -1,5 +1,5 @@
 import { GraphQLSchema, buildSchema } from "graphql"
-import { CacheInvalidationParser, EntityReference } from "../parser"
+import { CacheInvalidationParser, EntityReference } from "#utils/parser"
 
 describe("CacheInvalidationParser", () => {
   let parser: CacheInvalidationParser

@@ -21,6 +21,22 @@
       "types": "./dist/providers/*.d.ts",
       "default": "./dist/providers/*.js"
     },
+    "#providers/payment-medusa/*": {
+      "types": "./dist/providers/payment-medusa/*.d.ts",
+      "default": "./dist/providers/payment-medusa/*.js"
+    },
+    "#providers/payment-medusa/services/*": {
+      "types": "./dist/providers/payment-medusa/services/*.d.ts",
+      "default": "./dist/providers/payment-medusa/services/*.js"
+    },
+    "#providers/payment-medusa/types/*": {
+      "types": "./dist/providers/payment-medusa/types/*.d.ts",
+      "default": "./dist/providers/payment-medusa/types/*.js"
+    },
+    "#providers/payment-medusa/utils/*": {
+      "types": "./dist/providers/payment-medusa/utils/*.d.ts",
+      "default": "./dist/providers/payment-medusa/utils/*.js"
+    },
     "#services/*": {
       "types": "./dist/services/*.d.ts",
       "default": "./dist/services/*.js"

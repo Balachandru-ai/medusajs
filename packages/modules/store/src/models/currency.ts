@@ -1,5 +1,5 @@
 import { model } from "@medusajs/framework/utils"
-import Store from "./store"
+import Store from "#models/store"
 
 const StoreCurrency = model.define("StoreCurrency", {
   id: model.id({ prefix: "stocur" }).primaryKey(),

@@ -48,7 +48,7 @@ import { ShippingProfile } from "#models/shipping-profile"
 import { isContextValid, Rule, validateAndNormalizeRules } from "#utils/utils"
 import { joinerConfig } from "../joiner-config"
 import { UpdateShippingOptionsInput } from "#types/service"
-import FulfillmentProviderService from "./fulfillment-provider"
+import FulfillmentProviderService from "#services/fulfillment-provider"
 
 const generateMethodForModels = {
   FulfillmentSet,

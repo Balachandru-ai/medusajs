@@ -1,6 +1,6 @@
 import { model } from "@medusajs/framework/utils"
 
-import { ShippingOption } from "./shipping-option"
+import { ShippingOption } from "#models/shipping-option"
 
 export const ShippingOptionType = model.define("shipping_option_type", {
   id: model.id({ prefix: "sotype" }).primaryKey(),

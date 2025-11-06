@@ -1,12 +1,12 @@
 import { model, ProductUtils } from "@medusajs/framework/utils"
 
-import ProductCategory from "./product-category"
-import ProductCollection from "./product-collection"
-import ProductImage from "./product-image"
-import ProductOption from "./product-option"
-import ProductTag from "./product-tag"
-import ProductType from "./product-type"
-import ProductVariant from "./product-variant"
+import ProductCategory from "#models/product-category"
+import ProductCollection from "#models/product-collection"
+import ProductImage from "#models/product-image"
+import ProductOption from "#models/product-option"
+import ProductTag from "#models/product-tag"
+import ProductType from "#models/product-type"
+import ProductVariant from "#models/product-variant"
 
 const Product = model
   .define("Product", {

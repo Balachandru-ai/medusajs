@@ -1,5 +1,5 @@
 import { model } from "@medusajs/framework/utils"
-import PromotionRule from "./promotion-rule"
+import PromotionRule from "#models/promotion-rule"
 
 const PromotionRuleValue = model
   .define(

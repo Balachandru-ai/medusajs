@@ -1,7 +1,7 @@
 import { model } from "@medusajs/framework/utils"
-import Cart from "./cart"
-import LineItemAdjustment from "./line-item-adjustment"
-import LineItemTaxLine from "./line-item-tax-line"
+import Cart from "#models/cart"
+import LineItemAdjustment from "#models/line-item-adjustment"
+import LineItemTaxLine from "#models/line-item-tax-line"
 
 const LineItem = model
   .define(

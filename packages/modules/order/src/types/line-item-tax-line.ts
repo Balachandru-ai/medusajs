@@ -1,4 +1,4 @@
-import { CreateOrderTaxLineDTO, UpdateOrderTaxLineDTO } from "./tax-line"
+import { CreateOrderTaxLineDTO, UpdateOrderTaxLineDTO } from "#types/tax-line"
 
 export interface CreateOrderLineItemTaxLineDTO extends CreateOrderTaxLineDTO {
   item_id: string

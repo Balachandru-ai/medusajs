@@ -1,4 +1,4 @@
-import { CreateTaxLineDTO, UpdateTaxLineDTO } from "./tax-line"
+import { CreateTaxLineDTO, UpdateTaxLineDTO } from "#types/tax-line"
 
 export interface CreateShippingMethodTaxLineDTO extends CreateTaxLineDTO {
   shipping_method_id: string

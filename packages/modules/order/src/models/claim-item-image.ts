@@ -1,5 +1,5 @@
 import { model } from "@medusajs/framework/utils"
-import { OrderClaimItem } from "./claim-item"
+import { OrderClaimItem } from "#models/claim-item"
 
 const _OrderClaimItemImage = model
   .define("OrderClaimItemImage", {

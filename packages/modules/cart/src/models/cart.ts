@@ -1,8 +1,8 @@
 import { model } from "@medusajs/framework/utils"
-import Address from "./address"
-import CreditLine from "./credit-line"
-import LineItem from "./line-item"
-import ShippingMethod from "./shipping-method"
+import Address from "#models/address"
+import CreditLine from "#models/credit-line"
+import LineItem from "#models/line-item"
+import ShippingMethod from "#models/shipping-method"
 
 const Cart = model
   .define("Cart", {

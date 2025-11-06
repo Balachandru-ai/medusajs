@@ -3,8 +3,8 @@ import {
   PriceListStatus,
   PriceListType,
 } from "@medusajs/framework/utils"
-import Price from "./price"
-import PriceListRule from "./price-list-rule"
+import Price from "#models/price"
+import PriceListRule from "#models/price-list-rule"
 
 const PriceList = model
   .define("PriceList", {

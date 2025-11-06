@@ -1,6 +1,6 @@
 import { model } from "@medusajs/framework/utils"
-import CampaignBudget from "./campaign-budget"
-import Promotion from "./promotion"
+import CampaignBudget from "#models/campaign-budget"
+import Promotion from "#models/promotion"
 
 const Campaign = model
   .define(

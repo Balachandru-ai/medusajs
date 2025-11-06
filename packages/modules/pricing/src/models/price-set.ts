@@ -1,5 +1,5 @@
 import { model } from "@medusajs/framework/utils"
-import Price from "./price"
+import Price from "#models/price"
 
 const PriceSet = model
   .define("PriceSet", {

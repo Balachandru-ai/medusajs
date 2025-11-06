@@ -1,8 +1,8 @@
 import { model } from "@medusajs/framework/utils"
-import Capture from "./capture"
-import PaymentCollection from "./payment-collection"
-import PaymentSession from "./payment-session"
-import Refund from "./refund"
+import Capture from "#models/capture"
+import PaymentCollection from "#models/payment-collection"
+import PaymentSession from "#models/payment-session"
+import Refund from "#models/refund"
 
 // TODO: We should remove the `Payment` model and use the `PaymentSession` model instead.
 // We just need to move the refunds, captures, canceled_at, and captured_at to it.

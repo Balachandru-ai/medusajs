@@ -1,6 +1,6 @@
 import { model } from "@medusajs/framework/utils"
-import TaxProvider from "./tax-provider"
-import TaxRate from "./tax-rate"
+import TaxProvider from "#models/tax-provider"
+import TaxRate from "#models/tax-rate"
 
 export const taxRegionProviderTopLevelCheckName =
   "CK_tax_region_provider_top_level"
