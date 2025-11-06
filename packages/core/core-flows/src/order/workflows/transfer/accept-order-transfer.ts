@@ -19,8 +19,8 @@ import {
 
 import { useQueryGraphStep } from "#common/steps/use-query-graph"
 import { previewOrderChangeStep } from "#order/steps/preview-order-change"
-import { confirmOrderChanges } from "../../steps/confirm-order-changes"
-import { throwIfOrderIsCancelled } from "../../utils/order-validation"
+import { confirmOrderChanges } from "#order/steps/confirm-order-changes"
+import { throwIfOrderIsCancelled } from "#order/utils/order-validation"
 
 /**
  * The details of the order transfer acceptance to validate.

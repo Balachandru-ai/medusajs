@@ -14,7 +14,7 @@ import { useQueryGraphStep } from "#common/steps/use-query-graph"
 /**
  * The data to validate that items can be added to a return.
  */
-export type RequestItemReturnValidationStepInput = {
+export type RefreshReturnShippingStepInput = {
   /**
    * The order change's ID.
    */
@@ -40,7 +40,7 @@ export const refreshReturnShippingWorkflowId = "refresh-return-shipping"
 export const refreshReturnShippingWorkflow = createWorkflow(
   refreshReturnShippingWorkflowId,
   function (
-    input: WorkflowData<RequestItemReturnValidationStepInput>
+    input: WorkflowData<RefreshReturnShippingStepInput>
   ): WorkflowResponse<void> {
     const orderChangeQuery = useQueryGraphStep({
       entity: "order_change",
