@@ -4,6 +4,7 @@ import type {
 } from "@medusajs/framework/types"
 import {
   getSelectsAndRelationsFromObjectArray,
+  MedusaError,
   Modules,
 } from "@medusajs/framework/utils"
 import { createStep, StepResponse } from "@medusajs/framework/workflows-sdk"
@@ -48,6 +49,13 @@ export const updateProductOptionsStep = createStep(
       select: selects,
       relations: ["values"],
     })
+
+    if (!prevData.length) {
+      throw new MedusaError(
+        MedusaError.Types.NOT_FOUND,
+        `Product option with id "${data.selector.id}" not found`
+      )
+    }
 
     const productOptions = await service.updateProductOptions(
       data.selector,

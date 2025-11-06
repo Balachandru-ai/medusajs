@@ -242,6 +242,22 @@ medusaIntegrationTestRunner({
           })
         )
       })
+
+      it("should throw when trying to update an option that does not exist", async () => {
+        const error = await api.post(
+          `/admin/product-options/iDontExist`,
+          {
+            is_exclusive: false,
+          },
+          adminHeaders
+        ).catch((e) => e)
+
+        expect(error.response.status).toEqual(404)
+        expect(error.response.data).toEqual({
+          message:  "Product option with id \"iDontExist\" not found",
+          type: "not_found"
+        })
+      })
     })
 
     describe("DELETE /admin/product-options/[id]", () => {
