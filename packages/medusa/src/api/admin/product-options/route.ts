@@ -1,30 +1,29 @@
 import {
   AuthenticatedMedusaRequest,
   MedusaResponse,
-  refetchEntities,
-  refetchEntity,
 } from "@medusajs/framework/http"
 
 import { createProductOptionsWorkflow } from "@medusajs/core-flows"
 import { HttpTypes } from "@medusajs/framework/types"
+import { ContainerRegistrationKeys } from "@medusajs/framework/utils"
 
 export const GET = async (
   req: AuthenticatedMedusaRequest<HttpTypes.AdminProductOptionListParams>,
   res: MedusaResponse<HttpTypes.AdminProductOptionListResponse>
 ) => {
-  const { data: product_options, metadata } = await refetchEntities({
+  const query = req.scope.resolve(ContainerRegistrationKeys.QUERY)
+  const { data: product_options, metadata } = await query.graph({
     entity: "product_option",
-    idOrFilter: req.filterableFields,
-    scope: req.scope,
+    filters: req.filterableFields,
     fields: req.queryConfig.fields,
     pagination: req.queryConfig.pagination,
   })
 
   res.json({
     product_options,
-    count: metadata.count,
-    offset: metadata.skip,
-    limit: metadata.take,
+    count: metadata!.count,
+    offset: metadata!.skip,
+    limit: metadata!.take,
   })
 }
 
@@ -38,10 +37,12 @@ export const POST = async (
     input: { product_options: input },
   })
 
-  const productOption = await refetchEntity({
+  const query = req.scope.resolve(ContainerRegistrationKeys.QUERY)
+  const {
+    data: [productOption],
+  } = await query.graph({
     entity: "product_option",
-    idOrFilter: result[0].id,
-    scope: req.scope,
+    filters: { id: result[0].id },
     fields: req.queryConfig.fields,
   })
 
