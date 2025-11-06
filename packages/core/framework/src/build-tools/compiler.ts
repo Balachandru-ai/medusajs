@@ -1,7 +1,7 @@
 import type { AdminOptions, ConfigModule, Logger } from "@medusajs/types"
 import { FileSystem, getConfigFile, getResolvedPlugins } from "@medusajs/utils"
 import chokidar from "chokidar"
-import { access, constants, copyFile, mkdir, rm } from "fs/promises"
+import { access, constants, copyFile, mkdir, rm, readFile, writeFile } from "fs/promises"
 import path from "path"
 import type tsStatic from "typescript"
 
@@ -104,14 +104,33 @@ export class Compiler {
    * Copies package manager files from the project root
    * to the specified dist folder
    */
-  async #copyPkgManagerFiles(dist: string) {
+  async #copyPkgManagerFiles(dist: string, externalDeps?: string[]) {
     /**
      * Copying package manager files
      */
-    await this.#copy(
-      path.join(this.#projectRoot, "package.json"),
-      path.join(dist, "package.json")
-    )
+    const pkgPath = path.join(this.#projectRoot, "package.json")
+    const targetPath = path.join(dist, "package.json")
+
+    // If externalDeps provided, filter package.json to only include those
+    if (externalDeps && externalDeps.length > 0) {
+      const pkgJson = JSON.parse(await readFile(pkgPath, "utf-8"))
+      const filteredDeps: Record<string, string> = {}
+
+      // Only keep dependencies that are external (not bundled)
+      if (pkgJson.dependencies) {
+        for (const dep of externalDeps) {
+          if (pkgJson.dependencies[dep]) {
+            filteredDeps[dep] = pkgJson.dependencies[dep]
+          }
+        }
+      }
+
+      pkgJson.dependencies = filteredDeps
+      await writeFile(targetPath, JSON.stringify(pkgJson, null, 2))
+    } else {
+      await this.#copy(pkgPath, targetPath)
+    }
+
     await this.#copy(
       path.join(this.#projectRoot, "yarn.lock"),
       path.join(dist, "yarn.lock")
@@ -262,6 +281,350 @@ export class Compiler {
     }
 
     return tsConfig
+  }
+
+  /**
+   * Builds the application backend source code using esbuild
+   * with tree shaking and minification for production deployments.
+   * Maintains file structure for Medusa's file-based routing.
+   */
+  async buildAppBackendProduction(
+    tsConfig: tsStatic.ParsedCommandLine
+  ): Promise<boolean> {
+    const tracker = this.#trackDuration()
+    const dist = this.#computeDist(tsConfig)
+    this.#logger.info("Compiling backend source for production (optimized)...")
+
+    /**
+     * Step 1: Cleanup existing build output
+     */
+    this.#logger.info(
+      `Removing existing "${path.relative(this.#projectRoot, dist)}" folder`
+    )
+    await this.#clean(dist)
+
+    /**
+     * Create target directory
+     */
+    await mkdir(dist, { recursive: true })
+
+    /**
+     * Step 2: Build using esbuild with optimizations
+     */
+    try {
+      const esbuild = await import("esbuild")
+
+      // Find all entry points from user's src directory
+      const srcDir = path.join(this.#projectRoot, "src")
+      const glob = await import("glob")
+
+      // Discover all TypeScript/JavaScript files as entry points
+      // This includes api routes, subscribers, jobs, workflows, etc.
+      const files = glob.globSync("**/*.{ts,js}", {
+        cwd: srcDir,
+        ignore: [
+          "**/*.d.ts",
+          "**/__tests__/**",
+          "**/__mocks__/**",
+          "**/__fixtures__/**",
+          "**/test/**",
+          "**/tests/**",
+          "**/integration-tests/**",
+        ],
+        absolute: true,
+      })
+
+      const entryPoints = files.filter((file) => {
+        return !this.#backendIgnoreFiles.some((chunk) => file.includes(chunk))
+      })
+
+      this.#logger.info(`Found ${entryPoints.length} files to optimize`)
+
+      // Build with esbuild - transpile and optimize each file
+      // Keep file structure for Medusa's file-based routing
+      await esbuild.build({
+        entryPoints,
+        bundle: false, // Keep 1:1 file structure (required for Medusa)
+        platform: "node",
+        target: "node20",
+        format: "cjs",
+        outdir: dist,
+        outbase: srcDir,
+        sourcemap: true,
+        minify: true, // Minify for production
+        minifyWhitespace: true,
+        minifySyntax: true,
+        minifyIdentifiers: false, // Keep identifiers for debugging
+        treeShaking: true, // Remove unused code
+        keepNames: true, // Preserve function/class names for stack traces
+        legalComments: "none",
+        loader: {
+          ".ts": "ts",
+          ".js": "js",
+        },
+        logLevel: "warning",
+      })
+
+      this.#logger.info("Production build created successfully")
+
+      /**
+       * Step 3: Generate TypeScript declarations using tsc
+       */
+      this.#logger.info("Generating TypeScript declarations...")
+      const ts = await this.#loadTSCompiler()
+      const program = ts.createProgram(
+        tsConfig.fileNames.filter((fileName) => {
+          return !this.#backendIgnoreFiles.some((chunk) =>
+            fileName.includes(`${chunk}`)
+          )
+        }),
+        {
+          ...tsConfig.options,
+          outDir: dist,
+          emitDeclarationOnly: true,
+          declaration: true,
+        }
+      )
+
+      const emitResult = program.emit()
+      const diagnostics = ts
+        .getPreEmitDiagnostics(program)
+        .concat(emitResult.diagnostics)
+
+      this.#printDiagnostics(ts, diagnostics)
+
+      if (diagnostics.length) {
+        this.#logger.warn("Type declaration generation completed with errors")
+      }
+
+      /**
+       * Step 4: Copy package manager files
+       */
+      await this.#copyPkgManagerFiles(dist)
+
+      this.#logger.info(
+        `Production build completed successfully (${tracker.getSeconds()}s)`
+      )
+      return true
+    } catch (error) {
+      this.#logger.error("Production build failed")
+      this.#logger.error(error)
+      return false
+    }
+  }
+
+  /**
+   * Builds a production bundle from a trace manifest
+   * This creates a single bundled server file with all dependencies
+   */
+  async buildAppBackendFromManifest(manifestPath: string): Promise<boolean> {
+    const tracker = this.#trackDuration()
+    this.#logger.info("Building production bundle from trace manifest...")
+
+    try {
+      // Read manifest
+      const manifestContent = await readFile(manifestPath, "utf-8")
+      const manifest = JSON.parse(manifestContent)
+
+      this.#logger.info(`Manifest stats:`)
+      this.#logger.info(`  - User modules: ${manifest.stats.userModules}`)
+      this.#logger.info(
+        `  - Dependencies: ${manifest.stats.uniqueDependencies}`
+      )
+      this.#logger.info(`  - Dynamic imports: ${manifest.stats.dynamicImports}`)
+
+      // Prepare output directory
+      const dist = path.join(this.#projectRoot, ".medusa", "server")
+      await this.#clean(dist)
+      await mkdir(dist, { recursive: true })
+
+      const esbuild = await import("esbuild")
+      const fs = await import("fs/promises")
+
+      // Categorize modules by type for better bundling
+      const apiModules = manifest.userModules.filter((m: any) =>
+        m.path.includes("/api/")
+      )
+      const subscriberModules = manifest.userModules.filter((m: any) =>
+        m.path.includes("/subscribers/")
+      )
+      const jobModules = manifest.userModules.filter((m: any) =>
+        m.path.includes("/jobs/")
+      )
+      const workflowModules = manifest.userModules.filter((m: any) =>
+        m.path.includes("/workflows/")
+      )
+      const otherModules = manifest.userModules.filter(
+        (m: any) =>
+          !m.path.includes("/api/") &&
+          !m.path.includes("/subscribers/") &&
+          !m.path.includes("/jobs/") &&
+          !m.path.includes("/workflows/")
+      )
+
+      // Native/platform-specific modules and optional dependencies that can't be bundled
+      // Everything else will be bundled and tree-shaken
+      const external = [
+        // Native binary modules
+        "better-sqlite3",
+        "pg-native",
+        "@swc/core",
+        "fsevents",
+        // Optional database drivers (not always installed)
+        "tedious", // MSSQL
+        "mysql",
+        "mysql2",
+        "oracledb",
+        "mariadb",
+        "mariadb/callback",
+        "libsql",
+        "sqlite3",
+        "pg-query-stream", // PostgreSQL streaming
+        // Native file patterns
+        "*.node",
+      ]
+
+      this.#logger.info(`Creating optimized bundles with tree shaking...`)
+      this.#logger.info(`  - API routes: ${apiModules.length}`)
+      this.#logger.info(`  - Subscribers: ${subscriberModules.length}`)
+      this.#logger.info(`  - Jobs: ${jobModules.length}`)
+      this.#logger.info(`  - Workflows: ${workflowModules.length}`)
+      this.#logger.info(`  - Other: ${otherModules.length}`)
+
+      // Create virtual entry points that re-export all modules
+      const createVirtualEntry = (modules: any[]) => {
+        const imports = modules
+          .map((m: any, idx: number) => {
+            const modulePath = path.join(this.#projectRoot, m.path)
+            return `export * as _module_${idx} from "${modulePath}";`
+          })
+          .join("\n")
+        return imports
+      }
+
+      // Write virtual entry files
+      const virtualDir = path.join(this.#projectRoot, ".medusa", "virtual")
+      await mkdir(virtualDir, { recursive: true })
+
+      const bundleGroups: Array<{ name: string; modules: any[] }> = [
+        { name: "api", modules: apiModules },
+        { name: "subscribers", modules: subscriberModules },
+        { name: "jobs", modules: jobModules },
+        { name: "workflows", modules: workflowModules },
+        { name: "other", modules: otherModules },
+      ].filter((g) => g.modules.length > 0)
+
+      const routeManifest: Record<string, { bundle: string; export: string }> =
+        {}
+
+      for (const group of bundleGroups) {
+        const virtualEntry = path.join(virtualDir, `${group.name}.entry.js`)
+        const virtualContent = createVirtualEntry(group.modules)
+        await fs.writeFile(virtualEntry, virtualContent)
+
+        // Bundle this group
+        const result = await esbuild.build({
+          entryPoints: [virtualEntry],
+          bundle: true, // FULL bundling with tree shaking
+          platform: "node",
+          target: "node20",
+          format: "cjs",
+          outfile: path.join(dist, `bundle-${group.name}.js`),
+          sourcemap: true,
+          minify: true,
+          treeShaking: true,
+          keepNames: true,
+          external,
+          metafile: true,
+          loader: {
+            ".ts": "ts",
+            ".js": "js",
+          },
+          logLevel: "error",
+        })
+
+        // Map original paths to bundle exports
+        group.modules.forEach((m: any, idx: number) => {
+          routeManifest[m.path] = {
+            bundle: `bundle-${group.name}.js`,
+            export: `_module_${idx}`,
+          }
+        })
+
+        this.#logger.info(
+          `  ✓ ${group.name}: ${
+            Object.keys(result.metafile?.outputs || {})[0]?.length || 0
+          } bytes`
+        )
+      }
+
+      // Save route manifest
+      await fs.writeFile(
+        path.join(dist, "route-manifest.json"),
+        JSON.stringify(routeManifest, null, 2)
+      )
+
+      // Clean up virtual directory
+      await rm(virtualDir, { recursive: true, force: true })
+
+      this.#logger.info("Bundle created successfully with full tree shaking")
+
+      // Transpile and copy essential config files (not traced but needed at runtime)
+      this.#logger.info("Processing config files...")
+      const configFiles = ["medusa-config", "instrumentation"]
+
+      for (const configName of configFiles) {
+        const tsPath = path.join(this.#projectRoot, `${configName}.ts`)
+        const jsPath = path.join(this.#projectRoot, `${configName}.js`)
+
+        // Check if TS version exists and transpile it
+        if (await fs.access(tsPath).then(() => true).catch(() => false)) {
+          await esbuild.build({
+            entryPoints: [tsPath],
+            bundle: false, // Just transpile, don't bundle
+            platform: "node",
+            target: "node20",
+            format: "cjs",
+            outfile: path.join(dist, `${configName}.js`),
+            // No external - bundle: false doesn't support it
+            loader: { ".ts": "ts" },
+            logLevel: "error",
+          })
+        }
+        // Otherwise copy JS version if it exists
+        else if (await fs.access(jsPath).then(() => true).catch(() => false)) {
+          await this.#copy(jsPath, path.join(dist, `${configName}.js`))
+        }
+      }
+
+      // Copy package manager files (with filtered dependencies for bundle mode)
+      await this.#copyPkgManagerFiles(dist, external)
+
+      // Copy environment files if they exist
+      await this.#copy(
+        path.join(this.#projectRoot, ".env"),
+        path.join(dist, ".env")
+      ).catch(() => {
+        // .env might not exist, that's ok
+      })
+      await this.#copy(
+        path.join(this.#projectRoot, ".env.local"),
+        path.join(dist, ".env.local")
+      ).catch(() => {})
+      await this.#copy(
+        path.join(this.#projectRoot, ".env.production"),
+        path.join(dist, ".env.production")
+      ).catch(() => {})
+
+      this.#logger.info(
+        `Production bundle completed (${tracker.getSeconds()}s)`
+      )
+      this.#logger.info(`Output: ${path.relative(this.#projectRoot, dist)}`)
+      return true
+    } catch (error) {
+      this.#logger.error("Bundle build failed", error)
+      return false
+    }
   }
 
   /**

@@ -140,6 +140,22 @@ export async function initializeContainer(
     skipDbConnection?: boolean
   }
 ): Promise<MedusaContainer> {
+  // Initialize bundle loader for production bundles
+  try {
+    const { initializeBundleLoader } = await import(
+      "@medusajs/framework/build-tools"
+    )
+    const bundleLoader = initializeBundleLoader(rootDirectory)
+    if (bundleLoader.isEnabled()) {
+      const stats = bundleLoader.getStats()
+      defaultLogger.info(
+        `Bundle loader initialized: ${stats.manifestEntries} routes, ${stats.availableBundles} bundles`
+      )
+    }
+  } catch (error) {
+    // Bundle loader not available, continue with filesystem loading
+  }
+
   // custom flags from medusa project
   await featureFlagsLoader(rootDirectory)
   const configDir = await configLoader(rootDirectory, "medusa-config")

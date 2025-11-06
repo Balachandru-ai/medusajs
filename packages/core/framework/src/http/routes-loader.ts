@@ -2,6 +2,7 @@ import { dynamicImport, isFileSkipped, readDirRecursive } from "@medusajs/utils"
 import { join, parse, sep } from "path"
 import { logger } from "../logger"
 import { HTTP_METHODS, type RouteDescriptor, type RouteVerb } from "./types"
+import { getBundleLoader } from "../build-tools"
 
 /**
  * File name that is used to indicate that the file is a route file
@@ -159,6 +160,101 @@ export class RoutesLoader {
    * routes via "getRoutes" method
    */
   async scanDir(sourceDir: string) {
+    // Check if bundle loader is available
+    const bundleLoader = getBundleLoader()
+
+    if (bundleLoader?.isEnabled()) {
+      logger.info("Loading routes from bundle manifest...")
+
+      // Load routes from bundle manifest instead of filesystem
+      const availableModules = bundleLoader.getAvailableModules()
+      const routeModules = availableModules.filter((modulePath) =>
+        modulePath.includes("/api/") &&
+        (modulePath.endsWith("route.ts") || modulePath.endsWith("route.js"))
+      )
+
+      logger.info(`Found ${routeModules.length} routes in bundle manifest`)
+      logger.info(`Loading routes from bundles...`)
+
+      await Promise.all(
+        routeModules.map(async (modulePath) => {
+          try {
+            const routeExports = bundleLoader.loadModule(modulePath)
+            // Extract relative path from bundle module path
+            // Paths can be: "src/api/..." or "node_modules/@medusajs/medusa/dist/api/..."
+            const apiMatch = modulePath.match(/\/api\/(.+)$/)
+            if (!apiMatch) {
+              logger.warn(`Skipping module with no API path: ${modulePath}`)
+              return
+            }
+            const relativePath = `api/${apiMatch[1]}`
+            const routePath = this.#createRoutePath(relativePath)
+
+            // Check if file is skipped
+            if (isFileSkipped(routeExports)) {
+              return
+            }
+
+            // Get routes from exports (same logic as #getRoutesForFile)
+            const routeType = ADMIN_ROUTE_MATCH.test(routePath)
+              ? "admin"
+              : STORE_ROUTE_MATCH.test(routePath)
+              ? "store"
+              : AUTH_ROUTE_MATCH.test(routePath)
+              ? "auth"
+              : undefined
+
+            const shouldAuthenticate =
+              AUTHTHENTICATION_FLAG in routeExports
+                ? !!routeExports[AUTHTHENTICATION_FLAG]
+                : true
+
+            const shouldApplyCors =
+              CORS_FLAG in routeExports ? !!routeExports[CORS_FLAG] : true
+
+            const routes = Object.keys(routeExports)
+              .filter((key) => {
+                if (typeof routeExports[key] !== "function") {
+                  return false
+                }
+
+                if (!HTTP_METHODS.includes(key as RouteVerb)) {
+                  return false
+                }
+
+                return true
+              })
+              .map((key) => {
+                return {
+                  isRoute: true,
+                  matcher: routePath,
+                  method: key as RouteVerb,
+                  handler: routeExports[key],
+                  optedOutOfAuth: !shouldAuthenticate,
+                  shouldAppendAdminCors: shouldApplyCors && routeType === "admin",
+                  shouldAppendAuthCors: shouldApplyCors && routeType === "auth",
+                  shouldAppendStoreCors: shouldApplyCors && routeType === "store",
+                } satisfies RouteDescriptor
+              })
+
+            routes.forEach((routeConfig: RouteDescriptor) => {
+              this.registerRoute({
+                absolutePath: modulePath,
+                relativePath,
+                ...routeConfig,
+              })
+            })
+          } catch (error) {
+            logger.warn(`Failed to load route from bundle: ${modulePath} - ${error}`)
+          }
+        })
+      )
+
+      logger.info(`✓ Loaded routes from ${routeModules.length} bundle modules`)
+      return
+    }
+
+    // Fallback to filesystem scanning if bundle loader not available
     const entries = await readDirRecursive(sourceDir, {
       ignoreMissing: true,
     })

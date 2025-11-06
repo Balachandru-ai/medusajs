@@ -423,12 +423,14 @@ function buildLocalCommands(cli, isLocalProject) {
           .option("workers", {
             type: "string",
             default: "0",
-            describe: "Number of worker processes in cluster mode or a percentage of cluster size (e.g., 25%).",
+            describe:
+              "Number of worker processes in cluster mode or a percentage of cluster size (e.g., 25%).",
           })
           .option("servers", {
             type: "string",
             default: "0",
-            describe: "Number of server processes in cluster mode or a percentage of cluster size (e.g., 25%).",
+            describe:
+              "Number of server processes in cluster mode or a percentage of cluster size (e.g., 25%).",
           }),
       handler: handlerP(
         getCommandHandler(`start`, (args, cmd) => {
@@ -450,10 +452,36 @@ function buildLocalCommands(cli, isLocalProject) {
           type: "boolean",
           describe:
             "Only build the admin to serve it separately (outDir .medusa/admin)",
-        }),
+        })
+          .option("production", {
+            default: false,
+            type: "boolean",
+            describe:
+              "Build with bundling and tree shaking for production deployment",
+          })
+          .option("trace", {
+            default: false,
+            type: "boolean",
+            describe:
+              "Trace runtime dependencies by starting server (requires --production)",
+          })
+          .option("bundle", {
+            default: false,
+            type: "boolean",
+            describe:
+              "Bundle from trace manifest (requires --production and prior --trace run)",
+          })
+          .option("trace-timeout", {
+            type: "number",
+            default: 10000,
+            describe:
+              "Timeout in milliseconds for trace mode before stopping server",
+          }),
       handler: handlerP(
         getCommandHandler(`build`, (args, cmd) => {
-          process.env.NODE_ENV = process.env.NODE_ENV || `development`
+          process.env.NODE_ENV = args.production
+            ? "production"
+            : process.env.NODE_ENV || `development`
           cmd(args)
 
           return new Promise((resolve) => {})
