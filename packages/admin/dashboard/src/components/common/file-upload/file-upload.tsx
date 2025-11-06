@@ -20,8 +20,7 @@ export interface FileUploadProps {
   hasError?: boolean
   formats: string[]
   maxFileSize?: number // in bytes, defaults to 1MB. Disable by setting to 0.
-  onUploaded: (files: FileType[]) => void
-  onFilesRejected?: (rejectedFiles: RejectedFile[]) => void
+  onUploaded: (files: FileType[], rejectedFiles?: RejectedFile[]) => void
 }
 
 const DEFAULT_MAX_FILE_SIZE = 1024 * 1024 // 1MB
@@ -34,7 +33,6 @@ export const FileUpload = ({
   formats,
   maxFileSize = DEFAULT_MAX_FILE_SIZE,
   onUploaded,
-  onFilesRejected,
 }: FileUploadProps) => {
   const [isDragOver, setIsDragOver] = useState<boolean>(false)
   const inputRef = useRef<HTMLInputElement>(null)
@@ -94,12 +92,8 @@ export const FileUpload = ({
       })
     })
 
-    if (rejectedFiles.length > 0 && onFilesRejected) {
-      onFilesRejected(rejectedFiles)
-    }
-
-    if (validFiles.length > 0) {
-      onUploaded(validFiles)
+    if (validFiles.length > 0 || rejectedFiles.length > 0) {
+      onUploaded(validFiles, rejectedFiles)
     }
   }
 
