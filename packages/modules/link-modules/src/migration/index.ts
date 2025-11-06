@@ -185,7 +185,7 @@ export class MigrationsExecutionPlanner implements ILinkMigrationsPlanner {
       .getConnection()
       .execute(
         `
-      INSERT INTO "${this.tableName}" (table_name, link_descriptor) VALUES (?, ?);
+      INSERT INTO "${this.tableName}" (table_name, link_descriptor) VALUES (?, ?) ON CONFLICT (table_name) DO NOTHING;
       ${sql}
     `,
         [tableName, linkDescriptor]
