@@ -10,8 +10,9 @@ import {
   createWorkflow,
   transform,
 } from "@medusajs/framework/workflows-sdk"
-import { useRemoteQueryStep } from "../../../common"
-import { createOrderChangeStep, createReturnsStep } from "../../steps"
+import { useRemoteQueryStep } from "#common/steps/use-remote-query"
+import { createOrderChangeStep } from "#order/steps/create-order-change"
+import { createReturnsStep } from "#order/steps/return/create-returns"
 import { throwIfOrderIsCancelled } from "../../utils/order-validation"
 
 /**
@@ -27,14 +28,14 @@ export type BeginReturnOrderValidationStepInput = {
 /**
  * This step validates that a return can be created for an order.
  * If the order is canceled, the step will throw an error.
- * 
+ *
  * :::note
- * 
+ *
  * You can retrieve an order details using [Query](https://docs.medusajs.com/learn/fundamentals/module-links/query),
  * or [useQueryGraphStep](https://docs.medusajs.com/resources/references/medusa-workflows/steps/useQueryGraphStep).
- * 
+ *
  * :::
- * 
+ *
  * @example
  * const data = beginReturnOrderValidationStep({
  *   order: {
@@ -54,12 +55,12 @@ export const beginReturnOrderWorkflowId = "begin-return-order"
 /**
  * This workflow creates an order return that can be later requested or confirmed.
  * It's used by the [Create Return Admin API Route](https://docs.medusajs.com/api/admin#returns_postreturns).
- * 
+ *
  * You can start the return receival using the {@link beginReceiveReturnWorkflow}.
- * 
+ *
  * You can use this workflow within your customizations or your own custom workflows, allowing you
  * to create a return for an order in your custom flow.
- * 
+ *
  * @example
  * const { result } = await beginReturnOrderWorkflow(container)
  * .run({
@@ -67,9 +68,9 @@ export const beginReturnOrderWorkflowId = "begin-return-order"
  *     order_id: "order_123"
  *   }
  * })
- * 
+ *
  * @summary
- * 
+ *
  * Create a return for an order.
  */
 export const beginReturnOrderWorkflow = createWorkflow(

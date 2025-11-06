@@ -7,7 +7,7 @@ import {
   WorkflowResponse,
   createWorkflow,
 } from "@medusajs/framework/workflows-sdk"
-import { createCustomerGroupsStep } from "../steps"
+import { createCustomerGroupsStep } from "#customer-group/steps/create-customer-groups"
 
 /**
  * The data to create customer groups.
@@ -28,11 +28,11 @@ export const createCustomerGroupsWorkflowId = "create-customer-groups"
 /**
  * This workflow creates one or more customer groups. It's used by the
  * [Create Customer Group Admin API Route](https://docs.medusajs.com/api/admin#customer-groups_postcustomergroups).
- * 
- * You can use this workflow within your customizations or your own custom workflows, allowing you to 
+ *
+ * You can use this workflow within your customizations or your own custom workflows, allowing you to
  * create customer groups within your custom flows. For example, you can create customer groups to segregate
  * customers by age group or purchase habits.
- * 
+ *
  * @example
  * const { result } = await createCustomerGroupsWorkflow(container)
  * .run({
@@ -44,9 +44,9 @@ export const createCustomerGroupsWorkflowId = "create-customer-groups"
  *     ]
  *   }
  * })
- * 
+ *
  * @summary
- * 
+ *
  * Create one or more customer groups.
  */
 export const createCustomerGroupsWorkflow = createWorkflow(

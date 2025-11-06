@@ -7,8 +7,8 @@ import {
   createWorkflow,
   transform,
 } from "@medusajs/framework/workflows-sdk"
-import { emitEventStep } from "../../common/steps/emit-event"
-import { completeOrdersStep } from "../steps"
+import { emitEventStep } from "#common/steps/emit-event"
+import { completeOrdersStep } from "#order/steps/complete-orders"
 
 /**
  * The orders to complete, along with custom data that's passed to the workflow's hooks.

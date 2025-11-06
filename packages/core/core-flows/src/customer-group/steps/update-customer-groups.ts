@@ -27,7 +27,7 @@ export type UpdateCustomerGroupStepInput = {
 export const updateCustomerGroupStepId = "update-customer-groups"
 /**
  * This step updates one or more customer groups.
- * 
+ *
  * @example
  * const data = updateCustomerGroupsStep({
  *   selector: {

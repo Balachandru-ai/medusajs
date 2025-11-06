@@ -8,10 +8,12 @@ import {
   transform,
   when,
 } from "@medusajs/framework/workflows-sdk"
-import { useQueryGraphStep } from "../../common"
-import { acquireLockStep, releaseLockStep } from "../../locking"
-import { getItemTaxLinesStep } from "../../tax/steps/get-item-tax-lines"
-import { setTaxLinesForItemsStep, validateCartStep } from "../steps"
+import { useQueryGraphStep } from "#common/steps/use-query-graph"
+import { acquireLockStep } from "#locking/steps/acquire-lock"
+import { releaseLockStep } from "#locking/steps/release-lock"
+import { getItemTaxLinesStep } from "#tax/steps/get-item-tax-lines"
+import { setTaxLinesForItemsStep } from "#cart/steps/set-tax-lines-for-items"
+import { validateCartStep } from "#cart/steps/validate-cart"
 
 const cartFields = [
   "id",

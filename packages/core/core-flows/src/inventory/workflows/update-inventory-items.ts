@@ -5,7 +5,7 @@ import {
 } from "@medusajs/framework/workflows-sdk"
 
 import type { InventoryTypes } from "@medusajs/framework/types"
-import { updateInventoryItemsStep } from "../steps"
+import { updateInventoryItemsStep } from "#inventory/steps/update-inventory-items"
 
 /**
  * The data to update the inventory items.

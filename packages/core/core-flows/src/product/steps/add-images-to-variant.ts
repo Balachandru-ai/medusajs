@@ -6,7 +6,7 @@ export const addImagesToVariantStepId = "add-images-to-variant"
 
 /**
  * This step adds one or more images to a product variant.
- * 
+ *
  * @since 2.11.2
  *
  * @example

@@ -23,7 +23,7 @@ export type RevokeApiKeysStepInput = {
 export const revokeApiKeysStepId = "revoke-api-keys"
 /**
  * This step revokes one or more API keys.
- * 
+ *
  * @example
  * const data = revokeApiKeysStep({
  *   selector: {

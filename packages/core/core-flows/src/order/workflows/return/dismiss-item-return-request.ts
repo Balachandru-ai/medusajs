@@ -13,8 +13,8 @@ import {
   createWorkflow,
   transform,
 } from "@medusajs/framework/workflows-sdk"
-import { useRemoteQueryStep } from "../../../common"
-import { previewOrderChangeStep } from "../../steps"
+import { useRemoteQueryStep } from "#common/steps/use-remote-query"
+import { previewOrderChangeStep } from "#order/steps/preview-order-change"
 import {
   throwIfIsCancelled,
   throwIfItemsDoesNotExistsInReturn,
@@ -46,16 +46,16 @@ export type DismissItemReturnRequestValidationStepInput = {
 
 /**
  * This step validates that a return request can have its items dismissed.
- * If the order or return is canceled, the order change is not active, 
+ * If the order or return is canceled, the order change is not active,
  * or the items do not exist in the return, the step will throw an error.
- * 
+ *
  * :::note
- * 
+ *
  * You can retrieve an order, return, and order change details using [Query](https://docs.medusajs.com/learn/fundamentals/module-links/query),
  * or [useQueryGraphStep](https://docs.medusajs.com/resources/references/medusa-workflows/steps/useQueryGraphStep).
- * 
+ *
  * :::
- * 
+ *
  * @example
  * const data = dismissItemReturnRequestValidationStep({
  *   order: {
@@ -103,22 +103,23 @@ export const dismissItemReturnRequestValidationStep = createStep(
 
 /**
  * The data to dismiss items from a return request.
- * 
+ *
  * @property return_id - The ID of the return to dismiss items from.
  * @property items - The items to dismiss.
  */
-export type DismissItemReturnRequestWorkflowInput = OrderWorkflow.ReceiveOrderReturnItemsWorkflowInput
+export type DismissItemReturnRequestWorkflowInput =
+  OrderWorkflow.ReceiveOrderReturnItemsWorkflowInput
 
 export const dismissItemReturnRequestWorkflowId = "dismiss-item-return-request"
 /**
  * This workflow dismisses items from a return request due to them being damaged. It's used
  * by the [Add Damaged Items Admin API Route](https://docs.medusajs.com/api/admin#returns_postreturnsiddismissitems).
- * 
+ *
  * A damaged item's quantity is dismissed, meaning it's not returned to the inventory.
- * 
+ *
  * You can use this workflow within your customizations or your own custom workflows, allowing you
  * to dismiss items from a return request in your custom flow.
- * 
+ *
  * @example
  * const { result } = await dismissItemReturnRequestWorkflow(container)
  * .run({
@@ -132,9 +133,9 @@ export const dismissItemReturnRequestWorkflowId = "dismiss-item-return-request"
  *     ]
  *   }
  * })
- * 
+ *
  * @summary
- * 
+ *
  * Dismiss items from a return request.
  */
 export const dismissItemReturnRequestWorkflow = createWorkflow(

@@ -1,7 +1,7 @@
 import type { HttpTypes } from "@medusajs/framework/types"
 import { CSVNormalizer, productValidators } from "@medusajs/framework/utils"
 import { StepResponse, createStep } from "@medusajs/framework/workflows-sdk"
-import { convertCsvToJson } from "../utils"
+import { convertCsvToJson } from "#product/utils/csvtojson"
 
 /**
  * The CSV file content to parse.

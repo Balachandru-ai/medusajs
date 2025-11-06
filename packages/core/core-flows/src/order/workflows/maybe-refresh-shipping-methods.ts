@@ -10,12 +10,10 @@ import {
   when,
 } from "@medusajs/framework/workflows-sdk"
 import { ShippingOptionPriceType } from "@medusajs/framework/utils"
-import { calculateShippingOptionsPricesStep } from "../../fulfillment/steps"
-import {
-  updateOrderChangeActionsStep,
-  updateOrderShippingMethodsStep,
-} from "../steps"
-import { useQueryGraphStep } from "../../common"
+import { calculateShippingOptionsPricesStep } from "#fulfillment/steps/calculate-shipping-options-prices"
+import { updateOrderChangeActionsStep } from "#order/steps/update-order-change-actions"
+import { updateOrderShippingMethodsStep } from "#order/steps/update-shipping-methods"
+import { useQueryGraphStep } from "#common/steps/use-query-graph"
 
 const COMMON_OPTIONS_FIELDS = [
   "id",

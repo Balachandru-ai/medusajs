@@ -6,8 +6,8 @@ import {
   transform,
   when,
 } from "@medusajs/framework/workflows-sdk"
-import { updateStoresStep } from "../steps"
-import { updatePricePreferencesAsArrayStep } from "../../pricing"
+import { updateStoresStep } from "#store/steps/update-stores"
+import { updatePricePreferencesAsArrayStep } from "#pricing/steps/update-price-preferences-as-array"
 
 /**
  * The updated stores.

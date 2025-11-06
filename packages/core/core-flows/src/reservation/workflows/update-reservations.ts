@@ -5,7 +5,7 @@ import {
 } from "@medusajs/framework/workflows-sdk"
 
 import type { WorkflowTypes } from "@medusajs/framework/types"
-import { updateReservationsStep } from "../steps"
+import { updateReservationsStep } from "#reservation/steps/update-reservations"
 
 export const updateReservationsWorkflowId = "update-reservations-workflow"
 /**

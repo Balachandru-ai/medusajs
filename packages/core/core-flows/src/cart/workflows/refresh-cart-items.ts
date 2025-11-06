@@ -8,9 +8,11 @@ import {
   WorkflowData,
   WorkflowResponse,
 } from "@medusajs/framework/workflows-sdk"
-import { useQueryGraphStep } from "../../common"
-import { acquireLockStep, releaseLockStep } from "../../locking"
-import { updateLineItemsStep, validateCartStep } from "../steps"
+import { useQueryGraphStep } from "#common/steps/use-query-graph"
+import { acquireLockStep } from "#locking/steps/acquire-lock"
+import { releaseLockStep } from "#locking/steps/release-lock"
+import { updateLineItemsStep } from "#cart/steps/update-line-items"
+import { validateCartStep } from "#cart/steps/validate-cart"
 import { cartFieldsForRefreshSteps } from "../utils/fields"
 import { pricingContextResult } from "../utils/schemas"
 import { getVariantsAndItemsWithPrices } from "./get-variants-and-items-with-prices"

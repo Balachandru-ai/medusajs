@@ -7,7 +7,8 @@ import {
   WorkflowResponse,
   createWorkflow,
 } from "@medusajs/framework/workflows-sdk"
-import { createPriceListsStep, validateVariantPriceLinksStep } from "../steps"
+import { createPriceListsStep } from "#price-list/steps/create-price-lists"
+import { validateVariantPriceLinksStep } from "#price-list/steps/validate-variant-price-links"
 
 /**
  * The data to create price lists.
@@ -28,10 +29,10 @@ export const createPriceListsWorkflowId = "create-price-lists"
 /**
  * This workflow creates one or more price lists. It's used by the
  * [Create Price List Admin API Route](https://docs.medusajs.com/api/admin#price-lists_postpricelists).
- * 
+ *
  * You can use this workflow within your customizations or your own custom workflows, allowing you to
  * create price lists in your custom flows.
- * 
+ *
  * @example
  * const { result } = await createPriceListsWorkflow(container)
  * .run({
@@ -44,9 +45,9 @@ export const createPriceListsWorkflowId = "create-price-lists"
  *     ]
  *   }
  * })
- * 
+ *
  * @summary
- * 
+ *
  * Create one or more price lists.
  */
 export const createPriceListsWorkflow = createWorkflow(

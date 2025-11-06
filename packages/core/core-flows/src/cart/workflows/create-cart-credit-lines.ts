@@ -8,12 +8,12 @@ import {
   WorkflowResponse,
   createWorkflow,
 } from "@medusajs/framework/workflows-sdk"
-import { createEntitiesStep } from "../../common/steps/create-entities"
+import { createEntitiesStep } from "#common/steps/create-entities"
 
 export const createCartCreditLinesWorkflowId = "create-cart-credit-lines"
 /**
  * This workflow creates one or more credit lines for a cart.
- * 
+ *
  * @example
  * const { result } = await createCartCreditLinesWorkflow(container)
  * .run({

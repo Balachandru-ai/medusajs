@@ -6,8 +6,8 @@ import {
   when,
   WorkflowData,
 } from "@medusajs/framework/workflows-sdk"
-import { useQueryGraphStep } from "../../../common"
-import { refundPaymentsWorkflow } from "../../../payment/workflows/refund-payments"
+import { useQueryGraphStep } from "#common/steps/use-query-graph"
+import { refundPaymentsWorkflow } from "#payment/workflows/refund-payments"
 
 export const refundCapturedPaymentsWorkflowId =
   "refund-captured-payments-workflow"

@@ -20,7 +20,7 @@ import {
   transform,
   when,
 } from "@medusajs/framework/workflows-sdk"
-import { useRemoteQueryStep } from "../../../common"
+import { useRemoteQueryStep } from "#common/steps/use-remote-query"
 import { updateOrderClaimsStep } from "../../steps/claim/update-order-claims"
 import { previewOrderChangeStep } from "../../steps/preview-order-change"
 import { createReturnsStep } from "../../steps/return/create-returns"

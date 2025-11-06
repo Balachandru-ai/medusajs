@@ -27,7 +27,7 @@ export type UpdateCustomersStepInput = {
 export const updateCustomersStepId = "update-customer"
 /**
  * This step updates one or more customers.
- * 
+ *
  * @example
  * const data = updateCustomersStep({
  *   selector: {

@@ -7,7 +7,7 @@ import type { OrderChangeDTO, OrderWorkflow } from "@medusajs/framework/types"
 /**
  * The details of the draft order and its change to validate.
  */
-export interface ValidateDraftOrderUpdateActionItemStepInput {
+export interface ValidateDraftOrderRemoveActionItemStepInput {
   /**
    * The details of the item removal action.
    */
@@ -46,7 +46,7 @@ export const validateDraftOrderRemoveActionItemStep = createStep(
   async function ({
     input,
     orderChange,
-  }: ValidateDraftOrderUpdateActionItemStepInput) {
+  }: ValidateDraftOrderRemoveActionItemStepInput) {
     const associatedAction = (orderChange.actions ?? []).find(
       (a) => a.id === input.action_id
     ) as OrderChangeActionDTO

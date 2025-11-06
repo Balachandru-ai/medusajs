@@ -5,7 +5,7 @@ import {
   createHook,
   createWorkflow,
 } from "@medusajs/framework/workflows-sdk"
-import { createApiKeysStep } from "../steps"
+import { createApiKeysStep } from "#api-key/steps/create-api-keys"
 
 /**
  * The data to create API keys.

@@ -17,14 +17,13 @@ import {
   when,
   WorkflowResponse,
 } from "@medusajs/framework/workflows-sdk"
-import { useQueryGraphStep } from "../../common"
-import { emitEventStep } from "../../common/steps/emit-event"
-import { acquireLockStep, releaseLockStep } from "../../locking"
-import {
-  createLineItemsStep,
-  getLineItemActionsStep,
-  updateLineItemsStep,
-} from "../steps"
+import { useQueryGraphStep } from "#common/steps/use-query-graph"
+import { emitEventStep } from "#common/steps/emit-event"
+import { acquireLockStep } from "#locking/steps/acquire-lock"
+import { releaseLockStep } from "#locking/steps/release-lock"
+import { createLineItemsStep } from "#cart/steps/create-line-items"
+import { getLineItemActionsStep } from "#cart/steps/get-line-item-actions"
+import { updateLineItemsStep } from "#cart/steps/update-line-items"
 import { validateCartStep } from "../steps/validate-cart"
 import { validateLineItemPricesStep } from "../steps/validate-line-item-prices"
 import {

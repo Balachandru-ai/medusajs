@@ -8,7 +8,7 @@ import { StepResponse, createStep } from "@medusajs/framework/workflows-sdk"
 export const createTaxRateRulesStepId = "create-tax-rate-rules"
 /**
  * This step creates one or more tax rate rules.
- * 
+ *
  * @example
  * const data = createTaxRateRulesStep([
  *   {

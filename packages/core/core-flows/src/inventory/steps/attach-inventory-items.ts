@@ -20,7 +20,7 @@ export const attachInventoryItemToVariantsStepId =
   "attach-inventory-items-to-variants-step"
 /**
  * This step creates one or more links between variant and inventory item records.
- * 
+ *
  * @example
  * const data = attachInventoryItemToVariants([
  *   {
@@ -31,10 +31,7 @@ export const attachInventoryItemToVariantsStepId =
  */
 export const attachInventoryItemToVariants = createStep(
   attachInventoryItemToVariantsStepId,
-  async (
-    input: AttachInventoryItemToVariantsStepInput,
-    { container }
-  ) => {
+  async (input: AttachInventoryItemToVariantsStepInput, { container }) => {
     const remoteLink = container.resolve(ContainerRegistrationKeys.LINK)
 
     const linkDefinitions = input

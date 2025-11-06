@@ -12,17 +12,16 @@ import {
   OrderDTO,
   OrderWorkflow,
 } from "@medusajs/framework/types"
-import { useRemoteQueryStep } from "../../common"
-import {
-  previewOrderChangeStep,
-  updateOrderChangeActionsStep,
-} from "../../order"
+import { useRemoteQueryStep } from "#common/steps/use-remote-query"
+import { previewOrderChangeStep } from "#order/steps/preview-order-change"
+import { updateOrderChangeActionsStep } from "#order/steps/update-order-change-actions"
 import { getDraftOrderPromotionContextStep } from "../steps/get-draft-order-promotion-context"
 import { validateDraftOrderChangeStep } from "../steps/validate-draft-order-change"
 import { validateDraftOrderUpdateActionItemStep } from "../steps/validate-draft-order-update-action-item"
 import { draftOrderFieldsForRefreshSteps } from "../utils/fields"
 import { refreshDraftOrderAdjustmentsWorkflow } from "./refresh-draft-order-adjustments"
-import { acquireLockStep, releaseLockStep } from "../../locking"
+import { acquireLockStep } from "#locking/steps/acquire-lock"
+import { releaseLockStep } from "#locking/steps/release-lock"
 
 export const updateDraftOrderActionItemId = "update-draft-order-action-item"
 

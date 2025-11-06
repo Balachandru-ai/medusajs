@@ -15,8 +15,8 @@ import {
   transform,
 } from "@medusajs/framework/workflows-sdk"
 
-import { useQueryGraphStep } from "../../../common"
-import { declineOrderChangeStep } from "../../steps"
+import { useQueryGraphStep } from "#common/steps/use-query-graph"
+import { declineOrderChangeStep } from "#order/steps/decline-order-change"
 import {
   throwIfIsCancelled,
   throwIfOrderChangeIsNotActive,

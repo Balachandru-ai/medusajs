@@ -23,7 +23,7 @@ export type CreateVariantPricingLinkStepInput = {
 export const createVariantPricingLinkStepId = "create-variant-pricing-link"
 /**
  * This step creates links between variant and price set records.
- * 
+ *
  * @example
  * const data = createVariantPricingLinkStep({
  *   links: [

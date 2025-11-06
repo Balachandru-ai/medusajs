@@ -6,10 +6,8 @@ import {
   WorkflowData,
   WorkflowResponse,
 } from "@medusajs/framework/workflows-sdk"
-import {
-  setShippingOptionsPricesStep,
-  upsertShippingOptionsStep,
-} from "../steps"
+import { setShippingOptionsPricesStep } from "#fulfillment/steps/set-shipping-options-prices"
+import { upsertShippingOptionsStep } from "#fulfillment/steps/upsert-shipping-options"
 import { validateFulfillmentProvidersStep } from "../steps/validate-fulfillment-providers"
 import { validateShippingOptionPricesStep } from "../steps/validate-shipping-option-prices"
 import { ShippingOptionPriceType } from "@medusajs/framework/utils"

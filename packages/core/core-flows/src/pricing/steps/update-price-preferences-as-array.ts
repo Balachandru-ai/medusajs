@@ -19,7 +19,7 @@ export const updatePricePreferencesAsArrayStepId =
   "update-price-preferences-as-array"
 /**
  * This step creates or updates price preferences.
- * 
+ *
  * @example
  * const data = updatePricePreferencesAsArrayStep([
  *   {

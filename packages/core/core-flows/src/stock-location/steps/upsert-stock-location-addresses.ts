@@ -13,7 +13,8 @@ import { Modules } from "@medusajs/framework/utils"
 /**
  * The data to upsert stock location addresses.
  */
-export type UpsertStockLocationAddressesStepInput = UpsertStockLocationAddressInput[]
+export type UpsertStockLocationAddressesStepInput =
+  UpsertStockLocationAddressInput[]
 
 export const upsertStockLocationAddressesStepId =
   "upsert-stock-location-addresses-step"

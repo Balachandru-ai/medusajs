@@ -17,9 +17,9 @@ export interface CreateDefaultSalesChannelStepInput {
 
 export const createDefaultSalesChannelStepId = "create-default-sales-channel"
 /**
- * This step creates a default sales channel if none exist in the application. 
+ * This step creates a default sales channel if none exist in the application.
  * This is useful when creating seed scripts.
- * 
+ *
  * @example
  * const data = createDefaultSalesChannelStep({
  *   data: {

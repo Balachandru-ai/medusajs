@@ -26,7 +26,7 @@ export type UpdateRegionsStepInput = {
 export const updateRegionsStepId = "update-region"
 /**
  * This step updates regions matching the specified filters.
- * 
+ *
  * @example
  * const data = updateRegionsStep({
  *   selector: {

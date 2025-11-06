@@ -1,6 +1,7 @@
 import type { UpdatePriceListWorkflowInputDTO } from "@medusajs/framework/types"
 import { WorkflowData, createWorkflow } from "@medusajs/framework/workflows-sdk"
-import { updatePriceListsStep, validatePriceListsStep } from "../steps"
+import { updatePriceListsStep } from "#price-list/steps/update-price-lists"
+import { validatePriceListsStep } from "#price-list/steps/validate-price-lists"
 
 /**
  * The data to update price lists.

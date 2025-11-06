@@ -13,9 +13,10 @@ import {
   WorkflowData,
   WorkflowResponse,
 } from "@medusajs/framework/workflows-sdk"
-import { emitEventStep, useRemoteQueryStep } from "../../common"
-import { addOrderTransactionStep } from "../../order/steps/add-order-transaction"
-import { createOrderRefundCreditLinesWorkflow } from "../../order/workflows/payments/create-order-refund-credit-lines"
+import { emitEventStep } from "#common/steps/emit-event"
+import { useRemoteQueryStep } from "#common/steps/use-remote-query"
+import { addOrderTransactionStep } from "#order/steps/add-order-transaction"
+import { createOrderRefundCreditLinesWorkflow } from "#order/workflows/payments/create-order-refund-credit-lines"
 import { refundPaymentStep } from "../steps/refund-payment"
 
 /**

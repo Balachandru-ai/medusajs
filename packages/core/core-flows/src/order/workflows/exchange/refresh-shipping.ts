@@ -9,7 +9,7 @@ import {
 } from "@medusajs/framework/workflows-sdk"
 
 import { maybeRefreshShippingMethodsWorkflow } from "../maybe-refresh-shipping-methods"
-import { useQueryGraphStep } from "../../../common"
+import { useQueryGraphStep } from "#common/steps/use-query-graph"
 
 /**
  * The data to refresh the shipping methods for an exchange.

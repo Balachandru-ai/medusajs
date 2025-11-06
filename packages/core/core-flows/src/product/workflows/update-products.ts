@@ -20,12 +20,10 @@ import {
   parallelize,
   transform,
 } from "@medusajs/framework/workflows-sdk"
-import {
-  createRemoteLinkStep,
-  dismissRemoteLinkStep,
-  emitEventStep,
-  useRemoteQueryStep,
-} from "../../common"
+import { createRemoteLinkStep } from "#common/steps/create-remote-links"
+import { dismissRemoteLinkStep } from "#common/steps/dismiss-remote-links"
+import { emitEventStep } from "#common/steps/emit-event"
+import { useRemoteQueryStep } from "#common/steps/use-remote-query"
 import { upsertVariantPricesWorkflow } from "./upsert-variant-prices"
 
 /**

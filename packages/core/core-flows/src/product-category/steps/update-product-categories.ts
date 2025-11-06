@@ -26,7 +26,7 @@ export type UpdateProductCategoriesStepInput = {
 export const updateProductCategoriesStepId = "update-product-categories"
 /**
  * This step updates product categories matching specified filters.
- * 
+ *
  * @example
  * const data = updateProductCategoriesStep({
  *   selector: {

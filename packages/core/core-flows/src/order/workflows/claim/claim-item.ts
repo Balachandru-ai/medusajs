@@ -13,7 +13,7 @@ import {
   createWorkflow,
   transform,
 } from "@medusajs/framework/workflows-sdk"
-import { useRemoteQueryStep } from "../../../common"
+import { useRemoteQueryStep } from "#common/steps/use-remote-query"
 import { previewOrderChangeStep } from "../../steps/preview-order-change"
 import {
   throwIfIsCancelled,
@@ -42,14 +42,14 @@ export type OrderClaimItemValidationStepInput = {
 /**
  * This step validates that claim items can be added to a claim. If the
  * order or claim is canceled, or the order change is not active, the step will throw an error.
- * 
+ *
  * :::note
- * 
+ *
  * You can retrieve an order, order claim, and order change details using [Query](https://docs.medusajs.com/learn/fundamentals/module-links/query),
  * or [useQueryGraphStep](https://docs.medusajs.com/resources/references/medusa-workflows/steps/useQueryGraphStep).
- * 
+ *
  * :::
- * 
+ *
  * @example
  * const data = orderClaimItemValidationStep({
  *   order: {
@@ -85,12 +85,12 @@ export const orderClaimItemValidationStep = createStep(
 
 export const orderClaimItemWorkflowId = "claim-item"
 /**
- * This workflow adds order items to a claim as claim items. It's used by the 
+ * This workflow adds order items to a claim as claim items. It's used by the
  * [Add Claim Items Admin API Route](https://docs.medusajs.com/api/admin#claims_postclaimsidclaimitems).
- * 
+ *
  * You can use this workflow within your customizations or your own custom workflows, allowing you to add items to a claim
  * for an order in your custom flows.
- * 
+ *
  * @example
  * const { result } = await orderClaimItemWorkflow(container)
  * .run({
@@ -104,9 +104,9 @@ export const orderClaimItemWorkflowId = "claim-item"
  *     ]
  *   }
  * })
- * 
+ *
  * @summary
- * 
+ *
  * Add order items to a claim as claim items.
  */
 export const orderClaimItemWorkflow = createWorkflow(

@@ -7,8 +7,9 @@ import {
   transform,
   when,
 } from "@medusajs/framework/workflows-sdk"
-import { emitEventStep, useRemoteQueryStep } from "../../common"
-import { addOrderTransactionStep } from "../../order/steps/add-order-transaction"
+import { emitEventStep } from "#common/steps/emit-event"
+import { useRemoteQueryStep } from "#common/steps/use-remote-query"
+import { addOrderTransactionStep } from "#order/steps/add-order-transaction"
 import { capturePaymentStep } from "../steps/capture-payment"
 
 /**

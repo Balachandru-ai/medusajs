@@ -5,10 +5,12 @@ import {
   WorkflowResponse,
 } from "@medusajs/framework/workflows-sdk"
 import type { OrderDTO, OrderWorkflow } from "@medusajs/framework/types"
-import { useRemoteQueryStep } from "../../common"
-import { createOrderChangeStep, previewOrderChangeStep } from "../../order"
-import { validateDraftOrderStep } from "../steps"
-import { acquireLockStep, releaseLockStep } from "../../locking"
+import { useRemoteQueryStep } from "#common/steps/use-remote-query"
+import { createOrderChangeStep } from "#order/steps/create-order-change"
+import { previewOrderChangeStep } from "#order/steps/preview-order-change"
+import { validateDraftOrderStep } from "#draft-order/steps/validate-draft-order"
+import { acquireLockStep } from "#locking/steps/acquire-lock"
+import { releaseLockStep } from "#locking/steps/release-lock"
 
 export const beginDraftOrderEditWorkflowId = "begin-draft-order-edit"
 

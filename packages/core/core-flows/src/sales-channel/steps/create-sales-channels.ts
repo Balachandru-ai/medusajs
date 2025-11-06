@@ -18,7 +18,7 @@ export interface CreateSalesChannelsStepInput {
 export const createSalesChannelsStepId = "create-sales-channels"
 /**
  * This step creates one or more sales channels.
- * 
+ *
  * @example
  * const data = createSalesChannelsStep({
  *   data: [{

@@ -1,2 +1,2 @@
-export * from "./steps"
-export * from "./workflows"
+export * from "./steps/delete-shipping-profile"
+export * from "./workflows/delete-shipping-profile"

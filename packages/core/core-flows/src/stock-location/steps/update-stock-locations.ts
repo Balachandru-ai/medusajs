@@ -25,7 +25,7 @@ interface StepInput {
 export const updateStockLocationsStepId = "update-stock-locations-step"
 /**
  * This step updates stock locations matching the specified filters.
- * 
+ *
  * @example
  * const data = updateStockLocationsStep({
  *   selector: {

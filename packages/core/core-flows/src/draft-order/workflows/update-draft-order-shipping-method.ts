@@ -15,17 +15,16 @@ import {
   OrderChangeDTO,
   OrderDTO,
 } from "@medusajs/framework/types"
-import { useRemoteQueryStep } from "../../common"
-import {
-  createOrderChangeActionsWorkflow,
-  previewOrderChangeStep,
-  updateOrderTaxLinesWorkflow,
-} from "../../order"
+import { useRemoteQueryStep } from "#common/steps/use-remote-query"
+import { createOrderChangeActionsWorkflow } from "#order/workflows/create-order-change-actions"
+import { previewOrderChangeStep } from "#order/steps/preview-order-change"
+import { updateOrderTaxLinesWorkflow } from "#order/workflows/update-tax-lines"
 import { updateDraftOrderShippingMethodStep } from "../steps/update-draft-order-shipping-metod"
 import { validateDraftOrderChangeStep } from "../steps/validate-draft-order-change"
 import { draftOrderFieldsForRefreshSteps } from "../utils/fields"
 import { refreshDraftOrderAdjustmentsWorkflow } from "./refresh-draft-order-adjustments"
-import { acquireLockStep, releaseLockStep } from "../../locking"
+import { acquireLockStep } from "#locking/steps/acquire-lock"
+import { releaseLockStep } from "#locking/steps/release-lock"
 
 export const updateDraftOrderShippingMethodWorkflowId =
   "update-draft-order-shipping-method"

@@ -20,7 +20,7 @@ import {
   WorkflowData,
   WorkflowResponse,
 } from "@medusajs/framework/workflows-sdk"
-import { useRemoteQueryStep } from "../../../common"
+import { useRemoteQueryStep } from "#common/steps/use-remote-query"
 import { updateOrderExchangesStep } from "../../steps/exchange/update-order-exchanges"
 import { previewOrderChangeStep } from "../../steps/preview-order-change"
 import { createReturnsStep } from "../../steps/return/create-returns"

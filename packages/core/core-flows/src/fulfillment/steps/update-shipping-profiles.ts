@@ -26,7 +26,7 @@ export type UpdateShippingProfilesStepInput = {
 export const updateShippingProfilesStepId = "update-shipping-profiles"
 /**
  * This step updates shipping profiles matching the specified filters.
- * 
+ *
  * @example
  * const data = updateShippingProfilesStep({
  *   selector: {

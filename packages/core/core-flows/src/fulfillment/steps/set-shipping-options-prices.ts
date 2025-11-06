@@ -129,7 +129,7 @@ function buildPrices(
 export const setShippingOptionsPricesStepId = "set-shipping-options-prices-step"
 /**
  * This step sets the prices of one or more shipping options.
- * 
+ *
  * @example
  * const data = setShippingOptionsPricesStep([
  *   {

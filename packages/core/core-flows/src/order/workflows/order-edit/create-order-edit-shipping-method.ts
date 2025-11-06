@@ -13,9 +13,9 @@ import {
   createWorkflow,
   transform,
 } from "@medusajs/framework/workflows-sdk"
-import { pricingContextResult } from "../../../cart/utils/schemas"
-import { useRemoteQueryStep } from "../../../common"
-import { previewOrderChangeStep } from "../../steps"
+import { pricingContextResult } from "#cart/utils/schemas"
+import { useRemoteQueryStep } from "#common/steps/use-remote-query"
+import { previewOrderChangeStep } from "#order/steps/preview-order-change"
 import { createOrderShippingMethods } from "../../steps/create-order-shipping-methods"
 import {
   throwIfIsCancelled,
@@ -113,11 +113,11 @@ export const createOrderEditShippingMethodWorkflowId =
  * @summary
  *
  * Create a shipping method for an order edit.
- * 
+ *
  * @property hooks.setPricingContext - This hook is executed before the shipping method is created. You can consume this hook to return any custom context useful for the prices retrieval of the shipping method's option.
- * 
+ *
  * For example, assuming you have the following custom pricing rule:
- * 
+ *
  * ```json
  * {
  *   "attribute": "location_id",
@@ -125,13 +125,13 @@ export const createOrderEditShippingMethodWorkflowId =
  *   "value": "sloc_123",
  * }
  * ```
- * 
+ *
  * You can consume the `setPricingContext` hook to add the `location_id` context to the prices calculation:
- * 
+ *
  * ```ts
  * import { createOrderEditShippingMethodWorkflow } from "@medusajs/medusa/core-flows";
  * import { StepResponse } from "@medusajs/workflows-sdk";
- * 
+ *
  * createOrderEditShippingMethodWorkflow.hooks.setPricingContext((
  *   { order, shipping_option_id, additional_data }, { container }
  * ) => {
@@ -140,13 +140,13 @@ export const createOrderEditShippingMethodWorkflowId =
  *   });
  * });
  * ```
- * 
+ *
  * The price of the shipping method's option will now be retrieved using the context you return.
- * 
+ *
  * :::note
- * 
+ *
  * Learn more about prices calculation context in the [Prices Calculation](https://docs.medusajs.com/resources/commerce-modules/pricing/price-calculation) documentation.
- * 
+ *
  * :::
  */
 export const createOrderEditShippingMethodWorkflow = createWorkflow(

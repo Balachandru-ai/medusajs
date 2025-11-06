@@ -13,9 +13,9 @@ import {
   transform,
   when,
 } from "@medusajs/framework/workflows-sdk"
-import { useRemoteQueryStep } from "../../../common"
-import { deleteReservationsByLineItemsStep } from "../../../reservation/steps/delete-reservations-by-line-items"
-import { cancelOrderClaimStep } from "../../steps"
+import { useRemoteQueryStep } from "#common/steps/use-remote-query"
+import { deleteReservationsByLineItemsStep } from "#reservation/steps/delete-reservations-by-line-items"
+import { cancelOrderClaimStep } from "#order/steps/claim/cancel-claim"
 import { throwIfIsCancelled } from "../../utils/order-validation"
 import { cancelReturnWorkflow } from "../return/cancel-return"
 

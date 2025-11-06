@@ -4,7 +4,11 @@ import {
   ShippingOptionDTO,
   UpsertShippingOptionDTO,
 } from "@medusajs/framework/types"
-import { arrayDifference, getSelectsAndRelationsFromObjectArray, Modules, } from "@medusajs/framework/utils"
+import {
+  arrayDifference,
+  getSelectsAndRelationsFromObjectArray,
+  Modules,
+} from "@medusajs/framework/utils"
 import { createStep, StepResponse } from "@medusajs/framework/workflows-sdk"
 
 /**
@@ -61,12 +65,12 @@ export const upsertShippingOptionsStep = createStep(
 
     const upsertedShippingOptions: ShippingOptionDTO[] =
       await fulfillmentService.upsertShippingOptions(
-        input.map(inputItem => {
+        input.map((inputItem) => {
           const upsertShippingOption = inputItem as UpsertShippingOptionDTO
           if (inputItem.type_id) {
             upsertShippingOption.type = inputItem.type_id
           }
-          return upsertShippingOption;
+          return upsertShippingOption
         })
       )
 

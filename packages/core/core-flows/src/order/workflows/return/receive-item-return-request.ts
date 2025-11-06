@@ -13,8 +13,8 @@ import {
   createWorkflow,
   transform,
 } from "@medusajs/framework/workflows-sdk"
-import { useRemoteQueryStep } from "../../../common"
-import { previewOrderChangeStep } from "../../steps"
+import { useRemoteQueryStep } from "#common/steps/use-remote-query"
+import { previewOrderChangeStep } from "#order/steps/preview-order-change"
 import {
   throwIfIsCancelled,
   throwIfItemsDoesNotExistsInReturn,
@@ -48,14 +48,14 @@ export type ReceiveItemReturnRequestValidationStepInput = {
  * This step validates that a return's items can be marked as received.
  * If the order or return is canceled, the order change is not active,
  * or the items do not exist in the return, the step will throw an error.
- * 
+ *
  * :::note
- * 
+ *
  * You can retrieve an order, return, and order change details using [Query](https://docs.medusajs.com/learn/fundamentals/module-links/query),
  * or [useQueryGraphStep](https://docs.medusajs.com/resources/references/medusa-workflows/steps/useQueryGraphStep).
- * 
+ *
  * :::
- * 
+ *
  * @example
  * const data = receiveItemReturnRequestValidationStep({
  *   order: {
@@ -98,12 +98,12 @@ export const receiveItemReturnRequestValidationStep = createStep(
 
 export const receiveItemReturnRequestWorkflowId = "receive-item-return-request"
 /**
- * This workflow marks return items as received. It's used by the 
+ * This workflow marks return items as received. It's used by the
  * [Add Received Items to Return Admin API Route](https://docs.medusajs.com/api/admin#returns_postreturnsidreceiveitems).
- * 
+ *
  * You can use this workflow within your customizations or your own custom workflows, allowing you to mark return items as received
  * in your custom flows.
- * 
+ *
  * @example
  * const { result } = await receiveItemReturnRequestWorkflow(container)
  * .run({
@@ -117,9 +117,9 @@ export const receiveItemReturnRequestWorkflowId = "receive-item-return-request"
  *     ]
  *   }
  * })
- * 
+ *
  * @summary
- * 
+ *
  * Mark return items as received.
  */
 export const receiveItemReturnRequestWorkflow = createWorkflow(

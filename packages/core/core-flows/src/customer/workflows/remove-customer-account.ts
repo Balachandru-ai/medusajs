@@ -6,8 +6,8 @@ import {
   transform,
   when,
 } from "@medusajs/framework/workflows-sdk"
-import { setAuthAppMetadataStep } from "../../auth"
-import { useRemoteQueryStep } from "../../common"
+import { setAuthAppMetadataStep } from "#auth/steps/set-auth-app-metadata"
+import { useRemoteQueryStep } from "#common/steps/use-remote-query"
 import { deleteCustomersWorkflow } from "./delete-customers"
 
 export type RemoveCustomerAccountWorkflowInput = {
@@ -17,17 +17,17 @@ export const removeCustomerAccountWorkflowId = "remove-customer-account"
 /**
  * This workflow deletes a customer and remove its association to its auth identity. It's used by the
  * [Delete Customer Admin API Route](https://docs.medusajs.com/api/admin#customers_deletecustomersid).
- * 
+ *
  * You can use this workflow within your customizations or your own custom workflows, allowing you to
  * delete customer accounts within your custom flows.
- * 
+ *
  * :::note
- * 
- * This workflow uses the {@link deleteCustomersWorkflow} which has a hook that allows you to perform 
+ *
+ * This workflow uses the {@link deleteCustomersWorkflow} which has a hook that allows you to perform
  * custom actions after the customers are deleted.
- * 
+ *
  * :::
- * 
+ *
  * @example
  * const { result } = await removeCustomerAccountWorkflow(container)
  * .run({
@@ -35,9 +35,9 @@ export const removeCustomerAccountWorkflowId = "remove-customer-account"
  *     customerId: "cus_123"
  *   }
  * })
- * 
+ *
  * @summary
- * 
+ *
  * Delete a customer account and its auth identity association.
  */
 export const removeCustomerAccountWorkflow = createWorkflow(

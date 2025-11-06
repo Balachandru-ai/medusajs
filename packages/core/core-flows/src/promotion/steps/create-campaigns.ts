@@ -8,7 +8,7 @@ import { StepResponse, createStep } from "@medusajs/framework/workflows-sdk"
 export const createCampaignsStepId = "create-campaigns"
 /**
  * This step cancels one or more campaigns.
- * 
+ *
  * @example
  * const data = createCampaignsStep([
  *   {

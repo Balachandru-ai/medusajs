@@ -6,8 +6,8 @@ import {
   createWorkflow,
   transform,
 } from "@medusajs/framework/workflows-sdk"
-import { emitEventStep } from "../../common/steps/emit-event"
-import { createUsersStep } from "../steps"
+import { emitEventStep } from "#common/steps/emit-event"
+import { createUsersStep } from "#user/steps/create-users"
 
 export const createUsersWorkflowId = "create-users-workflow"
 /**

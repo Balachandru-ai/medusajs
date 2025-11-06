@@ -21,7 +21,7 @@ export type UpdateReturnItemBySelector = {
 export const updateReturnItemsStepId = "update-return-items"
 /**
  * This step updates return items.
- * 
+ *
  * @example
  * const data = updateReturnItemsStep([
  *   {

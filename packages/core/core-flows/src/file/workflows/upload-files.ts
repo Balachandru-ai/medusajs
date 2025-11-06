@@ -4,7 +4,7 @@ import {
   WorkflowResponse,
   createWorkflow,
 } from "@medusajs/framework/workflows-sdk"
-import { uploadFilesStep } from "../steps"
+import { uploadFilesStep } from "#file/steps/upload-files"
 
 /**
  * The data to upload files.

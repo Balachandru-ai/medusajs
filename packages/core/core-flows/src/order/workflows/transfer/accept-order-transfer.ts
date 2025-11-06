@@ -17,8 +17,8 @@ import {
   OrderChangeStatus,
 } from "@medusajs/utils"
 
-import { useQueryGraphStep } from "../../../common"
-import { previewOrderChangeStep } from "../../steps"
+import { useQueryGraphStep } from "#common/steps/use-query-graph"
+import { previewOrderChangeStep } from "#order/steps/preview-order-change"
 import { confirmOrderChanges } from "../../steps/confirm-order-changes"
 import { throwIfOrderIsCancelled } from "../../utils/order-validation"
 

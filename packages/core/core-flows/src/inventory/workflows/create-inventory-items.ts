@@ -4,7 +4,7 @@ import {
   createWorkflow,
   transform,
 } from "@medusajs/framework/workflows-sdk"
-import { createInventoryItemsStep } from "../steps"
+import { createInventoryItemsStep } from "#inventory/steps/create-inventory-items"
 
 import type { InventoryTypes } from "@medusajs/framework/types"
 import { createInventoryLevelsWorkflow } from "./create-inventory-levels"

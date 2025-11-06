@@ -1,6 +1,6 @@
 import type { RemovePromotionRulesWorkflowDTO } from "@medusajs/framework/types"
 import { WorkflowData, createWorkflow } from "@medusajs/framework/workflows-sdk"
-import { removeRulesFromPromotionsStep } from "../steps"
+import { removeRulesFromPromotionsStep } from "#promotion/steps/remove-rules-from-promotions"
 
 export const deletePromotionRulesWorkflowId = "delete-promotion-rules-workflow"
 /**

@@ -6,13 +6,13 @@ import {
   createWorkflow,
   transform,
 } from "@medusajs/framework/workflows-sdk"
-import { emitEventStep } from "../../common/steps/emit-event"
-import { deleteCustomersStep } from "../steps"
+import { emitEventStep } from "#common/steps/emit-event"
+import { deleteCustomersStep } from "#customer/steps/delete-customers"
 
 /**
  * The details of the customers to delete.
  */
-export type DeleteCustomersWorkflowInput = { 
+export type DeleteCustomersWorkflowInput = {
   /**
    * The IDs of the customers to delete.
    */
@@ -21,12 +21,12 @@ export type DeleteCustomersWorkflowInput = {
 
 export const deleteCustomersWorkflowId = "delete-customers"
 /**
- * This workflow deletes one or more customers. It's used by the 
+ * This workflow deletes one or more customers. It's used by the
  * {@link removeCustomerAccountWorkflow}.
- * 
- * You can use this workflow within your customizations or your own custom workflows, allowing you to 
+ *
+ * You can use this workflow within your customizations or your own custom workflows, allowing you to
  * delete customers in your custom flows.
- * 
+ *
  * @example
  * const { result } = await deleteCustomersWorkflow(container)
  * .run({
@@ -36,11 +36,11 @@ export const deleteCustomersWorkflowId = "delete-customers"
  *     ]
  *   }
  * })
- * 
+ *
  * @summary
- * 
+ *
  * Delete one or more customers.
- * 
+ *
  * @property hooks.customersDeleted - This hook is executed after the customers are deleted. You can consume this hook to perform custom actions.
  */
 export const deleteCustomersWorkflow = createWorkflow(

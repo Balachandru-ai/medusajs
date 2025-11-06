@@ -4,10 +4,7 @@ import {
   OrderPreviewDTO,
   OrderWorkflow,
 } from "@medusajs/framework/types"
-import {
-  ChangeActionType,
-  OrderChangeStatus
-} from "@medusajs/framework/utils"
+import { ChangeActionType, OrderChangeStatus } from "@medusajs/framework/utils"
 import {
   WorkflowData,
   WorkflowResponse,
@@ -15,7 +12,7 @@ import {
   createWorkflow,
   transform,
 } from "@medusajs/framework/workflows-sdk"
-import { useQueryGraphStep } from "../../../common"
+import { useQueryGraphStep } from "#common/steps/use-query-graph"
 import { previewOrderChangeStep } from "../../steps/preview-order-change"
 import {
   throwIfIsCancelled,

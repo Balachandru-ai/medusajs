@@ -8,7 +8,8 @@ import {
   transform,
   WorkflowResponse,
 } from "@medusajs/framework/workflows-sdk"
-import { emitEventStep, useRemoteQueryStep } from "../../common"
+import { emitEventStep } from "#common/steps/emit-event"
+import { useRemoteQueryStep } from "#common/steps/use-remote-query"
 import type { ProjectConfigOptions } from "@medusajs/framework/types"
 
 /**

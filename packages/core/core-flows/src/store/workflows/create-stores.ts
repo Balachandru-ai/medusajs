@@ -5,8 +5,8 @@ import {
   createWorkflow,
   transform,
 } from "@medusajs/framework/workflows-sdk"
-import { createStoresStep } from "../steps"
-import { updatePricePreferencesAsArrayStep } from "../../pricing"
+import { createStoresStep } from "#store/steps/create-stores"
+import { updatePricePreferencesAsArrayStep } from "#pricing/steps/update-price-preferences-as-array"
 
 /**
  * The data to create stores.

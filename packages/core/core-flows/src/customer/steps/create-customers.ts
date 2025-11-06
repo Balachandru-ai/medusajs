@@ -13,7 +13,7 @@ export type CreateCustomersStepInput = CreateCustomerDTO[]
 export const createCustomersStepId = "create-customers"
 /**
  * This step creates one or more customers.
- * 
+ *
  * @example
  * const data = createCustomersStep([
  *   {

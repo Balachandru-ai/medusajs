@@ -7,16 +7,16 @@ import {
   WorkflowResponse,
   createWorkflow,
 } from "@medusajs/framework/workflows-sdk"
-import { updatePromotionRulesStep } from "../steps"
+import { updatePromotionRulesStep } from "#promotion/steps/update-promotion-rules"
 
 export const updatePromotionRulesWorkflowId = "update-promotion-rules-workflow"
 /**
  * This workflow updates one or more promotion rules. It's used by other workflows,
  * such as {@link batchPromotionRulesWorkflow} that manages the rules of a promotion.
- * 
+ *
  * You can use this workflow within your own customizations or custom workflows, allowing you to
  * update promotion rules within your custom flows.
- * 
+ *
  * @example
  * const { result } = await updatePromotionRulesWorkflow(container)
  * .run({
@@ -29,9 +29,9 @@ export const updatePromotionRulesWorkflowId = "update-promotion-rules-workflow"
  *     ]
  *   }
  * })
- * 
+ *
  * @summary
- * 
+ *
  * Update one or more promotion rules.
  */
 export const updatePromotionRulesWorkflow = createWorkflow(

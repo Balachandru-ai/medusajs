@@ -9,7 +9,7 @@ import {
   createWorkflow,
   transform,
 } from "@medusajs/framework/workflows-sdk"
-import { emitEventStep } from "../../common/steps/emit-event"
+import { emitEventStep } from "#common/steps/emit-event"
 import { createSalesChannelsStep } from "../steps/create-sales-channels"
 
 /**
@@ -31,10 +31,10 @@ export const createSalesChannelsWorkflowId = "create-sales-channels"
 /**
  * This workflow creates one or more sales channels. It's used by the
  * [Create Sales Channel Admin API Route](https://docs.medusajs.com/api/admin#sales-channels_postsaleschannels).
- * 
+ *
  * You can use this workflow within your customizations or your own custom workflows, allowing you to
  * create sales channels within your custom flows.
- * 
+ *
  * @example
  * const { result } = await createSalesChannelsWorkflow(container)
  * .run({
@@ -46,9 +46,9 @@ export const createSalesChannelsWorkflowId = "create-sales-channels"
  *     ]
  *   }
  * })
- * 
+ *
  * @summary
- * 
+ *
  * Create sales channels.
  */
 export const createSalesChannelsWorkflow = createWorkflow(

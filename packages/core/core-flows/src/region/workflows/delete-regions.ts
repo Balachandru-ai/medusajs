@@ -4,9 +4,9 @@ import {
   createWorkflow,
   transform,
 } from "@medusajs/framework/workflows-sdk"
-import { emitEventStep } from "../../common/steps/emit-event"
-import { removeRemoteLinkStep } from "../../common/steps/remove-remote-links"
-import { deleteRegionsStep } from "../steps"
+import { emitEventStep } from "#common/steps/emit-event"
+import { removeRemoteLinkStep } from "#common/steps/remove-remote-links"
+import { deleteRegionsStep } from "#region/steps/delete-regions"
 
 export type DeleteRegionsWorkflowInput = { ids: string[] }
 

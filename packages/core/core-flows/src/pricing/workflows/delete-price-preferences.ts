@@ -1,7 +1,7 @@
 import { Modules } from "@medusajs/framework/utils"
 import { WorkflowData, createWorkflow } from "@medusajs/framework/workflows-sdk"
-import { removeRemoteLinkStep } from "../../common/steps/remove-remote-links"
-import { deletePricePreferencesStep } from "../steps"
+import { removeRemoteLinkStep } from "#common/steps/remove-remote-links"
+import { deletePricePreferencesStep } from "#pricing/steps/delete-price-preferences"
 
 /**
  * The IDs of price preferences to delete.

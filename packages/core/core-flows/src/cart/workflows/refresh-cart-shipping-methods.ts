@@ -9,9 +9,11 @@ import {
   WorkflowResponse,
 } from "@medusajs/framework/workflows-sdk"
 import { AdditionalData } from "@medusajs/types"
-import { useQueryGraphStep } from "../../common"
-import { acquireLockStep, releaseLockStep } from "../../locking"
-import { removeShippingMethodFromCartStep, validateCartStep } from "../steps"
+import { useQueryGraphStep } from "#common/steps/use-query-graph"
+import { acquireLockStep } from "#locking/steps/acquire-lock"
+import { releaseLockStep } from "#locking/steps/release-lock"
+import { removeShippingMethodFromCartStep } from "#cart/steps/remove-shipping-method-from-cart"
+import { validateCartStep } from "#cart/steps/validate-cart"
 import { updateShippingMethodsStep } from "../steps/update-shipping-methods"
 import { listShippingOptionsForCartWithPricingWorkflow } from "./list-shipping-options-for-cart-with-pricing"
 

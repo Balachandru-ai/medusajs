@@ -7,9 +7,9 @@ import {
   createWorkflow,
   transform,
 } from "@medusajs/framework/workflows-sdk"
-import { useQueryGraphStep } from "../../common"
+import { useQueryGraphStep } from "#common/steps/use-query-graph"
 import { updatePaymentCollectionStep } from "../steps/update-payment-collection"
-import { cancelPaymentStep } from "../steps/cancel-payment"
+import { paymentCollectionCancelPaymentStep } from "../steps/cancel-payment"
 
 const validatePaymentCollectionCancellationStep = createStep(
   "validate-payment-collection-cancellation",
@@ -103,7 +103,7 @@ export const cancelPaymentCollectionWorkflow = createWorkflow(
       },
     })
 
-    cancelPaymentStep({
+    paymentCollectionCancelPaymentStep({
       ids: authorizedPaymentIds,
     })
 

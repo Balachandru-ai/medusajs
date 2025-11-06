@@ -7,12 +7,10 @@ import {
   parallelize,
   transform,
 } from "@medusajs/framework/workflows-sdk"
-import {
-  emitEventStep,
-  removeRemoteLinkStep,
-  useQueryGraphStep,
-} from "../../common"
-import { deleteInventoryItemWorkflow } from "../../inventory"
+import { emitEventStep } from "#common/steps/emit-event"
+import { removeRemoteLinkStep } from "#common/steps/remove-remote-links"
+import { useQueryGraphStep } from "#common/steps/use-query-graph"
+import { deleteInventoryItemWorkflow } from "#inventory/workflows/delete-inventory-items"
 import { deleteProductsStep } from "../steps/delete-products"
 import { getProductsStep } from "../steps/get-products"
 

@@ -11,13 +11,15 @@ import {
   WorkflowData,
 } from "@medusajs/framework/workflows-sdk"
 import type { OrderChangeDTO, OrderDTO } from "@medusajs/framework/types"
-import { useRemoteQueryStep } from "../../common"
-import { deleteOrderChangesStep, deleteOrderShippingMethods } from "../../order"
+import { useRemoteQueryStep } from "#common/steps/use-remote-query"
+import { deleteOrderChangesStep } from "#order/steps/delete-order-changes"
+import { deleteOrderShippingMethods } from "#order/steps/delete-order-shipping-methods"
 import { restoreDraftOrderShippingMethodsStep } from "../steps/restore-draft-order-shipping-methods"
 import { validateDraftOrderChangeStep } from "../steps/validate-draft-order-change"
 import { draftOrderFieldsForRefreshSteps } from "../utils/fields"
 import { refreshDraftOrderAdjustmentsWorkflow } from "./refresh-draft-order-adjustments"
-import { acquireLockStep, releaseLockStep } from "../../locking"
+import { acquireLockStep } from "#locking/steps/acquire-lock"
+import { releaseLockStep } from "#locking/steps/release-lock"
 
 export const cancelDraftOrderEditWorkflowId = "cancel-draft-order-edit"
 

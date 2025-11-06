@@ -18,9 +18,10 @@ import {
   QueryContextType,
 } from "@medusajs/framework/types"
 
-import { useQueryGraphStep, validatePresenceOfStep } from "../../common"
-import { useRemoteQueryStep } from "../../common/steps/use-remote-query"
-import { calculateShippingOptionsPricesStep } from "../../fulfillment"
+import { useQueryGraphStep } from "#common/steps/use-query-graph"
+import { validatePresenceOfStep } from "#common/steps/validate-presence-of"
+import { useRemoteQueryStep } from "#common/steps/use-remote-query"
+import { calculateShippingOptionsPricesStep } from "#fulfillment/steps/calculate-shipping-options-prices"
 import { cartFieldsForCalculateShippingOptionsPrices } from "../utils/fields"
 import { shippingOptionsContextResult } from "../utils/schemas"
 

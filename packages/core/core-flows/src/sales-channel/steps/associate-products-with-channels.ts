@@ -24,7 +24,7 @@ export const associateProductsWithSalesChannelsStepId =
   "associate-products-with-channels"
 /**
  * This step creates links between products and sales channel records.
- * 
+ *
  * @example
  * const data = associateProductsWithSalesChannelsStep({
  *   links: [

@@ -23,11 +23,12 @@ import {
   WorkflowData,
   WorkflowResponse,
 } from "@medusajs/framework/workflows-sdk"
-import { useQueryGraphStep } from "../../common"
-import { emitEventStep } from "../../common/steps/emit-event"
-import { deleteLineItemsWorkflow } from "../../line-item"
-import { updateLineItemsStepWithSelector } from "../../line-item/steps"
-import { acquireLockStep, releaseLockStep } from "../../locking"
+import { useQueryGraphStep } from "#common/steps/use-query-graph"
+import { emitEventStep } from "#common/steps/emit-event"
+import { deleteLineItemsWorkflow } from "#line-item/workflows/delete-line-items"
+import { updateLineItemsStepWithSelector } from "#line-item/steps/update-line-items"
+import { acquireLockStep } from "#locking/steps/acquire-lock"
+import { releaseLockStep } from "#locking/steps/release-lock"
 import { validateCartStep } from "../steps/validate-cart"
 import { validateVariantPricesStep } from "../steps/validate-variant-prices"
 import {

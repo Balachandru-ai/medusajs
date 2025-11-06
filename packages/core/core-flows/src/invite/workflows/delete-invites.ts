@@ -5,8 +5,8 @@ import {
   createWorkflow,
   transform,
 } from "@medusajs/framework/workflows-sdk"
-import { emitEventStep } from "../../common/steps/emit-event"
-import { deleteInvitesStep } from "../steps"
+import { emitEventStep } from "#common/steps/emit-event"
+import { deleteInvitesStep } from "#invite/steps/delete-invites"
 
 export const deleteInvitesWorkflowId = "delete-invites-workflow"
 /**

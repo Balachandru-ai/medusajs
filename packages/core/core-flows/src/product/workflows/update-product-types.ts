@@ -7,8 +7,8 @@ import {
   createWorkflow,
   transform,
 } from "@medusajs/framework/workflows-sdk"
-import { emitEventStep } from "../../common/steps/emit-event"
-import { updateProductTypesStep } from "../steps"
+import { emitEventStep } from "#common/steps/emit-event"
+import { updateProductTypesStep } from "#product/steps/update-product-types"
 
 /**
  * The data to update one or more product types, along with custom data that's passed to the workflow's hooks.

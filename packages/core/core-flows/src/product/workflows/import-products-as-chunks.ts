@@ -5,12 +5,11 @@ import {
   createWorkflow,
   transform,
 } from "@medusajs/framework/workflows-sdk"
-import { notifyOnFailureStep, sendNotificationsStep } from "../../notification"
-import {
-  normalizeCsvToChunksStep,
-  processImportChunksStep,
-  waitConfirmationProductImportStep,
-} from "../steps"
+import { notifyOnFailureStep } from "#notification/steps/notify-on-failure"
+import { sendNotificationsStep } from "#notification/steps/send-notifications"
+import { normalizeCsvToChunksStep } from "#product/steps/normalize-products-to-chunks"
+import { processImportChunksStep } from "#product/steps/process-import-chunks"
+import { waitConfirmationProductImportStep } from "#product/steps/wait-confirmation-product-import"
 
 export const importProductsAsChunksWorkflowId = "import-products-as-chunks"
 

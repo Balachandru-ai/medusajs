@@ -8,10 +8,8 @@ import {
   createWorkflow,
   when,
 } from "@medusajs/framework/workflows-sdk"
-import {
-  createViewConfigurationStep,
-  setActiveViewConfigurationStep,
-} from "../steps"
+import { createViewConfigurationStep } from "#settings/steps/create-view-configuration"
+import { setActiveViewConfigurationStep } from "#settings/steps/set-active-view-configuration"
 
 export type CreateViewConfigurationWorkflowInput =
   CreateViewConfigurationDTO & {

@@ -11,7 +11,7 @@ import { StepResponse, createStep } from "@medusajs/framework/workflows-sdk"
 export const updateServiceZonesStepId = "update-service-zones"
 /**
  * This step updates service zones matching the specified filters.
- * 
+ *
  * @example
  * const data = updateServiceZonesStep({
  *   selector: {

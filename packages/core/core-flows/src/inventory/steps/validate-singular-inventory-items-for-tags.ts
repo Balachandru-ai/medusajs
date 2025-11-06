@@ -20,7 +20,7 @@ export const validateInventoryItemsForCreateStepId =
 /**
  * This step checks whether a variant already has an inventory item.
  * If so, the step will throw an error.
- * 
+ *
  * @example
  * const data = validateInventoryItemsForCreate([
  *   {
@@ -30,10 +30,7 @@ export const validateInventoryItemsForCreateStepId =
  */
 export const validateInventoryItemsForCreate = createStep(
   validateInventoryItemsForCreateStepId,
-  async (
-    input: ValidateInventoryItemsForCreateStepInput,
-    { container }
-  ) => {
+  async (input: ValidateInventoryItemsForCreateStepInput, { container }) => {
     const remoteLink = container.resolve(ContainerRegistrationKeys.LINK)
 
     const linkService = remoteLink.getLinkModule(

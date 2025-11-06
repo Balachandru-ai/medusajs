@@ -5,7 +5,7 @@ import {
   createWorkflow,
   transform,
 } from "@medusajs/framework/workflows-sdk"
-import { validateShipmentStep } from "../steps"
+import { validateShipmentStep } from "#fulfillment/steps/validate-shipment"
 import { updateFulfillmentWorkflow } from "./update-fulfillment"
 
 export const createShipmentWorkflowId = "create-shipment-workflow"

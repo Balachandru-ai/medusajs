@@ -14,11 +14,9 @@ import {
   createWorkflow,
   transform,
 } from "@medusajs/framework/workflows-sdk"
-import { useRemoteQueryStep } from "../../../common"
-import {
-  deleteOrderChangeActionsStep,
-  previewOrderChangeStep,
-} from "../../steps"
+import { useRemoteQueryStep } from "#common/steps/use-remote-query"
+import { deleteOrderChangeActionsStep } from "#order/steps/delete-order-change-actions"
+import { previewOrderChangeStep } from "#order/steps/preview-order-change"
 import {
   throwIfIsCancelled,
   throwIfOrderChangeIsNotActive,

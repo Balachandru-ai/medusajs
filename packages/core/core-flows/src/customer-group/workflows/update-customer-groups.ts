@@ -8,7 +8,7 @@ import {
   WorkflowResponse,
   createWorkflow,
 } from "@medusajs/framework/workflows-sdk"
-import { updateCustomerGroupsStep } from "../steps"
+import { updateCustomerGroupsStep } from "#customer-group/steps/update-customer-groups"
 
 /**
  * The data to update customer groups.
@@ -33,10 +33,10 @@ export const updateCustomerGroupsWorkflowId = "update-customer-groups"
 /**
  * This workflow updates one or more customer groups. It's used by the
  * [Update Customer Group Admin API Route](https://docs.medusajs.com/api/admin#customer-groups_postcustomergroupsid).
- * 
+ *
  * You can use this workflow within your customizations or your own custom workflows, allowing you to
  * update customer groups within your custom flows.
- * 
+ *
  * @example
  * const { result } = await updateCustomerGroupsWorkflow(container)
  * .run({
@@ -49,9 +49,9 @@ export const updateCustomerGroupsWorkflowId = "update-customer-groups"
  *     }
  *   }
  * })
- * 
+ *
  * @summary
- * 
+ *
  * Update one or more customer groups.
  */
 export const updateCustomerGroupsWorkflow = createWorkflow(

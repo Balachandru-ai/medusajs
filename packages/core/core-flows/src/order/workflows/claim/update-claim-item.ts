@@ -14,11 +14,9 @@ import {
   createWorkflow,
   transform,
 } from "@medusajs/framework/workflows-sdk"
-import { useRemoteQueryStep } from "../../../common"
-import {
-  previewOrderChangeStep,
-  updateOrderChangeActionsStep,
-} from "../../steps"
+import { useRemoteQueryStep } from "#common/steps/use-remote-query"
+import { previewOrderChangeStep } from "#order/steps/preview-order-change"
+import { updateOrderChangeActionsStep } from "#order/steps/update-order-change-actions"
 import {
   throwIfIsCancelled,
   throwIfOrderChangeIsNotActive,
@@ -50,14 +48,14 @@ export type UpdateClaimItemValidationStepInput = {
  * This step validates that a claim's item (added as an order item) can be updated.
  * If the order, claim, or order change is canceled, no action is claiming the item,
  * or the action is not claiming the item, the step will throw an error.
- * 
+ *
  * :::note
- * 
+ *
  * You can retrieve an order, order claim, and order change details using [Query](https://docs.medusajs.com/learn/fundamentals/module-links/query),
  * or [useQueryGraphStep](https://docs.medusajs.com/resources/references/medusa-workflows/steps/useQueryGraphStep).
- * 
+ *
  * :::
- * 
+ *
  * @example
  * const data = updateClaimItemValidationStep({
  *   order: {
@@ -114,10 +112,10 @@ export const updateClaimItemWorkflowId = "update-claim-item"
 /**
  * This workflow updates a claim item, added to the claim from an order item.
  * It's used by the [Update Claim Item Admin API Route](https://docs.medusajs.com/api/admin#claims_postclaimsidclaimitemsaction_id).
- * 
+ *
  * You can use this workflow within your customizations or your own custom workflows, allowing you to update a claim item
  * in your custom flows.
- * 
+ *
  * @example
  * const { result } = await updateClaimItemWorkflow(container)
  * .run({
@@ -129,9 +127,9 @@ export const updateClaimItemWorkflowId = "update-claim-item"
  *     }
  *   }
  * })
- * 
+ *
  * @summary
- * 
+ *
  * Update a claim item, added to the claim from an order item.
  */
 export const updateClaimItemWorkflow = createWorkflow(

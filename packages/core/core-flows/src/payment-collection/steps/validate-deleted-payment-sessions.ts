@@ -20,7 +20,7 @@ export const validateDeletedPaymentSessionsStepId =
 /**
  * This step validates that the specified payment session IDs were deleted.
  * If not all payment sessions were deleted, the step throws an error.
- * 
+ *
  * @example
  * const data = validateDeletedPaymentSessionsStep({
  *   idsDeleted: ["pay_123"],

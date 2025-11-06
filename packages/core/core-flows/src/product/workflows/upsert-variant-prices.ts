@@ -9,9 +9,11 @@ import {
   createWorkflow,
   transform,
 } from "@medusajs/framework/workflows-sdk"
-import { removeRemoteLinkStep, useRemoteQueryStep } from "../../common"
-import { createPriceSetsStep, updatePriceSetsStep } from "../../pricing"
-import { createVariantPricingLinkStep } from "../steps"
+import { removeRemoteLinkStep } from "#common/steps/remove-remote-links"
+import { useRemoteQueryStep } from "#common/steps/use-remote-query"
+import { createPriceSetsStep } from "#pricing/steps/create-price-sets"
+import { updatePriceSetsStep } from "#pricing/steps/update-price-sets"
+import { createVariantPricingLinkStep } from "#product/steps/create-variant-pricing-link"
 
 /**
  * The data to create, update, or remove variants' prices.
@@ -44,9 +46,9 @@ export const upsertVariantPricesWorkflowId = "upsert-variant-prices"
 /**
  * This workflow creates, updates, or removes variants' prices. It's used by the {@link updateProductsWorkflow}
  * when updating a variant's prices.
- * 
+ *
  * You can use this workflow within your own customizations or custom workflows to manage the prices of a variant.
- * 
+ *
  * @example
  * const { result } = await upsertVariantPricesWorkflow(container)
  * .run({
@@ -72,9 +74,9 @@ export const upsertVariantPricesWorkflowId = "upsert-variant-prices"
  *     previousVariantIds: ["variant_321"]
  *   }
  * })
- * 
+ *
  * @summary
- * 
+ *
  * Create, update, or remove variants' prices.
  */
 export const upsertVariantPricesWorkflow = createWorkflow(

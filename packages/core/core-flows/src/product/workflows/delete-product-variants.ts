@@ -9,13 +9,11 @@ import {
   createWorkflow,
   transform,
 } from "@medusajs/framework/workflows-sdk"
-import {
-  emitEventStep,
-  removeRemoteLinkStep,
-  useQueryGraphStep,
-} from "../../common"
-import { deleteProductVariantsStep } from "../steps"
-import { deleteInventoryItemWorkflow } from "../../inventory"
+import { emitEventStep } from "#common/steps/emit-event"
+import { removeRemoteLinkStep } from "#common/steps/remove-remote-links"
+import { useQueryGraphStep } from "#common/steps/use-query-graph"
+import { deleteProductVariantsStep } from "#product/steps/delete-product-variants"
+import { deleteInventoryItemWorkflow } from "#inventory/workflows/delete-inventory-items"
 
 /**
  * The data to delete one or more product variants.

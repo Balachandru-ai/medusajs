@@ -22,13 +22,12 @@ import {
   parallelize,
   transform,
 } from "@medusajs/framework/workflows-sdk"
-import { emitEventStep, useRemoteQueryStep } from "../../../common"
-import { adjustInventoryLevelsStep } from "../../../inventory/steps"
-import {
-  previewOrderChangeStep,
-  updateReturnItemsStep,
-  updateReturnsStep,
-} from "../../steps"
+import { emitEventStep } from "#common/steps/emit-event"
+import { useRemoteQueryStep } from "#common/steps/use-remote-query"
+import { adjustInventoryLevelsStep } from "#inventory/steps/adjust-inventory-levels"
+import { previewOrderChangeStep } from "#order/steps/preview-order-change"
+import { updateReturnItemsStep } from "#order/steps/return/update-return-items"
+import { updateReturnsStep } from "#order/steps/return/update-returns"
 import { confirmOrderChanges } from "../../steps/confirm-order-changes"
 import {
   throwIfIsCancelled,

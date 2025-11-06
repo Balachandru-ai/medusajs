@@ -6,13 +6,13 @@ import {
   createWorkflow,
   transform,
 } from "@medusajs/framework/workflows-sdk"
-import { emitEventStep } from "../../common/steps/emit-event"
-import { deleteProductTagsStep } from "../steps"
+import { emitEventStep } from "#common/steps/emit-event"
+import { deleteProductTagsStep } from "#product/steps/delete-product-tags"
 
 /**
  * The data to delete one or more product tags.
  */
-export type DeleteProductTagsWorkflowInput = { 
+export type DeleteProductTagsWorkflowInput = {
   /**
    * The IDs of the tags to delete.
    */
@@ -21,14 +21,14 @@ export type DeleteProductTagsWorkflowInput = {
 
 export const deleteProductTagsWorkflowId = "delete-product-tags"
 /**
- * This workflow deletes one or more product tags. It's used by the 
+ * This workflow deletes one or more product tags. It's used by the
  * [Delete Product Tags Admin API Route](https://docs.medusajs.com/api/admin#product-tags_deleteproducttagsid).
- * 
- * This workflow has a hook that allows you to perform custom actions after the product tags are deleted. For example, 
+ *
+ * This workflow has a hook that allows you to perform custom actions after the product tags are deleted. For example,
  * you can delete custom records linked to the product tags.
- * 
+ *
  * You can also use this workflow within your own custom workflows, allowing you to wrap custom logic around product-tag deletion.
- * 
+ *
  * @example
  * const { result } = await deleteProductTagsWorkflow(container)
  * .run({
@@ -36,11 +36,11 @@ export const deleteProductTagsWorkflowId = "delete-product-tags"
  *     ids: ["ptag_123"],
  *   }
  * })
- * 
+ *
  * @summary
- * 
+ *
  * Delete one or more product tags.
- * 
+ *
  * @property hooks.productTagsDeleted - This hook is executed after the tags are deleted. You can consume this hook to perform custom actions on the deleted tags.
  */
 export const deleteProductTagsWorkflow = createWorkflow(

@@ -6,7 +6,7 @@ import {
   WorkflowData,
   WorkflowResponse,
 } from "@medusajs/framework/workflows-sdk"
-import { useQueryGraphStep } from "../../common"
+import { useQueryGraphStep } from "#common/steps/use-query-graph"
 import {
   getLastFulfillmentStatus,
   getLastPaymentStatus,

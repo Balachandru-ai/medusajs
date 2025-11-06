@@ -8,7 +8,7 @@ import { StepResponse, createStep } from "@medusajs/framework/workflows-sdk"
 export const createPromotionsStepId = "create-promotions"
 /**
  * This step creates one or more promotions.
- * 
+ *
  * @example
  * const data = createPromotionsStep([
  *   {

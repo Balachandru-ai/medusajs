@@ -13,11 +13,9 @@ import {
   createWorkflow,
   transform,
 } from "@medusajs/framework/workflows-sdk"
-import {
-  createTaxRateRulesStep,
-  deleteTaxRateRulesStep,
-  updateTaxRatesStep,
-} from "../steps"
+import { createTaxRateRulesStep } from "#tax/steps/create-tax-rate-rules"
+import { deleteTaxRateRulesStep } from "#tax/steps/delete-tax-rate-rules"
+import { updateTaxRatesStep } from "#tax/steps/update-tax-rates"
 // import { setTaxRateRulesWorkflow } from "./set-tax-rate-rules"
 
 /**
@@ -88,7 +86,7 @@ export type MaybeListTaxRateRuleIdsStepInput = {
 const maybeListTaxRateRuleIdsStepId = "maybe-list-tax-rate-rule-ids"
 /**
  * This step lists the rules to update in a tax rate update object.
- * 
+ *
  * @example
  * const data = maybeListTaxRateRuleIdsStep({
  *   tax_rate_ids: ["txr_123"],
@@ -121,10 +119,10 @@ export const updateTaxRatesWorkflowId = "update-tax-rates"
 /**
  * This workflow updates tax rates matching specified filters. It's used by the
  * [Update Tax Rates Admin API Route](https://docs.medusajs.com/api/admin#tax-rates_posttaxratesid).
- * 
+ *
  * You can use this workflow within your own customizations or custom workflows, allowing you
  * to update tax rates in your custom flows.
- * 
+ *
  * @example
  * const { result } = await updateTaxRatesWorkflow(container)
  * .run({
@@ -137,9 +135,9 @@ export const updateTaxRatesWorkflowId = "update-tax-rates"
  *     }
  *   }
  * })
- * 
+ *
  * @summary
- * 
+ *
  * Update tax rates.
  */
 export const updateTaxRatesWorkflow = createWorkflow(

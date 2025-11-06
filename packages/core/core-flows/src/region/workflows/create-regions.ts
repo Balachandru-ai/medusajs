@@ -7,9 +7,9 @@ import {
   parallelize,
   transform,
 } from "@medusajs/framework/workflows-sdk"
-import { emitEventStep } from "../../common/steps/emit-event"
-import { createPricePreferencesWorkflow } from "../../pricing"
-import { createRegionsStep } from "../steps"
+import { emitEventStep } from "#common/steps/emit-event"
+import { createPricePreferencesWorkflow } from "#pricing/workflows/create-price-preferences"
+import { createRegionsStep } from "#region/steps/create-regions"
 import { setRegionsPaymentProvidersStep } from "../steps/set-regions-payment-providers"
 
 export const createRegionsWorkflowId = "create-regions"

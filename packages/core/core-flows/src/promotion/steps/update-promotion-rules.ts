@@ -8,7 +8,7 @@ import { StepResponse, createStep } from "@medusajs/framework/workflows-sdk"
 export const updatePromotionRulesStepId = "update-promotion-rules"
 /**
  * This step updates one or more promotion rules.
- * 
+ *
  * @example
  * const data = updatePromotionRulesStep({
  *   data: [

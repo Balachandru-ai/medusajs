@@ -9,7 +9,7 @@ export const linkCustomerGroupsToCustomerStepId =
   "link-customers-to-customer-group"
 /**
  * This step manages the customer groups of a customer.
- * 
+ *
  * @example
  * const data = linkCustomerGroupsToCustomerStep({
  *   id: "cus_123",

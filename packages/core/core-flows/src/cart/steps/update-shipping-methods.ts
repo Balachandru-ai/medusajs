@@ -16,7 +16,7 @@ export type UpdateShippingMethodsStepInput = UpdateShippingMethodDTO[]
 export const updateShippingMethodsStepId = "update-shipping-methods-step"
 /**
  * This step updates a cart's shipping methods.
- * 
+ *
  * @example
  * const data = updateOrderShippingMethodsStep([
  *   {

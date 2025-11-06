@@ -21,10 +21,11 @@ import {
   WorkflowData,
   WorkflowResponse,
 } from "@medusajs/framework/workflows-sdk"
-import { emitEventStep, useQueryGraphStep } from "../../common"
-import { updatePaymentCollectionStep } from "../../payment-collection"
-import { cancelPaymentStep } from "../../payment/steps"
-import { deleteReservationsByLineItemsStep } from "../../reservation/steps"
+import { emitEventStep } from "#common/steps/emit-event"
+import { useQueryGraphStep } from "#common/steps/use-query-graph"
+import { updatePaymentCollectionStep } from "#payment-collection/steps/update-payment-collection"
+import { cancelPaymentStep } from "#payment/steps/cancel-payment"
+import { deleteReservationsByLineItemsStep } from "#reservation/steps/delete-reservations-by-line-items"
 import { cancelOrdersStep } from "../steps/cancel-orders"
 import { throwIfOrderIsCancelled } from "../utils/order-validation"
 import { createOrderRefundCreditLinesWorkflow } from "./payments/create-order-refund-credit-lines"

@@ -7,16 +7,16 @@ import {
   WorkflowResponse,
   createWorkflow,
 } from "@medusajs/framework/workflows-sdk"
-import { addRulesToPromotionsStep } from "../steps"
+import { addRulesToPromotionsStep } from "#promotion/steps/add-rules-to-promotions"
 
 export const createPromotionRulesWorkflowId = "create-promotion-rules-workflow"
 /**
  * This workflow creates one or more promotion rules. It's used by other workflows,
  * such as {@link batchPromotionRulesWorkflow} that manages the rules of a promotion.
- * 
+ *
  * You can use this workflow within your own customizations or custom workflows, allowing you to
  * create promotion rules within your custom flows.
- * 
+ *
  * @example
  * const { result } = await createPromotionRulesWorkflow(container)
  * .run({
@@ -35,9 +35,9 @@ export const createPromotionRulesWorkflowId = "create-promotion-rules-workflow"
  *     }
  *   }
  * })
- * 
+ *
  * @summary
- * 
+ *
  * Create one or more promotion rules.
  */
 export const createPromotionRulesWorkflow = createWorkflow(

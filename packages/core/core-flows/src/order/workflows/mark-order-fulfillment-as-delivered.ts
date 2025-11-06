@@ -20,8 +20,9 @@ import {
   WorkflowData,
   WorkflowResponse,
 } from "@medusajs/framework/workflows-sdk"
-import { emitEventStep, useQueryGraphStep } from "../../common"
-import { markFulfillmentAsDeliveredWorkflow } from "../../fulfillment"
+import { emitEventStep } from "#common/steps/emit-event"
+import { useQueryGraphStep } from "#common/steps/use-query-graph"
+import { markFulfillmentAsDeliveredWorkflow } from "#fulfillment/workflows/mark-fulfillment-as-delivered"
 import { registerOrderDeliveryStep } from "../steps/register-delivery"
 import {
   throwIfItemsDoesNotExistsInOrder,

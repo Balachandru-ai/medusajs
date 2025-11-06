@@ -11,12 +11,10 @@ import {
   parallelize,
   transform,
 } from "@medusajs/framework/workflows-sdk"
-import { useRemoteQueryStep } from "../../../common"
-import {
-  deleteOrderChangesStep,
-  deleteOrderShippingMethods,
-  deleteReturnsStep,
-} from "../../steps"
+import { useRemoteQueryStep } from "#common/steps/use-remote-query"
+import { deleteOrderChangesStep } from "#order/steps/delete-order-changes"
+import { deleteOrderShippingMethods } from "#order/steps/delete-order-shipping-methods"
+import { deleteReturnsStep } from "#order/steps/return/delete-returns"
 import {
   throwIfIsCancelled,
   throwIfOrderChangeIsNotActive,

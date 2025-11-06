@@ -11,8 +11,8 @@ import {
   InventoryLevelDTO,
 } from "@medusajs/framework/types"
 import { deduplicate, MedusaError, Modules } from "@medusajs/framework/utils"
-import { useRemoteQueryStep } from "../../common"
-import { deleteEntitiesStep } from "../../common/steps/delete-entities"
+import { useRemoteQueryStep } from "#common/steps/use-remote-query"
+import { deleteEntitiesStep } from "#common/steps/delete-entities"
 
 /**
  * The data to validate the deletion of inventory levels.

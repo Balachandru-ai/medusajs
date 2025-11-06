@@ -10,11 +10,9 @@ import {
   parallelize,
   transform,
 } from "@medusajs/framework/workflows-sdk"
-import {
-  createCustomerAddressesStep,
-  maybeUnsetDefaultBillingAddressesStep,
-  maybeUnsetDefaultShippingAddressesStep,
-} from "../steps"
+import { createCustomerAddressesStep } from "#customer/steps/create-addresses"
+import { maybeUnsetDefaultBillingAddressesStep } from "#customer/steps/maybe-unset-default-billing-addresses"
+import { maybeUnsetDefaultShippingAddressesStep } from "#customer/steps/maybe-unset-default-shipping-addresses"
 
 /**
  * The data to create one or more customer addresses, along with custom data that's passed to the workflow's hooks.
@@ -30,12 +28,12 @@ export const createCustomerAddressesWorkflowId = "create-customer-addresses"
 /**
  * This workflow creates one or more addresses for customers. It's used by the [Add Customer Address Admin API Route](https://docs.medusajs.com/api/admin#customers_postcustomersidaddresses)
  * and the [Add Customer Address Store API Route](https://docs.medusajs.com/api/store#customers_postcustomersmeaddresses).
- * 
+ *
  * This workflow has a hook that allows you to perform custom actions on the created customer addresses. For example, you can pass under `additional_data` custom data that
  * allows you to create custom data models linked to the addresses.
- * 
+ *
  * You can also use this workflow within your customizations or your own custom workflows, allowing you to wrap custom logic around creating customer addresses.
- * 
+ *
  * @example
  * const { result } = await createCustomerAddressesWorkflow(container)
  * .run({
@@ -65,11 +63,11 @@ export const createCustomerAddressesWorkflowId = "create-customer-addresses"
  *     }
  *   }
  * })
- * 
+ *
  * @summary
- * 
+ *
  * Create one or more customer addresses.
- * 
+ *
  * @property hooks.addressesCreated - This hook is executed after the addresses are created. You can consume this hook to perform custom actions on the created addresses.
  */
 export const createCustomerAddressesWorkflow = createWorkflow(

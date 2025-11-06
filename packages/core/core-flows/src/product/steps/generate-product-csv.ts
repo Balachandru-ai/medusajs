@@ -6,7 +6,7 @@ import {
 import { Modules } from "@medusajs/framework/utils"
 import { StepResponse, createStep } from "@medusajs/framework/workflows-sdk"
 import { normalizeForExport } from "../helpers/normalize-for-export"
-import { convertJsonToCsv } from "../utils"
+import { convertJsonToCsv } from "#product/utils/jsontocsv"
 
 const prodColumnPositions = new Map([
   ["Product Id", 0],

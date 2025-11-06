@@ -7,8 +7,8 @@ import {
   WorkflowData,
   WorkflowResponse,
 } from "@medusajs/framework/workflows-sdk"
-import { useQueryGraphStep } from "../../common"
-import { addOrderTransactionStep } from "../../order/steps/add-order-transaction"
+import { useQueryGraphStep } from "#common/steps/use-query-graph"
+import { addOrderTransactionStep } from "#order/steps/add-order-transaction"
 import { refundPaymentsStep } from "../steps/refund-payments"
 
 /**

@@ -4,7 +4,7 @@ import {
   WorkflowResponse,
   createWorkflow,
 } from "@medusajs/framework/workflows-sdk"
-import { deleteEntitiesStep } from "../../common/steps/delete-entities"
+import { deleteEntitiesStep } from "#common/steps/delete-entities"
 
 export const deleteCartCreditLinesWorkflowId = "delete-cart-credit-lines"
 /**
@@ -12,12 +12,14 @@ export const deleteCartCreditLinesWorkflowId = "delete-cart-credit-lines"
  */
 export const deleteCartCreditLinesWorkflow = createWorkflow(
   deleteCartCreditLinesWorkflowId,
-  (input: WorkflowData<{
-    /**
-     * The IDs of the credit lines to delete.
-     */ 
-    id: string[]
-  }>) => {
+  (
+    input: WorkflowData<{
+      /**
+       * The IDs of the credit lines to delete.
+       */
+      id: string[]
+    }>
+  ) => {
     deleteEntitiesStep({
       moduleRegistrationName: Modules.CART,
       invokeMethod: "softDeleteCreditLines",

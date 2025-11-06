@@ -4,7 +4,7 @@ import {
   WorkflowResponse,
   createWorkflow,
 } from "@medusajs/framework/workflows-sdk"
-import { createTaxRatesStep } from "../steps"
+import { createTaxRatesStep } from "#tax/steps/create-tax-rates"
 
 /**
  * The tax rates to create.

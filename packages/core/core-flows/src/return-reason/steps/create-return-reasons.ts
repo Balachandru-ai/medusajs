@@ -8,7 +8,7 @@ import { StepResponse, createStep } from "@medusajs/framework/workflows-sdk"
 export const createReturnReasonsStepId = "create-return-reasons"
 /**
  * This step creates one or more return reasons.
- * 
+ *
  * @example
  * const data = createReturnReasonsStep([
  *   {

@@ -14,7 +14,7 @@ import { StepResponse, createStep } from "@medusajs/framework/workflows-sdk"
 /**
  * The details of the tax lines to set in a cart.
  */
-export interface SetTaxLinesForItemsStepInput {
+export interface UpsertTaxLinesForItemsStepInput {
   /**
    * The cart's details.
    */
@@ -62,7 +62,7 @@ export const upsertTaxLinesForItemsStepId = "set-tax-lines-for-items"
  */
 export const upsertTaxLinesForItemsStep = createStep(
   upsertTaxLinesForItemsStepId,
-  async (data: SetTaxLinesForItemsStepInput, { container }) => {
+  async (data: UpsertTaxLinesForItemsStepInput, { container }) => {
     const { cart, item_tax_lines, shipping_tax_lines } = data
     const cartService = container.resolve<ICartModuleService>(Modules.CART)
 

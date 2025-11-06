@@ -17,7 +17,7 @@ export const validateCartShippingOptionsPriceStepId =
 /**
  * This step validates shipping options to ensure they have a price.
  * If not valid, the step throws an error.
- * 
+ *
  * @example
  * const data = validateCartShippingOptionsPriceStep({
  *   shippingOptions: [

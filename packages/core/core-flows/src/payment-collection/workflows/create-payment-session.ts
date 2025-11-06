@@ -12,11 +12,10 @@ import {
   WorkflowData,
   WorkflowResponse,
 } from "@medusajs/framework/workflows-sdk"
-import { createRemoteLinkStep, useRemoteQueryStep } from "../../common"
-import {
-  createPaymentAccountHolderStep,
-  createPaymentSessionStep,
-} from "../steps"
+import { createRemoteLinkStep } from "#common/steps/create-remote-links"
+import { useRemoteQueryStep } from "#common/steps/use-remote-query"
+import { createPaymentAccountHolderStep } from "#payment-collection/steps/create-payment-account-holder"
+import { createPaymentSessionStep } from "#payment-collection/steps/create-payment-session"
 import { deletePaymentSessionsWorkflow } from "./delete-payment-sessions"
 
 /**

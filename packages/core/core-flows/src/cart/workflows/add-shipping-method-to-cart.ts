@@ -8,14 +8,13 @@ import {
   WorkflowResponse,
 } from "@medusajs/framework/workflows-sdk"
 import { AdditionalData } from "@medusajs/types"
-import { emitEventStep } from "../../common/steps/emit-event"
-import { useRemoteQueryStep } from "../../common/steps/use-remote-query"
-import { acquireLockStep, releaseLockStep } from "../../locking"
-import {
-  addShippingMethodToCartStep,
-  removeShippingMethodFromCartStep,
-  validateCartShippingOptionsStep,
-} from "../steps"
+import { emitEventStep } from "#common/steps/emit-event"
+import { useRemoteQueryStep } from "#common/steps/use-remote-query"
+import { acquireLockStep } from "#locking/steps/acquire-lock"
+import { releaseLockStep } from "#locking/steps/release-lock"
+import { addShippingMethodToCartStep } from "#cart/steps/add-shipping-method-to-cart"
+import { removeShippingMethodFromCartStep } from "#cart/steps/remove-shipping-method-from-cart"
+import { validateCartShippingOptionsStep } from "#cart/steps/validate-cart-shipping-options"
 import { validateCartStep } from "../steps/validate-cart"
 import { validateAndReturnShippingMethodsDataStep } from "../steps/validate-shipping-methods-data"
 import { validateCartShippingOptionsPriceStep } from "../steps/validate-shipping-options-price"

@@ -8,11 +8,9 @@ import {
   createWorkflow,
   transform,
 } from "@medusajs/framework/workflows-sdk"
-import {
-  createTaxRateRulesStep,
-  deleteTaxRateRulesStep,
-  listTaxRateRuleIdsStep,
-} from "../steps"
+import { createTaxRateRulesStep } from "#tax/steps/create-tax-rate-rules"
+import { deleteTaxRateRulesStep } from "#tax/steps/delete-tax-rate-rules"
+import { listTaxRateRuleIdsStep } from "#tax/steps/list-tax-rate-rule-ids"
 
 /**
  * The data to set the rules for tax rates.

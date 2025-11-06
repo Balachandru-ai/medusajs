@@ -6,17 +6,16 @@ import {
   WorkflowResponse,
 } from "@medusajs/framework/workflows-sdk"
 import type { OrderDTO } from "@medusajs/framework/types"
-import {
-  getActionsToComputeFromPromotionsStep,
-  getPromotionCodesToApply,
-  prepareAdjustmentsFromPromotionActionsStep,
-} from "../../cart"
+import { getActionsToComputeFromPromotionsStep } from "#cart/steps/get-actions-to-compute-from-promotions"
+import { getPromotionCodesToApply } from "#cart/steps/get-promotion-codes-to-apply"
+import { prepareAdjustmentsFromPromotionActionsStep } from "#cart/steps/prepare-adjustments-from-promotion-actions"
 import { createDraftOrderLineItemAdjustmentsStep } from "../steps/create-draft-order-line-item-adjustments"
 import { createDraftOrderShippingMethodAdjustmentsStep } from "../steps/create-draft-order-shipping-method-adjustments"
 import { removeDraftOrderLineItemAdjustmentsStep } from "../steps/remove-draft-order-line-item-adjustments"
 import { removeDraftOrderShippingMethodAdjustmentsStep } from "../steps/remove-draft-order-shipping-method-adjustments"
 import { updateDraftOrderPromotionsStep } from "../steps/update-draft-order-promotions"
-import { acquireLockStep, releaseLockStep } from "../../locking"
+import { acquireLockStep } from "#locking/steps/acquire-lock"
+import { releaseLockStep } from "#locking/steps/release-lock"
 
 export const refreshDraftOrderAdjustmentsWorkflowId =
   "refresh-draft-order-adjustments"

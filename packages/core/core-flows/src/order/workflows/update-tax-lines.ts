@@ -5,9 +5,9 @@ import {
   when,
   WorkflowData,
 } from "@medusajs/framework/workflows-sdk"
-import { useQueryGraphStep } from "../../common"
-import { getItemTaxLinesStep } from "../../tax/steps/get-item-tax-lines"
-import { setOrderTaxLinesForItemsStep } from "../steps"
+import { useQueryGraphStep } from "#common/steps/use-query-graph"
+import { getItemTaxLinesStep } from "#tax/steps/get-item-tax-lines"
+import { setOrderTaxLinesForItemsStep } from "#order/steps/set-tax-lines-for-items"
 
 const completeOrderFields = [
   "id",
@@ -209,9 +209,13 @@ export const updateOrderTaxLinesWorkflow = createWorkflow(
       return orderLineItems
     })
 
-    const shippingMethods = when("get-order-shipping-methods", { input }, ({ input }) => {
-      return input.shipping_method_ids!?.length > 0
-    }).then(() => {
+    const shippingMethods = when(
+      "get-order-shipping-methods",
+      { input },
+      ({ input }) => {
+        return input.shipping_method_ids!?.length > 0
+      }
+    ).then(() => {
       const { data: orderShippingMethods } = useQueryGraphStep({
         entity: "order_shipping_method",
         filters: { id: input.shipping_method_ids },

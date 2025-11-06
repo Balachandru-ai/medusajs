@@ -8,8 +8,9 @@ import {
 import type { OrderDTO } from "@medusajs/framework/types"
 import { Modules } from "@medusajs/framework/utils"
 
-import { removeRemoteLinkStep, useQueryGraphStep } from "../../common"
-import { deleteDraftOrdersStep } from "../steps"
+import { removeRemoteLinkStep } from "#common/steps/remove-remote-links"
+import { useQueryGraphStep } from "#common/steps/use-query-graph"
+import { deleteDraftOrdersStep } from "#draft-order/steps/delete-draft-order"
 
 /**
  * The data to validate the order's cancelation.

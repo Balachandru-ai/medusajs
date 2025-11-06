@@ -25,7 +25,7 @@ export const associateLocationsWithSalesChannelsStepId =
   "associate-locations-with-sales-channels-step"
 /**
  * This step creates links between stock locations and sales channel records.
- * 
+ *
  * @example
  * const data = associateLocationsWithSalesChannelsStep({
  *   links: [

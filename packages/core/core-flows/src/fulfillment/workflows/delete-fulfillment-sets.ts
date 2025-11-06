@@ -1,6 +1,6 @@
 import { createWorkflow, WorkflowData } from "@medusajs/framework/workflows-sdk"
-import { deleteFulfillmentSetsStep } from "../steps"
-import { removeRemoteLinkStep } from "../../common"
+import { deleteFulfillmentSetsStep } from "#fulfillment/steps/delete-fulfillment-sets"
+import { removeRemoteLinkStep } from "#common/steps/remove-remote-links"
 import { Modules } from "@medusajs/framework/utils"
 
 /**
@@ -18,10 +18,10 @@ export const deleteFulfillmentSetsWorkflowId =
 /**
  * This workflow deletes one or more fulfillment sets. It's used by the
  * [Delete Fulfillment Sets Admin API Route](https://docs.medusajs.com/api/admin#fulfillment-sets_deletefulfillmentsetsid).
- * 
+ *
  * You can use this workflow within your own customizations or custom workflows, allowing you to
  * delete fulfillment sets within your custom flows.
- * 
+ *
  * @example
  * const { result } = await deleteFulfillmentSetsWorkflow(container)
  * .run({
@@ -29,9 +29,9 @@ export const deleteFulfillmentSetsWorkflowId =
  *     ids: ["fulset_123"]
  *   }
  * })
- * 
+ *
  * @summary
- * 
+ *
  * Delete one or more fulfillment sets.
  */
 export const deleteFulfillmentSetsWorkflow = createWorkflow(

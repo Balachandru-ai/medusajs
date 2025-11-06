@@ -19,29 +19,28 @@ import { updatePromotionRulesWorkflow } from "./update-promotion-rules"
 
 /**
  * The data to manage a promotion's rules.
- * 
+ *
  * @property id - The ID of the promotion to manage the rules of.
  * @property rule_type - The type of rule to manage.
  * @property create - The rules to create.
  * @property update - The rules to update.
  * @property delete - The IDs of the rules to delete.
  */
-export interface BatchPromotionRulesWorkflowInput extends BatchWorkflowInput<
-  CreatePromotionRuleDTO,
-  UpdatePromotionRuleDTO
-> {
+export interface BatchPromotionRulesWorkflowInput
+  extends BatchWorkflowInput<CreatePromotionRuleDTO, UpdatePromotionRuleDTO> {
   id: string
   rule_type: RuleType
 }
 
 /**
  * The result of managing the promotion's rules.
- * 
+ *
  * @property created - The created rules.
  * @property updated - The updated rules.
  * @property deleted - The deleted rule IDs.
  */
-export interface BatchPromotionRulesWorkflowOutput extends BatchWorkflowOutput<PromotionRuleDTO> {}
+export interface BatchPromotionRulesWorkflowOutput
+  extends BatchWorkflowOutput<PromotionRuleDTO> {}
 
 export const batchPromotionRulesWorkflowId = "batch-promotion-rules"
 /**
@@ -49,10 +48,10 @@ export const batchPromotionRulesWorkflowId = "batch-promotion-rules"
  * [Manage Promotion Rules Admin API Route](https://docs.medusajs.com/api/admin#promotions_postpromotionsidrulesbatch),
  * [Manage Promotion Buy Rules Admin API Route](https://docs.medusajs.com/api/admin#promotions_postpromotionsidbuyrulesbatch),
  * and [Manage Promotion Target Rules Admin API Route](https://docs.medusajs.com/api/admin#promotions_postpromotionsidtargetrulesbatch).
- * 
+ *
  * You can use this workflow within your own customizations or custom workflows, allowing you to
  * manage promotion rules within your custom flows.
- * 
+ *
  * @example
  * const { result } = await batchPromotionRulesWorkflow(container)
  * .run({
@@ -76,9 +75,9 @@ export const batchPromotionRulesWorkflowId = "batch-promotion-rules"
  *     delete: ["prule_123"]
  *   }
  * })
- * 
+ *
  * @summary
- * 
+ *
  * Manage the rules of a promotion.
  */
 export const batchPromotionRulesWorkflow = createWorkflow(

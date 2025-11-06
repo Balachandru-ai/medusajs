@@ -10,8 +10,8 @@ import {
   transform,
   createHook,
 } from "@medusajs/framework/workflows-sdk"
-import { emitEventStep } from "../../common"
-import { updateProductCategoriesStep } from "../steps"
+import { emitEventStep } from "#common/steps/emit-event"
+import { updateProductCategoriesStep } from "#product-category/steps/update-product-categories"
 
 /**
  * The updated product categories.

@@ -1,6 +1,6 @@
 import type { LinkWorkflowInput } from "@medusajs/framework/types"
 import { WorkflowData, createWorkflow } from "@medusajs/framework/workflows-sdk"
-import { linkCustomersToCustomerGroupStep } from "../steps"
+import { linkCustomersToCustomerGroupStep } from "#customer-group/steps/link-customers-customer-group"
 
 /**
  * The data to manage the customers of a group.

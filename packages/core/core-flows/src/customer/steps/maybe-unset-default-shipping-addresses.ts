@@ -6,7 +6,8 @@ import {
 } from "@medusajs/framework/types"
 import { Modules, isDefined } from "@medusajs/framework/utils"
 import { createStep } from "@medusajs/framework/workflows-sdk"
-import { unsetForCreate, unsetForUpdate } from "./utils"
+import { unsetForCreate } from "#customer/steps/utils/unset-address-for-create"
+import { unsetForUpdate } from "#customer/steps/utils/unset-address-for-update"
 
 /**
  * The addresses being created or updated.
@@ -40,7 +41,7 @@ export const maybeUnsetDefaultShippingAddressesStepId =
 /**
  * This step unsets the `is_default_billing` property of existing customer addresses
  * if the `is_default_billing` property in the addresses in the input is set to `true`.
- * 
+ *
  * @example
  * const data = maybeUnsetDefaultShippingAddressesStep({
  *   create: [{

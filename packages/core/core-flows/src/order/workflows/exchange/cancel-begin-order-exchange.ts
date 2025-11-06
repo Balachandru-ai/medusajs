@@ -11,13 +11,11 @@ import {
   parallelize,
   transform,
 } from "@medusajs/framework/workflows-sdk"
-import { useRemoteQueryStep } from "../../../common"
-import {
-  deleteExchangesStep,
-  deleteOrderChangesStep,
-  deleteOrderShippingMethods,
-  deleteReturnsStep,
-} from "../../steps"
+import { useRemoteQueryStep } from "#common/steps/use-remote-query"
+import { deleteExchangesStep } from "#order/steps/exchange/delete-exchanges"
+import { deleteOrderChangesStep } from "#order/steps/delete-order-changes"
+import { deleteOrderShippingMethods } from "#order/steps/delete-order-shipping-methods"
+import { deleteReturnsStep } from "#order/steps/return/delete-returns"
 import {
   throwIfIsCancelled,
   throwIfOrderChangeIsNotActive,
@@ -44,14 +42,14 @@ export type CancelBeginOrderExchangeValidationStepInput = {
 /**
  * This step validates that a requested exchange can be canceled.
  * If the order or exchange is canceled, or the order change is not active, the step will throw an error.
- * 
+ *
  * :::note
- * 
+ *
  * You can retrieve an order, order exchange, and order change details using [Query](https://docs.medusajs.com/learn/fundamentals/module-links/query),
  * or [useQueryGraphStep](https://docs.medusajs.com/resources/references/medusa-workflows/steps/useQueryGraphStep).
- * 
+ *
  * :::
- * 
+ *
  * @example
  * const data = cancelBeginOrderExchangeValidationStep({
  *   order: {
@@ -95,10 +93,10 @@ export const cancelBeginOrderExchangeWorkflowId = "cancel-begin-order-exchange"
 /**
  * This workflow cancels a requested order exchange. It's used by the
  * [Cancel Exchange Admin API Route](https://docs.medusajs.com/api/admin#exchanges_deleteexchangesidrequest).
- * 
+ *
  * You can use this workflow within your customizations or your own custom workflows, allowing you to cancel an exchange
  * for an order in your custom flow.
- * 
+ *
  * @example
  * const { result } = await cancelBeginOrderExchangeWorkflow(container)
  * .run({
@@ -106,9 +104,9 @@ export const cancelBeginOrderExchangeWorkflowId = "cancel-begin-order-exchange"
  *     exchange_id: "exchange_123",
  *   }
  * })
- * 
+ *
  * @summary
- * 
+ *
  * Cancel a requested order exchange.
  */
 export const cancelBeginOrderExchangeWorkflow = createWorkflow(

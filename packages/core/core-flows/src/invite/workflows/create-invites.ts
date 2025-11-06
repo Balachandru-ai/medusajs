@@ -6,8 +6,8 @@ import {
   createWorkflow,
   transform,
 } from "@medusajs/framework/workflows-sdk"
-import { emitEventStep } from "../../common/steps/emit-event"
-import { createInviteStep } from "../steps"
+import { emitEventStep } from "#common/steps/emit-event"
+import { createInviteStep } from "#invite/steps/create-invites"
 export const createInvitesWorkflowId = "create-invite-step"
 /**
  * This workflow creates one or more user invites. It's used by the

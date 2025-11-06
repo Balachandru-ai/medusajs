@@ -9,8 +9,8 @@ import {
   createWorkflow,
   transform,
 } from "@medusajs/framework/workflows-sdk"
-import { createReturnFulfillmentStep } from "../steps"
-import { useRemoteQueryStep } from "../../common"
+import { createReturnFulfillmentStep } from "#fulfillment/steps/create-return-fulfillment"
+import { useRemoteQueryStep } from "#common/steps/use-remote-query"
 
 export const createReturnFulfillmentWorkflowId =
   "create-return-fulfillment-workflow"

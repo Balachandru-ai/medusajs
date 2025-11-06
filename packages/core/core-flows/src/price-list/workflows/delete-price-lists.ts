@@ -1,7 +1,7 @@
 import { Modules } from "@medusajs/framework/utils"
 import { createWorkflow, WorkflowData } from "@medusajs/framework/workflows-sdk"
-import { removeRemoteLinkStep } from "../../common/steps/remove-remote-links"
-import { deletePriceListsStep } from "../steps"
+import { removeRemoteLinkStep } from "#common/steps/remove-remote-links"
+import { deletePriceListsStep } from "#price-list/steps/delete-price-lists"
 
 /**
  * The data to delete price lists.

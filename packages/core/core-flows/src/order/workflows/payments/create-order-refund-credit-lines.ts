@@ -10,7 +10,7 @@ import {
   transform,
   WorkflowData,
 } from "@medusajs/framework/workflows-sdk"
-import { useQueryGraphStep } from "../../../common"
+import { useQueryGraphStep } from "#common/steps/use-query-graph"
 import { confirmOrderChanges } from "../../steps/confirm-order-changes"
 import { createOrderChangeStep } from "../../steps/create-order-change"
 import { throwIfOrderIsCancelled } from "../../utils/order-validation"

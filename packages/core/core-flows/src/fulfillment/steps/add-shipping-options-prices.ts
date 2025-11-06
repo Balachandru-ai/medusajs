@@ -14,7 +14,7 @@ import { createStep, StepResponse } from "@medusajs/framework/workflows-sdk"
 export interface ShippingOptionsPriceCurrencyCode {
   /**
    * The currency code of the price.
-   * 
+   *
    * @example
    * usd
    */
@@ -125,12 +125,12 @@ export const createShippingOptionsPriceSetsStepId =
   "add-shipping-options-prices-step"
 /**
  * This step creates price sets for one or more shipping options.
- * 
+ *
  * :::note
- * 
- * Learn more about adding rules to the shipping option's prices in the Pricing Module's 
+ *
+ * Learn more about adding rules to the shipping option's prices in the Pricing Module's
  * [Price Rules](https://docs.medusajs.com/resources/commerce-modules/pricing/price-rules) documentation.
- * 
+ *
  * :::
  */
 export const createShippingOptionsPriceSetsStep = createStep(

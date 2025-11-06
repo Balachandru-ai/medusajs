@@ -7,12 +7,10 @@ import {
   when,
 } from "@medusajs/framework/workflows-sdk"
 import { ProductTypes } from "@medusajs/framework/types"
-import {
-  addImageToVariantsStep,
-  removeImageFromVariantsStep,
-  updateProductVariantsStep,
-} from "../steps"
-import { useQueryGraphStep } from "../../common"
+import { addImageToVariantsStep } from "#product/steps/add-image-to-variants"
+import { removeImageFromVariantsStep } from "#product/steps/remove-image-from-variants"
+import { updateProductVariantsStep } from "#product/steps/update-product-variants"
+import { useQueryGraphStep } from "#common/steps/use-query-graph"
 
 /**
  * The input for the batch image-variant workflow.

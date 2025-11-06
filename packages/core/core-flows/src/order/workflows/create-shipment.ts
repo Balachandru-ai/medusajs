@@ -22,9 +22,10 @@ import {
   WorkflowData,
   WorkflowResponse,
 } from "@medusajs/framework/workflows-sdk"
-import { emitEventStep, useQueryGraphStep } from "../../common"
-import { createShipmentWorkflow } from "../../fulfillment"
-import { registerOrderShipmentStep } from "../steps"
+import { emitEventStep } from "#common/steps/emit-event"
+import { useQueryGraphStep } from "#common/steps/use-query-graph"
+import { createShipmentWorkflow } from "#fulfillment/workflows/create-shipment"
+import { registerOrderShipmentStep } from "#order/steps/register-shipment"
 import {
   throwIfItemsDoesNotExistsInOrder,
   throwIfOrderIsCancelled,

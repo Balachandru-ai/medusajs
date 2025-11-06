@@ -5,7 +5,7 @@ export const waitConfirmationProductImportStepId =
 /**
  * This step waits until a product import is confirmed. It's useful before executing the
  * {@link batchProductsWorkflow}.
- * 
+ *
  * This step is asynchronous and will make the workflow using it a [Long-Running Workflow](https://docs.medusajs.com/learn/fundamentals/workflows/long-running-workflow).
  */
 export const waitConfirmationProductImportStep = createStep(

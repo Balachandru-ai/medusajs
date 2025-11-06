@@ -8,9 +8,9 @@ import {
   WorkflowData,
   WorkflowResponse,
 } from "@medusajs/framework/workflows-sdk"
-import { emitEventStep } from "../../common/steps/emit-event"
-import { updatePricePreferencesWorkflow } from "../../pricing"
-import { updateRegionsStep } from "../steps"
+import { emitEventStep } from "#common/steps/emit-event"
+import { updatePricePreferencesWorkflow } from "#pricing/workflows/update-price-preferences"
+import { updateRegionsStep } from "#region/steps/update-regions"
 import { setRegionsPaymentProvidersStep } from "../steps/set-regions-payment-providers"
 
 export const updateRegionsWorkflowId = "update-regions"

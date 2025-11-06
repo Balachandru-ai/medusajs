@@ -18,7 +18,7 @@ export interface ListLineItemsStepInput {
   /**
    * Configurations to select the line items' fields
    * and relations, and to paginate the results.
-   * 
+   *
    * Learn more in the [service factory reference](https://docs.medusajs.com/resources/service-factory-reference/methods/list).
    */
   config?: FindConfig<CartLineItemDTO>
@@ -28,10 +28,10 @@ export const listLineItemsStepId = "list-line-items"
 /**
  * This step retrieves a list of a cart's line items
  * matching the specified filters.
- * 
+ *
  * @example
  * To retrieve the line items of a cart:
- * 
+ *
  * ```ts
  * const data = listLineItemsStep({
  *   filters: {
@@ -42,9 +42,9 @@ export const listLineItemsStepId = "list-line-items"
  *   }
  * })
  * ```
- * 
+ *
  * To retrieve the line items of a cart with pagination:
- * 
+ *
  * ```ts
  * const data = listLineItemsStep({
  *   filters: {
@@ -57,7 +57,7 @@ export const listLineItemsStepId = "list-line-items"
  *   }
  * })
  * ```
- * 
+ *
  * Learn more about listing items in [this service factory reference](https://docs.medusajs.com/resources/service-factory-reference/methods/list).
  */
 export const listLineItemsStep = createStep(

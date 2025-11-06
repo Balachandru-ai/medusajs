@@ -4,9 +4,11 @@ import {
   transform,
 } from "@medusajs/framework/workflows-sdk"
 import type { WorkflowTypes } from "@medusajs/framework/types"
-import { generateProductCsvStep, getAllProductsStep } from "../steps"
-import { useRemoteQueryStep } from "../../common"
-import { notifyOnFailureStep, sendNotificationsStep } from "../../notification"
+import { generateProductCsvStep } from "#product/steps/generate-product-csv"
+import { getAllProductsStep } from "#product/steps/get-all-products"
+import { useRemoteQueryStep } from "#common/steps/use-remote-query"
+import { notifyOnFailureStep } from "#notification/steps/notify-on-failure"
+import { sendNotificationsStep } from "#notification/steps/send-notifications"
 
 export const exportProductsWorkflowId = "export-products"
 /**

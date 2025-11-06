@@ -9,20 +9,22 @@ import { createStep, StepResponse } from "@medusajs/framework/workflows-sdk"
 /**
  * The data to cancel payments.
  */
-export interface CancelPaymentStepInput {
+export interface PaymentCollectionCancelPaymentStepInput {
   /**
    * The IDs of the payments to cancel.
    */
   ids: string[]
 }
 
-export const cancelPaymentStepId = "cancel-payment"
+export const paymentCollectionCancelPaymentStepId =
+  "payment-collection-cancel-payment"
+
 /**
  * This step cancels one or more authorized payments.
  */
-export const cancelPaymentStep = createStep(
-  cancelPaymentStepId,
-  async (input: CancelPaymentStepInput, { container }) => {
+export const paymentCollectionCancelPaymentStep = createStep(
+  paymentCollectionCancelPaymentStepId,
+  async (input: PaymentCollectionCancelPaymentStepInput, { container }) => {
     const { ids = [] } = input
     const deleted: string[] = []
     const logger = container.resolve<Logger>(ContainerRegistrationKeys.LOGGER)

@@ -1,8 +1,8 @@
 import type { WebhookActionResult } from "@medusajs/framework/types"
 import { PaymentActions } from "@medusajs/utils"
 import { createWorkflow, when } from "@medusajs/workflows-sdk"
-import { useQueryGraphStep } from "../../common"
-import { authorizePaymentSessionStep } from "../steps"
+import { useQueryGraphStep } from "#common/steps/use-query-graph"
+import { authorizePaymentSessionStep } from "#payment/steps/authorize-payment-session"
 import { completeCartAfterPaymentStep } from "../steps/complete-cart-after-payment"
 import { capturePaymentWorkflow } from "./capture-payment"
 

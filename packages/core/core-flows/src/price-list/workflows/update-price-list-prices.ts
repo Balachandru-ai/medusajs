@@ -26,10 +26,10 @@ export const updatePriceListPricesWorkflowId = "update-price-list-prices"
 /**
  * This workflow update price lists' prices. It's used by other workflows, such
  * as {@link batchPriceListPricesWorkflow}.
- * 
+ *
  * You can use this workflow within your customizations or your own custom workflows, allowing you to
  * update prices in price lists in your custom flows.
- * 
+ *
  * @example
  * const { result } = await updatePriceListPricesWorkflow(container)
  * .run({
@@ -49,9 +49,9 @@ export const updatePriceListPricesWorkflowId = "update-price-list-prices"
  *     ]
  *   }
  * })
- * 
+ *
  * @summary
- * 
+ *
  * Update price lists' prices.
  */
 export const updatePriceListPricesWorkflow = createWorkflow(

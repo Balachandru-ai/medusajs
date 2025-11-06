@@ -11,8 +11,8 @@ import {
   createWorkflow,
   transform,
 } from "@medusajs/framework/workflows-sdk"
-import { emitEventStep } from "../../common/steps/emit-event"
-import { updateCustomersStep } from "../steps"
+import { emitEventStep } from "#common/steps/emit-event"
+import { updateCustomersStep } from "#customer/steps/update-customers"
 
 /**
  * The data to update one or more customers, along with custom data that's passed to the workflow's hooks.
@@ -32,12 +32,12 @@ export const updateCustomersWorkflowId = "update-customers"
 /**
  * This workflow updates one or more customers. It's used by the [Update Customer Admin API Route](https://docs.medusajs.com/api/admin#customers_postcustomersid) and
  * the [Update Customer Store API Route](https://docs.medusajs.com/api/store#customers_postcustomersme).
- * 
+ *
  * This workflow has a hook that allows you to perform custom actions on the updated customer. For example, you can pass under `additional_data` custom data to update
  * custom data models linked to the customers.
- * 
+ *
  * You can also use this workflow within your customizations or your own custom workflows, allowing you to wrap custom logic around updating customers.
- * 
+ *
  * @example
  * const { result } = await updateCustomersWorkflow(container)
  * .run({
@@ -50,11 +50,11 @@ export const updateCustomersWorkflowId = "update-customers"
  *     }
  *   }
  * })
- * 
+ *
  * @summary
- * 
+ *
  * Update one or more customers.
- * 
+ *
  * @property hooks.customersUpdated - This hook is executed after the customers are updated. You can consume this hook to perform custom actions on the updated customers.
  */
 export const updateCustomersWorkflow = createWorkflow(

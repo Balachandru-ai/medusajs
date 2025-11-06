@@ -25,13 +25,11 @@ import {
   parallelize,
   transform,
 } from "@medusajs/framework/workflows-sdk"
-import { pricingContextResult } from "../../../cart/utils/schemas"
-import {
-  createRemoteLinkStep,
-  emitEventStep,
-  useRemoteQueryStep,
-} from "../../../common"
-import { createReturnFulfillmentWorkflow } from "../../../fulfillment"
+import { pricingContextResult } from "#cart/utils/schemas"
+import { createRemoteLinkStep } from "#common/steps/create-remote-links"
+import { emitEventStep } from "#common/steps/emit-event"
+import { useRemoteQueryStep } from "#common/steps/use-remote-query"
+import { createReturnFulfillmentWorkflow } from "#fulfillment/workflows/create-return-fulfillment"
 import { createCompleteReturnStep } from "../../steps/return/create-complete-return"
 import { receiveReturnStep } from "../../steps/return/receive-return"
 import {

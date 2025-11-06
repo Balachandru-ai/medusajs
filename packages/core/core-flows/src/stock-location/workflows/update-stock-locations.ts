@@ -12,8 +12,8 @@ import {
   transform,
 } from "@medusajs/framework/workflows-sdk"
 
-import { useQueryGraphStep } from "../../common"
-import { updateStockLocationsStep } from "../steps"
+import { useQueryGraphStep } from "#common/steps/use-query-graph"
+import { updateStockLocationsStep } from "#stock-location/steps/update-stock-locations"
 import { upsertStockLocationAddressesStep } from "../steps/upsert-stock-location-addresses"
 
 /**

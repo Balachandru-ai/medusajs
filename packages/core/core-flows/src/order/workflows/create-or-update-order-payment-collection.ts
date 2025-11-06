@@ -11,9 +11,9 @@ import {
   WorkflowData,
   WorkflowResponse,
 } from "@medusajs/framework/workflows-sdk"
-import { useQueryGraphStep } from "../../common"
-import { updatePaymentCollectionStep } from "../../payment-collection"
-import { cancelPaymentCollectionWorkflow } from "../../payment-collection/workflows/cancel-payment-collection"
+import { useQueryGraphStep } from "#common/steps/use-query-graph"
+import { updatePaymentCollectionStep } from "#payment-collection/steps/update-payment-collection"
+import { cancelPaymentCollectionWorkflow } from "#payment-collection/workflows/cancel-payment-collection"
 import { createOrderPaymentCollectionWorkflow } from "./create-order-payment-collection"
 
 /**

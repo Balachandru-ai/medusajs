@@ -10,7 +10,7 @@ import { createStep, StepResponse } from "@medusajs/framework/workflows-sdk"
  */
 export type GetAllProductsStepInput = {
   /**
-   * The fields to select. These fields will be passed to 
+   * The fields to select. These fields will be passed to
    * [Query](https://docs.medusajs.com/learn/fundamentals/module-links/query), so you can
    * pass product properties or any relation names, including custom links.
    */
@@ -24,18 +24,18 @@ export type GetAllProductsStepInput = {
 export const getAllProductsStepId = "get-all-products"
 /**
  * This step retrieves all products matching a set of filters.
- * 
+ *
  * @example
  * To retrieve all products:
- * 
+ *
  * ```ts
  * const data = getAllProductsStep({
  *   select: ["*"],
  * })
  * ```
- * 
+ *
  * To retrieve all products matching a filter:
- * 
+ *
  * ```ts
  * const data = getAllProductsStep({
  *   select: ["*"],

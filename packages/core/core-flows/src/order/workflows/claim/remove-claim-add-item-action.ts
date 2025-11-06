@@ -15,11 +15,9 @@ import {
   WorkflowData,
   WorkflowResponse,
 } from "@medusajs/framework/workflows-sdk"
-import { useRemoteQueryStep } from "../../../common"
-import {
-  deleteOrderChangeActionsStep,
-  previewOrderChangeStep,
-} from "../../steps"
+import { useRemoteQueryStep } from "#common/steps/use-remote-query"
+import { deleteOrderChangeActionsStep } from "#order/steps/delete-order-change-actions"
+import { previewOrderChangeStep } from "#order/steps/preview-order-change"
 import {
   throwIfIsCancelled,
   throwIfOrderChangeIsNotActive,
@@ -51,14 +49,14 @@ export type RemoveClaimAddItemActionValidationStepInput = {
 /**
  * This step validates that outbound (new) items can be removed from a claim.
  * If the order, claim, or order change is canceled, or the action is not adding an item, the step will throw an error.
- * 
+ *
  * :::note
- * 
+ *
  * You can retrieve an order, order claim, and order change details using [Query](https://docs.medusajs.com/learn/fundamentals/module-links/query),
  * or [useQueryGraphStep](https://docs.medusajs.com/resources/references/medusa-workflows/steps/useQueryGraphStep).
- * 
+ *
  * :::
- * 
+ *
  * @example
  * const data = removeClaimAddItemActionValidationStep({
  *   order: {
@@ -107,22 +105,23 @@ export const removeClaimAddItemActionValidationStep = createStep(
 
 /**
  * The data to remove outbound (new) items from a claim.
- * 
+ *
  * @property action_id - The ID of the action associated with the outbound items.
- * Every item has an `actions` property, whose value is an array of actions. 
- * You can find the action name `ITEM_ADD` using its `action` property, 
+ * Every item has an `actions` property, whose value is an array of actions.
+ * You can find the action name `ITEM_ADD` using its `action` property,
  * and use the value of its `id` property.
  */
-export type RemoveAddItemClaimActionWorkflowInput = OrderWorkflow.DeleteOrderClaimItemActionWorkflowInput
+export type RemoveAddItemClaimActionWorkflowInput =
+  OrderWorkflow.DeleteOrderClaimItemActionWorkflowInput
 
 export const removeAddItemClaimActionWorkflowId = "remove-item-claim-add-action"
 /**
  * This workflow removes outbound (new) items from a claim. It's used by the
  * [Remove Outbound Items Admin API Route](https://docs.medusajs.com/api/admin#claims_deleteclaimsidoutbounditemsaction_id).
- * 
+ *
  * You can use this workflow within your customizations or your own custom workflows, allowing you to remove outbound items from a claim
  * in your custom flows.
- * 
+ *
  * @example
  * const { result } = await removeAddItemClaimActionWorkflow(container)
  * .run({
@@ -131,9 +130,9 @@ export const removeAddItemClaimActionWorkflowId = "remove-item-claim-add-action"
  *     action_id: "orchact_123",
  *   }
  * })
- * 
+ *
  * @summary
- * 
+ *
  * Remove outbound (new) items from a claim.
  */
 export const removeAddItemClaimActionWorkflow = createWorkflow(

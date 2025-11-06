@@ -11,8 +11,10 @@ import {
   parallelize,
   transform,
 } from "@medusajs/framework/workflows-sdk"
-import { emitEventStep, useQueryGraphStep } from "../../../common"
-import { deleteOrderChangesStep, deleteOrderShippingMethods } from "../../steps"
+import { emitEventStep } from "#common/steps/emit-event"
+import { useQueryGraphStep } from "#common/steps/use-query-graph"
+import { deleteOrderChangesStep } from "#order/steps/delete-order-changes"
+import { deleteOrderShippingMethods } from "#order/steps/delete-order-shipping-methods"
 import {
   throwIfIsCancelled,
   throwIfOrderChangeIsNotActive,

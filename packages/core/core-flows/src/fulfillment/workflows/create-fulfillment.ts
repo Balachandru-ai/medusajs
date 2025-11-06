@@ -9,24 +9,24 @@ import {
   createWorkflow,
   transform,
 } from "@medusajs/framework/workflows-sdk"
-import { createFulfillmentStep } from "../steps"
-import { useRemoteQueryStep } from "../../common"
+import { createFulfillmentStep } from "#fulfillment/steps/create-fulfillment"
+import { useRemoteQueryStep } from "#common/steps/use-remote-query"
 
 export const createFulfillmentWorkflowId = "create-fulfillment-workflow"
 /**
  * This workflow creates a fulfillment, which can be used for an order, return, exchanges, and similar concepts.
  * The workflow is used by the [Create Fulfillment Admin API Route](https://docs.medusajs.com/api/admin#fulfillments_postfulfillments).
- * 
+ *
  * You can use this workflow within your own customizations or custom workflows, allowing you to
  * create a fulfillment within your custom flows.
- * 
+ *
  * :::note
- * 
+ *
  * You can retrieve an order's details using [Query](https://docs.medusajs.com/learn/fundamentals/module-links/query),
  * or [useQueryGraphStep](https://docs.medusajs.com/resources/references/medusa-workflows/steps/useQueryGraphStep).
- * 
+ *
  * :::
- * 
+ *
  * @example
  * const { result } = await createFulfillmentWorkflow(container)
  * .run({
@@ -56,9 +56,9 @@ export const createFulfillmentWorkflowId = "create-fulfillment-workflow"
  *     }
  *   }
  * })
- * 
+ *
  * @summary
- * 
+ *
  * Create a fulfillment.
  */
 export const createFulfillmentWorkflow = createWorkflow(

@@ -13,11 +13,9 @@ import {
   createStep,
   createWorkflow,
 } from "@medusajs/framework/workflows-sdk"
-import { useRemoteQueryStep } from "../../../common"
-import {
-  deleteOrderChangeActionsStep,
-  previewOrderChangeStep,
-} from "../../steps"
+import { useRemoteQueryStep } from "#common/steps/use-remote-query"
+import { deleteOrderChangeActionsStep } from "#order/steps/delete-order-change-actions"
+import { previewOrderChangeStep } from "#order/steps/preview-order-change"
 import {
   throwIfIsCancelled,
   throwIfOrderChangeIsNotActive,
@@ -50,14 +48,14 @@ export type RemoveItemReceiveReturnActionValidationStepInput = {
  * If the order or return is canceled, the order change is not active,
  * the return request is not found,
  * or the action is not a receive return action, the step will throw an error.
- * 
+ *
  * :::note
- * 
+ *
  * You can retrieve an order, return, and order change details using [Query](https://docs.medusajs.com/learn/fundamentals/module-links/query),
  * or [useQueryGraphStep](https://docs.medusajs.com/resources/references/medusa-workflows/steps/useQueryGraphStep).
- * 
+ *
  * :::
- * 
+ *
  * @example
  * const data = removeItemReceiveReturnActionValidationStep({
  *   order: {
@@ -116,10 +114,10 @@ export const removeItemReceiveReturnActionWorkflowId =
 /**
  * This workflow removes an item from a return receival. It's used by the
  * [Remove a Received Item from Return Admin API Route](https://docs.medusajs.com/api/admin#returns_deletereturnsidreceiveitemsaction_id).
- * 
+ *
  * You can use this workflow within your customizations or your own custom workflows, allowing you to remove an item from a return receival
  * in your custom flow.
- * 
+ *
  * @example
  * const { result } = await removeItemReceiveReturnActionWorkflow(container)
  * .run({
@@ -128,9 +126,9 @@ export const removeItemReceiveReturnActionWorkflowId =
  *     action_id: "orchac_123",
  *   }
  * })
- * 
+ *
  * @summary
- * 
+ *
  * Remove an item from a return receival.
  */
 export const removeItemReceiveReturnActionWorkflow = createWorkflow(

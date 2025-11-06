@@ -10,8 +10,9 @@ import {
   parallelize,
   transform,
 } from "@medusajs/framework/workflows-sdk"
-import { emitEventStep, removeRemoteLinkStep } from "../../common"
-import { deleteCollectionsStep } from "../steps"
+import { emitEventStep } from "#common/steps/emit-event"
+import { removeRemoteLinkStep } from "#common/steps/remove-remote-links"
+import { deleteCollectionsStep } from "#product/steps/delete-collections"
 
 /**
  * The data to delete one or more product collections.

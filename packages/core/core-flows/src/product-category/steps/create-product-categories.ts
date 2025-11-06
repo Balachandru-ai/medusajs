@@ -18,7 +18,7 @@ export type CreateProductCategoriesStepInput = {
 export const createProductCategoriesStepId = "create-product-categories"
 /**
  * This step creates one or more product categories.
- * 
+ *
  * @example
  * const data = createProductCategoriesStep({
  *   product_categories: [

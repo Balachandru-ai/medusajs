@@ -26,7 +26,7 @@ export type UpdateTaxRatesStepInput = {
 export const updateTaxRatesStepId = "update-tax-rates"
 /**
  * This step updates tax rates matching the specified filters.
- * 
+ *
  * @example
  * const data = updateTaxRatesStep({
  *   selector: {

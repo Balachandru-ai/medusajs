@@ -29,12 +29,12 @@ export type CreatePriceListPricesWorkflowOutput = PricingTypes.PriceDTO[]
 
 export const createPriceListPricesWorkflowId = "create-price-list-prices"
 /**
- * This workflow creates prices in price lists. It's used by other workflows, such as 
+ * This workflow creates prices in price lists. It's used by other workflows, such as
  * {@link batchPriceListPricesWorkflow}.
- * 
+ *
  * You can use this workflow within your customizations or your own custom workflows, allowing you to
  * create prices in price lists in your custom flows.
- * 
+ *
  * @example
  * const { result } = await createPriceListPricesWorkflow(container)
  * .run({
@@ -51,9 +51,9 @@ export const createPriceListPricesWorkflowId = "create-price-list-prices"
  *     }]
  *   }
  * })
- * 
+ *
  * @summary
- * 
+ *
  * Create prices in price lists.
  */
 export const createPriceListPricesWorkflow = createWorkflow(

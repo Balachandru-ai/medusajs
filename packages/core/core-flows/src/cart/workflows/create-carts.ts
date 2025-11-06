@@ -17,13 +17,11 @@ import {
   WorkflowData,
   WorkflowResponse,
 } from "@medusajs/framework/workflows-sdk"
-import { emitEventStep } from "../../common/steps/emit-event"
-import {
-  createCartsStep,
-  findOneOrAnyRegionStep,
-  findOrCreateCustomerStep,
-  findSalesChannelStep,
-} from "../steps"
+import { emitEventStep } from "#common/steps/emit-event"
+import { createCartsStep } from "#cart/steps/create-carts"
+import { findOneOrAnyRegionStep } from "#cart/steps/find-one-or-any-region"
+import { findOrCreateCustomerStep } from "#cart/steps/find-or-create-customer"
+import { findSalesChannelStep } from "#cart/steps/find-sales-channel"
 import { validateSalesChannelStep } from "../steps/validate-sales-channel"
 import { productVariantsFields } from "../utils/fields"
 import { requiredVariantFieldsForInventoryConfirmation } from "../utils/prepare-confirm-inventory-input"

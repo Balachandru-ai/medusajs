@@ -22,13 +22,12 @@ import {
   transform,
   when,
 } from "@medusajs/framework/workflows-sdk"
-import {
-  createRemoteLinkStep,
-  emitEventStep,
-  useRemoteQueryStep,
-} from "../../../common"
-import { createReturnFulfillmentWorkflow } from "../../../fulfillment/workflows/create-return-fulfillment"
-import { previewOrderChangeStep, updateReturnsStep } from "../../steps"
+import { createRemoteLinkStep } from "#common/steps/create-remote-links"
+import { emitEventStep } from "#common/steps/emit-event"
+import { useRemoteQueryStep } from "#common/steps/use-remote-query"
+import { createReturnFulfillmentWorkflow } from "#fulfillment/workflows/create-return-fulfillment"
+import { previewOrderChangeStep } from "#order/steps/preview-order-change"
+import { updateReturnsStep } from "#order/steps/return/update-returns"
 import { confirmOrderChanges } from "../../steps/confirm-order-changes"
 import { createReturnItemsFromActionsStep } from "../../steps/return/create-return-items-from-actions"
 import {

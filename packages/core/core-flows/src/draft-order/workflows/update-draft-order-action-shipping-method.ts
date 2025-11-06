@@ -14,19 +14,18 @@ import {
   OrderPreviewDTO,
   OrderWorkflow,
 } from "@medusajs/framework/types"
-import { useRemoteQueryStep } from "../../common"
-import {
-  previewOrderChangeStep,
-  updateOrderChangeActionsStep,
-  updateOrderShippingMethodsStep,
-} from "../../order"
-import { prepareShippingMethodUpdate } from "../../order/utils/prepare-shipping-method"
+import { useRemoteQueryStep } from "#common/steps/use-remote-query"
+import { previewOrderChangeStep } from "#order/steps/preview-order-change"
+import { updateOrderChangeActionsStep } from "#order/steps/update-order-change-actions"
+import { updateOrderShippingMethodsStep } from "#order/steps/update-shipping-methods"
+import { prepareShippingMethodUpdate } from "#order/utils/prepare-shipping-method"
 import { getDraftOrderPromotionContextStep } from "../steps/get-draft-order-promotion-context"
 import { validateDraftOrderChangeStep } from "../steps/validate-draft-order-change"
 import { validateDraftOrderShippingMethodActionStep } from "../steps/validate-draft-order-shipping-method-action"
 import { draftOrderFieldsForRefreshSteps } from "../utils/fields"
 import { refreshDraftOrderAdjustmentsWorkflow } from "./refresh-draft-order-adjustments"
-import { acquireLockStep, releaseLockStep } from "../../locking"
+import { acquireLockStep } from "#locking/steps/acquire-lock"
+import { releaseLockStep } from "#locking/steps/release-lock"
 
 export const updateDraftOrderActionShippingMethodWorkflowId =
   "update-draft-order-action-shipping-method"

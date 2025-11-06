@@ -17,7 +17,7 @@ import {
   createWorkflow,
   transform,
 } from "@medusajs/framework/workflows-sdk"
-import { useQueryGraphStep } from "../../../common"
+import { useQueryGraphStep } from "#common/steps/use-query-graph"
 import { previewOrderChangeStep } from "../../steps/preview-order-change"
 import {
   throwIfIsCancelled,

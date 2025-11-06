@@ -26,19 +26,15 @@ import {
   WorkflowData,
   WorkflowResponse,
 } from "@medusajs/framework/workflows-sdk"
-import {
-  createRemoteLinkStep,
-  emitEventStep,
-  useQueryGraphStep,
-  useRemoteQueryStep,
-} from "../../common"
-import { createFulfillmentWorkflow } from "../../fulfillment"
-import { adjustInventoryLevelsStep } from "../../inventory"
-import {
-  deleteReservationsStep,
-  updateReservationsStep,
-} from "../../reservation"
-import { registerOrderFulfillmentStep } from "../steps"
+import { createRemoteLinkStep } from "#common/steps/create-remote-links"
+import { emitEventStep } from "#common/steps/emit-event"
+import { useQueryGraphStep } from "#common/steps/use-query-graph"
+import { useRemoteQueryStep } from "#common/steps/use-remote-query"
+import { createFulfillmentWorkflow } from "#fulfillment/workflows/create-fulfillment"
+import { adjustInventoryLevelsStep } from "#inventory/steps/adjust-inventory-levels"
+import { deleteReservationsStep } from "#reservation/steps/delete-reservations"
+import { updateReservationsStep } from "#reservation/steps/update-reservations"
+import { registerOrderFulfillmentStep } from "#order/steps/register-fulfillment"
 import { buildReservationsMap } from "../utils/build-reservations-map"
 import {
   throwIfItemsAreNotGroupedByShippingRequirement,

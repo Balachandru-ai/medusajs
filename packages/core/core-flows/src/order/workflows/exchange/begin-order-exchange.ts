@@ -10,7 +10,7 @@ import {
   createWorkflow,
   transform,
 } from "@medusajs/framework/workflows-sdk"
-import { useRemoteQueryStep } from "../../../common"
+import { useRemoteQueryStep } from "#common/steps/use-remote-query"
 import { createOrderChangeStep } from "../../steps/create-order-change"
 import { createOrderExchangesStep } from "../../steps/exchange/create-exchange"
 import { throwIfOrderIsCancelled } from "../../utils/order-validation"

@@ -20,22 +20,18 @@ import {
   WorkflowData,
   WorkflowResponse,
 } from "@medusajs/framework/workflows-sdk"
-import {
-  createRemoteLinkStep,
-  emitEventStep,
-  useQueryGraphStep,
-} from "../../common"
-import { acquireLockStep } from "../../locking/steps/acquire-lock"
-import { releaseLockStep } from "../../locking/steps/release-lock"
-import { addOrderTransactionStep } from "../../order/steps/add-order-transaction"
-import { createOrdersStep } from "../../order/steps/create-orders"
-import { authorizePaymentSessionStep } from "../../payment/steps/authorize-payment-session"
-import { registerUsageStep } from "../../promotion/steps/register-usage"
-import {
-  updateCartsStep,
-  validateCartPaymentsStep,
-  validateShippingStep,
-} from "../steps"
+import { createRemoteLinkStep } from "#common/steps/create-remote-links"
+import { emitEventStep } from "#common/steps/emit-event"
+import { useQueryGraphStep } from "#common/steps/use-query-graph"
+import { acquireLockStep } from "#locking/steps/acquire-lock"
+import { releaseLockStep } from "#locking/steps/release-lock"
+import { addOrderTransactionStep } from "#order/steps/add-order-transaction"
+import { createOrdersStep } from "#order/steps/create-orders"
+import { authorizePaymentSessionStep } from "#payment/steps/authorize-payment-session"
+import { registerUsageStep } from "#promotion/steps/register-usage"
+import { updateCartsStep } from "#cart/steps/update-carts"
+import { validateCartPaymentsStep } from "#cart/steps/validate-cart-payments"
+import { validateShippingStep } from "#cart/steps/validate-shipping"
 import { compensatePaymentIfNeededStep } from "../steps/compensate-payment-if-needed"
 import { reserveInventoryStep } from "../steps/reserve-inventory"
 import { completeCartFields } from "../utils/fields"

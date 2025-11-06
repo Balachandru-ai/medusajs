@@ -22,14 +22,14 @@ export type CreateOrderExchangeItemsFromActionsInput = {
 
 /**
  * This step creates exchange items from change actions.
- * 
+ *
  * :::note
- * 
+ *
  * You can retrieve an order change action details using [Query](https://docs.medusajs.com/learn/fundamentals/module-links/query),
  * or [useQueryGraphStep](https://docs.medusajs.com/resources/references/medusa-workflows/steps/useQueryGraphStep).
- * 
+ *
  * :::
- * 
+ *
  * @example
  * const data = createOrderExchangeItemsFromActionsStep({
  *   exchangeId: "exchange_123",

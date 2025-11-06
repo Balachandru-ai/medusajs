@@ -10,7 +10,7 @@ import {
   createWorkflow,
   transform,
 } from "@medusajs/framework/workflows-sdk"
-import { useRemoteQueryStep } from "../../../common"
+import { useRemoteQueryStep } from "#common/steps/use-remote-query"
 import { createOrderClaimsStep } from "../../steps/claim/create-claims"
 import { createOrderChangeStep } from "../../steps/create-order-change"
 import { throwIfIsCancelled } from "../../utils/order-validation"
@@ -28,14 +28,14 @@ export type BeginClaimOrderValidationStepInput = {
 /**
  * This step validates that the order associated with the claim isn't canceled.
  * If not valid, the step will throw an error.
- * 
+ *
  * :::note
- * 
+ *
  * You can retrieve an order's details using [Query](https://docs.medusajs.com/learn/fundamentals/module-links/query),
  * or [useQueryGraphStep](https://docs.medusajs.com/resources/references/medusa-workflows/steps/useQueryGraphStep).
- * 
+ *
  * :::
- * 
+ *
  * @example
  * const data = beginClaimOrderValidationStep({
  *   order: {
@@ -53,12 +53,12 @@ export const beginClaimOrderValidationStep = createStep(
 
 export const beginClaimOrderWorkflowId = "begin-claim-order"
 /**
- * This workflow creates an order claim in requested state. It's used by the 
+ * This workflow creates an order claim in requested state. It's used by the
  * [Create Claim Admin API Route](https://docs.medusajs.com/api/admin#claims_postclaims).
- * 
+ *
  * You can use this workflow within your customizations or your own custom workflows, allowing you to create a claim
  * for an order in your custom flows.
- * 
+ *
  * @example
  * const { result } = await beginClaimOrderWorkflow(container)
  * .run({
@@ -67,9 +67,9 @@ export const beginClaimOrderWorkflowId = "begin-claim-order"
  *     type: "refund",
  *   }
  * })
- * 
+ *
  * @summary
- * 
+ *
  * Create an order claim in requested state.
  */
 export const beginClaimOrderWorkflow = createWorkflow(

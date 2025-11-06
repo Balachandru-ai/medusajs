@@ -4,7 +4,7 @@ import {
   WorkflowResponse,
   createWorkflow,
 } from "@medusajs/framework/workflows-sdk"
-import { createPricePreferencesStep } from "../steps"
+import { createPricePreferencesStep } from "#pricing/steps/create-price-preferences"
 
 /**
  * The price preferences to create.

@@ -7,10 +7,8 @@ import {
   WorkflowResponse,
   createWorkflow,
 } from "@medusajs/framework/workflows-sdk"
-import {
-  createInventoryLevelsStep,
-  validateInventoryLocationsStep,
-} from "../steps"
+import { createInventoryLevelsStep } from "#inventory/steps/create-inventory-levels"
+import { validateInventoryLocationsStep } from "#inventory/steps/validate-inventory-locations"
 
 /**
  * The data to create the inventory levels.

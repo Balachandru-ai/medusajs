@@ -4,10 +4,8 @@ import {
   createWorkflow,
   parallelize,
 } from "@medusajs/framework/workflows-sdk"
-import {
-  addCampaignPromotionsStep,
-  removeCampaignPromotionsStep,
-} from "../steps"
+import { addCampaignPromotionsStep } from "#promotion/steps/add-campaign-promotions"
+import { removeCampaignPromotionsStep } from "#promotion/steps/remove-campaign-promotions"
 
 /**
  * The data to manage the promotions of a campaign.

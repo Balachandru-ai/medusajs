@@ -5,9 +5,9 @@ import {
   WorkflowData,
   WorkflowResponse,
 } from "@medusajs/framework/workflows-sdk"
-import { calculateShippingOptionsPricesStep } from "../steps"
-import { useQueryGraphStep } from "../../common"
-import { cartFieldsForCalculateShippingOptionsPrices } from "../../cart/utils/fields"
+import { calculateShippingOptionsPricesStep } from "#fulfillment/steps/calculate-shipping-options-prices"
+import { useQueryGraphStep } from "#common/steps/use-query-graph"
+import { cartFieldsForCalculateShippingOptionsPrices } from "#cart/utils/fields"
 
 export const calculateShippingOptionsPricesWorkflowId =
   "calculate-shipping-options-prices-workflow"

@@ -14,8 +14,8 @@ import {
   createWorkflow,
   transform,
 } from "@medusajs/framework/workflows-sdk"
-import { useQueryGraphStep } from "../../../common"
-import { deleteOrderChangesStep } from "../../steps"
+import { useQueryGraphStep } from "#common/steps/use-query-graph"
+import { deleteOrderChangesStep } from "#order/steps/delete-order-changes"
 import {
   throwIfIsCancelled,
   throwIfOrderChangeIsNotActive,

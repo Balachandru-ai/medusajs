@@ -28,7 +28,7 @@ export interface DeleteEntitiesStepType {
 export const deleteEntitiesStepId = "delete-entities-step"
 /**
  * This step deletes one or more entities using methods in a module's service.
- * 
+ *
  * @example
  * deleteEntitiesStep({
  *   moduleRegistrationName: Modules.CART,

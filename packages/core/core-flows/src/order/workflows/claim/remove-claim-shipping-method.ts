@@ -14,8 +14,8 @@ import {
   parallelize,
   transform,
 } from "@medusajs/framework/workflows-sdk"
-import { useRemoteQueryStep } from "../../../common"
-import { deleteOrderShippingMethods } from "../../steps"
+import { useRemoteQueryStep } from "#common/steps/use-remote-query"
+import { deleteOrderShippingMethods } from "#order/steps/delete-order-shipping-methods"
 import { deleteOrderChangeActionsStep } from "../../steps/delete-order-change-actions"
 import { previewOrderChangeStep } from "../../steps/preview-order-change"
 import {
@@ -38,21 +38,24 @@ export type RemoveClaimShippingMethodValidationStepInput = {
   /**
    * The details of removing the shipping method.
    */
-  input: Pick<OrderWorkflow.DeleteClaimShippingMethodWorkflowInput, "claim_id" | "action_id">
+  input: Pick<
+    OrderWorkflow.DeleteClaimShippingMethodWorkflowInput,
+    "claim_id" | "action_id"
+  >
 }
 
 /**
  * This step validates that a claim's shipping method can be removed.
  * If the claim or order change is canceled, the shipping method doesn't
  * exist in the claim, or the action is not adding a shipping method, the step will throw an error.
- * 
+ *
  * :::note
- * 
+ *
  * You can retrieve an order claim and order change details using [Query](https://docs.medusajs.com/learn/fundamentals/module-links/query),
  * or [useQueryGraphStep](https://docs.medusajs.com/resources/references/medusa-workflows/steps/useQueryGraphStep).
- * 
+ *
  * :::
- * 
+ *
  * @example
  * const data = removeClaimShippingMethodValidationStep({
  *   orderChange: {
@@ -101,10 +104,10 @@ export const removeClaimShippingMethodWorkflowId =
  * This workflow removes an inbound (return) or outbound (delivery of new items) shipping method of a claim.
  * It's used by the [Remove Inbound Shipping Method](https://docs.medusajs.com/api/admin#claims_deleteclaimsidinboundshippingmethodaction_id),
  * or [Remove Outbound Shipping Method](https://docs.medusajs.com/api/admin#claims_deleteclaimsidoutboundshippingmethodaction_id) Admin API Routes.
- * 
+ *
  * You can use this workflow within your customizations or your own custom workflows, allowing you to remove shipping methods from a claim
  * in your own custom flows.
- * 
+ *
  * @example
  * const { result } = await removeClaimShippingMethodWorkflow(container)
  * .run({
@@ -113,9 +116,9 @@ export const removeClaimShippingMethodWorkflowId =
  *     action_id: "orchact_123",
  *   }
  * })
- * 
+ *
  * @summary
- * 
+ *
  * Remove an inbound or outbound shipping method from a claim.
  */
 export const removeClaimShippingMethodWorkflow = createWorkflow(

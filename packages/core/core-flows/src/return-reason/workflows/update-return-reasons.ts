@@ -8,7 +8,7 @@ import {
   WorkflowResponse,
   createWorkflow,
 } from "@medusajs/framework/workflows-sdk"
-import { updateReturnReasonsStep } from "../steps"
+import { updateReturnReasonsStep } from "#return-reason/steps/update-return-reasons"
 
 /**
  * The data to update return reasons.
@@ -33,10 +33,10 @@ export const updateReturnReasonsWorkflowId = "update-return-reasons"
 /**
  * This workflow updates return reasons matching the specified filters. It's used by the
  * [Update Return Reason Admin API Route](https://docs.medusajs.com/api/admin#return-reasons_postreturnreasonsid).
- * 
+ *
  * You can use this workflow within your customizations or your own custom workflows, allowing you to
  * update return reasons within your custom flows.
- * 
+ *
  * @example
  * const { result } = await updateReturnReasonsWorkflow(container)
  * .run({
@@ -49,9 +49,9 @@ export const updateReturnReasonsWorkflowId = "update-return-reasons"
  *     }
  *   }
  * })
- * 
+ *
  * @summary
- * 
+ *
  * Update return reasons.
  */
 export const updateReturnReasonsWorkflow = createWorkflow(

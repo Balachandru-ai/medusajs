@@ -24,15 +24,14 @@ import {
   transform,
   when,
 } from "@medusajs/framework/workflows-sdk"
-import { reserveInventoryStep } from "../../../cart/steps/reserve-inventory"
-import { prepareConfirmInventoryInput } from "../../../cart/utils/prepare-confirm-inventory-input"
-import {
-  createRemoteLinkStep,
-  emitEventStep,
-  useRemoteQueryStep,
-} from "../../../common"
-import { createReturnFulfillmentWorkflow } from "../../../fulfillment/workflows/create-return-fulfillment"
-import { previewOrderChangeStep, updateReturnsStep } from "../../steps"
+import { reserveInventoryStep } from "#cart/steps/reserve-inventory"
+import { prepareConfirmInventoryInput } from "#cart/utils/prepare-confirm-inventory-input"
+import { createRemoteLinkStep } from "#common/steps/create-remote-links"
+import { emitEventStep } from "#common/steps/emit-event"
+import { useRemoteQueryStep } from "#common/steps/use-remote-query"
+import { createReturnFulfillmentWorkflow } from "#fulfillment/workflows/create-return-fulfillment"
+import { previewOrderChangeStep } from "#order/steps/preview-order-change"
+import { updateReturnsStep } from "#order/steps/return/update-returns"
 import { confirmOrderChanges } from "../../steps/confirm-order-changes"
 import { createOrderExchangeItemsFromActionsStep } from "../../steps/exchange/create-exchange-items-from-actions"
 import { createReturnItemsFromActionsStep } from "../../steps/return/create-return-items-from-actions"

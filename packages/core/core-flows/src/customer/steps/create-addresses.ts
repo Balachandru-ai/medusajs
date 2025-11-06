@@ -13,7 +13,7 @@ export type CreateCustomerAddressesStepInput = CreateCustomerAddressDTO[]
 export const createCustomerAddressesStepId = "create-customer-addresses"
 /**
  * This step creates one or more customer addresses.
- * 
+ *
  * @example
  * const data = createCustomerAddressesStep([
  *   {

@@ -12,9 +12,10 @@ import {
   WorkflowData,
   WorkflowResponse,
 } from "@medusajs/framework/workflows-sdk"
-import { createRemoteLinkStep } from "../../common/steps/create-remote-links"
-import { useRemoteQueryStep } from "../../common/steps/use-remote-query"
-import { acquireLockStep, releaseLockStep } from "../../locking"
+import { createRemoteLinkStep } from "#common/steps/create-remote-links"
+import { useRemoteQueryStep } from "#common/steps/use-remote-query"
+import { acquireLockStep } from "#locking/steps/acquire-lock"
+import { releaseLockStep } from "#locking/steps/release-lock"
 import { createPaymentCollectionsStep } from "../steps/create-payment-collection"
 import { validateCartStep } from "../steps/validate-cart"
 

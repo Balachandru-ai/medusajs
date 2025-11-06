@@ -8,7 +8,7 @@ import {
   createHook,
   createWorkflow,
 } from "@medusajs/framework/workflows-sdk"
-import { updateCampaignsStep } from "../steps"
+import { updateCampaignsStep } from "#promotion/steps/update-campaigns"
 
 /**
  * The data to update one or more campaigns, along with custom data that's passed to the workflow's hooks.

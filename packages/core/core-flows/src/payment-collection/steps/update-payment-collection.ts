@@ -27,7 +27,7 @@ export interface UpdatePaymentCollectionStepInput {
 export const updatePaymentCollectionStepId = "update-payment-collection"
 /**
  * This step updates payment collections matching the specified filters.
- * 
+ *
  * @example
  * const data = updatePaymentCollectionStep({
  *   selector: {

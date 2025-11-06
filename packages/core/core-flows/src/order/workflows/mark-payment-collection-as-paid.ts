@@ -6,12 +6,10 @@ import {
   WorkflowData,
   WorkflowResponse,
 } from "@medusajs/framework/workflows-sdk"
-import { useQueryGraphStep } from "../../common"
-import {
-  authorizePaymentSessionStep,
-  capturePaymentWorkflow,
-} from "../../payment"
-import { createPaymentSessionsWorkflow } from "../../payment-collection"
+import { useQueryGraphStep } from "#common/steps/use-query-graph"
+import { authorizePaymentSessionStep } from "#payment/steps/authorize-payment-session"
+import { capturePaymentWorkflow } from "#payment/workflows/capture-payment"
+import { createPaymentSessionsWorkflow } from "#payment-collection/workflows/create-payment-session"
 
 /**
  * The details of the payment collection to validate.

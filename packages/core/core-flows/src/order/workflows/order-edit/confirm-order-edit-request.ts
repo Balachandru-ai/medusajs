@@ -16,18 +16,16 @@ import {
   createWorkflow,
   transform,
 } from "@medusajs/framework/workflows-sdk"
-import { reserveInventoryStep } from "../../../cart/steps/reserve-inventory"
+import { reserveInventoryStep } from "#cart/steps/reserve-inventory"
 import {
   prepareConfirmInventoryInput,
   requiredOrderFieldsForInventoryConfirmation,
-} from "../../../cart/utils/prepare-confirm-inventory-input"
-import {
-  emitEventStep,
-  useQueryGraphStep,
-  useRemoteQueryStep,
-} from "../../../common"
-import { deleteReservationsByLineItemsStep } from "../../../reservation"
-import { previewOrderChangeStep } from "../../steps"
+} from "#cart/utils/prepare-confirm-inventory-input"
+import { emitEventStep } from "#common/steps/emit-event"
+import { useQueryGraphStep } from "#common/steps/use-query-graph"
+import { useRemoteQueryStep } from "#common/steps/use-remote-query"
+import { deleteReservationsByLineItemsStep } from "#reservation/steps/delete-reservations-by-line-items"
+import { previewOrderChangeStep } from "#order/steps/preview-order-change"
 import { confirmOrderChanges } from "../../steps/confirm-order-changes"
 import {
   throwIfIsCancelled,

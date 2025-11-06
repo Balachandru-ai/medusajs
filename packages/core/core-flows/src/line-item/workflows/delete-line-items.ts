@@ -1,7 +1,8 @@
 import { createWorkflow, WorkflowData } from "@medusajs/framework/workflows-sdk"
 import { AdditionalData } from "@medusajs/types"
-import { refreshCartItemsWorkflow } from "../../cart/workflows/refresh-cart-items"
-import { acquireLockStep, releaseLockStep } from "../../locking"
+import { refreshCartItemsWorkflow } from "#cart/workflows/refresh-cart-items"
+import { acquireLockStep } from "#locking/steps/acquire-lock"
+import { releaseLockStep } from "#locking/steps/release-lock"
 import { deleteLineItemsStep } from "../steps/delete-line-items"
 
 /**

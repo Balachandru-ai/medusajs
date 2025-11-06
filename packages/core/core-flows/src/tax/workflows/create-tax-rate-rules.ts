@@ -7,7 +7,7 @@ import {
   WorkflowResponse,
   createWorkflow,
 } from "@medusajs/framework/workflows-sdk"
-import { createTaxRateRulesStep } from "../steps"
+import { createTaxRateRulesStep } from "#tax/steps/create-tax-rate-rules"
 
 /**
  * The data to create tax rules for rates.

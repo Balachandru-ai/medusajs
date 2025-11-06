@@ -5,8 +5,9 @@ import {
   WorkflowData,
   WorkflowResponse,
 } from "@medusajs/framework/workflows-sdk"
-import { createPaymentCollectionsStep } from "../../cart"
-import { createRemoteLinkStep, useQueryGraphStep } from "../../common"
+import { createPaymentCollectionsStep } from "#cart/steps/create-payment-collection"
+import { createRemoteLinkStep } from "#common/steps/create-remote-links"
+import { useQueryGraphStep } from "#common/steps/use-query-graph"
 
 /**
  * The details of the payment collection to create.

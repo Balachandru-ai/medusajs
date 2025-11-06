@@ -104,7 +104,7 @@ export const setRegionsPaymentProvidersStepId =
   "add-region-payment-providers-step"
 /**
  * This step sets the payment providers available in regions.
- * 
+ *
  * @example
  * const data = setRegionsPaymentProvidersStep({
  *   input: [

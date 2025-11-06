@@ -9,7 +9,7 @@ import {
   createStep,
   createWorkflow,
 } from "@medusajs/framework/workflows-sdk"
-import { updatePromotionsStep } from "../steps"
+import { updatePromotionsStep } from "#promotion/steps/update-promotions"
 
 /**
  * The data to update the status of one or more promotions.
@@ -50,13 +50,13 @@ export const updatePromotionsValidationStep = createStep(
 export const updatePromotionsStatusWorkflowId = "update-promotions-status"
 /**
  * This workflow updates the status of one or more promotions.
- * 
+ *
  * This workflow has a hook that allows you to perform custom actions on the updated promotions. For example, you can pass under `additional_data` custom data that
  * allows you to create custom data models linked to the promotions.
- * 
+ *
  * You can also use this workflow within your customizations or your own custom workflows, allowing you to
  * update the status of promotions within your custom flows.
- * 
+ *
  * @example
  * const { result } = await updatePromotionsStatusWorkflow(container)
  * .run({
@@ -70,11 +70,11 @@ export const updatePromotionsStatusWorkflowId = "update-promotions-status"
  *     }
  *   }
  * })
- * 
+ *
  * @summary
- * 
+ *
  * Update the status of one or more promotions.
- * 
+ *
  * @property hooks.promotionStatusUpdated - This hook is executed after the promotions' status is updated. You can consume this hook to perform custom actions on the updated promotions.
  */
 export const updatePromotionsStatusWorkflow = createWorkflow(

@@ -8,7 +8,7 @@ import {
   WorkflowResponse,
   createWorkflow,
 } from "@medusajs/framework/workflows-sdk"
-import { createEntitiesStep } from "../../common/steps/create-entities"
+import { createEntitiesStep } from "#common/steps/create-entities"
 
 export const createOrderChangeActionsWorkflowId = "create-order-change-actions"
 /**

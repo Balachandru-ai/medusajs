@@ -6,7 +6,7 @@ import {
   WorkflowData,
   WorkflowResponse,
 } from "@medusajs/framework/workflows-sdk"
-import { useRemoteQueryStep } from "../../common"
+import { useRemoteQueryStep } from "#common/steps/use-remote-query"
 import {
   getLastFulfillmentStatus,
   getLastPaymentStatus,

@@ -7,7 +7,7 @@ import {
   WorkflowResponse,
   createWorkflow,
 } from "@medusajs/framework/workflows-sdk"
-import { createOrderChangeStep } from "../steps"
+import { createOrderChangeStep } from "#order/steps/create-order-change"
 
 export const createOrderChangeWorkflowId = "create-order-change"
 /**

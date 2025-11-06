@@ -26,7 +26,7 @@ export type UpdateOrdersStepInput = {
 export const updateOrdersStepId = "update-orders"
 /**
  * This step updates orders matching the specified filters.
- * 
+ *
  * @example
  * const data = updateOrdersStep({
  *   selector: {

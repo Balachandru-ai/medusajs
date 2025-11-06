@@ -11,7 +11,8 @@ import {
   InventoryLevelDTO,
   InventoryTypes,
 } from "@medusajs/framework/types"
-import { createInventoryLevelsStep, updateInventoryLevelsStep } from "../steps"
+import { createInventoryLevelsStep } from "#inventory/steps/create-inventory-levels"
+import { updateInventoryLevelsStep } from "#inventory/steps/update-inventory-levels"
 import { deleteInventoryLevelsWorkflow } from "./delete-inventory-levels"
 
 /**

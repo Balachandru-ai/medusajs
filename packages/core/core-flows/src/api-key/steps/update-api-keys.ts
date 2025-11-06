@@ -26,7 +26,7 @@ export type UpdateApiKeysStepInput = {
 export const updateApiKeysStepId = "update-api-keys"
 /**
  * This step updates one or more API keys.
- * 
+ *
  * @example
  * const data = updateApiKeysStep({
  *   selector: {

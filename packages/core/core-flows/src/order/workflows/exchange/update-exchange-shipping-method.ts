@@ -17,18 +17,16 @@ import {
   transform,
   when,
 } from "@medusajs/framework/workflows-sdk"
-import { useRemoteQueryStep } from "../../../common"
-import {
-  updateOrderChangeActionsStep,
-  updateOrderShippingMethodsStep,
-} from "../../steps"
+import { useRemoteQueryStep } from "#common/steps/use-remote-query"
+import { updateOrderChangeActionsStep } from "#order/steps/update-order-change-actions"
+import { updateOrderShippingMethodsStep } from "#order/steps/update-shipping-methods"
 import { previewOrderChangeStep } from "../../steps/preview-order-change"
 import {
   throwIfIsCancelled,
   throwIfOrderChangeIsNotActive,
 } from "../../utils/order-validation"
 import { prepareShippingMethodUpdate } from "../../utils/prepare-shipping-method"
-import { pricingContextResult } from "../../../cart/utils/schemas"
+import { pricingContextResult } from "#cart/utils/schemas"
 
 /**
  * The data to validate that an exchange's shipping method can be updated.
@@ -134,11 +132,11 @@ export const updateExchangeShippingMethodWorkflowId =
  * @summary
  *
  * Update an exchange's inbound or outbound shipping method.
- * 
+ *
  * @property hooks.setPricingContext - This hook is executed before the shipping method is updated. You can consume this hook to return any custom context useful for the prices retrieval of the shipping method's option.
- * 
+ *
  * For example, assuming you have the following custom pricing rule:
- * 
+ *
  * ```json
  * {
  *   "attribute": "location_id",
@@ -146,13 +144,13 @@ export const updateExchangeShippingMethodWorkflowId =
  *   "value": "sloc_123",
  * }
  * ```
- * 
+ *
  * You can consume the `setPricingContext` hook to add the `location_id` context to the prices calculation:
- * 
+ *
  * ```ts
  * import { updateExchangeShippingMethodWorkflow } from "@medusajs/medusa/core-flows";
  * import { StepResponse } from "@medusajs/workflows-sdk";
- * 
+ *
  * updateExchangeShippingMethodWorkflow.hooks.setPricingContext((
  *   { order_exchange, order_change, additional_data }, { container }
  * ) => {
@@ -161,13 +159,13 @@ export const updateExchangeShippingMethodWorkflowId =
  *   });
  * });
  * ```
- * 
+ *
  * The price of the shipping method's option will now be retrieved using the context you return.
- * 
+ *
  * :::note
- * 
+ *
  * Learn more about prices calculation context in the [Prices Calculation](https://docs.medusajs.com/resources/commerce-modules/pricing/price-calculation) documentation.
- * 
+ *
  * :::
  */
 export const updateExchangeShippingMethodWorkflow = createWorkflow(

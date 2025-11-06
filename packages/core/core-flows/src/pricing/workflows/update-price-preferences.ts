@@ -4,7 +4,7 @@ import {
   WorkflowResponse,
   createWorkflow,
 } from "@medusajs/framework/workflows-sdk"
-import { updatePricePreferencesStep } from "../steps"
+import { updatePricePreferencesStep } from "#pricing/steps/update-price-preferences"
 
 export const updatePricePreferencesWorkflowId = "update-price-preferences"
 /**

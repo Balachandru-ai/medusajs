@@ -1,7 +1,7 @@
 import { Modules } from "@medusajs/framework/utils"
 import { WorkflowData, createWorkflow } from "@medusajs/framework/workflows-sdk"
-import { removeRemoteLinkStep } from "../../common"
-import { deleteReturnReasonStep } from "../steps"
+import { removeRemoteLinkStep } from "#common/steps/remove-remote-links"
+import { deleteReturnReasonStep } from "#return-reason/steps/delete-return-reasons"
 
 /**
  * The IDs of return reasons to delete.

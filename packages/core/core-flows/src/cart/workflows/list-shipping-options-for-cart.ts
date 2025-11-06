@@ -5,11 +5,9 @@ import {
   WorkflowData,
   WorkflowResponse,
 } from "@medusajs/framework/workflows-sdk"
-import {
-  useQueryGraphStep,
-  useRemoteQueryStep,
-  validatePresenceOfStep,
-} from "../../common"
+import { useQueryGraphStep } from "#common/steps/use-query-graph"
+import { useRemoteQueryStep } from "#common/steps/use-remote-query"
+import { validatePresenceOfStep } from "#common/steps/validate-presence-of"
 import { cartFieldsForPricingContext } from "../utils/fields"
 import {
   AdditionalData,

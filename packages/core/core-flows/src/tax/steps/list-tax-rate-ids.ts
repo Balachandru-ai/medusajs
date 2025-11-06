@@ -18,7 +18,7 @@ export type ListTaxRateIdsStepInput = {
 export const listTaxRateIdsStepId = "list-tax-rate-ids"
 /**
  * This step retrieves the IDs of tax rates matching the specified filters.
- * 
+ *
  * @example
  * const data = listTaxRateIdsStep({
  *   selector: {

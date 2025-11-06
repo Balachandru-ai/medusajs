@@ -5,7 +5,7 @@ import {
 } from "@medusajs/framework/types"
 import { Modules } from "@medusajs/framework/utils"
 import { StepResponse, createStep } from "@medusajs/framework/workflows-sdk"
-import { createStoresWorkflow } from "../../store"
+import { createStoresWorkflow } from "#store/workflows/create-stores"
 
 /**
  * The data to create a default store.
@@ -21,7 +21,7 @@ export const createDefaultStoreStepId = "create-default-store"
 /**
  * This step creates a default store. Useful if creating a workflow
  * that seeds data into Medusa.
- * 
+ *
  * @example
  * const data = createDefaultStoreStep({
  *   store: {

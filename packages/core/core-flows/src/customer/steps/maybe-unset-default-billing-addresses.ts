@@ -6,14 +6,15 @@ import {
 } from "@medusajs/framework/types"
 import { Modules, isDefined } from "@medusajs/framework/utils"
 import { createStep } from "@medusajs/framework/workflows-sdk"
-import { unsetForCreate, unsetForUpdate } from "./utils"
+import { unsetForCreate } from "#customer/steps/utils/unset-address-for-create"
+import { unsetForUpdate } from "#customer/steps/utils/unset-address-for-update"
 
 /**
  * The addresses being created or updated.
  */
 export type MaybeUnsetDefaultBillingAddressStepInput = {
   /**
-   * The addresses being created. If the address has 
+   * The addresses being created. If the address has
    * the `is_default_billing` property set to `true`,
    * the existing default billing address of the customer will be unset.
    */
@@ -28,7 +29,7 @@ export type MaybeUnsetDefaultBillingAddressStepInput = {
     selector: FilterableCustomerAddressProps
     /**
      * The address details to update. The `is_default_billing` property
-     * of existing customer addresses are only unset if 
+     * of existing customer addresses are only unset if
      * the `is_default_billing` property in this object is set to `true`.
      */
     update: UpdateCustomerAddressDTO
@@ -40,7 +41,7 @@ export const maybeUnsetDefaultBillingAddressesStepId =
 /**
  * This step unsets the `is_default_billing` property of existing customer addresses
  * if the `is_default_billing` property in the addresses in the input is set to `true`.
- * 
+ *
  * @example
  * const data = maybeUnsetDefaultBillingAddressesStep({
  *   create: [{

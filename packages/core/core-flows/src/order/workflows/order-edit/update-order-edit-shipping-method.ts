@@ -16,12 +16,11 @@ import {
   transform,
   when,
 } from "@medusajs/framework/workflows-sdk"
-import { pricingContextResult } from "../../../cart/utils/schemas"
-import { useQueryGraphStep, useRemoteQueryStep } from "../../../common"
-import {
-  updateOrderChangeActionsStep,
-  updateOrderShippingMethodsStep,
-} from "../../steps"
+import { pricingContextResult } from "#cart/utils/schemas"
+import { useQueryGraphStep } from "#common/steps/use-query-graph"
+import { useRemoteQueryStep } from "#common/steps/use-remote-query"
+import { updateOrderChangeActionsStep } from "#order/steps/update-order-change-actions"
+import { updateOrderShippingMethodsStep } from "#order/steps/update-shipping-methods"
 import { previewOrderChangeStep } from "../../steps/preview-order-change"
 import { throwIfOrderChangeIsNotActive } from "../../utils/order-validation"
 import { prepareShippingMethodUpdate } from "../../utils/prepare-shipping-method"

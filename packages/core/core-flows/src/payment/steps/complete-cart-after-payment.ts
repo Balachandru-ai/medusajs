@@ -1,6 +1,6 @@
 import { Modules } from "@medusajs/framework/utils"
 import { createStep } from "@medusajs/framework/workflows-sdk"
-import { completeCartWorkflowId } from "../../cart/workflows/complete-cart"
+import { completeCartWorkflowId } from "#cart/workflows/complete-cart"
 
 /**
  * The data to complete a cart after a payment is captured.

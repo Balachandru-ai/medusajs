@@ -12,16 +12,15 @@ import {
   OrderPreviewDTO,
   OrderWorkflow,
 } from "@medusajs/framework/types"
-import { useRemoteQueryStep } from "../../common"
-import {
-  deleteOrderChangeActionsStep,
-  previewOrderChangeStep,
-} from "../../order"
+import { useRemoteQueryStep } from "#common/steps/use-remote-query"
+import { deleteOrderChangeActionsStep } from "#order/steps/delete-order-change-actions"
+import { previewOrderChangeStep } from "#order/steps/preview-order-change"
 import { validateDraftOrderChangeStep } from "../steps/validate-draft-order-change"
 import { validateDraftOrderRemoveActionItemStep } from "../steps/validate-draft-order-remove-action-item"
 import { draftOrderFieldsForRefreshSteps } from "../utils/fields"
 import { refreshDraftOrderAdjustmentsWorkflow } from "./refresh-draft-order-adjustments"
-import { acquireLockStep, releaseLockStep } from "../../locking"
+import { acquireLockStep } from "#locking/steps/acquire-lock"
+import { releaseLockStep } from "#locking/steps/release-lock"
 
 export const removeDraftOrderActionItemWorkflowId =
   "remove-draft-order-action-item"

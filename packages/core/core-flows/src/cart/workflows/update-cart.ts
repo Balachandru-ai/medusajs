@@ -17,15 +17,15 @@ import {
   WorkflowData,
   WorkflowResponse,
 } from "@medusajs/framework/workflows-sdk"
-import { emitEventStep, useQueryGraphStep } from "../../common"
-import { deleteLineItemsStep } from "../../line-item"
-import { acquireLockStep, releaseLockStep } from "../../locking"
-import {
-  findOrCreateCustomerStep,
-  findSalesChannelStep,
-  updateCartsStep,
-  validateCartStep,
-} from "../steps"
+import { emitEventStep } from "#common/steps/emit-event"
+import { useQueryGraphStep } from "#common/steps/use-query-graph"
+import { deleteLineItemsStep } from "#line-item/steps/delete-line-items"
+import { acquireLockStep } from "#locking/steps/acquire-lock"
+import { releaseLockStep } from "#locking/steps/release-lock"
+import { findOrCreateCustomerStep } from "#cart/steps/find-or-create-customer"
+import { findSalesChannelStep } from "#cart/steps/find-sales-channel"
+import { updateCartsStep } from "#cart/steps/update-carts"
+import { validateCartStep } from "#cart/steps/validate-cart"
 import { validateSalesChannelStep } from "../steps/validate-sales-channel"
 import { refreshCartItemsWorkflow } from "./refresh-cart-items"
 

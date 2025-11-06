@@ -17,11 +17,11 @@ import {
   createWorkflow,
   transform,
 } from "@medusajs/framework/workflows-sdk"
-import { emitEventStep } from "../../common"
-import { createLinksWorkflow } from "../../common/workflows/create-links"
-import { validateInventoryItems } from "../../inventory/steps/validate-inventory-items"
-import { createInventoryItemsWorkflow } from "../../inventory/workflows/create-inventory-items"
-import { createPriceSetsStep } from "../../pricing"
+import { emitEventStep } from "#common/steps/emit-event"
+import { createLinksWorkflow } from "#common/workflows/create-links"
+import { validateInventoryItems } from "#inventory/steps/validate-inventory-items"
+import { createInventoryItemsWorkflow } from "#inventory/workflows/create-inventory-items"
+import { createPriceSetsStep } from "#pricing/steps/create-price-sets"
 import { createProductVariantsStep } from "../steps/create-product-variants"
 import { createVariantPricingLinkStep } from "../steps/create-variant-pricing-link"
 

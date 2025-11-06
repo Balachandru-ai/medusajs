@@ -21,7 +21,7 @@ export type GetVariantAvailabilityStepInput = {
 export const getVariantAvailabilityId = "get-variant-availability"
 /**
  * This step computes the inventory availability for a list of variants in a given sales channel.
- * 
+ *
  * @example
  * const data = getVariantAvailabilityStep({
  *   variant_ids: ["variant_123"],

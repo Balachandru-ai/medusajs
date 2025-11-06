@@ -7,7 +7,7 @@ import {
   WorkflowResponse,
   createWorkflow,
 } from "@medusajs/framework/workflows-sdk"
-import { createServiceZonesStep } from "../steps"
+import { createServiceZonesStep } from "#fulfillment/steps/create-service-zones"
 
 /**
  * The service zones to create.

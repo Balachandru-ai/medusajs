@@ -5,8 +5,9 @@ import {
 } from "@medusajs/framework/workflows-sdk"
 import { MedusaError, Modules } from "@medusajs/framework/utils"
 
-import { deleteShippingProfilesStep } from "../steps"
-import { removeRemoteLinkStep, useQueryGraphStep } from "../../common"
+import { deleteShippingProfilesStep } from "#shipping-profile/steps/delete-shipping-profile"
+import { removeRemoteLinkStep } from "#common/steps/remove-remote-links"
+import { useQueryGraphStep } from "#common/steps/use-query-graph"
 
 /**
  * The data to validate the deletion of shipping profiles.
@@ -15,7 +16,7 @@ export type ValidateStepShippingProfileDeleteInput = {
   /**
    * The links between products and shipping profiles.
    */
-  links: { 
+  links: {
     /**
      * The ID of the product linked to the shipping profile.
      */
@@ -30,7 +31,7 @@ export type ValidateStepShippingProfileDeleteInput = {
 /**
  * This step validates that the shipping profiles to delete are not linked to any products.
  * Otherwise, an error is thrown.
- * 
+ *
  * @example
  * validateStepShippingProfileDelete({
  *   links: [
@@ -43,7 +44,7 @@ export type ValidateStepShippingProfileDeleteInput = {
  */
 export const validateStepShippingProfileDelete = createStep(
   "validate-step-shipping-profile-delete",
-  (data: ValidateStepShippingProfileDeleteInput ) => {
+  (data: ValidateStepShippingProfileDeleteInput) => {
     const { links } = data
 
     if (links.length > 0) {

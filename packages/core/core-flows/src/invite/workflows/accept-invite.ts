@@ -7,10 +7,10 @@ import {
   parallelize,
   transform,
 } from "@medusajs/framework/workflows-sdk"
-import { setAuthAppMetadataStep } from "../../auth"
-import { emitEventStep } from "../../common/steps/emit-event"
-import { createUsersWorkflow } from "../../user"
-import { deleteInvitesStep } from "../steps"
+import { setAuthAppMetadataStep } from "#auth/steps/set-auth-app-metadata"
+import { emitEventStep } from "#common/steps/emit-event"
+import { createUsersWorkflow } from "#user/workflows/create-users"
+import { deleteInvitesStep } from "#invite/steps/delete-invites"
 import { validateTokenStep } from "../steps/validate-token"
 
 export const acceptInviteWorkflowId = "accept-invite-workflow"

@@ -1,9 +1,7 @@
 import type { LinkWorkflowInput } from "@medusajs/framework/types"
 import { WorkflowData, createWorkflow } from "@medusajs/framework/workflows-sdk"
-import {
-  linkSalesChannelsToApiKeyStep,
-  validateSalesChannelsExistStep,
-} from "../steps"
+import { linkSalesChannelsToApiKeyStep } from "#api-key/steps/link-sales-channels-to-publishable-key"
+import { validateSalesChannelsExistStep } from "#api-key/steps/validate-sales-channel-exists"
 
 /**
  * The data to manage the sales channels of a publishable API key.

@@ -6,7 +6,8 @@ import {
 } from "@medusajs/framework/workflows-sdk"
 import type { ListShippingOptionsForOrderWorkflowInput } from "@medusajs/framework/types"
 
-import { useQueryGraphStep, validatePresenceOfStep } from "../../common"
+import { useQueryGraphStep } from "#common/steps/use-query-graph"
+import { validatePresenceOfStep } from "#common/steps/validate-presence-of"
 
 export const listShippingOptionsForOrderWorkflowId =
   "list-shipping-options-for-order"

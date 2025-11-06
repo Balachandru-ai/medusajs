@@ -14,18 +14,17 @@ import {
   OrderPreviewDTO,
   OrderWorkflow,
 } from "@medusajs/framework/types"
-import { useRemoteQueryStep } from "../../common"
-import {
-  deleteOrderChangeActionsStep,
-  deleteOrderShippingMethods,
-  previewOrderChangeStep,
-} from "../../order"
+import { useRemoteQueryStep } from "#common/steps/use-remote-query"
+import { deleteOrderChangeActionsStep } from "#order/steps/delete-order-change-actions"
+import { deleteOrderShippingMethods } from "#order/steps/delete-order-shipping-methods"
+import { previewOrderChangeStep } from "#order/steps/preview-order-change"
 import { getDraftOrderPromotionContextStep } from "../steps/get-draft-order-promotion-context"
 import { validateDraftOrderChangeStep } from "../steps/validate-draft-order-change"
 import { validateDraftOrderShippingMethodActionStep } from "../steps/validate-draft-order-shipping-method-action"
 import { draftOrderFieldsForRefreshSteps } from "../utils/fields"
 import { refreshDraftOrderAdjustmentsWorkflow } from "./refresh-draft-order-adjustments"
-import { acquireLockStep, releaseLockStep } from "../../locking"
+import { acquireLockStep } from "#locking/steps/acquire-lock"
+import { releaseLockStep } from "#locking/steps/release-lock"
 
 export const removeDraftOrderActionShippingMethodWorkflowId =
   "remove-draft-order-action-shipping-method"

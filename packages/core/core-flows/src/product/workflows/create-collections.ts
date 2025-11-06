@@ -7,8 +7,8 @@ import {
   createWorkflow,
   transform,
 } from "@medusajs/framework/workflows-sdk"
-import { emitEventStep } from "../../common"
-import { createCollectionsStep } from "../steps"
+import { emitEventStep } from "#common/steps/emit-event"
+import { createCollectionsStep } from "#product/steps/create-collections"
 
 /**
  * The details of the collection to create, along with custom data that's passed to the workflow's hooks.

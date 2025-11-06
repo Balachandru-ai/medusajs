@@ -14,7 +14,7 @@ export const updateLineItemsStepWithSelectorId =
   "update-line-items-with-selector"
 /**
  * This step updates line items.
- * 
+ *
  * @example
  * const data = updateLineItemsStepWithSelector({
  *   selector: {

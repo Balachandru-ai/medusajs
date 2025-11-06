@@ -10,8 +10,8 @@ import {
   WorkflowData,
   WorkflowResponse,
 } from "@medusajs/framework/workflows-sdk"
-import { emitEventStep } from "../../common/steps/emit-event"
-import { updateShippingOptionTypesStep } from "../steps"
+import { emitEventStep } from "#common/steps/emit-event"
+import { updateShippingOptionTypesStep } from "#shipping-options/steps/update-shipping-option-types"
 
 /**
  * The data to update one or more shipping option types, along with custom data that's passed to the workflow's hooks.

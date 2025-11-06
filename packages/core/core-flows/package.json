@@ -3,6 +3,488 @@
   "version": "2.11.3",
   "description": "Set of workflow definitions for Medusa",
   "main": "dist/index.js",
+  "imports": {
+    "#api-key/*": {
+      "types": "./dist/api-key/*.d.ts",
+      "default": "./dist/api-key/*.js"
+    },
+    "#api-key/steps/*": {
+      "types": "./dist/api-key/steps/*.d.ts",
+      "default": "./dist/api-key/steps/*.js"
+    },
+    "#api-key/workflows/*": {
+      "types": "./dist/api-key/workflows/*.d.ts",
+      "default": "./dist/api-key/workflows/*.js"
+    },
+    "#auth/*": {
+      "types": "./dist/auth/*.d.ts",
+      "default": "./dist/auth/*.js"
+    },
+    "#auth/steps/*": {
+      "types": "./dist/auth/steps/*.d.ts",
+      "default": "./dist/auth/steps/*.js"
+    },
+    "#auth/workflows/*": {
+      "types": "./dist/auth/workflows/*.d.ts",
+      "default": "./dist/auth/workflows/*.js"
+    },
+    "#cart/*": {
+      "types": "./dist/cart/*.d.ts",
+      "default": "./dist/cart/*.js"
+    },
+    "#cart/steps/*": {
+      "types": "./dist/cart/steps/*.d.ts",
+      "default": "./dist/cart/steps/*.js"
+    },
+    "#cart/utils/*": {
+      "types": "./dist/cart/utils/*.d.ts",
+      "default": "./dist/cart/utils/*.js"
+    },
+    "#cart/utils/__tests__/*": {
+      "types": "./dist/cart/utils/__tests__/*.d.ts",
+      "default": "./dist/cart/utils/__tests__/*.js"
+    },
+    "#cart/workflows/*": {
+      "types": "./dist/cart/workflows/*.d.ts",
+      "default": "./dist/cart/workflows/*.js"
+    },
+    "#common/*": {
+      "types": "./dist/common/*.d.ts",
+      "default": "./dist/common/*.js"
+    },
+    "#common/steps/*": {
+      "types": "./dist/common/steps/*.d.ts",
+      "default": "./dist/common/steps/*.js"
+    },
+    "#common/steps/__fixtures__/*": {
+      "types": "./dist/common/steps/__fixtures__/*.d.ts",
+      "default": "./dist/common/steps/__fixtures__/*.js"
+    },
+    "#common/steps/__tests__/*": {
+      "types": "./dist/common/steps/__tests__/*.d.ts",
+      "default": "./dist/common/steps/__tests__/*.js"
+    },
+    "#common/workflows/*": {
+      "types": "./dist/common/workflows/*.d.ts",
+      "default": "./dist/common/workflows/*.js"
+    },
+    "#customer/*": {
+      "types": "./dist/customer/*.d.ts",
+      "default": "./dist/customer/*.js"
+    },
+    "#customer/steps/*": {
+      "types": "./dist/customer/steps/*.d.ts",
+      "default": "./dist/customer/steps/*.js"
+    },
+    "#customer/steps/utils/*": {
+      "types": "./dist/customer/steps/utils/*.d.ts",
+      "default": "./dist/customer/steps/utils/*.js"
+    },
+    "#customer/workflows/*": {
+      "types": "./dist/customer/workflows/*.d.ts",
+      "default": "./dist/customer/workflows/*.js"
+    },
+    "#customer-group/*": {
+      "types": "./dist/customer-group/*.d.ts",
+      "default": "./dist/customer-group/*.js"
+    },
+    "#customer-group/steps/*": {
+      "types": "./dist/customer-group/steps/*.d.ts",
+      "default": "./dist/customer-group/steps/*.js"
+    },
+    "#customer-group/workflows/*": {
+      "types": "./dist/customer-group/workflows/*.d.ts",
+      "default": "./dist/customer-group/workflows/*.js"
+    },
+    "#defaults/*": {
+      "types": "./dist/defaults/*.d.ts",
+      "default": "./dist/defaults/*.js"
+    },
+    "#defaults/steps/*": {
+      "types": "./dist/defaults/steps/*.d.ts",
+      "default": "./dist/defaults/steps/*.js"
+    },
+    "#defaults/workflows/*": {
+      "types": "./dist/defaults/workflows/*.d.ts",
+      "default": "./dist/defaults/workflows/*.js"
+    },
+    "#draft-order/*": {
+      "types": "./dist/draft-order/*.d.ts",
+      "default": "./dist/draft-order/*.js"
+    },
+    "#draft-order/steps/*": {
+      "types": "./dist/draft-order/steps/*.d.ts",
+      "default": "./dist/draft-order/steps/*.js"
+    },
+    "#draft-order/utils/*": {
+      "types": "./dist/draft-order/utils/*.d.ts",
+      "default": "./dist/draft-order/utils/*.js"
+    },
+    "#draft-order/workflows/*": {
+      "types": "./dist/draft-order/workflows/*.d.ts",
+      "default": "./dist/draft-order/workflows/*.js"
+    },
+    "#file/*": {
+      "types": "./dist/file/*.d.ts",
+      "default": "./dist/file/*.js"
+    },
+    "#file/steps/*": {
+      "types": "./dist/file/steps/*.d.ts",
+      "default": "./dist/file/steps/*.js"
+    },
+    "#file/workflows/*": {
+      "types": "./dist/file/workflows/*.d.ts",
+      "default": "./dist/file/workflows/*.js"
+    },
+    "#fulfillment/*": {
+      "types": "./dist/fulfillment/*.d.ts",
+      "default": "./dist/fulfillment/*.js"
+    },
+    "#fulfillment/steps/*": {
+      "types": "./dist/fulfillment/steps/*.d.ts",
+      "default": "./dist/fulfillment/steps/*.js"
+    },
+    "#fulfillment/workflows/*": {
+      "types": "./dist/fulfillment/workflows/*.d.ts",
+      "default": "./dist/fulfillment/workflows/*.js"
+    },
+    "#inventory/*": {
+      "types": "./dist/inventory/*.d.ts",
+      "default": "./dist/inventory/*.js"
+    },
+    "#inventory/steps/*": {
+      "types": "./dist/inventory/steps/*.d.ts",
+      "default": "./dist/inventory/steps/*.js"
+    },
+    "#inventory/workflows/*": {
+      "types": "./dist/inventory/workflows/*.d.ts",
+      "default": "./dist/inventory/workflows/*.js"
+    },
+    "#invite/*": {
+      "types": "./dist/invite/*.d.ts",
+      "default": "./dist/invite/*.js"
+    },
+    "#invite/steps/*": {
+      "types": "./dist/invite/steps/*.d.ts",
+      "default": "./dist/invite/steps/*.js"
+    },
+    "#invite/workflows/*": {
+      "types": "./dist/invite/workflows/*.d.ts",
+      "default": "./dist/invite/workflows/*.js"
+    },
+    "#line-item/*": {
+      "types": "./dist/line-item/*.d.ts",
+      "default": "./dist/line-item/*.js"
+    },
+    "#line-item/steps/*": {
+      "types": "./dist/line-item/steps/*.d.ts",
+      "default": "./dist/line-item/steps/*.js"
+    },
+    "#line-item/workflows/*": {
+      "types": "./dist/line-item/workflows/*.d.ts",
+      "default": "./dist/line-item/workflows/*.js"
+    },
+    "#locking/*": {
+      "types": "./dist/locking/*.d.ts",
+      "default": "./dist/locking/*.js"
+    },
+    "#locking/steps/*": {
+      "types": "./dist/locking/steps/*.d.ts",
+      "default": "./dist/locking/steps/*.js"
+    },
+    "#notification/*": {
+      "types": "./dist/notification/*.d.ts",
+      "default": "./dist/notification/*.js"
+    },
+    "#notification/steps/*": {
+      "types": "./dist/notification/steps/*.d.ts",
+      "default": "./dist/notification/steps/*.js"
+    },
+    "#order/*": {
+      "types": "./dist/order/*.d.ts",
+      "default": "./dist/order/*.js"
+    },
+    "#order/steps/*": {
+      "types": "./dist/order/steps/*.d.ts",
+      "default": "./dist/order/steps/*.js"
+    },
+    "#order/steps/claim/*": {
+      "types": "./dist/order/steps/claim/*.d.ts",
+      "default": "./dist/order/steps/claim/*.js"
+    },
+    "#order/steps/exchange/*": {
+      "types": "./dist/order/steps/exchange/*.d.ts",
+      "default": "./dist/order/steps/exchange/*.js"
+    },
+    "#order/steps/return/*": {
+      "types": "./dist/order/steps/return/*.d.ts",
+      "default": "./dist/order/steps/return/*.js"
+    },
+    "#order/utils/*": {
+      "types": "./dist/order/utils/*.d.ts",
+      "default": "./dist/order/utils/*.js"
+    },
+    "#order/utils/__tests__/*": {
+      "types": "./dist/order/utils/__tests__/*.d.ts",
+      "default": "./dist/order/utils/__tests__/*.js"
+    },
+    "#order/workflows/*": {
+      "types": "./dist/order/workflows/*.d.ts",
+      "default": "./dist/order/workflows/*.js"
+    },
+    "#order/workflows/claim/*": {
+      "types": "./dist/order/workflows/claim/*.d.ts",
+      "default": "./dist/order/workflows/claim/*.js"
+    },
+    "#order/workflows/exchange/*": {
+      "types": "./dist/order/workflows/exchange/*.d.ts",
+      "default": "./dist/order/workflows/exchange/*.js"
+    },
+    "#order/workflows/order-edit/*": {
+      "types": "./dist/order/workflows/order-edit/*.d.ts",
+      "default": "./dist/order/workflows/order-edit/*.js"
+    },
+    "#order/workflows/order-edit/utils/*": {
+      "types": "./dist/order/workflows/order-edit/utils/*.d.ts",
+      "default": "./dist/order/workflows/order-edit/utils/*.js"
+    },
+    "#order/workflows/payments/*": {
+      "types": "./dist/order/workflows/payments/*.d.ts",
+      "default": "./dist/order/workflows/payments/*.js"
+    },
+    "#order/workflows/return/*": {
+      "types": "./dist/order/workflows/return/*.d.ts",
+      "default": "./dist/order/workflows/return/*.js"
+    },
+    "#order/workflows/transfer/*": {
+      "types": "./dist/order/workflows/transfer/*.d.ts",
+      "default": "./dist/order/workflows/transfer/*.js"
+    },
+    "#payment/*": {
+      "types": "./dist/payment/*.d.ts",
+      "default": "./dist/payment/*.js"
+    },
+    "#payment/steps/*": {
+      "types": "./dist/payment/steps/*.d.ts",
+      "default": "./dist/payment/steps/*.js"
+    },
+    "#payment/workflows/*": {
+      "types": "./dist/payment/workflows/*.d.ts",
+      "default": "./dist/payment/workflows/*.js"
+    },
+    "#payment-collection/*": {
+      "types": "./dist/payment-collection/*.d.ts",
+      "default": "./dist/payment-collection/*.js"
+    },
+    "#payment-collection/steps/*": {
+      "types": "./dist/payment-collection/steps/*.d.ts",
+      "default": "./dist/payment-collection/steps/*.js"
+    },
+    "#payment-collection/workflows/*": {
+      "types": "./dist/payment-collection/workflows/*.d.ts",
+      "default": "./dist/payment-collection/workflows/*.js"
+    },
+    "#price-list/*": {
+      "types": "./dist/price-list/*.d.ts",
+      "default": "./dist/price-list/*.js"
+    },
+    "#price-list/steps/*": {
+      "types": "./dist/price-list/steps/*.d.ts",
+      "default": "./dist/price-list/steps/*.js"
+    },
+    "#price-list/workflows/*": {
+      "types": "./dist/price-list/workflows/*.d.ts",
+      "default": "./dist/price-list/workflows/*.js"
+    },
+    "#pricing/*": {
+      "types": "./dist/pricing/*.d.ts",
+      "default": "./dist/pricing/*.js"
+    },
+    "#pricing/steps/*": {
+      "types": "./dist/pricing/steps/*.d.ts",
+      "default": "./dist/pricing/steps/*.js"
+    },
+    "#pricing/workflows/*": {
+      "types": "./dist/pricing/workflows/*.d.ts",
+      "default": "./dist/pricing/workflows/*.js"
+    },
+    "#product/*": {
+      "types": "./dist/product/*.d.ts",
+      "default": "./dist/product/*.js"
+    },
+    "#product/helpers/*": {
+      "types": "./dist/product/helpers/*.d.ts",
+      "default": "./dist/product/helpers/*.js"
+    },
+    "#product/steps/*": {
+      "types": "./dist/product/steps/*.d.ts",
+      "default": "./dist/product/steps/*.js"
+    },
+    "#product/utils/*": {
+      "types": "./dist/product/utils/*.d.ts",
+      "default": "./dist/product/utils/*.js"
+    },
+    "#product/workflows/*": {
+      "types": "./dist/product/workflows/*.d.ts",
+      "default": "./dist/product/workflows/*.js"
+    },
+    "#product-category/*": {
+      "types": "./dist/product-category/*.d.ts",
+      "default": "./dist/product-category/*.js"
+    },
+    "#product-category/steps/*": {
+      "types": "./dist/product-category/steps/*.d.ts",
+      "default": "./dist/product-category/steps/*.js"
+    },
+    "#product-category/workflows/*": {
+      "types": "./dist/product-category/workflows/*.d.ts",
+      "default": "./dist/product-category/workflows/*.js"
+    },
+    "#promotion/*": {
+      "types": "./dist/promotion/*.d.ts",
+      "default": "./dist/promotion/*.js"
+    },
+    "#promotion/steps/*": {
+      "types": "./dist/promotion/steps/*.d.ts",
+      "default": "./dist/promotion/steps/*.js"
+    },
+    "#promotion/workflows/*": {
+      "types": "./dist/promotion/workflows/*.d.ts",
+      "default": "./dist/promotion/workflows/*.js"
+    },
+    "#region/*": {
+      "types": "./dist/region/*.d.ts",
+      "default": "./dist/region/*.js"
+    },
+    "#region/steps/*": {
+      "types": "./dist/region/steps/*.d.ts",
+      "default": "./dist/region/steps/*.js"
+    },
+    "#region/workflows/*": {
+      "types": "./dist/region/workflows/*.d.ts",
+      "default": "./dist/region/workflows/*.js"
+    },
+    "#reservation/*": {
+      "types": "./dist/reservation/*.d.ts",
+      "default": "./dist/reservation/*.js"
+    },
+    "#reservation/steps/*": {
+      "types": "./dist/reservation/steps/*.d.ts",
+      "default": "./dist/reservation/steps/*.js"
+    },
+    "#reservation/workflows/*": {
+      "types": "./dist/reservation/workflows/*.d.ts",
+      "default": "./dist/reservation/workflows/*.js"
+    },
+    "#return-reason/*": {
+      "types": "./dist/return-reason/*.d.ts",
+      "default": "./dist/return-reason/*.js"
+    },
+    "#return-reason/steps/*": {
+      "types": "./dist/return-reason/steps/*.d.ts",
+      "default": "./dist/return-reason/steps/*.js"
+    },
+    "#return-reason/workflows/*": {
+      "types": "./dist/return-reason/workflows/*.d.ts",
+      "default": "./dist/return-reason/workflows/*.js"
+    },
+    "#sales-channel/*": {
+      "types": "./dist/sales-channel/*.d.ts",
+      "default": "./dist/sales-channel/*.js"
+    },
+    "#sales-channel/steps/*": {
+      "types": "./dist/sales-channel/steps/*.d.ts",
+      "default": "./dist/sales-channel/steps/*.js"
+    },
+    "#sales-channel/workflows/*": {
+      "types": "./dist/sales-channel/workflows/*.d.ts",
+      "default": "./dist/sales-channel/workflows/*.js"
+    },
+    "#settings/*": {
+      "types": "./dist/settings/*.d.ts",
+      "default": "./dist/settings/*.js"
+    },
+    "#settings/steps/*": {
+      "types": "./dist/settings/steps/*.d.ts",
+      "default": "./dist/settings/steps/*.js"
+    },
+    "#settings/workflows/*": {
+      "types": "./dist/settings/workflows/*.d.ts",
+      "default": "./dist/settings/workflows/*.js"
+    },
+    "#shipping-options/*": {
+      "types": "./dist/shipping-options/*.d.ts",
+      "default": "./dist/shipping-options/*.js"
+    },
+    "#shipping-options/steps/*": {
+      "types": "./dist/shipping-options/steps/*.d.ts",
+      "default": "./dist/shipping-options/steps/*.js"
+    },
+    "#shipping-options/workflows/*": {
+      "types": "./dist/shipping-options/workflows/*.d.ts",
+      "default": "./dist/shipping-options/workflows/*.js"
+    },
+    "#shipping-profile/*": {
+      "types": "./dist/shipping-profile/*.d.ts",
+      "default": "./dist/shipping-profile/*.js"
+    },
+    "#shipping-profile/steps/*": {
+      "types": "./dist/shipping-profile/steps/*.d.ts",
+      "default": "./dist/shipping-profile/steps/*.js"
+    },
+    "#shipping-profile/workflows/*": {
+      "types": "./dist/shipping-profile/workflows/*.d.ts",
+      "default": "./dist/shipping-profile/workflows/*.js"
+    },
+    "#stock-location/*": {
+      "types": "./dist/stock-location/*.d.ts",
+      "default": "./dist/stock-location/*.js"
+    },
+    "#stock-location/steps/*": {
+      "types": "./dist/stock-location/steps/*.d.ts",
+      "default": "./dist/stock-location/steps/*.js"
+    },
+    "#stock-location/workflows/*": {
+      "types": "./dist/stock-location/workflows/*.d.ts",
+      "default": "./dist/stock-location/workflows/*.js"
+    },
+    "#store/*": {
+      "types": "./dist/store/*.d.ts",
+      "default": "./dist/store/*.js"
+    },
+    "#store/steps/*": {
+      "types": "./dist/store/steps/*.d.ts",
+      "default": "./dist/store/steps/*.js"
+    },
+    "#store/workflows/*": {
+      "types": "./dist/store/workflows/*.d.ts",
+      "default": "./dist/store/workflows/*.js"
+    },
+    "#tax/*": {
+      "types": "./dist/tax/*.d.ts",
+      "default": "./dist/tax/*.js"
+    },
+    "#tax/steps/*": {
+      "types": "./dist/tax/steps/*.d.ts",
+      "default": "./dist/tax/steps/*.js"
+    },
+    "#tax/workflows/*": {
+      "types": "./dist/tax/workflows/*.d.ts",
+      "default": "./dist/tax/workflows/*.js"
+    },
+    "#user/*": {
+      "types": "./dist/user/*.d.ts",
+      "default": "./dist/user/*.js"
+    },
+    "#user/steps/*": {
+      "types": "./dist/user/steps/*.d.ts",
+      "default": "./dist/user/steps/*.js"
+    },
+    "#user/workflows/*": {
+      "types": "./dist/user/workflows/*.d.ts",
+      "default": "./dist/user/workflows/*.js"
+    }
+  },
   "exports": {
     ".": "./dist/index.js"
   },

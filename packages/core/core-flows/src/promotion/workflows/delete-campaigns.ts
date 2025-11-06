@@ -4,12 +4,12 @@ import {
   WorkflowData,
   WorkflowResponse,
 } from "@medusajs/framework/workflows-sdk"
-import { deleteCampaignsStep } from "../steps"
+import { deleteCampaignsStep } from "#promotion/steps/delete-campaigns"
 
 /**
  * The data to delete one or more campaigns.
  */
-export type DeleteCampaignsWorkflowInput = { 
+export type DeleteCampaignsWorkflowInput = {
   /**
    * The IDs of the campaigns to delete.
    */
@@ -20,10 +20,10 @@ export const deleteCampaignsWorkflowId = "delete-campaigns"
 /**
  * This workflow deletes one or more campaigns. It's used by the
  * [Delete Campaign Admin API Route](https://docs.medusajs.com/api/admin#campaigns_deletecampaignsid).
- * 
+ *
  * You can use this workflow within your own customizations or custom workflows, allowing you to
  * delete campaigns within your custom flows.
- * 
+ *
  * @example
  * const { result } = await deleteCampaignsWorkflow(container)
  * .run({
@@ -31,9 +31,9 @@ export const deleteCampaignsWorkflowId = "delete-campaigns"
  *     ids: ["camp_123"]
  *   }
  * })
- * 
+ *
  * @summary
- * 
+ *
  * Delete one or more campaigns.
  */
 export const deleteCampaignsWorkflow = createWorkflow(

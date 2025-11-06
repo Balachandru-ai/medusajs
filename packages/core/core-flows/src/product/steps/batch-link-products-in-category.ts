@@ -9,7 +9,7 @@ export const batchLinkProductsToCategoryStepId =
   "batch-link-products-to-category"
 /**
  * This step manages the links between a category and products.
- * 
+ *
  * @example
  * const data = batchLinkProductsToCategoryStep({
  *   id: "pcat_123",

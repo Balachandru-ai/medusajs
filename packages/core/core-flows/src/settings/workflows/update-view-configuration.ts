@@ -9,10 +9,8 @@ import {
   when,
   transform,
 } from "@medusajs/framework/workflows-sdk"
-import {
-  updateViewConfigurationStep,
-  setActiveViewConfigurationStep,
-} from "../steps"
+import { updateViewConfigurationStep } from "#settings/steps/update-view-configuration"
+import { setActiveViewConfigurationStep } from "#settings/steps/set-active-view-configuration"
 
 export type UpdateViewConfigurationWorkflowInput = {
   id: string

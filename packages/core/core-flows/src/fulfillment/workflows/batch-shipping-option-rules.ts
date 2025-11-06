@@ -12,41 +12,41 @@ import {
   WorkflowData,
   WorkflowResponse,
 } from "@medusajs/framework/workflows-sdk"
-import {
-  createShippingOptionRulesStep,
-  deleteShippingOptionRulesStep,
-} from "../steps"
+import { createShippingOptionRulesStep } from "#fulfillment/steps/create-shipping-option-rules"
+import { deleteShippingOptionRulesStep } from "#fulfillment/steps/delete-shipping-option-rules"
 import { updateShippingOptionRulesStep } from "../steps/update-shipping-option-rules"
 
 /**
  * The data to manage the shipping option rules in bulk.
- * 
+ *
  * @property create - The shipping option rules to create.
  * @property update - The shipping option rules to update.
  * @property delete - The IDs of the shipping option rules to delete.
  */
-export interface BatchShippingOptionRulesInput extends BatchWorkflowInput<
-  CreateShippingOptionRuleDTO,
-  UpdateShippingOptionRuleDTO
-> {}
+export interface BatchShippingOptionRulesInput
+  extends BatchWorkflowInput<
+    CreateShippingOptionRuleDTO,
+    UpdateShippingOptionRuleDTO
+  > {}
 
 /**
  * The result of managing the shipping option rules in bulk.
- * 
+ *
  * @property created - The shipping option rules that were created.
  * @property updated - The shipping option rules that were updated.
  * @property deleted - The IDs of the shipping option rules that were deleted.
  */
-export interface BatchShippingOptionRulesOutput extends BatchWorkflowOutput<ShippingOptionRuleDTO> {}
+export interface BatchShippingOptionRulesOutput
+  extends BatchWorkflowOutput<ShippingOptionRuleDTO> {}
 
 export const batchShippingOptionRulesWorkflowId = "batch-shipping-option-rules"
 /**
  * This workflow manages shipping option rules allowing you to create, update, or delete them. It's used by the
  * [Manage the Rules of Shipping Option Admin API Route](https://docs.medusajs.com/api/admin#shipping-options_postshippingoptionsidrulesbatch).
- * 
- * You can use this workflow within your own customizations or custom workflows, allowing you to 
+ *
+ * You can use this workflow within your own customizations or custom workflows, allowing you to
  * manage shipping option rules within your custom flows.
- * 
+ *
  * @example
  * const { result } = await batchShippingOptionRulesWorkflow(container)
  * .run({
@@ -68,9 +68,9 @@ export const batchShippingOptionRulesWorkflowId = "batch-shipping-option-rules"
  *     delete: ["sor_321"]
  *   }
  * })
- * 
+ *
  * @summary
- * 
+ *
  * Manage shipping option rules.
  */
 export const batchShippingOptionRulesWorkflow = createWorkflow(

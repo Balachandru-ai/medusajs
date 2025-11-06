@@ -16,9 +16,9 @@ export const canDeleteSalesChannelsOrThrowStepId =
 
 /**
  * This step validates that the specified sales channels can be deleted.
- * If any of the sales channels are default sales channels for a store, 
+ * If any of the sales channels are default sales channels for a store,
  * the step will throw an error.
- * 
+ *
  * @example
  * const data = canDeleteSalesChannelsOrThrowStep({
  *   ids: ["sc_123"]

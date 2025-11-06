@@ -27,10 +27,10 @@ export const batchPriceListPricesWorkflowId = "batch-price-list-prices"
 /**
  * This workflow manages a price list's prices by creating, updating, or removing them. It's used by the
  * [Manage Prices in Price List Admin API Route](https://docs.medusajs.com/api/admin#price-lists_postpricelistsidpricesbatch).
- * 
- * You can use this workflow within your customizations or your own custom workflows, allowing you to 
+ *
+ * You can use this workflow within your customizations or your own custom workflows, allowing you to
  * manage price lists' prices in your custom flows.
- * 
+ *
  * @example
  * const { result } = await batchPriceListPricesWorkflow(container)
  * .run({
@@ -56,9 +56,9 @@ export const batchPriceListPricesWorkflowId = "batch-price-list-prices"
  *     }
  *   }
  * })
- * 
+ *
  * @summary
- * 
+ *
  * Manage a price list's prices.
  */
 export const batchPriceListPricesWorkflow = createWorkflow(

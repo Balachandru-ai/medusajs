@@ -5,8 +5,10 @@ import {
   createWorkflow,
   transform,
 } from "@medusajs/framework/workflows-sdk"
-import { notifyOnFailureStep, sendNotificationsStep } from "../../notification"
-import { normalizeCsvStep, waitConfirmationProductImportStep } from "../steps"
+import { notifyOnFailureStep } from "#notification/steps/notify-on-failure"
+import { sendNotificationsStep } from "#notification/steps/send-notifications"
+import { normalizeCsvStep } from "#product/steps/normalize-products"
+import { waitConfirmationProductImportStep } from "#product/steps/wait-confirmation-product-import"
 import { batchProductsWorkflow } from "./batch-products"
 
 export const importProductsWorkflowId = "import-products"

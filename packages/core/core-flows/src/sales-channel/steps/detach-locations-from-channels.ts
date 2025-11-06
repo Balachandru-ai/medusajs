@@ -26,7 +26,7 @@ export const detachLocationsFromSalesChannelsStepId =
   "detach-locations-from-sales-channels"
 /**
  * This step dismisses links between stock location and sales channel records.
- * 
+ *
  * @example
  * const data = detachLocationsFromSalesChannelsStep({
  *   links: [

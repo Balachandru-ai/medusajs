@@ -12,10 +12,10 @@ import {
   WorkflowResponse,
 } from "@medusajs/framework/workflows-sdk"
 import { createStep } from "@medusajs/framework/workflows-sdk"
-import { emitEventStep } from "../../common/steps/emit-event"
-import { removeRemoteLinkStep } from "../../common/steps/remove-remote-links"
-import { deleteShippingOptionTypesStep } from "../steps"
-import { useQueryGraphStep } from "../../common"
+import { emitEventStep } from "#common/steps/emit-event"
+import { removeRemoteLinkStep } from "#common/steps/remove-remote-links"
+import { deleteShippingOptionTypesStep } from "#shipping-options/steps/delete-shipping-option-types"
+import { useQueryGraphStep } from "#common/steps/use-query-graph"
 
 const validateDeleteShippingOptionTypesStep = createStep(
   "validate-delete-shipping-option-types",
@@ -51,7 +51,7 @@ export const deleteShippingOptionTypesWorkflowId =
  * you can delete custom records linked to the shipping-option types.
  *
  * You can also use this workflow within your own custom workflows, allowing you to wrap custom logic around shipping option type deletion.
- * 
+ *
  * @since 2.10.0
  *
  * @example

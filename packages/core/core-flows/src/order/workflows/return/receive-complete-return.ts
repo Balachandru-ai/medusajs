@@ -5,7 +5,7 @@ import {
   createStep,
   createWorkflow,
 } from "@medusajs/framework/workflows-sdk"
-import { useRemoteQueryStep } from "../../../common"
+import { useRemoteQueryStep } from "#common/steps/use-remote-query"
 
 import type { ReturnDTO } from "@medusajs/framework/types"
 import { receiveReturnStep } from "../../steps/return/receive-return"

@@ -4,7 +4,7 @@ import {
   WorkflowResponse,
   createWorkflow,
 } from "@medusajs/framework/workflows-sdk"
-import { createShippingProfilesStep } from "../steps"
+import { createShippingProfilesStep } from "#fulfillment/steps/create-shipping-profiles"
 
 export const createShippingProfilesWorkflowId =
   "create-shipping-profiles-workflow"

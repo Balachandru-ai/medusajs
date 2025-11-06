@@ -24,22 +24,18 @@ import {
   WorkflowData,
   WorkflowResponse,
 } from "@medusajs/framework/workflows-sdk"
-import {
-  emitEventStep,
-  useQueryGraphStep,
-  useRemoteQueryStep,
-} from "../../common"
-import { cancelFulfillmentWorkflow } from "../../fulfillment"
-import { adjustInventoryLevelsStep } from "../../inventory"
+import { emitEventStep } from "#common/steps/emit-event"
+import { useQueryGraphStep } from "#common/steps/use-query-graph"
+import { useRemoteQueryStep } from "#common/steps/use-remote-query"
+import { cancelFulfillmentWorkflow } from "#fulfillment/workflows/cancel-fulfillment"
+import { adjustInventoryLevelsStep } from "#inventory/steps/adjust-inventory-levels"
 import { cancelOrderFulfillmentStep } from "../steps/cancel-fulfillment"
 import {
   throwIfItemsDoesNotExistsInOrder,
   throwIfOrderIsCancelled,
 } from "../utils/order-validation"
-import {
-  createReservationsStep,
-  updateReservationsStep,
-} from "../../reservation"
+import { createReservationsStep } from "#reservation/steps/create-reservations"
+import { updateReservationsStep } from "#reservation/steps/update-reservations"
 
 type OrderItemWithVariantDTO = OrderLineItemDTO & {
   variant?: ProductVariantDTO & {

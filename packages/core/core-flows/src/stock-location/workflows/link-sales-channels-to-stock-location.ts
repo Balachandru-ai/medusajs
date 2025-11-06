@@ -1,10 +1,8 @@
 import type { LinkWorkflowInput } from "@medusajs/framework/types"
 import { WorkflowData, createWorkflow } from "@medusajs/framework/workflows-sdk"
 import { transform } from "@medusajs/framework/workflows-sdk"
-import {
-  associateLocationsWithSalesChannelsStep,
-  detachLocationsFromSalesChannelsStep,
-} from "../../sales-channel"
+import { associateLocationsWithSalesChannelsStep } from "#sales-channel/steps/associate-locations-with-channels"
+import { detachLocationsFromSalesChannelsStep } from "#sales-channel/steps/detach-locations-from-channels"
 
 /**
  * The sales channels to manage for a stock location.

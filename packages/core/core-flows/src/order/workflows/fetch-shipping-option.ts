@@ -13,9 +13,10 @@ import {
   WorkflowResponse,
 } from "@medusajs/framework/workflows-sdk"
 import { BigNumber, ShippingOptionPriceType } from "@medusajs/framework/utils"
-import { calculateShippingOptionsPricesStep } from "../../fulfillment/steps"
-import { useQueryGraphStep, useRemoteQueryStep } from "../../common"
-import { pricingContextResult } from "../../cart/utils/schemas"
+import { calculateShippingOptionsPricesStep } from "#fulfillment/steps/calculate-shipping-options-prices"
+import { useQueryGraphStep } from "#common/steps/use-query-graph"
+import { useRemoteQueryStep } from "#common/steps/use-remote-query"
+import { pricingContextResult } from "#cart/utils/schemas"
 
 const COMMON_OPTIONS_FIELDS = [
   "id",

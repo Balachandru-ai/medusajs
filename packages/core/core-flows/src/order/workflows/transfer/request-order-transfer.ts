@@ -9,7 +9,8 @@ import {
 import type { CustomerDTO, OrderPreviewDTO } from "@medusajs/framework/types"
 import { v4 as uid } from "uuid"
 
-import { emitEventStep, useRemoteQueryStep } from "../../../common"
+import { emitEventStep } from "#common/steps/emit-event"
+import { useRemoteQueryStep } from "#common/steps/use-remote-query"
 import { createOrderChangeStep } from "../../steps/create-order-change"
 import { throwIfOrderIsCancelled } from "../../utils/order-validation"
 import { createOrderChangeActionsWorkflow } from "../create-order-change-actions"
@@ -19,7 +20,8 @@ import {
   OrderChangeStatus,
   OrderWorkflowEvents,
 } from "@medusajs/utils"
-import { previewOrderChangeStep, updateOrderChangesStep } from "../../steps"
+import { previewOrderChangeStep } from "#order/steps/preview-order-change"
+import { updateOrderChangesStep } from "#order/steps/update-order-changes"
 
 /**
  * The details of the order transfer request to validate.

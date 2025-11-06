@@ -6,8 +6,9 @@ import {
   parallelize,
   transform,
 } from "@medusajs/framework/workflows-sdk"
-import { emitEventStep, removeRemoteLinkStep } from "../../common"
-import { deleteUsersStep } from "../steps"
+import { emitEventStep } from "#common/steps/emit-event"
+import { removeRemoteLinkStep } from "#common/steps/remove-remote-links"
+import { deleteUsersStep } from "#user/steps/delete-users"
 
 export const deleteUsersWorkflowId = "delete-user"
 /**

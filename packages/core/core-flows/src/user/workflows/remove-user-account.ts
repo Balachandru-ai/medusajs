@@ -5,8 +5,8 @@ import {
   transform,
   when,
 } from "@medusajs/framework/workflows-sdk"
-import { setAuthAppMetadataStep } from "../../auth"
-import { useRemoteQueryStep } from "../../common"
+import { setAuthAppMetadataStep } from "#auth/steps/set-auth-app-metadata"
+import { useRemoteQueryStep } from "#common/steps/use-remote-query"
 import { deleteUsersWorkflow } from "./delete-users"
 
 /**
@@ -22,10 +22,10 @@ export const removeUserAccountWorkflowId = "remove-user-account"
 /**
  * This workflow deletes a user and remove the association to its auth identity. It's used
  * by the [Delete User Admin API Route](https://docs.medusajs.com/api/admin#users_deleteusersid).
- * 
+ *
  * You can use this workflow within your customizations or your own custom workflows, allowing you to
  * delete users within your custom flows.
- * 
+ *
  * @example
  * const { result } = await removeUserAccountWorkflow(container)
  * .run({
@@ -33,9 +33,9 @@ export const removeUserAccountWorkflowId = "remove-user-account"
  *     userId: "user_123"
  *   }
  * })
- * 
+ *
  * @summary
- * 
+ *
  * Delete a user and remove the association to its auth identity.
  */
 export const removeUserAccountWorkflow = createWorkflow(

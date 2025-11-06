@@ -13,7 +13,7 @@ export type CreatePriceSetWorkflowInput = CreatePriceSetDTO[]
 export const createPriceSetsStepId = "create-price-sets"
 /**
  * This step creates one or more price sets.
- * 
+ *
  * @example
  * const data = createPriceSetsStep([{
  *   prices: [

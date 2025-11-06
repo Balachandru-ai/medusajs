@@ -1,6 +1,6 @@
 import { MedusaError, Modules } from "@medusajs/framework/utils"
 import { createStep } from "@medusajs/framework/workflows-sdk"
-import { CreateCustomerAccountWorkflowInput } from "../workflows"
+import { CreateCustomerAccountWorkflowInput } from "#customer/workflows/create-customer-account"
 
 export const validateCustomerAccountCreationStepId =
   "validate-customer-account-creation"
@@ -8,11 +8,11 @@ export const validateCustomerAccountCreationStepId =
 /**
  * This step validates the input data for creating a customer account.
  * The step throws an error if:
- * 
+ *
  * - The email is missing
  * - A customer with the email already exists and has an account
  * - A guest customer with the email already exists
- * 
+ *
  * @example
  * const data = validateCustomerAccountCreation({
  *   authIdentityId: "au_1234",

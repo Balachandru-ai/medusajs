@@ -7,7 +7,7 @@ import {
   WorkflowResponse,
   createWorkflow,
 } from "@medusajs/framework/workflows-sdk"
-import { updateRefundReasonsStep } from "../steps"
+import { updateRefundReasonsStep } from "#payment-collection/steps/update-refund-reasons"
 
 /**
  * The refund reasons to update.
@@ -23,10 +23,10 @@ export const updateRefundReasonsWorkflowId = "update-refund-reasons"
 /**
  * This workflow updates one or more refund reasons. It's used by the
  * [Update Refund Reason Admin API Route](https://docs.medusajs.com/api/admin#refund-reasons_postrefundreasonsid).
- * 
+ *
  * You can use this workflow within your own customizations or custom workflows, allowing you
  * to update refund reasons in your custom flows.
- * 
+ *
  * @example
  * const { result } = await updateRefundReasonsWorkflow(container)
  * .run({
@@ -37,9 +37,9 @@ export const updateRefundReasonsWorkflowId = "update-refund-reasons"
  *     }
  *   ]
  * })
- * 
+ *
  * @summary
- * 
+ *
  * Update refund reasons.
  */
 export const updateRefundReasonsWorkflow = createWorkflow(

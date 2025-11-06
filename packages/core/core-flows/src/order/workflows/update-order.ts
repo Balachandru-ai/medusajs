@@ -17,12 +17,11 @@ import {
   UpdateOrderDTO,
 } from "@medusajs/framework/types"
 
-import { emitEventStep, useQueryGraphStep } from "../../common"
-import {
-  previewOrderChangeStep,
-  registerOrderChangesStep,
-  updateOrdersStep,
-} from "../steps"
+import { emitEventStep } from "#common/steps/emit-event"
+import { useQueryGraphStep } from "#common/steps/use-query-graph"
+import { previewOrderChangeStep } from "#order/steps/preview-order-change"
+import { registerOrderChangesStep } from "#order/steps/register-order-changes"
+import { updateOrdersStep } from "#order/steps/update-orders"
 import { throwIfOrderIsCancelled } from "../utils/order-validation"
 
 /**

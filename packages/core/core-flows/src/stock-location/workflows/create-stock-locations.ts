@@ -6,7 +6,7 @@ import {
 } from "@medusajs/framework/workflows-sdk"
 
 import type { CreateStockLocationInput } from "@medusajs/framework/types"
-import { createStockLocations } from "../steps"
+import { createStockLocations } from "#stock-location/steps/create-stock-locations"
 
 /**
  * The data to create the stock locations.

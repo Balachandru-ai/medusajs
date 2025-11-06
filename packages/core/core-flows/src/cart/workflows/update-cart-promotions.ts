@@ -8,18 +8,17 @@ import {
   WorkflowData,
   WorkflowResponse,
 } from "@medusajs/framework/workflows-sdk"
-import { useQueryGraphStep } from "../../common"
-import { acquireLockStep, releaseLockStep } from "../../locking"
-import {
-  createLineItemAdjustmentsStep,
-  createShippingMethodAdjustmentsStep,
-  getActionsToComputeFromPromotionsStep,
-  getPromotionCodesToApply,
-  prepareAdjustmentsFromPromotionActionsStep,
-  removeLineItemAdjustmentsStep,
-  removeShippingMethodAdjustmentsStep,
-  validateCartStep,
-} from "../steps"
+import { useQueryGraphStep } from "#common/steps/use-query-graph"
+import { acquireLockStep } from "#locking/steps/acquire-lock"
+import { releaseLockStep } from "#locking/steps/release-lock"
+import { createLineItemAdjustmentsStep } from "#cart/steps/create-line-item-adjustments"
+import { createShippingMethodAdjustmentsStep } from "#cart/steps/create-shipping-method-adjustments"
+import { getActionsToComputeFromPromotionsStep } from "#cart/steps/get-actions-to-compute-from-promotions"
+import { getPromotionCodesToApply } from "#cart/steps/get-promotion-codes-to-apply"
+import { prepareAdjustmentsFromPromotionActionsStep } from "#cart/steps/prepare-adjustments-from-promotion-actions"
+import { removeLineItemAdjustmentsStep } from "#cart/steps/remove-line-item-adjustments"
+import { removeShippingMethodAdjustmentsStep } from "#cart/steps/remove-shipping-method-adjustments"
+import { validateCartStep } from "#cart/steps/validate-cart"
 import { updateCartPromotionsStep } from "../steps/update-cart-promotions"
 import { cartFieldsForRefreshSteps } from "../utils/fields"
 

@@ -26,7 +26,7 @@ export type UpdateSalesChannelsStepInput = {
 export const updateSalesChannelsStepId = "update-sales-channels"
 /**
  * This step updates sales channels matching the specified filters.
- * 
+ *
  * @example
  * const data = updateSalesChannelsStep({
  *   selector: {

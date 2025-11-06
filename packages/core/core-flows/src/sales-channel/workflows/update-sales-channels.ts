@@ -10,7 +10,7 @@ import {
   createWorkflow,
   transform,
 } from "@medusajs/framework/workflows-sdk"
-import { emitEventStep } from "../../common"
+import { emitEventStep } from "#common/steps/emit-event"
 import { updateSalesChannelsStep } from "../steps/update-sales-channels"
 
 /**
@@ -36,10 +36,10 @@ export const updateSalesChannelsWorkflowId = "update-sales-channels"
 /**
  * This workflow updates sales channels matching the specified conditions. It's used by the
  * [Update Sales Channel Admin API Route](https://docs.medusajs.com/api/admin#sales-channels_postsaleschannelsid).
- * 
+ *
  * You can use this workflow within your customizations or your own custom workflows, allowing you to
  * update sales channels within your custom flows.
- * 
+ *
  * @example
  * const { result } = await updateSalesChannelsWorkflow(container)
  * .run({
@@ -52,9 +52,9 @@ export const updateSalesChannelsWorkflowId = "update-sales-channels"
  *     }
  *   }
  * })
- * 
+ *
  * @summary
- * 
+ *
  * Update sales channels.
  */
 export const updateSalesChannelsWorkflow = createWorkflow(

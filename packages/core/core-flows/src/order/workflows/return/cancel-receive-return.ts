@@ -9,8 +9,8 @@ import {
   createStep,
   createWorkflow,
 } from "@medusajs/framework/workflows-sdk"
-import { useRemoteQueryStep } from "../../../common"
-import { deleteOrderChangesStep } from "../../steps"
+import { useRemoteQueryStep } from "#common/steps/use-remote-query"
+import { deleteOrderChangesStep } from "#order/steps/delete-order-changes"
 import {
   throwIfIsCancelled,
   throwIfOrderChangeIsNotActive,

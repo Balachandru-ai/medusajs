@@ -4,15 +4,15 @@ import {
   transform,
   WorkflowData,
 } from "@medusajs/framework/workflows-sdk"
-import { emitEventStep } from "../../common"
-import { removeRemoteLinkStep } from "../../common/steps/remove-remote-links"
+import { emitEventStep } from "#common/steps/emit-event"
+import { removeRemoteLinkStep } from "#common/steps/remove-remote-links"
 import { deleteSalesChannelsStep } from "../steps/delete-sales-channels"
-import { canDeleteSalesChannelsOrThrowStep } from "../steps"
+import { canDeleteSalesChannelsOrThrowStep } from "#sales-channel/steps/can-delete-sales-channels"
 
 /**
  * The data to delete sales channels.
  */
-export type DeleteSalesChannelsWorkflowInput = { 
+export type DeleteSalesChannelsWorkflowInput = {
   /**
    * The IDs of the sales channels to delete.
    */
@@ -23,10 +23,10 @@ export const deleteSalesChannelsWorkflowId = "delete-sales-channels"
 /**
  * This workflow deletes one or more sales channels. It's used by the
  * [Delete Sales Channel Admin API Route](https://docs.medusajs.com/api/admin#sales-channels_deletesaleschannelsid).
- * 
+ *
  * You can use this workflow within your customizations or your own custom workflows, allowing you to
  * delete sales channels within your custom flows.
- * 
+ *
  * @example
  * const { result } = await deleteSalesChannelsWorkflow(container)
  * .run({
@@ -34,9 +34,9 @@ export const deleteSalesChannelsWorkflowId = "delete-sales-channels"
  *     ids: ["sc_123"],
  *   }
  * })
- * 
+ *
  * @summary
- * 
+ *
  * Delete sales channels.
  */
 export const deleteSalesChannelsWorkflow = createWorkflow(

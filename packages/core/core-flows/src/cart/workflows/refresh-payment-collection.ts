@@ -8,11 +8,12 @@ import {
   transform,
   when,
 } from "@medusajs/framework/workflows-sdk"
-import { useQueryGraphStep } from "../../common"
-import { acquireLockStep, releaseLockStep } from "../../locking"
-import { updatePaymentCollectionStep } from "../../payment-collection"
-import { deletePaymentSessionsWorkflow } from "../../payment-collection/workflows/delete-payment-sessions"
-import { validateCartStep } from "../steps"
+import { useQueryGraphStep } from "#common/steps/use-query-graph"
+import { acquireLockStep } from "#locking/steps/acquire-lock"
+import { releaseLockStep } from "#locking/steps/release-lock"
+import { updatePaymentCollectionStep } from "#payment-collection/steps/update-payment-collection"
+import { deletePaymentSessionsWorkflow } from "#payment-collection/workflows/delete-payment-sessions"
+import { validateCartStep } from "#cart/steps/validate-cart"
 
 /**
  * The details of the cart to refresh.

@@ -11,13 +11,11 @@ import {
   parallelize,
   transform,
 } from "@medusajs/framework/workflows-sdk"
-import { useRemoteQueryStep } from "../../../common"
-import {
-  deleteClaimsStep,
-  deleteOrderChangesStep,
-  deleteOrderShippingMethods,
-  deleteReturnsStep,
-} from "../../steps"
+import { useRemoteQueryStep } from "#common/steps/use-remote-query"
+import { deleteClaimsStep } from "#order/steps/claim/delete-claims"
+import { deleteOrderChangesStep } from "#order/steps/delete-order-changes"
+import { deleteOrderShippingMethods } from "#order/steps/delete-order-shipping-methods"
+import { deleteReturnsStep } from "#order/steps/return/delete-returns"
 import {
   throwIfIsCancelled,
   throwIfOrderChangeIsNotActive,
@@ -44,14 +42,14 @@ export type CancelBeginOrderClaimValidationStepInput = {
 /**
  * This step validates that the requested claim can be canceled by checking that it's not canceled,
  * its order isn't canceled, and it hasn't been confirmed. If not valid, the step will throw an error.
- * 
+ *
  * :::note
- * 
+ *
  * You can retrieve an order, order claim, and order change details using [Query](https://docs.medusajs.com/learn/fundamentals/module-links/query),
  * or [useQueryGraphStep](https://docs.medusajs.com/resources/references/medusa-workflows/steps/useQueryGraphStep).
- * 
+ *
  * :::
- * 
+ *
  * @example
  * const data = cancelBeginOrderClaimValidationStep({
  *   order: {
@@ -95,10 +93,10 @@ export const cancelBeginOrderClaimWorkflowId = "cancel-begin-order-claim"
 /**
  * This workflow cancels a requested order claim. It's used by the
  * [Cancel Claim Request Admin API Route](https://docs.medusajs.com/api/admin#claims_deleteclaimsidrequest).
- * 
+ *
  * You can use this workflow within your customizations or your own custom workflows, allowing you to cancel a claim
  * for an order in your custom flows.
- * 
+ *
  * @example
  * const { result } = await cancelBeginOrderClaimWorkflow(container)
  * .run({
@@ -106,9 +104,9 @@ export const cancelBeginOrderClaimWorkflowId = "cancel-begin-order-claim"
  *     claim_id: "claim_123",
  *   }
  * })
- * 
+ *
  * @summary
- * 
+ *
  * Cancel a requested order claim.
  */
 export const cancelBeginOrderClaimWorkflow = createWorkflow(

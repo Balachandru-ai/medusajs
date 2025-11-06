@@ -4,7 +4,7 @@ import {
   WorkflowResponse,
   createWorkflow,
 } from "@medusajs/framework/workflows-sdk"
-import { updateFulfillmentStep } from "../steps"
+import { updateFulfillmentStep } from "#fulfillment/steps/update-fulfillment"
 
 export const updateFulfillmentWorkflowId = "update-fulfillment-workflow"
 /**

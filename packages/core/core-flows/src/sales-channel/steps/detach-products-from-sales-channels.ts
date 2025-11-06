@@ -24,7 +24,7 @@ export const detachProductsFromSalesChannelsStepId =
   "detach-products-from-sales-channels-step"
 /**
  * This step dismisses links between product and sales channel records.
- * 
+ *
  * @example
  * const data = detachProductsFromSalesChannelsStep({
  *   links: [

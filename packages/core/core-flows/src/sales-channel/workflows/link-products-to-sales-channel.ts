@@ -2,7 +2,7 @@ import type { LinkWorkflowInput } from "@medusajs/framework/types"
 import { WorkflowData, createWorkflow } from "@medusajs/framework/workflows-sdk"
 import { associateProductsWithSalesChannelsStep } from "../steps/associate-products-with-channels"
 import { transform } from "@medusajs/framework/workflows-sdk"
-import { detachProductsFromSalesChannelsStep } from "../steps"
+import { detachProductsFromSalesChannelsStep } from "#sales-channel/steps/detach-products-from-sales-channels"
 
 /**
  * The data to manage products available in a sales channel.

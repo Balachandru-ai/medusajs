@@ -18,7 +18,7 @@ export type ListTaxRateRuleIdsStepInput = {
 export const listTaxRateRuleIdsStepId = "list-tax-rate-rule-ids"
 /**
  * This step retrieves the IDs of tax rate rules matching the specified filters.
- * 
+ *
  * @example
  * const data = listTaxRateRuleIdsStep({
  *   selector: {

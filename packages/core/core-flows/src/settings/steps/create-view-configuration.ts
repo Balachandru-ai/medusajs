@@ -1,6 +1,4 @@
-import {
-  CreateViewConfigurationDTO,
-} from "@medusajs/framework/types"
+import { CreateViewConfigurationDTO } from "@medusajs/framework/types"
 import { Modules } from "@medusajs/framework/utils"
 import { StepResponse, createStep } from "@medusajs/framework/workflows-sdk"
 
@@ -17,7 +15,7 @@ export const createViewConfigurationStep = createStep(
   async (data: CreateViewConfigurationStepInput, { container }) => {
     const service = container.resolve(Modules.SETTINGS)
     const created = await service.createViewConfigurations(data)
-    
+
     return new StepResponse(created, { id: created.id })
   },
   async (compensateInput, { container }) => {

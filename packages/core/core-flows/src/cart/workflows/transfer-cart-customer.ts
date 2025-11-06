@@ -9,9 +9,11 @@ import {
   WorkflowResponse,
 } from "@medusajs/framework/workflows-sdk"
 import { AdditionalData } from "@medusajs/types"
-import { emitEventStep, useQueryGraphStep } from "../../common"
-import { acquireLockStep, releaseLockStep } from "../../locking"
-import { updateCartsStep } from "../steps"
+import { emitEventStep } from "#common/steps/emit-event"
+import { useQueryGraphStep } from "#common/steps/use-query-graph"
+import { acquireLockStep } from "#locking/steps/acquire-lock"
+import { releaseLockStep } from "#locking/steps/release-lock"
+import { updateCartsStep } from "#cart/steps/update-carts"
 import { refreshCartItemsWorkflow } from "./refresh-cart-items"
 
 /**

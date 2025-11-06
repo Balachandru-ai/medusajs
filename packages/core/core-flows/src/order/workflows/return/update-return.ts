@@ -12,8 +12,8 @@ import {
   createWorkflow,
   transform,
 } from "@medusajs/framework/workflows-sdk"
-import { useRemoteQueryStep } from "../../../common"
-import { updateReturnsStep } from "../../steps"
+import { useRemoteQueryStep } from "#common/steps/use-remote-query"
+import { updateReturnsStep } from "#order/steps/return/update-returns"
 import { previewOrderChangeStep } from "../../steps/preview-order-change"
 import {
   throwIfIsCancelled,
@@ -37,14 +37,14 @@ export type UpdateReturnValidationStepInput = {
 /**
  * This step validates that a return can be updated.
  * If the return is canceled or the order change is not active, the step will throw an error.
- * 
+ *
  * :::note
- * 
+ *
  * You can retrieve a return and order change details using [Query](https://docs.medusajs.com/learn/fundamentals/module-links/query),
  * or [useQueryGraphStep](https://docs.medusajs.com/resources/references/medusa-workflows/steps/useQueryGraphStep).
- * 
+ *
  * :::
- * 
+ *
  * @example
  * const data = updateReturnValidationStep({
  *   orderChange: {
@@ -72,10 +72,10 @@ export const updateReturnWorkflowId = "update-return"
 /**
  * This workflow updates a return's details. It's used by the
  * [Update Return Admin API Route](https://docs.medusajs.com/api/admin#returns_postreturnsid).
- * 
+ *
  * You can use this workflow within your customizations or your own custom workflows, allowing you
  * to update a return in your custom flow.
- * 
+ *
  * @example
  * const { result } = await updateReturnWorkflow(container)
  * .run({
@@ -84,9 +84,9 @@ export const updateReturnWorkflowId = "update-return"
  *     no_notification: true
  *   }
  * })
- * 
+ *
  * @summary
- * 
+ *
  * Update a return's details.
  */
 export const updateReturnWorkflow = createWorkflow(

@@ -10,7 +10,7 @@ import {
   WorkflowData,
   WorkflowResponse,
 } from "@medusajs/framework/workflows-sdk"
-import { createInventoryLevelsStep } from "../steps"
+import { createInventoryLevelsStep } from "#inventory/steps/create-inventory-levels"
 import { deleteInventoryLevelsWorkflow } from "./delete-inventory-levels"
 
 export interface BulkCreateDeleteLevelsWorkflowInput {

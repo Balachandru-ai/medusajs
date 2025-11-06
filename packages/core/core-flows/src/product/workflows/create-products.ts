@@ -19,8 +19,9 @@ import {
   transform,
   createStep,
 } from "@medusajs/framework/workflows-sdk"
-import { createRemoteLinkStep, emitEventStep } from "../../common"
-import { associateProductsWithSalesChannelsStep } from "../../sales-channel"
+import { createRemoteLinkStep } from "#common/steps/create-remote-links"
+import { emitEventStep } from "#common/steps/emit-event"
+import { associateProductsWithSalesChannelsStep } from "#sales-channel/steps/associate-products-with-channels"
 import { createProductsStep } from "../steps/create-products"
 import { createProductVariantsWorkflow } from "./create-product-variants"
 
@@ -108,12 +109,12 @@ export const createProductsWorkflowId = "create-products"
  * This workflow has a hook that allows you to perform custom actions on the created products. You can see an example in [this guide](https://docs.medusajs.com/resources/commerce-modules/product/extend).
  *
  * You can also use this workflow within your customizations or your own custom workflows, allowing you to wrap custom logic around product creation.
- * 
+ *
  * :::note
- * 
- * Learn more about adding rules to the product variant's prices in the Pricing Module's 
+ *
+ * Learn more about adding rules to the product variant's prices in the Pricing Module's
  * [Price Rules](https://docs.medusajs.com/resources/commerce-modules/pricing/price-rules) documentation.
- * 
+ *
  * :::
  *
  * @example

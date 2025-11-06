@@ -10,8 +10,8 @@ import {
   WorkflowData,
   WorkflowResponse,
 } from "@medusajs/framework/workflows-sdk"
-import { emitEventStep } from "../../common"
-import { createProductCategoriesStep } from "../steps"
+import { emitEventStep } from "#common/steps/emit-event"
+import { createProductCategoriesStep } from "#product-category/steps/create-product-categories"
 
 /**
  * The created product categories.

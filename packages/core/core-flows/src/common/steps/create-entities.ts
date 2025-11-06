@@ -27,7 +27,7 @@ export interface CreateEntitiesStepType {
 export const createEntitiesStepId = "create-entities-step"
 /**
  * This step creates one or more entities using methods in a module's service.
- * 
+ *
  * @example
  * createEntitiesStep({
  *   moduleRegistrationName: Modules.CART,

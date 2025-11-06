@@ -9,7 +9,7 @@ export const batchLinkProductsToCollectionStepId =
   "batch-link-products-to-collection"
 /**
  * This step manages the links between a collection and products.
- * 
+ *
  * @example
  * const data = batchLinkProductsToCollectionStep({
  *   id: "collection_123",

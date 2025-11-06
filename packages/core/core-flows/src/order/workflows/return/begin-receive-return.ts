@@ -11,8 +11,8 @@ import {
   createWorkflow,
   transform,
 } from "@medusajs/framework/workflows-sdk"
-import { useRemoteQueryStep } from "../../../common"
-import { createOrderChangeStep } from "../../steps"
+import { useRemoteQueryStep } from "#common/steps/use-remote-query"
+import { createOrderChangeStep } from "#order/steps/create-order-change"
 import { throwIfIsCancelled } from "../../utils/order-validation"
 
 /**
@@ -32,14 +32,14 @@ export type BeginReceiveReturnValidationStepInput = {
 /**
  * This step validates that a return can be received.
  * If the order or return is canceled, the step will throw an error.
- * 
+ *
  * :::note
- * 
+ *
  * You can retrieve an order and return details using [Query](https://docs.medusajs.com/learn/fundamentals/module-links/query),
  * or [useQueryGraphStep](https://docs.medusajs.com/resources/references/medusa-workflows/steps/useQueryGraphStep).
- * 
+ *
  * :::
- * 
+ *
  * @example
  * const data = beginReceiveReturnValidationStep({
  *   orderReturn: {
@@ -55,10 +55,7 @@ export type BeginReceiveReturnValidationStepInput = {
 export const beginReceiveReturnValidationStep = createStep(
   "begin-receive-return-validation",
   async function (
-    {
-      orderReturn,
-      order,
-    }: BeginReceiveReturnValidationStepInput,
+    { orderReturn, order }: BeginReceiveReturnValidationStepInput,
     context
   ) {
     throwIfIsCancelled(order, "Order")
@@ -70,12 +67,12 @@ export const beginReceiveReturnWorkflowId = "begin-receive-return"
 /**
  * This workflow requests return receival. It's used by the
  * [Start Return Receival Admin API Route](https://docs.medusajs.com/api/admin#returns_postreturnsidreceive).
- * 
+ *
  * You can confirm the return receival using the {@link confirmReturnRequestWorkflow}.
- * 
+ *
  * You can use this workflow within your customizations or your own custom workflows, allowing you
  * to receive a return in your custom flows.
- * 
+ *
  * @example
  * const { result } = await beginReceiveReturnWorkflow(container)
  * .run({
@@ -83,9 +80,9 @@ export const beginReceiveReturnWorkflowId = "begin-receive-return"
  *     return_id: "return_123",
  *   }
  * })
- * 
+ *
  * @summary
- * 
+ *
  * Request a return receival.
  */
 export const beginReceiveReturnWorkflow = createWorkflow(

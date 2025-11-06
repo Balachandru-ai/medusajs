@@ -14,15 +14,15 @@ import {
   WorkflowData,
   WorkflowResponse,
 } from "@medusajs/framework/workflows-sdk"
-import { findOneOrAnyRegionStep } from "../../cart/steps/find-one-or-any-region"
-import { findOrCreateCustomerStep } from "../../cart/steps/find-or-create-customer"
-import { findSalesChannelStep } from "../../cart/steps/find-sales-channel"
-import { requiredVariantFieldsForInventoryConfirmation } from "../../cart/utils/prepare-confirm-inventory-input"
-import { pricingContextResult } from "../../cart/utils/schemas"
-import { confirmVariantInventoryWorkflow } from "../../cart/workflows/confirm-variant-inventory"
-import { getVariantsAndItemsWithPrices } from "../../cart/workflows/get-variants-and-items-with-prices"
-import { useQueryGraphStep } from "../../common"
-import { createOrderLineItemsStep } from "../steps"
+import { findOneOrAnyRegionStep } from "#cart/steps/find-one-or-any-region"
+import { findOrCreateCustomerStep } from "#cart/steps/find-or-create-customer"
+import { findSalesChannelStep } from "#cart/steps/find-sales-channel"
+import { requiredVariantFieldsForInventoryConfirmation } from "#cart/utils/prepare-confirm-inventory-input"
+import { pricingContextResult } from "#cart/utils/schemas"
+import { confirmVariantInventoryWorkflow } from "#cart/workflows/confirm-variant-inventory"
+import { getVariantsAndItemsWithPrices } from "#cart/workflows/get-variants-and-items-with-prices"
+import { useQueryGraphStep } from "#common/steps/use-query-graph"
+import { createOrderLineItemsStep } from "#order/steps/create-line-items"
 import { productVariantsFields } from "../utils/fields"
 
 /**

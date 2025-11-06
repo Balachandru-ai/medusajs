@@ -21,14 +21,14 @@ export type CreateOrderClaimItemsFromActionsInput = {
 
 /**
  * This step creates claim items from a change action.
- * 
+ *
  * :::note
- * 
+ *
  * You can retrieve an order change action details using [Query](https://docs.medusajs.com/learn/fundamentals/module-links/query),
  * or [useQueryGraphStep](https://docs.medusajs.com/resources/references/medusa-workflows/steps/useQueryGraphStep).
- * 
+ *
  * :::
- * 
+ *
  * @example
  * const data = createOrderClaimItemsFromActionsStep({
  *   claimId: "claim_123",

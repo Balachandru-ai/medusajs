@@ -7,9 +7,9 @@ import {
   parallelize,
   transform,
 } from "@medusajs/framework/workflows-sdk"
-import { emitEventStep } from "../../common/steps/emit-event"
-import { removeRemoteLinkStep } from "../../common/steps/remove-remote-links"
-import { deleteProductOptionsStep } from "../steps"
+import { emitEventStep } from "#common/steps/emit-event"
+import { removeRemoteLinkStep } from "#common/steps/remove-remote-links"
+import { deleteProductOptionsStep } from "#product/steps/delete-product-options"
 
 /**
  * The data to delete one or more product options.

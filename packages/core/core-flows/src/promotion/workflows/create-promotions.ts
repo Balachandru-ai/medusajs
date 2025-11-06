@@ -8,7 +8,7 @@ import {
   createHook,
   createWorkflow,
 } from "@medusajs/framework/workflows-sdk"
-import { createPromotionsStep } from "../steps"
+import { createPromotionsStep } from "#promotion/steps/create-promotions"
 
 /**
  * The data to create one or more promotions, along with custom data that's passed to the workflow's hooks.
