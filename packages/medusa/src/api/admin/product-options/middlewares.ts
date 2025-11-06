@@ -57,6 +57,5 @@ export const adminProductOptionRoutesMiddlewares: MiddlewareRoute[] = [
   {
     method: ["DELETE"],
     matcher: "/admin/product-options/:id",
-    middlewares: [],
   },
 ]

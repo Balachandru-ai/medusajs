@@ -1,9 +1,6 @@
 import * as QueryConfig from "./query-config"
 import { MiddlewareRoute } from "@medusajs/framework/http"
-import {
-  validateAndTransformBody,
-  validateAndTransformQuery,
-} from "@medusajs/framework"
+import { validateAndTransformBody, validateAndTransformQuery, } from "@medusajs/framework"
 import {
   AdminCreateProductTag,
   AdminGetProductTagParams,
@@ -58,6 +55,5 @@ export const adminProductTagRoutesMiddlewares: MiddlewareRoute[] = [
   {
     method: ["DELETE"],
     matcher: "/admin/product-tags/:id",
-    middlewares: [],
   },
 ]

@@ -58,7 +58,6 @@ export const adminProductCategoryRoutesMiddlewares: MiddlewareRoute[] = [
   {
     method: ["DELETE"],
     matcher: "/admin/product-categories/:id",
-    middlewares: [],
   },
   {
     method: ["POST"],
