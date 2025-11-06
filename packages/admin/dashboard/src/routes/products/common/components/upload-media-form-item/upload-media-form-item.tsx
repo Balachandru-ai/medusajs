@@ -69,7 +69,7 @@ export const UploadMediaFormItem = ({
 
       const fileSizeRejections = rejectedFiles.filter((f) => f?.reason === "size")
 
-      if (fileSizeRejections.length > 0) {
+      if (fileSizeRejections.length) {
         const fileNames = fileSizeRejections.map((f) => f.file.name).join(", ")
         form.setError("media", {
           type: "file_too_large",
