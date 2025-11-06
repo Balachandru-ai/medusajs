@@ -1,6 +1,6 @@
 export function formatError(err: unknown): string {
   if (err instanceof Error) {
-    return `${err.message}: ${err.stack}`
+    return err.stack || String(err)
   }
   
   if (typeof err === 'object' && err !== null) {
