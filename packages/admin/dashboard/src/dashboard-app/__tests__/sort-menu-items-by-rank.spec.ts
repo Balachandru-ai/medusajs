@@ -1,48 +1,6 @@
 import { describe, expect, it } from "vitest"
-
-type INavItem = {
-  label: string
-  to: string
-  icon?: any
-  items?: INavItem[]
-  rank?: number
-}
-
-// Extract the sortMenuItemsByRank logic as a standalone function for testing
-function sortMenuItemsByRank(
-  items: (INavItem & { rank?: number })[]
-): INavItem[] {
-  // Sort items by rank (ascending order)
-  // Items with rank come first, sorted by rank value
-  // Items without rank come last, maintaining their original order
-  const sortedItems = items.sort((a, b) => {
-    // If both have rank, sort by rank value
-    if (a.rank !== undefined && b.rank !== undefined) {
-      return a.rank - b.rank
-    }
-    // If only a has rank, it comes first
-    if (a.rank !== undefined) {
-      return -1
-    }
-    // If only b has rank, it comes first
-    if (b.rank !== undefined) {
-      return 1
-    }
-    // If neither has rank, maintain original order
-    return 0
-  })
-
-  // Recursively sort nested items
-  sortedItems.forEach((item) => {
-    if (item.items && item.items.length > 0) {
-      item.items = sortMenuItemsByRank(
-        item.items as (INavItem & { rank?: number })[]
-      )
-    }
-  })
-
-  return sortedItems
-}
+import { sortMenuItemsByRank } from "../utils/sort-menu-items-by-rank"
+import { INavItem } from "../../components/layout/nav-item"
 
 describe("sortMenuItemsByRank", () => {
   it("should sort items by rank in ascending order", () => {
