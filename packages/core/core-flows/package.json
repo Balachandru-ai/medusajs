@@ -40,10 +40,6 @@
       "types": "./dist/cart/utils/*.d.ts",
       "default": "./dist/cart/utils/*.js"
     },
-    "#cart/utils/__tests__/*": {
-      "types": "./dist/cart/utils/__tests__/*.d.ts",
-      "default": "./dist/cart/utils/__tests__/*.js"
-    },
     "#cart/workflows/*": {
       "types": "./dist/cart/workflows/*.d.ts",
       "default": "./dist/cart/workflows/*.js"
@@ -55,14 +51,6 @@
     "#common/steps/*": {
       "types": "./dist/common/steps/*.d.ts",
       "default": "./dist/common/steps/*.js"
-    },
-    "#common/steps/__fixtures__/*": {
-      "types": "./dist/common/steps/__fixtures__/*.d.ts",
-      "default": "./dist/common/steps/__fixtures__/*.js"
-    },
-    "#common/steps/__tests__/*": {
-      "types": "./dist/common/steps/__tests__/*.d.ts",
-      "default": "./dist/common/steps/__tests__/*.js"
     },
     "#common/workflows/*": {
       "types": "./dist/common/workflows/*.d.ts",
@@ -223,10 +211,6 @@
     "#order/utils/*": {
       "types": "./dist/order/utils/*.d.ts",
       "default": "./dist/order/utils/*.js"
-    },
-    "#order/utils/__tests__/*": {
-      "types": "./dist/order/utils/__tests__/*.d.ts",
-      "default": "./dist/order/utils/__tests__/*.js"
     },
     "#order/workflows/*": {
       "types": "./dist/order/workflows/*.d.ts",
