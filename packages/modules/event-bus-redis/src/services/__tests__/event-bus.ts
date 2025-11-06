@@ -404,7 +404,7 @@ describe("RedisEventBusService", () => {
           1,
           "An error occurred while processing eventName:"
         )
-        expect(loggerMock.warn).toHaveBeenNthCalledWith(2, new Error("fail1"))
+        expect(loggerMock.warn).toHaveBeenNthCalledWith(2, expect.stringContaining("fail1: Error: fail1"))
 
         expect(loggerMock.warn).toHaveBeenNthCalledWith(
           3,
@@ -418,6 +418,43 @@ describe("RedisEventBusService", () => {
         )
 
         expect(test.sort()).toEqual(["hi", "fail1", "hi2", "fail2"].sort())
+      })
+
+      it("should process event with failing subscribers and handle error messages correctly", async () => {
+        const test: string[] = []
+
+        eventBus.subscribe("eventName", () => {
+          test.push("fail1")
+          return Promise.reject(new Error("fail1"))
+        })
+
+        eventBus.subscribe("eventName", () => {
+          test.push("fail2")
+          return Promise.reject({ error: "fail2"})
+        })
+
+        await eventBus.worker_({
+          name: "eventName",
+          data: { data: { test: 1 } },
+          opts: { attempts: 1 },
+          update: (data) => data,
+        } as any)
+
+        expect(loggerMock.warn).toHaveBeenCalledTimes(5)
+        
+        expect(loggerMock.warn).toHaveBeenNthCalledWith(
+          1,
+          "An error occurred while processing eventName:"
+        )
+        expect(loggerMock.warn).toHaveBeenNthCalledWith(2, expect.stringContaining("fail1: Error: fail1"))
+
+        expect(loggerMock.warn).toHaveBeenNthCalledWith(
+          3,
+          "An error occurred while processing eventName:"
+        )
+        expect(loggerMock.warn).toHaveBeenNthCalledWith(4, '{"error":"fail2"}')
+
+        expect(test).toEqual(["fail1", "fail2"])
       })
 
       it("should retry processing when subcribers fail, if configured - final attempt", async () => {

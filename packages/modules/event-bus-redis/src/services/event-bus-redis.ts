@@ -12,6 +12,7 @@ import {
 import { BulkJobOptions, Queue, Worker } from "bullmq"
 import { Redis } from "ioredis"
 import { BullJob, EventBusRedisModuleOptions, Options } from "../types"
+import { formatError } from "../utils"
 
 type InjectedDependencies = {
   logger: Logger
@@ -345,8 +346,7 @@ export default class RedisEventBusService extends AbstractEventBusModuleService 
           })
         } catch (err) {
           this.logger_?.warn(`An error occurred while processing ${name}:`)
-          this.logger_?.warn(err)
-
+          this.logger_?.warn(formatError(err))
           return err
         }
       })
