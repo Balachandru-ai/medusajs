@@ -1,5 +1,6 @@
 ---
-"@medusajs/product": minor
+"@medusajs/product": patch
+"integration-tests-http": patch
 ---
 
-Add the ability to search products by their variant SKU through the admin `/admin/products` endpoint using the `q` query parameter.
+feat(product): add SKU search support to admin API
