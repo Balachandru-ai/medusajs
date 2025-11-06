@@ -1,11 +1,11 @@
 import { updateCartPromotionsWorkflowId } from "@medusajs/core-flows"
-import { MedusaRequest, MedusaResponse } from "@medusajs/framework/http"
+import { MedusaStoreRequest, MedusaResponse } from "@medusajs/framework/http"
 import { HttpTypes } from "@medusajs/framework/types"
 import { Modules, PromotionActions } from "@medusajs/framework/utils"
 import { refetchCart } from "../../helpers"
 
 export const POST = async (
-  req: MedusaRequest<HttpTypes.StoreCartAddPromotion, HttpTypes.SelectParams>,
+  req: MedusaStoreRequest<HttpTypes.StoreCartAddPromotion, HttpTypes.SelectParams>,
   res: MedusaResponse<HttpTypes.StoreCartResponse>
 ) => {
   const we = req.scope.resolve(Modules.WORKFLOW_ENGINE)
@@ -25,20 +25,19 @@ export const POST = async (
   const cart = await refetchCart(
     req.params.id,
     req.scope,
-    req.queryConfig.fields
+    req.queryConfig.fields,
+    req
   )
 
   res.status(200).json({ cart })
 }
 
 export const DELETE = async (
-  req: MedusaRequest<
+  req: MedusaStoreRequest<
     HttpTypes.StoreCartRemovePromotion,
     HttpTypes.SelectParams
   >,
-  res: MedusaResponse<{
-    cart: HttpTypes.StoreCart
-  }>
+  res: MedusaResponse<HttpTypes.StoreCartResponse>
 ) => {
   const we = req.scope.resolve(Modules.WORKFLOW_ENGINE)
   const payload = req.validatedBody
@@ -54,7 +53,8 @@ export const DELETE = async (
   const cart = await refetchCart(
     req.params.id,
     req.scope,
-    req.queryConfig.fields
+    req.queryConfig.fields,
+    req
   )
 
   res.status(200).json({ cart })

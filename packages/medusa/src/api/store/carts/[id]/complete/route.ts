@@ -1,6 +1,6 @@
 import { completeCartWorkflowId } from "@medusajs/core-flows"
 import { prepareRetrieveQuery } from "@medusajs/framework"
-import { MedusaRequest, MedusaResponse } from "@medusajs/framework/http"
+import { MedusaStoreRequest, MedusaResponse } from "@medusajs/framework/http"
 import { HttpTypes } from "@medusajs/framework/types"
 import {
   ContainerRegistrationKeys,
@@ -11,7 +11,7 @@ import { refetchCart } from "../../helpers"
 import { defaultStoreCartFields } from "../../query-config"
 
 export const POST = async (
-  req: MedusaRequest<{}, HttpTypes.SelectParams>,
+  req: MedusaStoreRequest<{}, HttpTypes.SelectParams>,
   res: MedusaResponse<HttpTypes.StoreCompleteCartResponse>
 ) => {
   const cart_id = req.params.id
@@ -53,7 +53,7 @@ export const POST = async (
           defaults: defaultStoreCartFields,
         }
       ).remoteQueryConfig.fields
-    )
+    , req)
 
     if (!statusOKErrors.includes(error?.type)) {
       throw error
