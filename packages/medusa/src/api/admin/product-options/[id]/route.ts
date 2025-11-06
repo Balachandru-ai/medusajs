@@ -12,10 +12,7 @@ import {
   AdminUpdateProductOptionType,
 } from "../validators"
 import { HttpTypes } from "@medusajs/framework/types"
-import {
-  ContainerRegistrationKeys,
-  MedusaError,
-} from "@medusajs/framework/utils"
+import { ContainerRegistrationKeys } from "@medusajs/framework/utils"
 
 export const GET = async (
   req: AuthenticatedMedusaRequest<AdminGetProductOptionParamsType>,
@@ -37,22 +34,6 @@ export const POST = async (
   req: AuthenticatedMedusaRequest<AdminUpdateProductOptionType>,
   res: MedusaResponse<HttpTypes.AdminProductOptionResponse>
 ) => {
-  const query = req.scope.resolve(ContainerRegistrationKeys.QUERY)
-  const {
-    data: [existingProductOption],
-  } = await query.graph({
-    entity: "product_option",
-    filters: { id: req.params.id },
-    fields: ["id"],
-  })
-
-  if (!existingProductOption) {
-    throw new MedusaError(
-      MedusaError.Types.NOT_FOUND,
-      `Product option with id "${req.params.id}" not found`
-    )
-  }
-
   const { result } = await updateProductOptionsWorkflow(req.scope).run({
     input: {
       selector: { id: req.params.id },
@@ -60,6 +41,7 @@ export const POST = async (
     },
   })
 
+  const query = req.scope.resolve(ContainerRegistrationKeys.QUERY)
   const {
     data: [product_option],
   } = await query.graph({
