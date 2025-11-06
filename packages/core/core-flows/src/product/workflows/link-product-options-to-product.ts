@@ -61,29 +61,30 @@ export const linkProductOptionsToProductWorkflowId =
 export const linkProductOptionsToProductWorkflow = createWorkflow(
   linkProductOptionsToProductWorkflowId,
   (input: WorkflowData<LinkProductOptionsToProductWorkflowInput>) => {
-    const optionsToCreate = transform({ input }, ({ input }) => {
-      return (input.add ?? []).filter((option) => !isString(option))
-    }) as ProductTypes.CreateProductOptionDTO[]
+    const { toCreate, toAdd } = transform({ input }, ({ input }) => {
+      const toCreate: ProductTypes.CreateProductOptionDTO[] = []
+      const toAdd: string[] = []
+      for (const option of input.add ?? []) {
+        isString(option) ? toAdd.push(option) : toCreate.push(option)
+      }
+
+      return { toCreate, toAdd }
+    })
 
     const createdIds = when(
       "creating-product-options",
-      { optionsToCreate },
-      ({ optionsToCreate }) => optionsToCreate.length > 0
+      { toCreate },
+      ({ toCreate }) => toCreate.length > 0
     ).then(() => {
-      const createdOptions = createProductOptionsStep(optionsToCreate)
-
-      return transform({ createdOptions }, ({ createdOptions }) => {
-        return createdOptions.map((option) => option.id)
-      })
+      const createdOptions = createProductOptionsStep(toCreate)
+      return transform({ createdOptions }, ({ createdOptions }) =>
+        createdOptions.map((option) => option.id)
+      )
     })
 
     const toAddProductOptionIds = transform(
-      { input, createdIds },
-      ({ input, createdIds }) => {
-        return (input.add ?? [])
-          .filter((option) => isString(option))
-          .concat(createdIds ? createdIds : [])
-      }
+      { toAdd, createdIds },
+      ({ toAdd, createdIds }) => toAdd.concat(createdIds ?? [])
     )
 
     const productOptions = linkProductOptionsToProductStep({

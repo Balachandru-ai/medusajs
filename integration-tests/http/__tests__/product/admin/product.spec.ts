@@ -2815,6 +2815,145 @@ medusaIntegrationTestRunner({
         })
       })
 
+      describe("POST /admin/products/:id/options", () => {
+        let colorOption
+        let sizeOption
+
+        beforeEach(async () => {
+          colorOption = (
+            await api.post(
+              "/admin/product-options",
+              { title: "Color", values: ["Red", "Blue"] },
+              adminHeaders
+            )
+          ).data.product_option
+
+          sizeOption = (
+            await api.post(
+              "/admin/product-options",
+              { title: "Size", values: ["L", "M"] },
+              adminHeaders
+            )
+          ).data.product_option
+        })
+
+        it("should link existing options to product", async () => {
+          const payload = {
+            add: [colorOption.id, sizeOption.id],
+          }
+
+          const response = await api.post(
+            `/admin/products/${baseProduct.id}/options`,
+            payload,
+            adminHeaders
+          )
+
+          expect(response.status).toEqual(200)
+          expect(response.data.product.options.length).toEqual(4) // 2 new ones and 2 it already had
+          expect(response.data.product.options).toEqual(
+            expect.arrayContaining([
+              expect.objectContaining({
+                id: baseProduct.options[0].id,
+              }),
+              expect.objectContaining({
+                id: baseProduct.options[1].id,
+              }),
+              expect.objectContaining({
+                id: colorOption.id,
+              }),
+              expect.objectContaining({
+                id: sizeOption.id,
+              }),
+            ])
+          )
+        })
+
+        it("should unlink existing options from product", async () => {
+          let response = await api.post(
+            `/admin/products/${baseProduct.id}/options`,
+            {
+              add: [colorOption.id, sizeOption.id],
+            },
+            adminHeaders
+          )
+
+          expect(response.status).toEqual(200)
+          expect(response.data.product.options.length).toEqual(4) // 2 new ones and 2 it already had
+
+          const payload = {
+            remove: [colorOption.id, sizeOption.id],
+          }
+
+          response = await api.post(
+            `/admin/products/${baseProduct.id}/options`,
+            payload,
+            adminHeaders
+          )
+
+          expect(response.status).toEqual(200)
+          expect(response.data.product.options.length).toEqual(2)
+        })
+
+        it("should link and unlink existing options to/from product", async () => {
+          const payload = {
+            add: [colorOption.id, sizeOption.id],
+            remove: [baseProduct.options[0].id, baseProduct.options[1].id],
+          }
+
+          const response = await api.post(
+            `/admin/products/${baseProduct.id}/options`,
+            payload,
+            adminHeaders
+          )
+
+          expect(response.status).toEqual(200)
+          expect(response.data.product.options.length).toEqual(2)
+          expect(response.data.product.options).toEqual(
+            expect.arrayContaining([
+              expect.objectContaining({
+                id: colorOption.id,
+              }),
+              expect.objectContaining({
+                id: sizeOption.id,
+              }),
+            ])
+          )
+        })
+
+        it("should link a new options to product", async () => {
+          const payload = {
+            add: [
+              colorOption.id,
+              sizeOption.id,
+              { title: "new", values: ["A", "B"] },
+            ],
+            remove: [baseProduct.options[0].id, baseProduct.options[1].id],
+          }
+
+          const response = await api.post(
+            `/admin/products/${baseProduct.id}/options`,
+            payload,
+            adminHeaders
+          )
+
+          expect(response.status).toEqual(200)
+          expect(response.data.product.options.length).toEqual(3)
+          expect(response.data.product.options).toEqual(
+            expect.arrayContaining([
+              expect.objectContaining({
+                id: colorOption.id,
+              }),
+              expect.objectContaining({
+                id: sizeOption.id,
+              }),
+              expect.objectContaining({
+                title: "new",
+              }),
+            ])
+          )
+        })
+      })
+
       describe("testing for soft-deletion + uniqueness on handles, collection and variant properties", () => {
         it("successfully deletes a product", async () => {
           const response = await api
