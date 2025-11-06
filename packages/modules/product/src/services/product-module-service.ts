@@ -902,9 +902,9 @@ export default class ProductModuleService
         ...opt,
         values: opt.values?.map((v) => {
           // Normalize each value into an object and attach rank if available
-          const valueObj = typeof v === "string" ? { value: v } : v
+          const valueObj = isString(v) ? { value: v } : v
           const rank =
-            opt.ranks && typeof v === "string"
+            opt.ranks && isString(v)
               ? opt.ranks[v]
               : opt.ranks?.[valueObj.value]
 
@@ -1057,10 +1057,10 @@ export default class ProductModuleService
       if (opt.values) {
         // If new values are provided → normalize and apply ranks
         normalizedValues = opt.values.map((v) => {
-          const valueObj = typeof v === "string" ? { value: v } : v
+          const valueObj = isString(v) ? { value: v } : v
 
           const rank =
-            opt.ranks && typeof v === "string"
+            opt.ranks && isString(v)
               ? opt.ranks[v]
               : opt.ranks?.[valueObj.value]
 
