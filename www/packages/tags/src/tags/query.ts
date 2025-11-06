@@ -8,8 +8,8 @@ export const query = [
     "path": "https://docs.medusajs.com/resources/commerce-modules/product/guides/price-with-taxes"
   },
   {
-    "title": "getVariantPriceSetsStep",
-    "path": "https://docs.medusajs.com/resources/references/medusa-workflows/steps/getVariantPriceSetsStep"
+    "title": "prepareAdjustmentsFromPromotionActionsStep",
+    "path": "https://docs.medusajs.com/resources/references/medusa-workflows/steps/prepareAdjustmentsFromPromotionActionsStep"
   },
   {
     "title": "addShippingMethodToCartWorkflow",
@@ -36,6 +36,10 @@ export const query = [
     "path": "https://docs.medusajs.com/resources/references/medusa-workflows/transferCartCustomerWorkflow"
   },
   {
+    "title": "updateCartPromotionsWorkflow",
+    "path": "https://docs.medusajs.com/resources/references/medusa-workflows/updateCartPromotionsWorkflow"
+  },
+  {
     "title": "updateCartWorkflow",
     "path": "https://docs.medusajs.com/resources/references/medusa-workflows/updateCartWorkflow"
   },
@@ -48,8 +52,12 @@ export const query = [
     "path": "https://docs.medusajs.com/resources/references/medusa-workflows/steps/useQueryGraphStep"
   },
   {
-    "title": "addDraftOrderItemsWorkflow",
-    "path": "https://docs.medusajs.com/resources/references/medusa-workflows/addDraftOrderItemsWorkflow"
+    "title": "confirmDraftOrderEditWorkflow",
+    "path": "https://docs.medusajs.com/resources/references/medusa-workflows/confirmDraftOrderEditWorkflow"
+  },
+  {
+    "title": "requestDraftOrderEditWorkflow",
+    "path": "https://docs.medusajs.com/resources/references/medusa-workflows/requestDraftOrderEditWorkflow"
   },
   {
     "title": "deleteInventoryItemWorkflow",
@@ -60,28 +68,32 @@ export const query = [
     "path": "https://docs.medusajs.com/resources/references/medusa-workflows/deleteLineItemsWorkflow"
   },
   {
-    "title": "addOrderLineItemsWorkflow",
-    "path": "https://docs.medusajs.com/resources/references/medusa-workflows/addOrderLineItemsWorkflow"
-  },
-  {
     "title": "beginOrderEditOrderWorkflow",
     "path": "https://docs.medusajs.com/resources/references/medusa-workflows/beginOrderEditOrderWorkflow"
   },
   {
-    "title": "createOrderWorkflow",
-    "path": "https://docs.medusajs.com/resources/references/medusa-workflows/createOrderWorkflow"
+    "title": "confirmClaimRequestWorkflow",
+    "path": "https://docs.medusajs.com/resources/references/medusa-workflows/confirmClaimRequestWorkflow"
   },
   {
-    "title": "orderClaimAddNewItemWorkflow",
-    "path": "https://docs.medusajs.com/resources/references/medusa-workflows/orderClaimAddNewItemWorkflow"
+    "title": "confirmExchangeRequestWorkflow",
+    "path": "https://docs.medusajs.com/resources/references/medusa-workflows/confirmExchangeRequestWorkflow"
   },
   {
-    "title": "orderEditAddNewItemWorkflow",
-    "path": "https://docs.medusajs.com/resources/references/medusa-workflows/orderEditAddNewItemWorkflow"
+    "title": "confirmOrderEditRequestWorkflow",
+    "path": "https://docs.medusajs.com/resources/references/medusa-workflows/confirmOrderEditRequestWorkflow"
   },
   {
-    "title": "orderExchangeAddNewItemWorkflow",
-    "path": "https://docs.medusajs.com/resources/references/medusa-workflows/orderExchangeAddNewItemWorkflow"
+    "title": "confirmReturnReceiveWorkflow",
+    "path": "https://docs.medusajs.com/resources/references/medusa-workflows/confirmReturnReceiveWorkflow"
+  },
+  {
+    "title": "confirmReturnRequestWorkflow",
+    "path": "https://docs.medusajs.com/resources/references/medusa-workflows/confirmReturnRequestWorkflow"
+  },
+  {
+    "title": "createOrUpdateOrderPaymentCollectionWorkflow",
+    "path": "https://docs.medusajs.com/resources/references/medusa-workflows/createOrUpdateOrderPaymentCollectionWorkflow"
   },
   {
     "title": "batchProductVariantsWorkflow",

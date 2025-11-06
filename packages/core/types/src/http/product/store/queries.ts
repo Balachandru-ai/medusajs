@@ -28,7 +28,7 @@ export interface StoreProductPricingContext {
 export interface StoreProductParams extends SelectParams, StoreProductPricingContext {}
 
 export interface StoreProductListParams
-  extends Omit<BaseProductListParams, "tags" | "status" | "categories" | "deleted_at">, StoreProductPricingContext {
+  extends Omit<BaseProductListParams, "tags" | "status" | "categories" | "deleted_at" | "with_deleted">, StoreProductPricingContext {
   /**
    * Filter by the product's tag(s).
    */
