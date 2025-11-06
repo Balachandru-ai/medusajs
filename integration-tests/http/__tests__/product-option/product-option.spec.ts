@@ -41,7 +41,7 @@ medusaIntegrationTestRunner({
     })
 
     describe("GET /admin/product-options", () => {
-      it("returns a list of product options", async () => {
+      it("should return a list of product options", async () => {
         const res = await api.get("/admin/product-options", adminHeaders)
 
         expect(res.status).toEqual(200)
@@ -68,7 +68,7 @@ medusaIntegrationTestRunner({
         )
       })
 
-      it("returns a list of product options matching free text search param", async () => {
+      it("should return a list of product options matching free text search param", async () => {
         const res = await api.get("/admin/product-options?q=1", adminHeaders)
 
         expect(res.status).toEqual(200)
@@ -80,7 +80,7 @@ medusaIntegrationTestRunner({
         )
       })
 
-      it("returns a list of exclusive product options", async () => {
+      it("should return a list of exclusive product options", async () => {
         const res = await api.get(
           "/admin/product-options?is_exclusive=false",
           adminHeaders
@@ -97,7 +97,7 @@ medusaIntegrationTestRunner({
     })
 
     describe("POST /admin/product-options", () => {
-      it("creates a product option with value ranks", async () => {
+      it("should create a product option with value ranks", async () => {
         const option = (
           await api.post(
             `/admin/product-options`,
@@ -131,7 +131,7 @@ medusaIntegrationTestRunner({
         )
       })
 
-      it("throws ir a rank is specified for invalid value", async () => {
+      it("should throw if a rank is specified for invalid value", async () => {
         const error = await api
           .post(
             `/admin/product-options`,
@@ -155,7 +155,7 @@ medusaIntegrationTestRunner({
     })
 
     describe("GET /admin/product-options/[id]", () => {
-      it("returns a product option", async () => {
+      it("should return a product option", async () => {
         const res = await api.get(
           `/admin/product-options/${option1.id}`,
           adminHeaders
@@ -177,7 +177,7 @@ medusaIntegrationTestRunner({
     })
 
     describe("POST /admin/product-options/[id]", () => {
-      it("updates a product option", async () => {
+      it("should update a product option", async () => {
         const option = (
           await api.post(
             `/admin/product-options/${option2.id}`,
@@ -208,7 +208,7 @@ medusaIntegrationTestRunner({
         expect(res.data.product_options.length).toEqual(0)
       })
 
-      it("updates a product value ranks", async () => {
+      it("should update a product value ranks", async () => {
         const option = (
           await api.post(
             `/admin/product-options/${option2.id}`,
@@ -242,7 +242,7 @@ medusaIntegrationTestRunner({
     })
 
     describe("DELETE /admin/product-options/[id]", () => {
-      it("deletes a product option", async () => {
+      it("should delete a product option", async () => {
         await api.delete(`/admin/product-options/${option2.id}`, adminHeaders)
 
         const res = await api.get("/admin/product-options", adminHeaders)
