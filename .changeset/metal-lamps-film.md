@@ -1,7 +1,7 @@
 ---
-"@medusajs/admin-vite-plugin": minor
-"@medusajs/admin-sdk": minor
-"@medusajs/dashboard": minor
+"@medusajs/admin-vite-plugin": patch
+"@medusajs/admin-sdk": patch
+"@medusajs/dashboard": patch
 ---
 
-add custom admin route ranking feature
+feat(dashboard): add custom admin route ranking feature
