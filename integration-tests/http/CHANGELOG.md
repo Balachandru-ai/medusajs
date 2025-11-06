@@ -1,5 +1,34 @@
 # integration-tests-http
 
+## 1.0.29
+
+### Patch Changes
+
+- Updated dependencies [[`42b270ed2df09474f528d8d23816e0affcf4bd25`](https://github.com/medusajs/medusa/commit/42b270ed2df09474f528d8d23816e0affcf4bd25), [`018871f8cd6121ea6af40644f784256891b11849`](https://github.com/medusajs/medusa/commit/018871f8cd6121ea6af40644f784256891b11849), [`28c3ea68f5634792848f146ac6af5b27c848bf21`](https://github.com/medusajs/medusa/commit/28c3ea68f5634792848f146ac6af5b27c848bf21), [`224ab39a81e8d3cf3d6fa3ff5eee82541f64728d`](https://github.com/medusajs/medusa/commit/224ab39a81e8d3cf3d6fa3ff5eee82541f64728d), [`afb40d437b3cc4ceb015df70985b2f005f40eaff`](https://github.com/medusajs/medusa/commit/afb40d437b3cc4ceb015df70985b2f005f40eaff), [`e66f7cf59e516f12e5446e191e9fdd1aede9c8ab`](https://github.com/medusajs/medusa/commit/e66f7cf59e516f12e5446e191e9fdd1aede9c8ab), [`990691e78a77a46bc581353de47945dd8f5d6928`](https://github.com/medusajs/medusa/commit/990691e78a77a46bc581353de47945dd8f5d6928), [`e4f8e3d6cc90ba1570e4b0f3f09ac225ce6bc871`](undefined), [`37563987b8fe75c9acfe62957a33e8398977647a`](https://github.com/medusajs/medusa/commit/37563987b8fe75c9acfe62957a33e8398977647a), [`13d7d15be594ca413785eebe8f86b47c36cb9830`](https://github.com/medusajs/medusa/commit/13d7d15be594ca413785eebe8f86b47c36cb9830)]:
+  - @medusajs/medusa@2.11.3
+  - @medusajs/framework@2.11.3
+  - @medusajs/api-key@2.11.3
+  - @medusajs/auth@2.11.3
+  - @medusajs/cache-inmemory@2.11.3
+  - @medusajs/core-flows@2.11.3
+  - @medusajs/customer@2.11.3
+  - @medusajs/event-bus-local@2.11.3
+  - @medusajs/fulfillment@2.11.3
+  - @medusajs/fulfillment-manual@2.11.3
+  - @medusajs/inventory@2.11.3
+  - @medusajs/modules-sdk@2.11.3
+  - @medusajs/pricing@2.11.3
+  - @medusajs/product@2.11.3
+  - @medusajs/promotion@2.11.3
+  - @medusajs/region@2.11.3
+  - @medusajs/stock-location@2.11.3
+  - @medusajs/store@2.11.3
+  - @medusajs/tax@2.11.3
+  - @medusajs/test-utils@2.11.3
+  - @medusajs/user@2.11.3
+  - @medusajs/utils@2.11.3
+  - @medusajs/workflow-engine-inmemory@2.11.3
+
 ## 1.0.28
 
 ### Patch Changes

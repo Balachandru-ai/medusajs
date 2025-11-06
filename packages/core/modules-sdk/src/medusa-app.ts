@@ -558,9 +558,10 @@ async function MedusaApp_({
       }
     }
 
+    const concurrency = parseInt(process.env.DB_MIGRATION_CONCURRENCY ?? "1")
     await executeWithConcurrency(
       moduleResolutions.map((a) => () => run(a)),
-      8 // parallel migrations
+      concurrency
     )
   }
 
