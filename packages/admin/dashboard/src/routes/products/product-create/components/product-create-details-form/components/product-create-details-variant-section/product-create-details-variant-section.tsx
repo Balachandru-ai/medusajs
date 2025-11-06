@@ -424,7 +424,7 @@ export const ProductCreateVariantsSection = ({
                             handleValueChange(option.id, value as string[])
                           }
                           onCreateOption={(_) => {
-                            // Nothing
+                            // Todo
                           }}
                           options={valueOptions}
                           placeholder={t(
