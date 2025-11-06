@@ -19,7 +19,7 @@ import { previewOrderChangeStep } from "../../steps/preview-order-change"
 import { createOrderChangeActionsWorkflow } from "../create-order-change-actions"
 
 /**
- * The data to compute adjustments for an order edit.
+ * The data to compute adjustments for an order edit, exchange, claim, or return.
  */
 export type ComputeAdjustmentsForPreviewWorkflowInput = {
   /**
@@ -30,15 +30,29 @@ export type ComputeAdjustmentsForPreviewWorkflowInput = {
    * The order change's details.
    */
   orderChange: OrderChangeDTO
+  /**
+   * Optional exchange ID to include in the order change action.
+   */
+  exchange_id?: string
+  /**
+   * Optional claim ID to include in the order change action.
+   */
+  claim_id?: string
+  /**
+   * Optional return ID to include in the order change action.
+   */
+  return_id?: string
 }
 
 export const computeAdjustmentsForPreviewWorkflowId =
   "compute-adjustments-for-preview"
 /**
- * This workflow computes adjustments for an order edit. It's used by the
- * [Add Items to Order Edit Admin API Route](https://docs.medusajs.com/api/admin#order-edits_postordereditsiditems).
+ * This workflow computes adjustments for an order edit, exchange, claim, or return.
+ * It's used by the [Add Items to Order Edit Admin API Route](https://docs.medusajs.com/api/admin#order-edits_postordereditsiditems),
+ * [Add Outbound Items Admin API Route](https://docs.medusajs.com/api/admin#exchanges_postexchangesidoutbounditems),
+ * and [Add Inbound Items Admin API Route](https://docs.medusajs.com/api/admin#exchanges_postexchangesidinbounditems).
  *
- * You can use this workflow within your customizations or your own custom workflows, allowing you to compute adjustments for an order edit
+ * You can use this workflow within your customizations or your own custom workflows, allowing you to compute adjustments
  * in your custom flows.
  *
  * @example
@@ -52,13 +66,14 @@ export const computeAdjustmentsForPreviewWorkflowId =
  *     orderChange: {
  *       id: "orch_123",
  *       // other order change details...
- *     }
+ *     },
+ *     exchange_id: "exchange_123", // optional, for exchanges
  *   }
  * })
  *
  * @summary
  *
- * Compute adjustments for an order edit.
+ * Compute adjustments for an order edit, exchange, claim, or return.
  */
 export const computeAdjustmentsForPreviewWorkflow = createWorkflow(
   computeAdjustmentsForPreviewWorkflowId,
@@ -104,12 +119,18 @@ export const computeAdjustmentsForPreviewWorkflow = createWorkflow(
             previewedOrder,
             orderChange: input.orderChange,
             lineItemAdjustmentsToCreate,
+            exchange_id: input.exchange_id,
+            claim_id: input.claim_id,
+            return_id: input.return_id,
           },
           ({
             order,
             previewedOrder,
             orderChange,
             lineItemAdjustmentsToCreate,
+            exchange_id,
+            claim_id,
+            return_id,
           }) => {
             return previewedOrder.items.map((item) => {
               const itemAdjustments = lineItemAdjustmentsToCreate.filter(
@@ -119,6 +140,9 @@ export const computeAdjustmentsForPreviewWorkflow = createWorkflow(
               return {
                 order_change_id: orderChange.id,
                 order_id: order.id,
+                ...(exchange_id && { exchange_id }),
+                ...(claim_id && { claim_id }),
+                ...(return_id && { return_id }),
                 version: orderChange.version,
                 action: ChangeActionType.ITEM_ADJUSTMENTS_REPLACE,
                 details: {
