@@ -70,7 +70,7 @@ export const UploadMediaFormItem = ({
       const fileSizeRejections = rejectedFiles.filter((f) => f?.reason === "size")
 
       if (fileSizeRejections.length) {
-        const fileNames = fileSizeRejections.map((f) => f.file.name).join(", ")
+        const fileNames = "\n" + fileSizeRejections.slice(0, 5).map((f) => f.file.name).join("\n")
         form.setError("media", {
           type: "file_too_large",
           message: t("products.media.fileTooLarge", {
@@ -124,7 +124,7 @@ export const UploadMediaFormItem = ({
                   onUploaded={onUploaded}
                 />
               </Form.Control>
-              <Form.ErrorMessage />
+              <Form.ErrorMessage className="whitespace-pre-line" />
             </div>
           </Form.Item>
         )
