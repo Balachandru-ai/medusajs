@@ -5,7 +5,6 @@ import {
 import {
   AuthenticatedMedusaRequest,
   MedusaResponse,
-  refetchEntity,
 } from "@medusajs/framework/http"
 
 import {
@@ -13,16 +12,21 @@ import {
   AdminUpdateProductOptionType,
 } from "../validators"
 import { HttpTypes } from "@medusajs/framework/types"
-import { MedusaError } from "@medusajs/framework/utils"
+import {
+  ContainerRegistrationKeys,
+  MedusaError,
+} from "@medusajs/framework/utils"
 
 export const GET = async (
   req: AuthenticatedMedusaRequest<AdminGetProductOptionParamsType>,
   res: MedusaResponse<HttpTypes.AdminProductOptionResponse>
 ) => {
-  const product_option = await refetchEntity({
+  const query = req.scope.resolve(ContainerRegistrationKeys.QUERY)
+  const {
+    data: [product_option],
+  } = await query.graph({
     entity: "product_option",
-    idOrFilter: req.params.id,
-    scope: req.scope,
+    filters: { id: req.params.id },
     fields: req.queryConfig.fields,
   })
 
@@ -33,10 +37,12 @@ export const POST = async (
   req: AuthenticatedMedusaRequest<AdminUpdateProductOptionType>,
   res: MedusaResponse<HttpTypes.AdminProductOptionResponse>
 ) => {
-  const existingProductOption = await refetchEntity({
+  const query = req.scope.resolve(ContainerRegistrationKeys.QUERY)
+  const {
+    data: [existingProductOption],
+  } = await query.graph({
     entity: "product_option",
-    idOrFilter: req.params.id,
-    scope: req.scope,
+    filters: { id: req.params.id },
     fields: ["id"],
   })
 
@@ -54,10 +60,11 @@ export const POST = async (
     },
   })
 
-  const product_option = await refetchEntity({
+  const {
+    data: [product_option],
+  } = await query.graph({
     entity: "product_option",
-    idOrFilter: result[0].id,
-    scope: req.scope,
+    filters: { id: result[0].id },
     fields: req.queryConfig.fields,
   })
 
