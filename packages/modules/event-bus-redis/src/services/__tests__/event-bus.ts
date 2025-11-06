@@ -404,7 +404,7 @@ describe("RedisEventBusService", () => {
           1,
           "An error occurred while processing eventName:"
         )
-        expect(loggerMock.warn).toHaveBeenNthCalledWith(2, expect.stringContaining("fail1: Error: fail1"))
+        expect(loggerMock.warn).toHaveBeenNthCalledWith(2, expect.stringContaining("Error: fail1"))
 
         expect(loggerMock.warn).toHaveBeenNthCalledWith(
           3,
@@ -446,7 +446,7 @@ describe("RedisEventBusService", () => {
           1,
           "An error occurred while processing eventName:"
         )
-        expect(loggerMock.warn).toHaveBeenNthCalledWith(2, expect.stringContaining("fail1: Error: fail1"))
+        expect(loggerMock.warn).toHaveBeenNthCalledWith(2, expect.stringContaining("Error: fail1"))
 
         expect(loggerMock.warn).toHaveBeenNthCalledWith(
           3,
