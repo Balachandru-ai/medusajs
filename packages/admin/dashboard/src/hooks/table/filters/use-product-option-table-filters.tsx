@@ -18,11 +18,11 @@ export const useProductOptionTableFilters = () => {
         options: [
           {
             label: t("fields.true"),
-            value: "false",
+            value: "true",
           },
           {
             label: t("fields.false"),
-            value: "true",
+            value: "false",
           },
         ],
       }),
