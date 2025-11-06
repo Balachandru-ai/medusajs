@@ -1153,6 +1153,8 @@ medusaIntegrationTestRunner({
               .catch((e) => console.log(e))
           ).data.order_preview
 
+          const returnId = result.order_change.return_id
+
           // expect(result.total).toEqual(11.016) //  12 * 0.9 * 1.02
           // expect(result.original_total).toEqual(12.24) // 12 * 1.02
 
@@ -1176,12 +1178,29 @@ medusaIntegrationTestRunner({
             await api.get(`/admin/orders/${orderId}`, adminHeaders)
           ).data.order
 
-          /**
-           * TODO: receive return
-           */
+          // TODO: check state here
+
+          // TODO check order here
+
+          await api.post(`/admin/returns/${returnId}/receive`, {}, adminHeaders)
+
+          // TODO check order here
 
           await api.post(
-            `/admin/exchanges/${exchangeId}/confirm`,
+            `/admin/returns/${returnId}/receive-items`,
+            {
+              items: [
+                {
+                  id: originalItemId,
+                  quantity: 1,
+                },
+              ],
+            },
+            adminHeaders
+          )
+
+          await api.post(
+            `/admin/returns/${returnId}/receive/confirm`,
             {},
             adminHeaders
           )
