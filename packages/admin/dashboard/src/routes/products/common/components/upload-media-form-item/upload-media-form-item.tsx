@@ -5,6 +5,7 @@ import { z } from "zod"
 import {
   FileType,
   FileUpload,
+  RejectedFile,
 } from "../../../../../components/common/file-upload"
 import { Form } from "../../../../../components/common/form"
 import { MediaSchema } from "../../../product-create/constants"
@@ -69,6 +70,24 @@ export const UploadMediaFormItem = ({
     [form, t]
   )
 
+  const onFilesRejected = useCallback(
+    (rejectedFiles: RejectedFile[]) => {
+      const fileSizeRejections = rejectedFiles.filter((f) => f.reason === "size")
+
+      if (fileSizeRejections.length > 0) {
+        const fileNames = fileSizeRejections.map((f) => f.file.name).join(", ")
+        form.setError("media", {
+          type: "file_too_large",
+          message: t("products.media.fileTooLarge", {
+            name: fileNames,
+            size: "1MB",
+          }),
+        })
+      }
+    },
+    [form, t]
+  )
+
   const onUploaded = useCallback(
     (files: FileType[]) => {
       form.clearErrors("media")
@@ -104,6 +123,7 @@ export const UploadMediaFormItem = ({
                   hasError={!!form.formState.errors.media}
                   formats={SUPPORTED_FORMATS}
                   onUploaded={onUploaded}
+                  onFilesRejected={onFilesRejected}
                 />
               </Form.Control>
               <Form.ErrorMessage />

@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { FileType, FileUpload } from "../../../../components/common/file-upload"
+import { FileType, FileUpload, RejectedFile } from "../../../../components/common/file-upload"
 import { Hint } from "@medusajs/ui"
 import { useTranslation } from "react-i18next"
 
@@ -47,6 +47,19 @@ export const UploadImport = ({
             return
           }
           onUploaded(files[0].file)
+        }}
+        onFilesRejected={(rejectedFiles: RejectedFile[]) => {
+          const fileSizeRejections = rejectedFiles.filter((f) => f.reason === "size")
+
+          if (fileSizeRejections.length > 0) {
+            const fileName = fileSizeRejections[0].file.name
+            setError(
+              t("products.media.fileTooLarge", {
+                name: fileName,
+                size: "1MB",
+              })
+            )
+          }
         }}
       />
 
