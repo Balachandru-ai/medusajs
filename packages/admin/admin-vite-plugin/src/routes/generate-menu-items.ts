@@ -226,7 +226,7 @@ function processConfigProperties(
       isObjectProperty(prop) && isIdentifier(prop.key, { name: "nested" })
   ) as ObjectProperty | undefined
 
-  let nestedValue: string | undefined = undefined
+  let nestedValue: string | undefined
 
   if (isStringLiteral(nested?.value)) {
     nestedValue = nested.value.value
@@ -250,7 +250,7 @@ function processConfigProperties(
       isObjectProperty(prop) && isIdentifier(prop.key, { name: "rank" })
   ) as ObjectProperty | undefined
 
-  let rankValue: number | undefined = undefined
+  let rankValue: number | undefined
 
   if (isNumericLiteral(rank?.value)) {
     rankValue = rank.value.value
