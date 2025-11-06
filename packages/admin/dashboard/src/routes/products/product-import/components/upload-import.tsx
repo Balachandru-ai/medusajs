@@ -48,19 +48,7 @@ export const UploadImport = ({
           }
           onUploaded(files[0].file)
         }}
-        onFilesRejected={(rejectedFiles: RejectedFile[]) => {
-          const fileSizeRejections = rejectedFiles.filter((f) => f.reason === "size")
-
-          if (fileSizeRejections.length > 0) {
-            const fileName = fileSizeRejections[0].file.name
-            setError(
-              t("products.media.fileTooLarge", {
-                name: fileName,
-                size: "1MB",
-              })
-            )
-          }
-        }}
+        maxFileSize={0}
       />
 
       {error && (

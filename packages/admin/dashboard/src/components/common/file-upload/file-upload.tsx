@@ -19,7 +19,7 @@ export interface FileUploadProps {
   hint?: string
   hasError?: boolean
   formats: string[]
-  maxFileSize?: number // in bytes, defaults to 1MB
+  maxFileSize?: number // in bytes, defaults to 1MB. Disable by setting to 0.
   onUploaded: (files: FileType[]) => void
   onFilesRejected?: (rejectedFiles: RejectedFile[]) => void
 }
@@ -80,8 +80,7 @@ export const FileUpload = ({
     const rejectedFiles: RejectedFile[] = []
 
     fileList.forEach((file) => {
-      // Check file size
-      if (file.size > maxFileSize) {
+      if (file.size > maxFileSize && maxFileSize !== 0) {
         rejectedFiles.push({ file, reason: "size" })
         return
       }
