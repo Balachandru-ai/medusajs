@@ -162,6 +162,7 @@ medusaIntegrationTestRunner({
         )
 
         expect(res.status).toEqual(200)
+        expect(res.data.product_option.values.length).toEqual(3)
         expect(res.data.product_option).toEqual(
           expect.objectContaining({
             title: "option1",
@@ -188,6 +189,7 @@ medusaIntegrationTestRunner({
           )
         ).data.product_option
 
+        expect(option.values.length).toEqual(2)
         expect(option).toEqual(
           expect.objectContaining({
             title: "option2",
@@ -222,6 +224,7 @@ medusaIntegrationTestRunner({
           )
         ).data.product_option
 
+        expect(option.values.length).toEqual(2)
         expect(option).toEqual(
           expect.objectContaining({
             title: "option2",

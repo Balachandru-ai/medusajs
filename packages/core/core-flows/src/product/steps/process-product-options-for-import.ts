@@ -36,7 +36,7 @@ export const processProductOptionsForImportStep = createStep(
     const processedProducts: UpdateProductWorkflowInputDTO[] = []
 
     for (const product of data.products) {
-      if (product.options && product.options.length > 0) {
+      if (product.options?.length) {
         const createdOptions = await productService.createProductOptions(
           product.options
         )
