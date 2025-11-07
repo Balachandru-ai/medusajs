@@ -562,33 +562,32 @@ export class Compiler {
           if (!dep.startsWith("@medusajs/")) continue
 
           try {
-            // Check if package has a valid entry point
-            // Try to resolve the package directly - if it fails, skip it
-            let canImport = false
+            // Check if package has a valid entry point and import it
             try {
               require.resolve(dep, { paths: [this.#projectRoot] })
-              canImport = true
-            } catch {
-              // Main entry doesn't exist, try individual exports
-              canImport = false
-            }
-
-            if (canImport) {
               // Import the main entry
               medusaImports.push(`import * as _dep_${depIdx} from "${dep}";`)
               medusaRegistry.push(`  "${dep}": _dep_${depIdx},`)
               depIdx++
-            } else {
-              // Try to import individual exports instead
+            } catch {
+              // Main entry doesn't exist, skip it
+            }
+
+            // Also import all individual exports (subpaths like @medusajs/framework/utils)
+            // This is important for packages that re-export submodules
+            try {
               const pkgPath = require.resolve(`${dep}/package.json`, {
                 paths: [this.#projectRoot],
               })
               const pkg = require(pkgPath)
 
               if (pkg.exports && typeof pkg.exports === "object") {
-                // Import all individual exports
+                // Import all individual exports except main
                 for (const exportKey of Object.keys(pkg.exports)) {
+                  // Skip package.json and main entry (.) since we already imported it
                   if (exportKey === "./package.json" || exportKey === ".") continue
+                  // Skip wildcard exports as they can't be statically imported
+                  if (exportKey.includes("*")) continue
 
                   try {
                     const fullPath = `${dep}${exportKey.replace(".", "")}`
@@ -602,6 +601,8 @@ export class Compiler {
                   }
                 }
               }
+            } catch {
+              // Can't read package.json or no exports, skip subpaths
             }
           } catch (error) {
             // Package not found or can't be read, skip it entirely
@@ -620,9 +621,21 @@ ${medusaRegistry.join("\n")}
 // Override require for @medusajs/* packages to use the registry
 const Module = require("module");
 const originalRequire = Module.prototype.require;
+
 Module.prototype.require = function(id) {
-  if (__medusa_module_registry[id]) {
-    return __medusa_module_registry[id];
+  // Debug: Log all @medusajs/* requires
+  if (id.startsWith("@medusajs/")) {
+    console.log("[REQUIRE OVERRIDE] Intercepted:", id);
+
+    // Check if this package is in the registry
+    if (__medusa_module_registry[id]) {
+      console.log("[REQUIRE OVERRIDE] ✓ Serving from bundle registry:", id);
+      return __medusa_module_registry[id];
+    }
+
+    // If not in registry, fall through to original require
+    // This will load from node_modules, which is the current behavior
+    console.log("[REQUIRE OVERRIDE] ✗ Not in registry, using original require:", id);
   }
   return originalRequire.apply(this, arguments);
 };
