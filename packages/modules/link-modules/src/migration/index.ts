@@ -16,6 +16,7 @@ import {
   DALUtils,
   ModulesSdkUtils,
   normalizeMigrationSQL,
+  promiseAll,
 } from "@medusajs/framework/utils"
 import { generateEntity } from "../utils"
 
@@ -495,34 +496,19 @@ export class MigrationsExecutionPlanner implements ILinkMigrationsPlanner {
   async executePlan(actionPlan: LinkMigrationsPlannerAction[]): Promise<void> {
     const orm = await this.createORM()
 
-    console.log(
-      " =================== EXECUTING PLAN ===================\n",
-      JSON.stringify(
-        actionPlan.map((action) => ({
-          action: action.action,
-          table_name: action.tableName,
-        })),
-        null,
-        2
-      )
-    )
-
-    try {
-      for (const action of actionPlan) {
+    await promiseAll(
+      actionPlan.map(async (action) => {
         switch (action.action) {
           case "delete":
             return await this.dropLinkTable(orm, action.tableName)
           case "create":
             return await this.createLinkTable(orm, action)
           case "update":
-            await orm.em.getDriver().getConnection().execute(action.sql)
-            return
+            return await orm.em.getDriver().getConnection().execute(action.sql)
           default:
             return
         }
-      }
-    } finally {
-      await orm.close(true)
-    }
+      })
+    ).finally(() => orm.close(true))
   }
 }
