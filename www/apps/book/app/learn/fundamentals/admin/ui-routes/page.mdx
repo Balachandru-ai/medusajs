@@ -176,21 +176,14 @@ export default ReportsPage
 
 In the sidebar, "Analytics" with the rank `1` will be added before "Reports" with the rank `2`.
 
-Routes without a `rank` property will appear after all routes with ranks:
+#### How are UI Routes Sorted in the Sidebar
 
-```tsx title="src/admin/routes/other/page.tsx"
-export const config = defineRouteConfig({
-  label: "Other Page",
-  icon: TagSolid,
-  // No rank - will appear after ranked routes
-})
-```
+Medusa sorts custom UI routes based on their rank:
 
-<Note>
+1. UI routes that have ranks are sorted in ascending order.
+2. UI routes without a rank are added after the ranked UI routes.
 
-The `rank` property also works for nested routes. Nested routes are sorted by their own rank values independently of their parent's rank.
-
-</Note>
+Medusa also applies the same sorting logic to UI routes at the nested level. Learn more in the [Nested UI Routes Ranking](#nested-ui-routes-ranking) section.
 
 ### Nested UI Routes
 
