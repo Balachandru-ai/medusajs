@@ -7,6 +7,7 @@ import { outdent } from "outdent"
 import {
   File,
   isIdentifier,
+  isNumericLiteral,
   isObjectProperty,
   isStringLiteral,
   Node,
@@ -27,7 +28,8 @@ import { getRoute } from "./helpers"
 type RouteConfig = {
   label: boolean
   icon: boolean
-  nested?: string
+  nested?: NestedRoutePosition
+  rank?: number
   translationNs?: string
 }
 
@@ -35,7 +37,8 @@ type MenuItem = {
   icon?: string
   label: string
   path: string
-  nested?: string
+  nested?: NestedRoutePosition
+  rank?: number
   translationNs?: string
 }
 
@@ -66,12 +69,13 @@ function generateCode(results: MenuItemResult[]): string {
 }
 
 function formatMenuItem(route: MenuItem): string {
-  const { label, icon, path, nested, translationNs } = route
+  const { label, icon, path, nested, rank, translationNs } = route
   return `{
     label: ${label},
     icon: ${icon || "undefined"},
     path: "${path}",
     nested: ${nested ? `"${nested}"` : "undefined"},
+    rank: ${rank !== undefined ? rank : "undefined"},
     translationNs: ${translationNs ? `${translationNs}` : "undefined"}
   }`
 }
@@ -133,7 +137,10 @@ function generateMenuItem(
     icon: config.icon ? `${configName}.icon` : undefined,
     path: getRoute(file),
     nested: config.nested,
-    translationNs: config.translationNs ? `${configName}.translationNs` : undefined,
+    rank: config.rank,
+    translationNs: config.translationNs
+      ? `${configName}.translationNs`
+      : undefined,
   }
 }
 
@@ -225,7 +232,7 @@ function processConfigProperties(
       isObjectProperty(prop) && isIdentifier(prop.key, { name: "nested" })
   ) as ObjectProperty | undefined
 
-  let nestedValue: string | undefined = undefined
+  let nestedValue: string | undefined
 
   if (isStringLiteral(nested?.value)) {
     nestedValue = nested.value.value
@@ -255,10 +262,22 @@ function processConfigProperties(
     translationNsValue = translationNs.value.value
   }
 
+  const rank = properties.find(
+    (prop) =>
+      isObjectProperty(prop) && isIdentifier(prop.key, { name: "rank" })
+  ) as ObjectProperty | undefined
+
+  let rankValue: number | undefined
+
+  if (isNumericLiteral(rank?.value)) {
+    rankValue = rank.value.value
+  }
+
   return {
     label: hasLabel,
     icon: hasProperty("icon"),
-    nested: nestedValue,
+    nested: nestedValue as NestedRoutePosition | undefined,
+    rank: rankValue,
     translationNs: translationNsValue,
   }
 }
