@@ -450,7 +450,13 @@ function buildLocalCommands(cli, isLocalProject) {
           type: "boolean",
           describe:
             "Only build the admin to serve it separately (outDir .medusa/admin)",
-        }),
+        })
+          .option("production", {
+            default: false,
+            type: "boolean",
+            describe:
+              "Create an optimized production bundle with all dependencies included",
+          }),
       handler: handlerP(
         getCommandHandler(`build`, (args, cmd) => {
           process.env.NODE_ENV = process.env.NODE_ENV || `development`

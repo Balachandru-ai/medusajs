@@ -561,4 +561,348 @@ export class Compiler {
       return false
     }
   }
+
+  /**
+   * Builds a production bundle using @vercel/ncc that packages
+   * the entire application with all dependencies into deployable artifacts.
+   * This creates an optimized, self-contained bundle suitable for production deployment.
+   */
+  async buildProductionBundle(
+    tsConfig: tsStatic.ParsedCommandLine
+  ): Promise<boolean> {
+    const tracker = this.#trackDuration()
+    this.#logger.info("Building production bundle...")
+
+    try {
+      const dist = this.#computeDist(tsConfig)
+
+      /**
+       * Step 1: First compile TypeScript to JavaScript
+       * We need intermediate JS files for ncc to bundle
+       */
+      this.#logger.info("Compiling TypeScript source...")
+      const tempDist = path.join(this.#projectRoot, ".medusa", "temp")
+      await this.#clean(tempDist)
+      await mkdir(tempDist, { recursive: true })
+
+      const { emitResult, diagnostics } = await this.#emitBuildOutput(
+        tsConfig,
+        this.#backendIgnoreFiles,
+        tempDist
+      )
+
+      if (emitResult.emitSkipped) {
+        this.#logger.error("TypeScript compilation failed")
+        return false
+      }
+
+      if (diagnostics.length) {
+        this.#logger.warn("TypeScript compilation completed with errors")
+      }
+
+      /**
+       * Step 2: Load medusa config and compile it separately
+       */
+      const configFile = await this.#loadMedusaConfig()
+      if (!configFile) {
+        return false
+      }
+
+      // Compile the config file separately since it's not in src/
+      const ts = await this.#loadTSCompiler()
+
+      // getConfigFile may return path without extension or with incorrect path
+      // We should construct it from project root instead
+      const { existsSync } = await import("fs")
+      const configBasePath = path.join(this.#projectRoot, "medusa-config")
+
+      let actualConfigPath: string
+      if (existsSync(`${configBasePath}.ts`)) {
+        actualConfigPath = `${configBasePath}.ts`
+      } else if (existsSync(`${configBasePath}.js`)) {
+        actualConfigPath = `${configBasePath}.js`
+      } else {
+        // Fallback to what getConfigFile returned
+        actualConfigPath = configFile.configFilePath
+      }
+
+      const configFileName = path.basename(actualConfigPath)
+      const isTypeScript = configFileName.endsWith(".ts")
+      // Determine output filename (JS for TS files, same for JS files)
+      const outputConfigFileName = isTypeScript ? configFileName.replace(/\.ts$/, ".js") : configFileName
+
+      this.#logger.info(`Config file path: ${actualConfigPath}`)
+      this.#logger.info(`Config file: ${configFileName}, isTS: ${isTypeScript}, output: ${outputConfigFileName}`)
+
+      if (isTypeScript) {
+        // Compile TS config to JS using transpileModule for direct control
+        const { readFileSync } = await import("fs")
+        const configSource = readFileSync(actualConfigPath, "utf-8")
+        const compiledConfigContent = ts.transpileModule(configSource, {
+          compilerOptions: {
+            module: ts.ModuleKind.CommonJS,
+            target: ts.ScriptTarget.ES2020,
+          },
+        })
+
+        // Write compiled config to temp directory
+        await new FileSystem(tempDist).create(outputConfigFileName, compiledConfigContent.outputText)
+      } else {
+        // Copy JS config directly
+        await this.#copy(
+          actualConfigPath,
+          path.join(tempDist, outputConfigFileName)
+        )
+      }
+
+      /**
+       * Step 3: Create bundle entry point that pre-loads all @medusajs packages
+       * This ensures ncc bundles them even though they're loaded dynamically
+       */
+
+      // Scan node_modules to find all @medusajs packages with valid main exports
+      const nodeModulesDir = path.join(this.#projectRoot, "node_modules")
+      const medusaPackagesDir = path.join(nodeModulesDir, "@medusajs")
+      let medusaPackages: string[] = []
+
+      const { readdirSync, statSync, existsSync: fsExistsSync, readFileSync } = await import("fs")
+      if (fsExistsSync(medusaPackagesDir)) {
+        const allPackages = readdirSync(medusaPackagesDir).filter(pkg => {
+          const pkgPath = path.join(medusaPackagesDir, pkg)
+          return statSync(pkgPath).isDirectory()
+        })
+
+        // Filter to only packages that have a main entry point
+        for (const pkg of allPackages) {
+          const pkgJsonPath = path.join(medusaPackagesDir, pkg, "package.json")
+          if (fsExistsSync(pkgJsonPath)) {
+            try {
+              const pkgJson = JSON.parse(readFileSync(pkgJsonPath, "utf-8"))
+              // Check if package has main, exports["."], or dist/index.js
+              if (pkgJson.main || pkgJson.exports?.["."] || fsExistsSync(path.join(medusaPackagesDir, pkg, "dist", "index.js"))) {
+                medusaPackages.push(pkg)
+              }
+            } catch (e) {
+              // Skip packages with invalid package.json
+            }
+          }
+        }
+      }
+
+      this.#logger.info(`Pre-loading ${medusaPackages.length} @medusajs packages for bundling`)
+
+      // Generate imports for all @medusajs packages to ensure ncc bundles them
+      // Wrap in try-catch to handle packages that might fail to load
+      const packageImports = medusaPackages
+        .map(pkg => `  "@medusajs/${pkg}": (() => { try { return require("@medusajs/${pkg}"); } catch (e) { return null; } })()`)
+        .join(",\n")
+
+      const entryContent = `
+// Production bundle entry point
+const { default: start } = require("@medusajs/medusa/commands/start");
+const path = require("path");
+
+// Pre-load all @medusajs packages so ncc bundles them
+// Even though they're loaded dynamically, having them in the bundle
+// allows them to be resolved at runtime
+const __MEDUSA_PACKAGES__ = {
+${packageImports}
+};
+
+// Make packages available for dynamic require
+const Module = require("module");
+const originalRequire = Module.prototype.require;
+Module.prototype.require = function(id) {
+  // Intercept @medusajs package loads and serve from pre-loaded bundle
+  if (id.startsWith("@medusajs/") && __MEDUSA_PACKAGES__[id]) {
+    return __MEDUSA_PACKAGES__[id];
+  }
+  return originalRequire.apply(this, arguments);
+};
+
+// Start the Medusa server with the bundled application
+start({
+  directory: __dirname,
+  port: process.env.PORT || 9000,
+  host: process.env.HOST,
+  types: false,
+}).catch((error) => {
+  console.error("Failed to start Medusa server:", error);
+  process.exit(1);
+});
+`
+
+      const entryPath = path.join(tempDist, "index.js")
+      await new FileSystem(tempDist).create("index.js", entryContent)
+
+      /**
+       * Step 4: Clean and prepare final output directory
+       */
+      this.#logger.info(
+        `Removing existing "${path.relative(this.#projectRoot, dist)}" folder`
+      )
+      await this.#clean(dist)
+      await mkdir(dist, { recursive: true })
+
+      /**
+       * Step 5: Bundle with @vercel/ncc
+       * This creates a single optimized bundle with all dependencies
+       */
+      this.#logger.info(
+        "Creating optimized production bundle with @vercel/ncc..."
+      )
+
+      const ncc = await import("@vercel/ncc")
+
+      // Bundle the entry point
+      const { code, map, assets } = await ncc.default(entryPath, {
+        minify: true,
+        sourceMap: true,
+        cache: false,
+        externals: [
+          // Native modules that can't be bundled
+          "better-sqlite3",
+          "pg-native",
+          "@swc/core",
+          // Virtual modules from admin dashboard (Vite-specific)
+          /^virtual:/,
+        ],
+        filterAssetBase: tempDist,
+      })
+
+      /**
+       * Step 6: Write bundle output
+       */
+      const fs = new FileSystem(dist)
+      await fs.create("bundle.js", code)
+
+      if (map) {
+        await fs.create("bundle.js.map", map)
+      }
+
+      // Write any assets (JSON configs, etc.)
+      for (const [assetPath, asset] of Object.entries(assets)) {
+        const assetData = asset as any
+        if (assetData.source) {
+          await fs.create(assetPath, assetData.source)
+        }
+      }
+
+      /**
+       * Step 7: Copy additional files needed for deployment
+       */
+      // Copy compiled config file from temp directory (it was compiled in Step 2)
+      const compiledConfigPath = path.join(tempDist, outputConfigFileName)
+      const targetConfigPath = path.join(dist, outputConfigFileName)
+
+      this.#logger.info(`Copying config file: ${outputConfigFileName}`)
+      this.#logger.info(`  From: ${compiledConfigPath}`)
+      this.#logger.info(`  To: ${targetConfigPath}`)
+
+      // Use access to check if file exists before copying
+      try {
+        await access(compiledConfigPath, constants.F_OK)
+        await copyFile(compiledConfigPath, targetConfigPath)
+        this.#logger.info(`Config file copied successfully`)
+      } catch (error) {
+        // If compiled config not found, try copying source config
+        this.#logger.warn(`Could not copy compiled config: ${error.message}`)
+        try {
+          await copyFile(configFile.configFilePath, path.join(dist, configFileName))
+          this.#logger.info(`Copied source config instead`)
+        } catch (sourceError) {
+          this.#logger.error(`Failed to copy config file: ${sourceError.message}`)
+        }
+      }
+
+      // Copy .env file if it exists
+      await this.#copy(
+        path.join(this.#projectRoot, ".env"),
+        path.join(dist, ".env")
+      )
+
+      // Copy compiled instrumentation file if it exists
+      const compiledInstrumentationPath = path.join(tempDist, "instrumentation.js")
+
+      try {
+        await this.#copy(
+          compiledInstrumentationPath,
+          path.join(dist, "instrumentation.js")
+        )
+      } catch {
+        // No instrumentation file, create empty one
+        await fs.create("instrumentation.js", "")
+      }
+
+      // Copy package.json (minimal version for deployment)
+      await this.#copyPkgManagerFiles(dist)
+
+      // Copy compiled user source files (for runtime loading via file-based routing)
+      // ncc bundles dependencies, but user source files need to be available for dynamic loading
+      const srcDir = path.join(tempDist, "src")
+      const srcDirExists = await new FileSystem(srcDir).exists("")
+      if (srcDirExists) {
+        const glob = await import("glob")
+        const srcFiles = glob.globSync("**/*.js", {
+          cwd: srcDir,
+          absolute: true,
+          nodir: true,
+        })
+
+        for (const file of srcFiles) {
+          const relativePath = path.relative(srcDir, file)
+          const targetPath = path.join(dist, "src", relativePath)
+          await mkdir(path.dirname(targetPath), { recursive: true })
+          await this.#copy(file, targetPath)
+        }
+      }
+
+      // Copy public directory if it exists
+      const publicDir = path.join(this.#projectRoot, "public")
+      const publicDirExists = await new FileSystem(publicDir).exists("")
+      if (publicDirExists) {
+        const glob = await import("glob")
+        const publicFiles = glob.globSync("**/*", {
+          cwd: publicDir,
+          absolute: true,
+          nodir: true,
+        })
+
+        for (const file of publicFiles) {
+          const relativePath = path.relative(publicDir, file)
+          const targetPath = path.join(dist, "public", relativePath)
+          await mkdir(path.dirname(targetPath), { recursive: true })
+          await this.#copy(file, targetPath)
+        }
+      }
+
+      /**
+       * Step 8: Cleanup temp directory
+       */
+      await this.#clean(tempDist)
+
+      /**
+       * Step 9: Log bundle statistics
+       */
+      const bundleSize = (code.length / 1024 / 1024).toFixed(2)
+      this.#logger.info(`Bundle size: ${bundleSize} MB`)
+      this.#logger.info(
+        `Production bundle created successfully (${tracker.getSeconds()}s)`
+      )
+      this.#logger.info(`Output: ${path.relative(this.#projectRoot, dist)}`)
+      this.#logger.info("\nTo deploy:")
+      this.#logger.info(`  1. Copy the ${path.relative(this.#projectRoot, dist)} directory to your server`)
+      this.#logger.info(`  2. Set up environment variables (copy .env or set in your environment)`)
+      this.#logger.info(`  3. Run migrations: cd ${path.relative(this.#projectRoot, dist)} && node bundle.js db:migrate`)
+      this.#logger.info(`  4. Start the server: cd ${path.relative(this.#projectRoot, dist)} && node bundle.js start`)
+      this.#logger.info(`\nNote: The bundle is self-contained with all @medusajs packages included.`)
+      this.#logger.info(`      No node_modules required!`)
+
+      return true
+    } catch (error) {
+      this.#logger.error("Production bundle build failed")
+      this.#logger.error(error)
+      return false
+    }
+  }
 }
