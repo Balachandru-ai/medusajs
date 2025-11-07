@@ -250,23 +250,29 @@ export default NestedOrdersPage
 
 The `nested` property passed to `defineRouteConfig` specifies which route this custom route is nested under. This route will now show in the sidebar under the existing "Orders" sidebar item.
 
-You can also use the `rank` property to control the order of multiple custom routes nested under the same parent route:
+#### Nested UI Routes Ranking
+
+Nested UI routes also accept the [rank](#specify-ui-route-sidebar-rank) configuration. It allows you to specify the order that the nested UI routes are shown in the sidebar under the parent item.
+
+For example:
 
 ```tsx title="src/admin/routes/orders/insights/page.tsx"
+// In nested UI route 1 at src/admin/routes/orders/insights/page.tsx
 export const config = defineRouteConfig({
   label: "Order Insights",
   nested: "/orders",
   rank: 1, // Will appear first
 })
-```
 
-```tsx title="src/admin/routes/orders/reports/page.tsx"
+// In nested UI route 2 at src/admin/routes/orders/reports/page.tsx
 export const config = defineRouteConfig({
   label: "Order Reports",
   nested: "/orders",
   rank: 2, // Will appear second
 })
 ```
+
+In this example, the "Order Insights" item will appear before the "Order Reports" item under the parent "Orders" item in the sidebar.
 
 ---
 
