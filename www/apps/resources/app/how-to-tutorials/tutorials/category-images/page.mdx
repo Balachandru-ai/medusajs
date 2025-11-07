@@ -1725,7 +1725,38 @@ You validate the request body using a Zod schema, then execute the `updateCatego
 
 Finally, you return the updated category images in the response.
 
-### c. Add Update Mutation
+### c. Add Validation Middleware
+
+To ensure the request body is validated using the Zod schema you created, you'll add a validation middleware to the new API route.
+
+In `src/api/middlewares.ts`, add the following import at the top of the file:
+
+```ts title="src/api/middlewares.ts"
+import { 
+  UpdateCategoryImagesSchema,
+} from "./admin/categories/[category_id]/images/batch/route"
+```
+
+Then, add a new route object passed to the array in `defineMiddlewares`:
+
+```ts title="src/api/middlewares.ts"
+export default defineMiddlewares({
+  routes: [
+    // ...
+    {
+      matcher: "/admin/categories/:category_id/images/batch",
+      method: ["POST"],
+      middlewares: [
+        validateAndTransformBody(UpdateCategoryImagesSchema),
+      ],
+    },
+  ],
+})
+```
+
+All `POST` requests to `/admin/categories/:category_id/images/batch` will now be validated using the `UpdateCategoryImagesSchema`.
+
+### d. Add Update Mutation
 
 Next, add a mutation to the `useCategoryImageMutations` hook for updating category images.
 
@@ -1786,7 +1817,7 @@ return {
 }
 ```
 
-### d. Add Selection in Category Image Item
+### e. Add Selection in Category Image Item
 
 Next, add the ability to select a category image in the `CategoryImageItem` component. You'll use this selection to choose which image to set as the thumbnail, and later to delete images.
 
@@ -1796,7 +1827,7 @@ In `src/admin/components/category-media/category-image-item.tsx`, add the follow
 import { Checkbox, clx } from "@medusajs/ui"
 ```
 
-Then, update the `CategoryImageItemProps` type to include two new props:
+Then update the `CategoryImageItemProps` type to include two new props:
 
 ```tsx title="src/admin/components/category-media/category-image-item.tsx" highlights={[["3"], ["4"]]}
 type CategoryImageItemProps = {
@@ -1841,7 +1872,7 @@ You add a checkbox in the top-right corner of the image that indicates whether i
 
 When the checkbox state changes, it calls the `onToggleSelect` callback to update the selection state.
 
-### e. Update Category Image Gallery
+### f. Update Category Image Gallery
 
 Next, you'll update the `CategoryImageGallery` component to manage the selection state of category images.
 
@@ -1911,7 +1942,7 @@ return (
 
 You pass the `isSelected` prop to indicate whether the image is selected, and the `onToggleSelect` prop to handle selection changes.
 
-### f. Update Category Media Modal
+### g. Update Category Media Modal
 
 Lastly, you'll update the `CategoryMediaModal` component to manage the selection state and implement the update functionality.
 
@@ -2350,6 +2381,37 @@ You create a `DELETE` API route at `/admin/categories/:category_id/images/batch`
 You validate the request body using a Zod schema, then execute the `deleteCategoryImagesWorkflow` with the validated input.
 
 Finally, you return the deleted category image IDs in the response.
+
+### c. Add Validation Middleware
+
+To ensure the request body is validated using the Zod schema you created, you'll add a validation middleware to the new API route.
+
+In `src/api/middlewares.ts`, add the following import at the top of the file:
+
+```ts title="src/api/middlewares.ts"
+import { 
+  DeleteCategoryImagesSchema,
+} from "./admin/categories/[category_id]/images/batch/route"
+```
+
+Then, add a new route object passed to the array in `defineMiddlewares`:
+
+```ts title="src/api/middlewares.ts"
+export default defineMiddlewares({
+  routes: [
+    // ...
+    {
+      matcher: "/admin/categories/:category_id/images/batch",
+      method: ["DELETE"],
+      middlewares: [
+        validateAndTransformBody(DeleteCategoryImagesSchema),
+      ],
+    },
+  ],
+})
+```
+
+All `DELETE` requests to `/admin/categories/:category_id/images/batch` will now be validated using the `DeleteCategoryImagesSchema`.
 
 ### c. Add Delete Mutation
 

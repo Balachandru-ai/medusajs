@@ -6614,7 +6614,7 @@ export const generatedEditDates = {
   "app/data-model-repository-reference/methods/upsertWithReplace/page.mdx": "2025-10-28T16:02:30.479Z",
   "app/how-to-tutorials/tutorials/agentic-commerce/page.mdx": "2025-10-09T11:25:48.831Z",
   "app/storefront-development/production-optimizations/page.mdx": "2025-10-03T13:28:37.909Z",
-  "app/how-to-tutorials/tutorials/category-images/page.mdx": "2025-11-06T14:14:45.465Z",
+  "app/how-to-tutorials/tutorials/category-images/page.mdx": "2025-11-07T08:55:59.228Z",
   "app/infrastructure-modules/caching/page.mdx": "2025-10-13T11:46:36.452Z",
   "app/troubleshooting/subscribers/not-working/page.mdx": "2025-10-16T09:25:57.376Z",
   "references/js_sdk/admin/RefundReason/methods/js_sdk.admin.RefundReason.create/page.mdx": "2025-10-21T08:10:56.630Z",

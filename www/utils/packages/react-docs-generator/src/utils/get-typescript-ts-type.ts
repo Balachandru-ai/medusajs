@@ -16,6 +16,7 @@ export function getTypescriptTsType(
   if (
     !convertedType &&
     "links" in symbol &&
+    symbol.links &&
     "type" in (symbol.links as Record<string, unknown>)
   ) {
     const symbolTypeLink = (symbol.links as Record<string, unknown>)

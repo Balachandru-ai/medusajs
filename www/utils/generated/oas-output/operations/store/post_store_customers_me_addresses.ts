@@ -5,7 +5,7 @@
  * x-sidebar-summary: Create Address
  * description: Create an address for the logged-in customer.
  * externalDocs:
- *   url: https://docs.medusajs.com/v2/resources/storefront-development/customers/addresses#add-customer-address
+ *   url: https://docs.medusajs.com/resources/storefront-development/customers/addresses#add-customer-address
  *   description: "Storefront guide: How to create an address for the logged-in customer."
  * x-authenticated: true
  * parameters:
