@@ -124,14 +124,10 @@ type Activity = {
 const useActivityItems = (order: AdminOrder): Activity[] => {
   const { t } = useTranslation()
 
-  let firstOrderVersion = order
-  if (firstOrderVersion.version !== 1) {
-    const { order: initialOrder = {} } = useOrder(firstOrderVersion.id, {
-      version: 1,
-      fields: "created_at,total,currency_code",
-    })
-    firstOrderVersion = initialOrder
-  }
+  const { order: initialOrder = order } = useOrder(order.id, {
+    version: 1,
+    fields: "created_at,total,currency_code",
+  }, { enabled: order.version !== 1})
 
   const { order_changes: orderChanges = [] } = useOrderChanges(order.id, {
     change_type: [
@@ -530,13 +526,13 @@ const useActivityItems = (order: AdminOrder): Activity[] => {
       return new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
     })
 
-    if (firstOrderVersion.created_at) {
+    if (initialOrder.created_at) {
         const createdAt = {
           title: t("orders.activity.events.placed.title"),
-          timestamp: firstOrderVersion.created_at,
+          timestamp: initialOrder.created_at,
           children: (
             <Text size="small" className="text-ui-fg-subtle">
-              {getStylizedAmount(firstOrderVersion.total, firstOrderVersion.currency_code)}
+              {getStylizedAmount(initialOrder.total, initialOrder.currency_code)}
             </Text>
           ),
         }
@@ -546,7 +542,7 @@ const useActivityItems = (order: AdminOrder): Activity[] => {
     return [...sortedActivities]
   }, [
     order,
-    firstOrderVersion,
+    initialOrder,
     payments,
     returns,
     exchanges,
