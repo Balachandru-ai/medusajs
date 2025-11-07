@@ -133,11 +133,6 @@ export class Compiler {
         }
       }
 
-      // Always include @medusajs/cli for running commands
-      if (pkgJson.dependencies?.["@medusajs/cli"]) {
-        filteredDeps["@medusajs/cli"] = pkgJson.dependencies["@medusajs/cli"]
-      }
-
       pkgJson.dependencies = filteredDeps
       await writeFile(targetPath, JSON.stringify(pkgJson, null, 2))
     } else {
@@ -364,9 +359,9 @@ export class Compiler {
         outdir: dist,
         outbase: srcDir,
         sourcemap: true,
-        minify: true, // Minify for production
-        minifyWhitespace: true,
-        minifySyntax: true,
+        minify: false, // Minify for production
+        minifyWhitespace: false,
+        minifySyntax: false,
         minifyIdentifiers: false, // Keep identifiers for debugging
         treeShaking: true, // Remove unused code
         keepNames: true, // Preserve function/class names for stack traces
@@ -476,7 +471,7 @@ export class Compiler {
       )
 
       // Native/platform-specific modules and optional dependencies that can't be bundled
-      // Everything else will be bundled and tree-shaken
+      // @medusajs/* packages WILL be bundled (not in this list)
       const external = [
         // Native binary modules
         "better-sqlite3",
@@ -493,6 +488,14 @@ export class Compiler {
         "libsql",
         "sqlite3",
         "pg-query-stream", // PostgreSQL streaming
+        // Packages with dynamic requires that can't be bundled
+        "iconv-lite", // Has conditional require('./extend-node')
+        "chardet", // Has conditional require('./fs/node')
+        // CLI/interactive packages (only used in CLI commands, not server runtime)
+        "inquirer",
+        "@inquirer/prompts",
+        "@inquirer/core",
+        "@inquirer/external-editor",
         // Build tools (referenced by start command but not needed at runtime)
         "esbuild",
         "vite",
@@ -501,6 +504,7 @@ export class Compiler {
         "@babel/core",
         // Native file patterns
         "*.node",
+        // NOTE: All other packages including @medusajs/* will be bundled
       ]
 
       this.#logger.info(`Creating single optimized bundle with tree shaking...`)
@@ -534,24 +538,160 @@ export class Compiler {
         startCommandPath = require.resolve("@medusajs/medusa/commands/start")
       }
 
-      // Copy the start command to a separate file (not in bundle)
-      const startCommandDist = path.join(dist, "commands", "start.js")
-      await mkdir(path.dirname(startCommandDist), { recursive: true })
-      await this.#copy(startCommandPath, startCommandDist)
-      this.#logger.info("  ✓ Copied start command separately (not bundled)")
-
-      // Create a single virtual entry that exports all modules
-      const createVirtualEntry = (modules: any[]) => {
+      // Create a self-executing virtual entry that includes the start command
+      const createVirtualEntry = (modules: any[], startCommandPath: string, dependencies: string[]) => {
+        // Import all user modules
         const imports = modules
           .map((m: any, idx: number) => {
             const modulePath = m.path.startsWith("/")
               ? m.path
               : path.join(this.#projectRoot, m.path)
-            return `export * as _module_${idx} from "${modulePath}";`
+            return `import * as _module_${idx} from "${modulePath}";`
           })
           .join("\n")
 
-        return imports
+        // Import all @medusajs/* dependencies that would normally be dynamically required
+        // Handle packages with and without main entry points
+        const medusaImports: string[] = []
+        const medusaRegistry: string[] = []
+        let depIdx = 0
+
+        for (const dep of dependencies) {
+          if (!dep.startsWith("@medusajs/")) continue
+
+          try {
+            // Check if package has a valid entry point
+            // Try to resolve the package directly - if it fails, skip it
+            let canImport = false
+            try {
+              require.resolve(dep, { paths: [this.#projectRoot] })
+              canImport = true
+            } catch {
+              // Main entry doesn't exist, try individual exports
+              canImport = false
+            }
+
+            if (canImport) {
+              // Import the main entry
+              medusaImports.push(`import * as _dep_${depIdx} from "${dep}";`)
+              medusaRegistry.push(`  "${dep}": _dep_${depIdx},`)
+              depIdx++
+            } else {
+              // Try to import individual exports instead
+              const pkgPath = require.resolve(`${dep}/package.json`, {
+                paths: [this.#projectRoot],
+              })
+              const pkg = require(pkgPath)
+
+              if (pkg.exports && typeof pkg.exports === "object") {
+                // Import all individual exports
+                for (const exportKey of Object.keys(pkg.exports)) {
+                  if (exportKey === "./package.json" || exportKey === ".") continue
+
+                  try {
+                    const fullPath = `${dep}${exportKey.replace(".", "")}`
+                    // Verify this export actually resolves
+                    require.resolve(fullPath, { paths: [this.#projectRoot] })
+                    medusaImports.push(`import * as _dep_${depIdx} from "${fullPath}";`)
+                    medusaRegistry.push(`  "${fullPath}": _dep_${depIdx},`)
+                    depIdx++
+                  } catch {
+                    // This export doesn't resolve, skip it
+                  }
+                }
+              }
+            }
+          } catch (error) {
+            // Package not found or can't be read, skip it entirely
+          }
+        }
+
+        const medusaImportsStr = medusaImports.join("\n")
+
+        // Create a module registry to intercept require() calls
+        const moduleRegistry = `
+// Module registry for dynamically loaded @medusajs/* packages
+const __medusa_module_registry = {
+${medusaRegistry.join("\n")}
+};
+
+// Override require for @medusajs/* packages to use the registry
+const Module = require("module");
+const originalRequire = Module.prototype.require;
+Module.prototype.require = function(id) {
+  if (__medusa_module_registry[id]) {
+    return __medusa_module_registry[id];
+  }
+  return originalRequire.apply(this, arguments);
+};
+`
+
+        // Import and self-execute the start command
+        const selfExecutingCode = `
+// Import the start command
+import startCommand from "${startCommandPath}";
+
+// Parse command line arguments
+function parseArgs() {
+  const args = process.argv.slice(2);
+  const parsed = {
+    directory: process.cwd(),
+    types: false,
+  };
+
+  for (let i = 0; i < args.length; i++) {
+    const arg = args[i];
+    const next = args[i + 1];
+
+    switch (arg) {
+      case '--port':
+      case '-p':
+        parsed.port = parseInt(next, 10);
+        i++;
+        break;
+      case '--host':
+      case '-h':
+        parsed.host = next;
+        i++;
+        break;
+      case '--directory':
+      case '-d':
+        parsed.directory = next;
+        i++;
+        break;
+      case '--types':
+        parsed.types = true;
+        break;
+      case '--cluster':
+        parsed.cluster = next;
+        i++;
+        break;
+      case '--workers':
+        parsed.workers = next;
+        i++;
+        break;
+      case '--servers':
+        parsed.servers = next;
+        i++;
+        break;
+    }
+  }
+
+  return parsed;
+}
+
+// Self-execute the start command only if this is the main module
+// This prevents infinite loops when the bundle is required by other code
+if (require.main === module) {
+  const args = parseArgs();
+  startCommand(args).catch((error) => {
+    console.error('Failed to start server:', error);
+    process.exit(1);
+  });
+}
+`
+
+        return medusaImportsStr + "\n" + imports + "\n" + moduleRegistry + "\n" + selfExecutingCode
       }
 
       // Write virtual entry file
@@ -559,10 +699,10 @@ export class Compiler {
       await mkdir(virtualDir, { recursive: true })
 
       const virtualEntry = path.join(virtualDir, "bundle.entry.js")
-      const virtualContent = createVirtualEntry(allModules)
+      const virtualContent = createVirtualEntry(allModules, startCommandPath, manifest.dependencies)
       await fs.writeFile(virtualEntry, virtualContent)
 
-      // Create the single bundle
+      // Create the single bundle with a plugin to control what gets bundled
       const result = await esbuild.build({
         entryPoints: [virtualEntry],
         bundle: true, // FULL bundling with tree shaking
@@ -571,7 +711,7 @@ export class Compiler {
         format: "cjs",
         outfile: path.join(dist, "bundle.js"),
         sourcemap: true,
-        minify: true,
+        minify: false, // Keep unminified for easier debugging
         treeShaking: true,
         keepNames: true,
         external,
@@ -581,6 +721,38 @@ export class Compiler {
           ".js": "js",
         },
         logLevel: "warning", // Show warnings to see what's not being bundled
+        plugins: [
+          {
+            name: "bundle-all-dependencies",
+            setup(build) {
+              // Override esbuild's default behavior of marking node_modules as external
+              // This plugin ensures ALL dependencies (except those in `external`) get bundled
+              build.onResolve({ filter: /.*/ }, (args) => {
+                // Skip entry points and already resolved paths
+                if (args.kind === "entry-point") {
+                  return null
+                }
+
+                // Check if this module is in the external list
+                const isExternal = external.some(ext => {
+                  if (ext.includes("*")) {
+                    // Handle glob patterns like *.node
+                    const regex = new RegExp("^" + ext.replace(/\*/g, ".*") + "$")
+                    return regex.test(args.path)
+                  }
+                  return args.path === ext || args.path.startsWith(ext + "/")
+                })
+
+                if (isExternal) {
+                  return { path: args.path, external: true }
+                }
+
+                // Everything else should be bundled (including @medusajs/*)
+                return null
+              })
+            },
+          },
+        ],
       })
 
       // Create manifest mapping original paths to bundle exports
@@ -655,60 +827,6 @@ export class Compiler {
 
       // Copy package manager files (with filtered dependencies for bundle mode)
       await this.#copyPkgManagerFiles(dist, external)
-
-      // Create post-install script to set up stub medusa package
-      const postInstallScript = `// Post-install script to create stub @medusajs/medusa package
-const fs = require('fs');
-const path = require('path');
-
-const stubMedusaDir = path.join(__dirname, 'node_modules', '@medusajs', 'medusa');
-const stubCommandsDir = path.join(stubMedusaDir, 'dist', 'commands');
-
-fs.mkdirSync(stubCommandsDir, { recursive: true });
-
-// Create stub start.js that points to the separate start command file
-const stubStartCommand = \`// This file is a stub that loads the actual start command
-const path = require('path');
-const startCommandPath = path.join(__dirname, '..', '..', '..', '..', '..', 'commands', 'start.js');
-module.exports = require(startCommandPath);
-\`;
-
-fs.writeFileSync(path.join(stubCommandsDir, 'start.js'), stubStartCommand);
-
-// Create minimal package.json
-const stubPackageJson = {
-  name: '@medusajs/medusa',
-  version: '0.0.0-bundle',
-  main: './dist/index.js'
-};
-
-fs.writeFileSync(
-  path.join(stubMedusaDir, 'package.json'),
-  JSON.stringify(stubPackageJson, null, 2)
-);
-
-console.log('✓ Created stub @medusajs/medusa package');
-`
-
-      await fs.writeFile(path.join(dist, "postinstall.js"), postInstallScript)
-
-      // Update package.json to run postinstall script and disable PnP
-      const pkgJsonPath = path.join(dist, "package.json")
-      const pkgJson = JSON.parse(await fs.readFile(pkgJsonPath, "utf-8"))
-      pkgJson.scripts = pkgJson.scripts || {}
-      pkgJson.scripts.postinstall = "node postinstall.js"
-
-      // Disable Yarn PnP - we need real node_modules for the stub package
-      pkgJson.installConfig = {
-        pnp: false
-      }
-
-      await fs.writeFile(pkgJsonPath, JSON.stringify(pkgJson, null, 2))
-
-      // Create .yarnrc.yml to disable PnP
-      const yarnrcContent = `nodeLinker: node-modules
-`
-      await fs.writeFile(path.join(dist, ".yarnrc.yml"), yarnrcContent)
 
       // Copy environment files if they exist
       await this.#copy(

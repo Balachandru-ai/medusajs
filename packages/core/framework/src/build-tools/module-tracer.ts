@@ -84,6 +84,24 @@ export class ModuleTracer {
     const Module = require("module")
     Module.prototype.require = this.#originalRequire
 
+    // IMPORTANT: Also capture all modules from the cache
+    // This catches ESM imports and modules loaded before tracing started
+    this.#logger.info("Capturing modules from Node.js module cache...")
+    const loadedModules = Object.keys(Module._cache || {})
+    this.#logger.info(`Found ${loadedModules.length} modules in cache`)
+
+    loadedModules.forEach((modulePath) => {
+      const module = Module._cache[modulePath]
+      this.#trackModule({
+        id: modulePath,
+        resolved: modulePath,
+        parent: module?.parent?.filename || null,
+        isNodeModule: modulePath.includes("node_modules"),
+        isDynamic: false,
+        timestamp: Date.now(),
+      })
+    })
+
     // Generate manifest
     const manifest = this.#generateManifest()
 
