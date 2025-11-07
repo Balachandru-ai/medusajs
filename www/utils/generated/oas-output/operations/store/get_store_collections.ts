@@ -5,7 +5,7 @@
  * description: Retrieve a list of collections. The collections can be filtered by fields such as `handle`. The collections can also be sorted or paginated.
  * x-authenticated: false
  * externalDocs:
- *   url: https://docs.medusajs.com/v2/resources/storefront-development/products/collections/list
+ *   url: https://docs.medusajs.com/resources/storefront-development/products/collections/list
  *   description: "Storefront guide: How to retrieve a list of collections."
  * parameters:
  *   - name: x-publishable-api-key

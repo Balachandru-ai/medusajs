@@ -43,6 +43,13 @@ type DashboardAppProps = {
   plugins: DashboardPlugin[]
 }
 
+/**
+ * Matches segments that are optional and at the end of the path.
+ * Example: /path/to/:id?
+ * Such paths can be added to the menu items without the optional segment.
+ */
+const OPTIONAL_LAST_SEGMENT_MATCH = /\/([^\/])+\?$/
+
 export class DashboardApp {
   private widgets: WidgetMap
   private menus: MenuMap
@@ -130,10 +137,11 @@ export class DashboardApp {
     allMenuItems.sort((a, b) => a.path.length - b.path.length)
 
     allMenuItems.forEach((item) => {
-      if (item.path.includes("/:")) {
+      item.path = item.path.replace(OPTIONAL_LAST_SEGMENT_MATCH, "")
+      if (item.path.includes("/:") || item.path.endsWith("/*")) {
         if (process.env.NODE_ENV === "development") {
           console.warn(
-            `[@medusajs/dashboard] Menu item for path "${item.path}" can't be added to the sidebar as it contains a parameter.`
+            `[@medusajs/dashboard] Menu item for path "${item.path}" can't be added to the sidebar as it contains a mandatory parameter.`
           )
         }
         return
@@ -181,6 +189,7 @@ export class DashboardApp {
         items: [],
         nested: item.nested,
         rank: item.rank,
+        translationNs: item.translationNs,
       }
 
       if (parentPath !== "/" && tempRegistry[parentPath]) {

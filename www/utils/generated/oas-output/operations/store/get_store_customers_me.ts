@@ -6,7 +6,7 @@
  * description: Retrieve the logged-in customer. You can expand the customer's relations or select the fields that should be returned.
  * x-authenticated: true
  * externalDocs:
- *   url: https://docs.medusajs.com/v2/resources/storefront-development/customers/retrieve
+ *   url: https://docs.medusajs.com/resources/storefront-development/customers/retrieve
  *   description: "Storefront guide: How to retrieve the logged-in customer."
  * parameters:
  *   - name: x-publishable-api-key

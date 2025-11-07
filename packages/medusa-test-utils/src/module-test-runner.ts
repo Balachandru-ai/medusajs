@@ -13,6 +13,7 @@ import * as fs from "fs"
 import { getDatabaseURL, getMikroOrmWrapper, TestDatabase } from "./database"
 import { initModules, InitModulesOptions } from "./init-modules"
 import { default as MockEventBusService } from "./mock-event-bus-service"
+import { ulid } from "ulid"
 
 export interface SuiteOptions<TService = unknown> {
   MikroOrmWrapper: TestDatabase
@@ -114,9 +115,10 @@ class ModuleTestRunner<TService = any> {
   constructor(config: ModuleTestRunnerConfig<TService>) {
     const tempName = parseInt(process.env.JEST_WORKER_ID || "1")
     this.moduleName = config.moduleName
+    const moduleName = this.moduleName ?? ulid()
     this.dbName =
       config.dbName ??
-      `medusa-${config.moduleName.toLowerCase()}-integration-${tempName}`
+      `medusa-${moduleName.toLowerCase()}-integration-${tempName}`
     this.schema = config.schema ?? "public"
     this.debug = config.debug ?? false
     this.resolve = config.resolve

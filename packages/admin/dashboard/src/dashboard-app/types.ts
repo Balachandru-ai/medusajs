@@ -25,6 +25,7 @@ export type MenuItemExtension = {
   icon?: ComponentType
   nested?: NestedRoutePosition
   rank?: number
+  translationNs?: string
 }
 
 export type WidgetExtension = {

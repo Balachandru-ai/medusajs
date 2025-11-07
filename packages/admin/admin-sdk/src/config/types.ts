@@ -36,6 +36,17 @@ export interface RouteConfig {
    * If not provided, the route will be ranked after all routes with explicit ranks.
    */
   rank?: number
+
+  /**
+   * An optional i18n namespace for translating the label. When provided, the label will be treated as a translation key.
+   * @example
+   * ```ts
+   * label: "menuItems.customFeature"
+   * translationNs: "my-plugin"
+   * // Will translate using: t("menuItems.customFeature", { ns: "my-plugin" })
+   * ```
+   */
+  translationNs?: string
 }
 
 export type CustomFormField<

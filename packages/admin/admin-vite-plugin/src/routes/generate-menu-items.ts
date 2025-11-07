@@ -28,16 +28,18 @@ import { getRoute } from "./helpers"
 type RouteConfig = {
   label: boolean
   icon: boolean
-  nested?: string
+  nested?: NestedRoutePosition
   rank?: number
+  translationNs?: string
 }
 
 type MenuItem = {
   icon?: string
   label: string
   path: string
-  nested?: string
+  nested?: NestedRoutePosition
   rank?: number
+  translationNs?: string
 }
 
 type MenuItemResult = {
@@ -67,13 +69,14 @@ function generateCode(results: MenuItemResult[]): string {
 }
 
 function formatMenuItem(route: MenuItem): string {
-  const { label, icon, path, nested, rank } = route
+  const { label, icon, path, nested, rank, translationNs } = route
   return `{
     label: ${label},
     icon: ${icon || "undefined"},
     path: "${path}",
     nested: ${nested ? `"${nested}"` : "undefined"},
-    rank: ${rank !== undefined ? rank : "undefined"}
+    rank: ${rank !== undefined ? rank : "undefined"},
+    translationNs: ${translationNs ? `${translationNs}` : "undefined"}
   }`
 }
 
@@ -135,6 +138,9 @@ function generateMenuItem(
     path: getRoute(file),
     nested: config.nested,
     rank: config.rank,
+    translationNs: config.translationNs
+      ? `${configName}.translationNs`
+      : undefined,
   }
 }
 
@@ -245,6 +251,17 @@ function processConfigProperties(
     return null
   }
 
+  const translationNs = properties.find(
+    (prop) =>
+      isObjectProperty(prop) && isIdentifier(prop.key, { name: "translationNs" })
+  ) as ObjectProperty | undefined
+
+  let translationNsValue: string | undefined = undefined
+
+  if (isStringLiteral(translationNs?.value)) {
+    translationNsValue = translationNs.value.value
+  }
+
   const rank = properties.find(
     (prop) =>
       isObjectProperty(prop) && isIdentifier(prop.key, { name: "rank" })
@@ -259,8 +276,9 @@ function processConfigProperties(
   return {
     label: hasLabel,
     icon: hasProperty("icon"),
-    nested: nestedValue,
+    nested: nestedValue as NestedRoutePosition | undefined,
     rank: rankValue,
+    translationNs: translationNsValue,
   }
 }
 
