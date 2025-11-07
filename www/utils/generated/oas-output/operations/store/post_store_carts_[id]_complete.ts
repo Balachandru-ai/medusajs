@@ -5,7 +5,7 @@
  * description: Complete a cart and place an order.
  * x-authenticated: false
  * externalDocs:
- *   url: https://docs.medusajs.com/v2/resources/storefront-development/checkout/complete-cart
+ *   url: https://docs.medusajs.com/resources/storefront-development/checkout/complete-cart
  *   description: "Storefront guide: How to implement cart completion during checkout."
  * parameters:
  *   - name: id
@@ -123,7 +123,7 @@
  *                       type: string
  *                       title: type
  *                       description: >
- *                         The error's type. Can be a [MedusaError type](https://docs.medusajs.com/v2/advanced-development/api-routes/errors#medusaerror-types) or `payment_authorization_error` or
+ *                         The error's type. Can be a [MedusaError type](https://docs.medusajs.com/learn/fundamentals/api-routes/errors#medusaerror-types) or `payment_authorization_error` or
  *                         `payment_requires_more_error` for payment-related errors.
  *   "400":
  *     $ref: "#/components/responses/400_error"

@@ -12,7 +12,7 @@
  * 
  *    Use the generated token to update the customer's password using the [Reset Password API route](https://docs.medusajs.com/api/store#auth_postactor_typeauth_providerupdate).
  * externalDocs:
- *   url: https://docs.medusajs.com/v2/resources/storefront-development/customers/reset-password#1-request-reset-password-page
+ *   url: https://docs.medusajs.com/resources/storefront-development/customers/reset-password#1-request-reset-password-page
  *   description: "Storefront development: How to create the request reset password page."
  * x-authenticated: false
  * parameters:

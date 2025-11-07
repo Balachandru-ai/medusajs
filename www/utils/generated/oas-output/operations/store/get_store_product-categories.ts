@@ -5,7 +5,7 @@
  * description: Retrieve a list of product categories. The product categories can be filtered by fields such as `id`. The product categories can also be sorted or paginated.
  * x-authenticated: false
  * externalDocs:
- *   url: https://docs.medusajs.com/v2/resources/storefront-development/products/categories/list
+ *   url: https://docs.medusajs.com/resources/storefront-development/products/categories/list
  *   description: "Storefront guide: How to retrieve a list of product categories."
  * parameters:
  *   - name: x-publishable-api-key

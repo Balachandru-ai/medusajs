@@ -30,7 +30,7 @@ export interface IFileModuleService extends IModuleService {
    * const [file] = await fileModuleService.createFiles([{
    *   filename: "product.png",
    *   mimeType: "image/png",
-   *   content: "somecontent" // binary string
+   *   content: "somecontent" // base64 string
    * }])
    */
   createFiles(
@@ -49,7 +49,7 @@ export interface IFileModuleService extends IModuleService {
    * const file = await fileModuleService.createFiles({
    *   filename: "product.png",
    *   mimeType: "image/png",
-   *   content: "somecontent" // binary string
+   *   content: "somecontent" // base64 string
    * })
    */
 

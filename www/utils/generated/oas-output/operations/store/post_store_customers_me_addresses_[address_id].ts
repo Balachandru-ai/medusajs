@@ -5,7 +5,7 @@
  * x-sidebar-summary: Update Address
  * description: Update the logged-in customer's address.
  * externalDocs:
- *   url: https://docs.medusajs.com/v2/resources/storefront-development/customers/addresses#edit-an-address
+ *   url: https://docs.medusajs.com/resources/storefront-development/customers/addresses#edit-an-address
  *   description: "Storefront guide: How to update an address of the logged-in customer."
  * x-authenticated: true
  * parameters:

@@ -69,19 +69,22 @@ const expectedMenuItems = `
             label: RouteConfig0.label,
             icon: RouteConfig0.icon,
             path: "/one",
-            nested: undefined
+            nested: undefined,
+            translationNs: undefined
           },
           {
             label: RouteConfig1.label,
             icon: undefined,
             path: "/two",
-            nested: undefined
+            nested: undefined,
+            translationNs: undefined
           },
           {
             label: RouteConfig2.label,
             icon: RouteConfig2.icon,
             path: "/three",
-            nested: "/products"
+            nested: "/products",
+            translationNs: undefined
           }
         ]
       `
@@ -135,6 +138,51 @@ describe("generateMenuItems", () => {
     ])
     expect(utils.normalizeString(result.code)).toEqual(
       utils.normalizeString(expectedMenuItems)
+    )
+  })
+
+  it("should handle translationNs field", async () => {
+    const mockFileWithTranslation = `
+      import { defineRouteConfig } from "@medusajs/admin-sdk"
+
+      const Page = () => {
+          return <div>Custom Page</div>
+      }
+
+      export const config = defineRouteConfig({
+          label: "menuItems.customFeature",
+          translationNs: "my-plugin",
+      })
+
+      export default Page
+    `
+
+    const mockFiles = ["Users/user/medusa/src/admin/routes/custom/page.tsx"]
+    vi.mocked(utils.crawl).mockResolvedValue(mockFiles)
+    vi.mocked(fs.readFile).mockResolvedValue(mockFileWithTranslation)
+
+    const result = await generateMenuItems(
+      new Set(["Users/user/medusa/src/admin"])
+    )
+
+    expect(result.imports).toEqual([
+      `import { config as RouteConfig0 } from "Users/user/medusa/src/admin/routes/custom/page.tsx"`,
+    ])
+
+    const expectedOutput = `
+      menuItems: [
+        {
+          label: RouteConfig0.label,
+          icon: undefined,
+          path: "/custom",
+          nested: undefined,
+          translationNs: RouteConfig0.translationNs
+        }
+      ]
+    `
+
+    expect(utils.normalizeString(result.code)).toEqual(
+      utils.normalizeString(expectedOutput)
     )
   })
 })
