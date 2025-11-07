@@ -115,9 +115,12 @@ The above example adds a new sidebar item with the label `Custom Route` and an i
 
 When you have multiple custom UI routes, you can control their order in the sidebar using the `rank` property. Routes are sorted in ascending order, meaning routes with lower rank values appear first.
 
-For example:
+For example, consider you have the following UI routes:
 
-```tsx title="src/admin/routes/analytics/page.tsx"
+<CodeTabs group="ui-routes">
+  <CodeTab label="UI Route 1" value="ui-route-1">
+
+```tsx title="src/admin/routes/analytics/page.tsx" highlights={[["18"]]}
 import { defineRouteConfig } from "@medusajs/admin-sdk"
 import { ChartBar } from "@medusajs/icons"
 import { Container, Heading } from "@medusajs/ui"
@@ -141,7 +144,10 @@ export const config = defineRouteConfig({
 export default AnalyticsPage
 ```
 
-```tsx title="src/admin/routes/reports/page.tsx"
+  </CodeTab>
+  <CodeTab label="UI Route 2" value="ui-route-2">
+
+```tsx title="src/admin/routes/reports/page.tsx" highlights={[["18"]]}
 import { defineRouteConfig } from "@medusajs/admin-sdk"
 import { DocumentText } from "@medusajs/icons"
 import { Container, Heading } from "@medusajs/ui"
@@ -164,6 +170,9 @@ export const config = defineRouteConfig({
 
 export default ReportsPage
 ```
+
+  </CodeTab>
+</CodeTabs>
 
 In the sidebar, "Analytics" will appear before "Reports" because it has a lower rank (1 < 2).
 
