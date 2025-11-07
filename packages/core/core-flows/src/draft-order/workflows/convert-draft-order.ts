@@ -8,6 +8,7 @@ import {
   createWorkflow,
   parallelize,
   StepResponse,
+  transform,
   WorkflowData,
   WorkflowResponse,
 } from "@medusajs/framework/workflows-sdk"
@@ -15,6 +16,8 @@ import type { IOrderModuleService, OrderDTO } from "@medusajs/framework/types"
 import { emitEventStep, useRemoteQueryStep } from "../../common"
 import { validateDraftOrderStep } from "../steps/validate-draft-order"
 import { acquireLockStep, releaseLockStep } from "../../locking"
+import { prepareConfirmInventoryInput, requiredOrderFieldsForInventoryConfirmation } from "../../cart/utils/prepare-confirm-inventory-input"
+import { reserveInventoryStep } from "../../cart"
 
 export const convertDraftOrderWorkflowId = "convert-draft-order"
 
@@ -118,6 +121,37 @@ export const convertDraftOrderWorkflow = createWorkflow(
     }).config({ name: "order-query" })
 
     validateDraftOrderStep({ order })
+
+    const orderItems = useRemoteQueryStep({
+      entry_point: "order",
+      fields: requiredOrderFieldsForInventoryConfirmation,
+      variables: { id: input.id },
+      list: false,
+      throw_if_key_not_found: true,
+    }).config({ name: "order-items-query" })
+
+    const { variants, items } = transform({ orderItems }, ({ orderItems }) => {
+      const items: any[] = orderItems.items
+      const variants: any[] = orderItems.items.map((item) => item.variant)
+
+      return {
+        variants,
+        items,
+      }
+    })
+
+    const formatedInventoryItems = transform(
+      {
+        input: {
+          sales_channel_id: (orderItems as any).sales_channel_id,
+          variants,
+          items,
+        },
+      },
+      prepareConfirmInventoryInput
+    )
+
+    reserveInventoryStep(formatedInventoryItems)
 
     const updatedOrder = convertDraftOrderStep({ id: input.id })
 
