@@ -14,9 +14,9 @@ import {
 import {
   arrayDifference,
   DALUtils,
+  executeWithConcurrency,
   ModulesSdkUtils,
   normalizeMigrationSQL,
-  promiseAll,
 } from "@medusajs/framework/utils"
 import { generateEntity } from "../utils"
 
@@ -496,19 +496,30 @@ export class MigrationsExecutionPlanner implements ILinkMigrationsPlanner {
   async executePlan(actionPlan: LinkMigrationsPlannerAction[]): Promise<void> {
     const orm = await this.createORM()
 
-    await promiseAll(
-      actionPlan.map(async (action) => {
-        switch (action.action) {
-          case "delete":
-            return await this.dropLinkTable(orm, action.tableName)
-          case "create":
-            return await this.createLinkTable(orm, action)
-          case "update":
-            return await orm.em.getDriver().getConnection().execute(action.sql)
-          default:
-            return
-        }
-      })
-    ).finally(() => orm.close(true))
+    try {
+      const concurrency = parseInt(process.env.DB_MIGRATION_CONCURRENCY ?? "8")
+      await executeWithConcurrency(
+        actionPlan.map((action) => {
+          return async () => {
+            switch (action.action) {
+              case "delete":
+                return await this.dropLinkTable(orm, action.tableName)
+              case "create":
+                return await this.createLinkTable(orm, action)
+              case "update":
+                return await orm.em
+                  .getDriver()
+                  .getConnection()
+                  .execute(action.sql)
+              default:
+                return
+            }
+          }
+        }),
+        concurrency
+      )
+    } finally {
+      await orm.close(true)
+    }
   }
 }
