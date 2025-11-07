@@ -1053,7 +1053,7 @@ medusaIntegrationTestRunner({
           })
         })
 
-        it.only("should update adjustments when adding a new outbound item", async () => {
+        it("should update adjustments when adding an inbound and outbound item", async () => {
           // First item -> 10$ | 10% discount tax excl. | 10% tax
           // Second item -> 12$ | 10% discount tax excl. | 2% tax
 
@@ -1124,7 +1124,7 @@ medusaIntegrationTestRunner({
             }),
           ])
 
-          const orderResult = (
+          let orderResult = (
             await api.get(`/admin/orders/${orderId}`, adminHeaders)
           ).data.order
 
@@ -1155,36 +1155,29 @@ medusaIntegrationTestRunner({
 
           const returnId = result.order_change.return_id
 
-          // expect(result.total).toEqual(11.016) //  12 * 0.9 * 1.02
-          // expect(result.original_total).toEqual(12.24) // 12 * 1.02
-
-          // Confirm that the adjustment values are correct
-          // const adjustmentsAfterReturn = result.items[0].adjustments
-
-          // expect(adjustmentsAfterReturn).toHaveLength(1)
-          // expect(adjustmentsAfterReturn).toEqual([
-          //   expect.objectContaining({
-          //     amount: 1.2,
-          //   }),
-          // ])
-
           await api.post(
             `/admin/exchanges/${exchangeId}/request`,
             {},
             adminHeaders
           )
 
-          const orderResultAfterRequest = (
+          orderResult = (
             await api.get(`/admin/orders/${orderId}`, adminHeaders)
           ).data.order
 
-          // TODO: check state here
-
-          // TODO check order here
+          // after exchange request order contains both items and adjustments untill return is received
+          expect(orderResult.total).toEqual(20.916) // 10 * 0.9 * 1.1 + 12 * 0.9 * 1.02
+          expect(orderResult.original_total).toEqual(23.24) // 10 * 1.1 + 12 * 1.02
 
           await api.post(`/admin/returns/${returnId}/receive`, {}, adminHeaders)
 
-          // TODO check order here
+          orderResult = (
+            await api.get(`/admin/orders/${orderId}`, adminHeaders)
+          ).data.order
+
+          // still the same state while return receive process is pending
+          expect(orderResult.total).toEqual(20.916) // 10 * 0.9 * 1.1 + 12 * 0.9 * 1.02
+          expect(orderResult.original_total).toEqual(23.24) // 10 * 1.1 + 12 * 1.02
 
           await api.post(
             `/admin/returns/${returnId}/receive-items`,
@@ -1199,6 +1192,14 @@ medusaIntegrationTestRunner({
             adminHeaders
           )
 
+          orderResult = (
+            await api.get(`/admin/orders/${orderId}`, adminHeaders)
+          ).data.order
+
+          // still the same state while return receive process is pending
+          expect(orderResult.total).toEqual(20.916) // 10 * 0.9 * 1.1 + 12 * 0.9 * 1.02
+          expect(orderResult.original_total).toEqual(23.24) // 10 * 1.1 + 12 * 1.02
+
           await api.post(
             `/admin/returns/${returnId}/receive/confirm`,
             {},
@@ -1209,6 +1210,7 @@ medusaIntegrationTestRunner({
             await api.get(`/admin/orders/${orderId}`, adminHeaders)
           ).data.order
 
+          // after confirmation only first added item is active
           expect(orderResult2.total).toEqual(11.016)
           expect(orderResult2.original_total).toEqual(12.24)
         })
