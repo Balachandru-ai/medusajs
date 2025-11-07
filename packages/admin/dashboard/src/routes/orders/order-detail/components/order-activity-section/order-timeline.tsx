@@ -124,7 +124,14 @@ type Activity = {
 const useActivityItems = (order: AdminOrder): Activity[] => {
   const { t } = useTranslation()
 
-  const { order: firstOrderVersion = {} } = useOrder(order.id, { version: 1, fields: "created_at,total,currency_code" }) 
+  let firstOrderVersion = order
+  if (firstOrderVersion.version !== 1) {
+    const { order: initialOrder = {} } = useOrder(firstOrderVersion.id, {
+      version: 1,
+      fields: "created_at,total,currency_code",
+    })
+    firstOrderVersion = initialOrder
+  }
 
   const { order_changes: orderChanges = [] } = useOrderChanges(order.id, {
     change_type: [
