@@ -15063,7 +15063,7 @@ paths:
                             type: object
                             description: The shipping method's data, useful for fulfillment providers.
                             externalDocs:
-                              url: https://docs.medusajs.com/v2/resources/commerce-modules/order/concepts#data-property
+                              url: https://docs.medusajs.com/resources/commerce-modules/order/concepts#data-property
                           amount:
                             oneOf:
                               - type: string
@@ -39685,7 +39685,7 @@ paths:
                       type: string
                       description: The promotion's type.
                       externalDocs:
-                        url: https://docs.medusajs.com/v2/resources/commerce-modules/promotion/concepts#what-is-a-promotion
+                        url: https://docs.medusajs.com/resources/commerce-modules/promotion/concepts#what-is-a-promotion
                       enum:
                         - standard
                         - buyget
@@ -40429,7 +40429,7 @@ paths:
                       type: string
                       description: The promotion's type.
                       externalDocs:
-                        url: https://docs.medusajs.com/v2/resources/commerce-modules/promotion/concepts#what-is-a-promotion
+                        url: https://docs.medusajs.com/resources/commerce-modules/promotion/concepts#what-is-a-promotion
                       enum:
                         - standard
                         - buyget
@@ -59033,7 +59033,7 @@ paths:
       summary: Refresh Authentication Token
       description: Refresh the authentication token of a user. This is useful after authenticating a user with a third-party service to ensure the token holds the new user's details, or when you don't want users to re-login every day.
       externalDocs:
-        url: https://docs.medusajs.com/v2/resources/commerce-modules/auth/authentication-route#2-third-party-service-authenticate-flow
+        url: https://docs.medusajs.com/resources/commerce-modules/auth/authentication-route#2-third-party-service-authenticate-flow
         description: Learn about third-party authentication flow.
       x-authenticated: true
       x-codeSamples:
@@ -59089,7 +59089,7 @@ paths:
 
         When used with a third-party provider, such as Google, the request returns a `location` property. You redirect to the specified URL in your frontend to continue authentication with the third-party service.
       externalDocs:
-        url: https://docs.medusajs.com/v2/resources/commerce-modules/auth/authentication-route#types-of-authentication-flows
+        url: https://docs.medusajs.com/resources/commerce-modules/auth/authentication-route#types-of-authentication-flows
         description: Learn about different authentication flows.
       x-authenticated: false
       parameters:
@@ -59178,7 +59178,7 @@ paths:
 
         You can decode the JWT token using libraries like [react-jwt](https://www.npmjs.com/package/react-jwt) in the frontend. If the decoded data doesn't  have an `actor_id` property, then you must create a user, typically using the Accept Invite route passing the token in the request's Authorization header.
       externalDocs:
-        url: https://docs.medusajs.com/v2/resources/commerce-modules/auth/authentication-route#2-third-party-service-authenticate-flow
+        url: https://docs.medusajs.com/resources/commerce-modules/auth/authentication-route#2-third-party-service-authenticate-flow
         description: Learn about third-party authentication flow.
       x-authenticated: false
       parameters:
@@ -59285,7 +59285,7 @@ paths:
       summary: Retrieve Registration JWT Token
       description: This API route retrieves a registration JWT token of a user that hasn't been registered yet. The token is used in the header of requests that create a user, such as the Accept Invite API route.
       externalDocs:
-        url: https://docs.medusajs.com/v2/resources/commerce-modules/auth/authentication-route#1-basic-authentication-flow
+        url: https://docs.medusajs.com/resources/commerce-modules/auth/authentication-route#1-basic-authentication-flow
         description: Learn about the basic authentication flow.
       x-authenticated: false
       parameters:
@@ -59377,7 +59377,7 @@ paths:
 
          Use the generated token to update the user's password using the [Reset Password API route](https://docs.medusajs.com/api/admin#auth_postactor_typeauth_providerupdate).
       externalDocs:
-        url: https://docs.medusajs.com/v2/resources/commerce-modules/auth/authentication-route#generate-reset-password-token-route
+        url: https://docs.medusajs.com/resources/commerce-modules/auth/authentication-route#generate-reset-password-token-route
         description: Learn more about this API route.
       x-authenticated: false
       parameters:
@@ -59467,7 +59467,7 @@ paths:
       x-sidebar-summary: Reset Password
       description: Reset an admin user's password using a reset-password token generated with the [Generate Reset Password Token API route](https://docs.medusajs.com/api/admin#auth_postactor_typeauth_providerresetpassword). You pass the token as a bearer token in the request's Authorization header.
       externalDocs:
-        url: https://docs.medusajs.com/v2/resources/commerce-modules/auth/authentication-route#reset-password-route
+        url: https://docs.medusajs.com/resources/commerce-modules/auth/authentication-route#reset-password-route
         description: Learn more about this API route.
       x-authenticated: true
       parameters:
@@ -60888,7 +60888,7 @@ components:
           type: array
           description: The claim's transactions.
           externalDocs:
-            url: https://docs.medusajs.com/v2/resources/commerce-modules/order/transactions
+            url: https://docs.medusajs.com/resources/commerce-modules/order/transactions
             description: Learn more about transactions of orders and associated models.
           items:
             $ref: '#/components/schemas/BaseOrderTransaction'
@@ -61539,7 +61539,7 @@ components:
           type: object
           description: The flat-rate shipping option's data, useful for the fulfillment provider handling its processing.
           externalDocs:
-            url: https://docs.medusajs.com/v2/resources/commerce-modules/fulfillment/shipping-option#data-property
+            url: https://docs.medusajs.com/resources/commerce-modules/fulfillment/shipping-option#data-property
         price_type:
           type: string
           description: The shipping option's price type. If `flat`, the shipping option has a fixed price set in `prices`. Otherwise, the shipping option's price is calculated by the fulfillment provider.
@@ -61702,7 +61702,7 @@ components:
           type: object
           description: Any data useful for the fulfillment provider to handle the fulfillment.
           externalDocs:
-            url: https://docs.medusajs.com/v2/resources/commerce-modules/fulfillment/shipping-option#data-property
+            url: https://docs.medusajs.com/resources/commerce-modules/fulfillment/shipping-option#data-property
             description: Learn more about the data property.
         packed_at:
           type: string
@@ -62992,7 +62992,7 @@ components:
           title: is_combinable
           description: Whether the tax rate should be combined with parent rates.
           externalDocs:
-            url: https://docs.medusajs.com/v2/resources/commerce-modules/tax/tax-rates-and-rules#combinable-tax-rates
+            url: https://docs.medusajs.com/resources/commerce-modules/tax/tax-rates-and-rules#combinable-tax-rates
         metadata:
           type: object
           description: The tax rate's metadata, used to store custom key-value pairs.
@@ -63066,7 +63066,7 @@ components:
               type: boolean
               description: Whether the tax rate should be combined with parent rates.
               externalDocs:
-                url: https://docs.medusajs.com/v2/resources/commerce-modules/tax/tax-rates-and-rules#combinable-tax-rates
+                url: https://docs.medusajs.com/resources/commerce-modules/tax/tax-rates-and-rules#combinable-tax-rates
             metadata:
               type: object
               description: The default tax rate's metadata, used to store custom key-value pairs.
@@ -64812,7 +64812,7 @@ components:
                     type: object
                     description: The data relevant for the fulfillment provider to process this shipment.
                     externalDocs:
-                      url: https://docs.medusajs.com/v2/resources/commerce-modules/order/concepts#data-property
+                      url: https://docs.medusajs.com/resources/commerce-modules/order/concepts#data-property
                   metadata:
                     type: object
                     description: The shipping method's metadata, can hold custom key-value pairs.
@@ -65201,7 +65201,7 @@ components:
           type: array
           description: The exchange's transactions.
           externalDocs:
-            url: https://docs.medusajs.com/v2/resources/commerce-modules/order/transactions
+            url: https://docs.medusajs.com/resources/commerce-modules/order/transactions
           items:
             $ref: '#/components/schemas/BaseOrderTransaction'
         metadata:
@@ -65514,7 +65514,7 @@ components:
           type: object
           description: The fulfillment's data, useful for the third-party provider handling the fulfillment.
           externalDocs:
-            url: https://docs.medusajs.com/v2/resources/commerce-modules/fulfillment/shipping-option#data-property
+            url: https://docs.medusajs.com/resources/commerce-modules/fulfillment/shipping-option#data-property
         metadata:
           type: object
           description: The fulfillment's metadata, can hold custom key-value pairs.
@@ -67347,7 +67347,7 @@ components:
           type: object
           description: Data useful for the fulfillment provider handling it. This is taken from the associated shipping option.
           externalDocs:
-            url: https://docs.medusajs.com/v2/resources/commerce-modules/fulfillment/shipping-option#data-property
+            url: https://docs.medusajs.com/resources/commerce-modules/fulfillment/shipping-option#data-property
         provider_id:
           type: string
           title: provider_id
@@ -67986,7 +67986,7 @@ components:
                     type: object
                     description: The data relevant for the fulfillment provider to process this shipment.
                     externalDocs:
-                      url: https://docs.medusajs.com/v2/resources/commerce-modules/order/concepts#data-property
+                      url: https://docs.medusajs.com/resources/commerce-modules/order/concepts#data-property
                   metadata:
                     type: object
                     description: The shipping method's metadata, can hold custom key-value pairs.
@@ -68384,7 +68384,7 @@ components:
           type: object
           description: The shipping method's data, useful for fulfillment provider handling its fulfillment.
           externalDocs:
-            url: https://docs.medusajs.com/v2/resources/commerce-modules/fulfillment/shipping-option#data-property
+            url: https://docs.medusajs.com/resources/commerce-modules/fulfillment/shipping-option#data-property
         metadata:
           type: object
           description: The shipping method's metadata, can hold custom key-value pairs.
@@ -68479,7 +68479,7 @@ components:
           type: object
           description: The payment's data, useful for processing by the payment provider.
           externalDocs:
-            url: https://docs.medusajs.com/v2/resources/commerce-modules/payment/payment#whats-a-payment
+            url: https://docs.medusajs.com/resources/commerce-modules/payment/payment#whats-a-payment
         created_at:
           type: string
           format: date-time
@@ -68662,7 +68662,7 @@ components:
           type: object
           description: The payment session's data, useful for the payment provider processing the payment.
           externalDocs:
-            url: https://docs.medusajs.com/v2/resources/commerce-modules/payment/payment-session#data-property
+            url: https://docs.medusajs.com/resources/commerce-modules/payment/payment-session#data-property
         context:
           type: object
           description: The context around the payment, such as the customer's details.
@@ -71628,7 +71628,7 @@ components:
           type: object
           description: The shipping option's data, useful for the fulfillment provider handling fulfillments created from this option.
           externalDocs:
-            url: https://docs.medusajs.com/v2/resources/commerce-modules/fulfillment/shipping-option#data-property
+            url: https://docs.medusajs.com/resources/commerce-modules/fulfillment/shipping-option#data-property
         metadata:
           type: object
           description: The shipping option's metadata, can hold custom key-value pairs.
@@ -72556,7 +72556,7 @@ components:
           title: is_combinable
           description: Whether the tax rate should be combined with parent rates.
           externalDocs:
-            url: https://docs.medusajs.com/v2/resources/commerce-modules/tax/tax-rates-and-rules#combinable-tax-rates
+            url: https://docs.medusajs.com/resources/commerce-modules/tax/tax-rates-and-rules#combinable-tax-rates
         is_default:
           type: boolean
           title: is_default
@@ -74395,7 +74395,7 @@ components:
           title: is_combinable
           description: Whether the tax rate should be combined with parent rates.
           externalDocs:
-            url: https://docs.medusajs.com/v2/resources/commerce-modules/tax/tax-rates-and-rules#combinable-tax-rates
+            url: https://docs.medusajs.com/resources/commerce-modules/tax/tax-rates-and-rules#combinable-tax-rates
         metadata:
           type: object
           description: The tax rate's metadata, can hold custom key-value pairs.
@@ -76449,7 +76449,7 @@ components:
           type: object
           description: Data useful for the fulfillment provider handling it. This is taken from the associated shipping option.
           externalDocs:
-            url: https://docs.medusajs.com/v2/resources/commerce-modules/fulfillment/shipping-option#data-property
+            url: https://docs.medusajs.com/resources/commerce-modules/fulfillment/shipping-option#data-property
         provider_id:
           type: string
           title: provider_id
@@ -76995,7 +76995,7 @@ components:
           type: object
           description: The shipping method's data, useful for fulfillment provider handling its fulfillment.
           externalDocs:
-            url: https://docs.medusajs.com/v2/resources/commerce-modules/fulfillment/shipping-option#data-property
+            url: https://docs.medusajs.com/resources/commerce-modules/fulfillment/shipping-option#data-property
         metadata:
           type: object
           description: The shipping method's metadata, can hold custom key-value pairs.
@@ -77310,7 +77310,7 @@ components:
           type: object
           description: The payment's data, useful for processing by the payment provider.
           externalDocs:
-            url: https://docs.medusajs.com/v2/resources/commerce-modules/payment/payment#whats-a-payment
+            url: https://docs.medusajs.com/resources/commerce-modules/payment/payment#whats-a-payment
         created_at:
           type: string
           format: date-time
@@ -79763,7 +79763,7 @@ components:
           type: array
           description: The claim's transactions.
           externalDocs:
-            url: https://docs.medusajs.com/v2/resources/commerce-modules/order/transactions
+            url: https://docs.medusajs.com/resources/commerce-modules/order/transactions
             description: Learn more about transactions of orders and associated models.
           items:
             $ref: '#/components/schemas/OrderTransaction'
@@ -79928,7 +79928,7 @@ components:
           type: array
           description: The exchange's transactions.
           externalDocs:
-            url: https://docs.medusajs.com/v2/resources/commerce-modules/order/transactions
+            url: https://docs.medusajs.com/resources/commerce-modules/order/transactions
           items:
             $ref: '#/components/schemas/OrderTransaction'
         metadata:
@@ -80502,7 +80502,7 @@ components:
           type: object
           description: The shipping method's data, useful for the fulfillment provider handling the fulfillment.
           externalDocs:
-            url: https://docs.medusajs.com/v2/resources/commerce-modules/order/concepts#data-property
+            url: https://docs.medusajs.com/resources/commerce-modules/order/concepts#data-property
         metadata:
           type: object
           description: The shipping method's metadata, can hold custom key-value pairs.
@@ -81757,7 +81757,7 @@ components:
           type: object
           description: The shipping method's data, useful for fulfillment handling by third-party services.
           externalDocs:
-            url: https://docs.medusajs.com/v2/resources/commerce-modules/cart/concepts#data-property
+            url: https://docs.medusajs.com/resources/commerce-modules/cart/concepts#data-property
         metadata:
           type: object
           description: The shipping method's metadata, can hold custom key-value pairs.
@@ -82047,7 +82047,7 @@ components:
           type: object
           description: The shipping option's data, useful for the provider handling fulfillment.
           externalDocs:
-            url: https://docs.medusajs.com/v2/resources/commerce-modules/fulfillment/shipping-option#data-property
+            url: https://docs.medusajs.com/resources/commerce-modules/fulfillment/shipping-option#data-property
         prices:
           type: array
           description: The shipping option's prices.
@@ -82774,7 +82774,7 @@ components:
           type: object
           description: Any data necessary for the payment provider to process the payment.
           externalDocs:
-            url: https://docs.medusajs.com/v2/resources/commerce-modules/payment/payment-session#data-property
+            url: https://docs.medusajs.com/resources/commerce-modules/payment/payment-session#data-property
             description: Learn more about the payment session's data property
       x-schemaName: StoreInitializePaymentSession
     StoreOrder:
@@ -83163,7 +83163,7 @@ components:
           type: object
           description: Data useful for the fulfillment provider handling it. This is taken from the associated shipping option.
           externalDocs:
-            url: https://docs.medusajs.com/v2/resources/commerce-modules/fulfillment/shipping-option#data-property
+            url: https://docs.medusajs.com/resources/commerce-modules/fulfillment/shipping-option#data-property
         provider_id:
           type: string
           title: provider_id
@@ -87337,7 +87337,7 @@ components:
           type: object
           description: The shipping method's data, useful for fulfillment provider handling its fulfillment.
           externalDocs:
-            url: https://docs.medusajs.com/v2/resources/commerce-modules/fulfillment/shipping-option#data-property
+            url: https://docs.medusajs.com/resources/commerce-modules/fulfillment/shipping-option#data-property
         metadata:
           type: object
           description: The shipping method's metadata, can hold custom key-value pairs.
@@ -89137,7 +89137,7 @@ components:
           type: object
           description: The payment session's data, useful for the payment provider processing the payment.
           externalDocs:
-            url: https://docs.medusajs.com/v2/resources/commerce-modules/payment/payment-session#data-property
+            url: https://docs.medusajs.com/resources/commerce-modules/payment/payment-session#data-property
         context:
           type: object
           description: The context around the payment, such as the customer's details.
@@ -89923,14 +89923,14 @@ components:
           title: manage_inventory
           description: Whether Medusa manages the variant's inventory. If disabled, the variant is always considered in stock.
           externalDocs:
-            url: https://docs.medusajs.com/v2/resources/storefront-development/products/inventory
+            url: https://docs.medusajs.com/resources/storefront-development/products/inventory
             description: 'Storefront guide: How to retrieve a product variant''s inventory details.'
         inventory_quantity:
           type: number
           title: inventory_quantity
           description: The variant's inventory quantity. This property is only available if you pass `+variants.inventory_quantity` in the `fields` query parameter.
           externalDocs:
-            url: https://docs.medusajs.com/v2/resources/storefront-development/products/inventory
+            url: https://docs.medusajs.com/resources/storefront-development/products/inventory
             description: 'Storefront guide: How to retrieve a product variant''s inventory details.'
         variant_rank:
           type: number
@@ -90314,7 +90314,7 @@ components:
           type: object
           description: The shipping option's data, useful for the provider handling fulfillment.
           externalDocs:
-            url: https://docs.medusajs.com/v2/resources/commerce-modules/fulfillment/shipping-option#data-property
+            url: https://docs.medusajs.com/resources/commerce-modules/fulfillment/shipping-option#data-property
         metadata:
           type: object
           description: The shipping option's metadata, can hold custom key-value pairs.
