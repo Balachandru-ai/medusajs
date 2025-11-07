@@ -5,7 +5,7 @@
  * description: Retrieve a product by its ID. You can expand the product's relations or select the fields that should be returned.
  * x-authenticated: false
  * externalDocs:
- *   url: https://docs.medusajs.com/v2/resources/storefront-development/products/price
+ *   url: https://docs.medusajs.com/resources/storefront-development/products/price
  *   description: "Storefront guide: How to retrieve a product variants' prices."
  * parameters:
  *   - name: id
@@ -43,7 +43,7 @@
  *       title: region_id
  *       description: The ID of the region the product is being viewed from. This is required if you're retrieving product variant prices with taxes.
  *       externalDocs:
- *         url: https://docs.medusajs.com/v2/resources/storefront-development/products/price/examples/tax-price
+ *         url: https://docs.medusajs.com/resources/storefront-development/products/price/examples/tax-price
  *         description: "Storefront guide: How to show product variants' prices with taxes."
  *   - name: country_code
  *     in: query

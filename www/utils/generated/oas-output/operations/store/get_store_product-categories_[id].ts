@@ -5,7 +5,7 @@
  * description: Retrieve a product category by its ID. You can expand the product category's relations or select the fields that should be returned.
  * x-authenticated: false
  * externalDocs:
- *   url: https://docs.medusajs.com/v2/resources/storefront-development/products/categories/retrieve
+ *   url: https://docs.medusajs.com/resources/storefront-development/products/categories/retrieve
  *   description: "Storefront guide: How to retrieve a product category."
  * parameters:
  *   - name: id

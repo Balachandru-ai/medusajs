@@ -7,7 +7,7 @@
  * 
  *   The shipping options also be sorted or paginated.
  * externalDocs:
- *   url: https://docs.medusajs.com/v2/resources/storefront-development/checkout/shipping
+ *   url: https://docs.medusajs.com/resources/storefront-development/checkout/shipping
  *   description: "Storefront guide: How to implement shipping during checkout."
  * x-authenticated: false
  * parameters:
