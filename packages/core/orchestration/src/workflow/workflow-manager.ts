@@ -99,24 +99,11 @@ class WorkflowManager {
   ) {
     const finalFlow = flow instanceof OrchestratorBuilder ? flow.build() : flow
 
+    // Skip re-registration if workflow already exists (idempotent)
+    // This allows the same workflow to be imported and registered multiple times
+    // without errors, which happens when workflows are bundled
     if (WorkflowManager.workflows.has(workflowId)) {
-      const excludeStepUuid = (key, value) => {
-        return key === "uuid" ? undefined : value
-      }
-
-      const areStepsEqual = finalFlow
-        ? JSON.stringify(finalFlow, excludeStepUuid) ===
-          JSON.stringify(
-            WorkflowManager.workflows.get(workflowId)!.flow_,
-            excludeStepUuid
-          )
-        : true
-
-      if (!areStepsEqual) {
-        throw new Error(
-          `Workflow with id "${workflowId}" and step definition already exists.`
-        )
-      }
+      return
     }
 
     const workflow = {

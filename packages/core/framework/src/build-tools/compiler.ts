@@ -1,7 +1,15 @@
 import type { AdminOptions, ConfigModule, Logger } from "@medusajs/types"
 import { FileSystem, getConfigFile, getResolvedPlugins } from "@medusajs/utils"
 import chokidar from "chokidar"
-import { access, constants, copyFile, mkdir, rm, readFile, writeFile } from "fs/promises"
+import {
+  access,
+  constants,
+  copyFile,
+  mkdir,
+  rm,
+  readFile,
+  writeFile,
+} from "fs/promises"
 import path from "path"
 import type tsStatic from "typescript"
 
@@ -123,6 +131,11 @@ export class Compiler {
             filteredDeps[dep] = pkgJson.dependencies[dep]
           }
         }
+      }
+
+      // Always include @medusajs/cli for running commands
+      if (pkgJson.dependencies?.["@medusajs/cli"]) {
+        filteredDeps["@medusajs/cli"] = pkgJson.dependencies["@medusajs/cli"]
       }
 
       pkgJson.dependencies = filteredDeps
@@ -480,83 +493,106 @@ export class Compiler {
         "libsql",
         "sqlite3",
         "pg-query-stream", // PostgreSQL streaming
+        // Build tools (referenced by start command but not needed at runtime)
+        "esbuild",
+        "vite",
+        "lightningcss",
+        "@babel/preset-typescript",
+        "@babel/core",
         // Native file patterns
         "*.node",
       ]
 
-      this.#logger.info(`Creating optimized bundles with tree shaking...`)
+      this.#logger.info(`Creating single optimized bundle with tree shaking...`)
       this.#logger.info(`  - API routes: ${apiModules.length}`)
       this.#logger.info(`  - Subscribers: ${subscriberModules.length}`)
       this.#logger.info(`  - Jobs: ${jobModules.length}`)
       this.#logger.info(`  - Workflows: ${workflowModules.length}`)
       this.#logger.info(`  - Other: ${otherModules.length}`)
 
-      // Create virtual entry points that re-export all modules
+      // Combine ALL modules into a single bundle
+      const allModules = [
+        ...apiModules,
+        ...subscriberModules,
+        ...jobModules,
+        ...workflowModules,
+        ...otherModules,
+      ]
+
+      // Find and copy the start command before bundling
+      // The CLI needs it as a separate file, not minified in the bundle
+      let startCommandPath: string
+      try {
+        // First try to resolve @medusajs/medusa package
+        const medusaPkgPath = require.resolve("@medusajs/medusa/package.json", {
+          paths: [this.#projectRoot],
+        })
+        const medusaDir = path.dirname(medusaPkgPath)
+        startCommandPath = path.join(medusaDir, "dist", "commands", "start.js")
+      } catch {
+        // Fallback: try direct resolution
+        startCommandPath = require.resolve("@medusajs/medusa/commands/start")
+      }
+
+      // Copy the start command to a separate file (not in bundle)
+      const startCommandDist = path.join(dist, "commands", "start.js")
+      await mkdir(path.dirname(startCommandDist), { recursive: true })
+      await this.#copy(startCommandPath, startCommandDist)
+      this.#logger.info("  ✓ Copied start command separately (not bundled)")
+
+      // Create a single virtual entry that exports all modules
       const createVirtualEntry = (modules: any[]) => {
         const imports = modules
           .map((m: any, idx: number) => {
-            const modulePath = path.join(this.#projectRoot, m.path)
+            const modulePath = m.path.startsWith("/")
+              ? m.path
+              : path.join(this.#projectRoot, m.path)
             return `export * as _module_${idx} from "${modulePath}";`
           })
           .join("\n")
+
         return imports
       }
 
-      // Write virtual entry files
+      // Write virtual entry file
       const virtualDir = path.join(this.#projectRoot, ".medusa", "virtual")
       await mkdir(virtualDir, { recursive: true })
 
-      const bundleGroups: Array<{ name: string; modules: any[] }> = [
-        { name: "api", modules: apiModules },
-        { name: "subscribers", modules: subscriberModules },
-        { name: "jobs", modules: jobModules },
-        { name: "workflows", modules: workflowModules },
-        { name: "other", modules: otherModules },
-      ].filter((g) => g.modules.length > 0)
+      const virtualEntry = path.join(virtualDir, "bundle.entry.js")
+      const virtualContent = createVirtualEntry(allModules)
+      await fs.writeFile(virtualEntry, virtualContent)
 
+      // Create the single bundle
+      const result = await esbuild.build({
+        entryPoints: [virtualEntry],
+        bundle: true, // FULL bundling with tree shaking
+        platform: "node",
+        target: "node20",
+        format: "cjs",
+        outfile: path.join(dist, "bundle.js"),
+        sourcemap: true,
+        minify: true,
+        treeShaking: true,
+        keepNames: true,
+        external,
+        metafile: true,
+        loader: {
+          ".ts": "ts",
+          ".js": "js",
+        },
+        logLevel: "warning", // Show warnings to see what's not being bundled
+      })
+
+      // Create manifest mapping original paths to bundle exports
       const routeManifest: Record<string, { bundle: string; export: string }> =
         {}
 
-      for (const group of bundleGroups) {
-        const virtualEntry = path.join(virtualDir, `${group.name}.entry.js`)
-        const virtualContent = createVirtualEntry(group.modules)
-        await fs.writeFile(virtualEntry, virtualContent)
-
-        // Bundle this group
-        const result = await esbuild.build({
-          entryPoints: [virtualEntry],
-          bundle: true, // FULL bundling with tree shaking
-          platform: "node",
-          target: "node20",
-          format: "cjs",
-          outfile: path.join(dist, `bundle-${group.name}.js`),
-          sourcemap: true,
-          minify: true,
-          treeShaking: true,
-          keepNames: true,
-          external,
-          metafile: true,
-          loader: {
-            ".ts": "ts",
-            ".js": "js",
-          },
-          logLevel: "error",
-        })
-
-        // Map original paths to bundle exports
-        group.modules.forEach((m: any, idx: number) => {
-          routeManifest[m.path] = {
-            bundle: `bundle-${group.name}.js`,
-            export: `_module_${idx}`,
-          }
-        })
-
-        this.#logger.info(
-          `  ✓ ${group.name}: ${
-            Object.keys(result.metafile?.outputs || {})[0]?.length || 0
-          } bytes`
-        )
-      }
+      allModules.forEach((m: any, idx: number) => {
+        routeManifest[m.path] = {
+          bundle: "bundle.js",
+          export: `_module_${idx}`,
+        }
+      })
 
       // Save route manifest
       await fs.writeFile(
@@ -564,9 +600,19 @@ export class Compiler {
         JSON.stringify(routeManifest, null, 2)
       )
 
+      this.#logger.info("  ✓ Bundle created with self-executing start command")
+      this.#logger.info(
+        "  ✓ Postinstall script will create stub @medusajs/medusa after yarn install"
+      )
+
       // Clean up virtual directory
       await rm(virtualDir, { recursive: true, force: true })
 
+      const bundleSize =
+        Object.values(result.metafile?.outputs || {})[0]?.bytes || 0
+      this.#logger.info(
+        `  ✓ Single bundle: ${(bundleSize / 1024 / 1024).toFixed(2)} MB`
+      )
       this.#logger.info("Bundle created successfully with full tree shaking")
 
       // Transpile and copy essential config files (not traced but needed at runtime)
@@ -578,7 +624,12 @@ export class Compiler {
         const jsPath = path.join(this.#projectRoot, `${configName}.js`)
 
         // Check if TS version exists and transpile it
-        if (await fs.access(tsPath).then(() => true).catch(() => false)) {
+        if (
+          await fs
+            .access(tsPath)
+            .then(() => true)
+            .catch(() => false)
+        ) {
           await esbuild.build({
             entryPoints: [tsPath],
             bundle: false, // Just transpile, don't bundle
@@ -592,13 +643,72 @@ export class Compiler {
           })
         }
         // Otherwise copy JS version if it exists
-        else if (await fs.access(jsPath).then(() => true).catch(() => false)) {
+        else if (
+          await fs
+            .access(jsPath)
+            .then(() => true)
+            .catch(() => false)
+        ) {
           await this.#copy(jsPath, path.join(dist, `${configName}.js`))
         }
       }
 
       // Copy package manager files (with filtered dependencies for bundle mode)
       await this.#copyPkgManagerFiles(dist, external)
+
+      // Create post-install script to set up stub medusa package
+      const postInstallScript = `// Post-install script to create stub @medusajs/medusa package
+const fs = require('fs');
+const path = require('path');
+
+const stubMedusaDir = path.join(__dirname, 'node_modules', '@medusajs', 'medusa');
+const stubCommandsDir = path.join(stubMedusaDir, 'dist', 'commands');
+
+fs.mkdirSync(stubCommandsDir, { recursive: true });
+
+// Create stub start.js that points to the separate start command file
+const stubStartCommand = \`// This file is a stub that loads the actual start command
+const path = require('path');
+const startCommandPath = path.join(__dirname, '..', '..', '..', '..', '..', 'commands', 'start.js');
+module.exports = require(startCommandPath);
+\`;
+
+fs.writeFileSync(path.join(stubCommandsDir, 'start.js'), stubStartCommand);
+
+// Create minimal package.json
+const stubPackageJson = {
+  name: '@medusajs/medusa',
+  version: '0.0.0-bundle',
+  main: './dist/index.js'
+};
+
+fs.writeFileSync(
+  path.join(stubMedusaDir, 'package.json'),
+  JSON.stringify(stubPackageJson, null, 2)
+);
+
+console.log('✓ Created stub @medusajs/medusa package');
+`
+
+      await fs.writeFile(path.join(dist, "postinstall.js"), postInstallScript)
+
+      // Update package.json to run postinstall script and disable PnP
+      const pkgJsonPath = path.join(dist, "package.json")
+      const pkgJson = JSON.parse(await fs.readFile(pkgJsonPath, "utf-8"))
+      pkgJson.scripts = pkgJson.scripts || {}
+      pkgJson.scripts.postinstall = "node postinstall.js"
+
+      // Disable Yarn PnP - we need real node_modules for the stub package
+      pkgJson.installConfig = {
+        pnp: false
+      }
+
+      await fs.writeFile(pkgJsonPath, JSON.stringify(pkgJson, null, 2))
+
+      // Create .yarnrc.yml to disable PnP
+      const yarnrcContent = `nodeLinker: node-modules
+`
+      await fs.writeFile(path.join(dist, ".yarnrc.yml"), yarnrcContent)
 
       // Copy environment files if they exist
       await this.#copy(
@@ -620,6 +730,9 @@ export class Compiler {
         `Production bundle completed (${tracker.getSeconds()}s)`
       )
       this.#logger.info(`Output: ${path.relative(this.#projectRoot, dist)}`)
+      this.#logger.info(
+        `Run 'node bundle.js' to start the server (no dependencies needed)`
+      )
       return true
     } catch (error) {
       this.#logger.error("Bundle build failed", error)

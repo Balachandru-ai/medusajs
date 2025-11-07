@@ -13,6 +13,14 @@ export * from "./telemetry"
 export * from "./zod"
 export * from "./migrations"
 
-export const MEDUSA_CLI_PATH = require.resolve("@medusajs/cli")
+// CLI path - optional in production bundles
+export const MEDUSA_CLI_PATH = (() => {
+  try {
+    return require.resolve("@medusajs/cli")
+  } catch {
+    // CLI not available in production bundle - that's ok
+    return undefined
+  }
+})()
 
 export { Query } from "@medusajs/modules-sdk"

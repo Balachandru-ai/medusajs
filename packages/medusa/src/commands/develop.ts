@@ -38,7 +38,7 @@ export default async function ({ types, directory }) {
    * start command.
    */
 
-  const cliPath = path.resolve(MEDUSA_CLI_PATH, "..", "..", "cli.js")
+  const cliPath = path.resolve(MEDUSA_CLI_PATH!, "..", "..", "cli.js")
 
   const devServer = {
     childProcess: null as ChildProcess | null,

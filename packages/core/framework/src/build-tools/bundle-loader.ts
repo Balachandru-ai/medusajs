@@ -18,11 +18,16 @@ export class BundleLoader {
   #rootDir: string
   #manifest: RouteManifest | null = null
   #bundles: Map<string, any> = new Map()
+  #modules: Map<string, any> = new Map()
   #enabled: boolean = false
 
   constructor(rootDir: string) {
     this.#rootDir = rootDir
     this.#loadManifest()
+    // Preload all bundles and cache module exports
+    if (this.#enabled) {
+      this.#preloadBundles()
+    }
   }
 
   /**
@@ -41,6 +46,51 @@ export class BundleLoader {
         this.#enabled = false
       }
     }
+  }
+
+  /**
+   * Preload all bundles and cache module exports
+   * This loads the bundle ONCE and extracts all module exports
+   */
+  #preloadBundles() {
+    if (!this.#manifest) return
+
+    console.log("[BundleLoader] Preloading bundles...")
+
+    // Get unique bundle names
+    const bundleNames = new Set(
+      Object.values(this.#manifest).map((entry) => entry.bundle)
+    )
+
+    console.log(
+      `[BundleLoader] Found ${bundleNames.size} unique bundle(s):`,
+      Array.from(bundleNames)
+    )
+
+    // Load each unique bundle once
+    for (const bundleName of bundleNames) {
+      console.log(`[BundleLoader] Loading bundle: ${bundleName}`)
+      const bundle = this.#loadBundle(bundleName)
+
+      // Cache all module exports from this bundle
+      let cachedCount = 0
+      for (const [modulePath, entry] of Object.entries(this.#manifest)) {
+        if (entry.bundle === bundleName) {
+          const moduleExports = bundle[entry.export]
+          if (moduleExports) {
+            this.#modules.set(modulePath, moduleExports)
+            cachedCount++
+          }
+        }
+      }
+      console.log(
+        `[BundleLoader] Cached ${cachedCount} module exports from ${bundleName}`
+      )
+    }
+
+    console.log(
+      `[BundleLoader] ✓ Preloaded ${this.#modules.size} total module exports`
+    )
   }
 
   /**
@@ -75,29 +125,19 @@ export class BundleLoader {
    * @returns The module exports
    */
   loadModule(originalPath: string): any {
-    if (!this.isEnabled() || !this.#manifest) {
+    if (!this.isEnabled()) {
       throw new Error("Bundle loader not enabled")
     }
 
-    const entry = this.#manifest[originalPath]
-    if (!entry) {
+    // Return from preloaded cache
+    const moduleExports = this.#modules.get(originalPath)
+    if (!moduleExports) {
       throw new Error(
-        `Module not found in manifest: ${originalPath}\nAvailable: ${Object.keys(
-          this.#manifest
+        `Module not found in preloaded cache: ${originalPath}\nAvailable: ${Array.from(
+          this.#modules.keys()
         )
           .slice(0, 5)
           .join(", ")}...`
-      )
-    }
-
-    // Load the bundle
-    const bundle = this.#loadBundle(entry.bundle)
-
-    // Get the specific export
-    const moduleExports = bundle[entry.export]
-    if (!moduleExports) {
-      throw new Error(
-        `Export ${entry.export} not found in bundle ${entry.bundle}`
       )
     }
 
