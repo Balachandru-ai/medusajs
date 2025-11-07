@@ -240,7 +240,7 @@ export const CreateProduct = z
     categories: z.array(IdAssociation).optional(),
     tags: z.array(IdAssociation).optional(),
     options: z
-      .array(z.union([AdminCreateProductOption, z.object({ id: z.string() })]))
+      .array(z.union([AdminCreateProductOption, IdAssociation]))
       .optional(),
     variants: z.array(CreateProductVariant).optional(),
     sales_channels: z.array(z.object({ id: z.string() })).optional(),
@@ -265,6 +265,16 @@ export const UpdateProduct = z
     title: z.string().optional(),
     discountable: booleanString().optional(),
     is_giftcard: booleanString().optional(),
+    options: z.any().superRefine((val, ctx) => {
+      if (val !== undefined) {
+        // TODO set version and link to release notes
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message:
+            "The 'options' property was removed in version X.Y.Z. Please remove it from your request payload.",
+        })
+      }
+    }),
     option_ids: z.array(IdAssociation).optional(),
     variants: z.array(UpdateProductVariant).optional(),
     status: statusEnum.optional(),

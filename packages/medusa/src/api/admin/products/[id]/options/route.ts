@@ -6,7 +6,7 @@ import {
 } from "@medusajs/framework/http"
 import { HttpTypes } from "@medusajs/framework/types"
 import { remapKeysForProduct, remapProductResponse } from "../../helpers"
-import { linkProductOptionsToProductWorkflow } from "@medusajs/core-flows"
+import { createAndLinkProductOptionsToProductWorkflow } from "@medusajs/core-flows"
 
 export const GET = async (
   req: AuthenticatedMedusaRequest<HttpTypes.AdminProductOptionParams>,
@@ -35,7 +35,7 @@ export const POST = async (
 ) => {
   const productId = req.params.id
 
-  await linkProductOptionsToProductWorkflow(req.scope).run({
+  await createAndLinkProductOptionsToProductWorkflow(req.scope).run({
     input: {
       product_id: productId,
       ...req.validatedBody,
