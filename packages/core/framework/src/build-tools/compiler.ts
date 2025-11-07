@@ -491,6 +491,8 @@ export class Compiler {
         // Packages with dynamic requires that can't be bundled
         "iconv-lite", // Has conditional require('./extend-node')
         "chardet", // Has conditional require('./fs/node')
+        // OpenTelemetry packages with platform-specific dynamic requires
+        "@opentelemetry/api", // Has conditional require('./node')
         // CLI/interactive packages (only used in CLI commands, not server runtime)
         "inquirer",
         "@inquirer/prompts",
@@ -628,14 +630,15 @@ Module.prototype.require = function(id) {
 
         // Import and self-execute the start command
         const selfExecutingCode = `
-// Import the start command
-import startCommand from "${startCommandPath}";
-
 // Parse command line arguments
 function parseArgs() {
   const args = process.argv.slice(2);
+  const path = require("path");
+
+  // Default directory is where the bundle is located (not process.cwd())
+  // This ensures .env and configs are found when running from .medusa/server
   const parsed = {
-    directory: process.cwd(),
+    directory: __dirname,
     types: false,
   };
 
@@ -684,6 +687,10 @@ function parseArgs() {
 // This prevents infinite loops when the bundle is required by other code
 if (require.main === module) {
   const args = parseArgs();
+  // Use require() (not import()) to load start command AFTER module registry is set up
+  // This ensures the require() override intercepts all @medusajs/* package loads
+  const startModule = require("${startCommandPath}");
+  const startCommand = startModule.default || startModule;
   startCommand(args).catch((error) => {
     console.error('Failed to start server:', error);
     process.exit(1);
@@ -755,22 +762,10 @@ if (require.main === module) {
         ],
       })
 
-      // Create manifest mapping original paths to bundle exports
-      const routeManifest: Record<string, { bundle: string; export: string }> =
-        {}
-
-      allModules.forEach((m: any, idx: number) => {
-        routeManifest[m.path] = {
-          bundle: "bundle.js",
-          export: `_module_${idx}`,
-        }
-      })
-
-      // Save route manifest
-      await fs.writeFile(
-        path.join(dist, "route-manifest.json"),
-        JSON.stringify(routeManifest, null, 2)
-      )
+      // Note: We don't create a route-manifest.json for self-executing bundles
+      // because the bundle contains all routes internally and handles its own loading.
+      // The route-manifest would cause BundleLoader to try to require() the bundle,
+      // which creates an infinite loop.
 
       this.#logger.info("  ✓ Bundle created with self-executing start command")
       this.#logger.info(
