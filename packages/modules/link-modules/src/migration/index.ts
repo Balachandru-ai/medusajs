@@ -6,18 +6,17 @@ import {
   PlannerActionLinkDescriptor,
 } from "@medusajs/framework/types"
 
-import {
-  arrayDifference,
-  DALUtils,
-  ModulesSdkUtils,
-  normalizeMigrationSQL,
-  promiseAll,
-} from "@medusajs/framework/utils"
 import { EntitySchema, MikroORM } from "@medusajs/framework/mikro-orm/core"
 import {
   DatabaseSchema,
   PostgreSqlDriver,
 } from "@medusajs/framework/mikro-orm/postgresql"
+import {
+  arrayDifference,
+  DALUtils,
+  ModulesSdkUtils,
+  normalizeMigrationSQL,
+} from "@medusajs/framework/utils"
 import { generateEntity } from "../utils"
 
 /**
@@ -185,7 +184,7 @@ export class MigrationsExecutionPlanner implements ILinkMigrationsPlanner {
       .getConnection()
       .execute(
         `
-      INSERT INTO "${this.tableName}" (table_name, link_descriptor) VALUES (?, ?) ON CONFLICT (table_name) DO NOTHING;
+      INSERT INTO "${this.tableName}" (table_name, link_descriptor) VALUES (?, ?) ON CONFLICT DO NOTHING;
       ${sql}
     `,
         [tableName, linkDescriptor]
@@ -496,19 +495,27 @@ export class MigrationsExecutionPlanner implements ILinkMigrationsPlanner {
   async executePlan(actionPlan: LinkMigrationsPlannerAction[]): Promise<void> {
     const orm = await this.createORM()
 
-    await promiseAll(
-      actionPlan.map(async (action) => {
+    console.log(
+      " =================== EXECUTING PLAN ===================\n",
+      JSON.stringify(actionPlan, null, 2)
+    )
+
+    try {
+      for (const action of actionPlan) {
         switch (action.action) {
           case "delete":
             return await this.dropLinkTable(orm, action.tableName)
           case "create":
             return await this.createLinkTable(orm, action)
           case "update":
-            return await orm.em.getDriver().getConnection().execute(action.sql)
+            await orm.em.getDriver().getConnection().execute(action.sql)
+            return
           default:
             return
         }
-      })
-    ).finally(() => orm.close(true))
+      }
+    } finally {
+      await orm.close(true)
+    }
   }
 }
