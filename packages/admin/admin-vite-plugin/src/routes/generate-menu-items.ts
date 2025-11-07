@@ -28,6 +28,7 @@ type RouteConfig = {
   label: boolean
   icon: boolean
   nested?: string
+  translationNs?: string
 }
 
 type MenuItem = {
@@ -35,6 +36,7 @@ type MenuItem = {
   label: string
   path: string
   nested?: string
+  translationNs?: string
 }
 
 type MenuItemResult = {
@@ -64,12 +66,13 @@ function generateCode(results: MenuItemResult[]): string {
 }
 
 function formatMenuItem(route: MenuItem): string {
-  const { label, icon, path, nested } = route
+  const { label, icon, path, nested, translationNs } = route
   return `{
     label: ${label},
     icon: ${icon || "undefined"},
     path: "${path}",
-    nested: ${nested ? `"${nested}"` : "undefined"}
+    nested: ${nested ? `"${nested}"` : "undefined"},
+    translationNs: ${translationNs ? `${translationNs}` : "undefined"}
   }`
 }
 
@@ -130,6 +133,7 @@ function generateMenuItem(
     icon: config.icon ? `${configName}.icon` : undefined,
     path: getRoute(file),
     nested: config.nested,
+    translationNs: config.translationNs ? `${configName}.translationNs` : undefined,
   }
 }
 
@@ -240,10 +244,22 @@ function processConfigProperties(
     return null
   }
 
+  const translationNs = properties.find(
+    (prop) =>
+      isObjectProperty(prop) && isIdentifier(prop.key, { name: "translationNs" })
+  ) as ObjectProperty | undefined
+
+  let translationNsValue: string | undefined = undefined
+
+  if (isStringLiteral(translationNs?.value)) {
+    translationNsValue = translationNs.value.value
+  }
+
   return {
     label: hasLabel,
     icon: hasProperty("icon"),
     nested: nestedValue,
+    translationNs: translationNsValue,
   }
 }
 

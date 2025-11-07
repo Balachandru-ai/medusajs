@@ -182,7 +182,7 @@ paths:
 
         When used with a third-party provider, such as Google, the request returns a `location` property. You redirect to the specified URL in your storefront to continue authentication with the third-party service.
       externalDocs:
-        url: https://docs.medusajs.com/v2/storefront-development/customers/login#1-using-a-jwt-token
+        url: https://docs.medusajs.com/resources/storefront-development/customers/login#1-using-a-jwt-token
         description: 'Storefront development: How to login as a customer'
       x-authenticated: false
       parameters:
@@ -274,7 +274,7 @@ paths:
         This API route is used by your storefront or frontend application when a third-party provider redirects to it after authentication. It validates the authentication with the third-party provider and, if successful, returns an authentication token. All query parameters received from the third-party provider, such as `code`, `state`, and `error`, must be passed as query parameters to this route.
         You can decode the JWT token using libraries like [react-jwt](https://www.npmjs.com/package/react-jwt) in the storefront. If the decoded data doesn't  have an `actor_id` property, then you must register the customer using the Create Customer API route passing the token in the request's Authorization header.
       externalDocs:
-        url: https://docs.medusajs.com/v2/storefront-development/customers/third-party-login
+        url: https://docs.medusajs.com/resources/storefront-development/customers/third-party-login
         description: 'Storefront development: Implement third-party (social) login.'
       x-authenticated: false
       parameters:
@@ -375,7 +375,7 @@ paths:
       summary: Retrieve Registration JWT Token
       description: This API route retrieves a registration JWT token of a customer that hasn't been registered yet. The token is used in the header of requests that create a customer.
       externalDocs:
-        url: https://docs.medusajs.com/v2/storefront-development/customers/register
+        url: https://docs.medusajs.com/resources/storefront-development/customers/register
         description: 'Storefront development: How to register a customer'
       x-authenticated: false
       parameters:
@@ -471,7 +471,7 @@ paths:
 
          Use the generated token to update the customer's password using the [Reset Password API route](https://docs.medusajs.com/api/store#auth_postactor_typeauth_providerupdate).
       externalDocs:
-        url: https://docs.medusajs.com/v2/resources/storefront-development/customers/reset-password#1-request-reset-password-page
+        url: https://docs.medusajs.com/resources/storefront-development/customers/reset-password#1-request-reset-password-page
         description: 'Storefront development: How to create the request reset password page.'
       x-authenticated: false
       parameters:
@@ -565,7 +565,7 @@ paths:
       x-sidebar-summary: Reset Password
       description: Reset a customer's password using a reset-password token generated with the [Generate Reset Password Token API route](https://docs.medusajs.com/api/store#auth_postactor_typeauth_providerresetpassword). You pass the token as a bearer token in the request's Authorization header.
       externalDocs:
-        url: https://docs.medusajs.com/v2/resources/storefront-development/customers/reset-password#2-reset-password-page
+        url: https://docs.medusajs.com/resources/storefront-development/customers/reset-password#2-reset-password-page
         description: 'Storefront development: How to create the reset password page.'
       x-authenticated: true
       parameters:
@@ -662,7 +662,7 @@ paths:
       summary: Set Authentication Session
       description: Set the cookie session ID of a customer. The customer must be previously authenticated with the `/auth/customer/{provider}` API route first, as the JWT token is required in the header of the request.
       externalDocs:
-        url: https://docs.medusajs.com/v2/storefront-development/customers/login#2-using-a-cookie-session
+        url: https://docs.medusajs.com/resources/storefront-development/customers/login#2-using-a-cookie-session
         description: 'Storefront development: How to login as a customer'
       x-authenticated: true
       x-codeSamples:
@@ -759,7 +759,7 @@ paths:
       summary: Refresh Authentication Token
       description: Refresh the authentication token of a customer. This is useful after authenticating a customer with a third-party service to ensure the token holds the new user's details, or when you don't want customers to re-login every day.
       externalDocs:
-        url: https://docs.medusajs.com/v2/storefront-development/customers/third-party-login
+        url: https://docs.medusajs.com/resources/storefront-development/customers/third-party-login
         description: 'Storefront development: Implement third-party (social) login.'
       x-authenticated: true
       x-codeSamples:
@@ -1120,7 +1120,7 @@ paths:
       description: Complete a cart and place an order.
       x-authenticated: false
       externalDocs:
-        url: https://docs.medusajs.com/v2/resources/storefront-development/checkout/complete-cart
+        url: https://docs.medusajs.com/resources/storefront-development/checkout/complete-cart
         description: 'Storefront guide: How to implement cart completion during checkout.'
       parameters:
         - name: id
@@ -1236,7 +1236,7 @@ paths:
                             type: string
                             title: type
                             description: |
-                              The error's type. Can be a [MedusaError type](https://docs.medusajs.com/v2/advanced-development/api-routes/errors#medusaerror-types) or `payment_authorization_error` or `payment_requires_more_error` for payment-related errors.
+                              The error's type. Can be a [MedusaError type](https://docs.medusajs.com/learn/fundamentals/api-routes/errors#medusaerror-types) or `payment_authorization_error` or `payment_requires_more_error` for payment-related errors.
         '400':
           $ref: '#/components/responses/400_error'
         '401':
@@ -1534,7 +1534,7 @@ paths:
       x-sidebar-summary: Add Line Item
       description: Add a product variant as a line item in the cart.
       externalDocs:
-        url: https://docs.medusajs.com/v2/resources/storefront-development/cart/manage-items#add-product-variant-to-cart
+        url: https://docs.medusajs.com/resources/storefront-development/cart/manage-items#add-product-variant-to-cart
         description: 'Storefront guide: How to add a product variant to the cart.'
       x-authenticated: false
       parameters:
@@ -1666,7 +1666,7 @@ paths:
       x-sidebar-summary: Update Line Item
       description: Update a line item's details in the cart.
       externalDocs:
-        url: https://docs.medusajs.com/v2/resources/storefront-development/cart/manage-items#update-line-item-in-cart
+        url: https://docs.medusajs.com/resources/storefront-development/cart/manage-items#update-line-item-in-cart
         description: 'Storefront guide: How to update a cart''s line item.'
       x-authenticated: false
       parameters:
@@ -1800,7 +1800,7 @@ paths:
       x-sidebar-summary: Remove Line Item
       description: Remove a line item from a cart.
       externalDocs:
-        url: https://docs.medusajs.com/v2/resources/storefront-development/cart/manage-items#remove-line-item-from-cart
+        url: https://docs.medusajs.com/resources/storefront-development/cart/manage-items#remove-line-item-from-cart
         description: 'Storefront guide: How to remove line item from cart.'
       x-authenticated: false
       parameters:
@@ -1922,7 +1922,7 @@ paths:
       description: Add a list of promotions to a cart.
       x-authenticated: false
       externalDocs:
-        url: https://docs.medusajs.com/v2/resources/storefront-development/cart/manage-promotions#add-promotion-to-cart
+        url: https://docs.medusajs.com/resources/storefront-development/cart/manage-promotions#add-promotion-to-cart
         description: 'Storefront guide: How to add a promotion to cart.'
       parameters:
         - name: id
@@ -1995,7 +1995,7 @@ paths:
       description: Remove a list of promotions from a cart.
       x-authenticated: false
       externalDocs:
-        url: https://docs.medusajs.com/v2/resources/storefront-development/cart/manage-promotions#remove-promotion-from-cart
+        url: https://docs.medusajs.com/resources/storefront-development/cart/manage-promotions#remove-promotion-from-cart
         description: 'Storefront guide: How to remove a promotion from cart.'
       parameters:
         - name: id
@@ -2073,7 +2073,7 @@ paths:
       x-sidebar-summary: Add Shipping Method
       description: Add a shipping method to a cart. Use this API route when the customer chooses their preferred shipping option.
       externalDocs:
-        url: https://docs.medusajs.com/v2/resources/storefront-development/checkout/shipping
+        url: https://docs.medusajs.com/resources/storefront-development/checkout/shipping
         description: 'Storefront guide: How to implement shipping during checkout.'
       x-authenticated: false
       parameters:
@@ -2340,7 +2340,7 @@ paths:
       description: Retrieve a list of collections. The collections can be filtered by fields such as `handle`. The collections can also be sorted or paginated.
       x-authenticated: false
       externalDocs:
-        url: https://docs.medusajs.com/v2/resources/storefront-development/products/collections/list
+        url: https://docs.medusajs.com/resources/storefront-development/products/collections/list
         description: 'Storefront guide: How to retrieve a list of collections.'
       parameters:
         - name: x-publishable-api-key
@@ -3013,7 +3013,7 @@ paths:
       description: Retrieve a collection by its ID. You can expand the collection's relations or select the fields that should be returned.
       x-authenticated: false
       externalDocs:
-        url: https://docs.medusajs.com/v2/resources/storefront-development/products/collections/retrieve
+        url: https://docs.medusajs.com/resources/storefront-development/products/collections/retrieve
         description: 'Storefront guide: How to retrieve a collection.'
       parameters:
         - name: id
@@ -3282,7 +3282,7 @@ paths:
       summary: Register Customer
       description: Register a customer. Use the `/auth/customer/emailpass/register` API route first to retrieve the registration token and pass it in the header of the request.
       externalDocs:
-        url: https://docs.medusajs.com/v2/resources/storefront-development/customers/register
+        url: https://docs.medusajs.com/resources/storefront-development/customers/register
         description: 'Storefront guide: How to register a customer.'
       x-authenticated: true
       parameters:
@@ -3401,7 +3401,7 @@ paths:
       description: Retrieve the logged-in customer. You can expand the customer's relations or select the fields that should be returned.
       x-authenticated: true
       externalDocs:
-        url: https://docs.medusajs.com/v2/resources/storefront-development/customers/retrieve
+        url: https://docs.medusajs.com/resources/storefront-development/customers/retrieve
         description: 'Storefront guide: How to retrieve the logged-in customer.'
       parameters:
         - name: x-publishable-api-key
@@ -3480,7 +3480,7 @@ paths:
       summary: Update Customer
       description: Update the logged-in customer's details.
       externalDocs:
-        url: https://docs.medusajs.com/v2/resources/storefront-development/customers/profile
+        url: https://docs.medusajs.com/resources/storefront-development/customers/profile
         description: 'Storefront guide: How to edit a customer''s profile.'
       x-authenticated: true
       parameters:
@@ -3588,7 +3588,7 @@ paths:
       description: Retrieve the addresses of the logged-in customer. The addresses can be filtered by fields such as `country_code`. The addresses can also be sorted or paginated.
       x-authenticated: true
       externalDocs:
-        url: https://docs.medusajs.com/v2/resources/storefront-development/customers/addresses#list-customer-addresses
+        url: https://docs.medusajs.com/resources/storefront-development/customers/addresses#list-customer-addresses
         description: 'Storefront guide: How to retrieve the logged-in customer''s addresses.'
       parameters:
         - name: x-publishable-api-key
@@ -3759,7 +3759,7 @@ paths:
       x-sidebar-summary: Create Address
       description: Create an address for the logged-in customer.
       externalDocs:
-        url: https://docs.medusajs.com/v2/resources/storefront-development/customers/addresses#add-customer-address
+        url: https://docs.medusajs.com/resources/storefront-development/customers/addresses#add-customer-address
         description: 'Storefront guide: How to create an address for the logged-in customer.'
       x-authenticated: true
       parameters:
@@ -3951,7 +3951,7 @@ paths:
       x-sidebar-summary: Update Address
       description: Update the logged-in customer's address.
       externalDocs:
-        url: https://docs.medusajs.com/v2/resources/storefront-development/customers/addresses#edit-an-address
+        url: https://docs.medusajs.com/resources/storefront-development/customers/addresses#edit-an-address
         description: 'Storefront guide: How to update an address of the logged-in customer.'
       x-authenticated: true
       parameters:
@@ -4055,7 +4055,7 @@ paths:
       description: Remove an address of the logged-in customer.
       x-authenticated: true
       externalDocs:
-        url: https://docs.medusajs.com/v2/resources/storefront-development/customers/addresses#delete-customer-address
+        url: https://docs.medusajs.com/resources/storefront-development/customers/addresses#delete-customer-address
         description: 'Storefront guide: How to delete a customer''s address.'
       parameters:
         - name: address_id
@@ -5003,7 +5003,7 @@ paths:
       summary: Create Payment Collection
       description: Create a payment collection for a cart. This is used during checkout, where the payment collection holds the cart's payment sessions.
       externalDocs:
-        url: https://docs.medusajs.com/v2/resources/storefront-development/checkout/payment
+        url: https://docs.medusajs.com/resources/storefront-development/checkout/payment
         description: 'Storefront guide: How to implement payment during checkout.'
       x-authenticated: false
       parameters:
@@ -5103,7 +5103,7 @@ paths:
         In cases where you want to create a payment session for a payment collection with an amount of `0`, you can use the Manual System Payment Provider instead of third-party payment providers. The Manual System Payment Provider is built into Medusa and allows you to create payment sessions without interacting with an external payment provider.
         Make sure to configure the Manual System Payment Provider in your store's region. Learn more in the [Manage Region](https://docs.medusajs.com/user-guide/settings/regions#edit-region-details) user guide.
       externalDocs:
-        url: https://docs.medusajs.com/v2/resources/storefront-development/checkout/payment
+        url: https://docs.medusajs.com/resources/storefront-development/checkout/payment
         description: 'Storefront guide: How to implement payment during checkout.'
       x-authenticated: false
       parameters:
@@ -5176,7 +5176,7 @@ paths:
       description: Retrieve a list of payment providers. You must provide the `region_id` query parameter to retrieve the payment providers enabled in that region.
       x-authenticated: false
       externalDocs:
-        url: https://docs.medusajs.com/v2/resources/storefront-development/checkout/payment
+        url: https://docs.medusajs.com/resources/storefront-development/checkout/payment
         description: 'Storefront guide: How to implement payment during checkout.'
       parameters:
         - name: x-publishable-api-key
@@ -5327,7 +5327,7 @@ paths:
       description: Retrieve a list of product categories. The product categories can be filtered by fields such as `id`. The product categories can also be sorted or paginated.
       x-authenticated: false
       externalDocs:
-        url: https://docs.medusajs.com/v2/resources/storefront-development/products/categories/list
+        url: https://docs.medusajs.com/resources/storefront-development/products/categories/list
         description: 'Storefront guide: How to retrieve a list of product categories.'
       parameters:
         - name: x-publishable-api-key
@@ -6013,7 +6013,7 @@ paths:
       description: Retrieve a product category by its ID. You can expand the product category's relations or select the fields that should be returned.
       x-authenticated: false
       externalDocs:
-        url: https://docs.medusajs.com/v2/resources/storefront-development/products/categories/retrieve
+        url: https://docs.medusajs.com/resources/storefront-development/products/categories/retrieve
         description: 'Storefront guide: How to retrieve a product category.'
       parameters:
         - name: id
@@ -7455,7 +7455,7 @@ paths:
       description: Retrieve a list of products. The products can be filtered by fields such as `id`. The products can also be sorted or paginated.
       x-authenticated: false
       externalDocs:
-        url: https://docs.medusajs.com/v2/resources/storefront-development/products/price
+        url: https://docs.medusajs.com/resources/storefront-development/products/price
         description: 'Storefront guide: How to retrieve a product variants'' prices.'
       parameters:
         - name: x-publishable-api-key
@@ -7591,7 +7591,7 @@ paths:
           schema:
             description: Filter by a collection's ID to retrieve the products in it.
             externalDocs:
-              url: https://docs.medusajs.com/v2/resources/storefront-development/products/collections/products
+              url: https://docs.medusajs.com/resources/storefront-development/products/collections/products
               description: 'Storefront guide: Retrieve a collection''s products.'
             items:
               type: string
@@ -8098,7 +8098,7 @@ paths:
             title: region_id
             description: The ID of the region the products are being viewed from. This is required if you're retrieving product variant prices with taxes.
             externalDocs:
-              url: https://docs.medusajs.com/v2/resources/storefront-development/products/price/examples/tax-price
+              url: https://docs.medusajs.com/resources/storefront-development/products/price/examples/tax-price
               description: 'Storefront guide: How to show product variants'' prices with taxes.'
         - name: province
           in: query
@@ -8264,7 +8264,7 @@ paths:
       description: Retrieve a product by its ID. You can expand the product's relations or select the fields that should be returned.
       x-authenticated: false
       externalDocs:
-        url: https://docs.medusajs.com/v2/resources/storefront-development/products/price
+        url: https://docs.medusajs.com/resources/storefront-development/products/price
         description: 'Storefront guide: How to retrieve a product variants'' prices.'
       parameters:
         - name: id
@@ -8300,7 +8300,7 @@ paths:
             title: region_id
             description: The ID of the region the product is being viewed from. This is required if you're retrieving product variant prices with taxes.
             externalDocs:
-              url: https://docs.medusajs.com/v2/resources/storefront-development/products/price/examples/tax-price
+              url: https://docs.medusajs.com/resources/storefront-development/products/price/examples/tax-price
               description: 'Storefront guide: How to show product variants'' prices with taxes.'
         - name: country_code
           in: query
@@ -8385,7 +8385,7 @@ paths:
       description: Retrieve a list of regions. The regions can be filtered by fields such as `id`. The regions can also be sorted or paginated.
       x-authenticated: false
       externalDocs:
-        url: https://docs.medusajs.com/v2/resources/storefront-development/regions/list
+        url: https://docs.medusajs.com/resources/storefront-development/regions/list
         description: 'Storefront guide: How to retrieve a list of regions.'
       parameters:
         - name: x-publishable-api-key
@@ -8944,7 +8944,7 @@ paths:
 
         The shipping options also be sorted or paginated.
       externalDocs:
-        url: https://docs.medusajs.com/v2/resources/storefront-development/checkout/shipping
+        url: https://docs.medusajs.com/resources/storefront-development/checkout/shipping
         description: 'Storefront guide: How to implement shipping during checkout.'
       x-authenticated: false
       parameters:
@@ -10952,7 +10952,7 @@ components:
           type: array
           description: The claim's transactions.
           externalDocs:
-            url: https://docs.medusajs.com/v2/resources/commerce-modules/order/transactions
+            url: https://docs.medusajs.com/resources/commerce-modules/order/transactions
             description: Learn more about transactions of orders and associated models.
           items:
             $ref: '#/components/schemas/BaseOrderTransaction'
@@ -11603,7 +11603,7 @@ components:
           type: object
           description: The flat-rate shipping option's data, useful for the fulfillment provider handling its processing.
           externalDocs:
-            url: https://docs.medusajs.com/v2/resources/commerce-modules/fulfillment/shipping-option#data-property
+            url: https://docs.medusajs.com/resources/commerce-modules/fulfillment/shipping-option#data-property
         price_type:
           type: string
           description: The shipping option's price type. If `flat`, the shipping option has a fixed price set in `prices`. Otherwise, the shipping option's price is calculated by the fulfillment provider.
@@ -11766,7 +11766,7 @@ components:
           type: object
           description: Any data useful for the fulfillment provider to handle the fulfillment.
           externalDocs:
-            url: https://docs.medusajs.com/v2/resources/commerce-modules/fulfillment/shipping-option#data-property
+            url: https://docs.medusajs.com/resources/commerce-modules/fulfillment/shipping-option#data-property
             description: Learn more about the data property.
         packed_at:
           type: string
@@ -13056,7 +13056,7 @@ components:
           title: is_combinable
           description: Whether the tax rate should be combined with parent rates.
           externalDocs:
-            url: https://docs.medusajs.com/v2/resources/commerce-modules/tax/tax-rates-and-rules#combinable-tax-rates
+            url: https://docs.medusajs.com/resources/commerce-modules/tax/tax-rates-and-rules#combinable-tax-rates
         metadata:
           type: object
           description: The tax rate's metadata, used to store custom key-value pairs.
@@ -13130,7 +13130,7 @@ components:
               type: boolean
               description: Whether the tax rate should be combined with parent rates.
               externalDocs:
-                url: https://docs.medusajs.com/v2/resources/commerce-modules/tax/tax-rates-and-rules#combinable-tax-rates
+                url: https://docs.medusajs.com/resources/commerce-modules/tax/tax-rates-and-rules#combinable-tax-rates
             metadata:
               type: object
               description: The default tax rate's metadata, used to store custom key-value pairs.
@@ -14876,7 +14876,7 @@ components:
                     type: object
                     description: The data relevant for the fulfillment provider to process this shipment.
                     externalDocs:
-                      url: https://docs.medusajs.com/v2/resources/commerce-modules/order/concepts#data-property
+                      url: https://docs.medusajs.com/resources/commerce-modules/order/concepts#data-property
                   metadata:
                     type: object
                     description: The shipping method's metadata, can hold custom key-value pairs.
@@ -15265,7 +15265,7 @@ components:
           type: array
           description: The exchange's transactions.
           externalDocs:
-            url: https://docs.medusajs.com/v2/resources/commerce-modules/order/transactions
+            url: https://docs.medusajs.com/resources/commerce-modules/order/transactions
           items:
             $ref: '#/components/schemas/BaseOrderTransaction'
         metadata:
@@ -15578,7 +15578,7 @@ components:
           type: object
           description: The fulfillment's data, useful for the third-party provider handling the fulfillment.
           externalDocs:
-            url: https://docs.medusajs.com/v2/resources/commerce-modules/fulfillment/shipping-option#data-property
+            url: https://docs.medusajs.com/resources/commerce-modules/fulfillment/shipping-option#data-property
         metadata:
           type: object
           description: The fulfillment's metadata, can hold custom key-value pairs.
@@ -17411,7 +17411,7 @@ components:
           type: object
           description: Data useful for the fulfillment provider handling it. This is taken from the associated shipping option.
           externalDocs:
-            url: https://docs.medusajs.com/v2/resources/commerce-modules/fulfillment/shipping-option#data-property
+            url: https://docs.medusajs.com/resources/commerce-modules/fulfillment/shipping-option#data-property
         provider_id:
           type: string
           title: provider_id
@@ -18050,7 +18050,7 @@ components:
                     type: object
                     description: The data relevant for the fulfillment provider to process this shipment.
                     externalDocs:
-                      url: https://docs.medusajs.com/v2/resources/commerce-modules/order/concepts#data-property
+                      url: https://docs.medusajs.com/resources/commerce-modules/order/concepts#data-property
                   metadata:
                     type: object
                     description: The shipping method's metadata, can hold custom key-value pairs.
@@ -18448,7 +18448,7 @@ components:
           type: object
           description: The shipping method's data, useful for fulfillment provider handling its fulfillment.
           externalDocs:
-            url: https://docs.medusajs.com/v2/resources/commerce-modules/fulfillment/shipping-option#data-property
+            url: https://docs.medusajs.com/resources/commerce-modules/fulfillment/shipping-option#data-property
         metadata:
           type: object
           description: The shipping method's metadata, can hold custom key-value pairs.
@@ -18543,7 +18543,7 @@ components:
           type: object
           description: The payment's data, useful for processing by the payment provider.
           externalDocs:
-            url: https://docs.medusajs.com/v2/resources/commerce-modules/payment/payment#whats-a-payment
+            url: https://docs.medusajs.com/resources/commerce-modules/payment/payment#whats-a-payment
         created_at:
           type: string
           format: date-time
@@ -18726,7 +18726,7 @@ components:
           type: object
           description: The payment session's data, useful for the payment provider processing the payment.
           externalDocs:
-            url: https://docs.medusajs.com/v2/resources/commerce-modules/payment/payment-session#data-property
+            url: https://docs.medusajs.com/resources/commerce-modules/payment/payment-session#data-property
         context:
           type: object
           description: The context around the payment, such as the customer's details.
@@ -21692,7 +21692,7 @@ components:
           type: object
           description: The shipping option's data, useful for the fulfillment provider handling fulfillments created from this option.
           externalDocs:
-            url: https://docs.medusajs.com/v2/resources/commerce-modules/fulfillment/shipping-option#data-property
+            url: https://docs.medusajs.com/resources/commerce-modules/fulfillment/shipping-option#data-property
         metadata:
           type: object
           description: The shipping option's metadata, can hold custom key-value pairs.
@@ -22620,7 +22620,7 @@ components:
           title: is_combinable
           description: Whether the tax rate should be combined with parent rates.
           externalDocs:
-            url: https://docs.medusajs.com/v2/resources/commerce-modules/tax/tax-rates-and-rules#combinable-tax-rates
+            url: https://docs.medusajs.com/resources/commerce-modules/tax/tax-rates-and-rules#combinable-tax-rates
         is_default:
           type: boolean
           title: is_default
@@ -24459,7 +24459,7 @@ components:
           title: is_combinable
           description: Whether the tax rate should be combined with parent rates.
           externalDocs:
-            url: https://docs.medusajs.com/v2/resources/commerce-modules/tax/tax-rates-and-rules#combinable-tax-rates
+            url: https://docs.medusajs.com/resources/commerce-modules/tax/tax-rates-and-rules#combinable-tax-rates
         metadata:
           type: object
           description: The tax rate's metadata, can hold custom key-value pairs.
@@ -26513,7 +26513,7 @@ components:
           type: object
           description: Data useful for the fulfillment provider handling it. This is taken from the associated shipping option.
           externalDocs:
-            url: https://docs.medusajs.com/v2/resources/commerce-modules/fulfillment/shipping-option#data-property
+            url: https://docs.medusajs.com/resources/commerce-modules/fulfillment/shipping-option#data-property
         provider_id:
           type: string
           title: provider_id
@@ -27059,7 +27059,7 @@ components:
           type: object
           description: The shipping method's data, useful for fulfillment provider handling its fulfillment.
           externalDocs:
-            url: https://docs.medusajs.com/v2/resources/commerce-modules/fulfillment/shipping-option#data-property
+            url: https://docs.medusajs.com/resources/commerce-modules/fulfillment/shipping-option#data-property
         metadata:
           type: object
           description: The shipping method's metadata, can hold custom key-value pairs.
@@ -27374,7 +27374,7 @@ components:
           type: object
           description: The payment's data, useful for processing by the payment provider.
           externalDocs:
-            url: https://docs.medusajs.com/v2/resources/commerce-modules/payment/payment#whats-a-payment
+            url: https://docs.medusajs.com/resources/commerce-modules/payment/payment#whats-a-payment
         created_at:
           type: string
           format: date-time
@@ -29827,7 +29827,7 @@ components:
           type: array
           description: The claim's transactions.
           externalDocs:
-            url: https://docs.medusajs.com/v2/resources/commerce-modules/order/transactions
+            url: https://docs.medusajs.com/resources/commerce-modules/order/transactions
             description: Learn more about transactions of orders and associated models.
           items:
             $ref: '#/components/schemas/OrderTransaction'
@@ -29992,7 +29992,7 @@ components:
           type: array
           description: The exchange's transactions.
           externalDocs:
-            url: https://docs.medusajs.com/v2/resources/commerce-modules/order/transactions
+            url: https://docs.medusajs.com/resources/commerce-modules/order/transactions
           items:
             $ref: '#/components/schemas/OrderTransaction'
         metadata:
@@ -30566,7 +30566,7 @@ components:
           type: object
           description: The shipping method's data, useful for the fulfillment provider handling the fulfillment.
           externalDocs:
-            url: https://docs.medusajs.com/v2/resources/commerce-modules/order/concepts#data-property
+            url: https://docs.medusajs.com/resources/commerce-modules/order/concepts#data-property
         metadata:
           type: object
           description: The shipping method's metadata, can hold custom key-value pairs.
@@ -31821,7 +31821,7 @@ components:
           type: object
           description: The shipping method's data, useful for fulfillment handling by third-party services.
           externalDocs:
-            url: https://docs.medusajs.com/v2/resources/commerce-modules/cart/concepts#data-property
+            url: https://docs.medusajs.com/resources/commerce-modules/cart/concepts#data-property
         metadata:
           type: object
           description: The shipping method's metadata, can hold custom key-value pairs.
@@ -32111,7 +32111,7 @@ components:
           type: object
           description: The shipping option's data, useful for the provider handling fulfillment.
           externalDocs:
-            url: https://docs.medusajs.com/v2/resources/commerce-modules/fulfillment/shipping-option#data-property
+            url: https://docs.medusajs.com/resources/commerce-modules/fulfillment/shipping-option#data-property
         prices:
           type: array
           description: The shipping option's prices.
@@ -32838,7 +32838,7 @@ components:
           type: object
           description: Any data necessary for the payment provider to process the payment.
           externalDocs:
-            url: https://docs.medusajs.com/v2/resources/commerce-modules/payment/payment-session#data-property
+            url: https://docs.medusajs.com/resources/commerce-modules/payment/payment-session#data-property
             description: Learn more about the payment session's data property
       x-schemaName: StoreInitializePaymentSession
     StoreOrder:
@@ -33227,7 +33227,7 @@ components:
           type: object
           description: Data useful for the fulfillment provider handling it. This is taken from the associated shipping option.
           externalDocs:
-            url: https://docs.medusajs.com/v2/resources/commerce-modules/fulfillment/shipping-option#data-property
+            url: https://docs.medusajs.com/resources/commerce-modules/fulfillment/shipping-option#data-property
         provider_id:
           type: string
           title: provider_id
@@ -37401,7 +37401,7 @@ components:
           type: object
           description: The shipping method's data, useful for fulfillment provider handling its fulfillment.
           externalDocs:
-            url: https://docs.medusajs.com/v2/resources/commerce-modules/fulfillment/shipping-option#data-property
+            url: https://docs.medusajs.com/resources/commerce-modules/fulfillment/shipping-option#data-property
         metadata:
           type: object
           description: The shipping method's metadata, can hold custom key-value pairs.
@@ -39201,7 +39201,7 @@ components:
           type: object
           description: The payment session's data, useful for the payment provider processing the payment.
           externalDocs:
-            url: https://docs.medusajs.com/v2/resources/commerce-modules/payment/payment-session#data-property
+            url: https://docs.medusajs.com/resources/commerce-modules/payment/payment-session#data-property
         context:
           type: object
           description: The context around the payment, such as the customer's details.
@@ -39987,14 +39987,14 @@ components:
           title: manage_inventory
           description: Whether Medusa manages the variant's inventory. If disabled, the variant is always considered in stock.
           externalDocs:
-            url: https://docs.medusajs.com/v2/resources/storefront-development/products/inventory
+            url: https://docs.medusajs.com/resources/storefront-development/products/inventory
             description: 'Storefront guide: How to retrieve a product variant''s inventory details.'
         inventory_quantity:
           type: number
           title: inventory_quantity
           description: The variant's inventory quantity. This property is only available if you pass `+variants.inventory_quantity` in the `fields` query parameter.
           externalDocs:
-            url: https://docs.medusajs.com/v2/resources/storefront-development/products/inventory
+            url: https://docs.medusajs.com/resources/storefront-development/products/inventory
             description: 'Storefront guide: How to retrieve a product variant''s inventory details.'
         variant_rank:
           type: number
@@ -40378,7 +40378,7 @@ components:
           type: object
           description: The shipping option's data, useful for the provider handling fulfillment.
           externalDocs:
-            url: https://docs.medusajs.com/v2/resources/commerce-modules/fulfillment/shipping-option#data-property
+            url: https://docs.medusajs.com/resources/commerce-modules/fulfillment/shipping-option#data-property
         metadata:
           type: object
           description: The shipping option's metadata, can hold custom key-value pairs.

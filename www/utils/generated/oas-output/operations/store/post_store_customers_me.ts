@@ -4,7 +4,7 @@
  * summary: Update Customer
  * description: Update the logged-in customer's details.
  * externalDocs:
- *   url: https://docs.medusajs.com/v2/resources/storefront-development/customers/profile
+ *   url: https://docs.medusajs.com/resources/storefront-development/customers/profile
  *   description: "Storefront guide: How to edit a customer's profile."
  * x-authenticated: true
  * parameters:
