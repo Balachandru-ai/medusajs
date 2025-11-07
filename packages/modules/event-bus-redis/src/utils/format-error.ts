@@ -1,9 +1,11 @@
+import { isObject } from "@medusajs/framework/utils"
+
 export function formatError(err: unknown): string {
   if (err instanceof Error) {
     return err.stack || String(err)
   }
   
-  if (typeof err === 'object' && err !== null) {
+  if (isObject(err)) {
     try {
       return JSON.stringify(err)
     } catch (e) {
