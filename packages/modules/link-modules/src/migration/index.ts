@@ -497,7 +497,14 @@ export class MigrationsExecutionPlanner implements ILinkMigrationsPlanner {
 
     console.log(
       " =================== EXECUTING PLAN ===================\n",
-      JSON.stringify(actionPlan, null, 2)
+      JSON.stringify(
+        actionPlan.map((action) => ({
+          action: action.action,
+          table_name: action.tableName,
+        })),
+        null,
+        2
+      )
     )
 
     try {
