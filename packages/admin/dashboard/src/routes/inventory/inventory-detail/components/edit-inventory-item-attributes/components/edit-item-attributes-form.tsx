@@ -244,7 +244,7 @@ export const EditInventoryItemAttributesForm = ({
                     {t("fields.countryOfOrigin")}
                   </Form.Label>
                   <Form.Control>
-                    <CountrySelect {...field} />
+                    <CountrySelect {...field} allowClear />
                   </Form.Control>
                   <Form.ErrorMessage />
                 </Form.Item>

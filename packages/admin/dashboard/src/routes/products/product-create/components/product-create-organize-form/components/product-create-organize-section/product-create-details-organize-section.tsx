@@ -95,7 +95,7 @@ export const ProductCreateOrganizationSection = ({
                   <Combobox
                     {...field}
                     value={field.value || undefined}
-                    onChange={(value) => field.onChange(value || null)}
+                    onChange={(value) => field.onChange(value || "")}
                     options={types.options}
                     searchValue={types.searchValue}
                     onSearchValueChange={types.onSearchValueChange}
@@ -121,7 +121,7 @@ export const ProductCreateOrganizationSection = ({
                   <Combobox
                     {...field}
                     value={field.value || undefined}
-                    onChange={(value) => field.onChange(value || null)}
+                    onChange={(value) => field.onChange(value || "")}
                     options={collections.options}
                     searchValue={collections.searchValue}
                     onSearchValueChange={collections.onSearchValueChange}
