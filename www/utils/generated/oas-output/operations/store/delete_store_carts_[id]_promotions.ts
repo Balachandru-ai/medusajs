@@ -5,7 +5,7 @@
  * description: Remove a list of promotions from a cart.
  * x-authenticated: false
  * externalDocs:
- *   url: https://docs.medusajs.com/v2/resources/storefront-development/cart/manage-promotions#remove-promotion-from-cart
+ *   url: https://docs.medusajs.com/resources/storefront-development/cart/manage-promotions#remove-promotion-from-cart
  *   description: "Storefront guide: How to remove a promotion from cart."
  * parameters:
  *   - name: id
