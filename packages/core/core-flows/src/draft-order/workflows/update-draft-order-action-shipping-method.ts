@@ -164,6 +164,7 @@ export const updateDraftOrderActionShippingMethodWorkflow = createWorkflow(
           order,
           promo_codes: appliedPromoCodes,
           action: PromotionActions.REPLACE,
+          version: orderChange.version,
         },
       })
     })

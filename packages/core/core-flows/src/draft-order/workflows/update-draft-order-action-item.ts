@@ -139,6 +139,7 @@ export const updateDraftOrderActionItemWorkflow = createWorkflow(
           order: context,
           promo_codes: appliedPromoCodes,
           action: PromotionActions.REPLACE,
+          version: orderChange.version,
         },
       })
     })

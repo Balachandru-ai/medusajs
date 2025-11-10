@@ -165,6 +165,7 @@ export const cancelDraftOrderEditWorkflow = createWorkflow(
         order,
         promo_codes: promotionsToRefresh,
         action: PromotionActions.REPLACE,
+        version: orderChange.version,
       },
     })
 

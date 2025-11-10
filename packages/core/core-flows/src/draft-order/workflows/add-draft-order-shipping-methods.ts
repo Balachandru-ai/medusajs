@@ -200,6 +200,7 @@ export const addDraftOrderShippingMethodsWorkflow = createWorkflow(
           order: refetchedOrder,
           promo_codes: appliedPromoCodes,
           action: PromotionActions.REPLACE,
+          version: orderChange.version,
         },
       })
     })

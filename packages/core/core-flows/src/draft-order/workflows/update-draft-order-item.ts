@@ -72,7 +72,7 @@ export const updateDraftOrderItemWorkflow = createWorkflow(
 
     const orderChange: OrderChangeDTO = useRemoteQueryStep({
       entry_point: "order_change",
-      fields: ["id", "status"],
+      fields: ["id", "status", "version"],
       variables: {
         filters: {
           order_id: input.order_id,
@@ -138,6 +138,7 @@ export const updateDraftOrderItemWorkflow = createWorkflow(
           order: context,
           promo_codes: appliedPromoCodes,
           action: PromotionActions.REPLACE,
+          version: orderChange.version,
         },
       })
     })
