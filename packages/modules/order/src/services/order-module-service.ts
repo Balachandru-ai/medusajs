@@ -218,6 +218,14 @@ export default class OrderModuleService
   }>(generateMethodForModels)
   implements IOrderModuleService
 {
+  protected generateDisplayId_: (
+    this: OrderModuleService,
+    order: OrderTypes.CreateOrderDTO,
+    sharedContext: Context
+  ) => Promise<string | undefined> = async () => {
+    return undefined
+  }
+
   protected baseRepository_: DAL.RepositoryService
   protected orderService_: OrderService
   protected orderAddressService_: ModulesSdkTypes.IMedusaInternalService<
@@ -311,7 +319,8 @@ export default class OrderModuleService
       orderExchangeService,
       orderCreditLineService,
     }: InjectedDependencies,
-    protected readonly moduleDeclaration: InternalModuleDeclaration
+    protected readonly moduleDeclaration: InternalModuleDeclaration,
+    options?: { generateDisplayId?: () => Promise<string> }
   ) {
     // @ts-ignore
     super(...arguments)
@@ -338,6 +347,9 @@ export default class OrderModuleService
     this.orderClaimService_ = orderClaimService
     this.orderExchangeService_ = orderExchangeService
     this.orderCreditLineService_ = orderCreditLineService
+
+    this.generateDisplayId_ =
+      options?.generateDisplayId ?? this.generateDisplayId_
   }
 
   __joinerConfig(): ModuleJoinerConfig {
@@ -740,14 +752,15 @@ export default class OrderModuleService
     const creditLinesToCreate: CreateOrderCreditLineDTO[] = []
     const createdOrders: InferEntityType<typeof Order>[] = []
 
-    for (const {
-      items,
-      shipping_methods,
-      credit_lines,
-      shipping_address,
-      billing_address,
-      ...order
-    } of data) {
+    for (const data_ of data) {
+      const {
+        items,
+        shipping_methods,
+        credit_lines,
+        shipping_address,
+        billing_address,
+        ...order
+      } = data_
       const ord = order as any
 
       const shippingMethods = shipping_methods?.map((sm: any) => {
@@ -776,6 +789,11 @@ export default class OrderModuleService
       ord.summary = {
         totals: calculated.summary,
       }
+
+      ord.custom_display_id = await this.generateDisplayId_.bind(this)(
+        data_,
+        sharedContext
+      )
 
       const created = await this.orderService_.create(ord, sharedContext)
 

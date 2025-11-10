@@ -22,8 +22,12 @@ export const getColumnCategory = (
   semanticType?: string
 ): HttpTypes.AdminColumn["category"] => {
   // Check semantic type first
-  if (semanticType === "timestamp") return "timestamp"
-  if (semanticType === "status") return "status"
+  if (semanticType === "timestamp") {
+    return "timestamp"
+  }
+  if (semanticType === "status") {
+    return "status"
+  }
 
   // Check field name patterns
   if (
@@ -380,11 +384,7 @@ export const generateEntityColumns = (
       return
     }
 
-    const additionalFields = graphqlSchemaToFields(
-      schemaTypeMap,
-      typeName,
-      []
-    )
+    const additionalFields = graphqlSchemaToFields(schemaTypeMap, typeName, [])
 
     additionalFields.forEach((fieldName) => {
       if (directFields.includes(fieldName)) {
@@ -460,7 +460,8 @@ export const generateEntityColumns = (
   const directColumns = directFields.map((fieldName) => {
     const displayName = formatFieldName(fieldName)
 
-    const fieldDef = entityFields[fieldName] || additionalFieldDefinitions.get(fieldName)
+    const fieldDef =
+      entityFields[fieldName] || additionalFieldDefinitions.get(fieldName)
     const typeInfo = fieldDef
       ? getTypeInfoFromGraphQLType(fieldDef.type, fieldName)
       : getTypeInfoFromGraphQLType(null, fieldName)

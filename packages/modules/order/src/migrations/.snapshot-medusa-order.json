@@ -166,7 +166,7 @@
           "constraint": false,
           "primary": false,
           "unique": false,
-          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_address_deleted_at\" ON \"order_address\" (deleted_at) WHERE deleted_at IS NULL"
+          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_address_deleted_at\" ON \"order_address\" (\"deleted_at\") WHERE deleted_at IS NULL"
         },
         {
           "keyName": "IDX_order_address_customer_id",
@@ -175,7 +175,7 @@
           "constraint": false,
           "primary": false,
           "unique": false,
-          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_address_customer_id\" ON \"order_address\" (customer_id) WHERE deleted_at IS NULL"
+          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_address_customer_id\" ON \"order_address\" (\"customer_id\") WHERE deleted_at IS NULL"
         },
         {
           "keyName": "order_address_pkey",
@@ -211,6 +211,15 @@
           "primary": false,
           "nullable": false,
           "mappedType": "integer"
+        },
+        "custom_display_id": {
+          "name": "custom_display_id",
+          "type": "text",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "mappedType": "text"
         },
         "region_id": {
           "name": "region_id",
@@ -274,7 +283,6 @@
           "autoincrement": false,
           "primary": false,
           "nullable": false,
-          "default": "false",
           "mappedType": "boolean"
         },
         "email": {
@@ -384,7 +392,7 @@
           "constraint": false,
           "primary": false,
           "unique": false,
-          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_deleted_at\" ON \"order\" (deleted_at) WHERE deleted_at IS NULL"
+          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_deleted_at\" ON \"order\" (\"deleted_at\") WHERE deleted_at IS NULL"
         },
         {
           "keyName": "IDX_order_display_id",
@@ -393,7 +401,7 @@
           "constraint": false,
           "primary": false,
           "unique": false,
-          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_display_id\" ON \"order\" (display_id) WHERE deleted_at IS NULL"
+          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_display_id\" ON \"order\" (\"display_id\") WHERE deleted_at IS NULL"
         },
         {
           "keyName": "IDX_order_region_id",
@@ -402,7 +410,7 @@
           "constraint": false,
           "primary": false,
           "unique": false,
-          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_region_id\" ON \"order\" (region_id) WHERE deleted_at IS NULL"
+          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_region_id\" ON \"order\" (\"region_id\") WHERE deleted_at IS NULL"
         },
         {
           "keyName": "IDX_order_customer_id",
@@ -411,7 +419,7 @@
           "constraint": false,
           "primary": false,
           "unique": false,
-          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_customer_id\" ON \"order\" (customer_id) WHERE deleted_at IS NULL"
+          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_customer_id\" ON \"order\" (\"customer_id\") WHERE deleted_at IS NULL"
         },
         {
           "keyName": "IDX_order_sales_channel_id",
@@ -420,7 +428,7 @@
           "constraint": false,
           "primary": false,
           "unique": false,
-          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_sales_channel_id\" ON \"order\" (sales_channel_id) WHERE deleted_at IS NULL"
+          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_sales_channel_id\" ON \"order\" (\"sales_channel_id\") WHERE deleted_at IS NULL"
         },
         {
           "keyName": "IDX_order_deleted_at",
@@ -429,7 +437,7 @@
           "constraint": false,
           "primary": false,
           "unique": false,
-          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_deleted_at\" ON \"order\" (deleted_at) WHERE deleted_at IS NOT NULL"
+          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_deleted_at\" ON \"order\" (\"deleted_at\") WHERE deleted_at IS NOT NULL"
         },
         {
           "keyName": "IDX_order_currency_code",
@@ -438,7 +446,7 @@
           "constraint": false,
           "primary": false,
           "unique": false,
-          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_currency_code\" ON \"order\" (currency_code) WHERE deleted_at IS NULL"
+          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_currency_code\" ON \"order\" (\"currency_code\") WHERE deleted_at IS NULL"
         },
         {
           "keyName": "IDX_order_shipping_address_id",
@@ -447,7 +455,7 @@
           "constraint": false,
           "primary": false,
           "unique": false,
-          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_shipping_address_id\" ON \"order\" (shipping_address_id) WHERE deleted_at IS NULL"
+          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_shipping_address_id\" ON \"order\" (\"shipping_address_id\") WHERE deleted_at IS NULL"
         },
         {
           "keyName": "IDX_order_billing_address_id",
@@ -456,7 +464,7 @@
           "constraint": false,
           "primary": false,
           "unique": false,
-          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_billing_address_id\" ON \"order\" (billing_address_id) WHERE deleted_at IS NULL"
+          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_billing_address_id\" ON \"order\" (\"billing_address_id\") WHERE deleted_at IS NULL"
         },
         {
           "keyName": "IDX_order_is_draft_order",
@@ -465,7 +473,7 @@
           "constraint": false,
           "primary": false,
           "unique": false,
-          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_is_draft_order\" ON \"order\" (is_draft_order) WHERE deleted_at IS NULL"
+          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_is_draft_order\" ON \"order\" (\"is_draft_order\") WHERE deleted_at IS NULL"
         },
         {
           "keyName": "order_pkey",
@@ -490,7 +498,6 @@
             "id"
           ],
           "referencedTableName": "public.order_address",
-          "createForeignKeyConstraint": true,
           "deleteRule": "set null",
           "updateRule": "cascade"
         },
@@ -504,7 +511,6 @@
             "id"
           ],
           "referencedTableName": "public.order_address",
-          "createForeignKeyConstraint": true,
           "deleteRule": "set null",
           "updateRule": "cascade"
         }
@@ -757,7 +763,7 @@
           "constraint": false,
           "primary": false,
           "unique": false,
-          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_change_order_id\" ON \"order_change\" (order_id) WHERE deleted_at IS NULL"
+          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_change_order_id\" ON \"order_change\" (\"order_id\") WHERE deleted_at IS NULL"
         },
         {
           "keyName": "IDX_order_change_deleted_at",
@@ -766,7 +772,7 @@
           "constraint": false,
           "primary": false,
           "unique": false,
-          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_change_deleted_at\" ON \"order_change\" (deleted_at) WHERE deleted_at IS NULL"
+          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_change_deleted_at\" ON \"order_change\" (\"deleted_at\") WHERE deleted_at IS NULL"
         },
         {
           "keyName": "IDX_order_change_return_id",
@@ -775,7 +781,7 @@
           "constraint": false,
           "primary": false,
           "unique": false,
-          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_change_return_id\" ON \"order_change\" (return_id) WHERE return_id IS NOT NULL AND deleted_at IS NULL"
+          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_change_return_id\" ON \"order_change\" (\"return_id\") WHERE return_id IS NOT NULL AND deleted_at IS NULL"
         },
         {
           "keyName": "IDX_order_change_claim_id",
@@ -784,7 +790,7 @@
           "constraint": false,
           "primary": false,
           "unique": false,
-          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_change_claim_id\" ON \"order_change\" (claim_id) WHERE claim_id IS NOT NULL AND deleted_at IS NULL"
+          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_change_claim_id\" ON \"order_change\" (\"claim_id\") WHERE claim_id IS NOT NULL AND deleted_at IS NULL"
         },
         {
           "keyName": "IDX_order_change_exchange_id",
@@ -793,7 +799,7 @@
           "constraint": false,
           "primary": false,
           "unique": false,
-          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_change_exchange_id\" ON \"order_change\" (exchange_id) WHERE exchange_id IS NOT NULL AND deleted_at IS NULL"
+          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_change_exchange_id\" ON \"order_change\" (\"exchange_id\") WHERE exchange_id IS NOT NULL AND deleted_at IS NULL"
         },
         {
           "keyName": "IDX_order_change_status",
@@ -802,7 +808,7 @@
           "constraint": false,
           "primary": false,
           "unique": false,
-          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_change_status\" ON \"order_change\" (status) WHERE deleted_at IS NULL"
+          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_change_status\" ON \"order_change\" (\"status\") WHERE deleted_at IS NULL"
         },
         {
           "keyName": "IDX_order_change_deleted_at",
@@ -811,7 +817,7 @@
           "constraint": false,
           "primary": false,
           "unique": false,
-          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_change_deleted_at\" ON \"order_change\" (deleted_at) WHERE deleted_at IS NOT NULL"
+          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_change_deleted_at\" ON \"order_change\" (\"deleted_at\") WHERE deleted_at IS NOT NULL"
         },
         {
           "keyName": "IDX_order_change_version",
@@ -820,7 +826,7 @@
           "constraint": false,
           "primary": false,
           "unique": false,
-          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_change_version\" ON \"order_change\" (order_id, version) WHERE deleted_at IS NULL"
+          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_change_version\" ON \"order_change\" (\"order_id\", \"version\") WHERE deleted_at IS NULL"
         },
         {
           "keyName": "order_change_pkey",
@@ -845,7 +851,6 @@
             "id"
           ],
           "referencedTableName": "public.order",
-          "createForeignKeyConstraint": true,
           "updateRule": "cascade"
         }
       },
@@ -978,7 +983,6 @@
           "autoincrement": false,
           "primary": false,
           "nullable": false,
-          "default": "false",
           "mappedType": "boolean"
         },
         "order_change_id": {
@@ -1042,7 +1046,7 @@
           "constraint": false,
           "primary": false,
           "unique": false,
-          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_change_action_order_change_id\" ON \"order_change_action\" (order_change_id) WHERE deleted_at IS NULL"
+          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_change_action_order_change_id\" ON \"order_change_action\" (\"order_change_id\") WHERE deleted_at IS NULL"
         },
         {
           "keyName": "IDX_order_change_action_deleted_at",
@@ -1051,7 +1055,7 @@
           "constraint": false,
           "primary": false,
           "unique": false,
-          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_change_action_deleted_at\" ON \"order_change_action\" (deleted_at) WHERE deleted_at IS NULL"
+          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_change_action_deleted_at\" ON \"order_change_action\" (\"deleted_at\") WHERE deleted_at IS NULL"
         },
         {
           "keyName": "IDX_order_change_action_order_id",
@@ -1060,7 +1064,7 @@
           "constraint": false,
           "primary": false,
           "unique": false,
-          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_change_action_order_id\" ON \"order_change_action\" (order_id) WHERE deleted_at IS NULL"
+          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_change_action_order_id\" ON \"order_change_action\" (\"order_id\") WHERE deleted_at IS NULL"
         },
         {
           "keyName": "IDX_order_change_action_return_id",
@@ -1069,7 +1073,7 @@
           "constraint": false,
           "primary": false,
           "unique": false,
-          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_change_action_return_id\" ON \"order_change_action\" (return_id) WHERE return_id IS NOT NULL AND deleted_at IS NULL"
+          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_change_action_return_id\" ON \"order_change_action\" (\"return_id\") WHERE return_id IS NOT NULL AND deleted_at IS NULL"
         },
         {
           "keyName": "IDX_order_change_action_claim_id",
@@ -1078,7 +1082,7 @@
           "constraint": false,
           "primary": false,
           "unique": false,
-          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_change_action_claim_id\" ON \"order_change_action\" (claim_id) WHERE claim_id IS NOT NULL AND deleted_at IS NULL"
+          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_change_action_claim_id\" ON \"order_change_action\" (\"claim_id\") WHERE claim_id IS NOT NULL AND deleted_at IS NULL"
         },
         {
           "keyName": "IDX_order_change_action_exchange_id",
@@ -1087,7 +1091,7 @@
           "constraint": false,
           "primary": false,
           "unique": false,
-          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_change_action_exchange_id\" ON \"order_change_action\" (exchange_id) WHERE exchange_id IS NOT NULL AND deleted_at IS NULL"
+          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_change_action_exchange_id\" ON \"order_change_action\" (\"exchange_id\") WHERE exchange_id IS NOT NULL AND deleted_at IS NULL"
         },
         {
           "keyName": "IDX_order_change_action_deleted_at",
@@ -1096,7 +1100,7 @@
           "constraint": false,
           "primary": false,
           "unique": false,
-          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_change_action_deleted_at\" ON \"order_change_action\" (deleted_at) WHERE deleted_at IS NOT NULL"
+          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_change_action_deleted_at\" ON \"order_change_action\" (\"deleted_at\") WHERE deleted_at IS NOT NULL"
         },
         {
           "keyName": "IDX_order_change_action_ordering",
@@ -1105,7 +1109,7 @@
           "constraint": false,
           "primary": false,
           "unique": false,
-          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_change_action_ordering\" ON \"order_change_action\" (ordering) WHERE deleted_at IS NULL"
+          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_change_action_ordering\" ON \"order_change_action\" (\"ordering\") WHERE deleted_at IS NULL"
         },
         {
           "keyName": "order_change_action_pkey",
@@ -1130,7 +1134,6 @@
             "id"
           ],
           "referencedTableName": "public.order_change",
-          "createForeignKeyConstraint": true,
           "deleteRule": "cascade",
           "updateRule": "cascade"
         }
@@ -1255,7 +1258,7 @@
           "constraint": false,
           "primary": false,
           "unique": false,
-          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_credit_line_order_id\" ON \"order_credit_line\" (order_id) WHERE deleted_at IS NULL"
+          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_credit_line_order_id\" ON \"order_credit_line\" (\"order_id\") WHERE deleted_at IS NULL"
         },
         {
           "keyName": "IDX_order_credit_line_deleted_at",
@@ -1264,7 +1267,7 @@
           "constraint": false,
           "primary": false,
           "unique": false,
-          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_credit_line_deleted_at\" ON \"order_credit_line\" (deleted_at) WHERE deleted_at IS NULL"
+          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_credit_line_deleted_at\" ON \"order_credit_line\" (\"deleted_at\") WHERE deleted_at IS NULL"
         },
         {
           "keyName": "IDX_order_credit_line_order_id_version",
@@ -1273,7 +1276,7 @@
           "constraint": false,
           "primary": false,
           "unique": false,
-          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_credit_line_order_id_version\" ON \"order_credit_line\" (order_id, version) WHERE deleted_at IS NULL"
+          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_credit_line_order_id_version\" ON \"order_credit_line\" (\"order_id\", \"version\") WHERE deleted_at IS NULL"
         },
         {
           "keyName": "IDX_order_credit_line_deleted_at",
@@ -1282,7 +1285,7 @@
           "constraint": false,
           "primary": false,
           "unique": false,
-          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_credit_line_deleted_at\" ON \"order_credit_line\" (deleted_at) WHERE deleted_at IS NOT NULL"
+          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_credit_line_deleted_at\" ON \"order_credit_line\" (\"deleted_at\") WHERE deleted_at IS NOT NULL"
         },
         {
           "keyName": "order_credit_line_pkey",
@@ -1307,7 +1310,6 @@
             "id"
           ],
           "referencedTableName": "public.order",
-          "createForeignKeyConstraint": true,
           "deleteRule": "cascade",
           "updateRule": "cascade"
         }
@@ -1486,7 +1488,6 @@
           "autoincrement": false,
           "primary": false,
           "nullable": false,
-          "default": "false",
           "mappedType": "boolean"
         },
         "is_discountable": {
@@ -1506,7 +1507,6 @@
           "autoincrement": false,
           "primary": false,
           "nullable": false,
-          "default": "false",
           "mappedType": "boolean"
         },
         "compare_at_unit_price": {
@@ -1534,7 +1534,6 @@
           "autoincrement": false,
           "primary": false,
           "nullable": false,
-          "default": "false",
           "mappedType": "boolean"
         },
         "metadata": {
@@ -1607,7 +1606,7 @@
           "constraint": false,
           "primary": false,
           "unique": false,
-          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_line_item_deleted_at\" ON \"order_line_item\" (deleted_at) WHERE deleted_at IS NULL"
+          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_line_item_deleted_at\" ON \"order_line_item\" (\"deleted_at\") WHERE deleted_at IS NULL"
         },
         {
           "keyName": "IDX_order_line_item_deleted_at",
@@ -1616,7 +1615,7 @@
           "constraint": false,
           "primary": false,
           "unique": false,
-          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_line_item_deleted_at\" ON \"order_line_item\" (deleted_at) WHERE deleted_at IS NOT NULL"
+          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_line_item_deleted_at\" ON \"order_line_item\" (\"deleted_at\") WHERE deleted_at IS NOT NULL"
         },
         {
           "keyName": "IDX_order_line_item_product_id",
@@ -1625,7 +1624,7 @@
           "constraint": false,
           "primary": false,
           "unique": false,
-          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_line_item_product_id\" ON \"order_line_item\" (product_id) WHERE deleted_at IS NULL"
+          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_line_item_product_id\" ON \"order_line_item\" (\"product_id\") WHERE deleted_at IS NULL"
         },
         {
           "keyName": "IDX_line_item_product_type_id",
@@ -1634,7 +1633,7 @@
           "constraint": false,
           "primary": false,
           "unique": false,
-          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_line_item_product_type_id\" ON \"order_line_item\" (product_type_id) WHERE deleted_at IS NULL AND product_type_id IS NOT NULL"
+          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_line_item_product_type_id\" ON \"order_line_item\" (\"product_type_id\") WHERE deleted_at IS NULL AND product_type_id IS NOT NULL"
         },
         {
           "keyName": "IDX_order_line_item_variant_id",
@@ -1643,7 +1642,7 @@
           "constraint": false,
           "primary": false,
           "unique": false,
-          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_line_item_variant_id\" ON \"order_line_item\" (variant_id) WHERE deleted_at IS NULL"
+          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_line_item_variant_id\" ON \"order_line_item\" (\"variant_id\") WHERE deleted_at IS NULL"
         },
         {
           "keyName": "order_line_item_pkey",
@@ -1839,6 +1838,7 @@
           "autoincrement": false,
           "primary": false,
           "nullable": false,
+          "default": "'{\"value\":\"0\",\"precision\":20}'",
           "mappedType": "json"
         },
         "raw_delivered_quantity": {
@@ -1848,6 +1848,7 @@
           "autoincrement": false,
           "primary": false,
           "nullable": false,
+          "default": "'{\"value\":\"0\",\"precision\":20}'",
           "mappedType": "json"
         },
         "raw_shipped_quantity": {
@@ -1857,6 +1858,7 @@
           "autoincrement": false,
           "primary": false,
           "nullable": false,
+          "default": "'{\"value\":\"0\",\"precision\":20}'",
           "mappedType": "json"
         },
         "raw_return_requested_quantity": {
@@ -1866,6 +1868,7 @@
           "autoincrement": false,
           "primary": false,
           "nullable": false,
+          "default": "'{\"value\":\"0\",\"precision\":20}'",
           "mappedType": "json"
         },
         "raw_return_received_quantity": {
@@ -1875,6 +1878,7 @@
           "autoincrement": false,
           "primary": false,
           "nullable": false,
+          "default": "'{\"value\":\"0\",\"precision\":20}'",
           "mappedType": "json"
         },
         "raw_return_dismissed_quantity": {
@@ -1884,6 +1888,7 @@
           "autoincrement": false,
           "primary": false,
           "nullable": false,
+          "default": "'{\"value\":\"0\",\"precision\":20}'",
           "mappedType": "json"
         },
         "raw_written_off_quantity": {
@@ -1893,6 +1898,7 @@
           "autoincrement": false,
           "primary": false,
           "nullable": false,
+          "default": "'{\"value\":\"0\",\"precision\":20}'",
           "mappedType": "json"
         },
         "created_at": {
@@ -1938,7 +1944,7 @@
           "constraint": false,
           "primary": false,
           "unique": false,
-          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_item_order_id\" ON \"order_item\" (order_id) WHERE deleted_at IS NULL"
+          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_item_order_id\" ON \"order_item\" (\"order_id\") WHERE deleted_at IS NULL"
         },
         {
           "keyName": "IDX_order_item_deleted_at",
@@ -1947,7 +1953,7 @@
           "constraint": false,
           "primary": false,
           "unique": false,
-          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_item_deleted_at\" ON \"order_item\" (deleted_at) WHERE deleted_at IS NULL"
+          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_item_deleted_at\" ON \"order_item\" (\"deleted_at\") WHERE deleted_at IS NULL"
         },
         {
           "keyName": "IDX_order_item_order_id_version",
@@ -1956,7 +1962,7 @@
           "constraint": false,
           "primary": false,
           "unique": false,
-          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_item_order_id_version\" ON \"order_item\" (order_id, version) WHERE deleted_at IS NULL"
+          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_item_order_id_version\" ON \"order_item\" (\"order_id\", \"version\") WHERE deleted_at IS NULL"
         },
         {
           "keyName": "IDX_order_item_item_id",
@@ -1965,7 +1971,7 @@
           "constraint": false,
           "primary": false,
           "unique": false,
-          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_item_item_id\" ON \"order_item\" (item_id) WHERE deleted_at IS NULL"
+          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_item_item_id\" ON \"order_item\" (\"item_id\") WHERE deleted_at IS NULL"
         },
         {
           "keyName": "IDX_order_item_deleted_at",
@@ -1974,7 +1980,7 @@
           "constraint": false,
           "primary": false,
           "unique": false,
-          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_item_deleted_at\" ON \"order_item\" (deleted_at) WHERE deleted_at IS NOT NULL"
+          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_item_deleted_at\" ON \"order_item\" (\"deleted_at\") WHERE deleted_at IS NOT NULL"
         },
         {
           "keyName": "order_item_pkey",
@@ -1999,7 +2005,6 @@
             "id"
           ],
           "referencedTableName": "public.order",
-          "createForeignKeyConstraint": true,
           "deleteRule": "cascade",
           "updateRule": "cascade"
         },
@@ -2013,7 +2018,6 @@
             "id"
           ],
           "referencedTableName": "public.order_line_item",
-          "createForeignKeyConstraint": true,
           "updateRule": "cascade"
         }
       },
@@ -2082,7 +2086,6 @@
           "autoincrement": false,
           "primary": false,
           "nullable": false,
-          "default": "false",
           "mappedType": "boolean"
         },
         "item_id": {
@@ -2146,7 +2149,7 @@
           "constraint": false,
           "primary": false,
           "unique": false,
-          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_line_item_adjustment_item_id\" ON \"order_line_item_adjustment\" (item_id) WHERE deleted_at IS NULL"
+          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_line_item_adjustment_item_id\" ON \"order_line_item_adjustment\" (\"item_id\") WHERE deleted_at IS NULL"
         },
         {
           "keyName": "IDX_order_line_item_adjustment_deleted_at",
@@ -2155,7 +2158,7 @@
           "constraint": false,
           "primary": false,
           "unique": false,
-          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_line_item_adjustment_deleted_at\" ON \"order_line_item_adjustment\" (deleted_at) WHERE deleted_at IS NULL"
+          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_line_item_adjustment_deleted_at\" ON \"order_line_item_adjustment\" (\"deleted_at\") WHERE deleted_at IS NULL"
         },
         {
           "keyName": "IDX_order_order_line_item_adjustment_item_id",
@@ -2164,7 +2167,7 @@
           "constraint": false,
           "primary": false,
           "unique": false,
-          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_order_line_item_adjustment_item_id\" ON \"order_line_item_adjustment\" (item_id) WHERE deleted_at IS NULL"
+          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_order_line_item_adjustment_item_id\" ON \"order_line_item_adjustment\" (\"item_id\") WHERE deleted_at IS NULL"
         },
         {
           "keyName": "order_line_item_adjustment_pkey",
@@ -2189,7 +2192,6 @@
             "id"
           ],
           "referencedTableName": "public.order_line_item",
-          "createForeignKeyConstraint": true,
           "deleteRule": "cascade",
           "updateRule": "cascade"
         }
@@ -2313,7 +2315,7 @@
           "constraint": false,
           "primary": false,
           "unique": false,
-          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_line_item_tax_line_item_id\" ON \"order_line_item_tax_line\" (item_id) WHERE deleted_at IS NULL"
+          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_line_item_tax_line_item_id\" ON \"order_line_item_tax_line\" (\"item_id\") WHERE deleted_at IS NULL"
         },
         {
           "keyName": "IDX_order_line_item_tax_line_deleted_at",
@@ -2322,7 +2324,7 @@
           "constraint": false,
           "primary": false,
           "unique": false,
-          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_line_item_tax_line_deleted_at\" ON \"order_line_item_tax_line\" (deleted_at) WHERE deleted_at IS NULL"
+          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_line_item_tax_line_deleted_at\" ON \"order_line_item_tax_line\" (\"deleted_at\") WHERE deleted_at IS NULL"
         },
         {
           "keyName": "order_line_item_tax_line_pkey",
@@ -2347,7 +2349,6 @@
             "id"
           ],
           "referencedTableName": "public.order_line_item",
-          "createForeignKeyConstraint": true,
           "deleteRule": "cascade",
           "updateRule": "cascade"
         }
@@ -2399,7 +2400,6 @@
           "autoincrement": false,
           "primary": false,
           "nullable": false,
-          "default": "false",
           "mappedType": "boolean"
         },
         "is_custom_amount": {
@@ -2409,7 +2409,6 @@
           "autoincrement": false,
           "primary": false,
           "nullable": false,
-          "default": "false",
           "mappedType": "boolean"
         },
         "shipping_option_id": {
@@ -2491,7 +2490,7 @@
           "constraint": false,
           "primary": false,
           "unique": false,
-          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_shipping_method_deleted_at\" ON \"order_shipping_method\" (deleted_at) WHERE deleted_at IS NULL"
+          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_shipping_method_deleted_at\" ON \"order_shipping_method\" (\"deleted_at\") WHERE deleted_at IS NULL"
         },
         {
           "keyName": "IDX_order_shipping_method_shipping_option_id",
@@ -2500,7 +2499,7 @@
           "constraint": false,
           "primary": false,
           "unique": false,
-          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_shipping_method_shipping_option_id\" ON \"order_shipping_method\" (shipping_option_id) WHERE deleted_at IS NULL"
+          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_shipping_method_shipping_option_id\" ON \"order_shipping_method\" (\"shipping_option_id\") WHERE deleted_at IS NULL"
         },
         {
           "keyName": "order_shipping_method_pkey",
@@ -2634,7 +2633,7 @@
           "constraint": false,
           "primary": false,
           "unique": false,
-          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_shipping_method_adjustment_shipping_method_id\" ON \"order_shipping_method_adjustment\" (shipping_method_id) WHERE deleted_at IS NULL"
+          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_shipping_method_adjustment_shipping_method_id\" ON \"order_shipping_method_adjustment\" (\"shipping_method_id\") WHERE deleted_at IS NULL"
         },
         {
           "keyName": "IDX_order_shipping_method_adjustment_deleted_at",
@@ -2643,7 +2642,7 @@
           "constraint": false,
           "primary": false,
           "unique": false,
-          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_shipping_method_adjustment_deleted_at\" ON \"order_shipping_method_adjustment\" (deleted_at) WHERE deleted_at IS NULL"
+          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_shipping_method_adjustment_deleted_at\" ON \"order_shipping_method_adjustment\" (\"deleted_at\") WHERE deleted_at IS NULL"
         },
         {
           "keyName": "order_shipping_method_adjustment_pkey",
@@ -2668,7 +2667,6 @@
             "id"
           ],
           "referencedTableName": "public.order_shipping_method",
-          "createForeignKeyConstraint": true,
           "deleteRule": "cascade",
           "updateRule": "cascade"
         }
@@ -2792,7 +2790,7 @@
           "constraint": false,
           "primary": false,
           "unique": false,
-          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_shipping_method_tax_line_shipping_method_id\" ON \"order_shipping_method_tax_line\" (shipping_method_id) WHERE deleted_at IS NULL"
+          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_shipping_method_tax_line_shipping_method_id\" ON \"order_shipping_method_tax_line\" (\"shipping_method_id\") WHERE deleted_at IS NULL"
         },
         {
           "keyName": "IDX_order_shipping_method_tax_line_deleted_at",
@@ -2801,7 +2799,7 @@
           "constraint": false,
           "primary": false,
           "unique": false,
-          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_shipping_method_tax_line_deleted_at\" ON \"order_shipping_method_tax_line\" (deleted_at) WHERE deleted_at IS NULL"
+          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_shipping_method_tax_line_deleted_at\" ON \"order_shipping_method_tax_line\" (\"deleted_at\") WHERE deleted_at IS NULL"
         },
         {
           "keyName": "order_shipping_method_tax_line_pkey",
@@ -2826,7 +2824,6 @@
             "id"
           ],
           "referencedTableName": "public.order_shipping_method",
-          "createForeignKeyConstraint": true,
           "deleteRule": "cascade",
           "updateRule": "cascade"
         }
@@ -2915,7 +2912,7 @@
           "constraint": false,
           "primary": false,
           "unique": false,
-          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_summary_order_id\" ON \"order_summary\" (order_id) WHERE deleted_at IS NULL"
+          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_summary_order_id\" ON \"order_summary\" (\"order_id\") WHERE deleted_at IS NULL"
         },
         {
           "keyName": "IDX_order_summary_deleted_at",
@@ -2924,7 +2921,7 @@
           "constraint": false,
           "primary": false,
           "unique": false,
-          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_summary_deleted_at\" ON \"order_summary\" (deleted_at) WHERE deleted_at IS NULL"
+          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_summary_deleted_at\" ON \"order_summary\" (\"deleted_at\") WHERE deleted_at IS NULL"
         },
         {
           "keyName": "IDX_order_summary_order_id_version",
@@ -2933,7 +2930,7 @@
           "constraint": false,
           "primary": false,
           "unique": false,
-          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_summary_order_id_version\" ON \"order_summary\" (order_id, version) WHERE deleted_at IS NULL"
+          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_summary_order_id_version\" ON \"order_summary\" (\"order_id\", \"version\") WHERE deleted_at IS NULL"
         },
         {
           "keyName": "IDX_order_summary_deleted_at",
@@ -2942,7 +2939,7 @@
           "constraint": false,
           "primary": false,
           "unique": false,
-          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_summary_deleted_at\" ON \"order_summary\" (deleted_at) WHERE deleted_at IS NOT NULL"
+          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_summary_deleted_at\" ON \"order_summary\" (\"deleted_at\") WHERE deleted_at IS NOT NULL"
         },
         {
           "keyName": "order_summary_pkey",
@@ -2967,7 +2964,6 @@
             "id"
           ],
           "referencedTableName": "public.order",
-          "createForeignKeyConstraint": true,
           "deleteRule": "cascade",
           "updateRule": "cascade"
         }
@@ -3174,7 +3170,7 @@
           "constraint": false,
           "primary": false,
           "unique": false,
-          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_return_order_id\" ON \"return\" (order_id) WHERE deleted_at IS NULL"
+          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_return_order_id\" ON \"return\" (\"order_id\") WHERE deleted_at IS NULL"
         },
         {
           "keyName": "IDX_return_deleted_at",
@@ -3183,7 +3179,7 @@
           "constraint": false,
           "primary": false,
           "unique": false,
-          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_return_deleted_at\" ON \"return\" (deleted_at) WHERE deleted_at IS NULL"
+          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_return_deleted_at\" ON \"return\" (\"deleted_at\") WHERE deleted_at IS NULL"
         },
         {
           "keyName": "IDX_return_display_id",
@@ -3192,7 +3188,7 @@
           "constraint": false,
           "primary": false,
           "unique": false,
-          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_return_display_id\" ON \"return\" (display_id) WHERE deleted_at IS NULL"
+          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_return_display_id\" ON \"return\" (\"display_id\") WHERE deleted_at IS NULL"
         },
         {
           "keyName": "IDX_return_deleted_at",
@@ -3201,7 +3197,7 @@
           "constraint": false,
           "primary": false,
           "unique": false,
-          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_return_deleted_at\" ON \"return\" (deleted_at) WHERE deleted_at IS NOT NULL"
+          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_return_deleted_at\" ON \"return\" (\"deleted_at\") WHERE deleted_at IS NOT NULL"
         },
         {
           "keyName": "IDX_return_exchange_id",
@@ -3210,7 +3206,7 @@
           "constraint": false,
           "primary": false,
           "unique": false,
-          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_return_exchange_id\" ON \"return\" (exchange_id) WHERE exchange_id IS NOT NULL AND deleted_at IS NULL"
+          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_return_exchange_id\" ON \"return\" (\"exchange_id\") WHERE exchange_id IS NOT NULL AND deleted_at IS NULL"
         },
         {
           "keyName": "IDX_return_claim_id",
@@ -3219,7 +3215,7 @@
           "constraint": false,
           "primary": false,
           "unique": false,
-          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_return_claim_id\" ON \"return\" (claim_id) WHERE claim_id IS NOT NULL AND deleted_at IS NULL"
+          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_return_claim_id\" ON \"return\" (\"claim_id\") WHERE claim_id IS NOT NULL AND deleted_at IS NULL"
         },
         {
           "keyName": "return_pkey",
@@ -3244,7 +3240,6 @@
             "id"
           ],
           "referencedTableName": "public.order",
-          "createForeignKeyConstraint": true,
           "updateRule": "cascade"
         },
         "return_exchange_id_foreign": {
@@ -3257,7 +3252,6 @@
             "id"
           ],
           "referencedTableName": "public.order_exchange",
-          "createForeignKeyConstraint": true,
           "deleteRule": "set null",
           "updateRule": "cascade"
         },
@@ -3271,7 +3265,6 @@
             "id"
           ],
           "referencedTableName": "public.order_claim",
-          "createForeignKeyConstraint": true,
           "deleteRule": "set null",
           "updateRule": "cascade"
         }
@@ -3332,7 +3325,6 @@
           "autoincrement": false,
           "primary": false,
           "nullable": false,
-          "default": "false",
           "mappedType": "boolean"
         },
         "created_by": {
@@ -3433,7 +3425,7 @@
           "constraint": false,
           "primary": false,
           "unique": false,
-          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_exchange_deleted_at\" ON \"order_exchange\" (deleted_at) WHERE deleted_at IS NULL"
+          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_exchange_deleted_at\" ON \"order_exchange\" (\"deleted_at\") WHERE deleted_at IS NULL"
         },
         {
           "keyName": "IDX_order_exchange_display_id",
@@ -3442,7 +3434,7 @@
           "constraint": false,
           "primary": false,
           "unique": false,
-          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_exchange_display_id\" ON \"order_exchange\" (display_id) WHERE deleted_at IS NULL"
+          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_exchange_display_id\" ON \"order_exchange\" (\"display_id\") WHERE deleted_at IS NULL"
         },
         {
           "keyName": "IDX_order_exchange_deleted_at",
@@ -3451,7 +3443,7 @@
           "constraint": false,
           "primary": false,
           "unique": false,
-          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_exchange_deleted_at\" ON \"order_exchange\" (deleted_at) WHERE deleted_at IS NOT NULL"
+          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_exchange_deleted_at\" ON \"order_exchange\" (\"deleted_at\") WHERE deleted_at IS NOT NULL"
         },
         {
           "keyName": "IDX_order_exchange_order_id",
@@ -3460,7 +3452,7 @@
           "constraint": false,
           "primary": false,
           "unique": false,
-          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_exchange_order_id\" ON \"order_exchange\" (order_id) WHERE deleted_at IS NULL"
+          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_exchange_order_id\" ON \"order_exchange\" (\"order_id\") WHERE deleted_at IS NULL"
         },
         {
           "keyName": "IDX_order_exchange_return_id",
@@ -3469,7 +3461,7 @@
           "constraint": false,
           "primary": false,
           "unique": false,
-          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_exchange_return_id\" ON \"order_exchange\" (return_id) WHERE return_id IS NOT NULL AND deleted_at IS NULL"
+          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_exchange_return_id\" ON \"order_exchange\" (\"return_id\") WHERE return_id IS NOT NULL AND deleted_at IS NULL"
         },
         {
           "keyName": "order_exchange_pkey",
@@ -3494,7 +3486,6 @@
             "id"
           ],
           "referencedTableName": "public.order",
-          "createForeignKeyConstraint": true,
           "updateRule": "cascade"
         },
         "order_exchange_return_id_foreign": {
@@ -3507,7 +3498,6 @@
             "id"
           ],
           "referencedTableName": "public.return",
-          "createForeignKeyConstraint": true,
           "deleteRule": "set null",
           "updateRule": "cascade"
         }
@@ -3622,7 +3612,7 @@
           "constraint": false,
           "primary": false,
           "unique": false,
-          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_exchange_item_exchange_id\" ON \"order_exchange_item\" (exchange_id) WHERE deleted_at IS NULL"
+          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_exchange_item_exchange_id\" ON \"order_exchange_item\" (\"exchange_id\") WHERE deleted_at IS NULL"
         },
         {
           "keyName": "IDX_order_exchange_item_item_id",
@@ -3631,7 +3621,7 @@
           "constraint": false,
           "primary": false,
           "unique": false,
-          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_exchange_item_item_id\" ON \"order_exchange_item\" (item_id) WHERE deleted_at IS NULL"
+          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_exchange_item_item_id\" ON \"order_exchange_item\" (\"item_id\") WHERE deleted_at IS NULL"
         },
         {
           "keyName": "IDX_order_exchange_item_deleted_at",
@@ -3640,7 +3630,7 @@
           "constraint": false,
           "primary": false,
           "unique": false,
-          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_exchange_item_deleted_at\" ON \"order_exchange_item\" (deleted_at) WHERE deleted_at IS NULL"
+          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_exchange_item_deleted_at\" ON \"order_exchange_item\" (\"deleted_at\") WHERE deleted_at IS NULL"
         },
         {
           "keyName": "IDX_order_exchange_item_deleted_at",
@@ -3649,7 +3639,7 @@
           "constraint": false,
           "primary": false,
           "unique": false,
-          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_exchange_item_deleted_at\" ON \"order_exchange_item\" (deleted_at) WHERE deleted_at IS NOT NULL"
+          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_exchange_item_deleted_at\" ON \"order_exchange_item\" (\"deleted_at\") WHERE deleted_at IS NOT NULL"
         },
         {
           "keyName": "order_exchange_item_pkey",
@@ -3674,7 +3664,6 @@
             "id"
           ],
           "referencedTableName": "public.order_exchange",
-          "createForeignKeyConstraint": true,
           "deleteRule": "cascade",
           "updateRule": "cascade"
         },
@@ -3688,7 +3677,6 @@
             "id"
           ],
           "referencedTableName": "public.order_line_item",
-          "createForeignKeyConstraint": true,
           "updateRule": "cascade"
         }
       },
@@ -3852,7 +3840,7 @@
           "constraint": false,
           "primary": false,
           "unique": false,
-          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_claim_deleted_at\" ON \"order_claim\" (deleted_at) WHERE deleted_at IS NULL"
+          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_claim_deleted_at\" ON \"order_claim\" (\"deleted_at\") WHERE deleted_at IS NULL"
         },
         {
           "keyName": "IDX_order_claim_display_id",
@@ -3861,7 +3849,7 @@
           "constraint": false,
           "primary": false,
           "unique": false,
-          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_claim_display_id\" ON \"order_claim\" (display_id) WHERE deleted_at IS NULL"
+          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_claim_display_id\" ON \"order_claim\" (\"display_id\") WHERE deleted_at IS NULL"
         },
         {
           "keyName": "IDX_order_claim_deleted_at",
@@ -3870,7 +3858,7 @@
           "constraint": false,
           "primary": false,
           "unique": false,
-          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_claim_deleted_at\" ON \"order_claim\" (deleted_at) WHERE deleted_at IS NOT NULL"
+          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_claim_deleted_at\" ON \"order_claim\" (\"deleted_at\") WHERE deleted_at IS NOT NULL"
         },
         {
           "keyName": "IDX_order_claim_order_id",
@@ -3879,7 +3867,7 @@
           "constraint": false,
           "primary": false,
           "unique": false,
-          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_claim_order_id\" ON \"order_claim\" (order_id) WHERE deleted_at IS NULL"
+          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_claim_order_id\" ON \"order_claim\" (\"order_id\") WHERE deleted_at IS NULL"
         },
         {
           "keyName": "IDX_order_claim_return_id",
@@ -3888,7 +3876,7 @@
           "constraint": false,
           "primary": false,
           "unique": false,
-          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_claim_return_id\" ON \"order_claim\" (return_id) WHERE return_id IS NOT NULL AND deleted_at IS NULL"
+          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_claim_return_id\" ON \"order_claim\" (\"return_id\") WHERE return_id IS NOT NULL AND deleted_at IS NULL"
         },
         {
           "keyName": "order_claim_pkey",
@@ -3913,7 +3901,6 @@
             "id"
           ],
           "referencedTableName": "public.order",
-          "createForeignKeyConstraint": true,
           "updateRule": "cascade"
         },
         "order_claim_return_id_foreign": {
@@ -3926,7 +3913,6 @@
             "id"
           ],
           "referencedTableName": "public.return",
-          "createForeignKeyConstraint": true,
           "deleteRule": "set null",
           "updateRule": "cascade"
         }
@@ -4078,7 +4064,7 @@
           "constraint": false,
           "primary": false,
           "unique": false,
-          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_transaction_order_id\" ON \"order_transaction\" (order_id) WHERE deleted_at IS NULL"
+          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_transaction_order_id\" ON \"order_transaction\" (\"order_id\") WHERE deleted_at IS NULL"
         },
         {
           "keyName": "IDX_order_transaction_return_id",
@@ -4087,7 +4073,7 @@
           "constraint": false,
           "primary": false,
           "unique": false,
-          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_transaction_return_id\" ON \"order_transaction\" (return_id) WHERE deleted_at IS NULL"
+          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_transaction_return_id\" ON \"order_transaction\" (\"return_id\") WHERE deleted_at IS NULL"
         },
         {
           "keyName": "IDX_order_transaction_exchange_id",
@@ -4096,7 +4082,7 @@
           "constraint": false,
           "primary": false,
           "unique": false,
-          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_transaction_exchange_id\" ON \"order_transaction\" (exchange_id) WHERE deleted_at IS NULL"
+          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_transaction_exchange_id\" ON \"order_transaction\" (\"exchange_id\") WHERE deleted_at IS NULL"
         },
         {
           "keyName": "IDX_order_transaction_claim_id",
@@ -4105,7 +4091,7 @@
           "constraint": false,
           "primary": false,
           "unique": false,
-          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_transaction_claim_id\" ON \"order_transaction\" (claim_id) WHERE deleted_at IS NULL"
+          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_transaction_claim_id\" ON \"order_transaction\" (\"claim_id\") WHERE deleted_at IS NULL"
         },
         {
           "keyName": "IDX_order_transaction_deleted_at",
@@ -4114,7 +4100,7 @@
           "constraint": false,
           "primary": false,
           "unique": false,
-          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_transaction_deleted_at\" ON \"order_transaction\" (deleted_at) WHERE deleted_at IS NULL"
+          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_transaction_deleted_at\" ON \"order_transaction\" (\"deleted_at\") WHERE deleted_at IS NULL"
         },
         {
           "keyName": "IDX_order_transaction_reference_id",
@@ -4123,7 +4109,7 @@
           "constraint": false,
           "primary": false,
           "unique": false,
-          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_transaction_reference_id\" ON \"order_transaction\" (reference_id) WHERE deleted_at IS NULL"
+          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_transaction_reference_id\" ON \"order_transaction\" (\"reference_id\") WHERE deleted_at IS NULL"
         },
         {
           "keyName": "IDX_order_transaction_return_id",
@@ -4132,7 +4118,7 @@
           "constraint": false,
           "primary": false,
           "unique": false,
-          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_transaction_return_id\" ON \"order_transaction\" (return_id) WHERE return_id IS NOT NULL AND deleted_at IS NULL"
+          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_transaction_return_id\" ON \"order_transaction\" (\"return_id\") WHERE return_id IS NOT NULL AND deleted_at IS NULL"
         },
         {
           "keyName": "IDX_order_transaction_exchange_id",
@@ -4141,7 +4127,7 @@
           "constraint": false,
           "primary": false,
           "unique": false,
-          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_transaction_exchange_id\" ON \"order_transaction\" (exchange_id) WHERE exchange_id IS NOT NULL AND deleted_at IS NULL"
+          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_transaction_exchange_id\" ON \"order_transaction\" (\"exchange_id\") WHERE exchange_id IS NOT NULL AND deleted_at IS NULL"
         },
         {
           "keyName": "IDX_order_transaction_claim_id",
@@ -4150,7 +4136,7 @@
           "constraint": false,
           "primary": false,
           "unique": false,
-          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_transaction_claim_id\" ON \"order_transaction\" (claim_id) WHERE claim_id IS NOT NULL AND deleted_at IS NULL"
+          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_transaction_claim_id\" ON \"order_transaction\" (\"claim_id\") WHERE claim_id IS NOT NULL AND deleted_at IS NULL"
         },
         {
           "keyName": "IDX_order_transaction_currency_code",
@@ -4159,7 +4145,7 @@
           "constraint": false,
           "primary": false,
           "unique": false,
-          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_transaction_currency_code\" ON \"order_transaction\" (currency_code) WHERE deleted_at IS NULL"
+          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_transaction_currency_code\" ON \"order_transaction\" (\"currency_code\") WHERE deleted_at IS NULL"
         },
         {
           "keyName": "IDX_order_transaction_deleted_at",
@@ -4168,7 +4154,7 @@
           "constraint": false,
           "primary": false,
           "unique": false,
-          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_transaction_deleted_at\" ON \"order_transaction\" (deleted_at) WHERE deleted_at IS NOT NULL"
+          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_transaction_deleted_at\" ON \"order_transaction\" (\"deleted_at\") WHERE deleted_at IS NOT NULL"
         },
         {
           "keyName": "IDX_order_transaction_order_id_version",
@@ -4177,7 +4163,7 @@
           "constraint": false,
           "primary": false,
           "unique": false,
-          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_transaction_order_id_version\" ON \"order_transaction\" (order_id, version) WHERE deleted_at IS NULL"
+          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_transaction_order_id_version\" ON \"order_transaction\" (\"order_id\", \"version\") WHERE deleted_at IS NULL"
         },
         {
           "keyName": "order_transaction_pkey",
@@ -4202,7 +4188,6 @@
             "id"
           ],
           "referencedTableName": "public.order",
-          "createForeignKeyConstraint": true,
           "deleteRule": "cascade",
           "updateRule": "cascade"
         },
@@ -4216,7 +4201,6 @@
             "id"
           ],
           "referencedTableName": "public.return",
-          "createForeignKeyConstraint": true,
           "deleteRule": "cascade",
           "updateRule": "cascade"
         },
@@ -4230,7 +4214,6 @@
             "id"
           ],
           "referencedTableName": "public.order_exchange",
-          "createForeignKeyConstraint": true,
           "deleteRule": "cascade",
           "updateRule": "cascade"
         },
@@ -4244,7 +4227,6 @@
             "id"
           ],
           "referencedTableName": "public.order_claim",
-          "createForeignKeyConstraint": true,
           "deleteRule": "cascade",
           "updateRule": "cascade"
         }
@@ -4360,7 +4342,7 @@
           "constraint": false,
           "primary": false,
           "unique": false,
-          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_shipping_order_id\" ON \"order_shipping\" (order_id) WHERE deleted_at IS NULL"
+          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_shipping_order_id\" ON \"order_shipping\" (\"order_id\") WHERE deleted_at IS NULL"
         },
         {
           "keyName": "IDX_order_shipping_return_id",
@@ -4369,7 +4351,7 @@
           "constraint": false,
           "primary": false,
           "unique": false,
-          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_shipping_return_id\" ON \"order_shipping\" (return_id) WHERE deleted_at IS NULL"
+          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_shipping_return_id\" ON \"order_shipping\" (\"return_id\") WHERE deleted_at IS NULL"
         },
         {
           "keyName": "IDX_order_shipping_exchange_id",
@@ -4378,7 +4360,7 @@
           "constraint": false,
           "primary": false,
           "unique": false,
-          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_shipping_exchange_id\" ON \"order_shipping\" (exchange_id) WHERE deleted_at IS NULL"
+          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_shipping_exchange_id\" ON \"order_shipping\" (\"exchange_id\") WHERE deleted_at IS NULL"
         },
         {
           "keyName": "IDX_order_shipping_claim_id",
@@ -4387,7 +4369,7 @@
           "constraint": false,
           "primary": false,
           "unique": false,
-          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_shipping_claim_id\" ON \"order_shipping\" (claim_id) WHERE deleted_at IS NULL"
+          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_shipping_claim_id\" ON \"order_shipping\" (\"claim_id\") WHERE deleted_at IS NULL"
         },
         {
           "keyName": "IDX_order_shipping_deleted_at",
@@ -4396,7 +4378,7 @@
           "constraint": false,
           "primary": false,
           "unique": false,
-          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_shipping_deleted_at\" ON \"order_shipping\" (deleted_at) WHERE deleted_at IS NULL"
+          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_shipping_deleted_at\" ON \"order_shipping\" (\"deleted_at\") WHERE deleted_at IS NULL"
         },
         {
           "keyName": "IDX_order_shipping_return_id",
@@ -4405,7 +4387,7 @@
           "constraint": false,
           "primary": false,
           "unique": false,
-          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_shipping_return_id\" ON \"order_shipping\" (return_id) WHERE return_id IS NOT NULL AND deleted_at IS NULL"
+          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_shipping_return_id\" ON \"order_shipping\" (\"return_id\") WHERE return_id IS NOT NULL AND deleted_at IS NULL"
         },
         {
           "keyName": "IDX_order_shipping_exchange_id",
@@ -4414,7 +4396,7 @@
           "constraint": false,
           "primary": false,
           "unique": false,
-          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_shipping_exchange_id\" ON \"order_shipping\" (exchange_id) WHERE exchange_id IS NOT NULL AND deleted_at IS NULL"
+          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_shipping_exchange_id\" ON \"order_shipping\" (\"exchange_id\") WHERE exchange_id IS NOT NULL AND deleted_at IS NULL"
         },
         {
           "keyName": "IDX_order_shipping_claim_id",
@@ -4423,7 +4405,7 @@
           "constraint": false,
           "primary": false,
           "unique": false,
-          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_shipping_claim_id\" ON \"order_shipping\" (claim_id) WHERE claim_id IS NOT NULL AND deleted_at IS NULL"
+          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_shipping_claim_id\" ON \"order_shipping\" (\"claim_id\") WHERE claim_id IS NOT NULL AND deleted_at IS NULL"
         },
         {
           "keyName": "IDX_order_shipping_order_id_version",
@@ -4432,7 +4414,7 @@
           "constraint": false,
           "primary": false,
           "unique": false,
-          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_shipping_order_id_version\" ON \"order_shipping\" (order_id, version) WHERE deleted_at IS NULL"
+          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_shipping_order_id_version\" ON \"order_shipping\" (\"order_id\", \"version\") WHERE deleted_at IS NULL"
         },
         {
           "keyName": "IDX_order_shipping_shipping_method_id",
@@ -4441,7 +4423,7 @@
           "constraint": false,
           "primary": false,
           "unique": false,
-          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_shipping_shipping_method_id\" ON \"order_shipping\" (shipping_method_id) WHERE deleted_at IS NULL"
+          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_shipping_shipping_method_id\" ON \"order_shipping\" (\"shipping_method_id\") WHERE deleted_at IS NULL"
         },
         {
           "keyName": "IDX_order_shipping_deleted_at",
@@ -4450,7 +4432,7 @@
           "constraint": false,
           "primary": false,
           "unique": false,
-          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_shipping_deleted_at\" ON \"order_shipping\" (deleted_at) WHERE deleted_at IS NOT NULL"
+          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_shipping_deleted_at\" ON \"order_shipping\" (\"deleted_at\") WHERE deleted_at IS NOT NULL"
         },
         {
           "keyName": "order_shipping_pkey",
@@ -4475,7 +4457,6 @@
             "id"
           ],
           "referencedTableName": "public.order",
-          "createForeignKeyConstraint": true,
           "deleteRule": "cascade",
           "updateRule": "cascade"
         },
@@ -4489,7 +4470,6 @@
             "id"
           ],
           "referencedTableName": "public.return",
-          "createForeignKeyConstraint": true,
           "deleteRule": "cascade",
           "updateRule": "cascade"
         },
@@ -4503,7 +4483,6 @@
             "id"
           ],
           "referencedTableName": "public.order_exchange",
-          "createForeignKeyConstraint": true,
           "deleteRule": "set null",
           "updateRule": "cascade"
         },
@@ -4517,7 +4496,6 @@
             "id"
           ],
           "referencedTableName": "public.order_claim",
-          "createForeignKeyConstraint": true,
           "deleteRule": "set null",
           "updateRule": "cascade"
         },
@@ -4531,7 +4509,6 @@
             "id"
           ],
           "referencedTableName": "public.order_shipping_method",
-          "createForeignKeyConstraint": true,
           "updateRule": "cascade"
         }
       },
@@ -4579,7 +4556,6 @@
           "autoincrement": false,
           "primary": false,
           "nullable": false,
-          "default": "false",
           "mappedType": "boolean"
         },
         "note": {
@@ -4670,7 +4646,7 @@
           "constraint": false,
           "primary": false,
           "unique": false,
-          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_claim_item_claim_id\" ON \"order_claim_item\" (claim_id) WHERE deleted_at IS NULL"
+          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_claim_item_claim_id\" ON \"order_claim_item\" (\"claim_id\") WHERE deleted_at IS NULL"
         },
         {
           "keyName": "IDX_order_claim_item_item_id",
@@ -4679,7 +4655,7 @@
           "constraint": false,
           "primary": false,
           "unique": false,
-          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_claim_item_item_id\" ON \"order_claim_item\" (item_id) WHERE deleted_at IS NULL"
+          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_claim_item_item_id\" ON \"order_claim_item\" (\"item_id\") WHERE deleted_at IS NULL"
         },
         {
           "keyName": "IDX_order_claim_item_deleted_at",
@@ -4688,7 +4664,7 @@
           "constraint": false,
           "primary": false,
           "unique": false,
-          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_claim_item_deleted_at\" ON \"order_claim_item\" (deleted_at) WHERE deleted_at IS NULL"
+          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_claim_item_deleted_at\" ON \"order_claim_item\" (\"deleted_at\") WHERE deleted_at IS NULL"
         },
         {
           "keyName": "IDX_order_claim_item_deleted_at",
@@ -4697,7 +4673,7 @@
           "constraint": false,
           "primary": false,
           "unique": false,
-          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_claim_item_deleted_at\" ON \"order_claim_item\" (deleted_at) WHERE deleted_at IS NOT NULL"
+          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_claim_item_deleted_at\" ON \"order_claim_item\" (\"deleted_at\") WHERE deleted_at IS NOT NULL"
         },
         {
           "keyName": "order_claim_item_pkey",
@@ -4722,7 +4698,6 @@
             "id"
           ],
           "referencedTableName": "public.order_claim",
-          "createForeignKeyConstraint": true,
           "deleteRule": "cascade",
           "updateRule": "cascade"
         },
@@ -4736,7 +4711,6 @@
             "id"
           ],
           "referencedTableName": "public.order_line_item",
-          "createForeignKeyConstraint": true,
           "updateRule": "cascade"
         }
       },
@@ -4823,7 +4797,7 @@
           "constraint": false,
           "primary": false,
           "unique": false,
-          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_claim_item_image_claim_item_id\" ON \"order_claim_item_image\" (claim_item_id) WHERE deleted_at IS NULL"
+          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_claim_item_image_claim_item_id\" ON \"order_claim_item_image\" (\"claim_item_id\") WHERE deleted_at IS NULL"
         },
         {
           "keyName": "IDX_order_claim_item_image_deleted_at",
@@ -4832,7 +4806,7 @@
           "constraint": false,
           "primary": false,
           "unique": false,
-          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_claim_item_image_deleted_at\" ON \"order_claim_item_image\" (deleted_at) WHERE deleted_at IS NULL"
+          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_claim_item_image_deleted_at\" ON \"order_claim_item_image\" (\"deleted_at\") WHERE deleted_at IS NULL"
         },
         {
           "keyName": "IDX_order_claim_item_image_deleted_at",
@@ -4841,7 +4815,7 @@
           "constraint": false,
           "primary": false,
           "unique": false,
-          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_claim_item_image_deleted_at\" ON \"order_claim_item_image\" (deleted_at) WHERE deleted_at IS NOT NULL"
+          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_claim_item_image_deleted_at\" ON \"order_claim_item_image\" (\"deleted_at\") WHERE deleted_at IS NOT NULL"
         },
         {
           "keyName": "order_claim_item_image_pkey",
@@ -4866,7 +4840,6 @@
             "id"
           ],
           "referencedTableName": "public.order_claim_item",
-          "createForeignKeyConstraint": true,
           "deleteRule": "cascade",
           "updateRule": "cascade"
         }
@@ -4972,7 +4945,7 @@
           "constraint": false,
           "primary": false,
           "unique": false,
-          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_return_reason_parent_return_reason_id\" ON \"return_reason\" (parent_return_reason_id) WHERE deleted_at IS NULL"
+          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_return_reason_parent_return_reason_id\" ON \"return_reason\" (\"parent_return_reason_id\") WHERE deleted_at IS NULL"
         },
         {
           "keyName": "IDX_return_reason_deleted_at",
@@ -4981,7 +4954,7 @@
           "constraint": false,
           "primary": false,
           "unique": false,
-          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_return_reason_deleted_at\" ON \"return_reason\" (deleted_at) WHERE deleted_at IS NULL"
+          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_return_reason_deleted_at\" ON \"return_reason\" (\"deleted_at\") WHERE deleted_at IS NULL"
         },
         {
           "keyName": "IDX_return_reason_deleted_at",
@@ -4990,7 +4963,7 @@
           "constraint": false,
           "primary": false,
           "unique": false,
-          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_return_reason_deleted_at\" ON \"return_reason\" (deleted_at) WHERE deleted_at IS NOT NULL"
+          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_return_reason_deleted_at\" ON \"return_reason\" (\"deleted_at\") WHERE deleted_at IS NOT NULL"
         },
         {
           "keyName": "IDX_return_reason_value",
@@ -4999,7 +4972,7 @@
           "constraint": false,
           "primary": false,
           "unique": false,
-          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_return_reason_value\" ON \"return_reason\" (value) WHERE deleted_at IS NULL"
+          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_return_reason_value\" ON \"return_reason\" (\"value\") WHERE deleted_at IS NULL"
         },
         {
           "keyName": "return_reason_pkey",
@@ -5024,7 +4997,6 @@
             "id"
           ],
           "referencedTableName": "public.return_reason",
-          "createForeignKeyConstraint": true,
           "deleteRule": "set null",
           "updateRule": "cascade"
         }
@@ -5132,6 +5104,7 @@
           "autoincrement": false,
           "primary": false,
           "nullable": false,
+          "default": "'{\"value\":\"0\",\"precision\":20}'",
           "mappedType": "json"
         },
         "raw_damaged_quantity": {
@@ -5141,6 +5114,7 @@
           "autoincrement": false,
           "primary": false,
           "nullable": false,
+          "default": "'{\"value\":\"0\",\"precision\":20}'",
           "mappedType": "json"
         },
         "created_at": {
@@ -5186,7 +5160,7 @@
           "constraint": false,
           "primary": false,
           "unique": false,
-          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_return_item_reason_id\" ON \"return_item\" (reason_id) WHERE deleted_at IS NULL"
+          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_return_item_reason_id\" ON \"return_item\" (\"reason_id\") WHERE deleted_at IS NULL"
         },
         {
           "keyName": "IDX_return_item_return_id",
@@ -5195,7 +5169,7 @@
           "constraint": false,
           "primary": false,
           "unique": false,
-          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_return_item_return_id\" ON \"return_item\" (return_id) WHERE deleted_at IS NULL"
+          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_return_item_return_id\" ON \"return_item\" (\"return_id\") WHERE deleted_at IS NULL"
         },
         {
           "keyName": "IDX_return_item_item_id",
@@ -5204,7 +5178,7 @@
           "constraint": false,
           "primary": false,
           "unique": false,
-          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_return_item_item_id\" ON \"return_item\" (item_id) WHERE deleted_at IS NULL"
+          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_return_item_item_id\" ON \"return_item\" (\"item_id\") WHERE deleted_at IS NULL"
         },
         {
           "keyName": "IDX_return_item_deleted_at",
@@ -5213,7 +5187,7 @@
           "constraint": false,
           "primary": false,
           "unique": false,
-          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_return_item_deleted_at\" ON \"return_item\" (deleted_at) WHERE deleted_at IS NULL"
+          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_return_item_deleted_at\" ON \"return_item\" (\"deleted_at\") WHERE deleted_at IS NULL"
         },
         {
           "keyName": "IDX_return_item_deleted_at",
@@ -5222,7 +5196,7 @@
           "constraint": false,
           "primary": false,
           "unique": false,
-          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_return_item_deleted_at\" ON \"return_item\" (deleted_at) WHERE deleted_at IS NOT NULL"
+          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_return_item_deleted_at\" ON \"return_item\" (\"deleted_at\") WHERE deleted_at IS NOT NULL"
         },
         {
           "keyName": "return_item_pkey",
@@ -5247,7 +5221,6 @@
             "id"
           ],
           "referencedTableName": "public.return_reason",
-          "createForeignKeyConstraint": true,
           "deleteRule": "set null",
           "updateRule": "cascade"
         },
@@ -5261,7 +5234,6 @@
             "id"
           ],
           "referencedTableName": "public.return",
-          "createForeignKeyConstraint": true,
           "deleteRule": "cascade",
           "updateRule": "cascade"
         },
@@ -5275,7 +5247,6 @@
             "id"
           ],
           "referencedTableName": "public.order_line_item",
-          "createForeignKeyConstraint": true,
           "updateRule": "cascade"
         }
       },
