@@ -2024,6 +2024,7 @@
             "uploadImagesLabel",
             "uploadImagesHint",
             "invalidFileType",
+            "fileTooLarge",
             "failedToUpload",
             "deleteWarning_one",
             "deleteWarning_other",
@@ -11881,9 +11882,6 @@
         },
         "values": {
           "type": "string"
-        },
-        "exclusive": {
-          "type": "string"
         }
       },
       "required": [
@@ -12049,8 +12047,7 @@
         "startDate",
         "endDate",
         "draft",
-        "values",
-        "exclusive"
+        "values"
       ],
       "additionalProperties": false
     },

@@ -58,7 +58,7 @@
     "includesTaxTooltip": "Prices in this column are tax inclusive.",
     "excludesTaxTooltip": "Prices in this column are tax exclusive.",
     "noMoreData": "No more data",
-    "exclusive": "Exclusive",
+    "exclusive": "Product-specific",
     "global": "Global"
   },
   "json": {
@@ -3225,8 +3225,7 @@
     "startDate": "Start date",
     "endDate": "End date",
     "draft": "Draft",
-    "values": "Values",
-    "exclusive": "Exclusive"
+    "values": "Values"
   },
   "dateTime": {
     "years_one": "Year",

@@ -3,6 +3,7 @@ import { useMemo } from "react"
 import { useTranslation } from "react-i18next"
 import { TextCell } from "../../../components/table/table-cells/common/text-cell"
 import { HttpTypes } from "@medusajs/types"
+import { Badge } from "@medusajs/ui"
 
 const columnHelper = createColumnHelper<HttpTypes.AdminProductOption>()
 
@@ -27,13 +28,13 @@ export const useProductOptionTableColumns = () => {
         },
       }),
       columnHelper.accessor("is_exclusive", {
-        header: t("fields.exclusive"),
+        header: t("fields.status"),
         cell: ({ getValue }) => {
           const isExclusive = getValue()
           return (
-            <TextCell
-              text={isExclusive ? t("fields.true") : t("fields.false")}
-            />
+            <Badge size="xsmall" color={isExclusive ? "grey" : "blue"}>
+              {t(`general.${isExclusive ? "exclusive" : "global"}`)}
+            </Badge>
           )
         },
       }),

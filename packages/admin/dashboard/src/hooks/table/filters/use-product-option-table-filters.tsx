@@ -13,15 +13,15 @@ export const useProductOptionTableFilters = () => {
   return useMemo(
     () => [
       filterHelper.accessor("is_exclusive", {
-        label: t("fields.exclusive"),
+        label: t("fields.type"),
         type: "radio",
         options: [
           {
-            label: t("fields.true"),
+            label: t("general.exclusive"),
             value: "true",
           },
           {
-            label: t("fields.false"),
+            label: t("general.global"),
             value: "false",
           },
         ],
