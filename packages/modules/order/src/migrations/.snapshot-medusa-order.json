@@ -283,6 +283,7 @@
           "autoincrement": false,
           "primary": false,
           "nullable": false,
+          "default": "false",
           "mappedType": "boolean"
         },
         "email": {
@@ -983,6 +984,7 @@
           "autoincrement": false,
           "primary": false,
           "nullable": false,
+          "default": "false",
           "mappedType": "boolean"
         },
         "order_change_id": {
@@ -1488,6 +1490,7 @@
           "autoincrement": false,
           "primary": false,
           "nullable": false,
+          "default": "false",
           "mappedType": "boolean"
         },
         "is_discountable": {
@@ -1507,6 +1510,7 @@
           "autoincrement": false,
           "primary": false,
           "nullable": false,
+          "default": "false",
           "mappedType": "boolean"
         },
         "compare_at_unit_price": {
@@ -1534,6 +1538,7 @@
           "autoincrement": false,
           "primary": false,
           "nullable": false,
+          "default": "false",
           "mappedType": "boolean"
         },
         "metadata": {
@@ -2086,6 +2091,7 @@
           "autoincrement": false,
           "primary": false,
           "nullable": false,
+          "default": "false",
           "mappedType": "boolean"
         },
         "item_id": {
@@ -2400,6 +2406,7 @@
           "autoincrement": false,
           "primary": false,
           "nullable": false,
+          "default": "false",
           "mappedType": "boolean"
         },
         "is_custom_amount": {
@@ -2409,6 +2416,7 @@
           "autoincrement": false,
           "primary": false,
           "nullable": false,
+          "default": "false",
           "mappedType": "boolean"
         },
         "shipping_option_id": {
@@ -3325,6 +3333,7 @@
           "autoincrement": false,
           "primary": false,
           "nullable": false,
+          "default": "false",
           "mappedType": "boolean"
         },
         "created_by": {
@@ -4556,6 +4565,7 @@
           "autoincrement": false,
           "primary": false,
           "nullable": false,
+          "default": "false",
           "mappedType": "boolean"
         },
         "note": {

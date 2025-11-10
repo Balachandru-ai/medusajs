@@ -218,7 +218,7 @@ export default class OrderModuleService
   }>(generateMethodForModels)
   implements IOrderModuleService
 {
-  protected generateDisplayId_: (
+  protected generateCustomDisplayId_: (
     this: OrderModuleService,
     order: OrderTypes.CreateOrderDTO,
     sharedContext: Context
@@ -348,8 +348,8 @@ export default class OrderModuleService
     this.orderExchangeService_ = orderExchangeService
     this.orderCreditLineService_ = orderCreditLineService
 
-    this.generateDisplayId_ =
-      options?.generateDisplayId ?? this.generateDisplayId_
+    this.generateCustomDisplayId_ =
+      options?.generateDisplayId ?? this.generateCustomDisplayId_
   }
 
   __joinerConfig(): ModuleJoinerConfig {
@@ -790,7 +790,7 @@ export default class OrderModuleService
         totals: calculated.summary,
       }
 
-      ord.custom_display_id = await this.generateDisplayId_.bind(this)(
+      ord.custom_display_id = await this.generateCustomDisplayId_.bind(this)(
         data_,
         sharedContext
       )
