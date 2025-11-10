@@ -46,7 +46,10 @@ export const processProductOptionsForImportStep = createStep(
 
     const createdOptions =
       allOptions.length > 0
-        ? await productService.createProductOptions(allOptions)
+        ? await productService.createProductOptions(allOptions.map(option => ({
+          ...option,
+          is_exclusive: true // Until we change the CSV logic to pass option id in there, we have to default to exclusive
+        })))
         : []
     const createdOptionIds = createdOptions.map((opt) => opt.id)
 

@@ -9,7 +9,7 @@ get:
   x-authenticated: true
   externalDocs:
     url: >-
-      https://docs.medusajs.com/v2/resources/storefront-development/customers/addresses#list-customer-addresses
+      https://docs.medusajs.com/resources/storefront-development/customers/addresses#list-customer-addresses
     description: 'Storefront guide: How to retrieve the logged-in customer''s addresses.'
   parameters:
     - name: x-publishable-api-key
@@ -169,7 +169,7 @@ post:
   description: Create an address for the logged-in customer.
   externalDocs:
     url: >-
-      https://docs.medusajs.com/v2/resources/storefront-development/customers/addresses#add-customer-address
+      https://docs.medusajs.com/resources/storefront-development/customers/addresses#add-customer-address
     description: 'Storefront guide: How to create an address for the logged-in customer.'
   x-authenticated: true
   parameters:

@@ -351,6 +351,7 @@ const ExtensionRouteSection = () => {
                     label={item.label}
                     icon={item.icon ? item.icon : <SquaresPlus />}
                     items={item.items}
+                    translationNs={item.translationNs}
                     type="extension"
                   />
                 )

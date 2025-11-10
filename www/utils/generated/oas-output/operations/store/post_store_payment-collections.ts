@@ -4,7 +4,7 @@
  * summary: Create Payment Collection
  * description: Create a payment collection for a cart. This is used during checkout, where the payment collection holds the cart's payment sessions.
  * externalDocs:
- *   url: https://docs.medusajs.com/v2/resources/storefront-development/checkout/payment
+ *   url: https://docs.medusajs.com/resources/storefront-development/checkout/payment
  *   description: "Storefront guide: How to implement payment during checkout."
  * x-authenticated: false
  * parameters:

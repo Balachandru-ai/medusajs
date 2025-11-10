@@ -30,8 +30,8 @@ export type LinkProductOptionsToProductWorkflowInput = {
   remove?: string[]
 }
 
-export const linkProductOptionsToProductWorkflowId =
-  "link-product-options-to-product"
+export const createAndLinkProductOptionsToProductWorkflowId =
+  "create-and-link-product-options-to-product"
 /**
  * This workflow adds/removes one or more product options to/from a product. It's used by the [TODO](TODO).
  * This workflow also creates non-existing product options before adding them to the product.
@@ -39,7 +39,7 @@ export const linkProductOptionsToProductWorkflowId =
  * You can also use this workflow within your customizations or your own custom workflows, allowing you to wrap custom logic around product-option and product association.
  *
  * @example
- * const { result } = await linkProductOptionsToProductWorkflow(container)
+ * const { result } = await createAndLinkProductOptionsToProductWorkflow(container)
  * .run({
  *   input: {
  *     product_id: "prod_123"
@@ -58,8 +58,8 @@ export const linkProductOptionsToProductWorkflowId =
  *
  * Add/remove one or more product options to/from a product.
  */
-export const linkProductOptionsToProductWorkflow = createWorkflow(
-  linkProductOptionsToProductWorkflowId,
+export const createAndLinkProductOptionsToProductWorkflow = createWorkflow(
+  createAndLinkProductOptionsToProductWorkflowId,
   (input: WorkflowData<LinkProductOptionsToProductWorkflowInput>) => {
     const { toCreate, toAdd } = transform({ input }, ({ input }) => {
       const toCreate: ProductTypes.CreateProductOptionDTO[] = []
