@@ -111,6 +111,33 @@ export const computeDraftOrderAdjustmentsWorkflow = createWorkflow(
 
     const previewedOrder = previewOrderChangeStep(input.order_id)
 
+    when(
+      { order },
+      ({ order }) => Array.isArray(order.promotions) && !order.promotions.length
+    ).then(() => {
+      const orderChangeActionAdjustmentsInput = transform(
+        { order, previewedOrder, orderChange },
+        ({ order, previewedOrder, orderChange }) => {
+          return previewedOrder.items.map((item) => {
+            return {
+              order_id: order.id,
+              order_change_id: orderChange.id,
+              version: orderChange.version,
+              action: ChangeActionType.ITEM_ADJUSTMENTS_REPLACE,
+              details: {
+                reference_id: item.id,
+                adjustments: [],
+              },
+            }
+          })
+        }
+      )
+
+      createOrderChangeActionsWorkflow
+        .runAsStep({ input: orderChangeActionAdjustmentsInput })
+        .config({ name: "order-change-action-adjustments-input-remove" })
+    })
+
     when({ order }, ({ order }) => !!order.promotions?.length).then(() => {
       const orderPromotions = transform({ order }, ({ order }) => {
         return order.promotions
