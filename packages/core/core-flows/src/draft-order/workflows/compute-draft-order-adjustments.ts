@@ -22,6 +22,7 @@ import { validateDraftOrderChangeStep } from "../steps/validate-draft-order-chan
 import { draftOrderFieldsForRefreshSteps } from "../utils/fields"
 import { useRemoteQueryStep } from "../../common"
 import { acquireLockStep, releaseLockStep } from "../../locking"
+import { deleteOrderChangeActionsStep } from "../../order/steps/delete-order-change-actions"
 
 export const computeDraftOrderAdjustmentsWorkflowId =
   "compute-draft-order-adjustments"
@@ -78,7 +79,7 @@ export const computeDraftOrderAdjustmentsWorkflow = createWorkflow(
 
     const orderChange: OrderChangeDTO = useRemoteQueryStep({
       entry_point: "order_change",
-      fields: ["id", "status", "version"],
+      fields: ["id", "status", "version", "actions.*"],
       variables: {
         filters: {
           order_id: input.order_id,
@@ -89,6 +90,24 @@ export const computeDraftOrderAdjustmentsWorkflow = createWorkflow(
     }).config({ name: "order-change-query" })
 
     validateDraftOrderChangeStep({ order, orderChange })
+
+    const toDeleteActions = transform(orderChange, (orderChange) => {
+      return orderChange.actions
+        .filter(
+          (action) =>
+            action.action === ChangeActionType.ITEM_ADJUSTMENTS_REPLACE
+        )
+        .map((action) => {
+          return action.id
+        })
+    })
+
+    when(toDeleteActions, (toDeleteActions) => toDeleteActions.length > 0).then(
+      () => {
+        // clean up old replace actions from the current order change
+        deleteOrderChangeActionsStep({ ids: toDeleteActions })
+      }
+    )
 
     const previewedOrder = previewOrderChangeStep(input.order_id)
 
