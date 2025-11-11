@@ -1363,7 +1363,7 @@ medusaIntegrationTestRunner({
         expect(orderResult2.original_total).toEqual(24.2)
       })
 
-      it.only("should update adjustments when updating an item", async () => {
+      it("should update adjustments when updating an item", async () => {
         let result = await api.post(
           "/admin/order-edits",
           {
