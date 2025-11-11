@@ -132,6 +132,14 @@ export interface IFileProvider {
   ): Promise<void>
 
   /**
+   * This method is used to delete a file by url from the storage.
+   * 
+   * @param {string} url - The url of the file to remove.
+   * @returns {Promise<void>} Resolves when the file is deleted successfully.
+   */
+  deleteByUrl?(url: string): Promise<void>
+
+  /**
    * This method is used to retrieve a download URL of the file. For some file services, such as S3, a presigned URL indicates a temporary URL to get access to a file.
    *
    * If your file service doesn’t perform or offer a similar functionality, you can just return the URL to download the file.
