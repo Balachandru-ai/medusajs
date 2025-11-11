@@ -119,18 +119,18 @@ export const computeAdjustmentsForPreviewWorkflow = createWorkflow(
             previewedOrder,
             orderChange: input.orderChange,
             lineItemAdjustmentsToCreate,
-            exchange_id: input.exchange_id,
-            claim_id: input.claim_id,
-            return_id: input.return_id,
+            exchangeId: input.exchange_id,
+            claimId: input.claim_id,
+            returnId: input.return_id,
           },
           ({
             order,
             previewedOrder,
             orderChange,
             lineItemAdjustmentsToCreate,
-            exchange_id,
-            claim_id,
-            return_id,
+            exchangeId,
+            claimId,
+            returnId,
           }) => {
             return previewedOrder.items.map((item) => {
               const itemAdjustments = lineItemAdjustmentsToCreate.filter(
@@ -140,9 +140,9 @@ export const computeAdjustmentsForPreviewWorkflow = createWorkflow(
               return {
                 order_change_id: orderChange.id,
                 order_id: order.id,
-                ...(exchange_id && { exchange_id }),
-                ...(claim_id && { claim_id }),
-                ...(return_id && { return_id }),
+                ...(exchangeId && { exchange_id: exchangeId }),
+                ...(claimId && { claim_id: claimId }),
+                ...(returnId && { return_id: returnId }),
                 version: orderChange.version,
                 action: ChangeActionType.ITEM_ADJUSTMENTS_REPLACE,
                 details: {
