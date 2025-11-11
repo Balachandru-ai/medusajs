@@ -421,7 +421,7 @@ export const createOrderWorkflow = createWorkflow(
           order: freshOrder,
           promo_codes: appliedPromoCodes,
           action: PromotionActions.REPLACE,
-          version: order.version,
+          version: 1, // TODO: optional
         },
       })
     )

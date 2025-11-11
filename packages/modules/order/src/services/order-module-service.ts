@@ -13,7 +13,6 @@ import {
   ModulesSdkTypes,
   OrderChangeDTO,
   OrderDTO,
-  OrderLineItemAdjustmentDTO,
   OrderReturnReasonDTO,
   OrderShippingMethodDTO,
   OrderTypes,
@@ -2504,7 +2503,7 @@ export default class OrderModuleService
     const order = await this.retrieveOrder(
       orderId,
       {
-        select: ["id", "version", "items.detail", "summary", "total", "status"],
+        select: ["id", "version", "items.detail", "summary", "total"],
         relations: ["transactions", "credit_lines"],
       },
       sharedContext
@@ -2538,23 +2537,11 @@ export default class OrderModuleService
 
     const calculated = calculatedOrders[order.id]
 
-    let draftLineItemAdjustments: OrderLineItemAdjustmentDTO[] | null = null
-    if (calculated.order.status === OrderStatus.DRAFT) {
-      draftLineItemAdjustments = await this.listOrderLineItemAdjustments(
-        {
-          item_id: itemsToUpsert.map((item) => item.item_id),
-          version: orderChange.version,
-        },
-        { relations: [] },
-        sharedContext
-      )
-    }
-
     await this.includeTaxLinesAndAdjustmentsToPreview(
       calculated.order,
       itemsToUpsert,
       shippingMethodsToUpsert,
-      draftLineItemAdjustments ?? lineItemAdjustmentsToCreate, // this will add "virtual" adjustments for the preview version but no actual adjustments will be created in the DB
+      lineItemAdjustmentsToCreate, // this will add "virtual" adjustments for the preview version but no actual adjustments will be created in the DB
       sharedContext
     )
 
@@ -2581,10 +2568,6 @@ export default class OrderModuleService
     const addedShippingMethods = {}
 
     for (const item of order.items) {
-      console.log(
-        "item",
-        JSON.stringify({ detail: item.detail, id: item.id }, null, 2)
-      )
       const isExistingItem = item.id === item.detail?.item_id
       if (!isExistingItem) {
         addedItems[item.id] = {
@@ -2605,65 +2588,53 @@ export default class OrderModuleService
       }
     }
 
-    console.log("addedItems", JSON.stringify(addedItems, null, 2))
-    let addedItemDetails
     if (Object.keys(addedItems).length > 0) {
-      addedItemDetails = await this.listOrderLineItems(
+      const addedItemDetails = await this.listOrderLineItems(
         { id: Object.keys(addedItems) },
         {
           relations: ["adjustments", "tax_lines"],
         },
         sharedContext
       )
+
+      order.items.forEach((item, idx) => {
+        if (!addedItems[item.id]) {
+          return
+        }
+
+        const lineItem = addedItemDetails.find((d) => d.id === item.id) as any
+
+        const actions = item.actions
+        delete item.actions
+
+        //@ts-ignore
+        const newItem = itemsToUpsert.find((d) => d.item_id === item.id)!
+
+        const adjustments = lineItemAdjustmentsToCreate.filter(
+          (d) => d.item_id === newItem.item_id
+        )
+
+        const unitPrice = newItem?.unit_price ?? item.unit_price
+        const compareAtUnitPrice =
+          newItem?.compare_at_unit_price ?? item.compare_at_unit_price
+
+        delete lineItem.raw_unit_price
+        delete lineItem.raw_compare_at_unit_price
+
+        order.items[idx] = {
+          ...lineItem,
+          actions,
+          quantity: newItem.quantity,
+          unit_price: unitPrice,
+          compare_at_unit_price: compareAtUnitPrice || null,
+          adjustments: adjustments,
+          detail: {
+            ...newItem,
+            ...item,
+          },
+        }
+      })
     }
-
-    order.items.forEach((item, idx) => {
-      if (!addedItems[item.id]) {
-        const virtualAdjustments = lineItemAdjustmentsToCreate.filter(
-          (d) => d.item_id === item.id
-        )
-
-        console.log(
-          "virtualAdjustments",
-          JSON.stringify({ virtualAdjustments, item_id: item.id }, null, 2)
-        )
-        item.adjustments = virtualAdjustments
-
-        return
-      }
-
-      const lineItem = addedItemDetails.find((d) => d.id === item.id) as any
-
-      const actions = item.actions
-      delete item.actions
-
-      //@ts-ignore
-      const newItem = itemsToUpsert.find((d) => d.item_id === item.id)!
-
-      const adjustments = lineItemAdjustmentsToCreate.filter(
-        (d) => d.item_id === newItem.item_id
-      )
-
-      const unitPrice = newItem?.unit_price ?? item.unit_price
-      const compareAtUnitPrice =
-        newItem?.compare_at_unit_price ?? item.compare_at_unit_price
-
-      delete lineItem.raw_unit_price
-      delete lineItem.raw_compare_at_unit_price
-
-      order.items[idx] = {
-        ...lineItem,
-        actions,
-        quantity: newItem.quantity,
-        unit_price: unitPrice,
-        compare_at_unit_price: compareAtUnitPrice || null,
-        adjustments: adjustments,
-        detail: {
-          ...newItem,
-          ...item,
-        },
-      }
-    })
 
     if (Object.keys(addedShippingMethods).length > 0) {
       const addedShippingDetails = await this.listOrderShippingMethods(

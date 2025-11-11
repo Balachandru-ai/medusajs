@@ -1,8 +1,4 @@
-import {
-  ChangeActionType,
-  OrderChangeStatus,
-  PromotionActions,
-} from "@medusajs/framework/utils"
+import { ChangeActionType, OrderChangeStatus } from "@medusajs/framework/utils"
 import {
   createWorkflow,
   parallelize,
@@ -16,8 +12,8 @@ import { deleteOrderChangesStep, deleteOrderShippingMethods } from "../../order"
 import { restoreDraftOrderShippingMethodsStep } from "../steps/restore-draft-order-shipping-methods"
 import { validateDraftOrderChangeStep } from "../steps/validate-draft-order-change"
 import { draftOrderFieldsForRefreshSteps } from "../utils/fields"
-import { refreshDraftOrderAdjustmentsWorkflow } from "./refresh-draft-order-adjustments"
 import { acquireLockStep, releaseLockStep } from "../../locking"
+import { computeDraftOrderAdjustmentsWorkflow } from "./compute-draft-order-adjustments"
 
 export const cancelDraftOrderEditWorkflowId = "cancel-draft-order-edit"
 
@@ -113,59 +109,14 @@ export const cancelDraftOrderEditWorkflow = createWorkflow(
       }
     )
 
-    const promotionsToRemove = transform(
-      { orderChange, input },
-      ({ orderChange }) => {
-        return (orderChange.actions ?? [])
-          .filter((a) => a.action === ChangeActionType.PROMOTION_ADD)
-          .map(({ details }) => details?.added_code)
-          .filter(Boolean) as string[]
-      }
-    )
-
-    const promotionsToRestore = transform(
-      { orderChange, input },
-      ({ orderChange }) => {
-        return (orderChange.actions ?? [])
-          .filter((a) => a.action === ChangeActionType.PROMOTION_REMOVE)
-          .map(({ details }) => details?.removed_code)
-          .filter(Boolean) as string[]
-      }
-    )
-
-    const promotionsToRefresh = transform(
-      { order, promotionsToRemove, promotionsToRestore },
-      ({ order, promotionsToRemove, promotionsToRestore }) => {
-        const orderPromotions = order.promotions
-        const codes: Set<string> = new Set()
-
-        orderPromotions?.forEach((promo) => {
-          codes.add(promo.code)
-        })
-
-        for (const code of promotionsToRemove) {
-          codes.delete(code)
-        }
-
-        for (const code of promotionsToRestore) {
-          codes.add(code)
-        }
-
-        return Array.from(codes)
-      }
-    )
-
     parallelize(
       deleteOrderChangesStep({ ids: [orderChange.id] }),
       deleteOrderShippingMethods({ ids: shippingToRemove })
     )
 
-    refreshDraftOrderAdjustmentsWorkflow.runAsStep({
+    computeDraftOrderAdjustmentsWorkflow.runAsStep({
       input: {
-        order,
-        promo_codes: promotionsToRefresh,
-        action: PromotionActions.REPLACE,
-        version: orderChange.version,
+        order_id: input.order_id,
       },
     })
 

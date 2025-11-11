@@ -770,6 +770,317 @@ medusaIntegrationTestRunner({
         expect(response.status).toEqual(200)
       })
 
+      it("should apply promotion to a draft order via order edit", async () => {
+        const region = await regionModuleService.createRegions({
+          name: "US",
+          currency_code: "usd",
+        })
+
+        const salesChannel = await scModuleService.createSalesChannels({
+          name: "Webshop",
+        })
+
+        const location = await stockLocationModule.createStockLocations({
+          name: "Warehouse",
+        })
+
+        const [product, product_2] = await productModule.createProducts([
+          {
+            title: "Test product",
+            status: ProductStatus.PUBLISHED,
+            variants: [
+              {
+                title: "Test variant",
+              },
+            ],
+          },
+          {
+            title: "Another product",
+            status: ProductStatus.PUBLISHED,
+            variants: [
+              {
+                title: "Variant variable",
+                manage_inventory: false,
+              },
+            ],
+          },
+        ])
+
+        const inventoryItem = await inventoryModule.createInventoryItems({
+          sku: "inv-1234",
+        })
+
+        await inventoryModule.createInventoryLevels([
+          {
+            inventory_item_id: inventoryItem.id,
+            location_id: location.id,
+            stocked_quantity: 2,
+            reserved_quantity: 0,
+          },
+        ])
+
+        const [priceSet, priceSet_2] = await pricingModule.createPriceSets([
+          {
+            prices: [
+              {
+                amount: 3000,
+                currency_code: "usd",
+              },
+            ],
+          },
+          {
+            prices: [
+              {
+                amount: 1000,
+                currency_code: "usd",
+              },
+            ],
+          },
+        ])
+
+        /**
+         * Create a promotion to test with
+         */
+        const promotion = (
+          await api.post(
+            `/admin/promotions`,
+            {
+              code: "testytest",
+              type: PromotionType.STANDARD,
+              status: PromotionStatus.ACTIVE,
+              is_tax_inclusive: true,
+              application_method: {
+                target_type: "items",
+                type: "percentage",
+                allocation: "each",
+                currency_code: "usd",
+                value: 10,
+                max_quantity: 10,
+              },
+            },
+            adminHeaders
+          )
+        ).data.promotion
+
+        await api.post(
+          "/admin/price-preferences",
+          {
+            attribute: "currency_code",
+            value: "usd",
+            is_tax_inclusive: true,
+          },
+          adminHeaders
+        )
+
+        await remoteLink.create([
+          {
+            [Modules.PRODUCT]: {
+              variant_id: product.variants[0].id,
+            },
+            [Modules.PRICING]: {
+              price_set_id: priceSet.id,
+            },
+          },
+          {
+            [Modules.PRODUCT]: {
+              variant_id: product_2.variants[0].id,
+            },
+            [Modules.PRICING]: {
+              price_set_id: priceSet_2.id,
+            },
+          },
+          {
+            [Modules.SALES_CHANNEL]: {
+              sales_channel_id: salesChannel.id,
+            },
+            [Modules.STOCK_LOCATION]: {
+              stock_location_id: location.id,
+            },
+          },
+          {
+            [Modules.PRODUCT]: {
+              variant_id: product.variants[0].id,
+            },
+            [Modules.INVENTORY]: {
+              inventory_item_id: inventoryItem.id,
+            },
+          },
+          {
+            [Modules.PRODUCT]: {
+              variant_id: product_2.variants[0].id,
+            },
+            [Modules.INVENTORY]: {
+              inventory_item_id: inventoryItem.id,
+            },
+          },
+        ])
+
+        await setupTaxStructure(taxModule)
+
+        const payload = {
+          email: "oli@test.dk",
+          region_id: region.id,
+          sales_channel_id: salesChannel.id,
+          currency_code: "usd",
+          shipping_address: {
+            first_name: "Test",
+            last_name: "Test",
+            address_1: "Test",
+            city: "Test",
+            country_code: "US",
+            postal_code: "12345",
+            phone: "12345",
+          },
+          billing_address: {
+            first_name: "Test",
+            last_name: "Test",
+            address_1: "Test",
+            city: "Test",
+            country_code: "US",
+            postal_code: "12345",
+          },
+          items: [
+            {
+              variant_id: product.variants[0].id,
+              is_discountable: true,
+              quantity: 2, // 2 * 3000$ = 6000$ TAX INCLUSIVE
+            },
+            {
+              variant_id: product_2.variants[0].id,
+              is_discountable: true,
+              quantity: 1, // 1 * 1000$ = 1000$ TAX INCLUSIVE
+            },
+          ],
+          shipping_methods: [
+            {
+              name: "test-method",
+              shipping_option_id: "test-option",
+              amount: 0,
+            },
+          ],
+        }
+
+        const response = await api.post(
+          "/admin/draft-orders",
+          payload,
+          adminHeaders
+        )
+
+        // begin Order Edit on a Draft Order
+        let orderPreview = (
+          await api.post(
+            `/admin/draft-orders/${response.data.draft_order.id}/edit`,
+            {},
+            adminHeaders
+          )
+        ).data.draft_order_preview
+
+        orderPreview = (
+          await api.post(
+            `/admin/draft-orders/${response.data.draft_order.id}/edit/promotions`,
+            {
+              promo_codes: [promotion.code],
+            },
+            adminHeaders
+          )
+        ).data.draft_order_preview
+
+        expect(orderPreview.total).toEqual(6300) // 2 * 3000$ - 10% + 1 * 1000$ - 10%
+        expect(orderPreview.original_total).toEqual(7000)
+        expect(orderPreview.discount_total).toEqual(700)
+
+        expect(orderPreview.items).toEqual(
+          expect.arrayContaining([
+            expect.objectContaining({
+              total: 5400, // 2 * 3000$ - 10% = 5400$
+              original_total: 6000,
+              discount_total: 600,
+              variant_id: product.variants[0].id,
+              adjustments: expect.arrayContaining([
+                expect.objectContaining({
+                  code: "testytest",
+                  amount: 600,
+                  promotion_id: promotion.id,
+                  is_tax_inclusive: true,
+                }),
+              ]),
+            }),
+            expect.objectContaining({
+              total: 900, // 1000$ - 10% = 900$
+              original_total: 1000,
+              discount_total: 100,
+              variant_id: product_2.variants[0].id,
+              adjustments: expect.arrayContaining([
+                expect.objectContaining({
+                  code: "testytest",
+                  amount: 100,
+                  promotion_id: promotion.id,
+                  is_tax_inclusive: true,
+                }),
+              ]),
+            }),
+          ])
+        )
+
+        orderPreview = (
+          await api.post(
+            `/admin/draft-orders/${response.data.draft_order.id}/edit/confirm`,
+            {},
+            adminHeaders
+          )
+        ).data.draft_order_preview
+
+        const draftOrder = (
+          await api.get(
+            `/admin/draft-orders/${response.data.draft_order.id}?fields=+total,+original_total,+discount_total,+version,items.*`,
+            adminHeaders
+          )
+        ).data.draft_order
+
+        expect(draftOrder.total).toEqual(6300) // 2 * 3000$ - 10% + 1 * 1000$ - 10%
+        expect(draftOrder.original_total).toEqual(7000)
+        expect(draftOrder.discount_total).toEqual(700)
+        expect(draftOrder.version).toEqual(2)
+
+        expect(draftOrder.items[0].adjustments[0].version).toEqual(2)
+        expect(draftOrder.items[1].adjustments[0].version).toEqual(2)
+
+        expect(orderPreview.items).toEqual(
+          expect.arrayContaining([
+            expect.objectContaining({
+              total: 5400,
+              original_total: 6000,
+              discount_total: 600,
+              variant_id: product.variants[0].id,
+              adjustments: [
+                expect.objectContaining({
+                  code: "testytest",
+                  amount: 600,
+                  promotion_id: promotion.id,
+                  is_tax_inclusive: true,
+                  // version: 2,
+                }),
+              ],
+            }),
+            expect.objectContaining({
+              total: 900,
+              original_total: 1000,
+              discount_total: 100,
+              variant_id: product_2.variants[0].id,
+              adjustments: [
+                expect.objectContaining({
+                  code: "testytest",
+                  amount: 100,
+                  promotion_id: promotion.id,
+                  is_tax_inclusive: true,
+                  // version: 2,
+                }),
+              ],
+            }),
+          ])
+        )
+      })
+
       it("should create a draft order and apply tax by product type", async () => {
         const productType = await productModule.createProductTypes({
           value: "test_product_type",
