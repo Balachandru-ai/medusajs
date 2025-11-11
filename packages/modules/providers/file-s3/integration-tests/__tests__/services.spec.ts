@@ -39,11 +39,12 @@ describe.skip("S3 File Plugin", () => {
     it("uploads, reads, and then deletes a file successfully", async () => {
       const fileContent = await fs.readFile(fixtureImagePath)
       const fixtureAsBinary = fileContent.toString("binary")
+      const fixtureAsBase64 = fileContent.toString("base64")
 
       const resp = await s3Service.upload({
         filename: "catphoto.jpg",
         mimeType: "image/jpeg",
-        content: fixtureAsBinary,
+        content: fixtureAsBase64,
         access,
       })
 
@@ -84,7 +85,7 @@ describe.skip("S3 File Plugin", () => {
 
   it("gets a presigned upload URL and uploads a file successfully", async () => {
     const fileContent = await fs.readFile(fixtureImagePath)
-    const fixtureAsBinary = fileContent.toString("binary")
+    const fixtureAsBase64 = fileContent.toString("base64")
 
     const resp = await s3Service.getPresignedUploadUrl({
       filename: "catphoto.jpg",
@@ -118,14 +119,14 @@ describe.skip("S3 File Plugin", () => {
         .then((r) => r.data)
     )
 
-    expect(signedUrlFile.toString("binary")).toEqual(fixtureAsBinary)
+    expect(signedUrlFile.toString("base64")).toEqual(fixtureAsBase64)
 
     await s3Service.delete({ fileKey: resp.key })
   })
 
   it("gets a presigned upload URL for a nested filename structure and uploads a file successfully", async () => {
     const fileContent = await fs.readFile(fixtureImagePath)
-    const fixtureAsBinary = fileContent.toString("binary")
+    const fixtureAsBase64 = fileContent.toString("base64")
 
     const resp = await s3Service.getPresignedUploadUrl({
       filename: "testfolder/catphoto.jpg",
@@ -156,29 +157,29 @@ describe.skip("S3 File Plugin", () => {
         .then((r) => r.data)
     )
 
-    expect(signedUrlFile.toString("binary")).toEqual(fixtureAsBinary)
+    expect(signedUrlFile.toString("base64")).toEqual(fixtureAsBase64)
 
     await s3Service.delete({ fileKey: resp.key })
   })
 
   it("deletes multiple files in bulk", async () => {
     const fileContent = await fs.readFile(fixtureImagePath)
-    const fixtureAsBinary = fileContent.toString("binary")
+    const fixtureAsBase64 = fileContent.toString("base64")
 
     const cat = await s3Service.upload({
       filename: "catphoto.jpg",
       mimeType: "image/jpeg",
-      content: fixtureAsBinary,
+      content: fixtureAsBase64,
     })
     const cat1 = await s3Service.upload({
       filename: "catphoto-1.jpg",
       mimeType: "image/jpeg",
-      content: fixtureAsBinary,
+      content: fixtureAsBase64,
     })
     const cat2 = await s3Service.upload({
       filename: "catphoto-2.jpg",
       mimeType: "image/jpeg",
-      content: fixtureAsBinary,
+      content: fixtureAsBase64,
     })
 
     await s3Service.delete([
@@ -186,5 +187,42 @@ describe.skip("S3 File Plugin", () => {
       { fileKey: cat1.key },
       { fileKey: cat2.key },
     ])
+  })
+
+  it("deletes a file by URL", async () => {
+    const fileContent = await fs.readFile(fixtureImagePath)
+    const fixtureAsBase64 = fileContent.toString("base64")
+
+    const resp = await s3Service.upload({
+      filename: "delete-by-url-test.jpg",
+      mimeType: "image/jpeg",
+      content: fixtureAsBase64,
+      access: "private",
+    })
+
+    const signedUrl = await s3Service.getPresignedDownloadUrl({
+      fileKey: resp.key,
+    })
+
+    const fileBeforeDeletion = await axios
+      .get(signedUrl, { responseType: "arraybuffer" })
+      .then((r) => r.data)
+      .catch((e) => e)
+
+    expect(Buffer.from(fileBeforeDeletion).toString("base64")).toEqual(
+      fixtureAsBase64
+    )
+
+    await s3Service.deleteByUrl(resp.url)
+
+    const signedUrlAfterDeletion = await s3Service.getPresignedDownloadUrl({
+      fileKey: resp.key,
+    })
+
+    const { response } = await axios
+      .get(signedUrlAfterDeletion, { responseType: "arraybuffer" })
+      .catch((e) => e)
+
+    expect(response.status).toEqual(404)
   })
 })
