@@ -6,7 +6,7 @@
  * description: Remove an address of the logged-in customer.
  * x-authenticated: true
  * externalDocs:
- *   url: https://docs.medusajs.com/v2/resources/storefront-development/customers/addresses#delete-customer-address
+ *   url: https://docs.medusajs.com/resources/storefront-development/customers/addresses#delete-customer-address
  *   description: "Storefront guide: How to delete a customer's address."
  * parameters:
  *   - name: address_id
