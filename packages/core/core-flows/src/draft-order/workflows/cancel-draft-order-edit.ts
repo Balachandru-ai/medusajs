@@ -13,7 +13,6 @@ import { restoreDraftOrderShippingMethodsStep } from "../steps/restore-draft-ord
 import { validateDraftOrderChangeStep } from "../steps/validate-draft-order-change"
 import { draftOrderFieldsForRefreshSteps } from "../utils/fields"
 import { acquireLockStep, releaseLockStep } from "../../locking"
-import { computeDraftOrderAdjustmentsWorkflow } from "./compute-draft-order-adjustments"
 
 export const cancelDraftOrderEditWorkflowId = "cancel-draft-order-edit"
 
@@ -113,12 +112,6 @@ export const cancelDraftOrderEditWorkflow = createWorkflow(
       deleteOrderChangesStep({ ids: [orderChange.id] }),
       deleteOrderShippingMethods({ ids: shippingToRemove })
     )
-
-    computeDraftOrderAdjustmentsWorkflow.runAsStep({
-      input: {
-        order_id: input.order_id,
-      },
-    })
 
     when(shippingToRestore, (methods) => !!methods?.length).then(() => {
       restoreDraftOrderShippingMethodsStep({
