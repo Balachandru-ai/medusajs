@@ -1,5 +1,7 @@
 import { model } from "@medusajs/framework/utils"
-import { ProductOption, ProductVariant } from "./index"
+import ProductVariant from "./product-variant"
+import ProductOption from "./product-option"
+import ProductProductOption from "./product-product-option"
 
 const ProductOptionValue = model
   .define("ProductOptionValue", {
@@ -15,6 +17,7 @@ const ProductOptionValue = model
     variants: model.manyToMany(() => ProductVariant, {
       mappedBy: "options",
     }),
+    product_product_options: model.manyToMany(() => ProductProductOption),
   })
   .indexes([
     {
