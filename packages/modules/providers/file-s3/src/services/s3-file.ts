@@ -198,6 +198,11 @@ export class S3FileService extends AbstractFileProviderService {
     }
   }
 
+  async deleteByUrl(url: string) {
+    const fileKey = this.getFileKey(url)
+    return await this.delete({ fileKey })
+  }
+
   async getPresignedDownloadUrl(
     fileData: FileTypes.ProviderGetFileDTO
   ): Promise<string> {
@@ -287,5 +292,15 @@ export class S3FileService extends AbstractFileProviderService {
     )
 
     return Buffer.from(await response.Body!.transformToByteArray())
+  }
+
+  private getFileKey = (url: string) => {
+    const parsedUrl = new URL(url)
+    const basePath = new URL(this.config_.fileUrl).pathname
+    const fullPath = parsedUrl.pathname
+
+    const fileKeyPath = fullPath.startsWith(basePath) ? fullPath.slice(basePath.length) : fullPath
+    const fileKey = fileKeyPath.startsWith('/') ? fileKeyPath.slice(1) : fileKeyPath
+    return fileKey
   }
 }
