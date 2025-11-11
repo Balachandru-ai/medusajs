@@ -1,6 +1,6 @@
 import { model } from "@medusajs/framework/utils"
-import ProductProductOption from "./product-product-option"
 import ProductOptionValue from "./product-option-value"
+import ProductProductOption from "./product-product-option"
 
 const ProductProductOptionValue = model.define("ProductProductOptionValue", {
   id: model.id({ prefix: "prodoptval" }).primaryKey(),
@@ -8,7 +8,7 @@ const ProductProductOptionValue = model.define("ProductProductOptionValue", {
     mappedBy: "values",
   }),
   product_option_value: model.belongsTo(() => ProductOptionValue, {
-    mappedBy: "product_product_options",
+    mappedBy: "product_options",
   }),
 })
 
