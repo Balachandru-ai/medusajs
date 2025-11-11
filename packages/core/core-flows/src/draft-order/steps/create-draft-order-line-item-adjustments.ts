@@ -23,7 +23,7 @@ export interface CreateDraftOrderLineItemAdjustmentsStepInput {
   /**
    * The version of the order change to create the line item adjustments for.
    */
-  version: number
+  version?: number
 }
 
 /**

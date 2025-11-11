@@ -54,7 +54,7 @@ export interface RefreshDraftOrderAdjustmentsWorkflowInput {
   /**
    * The version of the order change to refresh the adjustments for.
    */
-  version: number // TODO: optional
+  version?: number
 }
 
 /**
