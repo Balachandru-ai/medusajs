@@ -233,4 +233,32 @@ export class RoutesLoader {
       []
     )
   }
+
+  /**
+   * Reload a single route file
+   * This is used by HMR to reload routes when files change
+   */
+  async reloadRouteFile(
+    absolutePath: string,
+    sourceDir: string
+  ): Promise<RouteDescriptor[]> {
+    const relativePath = absolutePath.replace(sourceDir, "")
+    const route = this.#createRoutePath(relativePath)
+    const routes = await this.#getRoutesForFile(route, absolutePath)
+
+    // Register the new routes (will overwrite existing)
+    routes.forEach((routeConfig) => {
+      this.registerRoute({
+        absolutePath,
+        relativePath,
+        ...routeConfig,
+      })
+    })
+
+    return routes.map((routeConfig) => ({
+      absolutePath,
+      relativePath,
+      ...routeConfig,
+    }))
+  }
 }

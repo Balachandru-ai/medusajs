@@ -78,6 +78,11 @@ export class ApiLoader {
   }
 
   /**
+   * RoutesLoader instance (stored for HMR)
+   */
+  #routesLoader?: RoutesLoader
+
+  /**
    * Loads routes, middleware, bodyParserConfig routes, routes that have
    * opted out for Auth and CORS and the error handler.
    */
@@ -89,6 +94,9 @@ export class ApiLoader {
       await routesLoader.scanDir(dir)
       await middlewareLoader.scanDir(dir)
     }
+
+    // Store for HMR access
+    this.#routesLoader = routesLoader
 
     return {
       routes: routesLoader.getRoutes(),
@@ -119,6 +127,22 @@ export class ApiLoader {
         : route.handler
 
       this.#app[route.method.toLowerCase()](route.matcher, wrapHandler(handler))
+
+      // Register with HMR route registry if available (experimental backend HMR)
+      const hmrRegistry = (global as any).__MEDUSA_HMR_ROUTE_REGISTRY__
+      if (hmrRegistry && route.absolutePath) {
+        hmrRegistry.register({
+          filePath: route.absolutePath,
+          type: "route",
+          loadedAt: Date.now(),
+          dependencies: new Set(),
+          meta: {
+            method: route.method,
+            path: route.matcher,
+          },
+        })
+      }
+
       return
     }
 
@@ -353,7 +377,62 @@ export class ApiLoader {
     this.#app.use(namespace, middleware as RequestHandler)
   }
 
+  /**
+   * Register routes (public method for HMR)
+   * This allows HMR to register new routes with all the proper middleware
+   */
+  registerRoutes(routes: RouteDescriptor[]) {
+    routes.forEach((route) => {
+      this.#registerExpressHandler(route)
+    })
+  }
+
+  /**
+   * Get source directories (public method for HMR)
+   */
+  getSourceDirs(): string[] {
+    return this.#sourceDirs
+  }
+
+  /**
+   * Reload a single route file (public method for HMR)
+   * This reloads the route file and re-registers it with Express
+   */
+  async reloadRoute(absolutePath: string): Promise<RouteDescriptor[]> {
+    if (!this.#routesLoader) {
+      throw new Error("ApiLoader not initialized - call load() first")
+    }
+
+    // Find which source directory contains this file
+    const sourceDir = this.#sourceDirs.find((dir) =>
+      absolutePath.startsWith(dir)
+    )
+
+    if (!sourceDir) {
+      throw new Error(
+        `Route file ${absolutePath} is not in any source directory`
+      )
+    }
+
+    // Reload the route file
+    const routes = await this.#routesLoader.reloadRouteFile(
+      absolutePath,
+      sourceDir
+    )
+
+    // Register with Express (will go through all middleware, CORS, auth, etc.)
+    this.registerRoutes(routes)
+
+    return routes
+  }
+
   async load() {
+    // Store ApiLoader instance globally for HMR access
+    const hmrRegistry = (global as any).__MEDUSA_HMR_ROUTE_REGISTRY__
+    if (hmrRegistry) {
+      ;(global as any).__MEDUSA_HMR_API_LOADER__ = this
+    }
+
     const {
       errorHandler: sourceErrorHandler,
       middlewares,

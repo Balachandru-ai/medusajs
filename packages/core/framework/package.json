@@ -26,6 +26,7 @@
     "./http": "./dist/http/index.js",
     "./telemetry": "./dist/telemetry/index.js",
     "./feature-flags": "./dist/feature-flags/index.js",
+    "./dev-server": "./dist/dev-server/index.js",
     "./utils": "./dist/utils/index.js",
     "./types": "./dist/types/index.js",
     "./build-tools": "./dist/build-tools/index.js",
@@ -67,7 +68,8 @@
     "test": "../../../node_modules/.bin/jest --bail --forceExit --testPathPattern=src"
   },
   "devDependencies": {
-    "@medusajs/cli": "2.11.3"
+    "@medusajs/cli": "2.11.3",
+    "vite": "^5.4.14"
   },
   "dependencies": {
     "@jercle/yargonaut": "^1.1.5",
