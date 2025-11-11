@@ -105,6 +105,11 @@ export class LocalFileService extends AbstractFileProviderService {
     return
   }
 
+  async deleteByUrl(url: string): Promise<void> {
+    const fileKey = this.getFileKey(url)
+    return this.delete({ fileKey })
+  }
+
   async getDownloadStream(
     file: FileTypes.ProviderGetFileDTO
   ): Promise<Readable> {
@@ -175,6 +180,16 @@ export class LocalFileService extends AbstractFileProviderService {
     const baseUrl = new URL(this.backendUrl_)
     baseUrl.pathname = path.join(baseUrl.pathname, fileKey)
     return baseUrl.href
+  }
+
+  private getFileKey = (url: string) => {
+    const parsedUrl = new URL(url)
+    const basePath = new URL(this.backendUrl_).pathname
+    const fullPath = parsedUrl.pathname
+
+    const fileKeyPath = fullPath.startsWith(basePath) ? fullPath.slice(basePath.length) : fullPath
+    const fileKey = fileKeyPath.startsWith('/') ? fileKeyPath.slice(1) : fileKeyPath
+    return fileKey
   }
 
   private async ensureDirExists(baseDir: string, dirPath: string) {
