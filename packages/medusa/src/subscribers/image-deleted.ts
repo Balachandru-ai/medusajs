@@ -6,8 +6,10 @@ export default async function imageDeletedHandler({ event, container }: Subscrib
     const query = container.resolve(ContainerRegistrationKeys.QUERY)
     const fileModuleService = container.resolve(Modules.FILE)
 
+    logger.info('[imageDeletedHandler] executing')
+
     const { data: [image] } = await query.graph({
-        entity: 'image',
+        entity: 'product_image',
         fields: ['url'],
         filters: {
             id: event.data.id
