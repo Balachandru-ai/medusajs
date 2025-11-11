@@ -164,9 +164,9 @@ export interface BaseProductVariant {
    */
   thumbnail: string | null
   /**
-   * 
+   * The variant's images.
    */
-  images: BaseProductVariantImage[] | null
+  images: BaseProductImage[] | null
   /**
    * Whether the variant can be ordered even if it's out of stock.
    */
@@ -323,21 +323,6 @@ export interface BaseProductImage {
    * Key-value pairs of custom data.
    */
   metadata?: Record<string, unknown> | null
-}
-
-export interface BaseProductVariantImage {
-  /**
-   * The product variant image's ID.
-   */
-  id: string
-  /**
-   * The variant associated with the image.
-   */
-  variant?: BaseProductVariant | null
-  /**
-   * The image associated with the variant.
-   */
-  image?: BaseProductImage | null
 }
 
 export interface BaseProductOptionValue {
