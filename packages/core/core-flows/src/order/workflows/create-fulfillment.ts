@@ -429,6 +429,7 @@ export const createOrderFulfillmentWorkflow = createWorkflow(
         "items.variant.product.mid_code",
         "items.variant.product.material",
         "items.tax_lines.rate",
+        "metadata",
         "subtotal",
         "discount_total",
         "tax_total",
