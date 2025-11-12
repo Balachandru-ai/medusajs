@@ -104,6 +104,10 @@ export const storefront = [
     "path": "https://docs.medusajs.com/resources/storefront-development/guides/express-checkout"
   },
   {
+    "title": "Implement Mobile App with React Native, Expo, and Medusa",
+    "path": "https://docs.medusajs.com/resources/storefront-development/guides/react-native-expo"
+  },
+  {
     "title": "Storefront Production Optimization Tips",
     "path": "https://docs.medusajs.com/resources/storefront-development/production-optimizations"
   },
