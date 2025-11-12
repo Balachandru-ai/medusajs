@@ -151,6 +151,7 @@ function setValue<
       if (index === field.split(".").length - 1) {
         curr[key] = newValue
       }
+      curr[key] ??= {}
       return curr[key]
     }, currentValues)
     return
