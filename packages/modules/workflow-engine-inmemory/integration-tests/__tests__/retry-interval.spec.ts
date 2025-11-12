@@ -20,7 +20,6 @@ import {
   retryIntervalStep2InvokeMock as retryIntervalStep2InvokeMockSync,
   workflowRetryIntervalId as workflowRetryIntervalIdSync,
 } from "../__fixtures__/workflow_sync_retry_interval"
-import { TestDatabase } from "../utils"
 
 jest.setTimeout(60000) // Increase timeout for async retries
 
@@ -34,15 +33,6 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
   },
   testSuite: ({ service: workflowOrcModule }) => {
     describe("Workflow Retry Interval", function () {
-      beforeEach(async () => {
-        await TestDatabase.clearTables()
-        jest.clearAllMocks()
-      })
-
-      afterEach(async () => {
-        await TestDatabase.clearTables()
-      })
-
       it("should properly retry sync step with retry interval after failures", async () => {
         // Configure step to succeed on 3rd attempt
         const attemptToSucceedOn = 3
