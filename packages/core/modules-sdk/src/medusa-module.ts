@@ -515,25 +515,29 @@ class MedusaModule {
       return [{}]
     }
 
-    for (const {
-      hashKey,
-      modDeclaration,
-      moduleResolutions,
-      container,
-      finishLoading,
-    } of loadedModules) {
-      const service = await MedusaModule.resolveLoadedModule({
+    const resolvedServices = await promiseAll(
+      loadedModules.map(async ({
         hashKey,
         modDeclaration,
         moduleResolutions,
         container,
-      })
+        finishLoading,
+      }) => {
+        const service = await MedusaModule.resolveLoadedModule({
+          hashKey,
+          modDeclaration,
+          moduleResolutions,
+          container,
+        })
 
-      MedusaModule.instances_.set(hashKey, service)
-      finishLoading(service)
-      MedusaModule.loading_.delete(hashKey)
-      services.push(service)
-    }
+        MedusaModule.instances_.set(hashKey, service)
+        finishLoading(service)
+        MedusaModule.loading_.delete(hashKey)
+        return service
+      })
+    )
+
+    services.push(...resolvedServices)
 
     return services
   }

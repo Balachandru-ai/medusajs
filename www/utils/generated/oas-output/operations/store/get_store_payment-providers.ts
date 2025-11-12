@@ -5,7 +5,7 @@
  * description: Retrieve a list of payment providers. You must provide the `region_id` query parameter to retrieve the payment providers enabled in that region.
  * x-authenticated: false
  * externalDocs:
- *   url: https://docs.medusajs.com/v2/resources/storefront-development/checkout/payment
+ *   url: https://docs.medusajs.com/resources/storefront-development/checkout/payment
  *   description: "Storefront guide: How to implement payment during checkout."
  * parameters:
  *   - name: x-publishable-api-key
