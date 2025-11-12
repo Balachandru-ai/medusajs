@@ -3423,7 +3423,6 @@ __metadata:
     i18next-http-backend: 2.4.2
     lodash.debounce: ^4.0.8
     lodash.isequal: ^4.5.0
-    lodash.set: ^4.3.2
     match-sorter: ^6.3.4
     motion: ^11.15.0
     qs: ^6.12.1
@@ -20382,13 +20381,6 @@ __metadata:
   version: 4.1.1
   resolution: "lodash.once@npm:4.1.1"
   checksum: 46a9a0a66c45dd812fcc016e46605d85ad599fe87d71a02f6736220554b52ffbe82e79a483ad40f52a8a95755b0d1077fba259da8bfb6694a7abbf4a48f1fc04
-  languageName: node
-  linkType: hard
-
-"lodash.set@npm:^4.3.2":
-  version: 4.3.2
-  resolution: "lodash.set@npm:4.3.2"
-  checksum: c641d31905e51df43170dce8a1d11a1cff11356e2e2e75fe2615995408e9687d58c3e1d64c3c284c2df2bc519f79a98af737d2944d382ff82ffd244ff6075c29
   languageName: node
   linkType: hard
 
