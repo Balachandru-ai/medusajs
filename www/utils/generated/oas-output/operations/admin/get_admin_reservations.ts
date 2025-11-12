@@ -559,21 +559,21 @@
  *                 title: $eq
  *                 description: Filter by an exact match.
  *         $ne:
- *           type: string
+ *           type: number
  *           title: $ne
  *           description: Filter by values not equal to this parameter.
  *         $in:
  *           type: array
  *           description: Filter by values in this array.
  *           items:
- *             type: string
+ *             type: number
  *             title: $in
  *             description: Filter by values in this array.
  *         $nin:
  *           type: array
  *           description: Filter by values not in this array.
  *           items:
- *             type: string
+ *             type: number
  *             title: $nin
  *             description: Filter by values not in this array.
  *         $not:
@@ -590,19 +590,19 @@
  *                 title: $not
  *                 description: Filter by values not matching the conditions in this parameter.
  *         $gt:
- *           type: string
+ *           type: number
  *           title: $gt
  *           description: Filter by values greater than this parameter. Useful for numbers and dates only.
  *         $gte:
- *           type: string
+ *           type: number
  *           title: $gte
  *           description: Filter by values greater than or equal to this parameter. Useful for numbers and dates only.
  *         $lt:
- *           type: string
+ *           type: number
  *           title: $lt
  *           description: Filter by values less than this parameter. Useful for numbers and dates only.
  *         $lte:
- *           type: string
+ *           type: number
  *           title: $lte
  *           description: Filter by values less than or equal to this parameter. Useful for numbers and dates only.
  *         $like:
