@@ -320,7 +320,12 @@ export default class OrderModuleService
       orderCreditLineService,
     }: InjectedDependencies,
     protected readonly moduleDeclaration: InternalModuleDeclaration,
-    options?: { generateDisplayId?: () => Promise<string> }
+    options?: {
+      generateCustomDisplayId?: (
+        order: OrderTypes.CreateOrderDTO,
+        sharedContext: Context
+      ) => Promise<string | undefined>
+    }
   ) {
     // @ts-ignore
     super(...arguments)
@@ -349,7 +354,7 @@ export default class OrderModuleService
     this.orderCreditLineService_ = orderCreditLineService
 
     this.generateCustomDisplayId_ =
-      options?.generateDisplayId ?? this.generateCustomDisplayId_
+      options?.generateCustomDisplayId ?? this.generateCustomDisplayId_
   }
 
   __joinerConfig(): ModuleJoinerConfig {
