@@ -1043,10 +1043,7 @@ medusaIntegrationTestRunner({
         expect(draftOrder.discount_total).toEqual(700)
         expect(draftOrder.version).toEqual(2)
 
-        expect(draftOrder.items[0].adjustments[0].version).toEqual(2)
-        expect(draftOrder.items[1].adjustments[0].version).toEqual(2)
-
-        expect(orderPreview.items).toEqual(
+        expect(draftOrder.items).toEqual(
           expect.arrayContaining([
             expect.objectContaining({
               total: 5400,
@@ -1059,7 +1056,7 @@ medusaIntegrationTestRunner({
                   amount: 600,
                   promotion_id: promotion.id,
                   is_tax_inclusive: true,
-                  // version: 2,
+                  version: 2,
                 }),
               ],
             }),
@@ -1074,7 +1071,7 @@ medusaIntegrationTestRunner({
                   amount: 100,
                   promotion_id: promotion.id,
                   is_tax_inclusive: true,
-                  // version: 2,
+                  version: 2,
                 }),
               ],
             }),
@@ -1450,23 +1447,6 @@ medusaIntegrationTestRunner({
             }),
           ])
         )
-
-        // // remove initial promotion
-        // const { result } = await removeDraftOrderPromotionsWorkflow(
-        //   appContainer
-        // ).run({
-        //   input: {
-        //     order_id: response.data.draft_order.id,
-        //     promo_codes: [promotionAdditional20.code],
-        //   },
-        // })
-
-        // orderPreview = result
-
-        // // only 20% should be applied
-        // expect(orderPreview.total).toEqual(5600)
-        // expect(orderPreview.original_total).toEqual(7000)
-        // expect(orderPreview.discount_total).toEqual(1400)
 
         await api.delete(
           `/admin/draft-orders/${response.data.draft_order.id}/edit`,
