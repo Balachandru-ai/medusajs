@@ -1316,6 +1316,10 @@ export const filesMap = [
     "pathname": "/storefront-development/guides/express-checkout"
   },
   {
+    "filePath": "/www/apps/resources/app/storefront-development/guides/react-native-expo/page.mdx",
+    "pathname": "/storefront-development/guides/react-native-expo"
+  },
+  {
     "filePath": "/www/apps/resources/app/storefront-development/page.mdx",
     "pathname": "/storefront-development"
   },

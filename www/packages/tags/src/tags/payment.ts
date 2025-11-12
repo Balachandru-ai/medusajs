@@ -28,6 +28,10 @@ export const payment = [
     "path": "https://docs.medusajs.com/resources/storefront-development/guides/express-checkout"
   },
   {
+    "title": "Implement Mobile App with React Native, Expo, and Medusa",
+    "path": "https://docs.medusajs.com/resources/storefront-development/guides/react-native-expo"
+  },
+  {
     "title": "createPaymentCollectionsStep",
     "path": "https://docs.medusajs.com/resources/references/medusa-workflows/steps/createPaymentCollectionsStep"
   },

@@ -18,6 +18,7 @@ import { Providers } from "../providers"
 import coreTranslations from "../i18n/translations"
 import { getRouteMap } from "./routes/get-route.map"
 import { createRouteMap, getRouteExtensions } from "./routes/utils"
+import { sortMenuItemsByRank } from "./utils/sort-menu-items-by-rank"
 import {
   ConfigExtension,
   ConfigField,
@@ -181,12 +182,13 @@ export class DashboardApp {
         return
       }
 
-      const navItem: INavItem = {
+      const navItem: INavItem & { rank?: number } = {
         label: item.label,
         to: item.path,
         icon: item.icon ? <item.icon /> : undefined,
         items: [],
         nested: item.nested,
+        rank: item.rank,
         translationNs: item.translationNs,
       }
 
@@ -203,6 +205,12 @@ export class DashboardApp {
       }
 
       tempRegistry[item.path] = navItem
+    })
+
+    // Sort menu items by rank (ascending order, undefined ranks come last)
+    registry.forEach((items, key) => {
+      const sorted = sortMenuItemsByRank(items)
+      registry.set(key, sorted)
     })
 
     return registry
