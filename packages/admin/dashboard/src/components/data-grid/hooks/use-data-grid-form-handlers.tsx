@@ -192,11 +192,18 @@ function setValueToggleableNumber(
       : newValue.checked
     : determineChecked(quantity)
 
-  set(currentValues, field, {
-    ...currentValue,
-    quantity,
-    checked,
-  })
+  const fieldParts = field.split(".")
+  fieldParts.reduce((curr, key: string, index) => {
+    if (index === fieldParts.length - 1) {
+      curr[key] = {
+        ...currentValues,
+        quantity,
+        checked,
+      }
+    }
+    curr[key] ??= {}
+    return curr[key]
+  }, currentValues)
 }
 
 export function convertArrayToPrimitive(
