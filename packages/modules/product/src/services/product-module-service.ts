@@ -2951,7 +2951,6 @@ export default class ProductModuleService
   }
 
   private filterOptionValuesByProduct(product: any): void {
-    console.log("ocock")
     if (!product.options || !(product as any).product_options) {
       return
     }
