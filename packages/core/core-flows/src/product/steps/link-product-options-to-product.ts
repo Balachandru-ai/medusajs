@@ -28,7 +28,7 @@ export const linkProductOptionsToProductStepId =
  * @example
  * const data = linkProductOptionsToProductStep({
  *   product_id: "prod_123",
- *   product_option_ids: ["opt_123", "opt_321"]
+ *   add: ["opt_123", "opt_321"]
  * })
  */
 export const linkProductOptionsToProductStep = createStep(
