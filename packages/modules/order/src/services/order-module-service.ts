@@ -7,7 +7,6 @@ import {
   FilterableOrderReturnReasonProps,
   FindConfig,
   InferEntityType,
-  InternalModuleDeclaration,
   IOrderModuleService,
   ModuleJoinerConfig,
   ModulesSdkTypes,
@@ -319,7 +318,6 @@ export default class OrderModuleService
       orderExchangeService,
       orderCreditLineService,
     }: InjectedDependencies,
-    protected readonly moduleDeclaration: InternalModuleDeclaration,
     options?: {
       generateCustomDisplayId?: (
         order: OrderTypes.CreateOrderDTO,
