@@ -6,7 +6,7 @@
  * description: Add a list of promotions to a cart.
  * x-authenticated: false
  * externalDocs:
- *   url: https://docs.medusajs.com/v2/resources/storefront-development/cart/manage-promotions#add-promotion-to-cart
+ *   url: https://docs.medusajs.com/resources/storefront-development/cart/manage-promotions#add-promotion-to-cart
  *   description: "Storefront guide: How to add a promotion to cart."
  * parameters:
  *   - name: id

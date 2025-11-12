@@ -7,7 +7,7 @@ post:
     request.
   externalDocs:
     url: >-
-      https://docs.medusajs.com/v2/resources/storefront-development/customers/register
+      https://docs.medusajs.com/resources/storefront-development/customers/register
     description: 'Storefront guide: How to register a customer.'
   x-authenticated: true
   parameters:

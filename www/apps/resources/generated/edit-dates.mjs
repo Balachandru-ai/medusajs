@@ -6614,7 +6614,7 @@ export const generatedEditDates = {
   "app/data-model-repository-reference/methods/upsertWithReplace/page.mdx": "2025-10-28T16:02:30.479Z",
   "app/how-to-tutorials/tutorials/agentic-commerce/page.mdx": "2025-10-09T11:25:48.831Z",
   "app/storefront-development/production-optimizations/page.mdx": "2025-10-03T13:28:37.909Z",
-  "app/how-to-tutorials/tutorials/category-images/page.mdx": "2025-10-15T08:57:05.566Z",
+  "app/how-to-tutorials/tutorials/category-images/page.mdx": "2025-11-07T08:55:59.228Z",
   "app/infrastructure-modules/caching/page.mdx": "2025-10-13T11:46:36.452Z",
   "app/troubleshooting/subscribers/not-working/page.mdx": "2025-10-16T09:25:57.376Z",
   "references/js_sdk/admin/RefundReason/methods/js_sdk.admin.RefundReason.create/page.mdx": "2025-10-21T08:10:56.630Z",
@@ -6716,5 +6716,6 @@ export const generatedEditDates = {
   "references/types/HttpTypes/interfaces/types.HttpTypes.AdminShippingOptionTypeListParams/page.mdx": "2025-10-31T09:41:31.507Z",
   "references/core_flows/Payment/Workflows_Payment/functions/core_flows.Payment.Workflows_Payment.validateRefundPaymentExceedsCapturedAmountStep/page.mdx": "2025-11-05T12:22:20.221Z",
   "references/core_flows/Product/Workflows_Product/functions/core_flows.Product.Workflows_Product.batchImageVariantsWorkflow/page.mdx": "2025-11-05T12:22:20.639Z",
-  "references/core_flows/Product/Workflows_Product/functions/core_flows.Product.Workflows_Product.batchVariantImagesWorkflow/page.mdx": "2025-11-05T12:22:20.671Z"
+  "references/core_flows/Product/Workflows_Product/functions/core_flows.Product.Workflows_Product.batchVariantImagesWorkflow/page.mdx": "2025-11-05T12:22:20.671Z",
+  "app/storefront-development/guides/react-native-expo/page.mdx": "2025-11-06T07:18:45.347Z"
 }

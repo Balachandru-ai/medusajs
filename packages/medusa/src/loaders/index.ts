@@ -92,8 +92,10 @@ async function loadEntrypoints(
   )
 
   if (shouldLoadBackgroundProcessors(configModule)) {
-    await subscribersLoader(plugins, container)
-    await jobsLoader(plugins, container)
+    await promiseAll([
+      subscribersLoader(plugins, container),
+      jobsLoader(plugins, container),
+    ])
   }
 
   if (isWorkerMode(configModule)) {
@@ -119,17 +121,18 @@ async function loadEntrypoints(
     next()
   })
 
-  const { shutdown } = await expressLoader({
-    app: expressApp,
-    container,
-  })
-
-  await adminLoader({ app: expressApp, configModule, rootDirectory, plugins })
-  await apiLoader({
-    container,
-    plugins,
-    app: expressApp,
-  })
+  const [{ shutdown }] = await promiseAll([
+    expressLoader({
+      app: expressApp,
+      container,
+    }),
+    adminLoader({ app: expressApp, configModule, rootDirectory, plugins }),
+    apiLoader({
+      container,
+      plugins,
+      app: expressApp,
+    }),
+  ])
 
   return shutdown
 }
@@ -140,10 +143,8 @@ export async function initializeContainer(
     skipDbConnection?: boolean
   }
 ): Promise<MedusaContainer> {
-  // custom flags from medusa project
   await featureFlagsLoader(rootDirectory)
   const configDir = await configLoader(rootDirectory, "medusa-config")
-  // core flags
   await featureFlagsLoader(join(__dirname, ".."))
 
   const customLogger = configDir.logger ?? defaultLogger
