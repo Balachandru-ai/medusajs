@@ -1,5 +1,5 @@
 import { HttpTypes } from "@medusajs/types"
-import { Button, toast } from "@medusajs/ui"
+import { Button, Hint, Label, toast } from "@medusajs/ui"
 import { useMemo, useState } from "react"
 import { useTranslation } from "react-i18next"
 import * as zod from "zod"
@@ -21,6 +21,7 @@ type ProductOptionsManageFormProps = {
 
 const ProductOptionsManageSchema = zod.object({
   option_ids: zod.array(zod.string()),
+  option_values: zod.record(zod.array(zod.string())).optional(),
 })
 
 export const ProductOptionsManageForm = ({
@@ -37,7 +38,7 @@ export const ProductOptionsManageForm = ({
 
   const productOptionChoices = useMemo(() => {
     return product_options.map((option) => ({
-      value: option.id,
+      value: option.id, 
       label: option.title,
     }))
   }, [product_options])
@@ -46,9 +47,27 @@ export const ProductOptionsManageForm = ({
     product.options?.map((opt) => opt.id) || []
   )
 
+  const [selectedOptionValues, setSelectedOptionValues] = useState<
+    Record<string, string[]>
+  >(() => {
+    // Initialize with existing product option values
+    const initialValues: Record<string, string[]> = {}
+    product.options?.forEach((opt) => {
+      initialValues[opt.id] = opt.values?.map((v) => v.id) || []
+    })
+    return initialValues
+  })
+
   const form = useExtendableForm({
     defaultValues: {
       option_ids: product.options?.map((opt) => opt.id) || [],
+      option_values: (() => {
+        const initialValues: Record<string, string[]> = {}
+        product.options?.forEach((opt) => {
+          initialValues[opt.id] = opt.values?.map((v) => v.id) || []
+        })
+        return initialValues
+      })(),
     },
     schema: ProductOptionsManageSchema,
     configs: configs,
@@ -60,19 +79,87 @@ export const ProductOptionsManageForm = ({
   const handleProductOptionSelect = (optionIds: string[]) => {
     setSelectedOptionIds(optionIds)
     form.setValue("option_ids", optionIds)
+
+    // Initialize selected values for new options (select all by default)
+    const newSelectedValues: Record<string, string[]> = {}
+    const selectedProductOptions = product_options.filter((option) =>
+      optionIds.includes(option.id)
+    )
+
+    selectedProductOptions.forEach((option) => {
+      // If option was already selected, keep its current value selection
+      if (selectedOptionValues[option.id]) {
+        newSelectedValues[option.id] = selectedOptionValues[option.id]
+      } else {
+        // New option - select all values by default
+        newSelectedValues[option.id] = option.values?.map((v) => v.id) || []
+      }
+    })
+
+    setSelectedOptionValues(newSelectedValues)
+    form.setValue("option_values", newSelectedValues)
+  }
+
+  const handleValueChange = (optionId: string, valueIds: string[]) => {
+    // Ensure at least one value is selected
+    if (valueIds.length === 0) {
+      return
+    }
+
+    const updatedSelectedValues = {
+      ...selectedOptionValues,
+      [optionId]: valueIds,
+    }
+
+    setSelectedOptionValues(updatedSelectedValues)
+    form.setValue("option_values", updatedSelectedValues)
   }
 
   const handleSubmit = form.handleSubmit(async (data) => {
     const currentOptionIds = product.options?.map((opt) => opt.id) || []
     const newOptionIds = data.option_ids
 
-    // Determine which options to add and remove
-    const optionsToAdd = newOptionIds.filter(
-      (id) => !currentOptionIds.includes(id)
-    )
-    const optionsToRemove = currentOptionIds.filter(
-      (id) => !newOptionIds.includes(id)
-    )
+    const optionsToAdd: { id: string; value_ids?: string[] }[] = []
+    const optionsToRemove: string[] = []
+
+    // Check for completely removed options
+    for (const currentId of currentOptionIds) {
+      if (!newOptionIds.includes(currentId)) {
+        optionsToRemove.push(currentId)
+      }
+    }
+
+    // Check for new options or options with changed values
+    for (const newId of newOptionIds) {
+      const isNewOption = !currentOptionIds.includes(newId)
+
+      if (isNewOption) {
+        // Completely new option - add it
+        optionsToAdd.push({
+          id: newId,
+          value_ids: data.option_values?.[newId],
+        })
+      } else {
+        // Option already exists - check if values have changed
+        const currentOption = product.options?.find((opt) => opt.id === newId)
+        const currentValueIds = currentOption?.values?.map((v) => v.id).sort() || []
+        const newValueIds = [...(data.option_values?.[newId] || [])].sort()
+
+        // Compare value arrays
+        const valuesChanged =
+          currentValueIds.length !== newValueIds.length ||
+          currentValueIds.some((id, index) => id !== newValueIds[index])
+
+        if (valuesChanged) {
+          // Values changed - remove and re-add with new values
+          optionsToRemove.push(newId)
+          optionsToAdd.push({
+            id: newId,
+            value_ids: data.option_values?.[newId],
+          })
+        }
+      }
+    }
 
     await mutateAsync(
       {
@@ -127,6 +214,49 @@ export const ProductOptionsManageForm = ({
                 )
               }}
             />
+            {selectedOptionIds.length > 0 && (
+              <div className="flex flex-col gap-y-4">
+                <div className="flex flex-col">
+                  <Label weight="plus">{t("fields.values")}</Label>
+                  <Hint>{t("products.create.variants.selectValuesHint")}</Hint>
+                </div>
+                <div className="flex flex-col gap-y-3">
+                  {product_options
+                    .filter((option) => selectedOptionIds.includes(option.id))
+                    .map((option) => {
+                      const valueOptions =
+                        option.values
+                          ?.sort((a, b) => {
+                            const rankA = a.rank ?? Number.MAX_VALUE
+                            const rankB = b.rank ?? Number.MAX_VALUE
+                            return rankA - rankB
+                          })
+                          .map((v) => ({
+                            value: v.id,
+                            label: v.value,
+                          })) || []
+
+                      return (
+                        <div key={option.id} className="flex flex-col gap-y-2">
+                          <Label size="small" weight="plus">
+                            {option.title}
+                          </Label>
+                          <Combobox
+                            value={selectedOptionValues[option.id] || []}
+                            onChange={(value) =>
+                              handleValueChange(option.id, value as string[])
+                            }
+                            options={valueOptions}
+                            placeholder={t(
+                              "products.fields.options.variantionsPlaceholder"
+                            )}
+                          />
+                        </div>
+                      )
+                    })}
+                </div>
+              </div>
+            )}
           </div>
         </RouteDrawer.Body>
         <RouteDrawer.Footer>

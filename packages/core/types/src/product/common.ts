@@ -1735,4 +1735,9 @@ export type ProductOptionProductPair = {
    * The product's ID.
    */
   product_id: string
+
+  /**
+   * The IDs of specific option values to link. If not provided, all values will be linked.
+   */
+  product_option_value_ids?: string[]
 }

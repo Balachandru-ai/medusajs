@@ -1,4 +1,4 @@
-import { IProductModuleService } from "@medusajs/framework/types"
+import { IProductModuleService, ProductTypes } from "@medusajs/framework/types"
 import { Modules, promiseAll } from "@medusajs/framework/utils"
 import { createStep, StepResponse } from "@medusajs/framework/workflows-sdk"
 
@@ -13,7 +13,7 @@ export type LinkProductOptionsToProductStepInput = {
   /**
    * The product options to add to the product.
    */
-  add?: string[]
+  add?: (string | Omit<ProductTypes.ProductOptionProductPair, "product_id">)[]
   /**
    * The product options to remove from the product.
    */
@@ -36,10 +36,17 @@ export const linkProductOptionsToProductStep = createStep(
   async (input: LinkProductOptionsToProductStepInput, { container }) => {
     const service = container.resolve<IProductModuleService>(Modules.PRODUCT)
 
-    const toAdd = (input.add ?? []).map((optionId) => {
+    const toAdd = (input.add ?? []).map((option) => {
+      if (typeof option === "string") {
+        return {
+          product_option_id: option,
+          product_id: input.product_id,
+        }
+      }
       return {
-        product_option_id: optionId,
+        product_option_id: option.product_option_id,
         product_id: input.product_id,
+        product_option_value_ids: option.product_option_value_ids,
       }
     })
 

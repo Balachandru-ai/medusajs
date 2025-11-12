@@ -1219,8 +1219,17 @@ export default class ProductModuleService
         (p) => p.product_option_id === (ppo as any).product_option_id
       )
       if (originalPair) {
-        const values = optionValuesMap.get(originalPair.product_option_id) || []
-        for (const value of values) {
+        const allValues =
+          optionValuesMap.get(originalPair.product_option_id) || []
+
+        // If specific value IDs were provided, use only those; otherwise use all values
+        const valuesToLink = originalPair.product_option_value_ids
+          ? allValues.filter((v) =>
+              originalPair.product_option_value_ids!.includes(v.id)
+            )
+          : allValues
+
+        for (const value of valuesToLink) {
           valuePairsToCreate.push({
             product_product_option_id: ppo.id,
             product_option_value_id: value.id,
@@ -1277,8 +1286,16 @@ export default class ProductModuleService
         $or: pairs,
       }
     )
-    await this.productProductOptionService_.softDelete(
-      productOptionsProducts.map(({ id }) => id),
+
+    const productOptionsProductIds = productOptionsProducts.map(({ id }) => id)
+
+    await this.productProductOptionValueService_.delete(
+      productOptionsProductIds.map((id) => ({ product_product_option_id: id })),
+      sharedContext
+    )
+
+    await this.productProductOptionService_.delete(
+      productOptionsProductIds,
       sharedContext
     )
   }
