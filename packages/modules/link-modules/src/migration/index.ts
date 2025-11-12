@@ -31,6 +31,8 @@ export class MigrationsExecutionPlanner implements ILinkMigrationsPlanner {
    */
   #dbConfig: ReturnType<typeof ModulesSdkUtils.loadDatabaseConfig>
 
+  #schema: string = "public"
+
   /**
    * The set of commands that are unsafe to execute automatically when
    * performing "alter table"
@@ -56,6 +58,7 @@ export class MigrationsExecutionPlanner implements ILinkMigrationsPlanner {
     options?: ModuleServiceInitializeOptions
   ) {
     this.#dbConfig = ModulesSdkUtils.loadDatabaseConfig("link_modules", options)
+    this.#schema = options?.database?.schema ?? "public"
     this.#linksEntities = joinerConfig
       .map((config) => {
         if (config.isReadOnlyLink) {
@@ -96,7 +99,7 @@ export class MigrationsExecutionPlanner implements ILinkMigrationsPlanner {
     orm: MikroORM<PostgreSqlDriver>
   ): Promise<void> {
     await orm.em.getDriver().getConnection().execute(`
-      CREATE TABLE IF NOT EXISTS "${this.tableName}" (
+      CREATE TABLE IF NOT EXISTS "${this.#schema}"."${this.tableName}" (
         id SERIAL PRIMARY KEY,
         table_name VARCHAR(255) NOT NULL UNIQUE,
         link_descriptor JSONB NOT NULL DEFAULT '{}'::jsonb,
@@ -125,7 +128,8 @@ export class MigrationsExecutionPlanner implements ILinkMigrationsPlanner {
         >(
           `
         SELECT table_name
-        FROM information_schema.tables;
+        FROM information_schema.tables
+        WHERE table_schema = '${this.#schema}';
     `
         )
     )
@@ -155,7 +159,9 @@ export class MigrationsExecutionPlanner implements ILinkMigrationsPlanner {
       .getConnection()
       .execute(
         `
-                  INSERT INTO ${this.tableName} (table_name, link_descriptor) VALUES ${positionalArgs} ON CONFLICT DO NOTHING;
+                  INSERT INTO "${this.#schema}"."${
+          this.tableName
+        }" (table_name, link_descriptor) VALUES ${positionalArgs} ON CONFLICT DO NOTHING;
         `,
         existingTables.flatMap((tableName, index) => [
           tableName,
@@ -185,7 +191,12 @@ export class MigrationsExecutionPlanner implements ILinkMigrationsPlanner {
       .getConnection()
       .execute(
         `
-      INSERT INTO "${this.tableName}" (table_name, link_descriptor) VALUES (?, ?);
+      SET LOCAL search_path TO "${this.#schema}"; 
+      
+      INSERT INTO "${
+        this.tableName
+      }" (table_name, link_descriptor) VALUES (?, ?);
+
       ${sql}
     `,
         [tableName, linkDescriptor]
@@ -201,8 +212,10 @@ export class MigrationsExecutionPlanner implements ILinkMigrationsPlanner {
     tableName: string
   ) {
     await orm.em.getDriver().getConnection().execute(`
-      DROP TABLE IF EXISTS "${tableName}";
-      DELETE FROM "${this.tableName}" WHERE table_name = '${tableName}';
+      DROP TABLE IF EXISTS "${this.#schema}"."${tableName}";
+      DELETE FROM "${this.#schema}"."${
+      this.tableName
+    }" WHERE table_name = '${tableName}';
     `)
   }
 
@@ -227,7 +240,9 @@ export class MigrationsExecutionPlanner implements ILinkMigrationsPlanner {
         link_descriptor: PlannerActionLinkDescriptor
       }[]
     >(`
-      SELECT table_name, link_descriptor from "${this.tableName}"
+      SELECT table_name, link_descriptor from "${this.#schema}"."${
+      this.tableName
+    }"
     `)
 
     return results.map((tuple) => ({
@@ -410,10 +425,12 @@ export class MigrationsExecutionPlanner implements ILinkMigrationsPlanner {
     descriptor: PlannerActionLinkDescriptor
   ) {
     await orm.em.getDriver().getConnection().execute(`
-      ALTER TABLE "${oldName}" RENAME TO "${newName}";
-      UPDATE "${
-        this.tableName
-      }" SET table_name = '${newName}', link_descriptor = '${JSON.stringify(
+      ALTER TABLE "${this.#schema}"."${oldName}" RENAME TO "${
+      this.#schema
+    }"."${newName}";
+      UPDATE "${this.#schema}"."${
+      this.tableName
+    }" SET table_name = '${newName}', link_descriptor = '${JSON.stringify(
       descriptor
     )}' WHERE table_name = '${oldName}';
     `)
@@ -504,7 +521,10 @@ export class MigrationsExecutionPlanner implements ILinkMigrationsPlanner {
           case "create":
             return await this.createLinkTable(orm, action)
           case "update":
-            return await orm.em.getDriver().getConnection().execute(action.sql)
+            const sql = `SET LOCAL search_path TO "${this.#schema}"; \n\n${
+              action.sql
+            }`
+            return await orm.em.getDriver().getConnection().execute(sql)
           default:
             return
         }
