@@ -34,6 +34,7 @@ export const getColumnCategory = (
     fieldName.includes("_id") ||
     fieldName === "id" ||
     fieldName.includes("display_id") ||
+    fieldName.includes("custom_display_id") ||
     fieldName === "code"
   ) {
     return "identifier"
@@ -195,7 +196,7 @@ export const getTypeInfoFromGraphQLType = (
       semantic_type: "object",
       context: "metadata",
     }
-  } else if (fieldName === "display_id") {
+  } else if (fieldName === "display_id" || fieldName === "custom_display_id") {
     return {
       data_type: "string",
       semantic_type: "identifier",
@@ -268,6 +269,7 @@ const ADDITIONAL_ENTITY_TYPES: Partial<Record<Entities, string[]>> = {
 export const DEFAULT_COLUMN_ORDERS: Record<Entities, Record<string, number>> = {
   orders: {
     display_id: 100,
+    custom_display_id: 101,
     created_at: 200,
     customer_display: 300,
     "sales_channel.name": 400,
@@ -372,6 +374,10 @@ export const generateEntityColumns = (
 
   if (entity === "orders" && !directFields.includes("display_id")) {
     directFields.unshift("display_id")
+  }
+
+  if (entity === "orders" && !directFields.includes("custom_display_id")) {
+    directFields.unshift("custom_display_id")
   }
 
   const additionalTypes = ADDITIONAL_ENTITY_TYPES[entity as Entities] ?? []

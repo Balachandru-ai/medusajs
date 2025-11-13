@@ -73,6 +73,12 @@ const _Order = model
       where: "deleted_at IS NULL",
     },
     {
+      name: "IDX_order_custom_display_id",
+      on: ["custom_display_id"],
+      unique: false,
+      where: "deleted_at IS NULL",
+    },
+    {
       name: "IDX_order_region_id",
       on: ["region_id"],
       unique: false,

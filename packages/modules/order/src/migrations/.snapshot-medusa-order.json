@@ -405,6 +405,15 @@
           "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_display_id\" ON \"order\" (\"display_id\") WHERE deleted_at IS NULL"
         },
         {
+          "keyName": "IDX_order_custom_display_id",
+          "columnNames": [],
+          "composite": false,
+          "constraint": false,
+          "primary": false,
+          "unique": false,
+          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_custom_display_id\" ON \"order\" (\"custom_display_id\") WHERE deleted_at IS NULL"
+        },
+        {
           "keyName": "IDX_order_region_id",
           "columnNames": [],
           "composite": false,
