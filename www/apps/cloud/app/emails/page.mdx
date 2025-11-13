@@ -37,6 +37,41 @@ Medusa enables Medusa Emails by default for all Cloud projects if you haven't co
 
 So, if you have a notification provider like the [SendGrid Notification Module Provider](!resources!/infrastructure-modules/notification/sendgrid), remove it from your Medusa application to use Medusa Emails.
 
+#### Local Development Email Setup
+
+Since Medusa Emails isn't available for local development, you can set up the [Local Notification Module Provider](!resources!/infrastructure-modules/notification/local) to test email sending functionality in your local environment. This provider will log the email details to the console instead of sending them.
+
+For example, you can add the following configuration to `medusa-config.ts`:
+
+```ts title="medusa-config.ts"
+module.exports = defineConfig({
+  // ...
+  modules: [
+    {
+      resolve: "@medusajs/medusa/notification",
+      options: {
+        providers: [
+          // ...
+          {
+            resolve: "@medusajs/medusa/notification-local",
+            id: "local",
+            options: {
+              channels: [
+                process.env.NODE_ENV === "development"
+                  ? "email"
+                  : "feed",
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+})
+```
+
+In this setup, the Local Notification Module Provider is used for the `email` channel only in the development environment. In other environments, it uses the `feed` channel.
+
 ### (Optional) Verify Your Email Sender Domain
 
 By default, Medusa Emails sends emails using a randomly generated email address at the domain `medusajsemails.com`.
