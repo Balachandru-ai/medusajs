@@ -212,6 +212,7 @@ export const ProductOptionsManageForm = ({
                         options={productOptionChoices}
                         placeholder={t("products.options.manage.placeholder")}
                         disabled={isLoading}
+                        displayMode="chips"
                       />
                     </Form.Control>
                     <Form.ErrorMessage />
@@ -255,6 +256,7 @@ export const ProductOptionsManageForm = ({
                             placeholder={t(
                               "products.fields.options.variantionsPlaceholder"
                             )}
+                            displayMode="chips"
                           />
                         </div>
                       )
