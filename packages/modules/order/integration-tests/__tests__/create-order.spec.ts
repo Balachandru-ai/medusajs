@@ -412,7 +412,7 @@ moduleIntegrationTestRunner<IOrderModuleService>({
         expect(orderRelatedEntities.orderBillingAddress).toBeNull()
       })
 
-      it.only("should transform requested fields and relations to match the db schema and return the order", async function () {
+      it("should transform requested fields and relations to match the db schema and return the order", async function () {
         const createdOrder = await service.createOrders(input)
         const getOrder = await service.retrieveOrder(createdOrder.id, {
           select: [
