@@ -1,7 +1,5 @@
 import {
-  BigNumber,
   ChangeActionType,
-  getLineItemTotals,
   MathBN,
   MedusaError,
 } from "@medusajs/framework/utils"
@@ -33,39 +31,6 @@ OrderChangeProcessing.registerActionType(ChangeActionType.ITEM_UPDATE, {
       existing.adjustments = action.details.adjustments
     }
 
-    const itemTotals = getLineItemTotals(
-      {
-        id: existing.id,
-        unit_price: new BigNumber(existing.unit_price),
-        quantity: new BigNumber(currentQuantity),
-        is_tax_inclusive: existing.is_tax_inclusive,
-        tax_lines: existing.tax_lines ?? [],
-        adjustments: existing.adjustments ?? [],
-        detail: {
-          fulfilled_quantity: new BigNumber(existing.detail.fulfilled_quantity),
-          delivered_quantity: new BigNumber(existing.detail.delivered_quantity),
-          shipped_quantity: new BigNumber(existing.detail.shipped_quantity),
-          return_requested_quantity: new BigNumber(
-            existing.detail.return_requested_quantity
-          ),
-          return_received_quantity: new BigNumber(
-            existing.detail.return_received_quantity
-          ),
-          return_dismissed_quantity: new BigNumber(
-            existing.detail.return_dismissed_quantity
-          ),
-          written_off_quantity: new BigNumber(
-            existing.detail.written_off_quantity
-          ),
-        },
-      },
-      {}
-    )
-
-    const unitTotal = MathBN.eq(itemTotals.quantity, 0)
-      ? 0
-      : MathBN.div(itemTotals.total, itemTotals.quantity)
-
     if (action.details.unit_price) {
       const currentUnitPrice = MathBN.convert(action.details.unit_price)
       const originalTotal = MathBN.mult(originalUnitPrice, originalQuantity)
@@ -81,7 +46,7 @@ OrderChangeProcessing.registerActionType(ChangeActionType.ITEM_UPDATE, {
 
     setActionReference(existing, action, options)
 
-    return MathBN.mult(unitTotal, quantityDiff)
+    return MathBN.mult(existing.unit_price, quantityDiff)
   },
   validate({ action, currentOrder }) {
     const refId = action.details?.reference_id
