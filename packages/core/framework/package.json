@@ -100,7 +100,7 @@
     "@medusajs/cli": "2.11.3",
     "connect-dynamodb": "^3.0.5",
     "ioredis": "^5.4.1",
-    "vite": "^5.4.14"
+    "vite": "^5.4.21"
   },
   "peerDependenciesMeta": {
     "@aws-sdk/client-dynamodb": {
