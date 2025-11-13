@@ -602,6 +602,21 @@ export interface OrderLineItemTotalsDTO {
   refundable_total_per_unit: BigNumberValue
 
   /**
+   * The total amount of the line item that has been requested for return.
+   */
+  return_requested_total: BigNumberValue
+
+  /**
+   * The total amount of the line item that has been received from a return.
+   */
+  return_received_total: BigNumberValue
+
+  /**
+   * The total amount of the line item that has been dismissed by a return.
+   */
+  return_dismissed_total: BigNumberValue
+
+  /**
    * The raw original total of the order line item.
    *
    * @ignore
@@ -691,6 +706,21 @@ export interface OrderLineItemTotalsDTO {
    * @ignore
    */
   raw_refundable_total_per_unit: BigNumberRawValue
+
+  /**
+   * The raw total amount of the line item that has been requested for return.
+   */
+  raw_return_requested_total: BigNumberRawValue
+
+  /**
+   * The raw total amount of the line item that has been received from a return.
+   */
+  raw_return_received_total: BigNumberRawValue
+
+  /**
+   * The raw total amount of the line item that has been dismissed by a return.
+   */
+  raw_return_dismissed_total: BigNumberRawValue
 }
 
 /**
@@ -2061,6 +2091,7 @@ export type FulfillmentStatus =
   | "shipped"
   | "partially_delivered"
   | "delivered"
+  | "returned"
   | "canceled"
 
 /**

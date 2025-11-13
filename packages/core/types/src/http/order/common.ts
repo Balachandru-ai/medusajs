@@ -702,6 +702,7 @@ type FulfillmentStatus =
   | "shipped"
   | "partially_delivered"
   | "delivered"
+  | "returned"
   | "canceled"
 
 export interface BaseOrder {
