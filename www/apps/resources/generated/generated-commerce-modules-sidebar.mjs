@@ -1239,6 +1239,14 @@ const generatedgeneratedCommerceModulesSidebarSidebar = {
               "loaded": true,
               "isPathHref": true,
               "type": "ref",
+              "title": "Implement Mobile App with React Native, Expo, and Medusa",
+              "path": "https://docs.medusajs.com/resources/storefront-development/guides/react-native-expo",
+              "children": []
+            },
+            {
+              "loaded": true,
+              "isPathHref": true,
+              "type": "ref",
               "title": "Manage Cart Promotions in Storefront",
               "path": "https://docs.medusajs.com/resources/storefront-development/cart/manage-promotions",
               "children": []
@@ -3476,6 +3484,14 @@ const generatedgeneratedCommerceModulesSidebarSidebar = {
               "type": "ref",
               "title": "Implement Express Checkout with Medusa",
               "path": "https://docs.medusajs.com/resources/storefront-development/guides/express-checkout",
+              "children": []
+            },
+            {
+              "loaded": true,
+              "isPathHref": true,
+              "type": "ref",
+              "title": "Implement Mobile App with React Native, Expo, and Medusa",
+              "path": "https://docs.medusajs.com/resources/storefront-development/guides/react-native-expo",
               "children": []
             }
           ]
@@ -6309,6 +6325,14 @@ const generatedgeneratedCommerceModulesSidebarSidebar = {
               "type": "ref",
               "title": "Implement Express Checkout with Medusa",
               "path": "https://docs.medusajs.com/resources/storefront-development/guides/express-checkout",
+              "children": []
+            },
+            {
+              "loaded": true,
+              "isPathHref": true,
+              "type": "ref",
+              "title": "Implement Mobile App with React Native, Expo, and Medusa",
+              "path": "https://docs.medusajs.com/resources/storefront-development/guides/react-native-expo",
               "children": []
             },
             {
@@ -9426,6 +9450,14 @@ const generatedgeneratedCommerceModulesSidebarSidebar = {
               "loaded": true,
               "isPathHref": true,
               "type": "ref",
+              "title": "Implement Mobile App with React Native, Expo, and Medusa",
+              "path": "https://docs.medusajs.com/resources/storefront-development/guides/react-native-expo",
+              "children": []
+            },
+            {
+              "loaded": true,
+              "isPathHref": true,
+              "type": "ref",
               "title": "Payment with Stripe in React Storefront",
               "path": "https://docs.medusajs.com/resources/storefront-development/checkout/payment/stripe",
               "children": []
@@ -11796,6 +11828,14 @@ const generatedgeneratedCommerceModulesSidebarSidebar = {
               "type": "ref",
               "title": "Implement Express Checkout with Medusa",
               "path": "https://docs.medusajs.com/resources/storefront-development/guides/express-checkout",
+              "children": []
+            },
+            {
+              "loaded": true,
+              "isPathHref": true,
+              "type": "ref",
+              "title": "Implement Mobile App with React Native, Expo, and Medusa",
+              "path": "https://docs.medusajs.com/resources/storefront-development/guides/react-native-expo",
               "children": []
             },
             {
@@ -14372,6 +14412,14 @@ const generatedgeneratedCommerceModulesSidebarSidebar = {
               "type": "ref",
               "title": "Implement Express Checkout with Medusa",
               "path": "https://docs.medusajs.com/resources/storefront-development/guides/express-checkout",
+              "children": []
+            },
+            {
+              "loaded": true,
+              "isPathHref": true,
+              "type": "ref",
+              "title": "Implement Mobile App with React Native, Expo, and Medusa",
+              "path": "https://docs.medusajs.com/resources/storefront-development/guides/react-native-expo",
               "children": []
             },
             {
