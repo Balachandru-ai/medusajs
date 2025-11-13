@@ -281,6 +281,7 @@ medusaIntegrationTestRunner({
           status: "pending",
           version: 1,
           display_id: 2,
+          custom_display_id: null,
           payment_collections: [],
           payment_status: "not_paid",
           region_id: "test_region_id",
