@@ -1,6 +1,6 @@
 import { medusaIntegrationTestRunner } from "@medusajs/test-utils"
 import { HttpTypes } from "@medusajs/types"
-import { ModuleRegistrationName, ProductStatus } from "@medusajs/utils"
+import { ApiKeyType, ModuleRegistrationName, ProductStatus } from "@medusajs/utils"
 import { adminHeaders, createAdminUser, } from "../../../../helpers/create-admin-user"
 import { setupTaxStructure } from "../../../../modules/__tests__/fixtures"
 
@@ -14,12 +14,14 @@ medusaIntegrationTestRunner({
     let testDraftOrder: HttpTypes.AdminDraftOrder
     let shippingOption: HttpTypes.AdminShippingOption
     let shippingOptionHeavy: HttpTypes.AdminShippingOption
+    let apiKey: HttpTypes.AdminApiKeyResponse['api_key']
+    let userId: string
 
     beforeEach(async () => {
       const container = getContainer()
 
       await setupTaxStructure(container.resolve(ModuleRegistrationName.TAX))
-      await createAdminUser(dbConnection, adminHeaders, container)
+      userId = (await createAdminUser(dbConnection, adminHeaders, container)).user.id
 
       region = (
         await api.post(
@@ -216,6 +218,36 @@ medusaIntegrationTestRunner({
 
         expect(response.status).toBe(200)
         expect(response.data.draft_order.email).toBe("test_new@test.com")
+      })
+
+      it("should set created_by to id of user linked to secret key", async () => {
+        apiKey = (await api.post('/admin/api-keys', {
+            title: 'secret-key',
+            type: ApiKeyType.SECRET
+        }, adminHeaders)).data.api_key
+
+        const draftOrderResponse = await api.post(
+            `/admin/draft-orders/${testDraftOrder.id}`,
+            {
+              email: "test_new@test.com",
+            },
+            {
+                auth: {
+                  username: apiKey.token,
+                },
+              }
+        )
+
+        expect(draftOrderResponse.status).toBe(200)
+        expect(draftOrderResponse.data.draft_order.email).toBe("test_new@test.com")
+
+        const orderChange = (await api.get(`/admin/orders/${testDraftOrder.id}/changes`, adminHeaders)).data.order_changes[0]
+
+        expect(orderChange).toEqual(
+            expect.objectContaining({
+                created_by: userId
+            })
+        )
       })
     })
 
