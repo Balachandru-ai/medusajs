@@ -38,7 +38,7 @@ export const ProductOptionsManageForm = ({
 
   const productOptionChoices = useMemo(() => {
     return product_options.map((option) => ({
-      value: option.id, 
+      value: option.id,
       label: option.title,
     }))
   }, [product_options])
@@ -119,7 +119,7 @@ export const ProductOptionsManageForm = ({
     const currentOptionIds = product.options?.map((opt) => opt.id) || []
     const newOptionIds = data.option_ids
 
-    const optionsToAdd: { id: string; value_ids?: string[] }[] = []
+    const optionsToAdd: (string | { id: string; value_ids: string[] })[] = []
     const optionsToRemove: string[] = []
 
     // Check for completely removed options
@@ -134,29 +134,34 @@ export const ProductOptionsManageForm = ({
       const isNewOption = !currentOptionIds.includes(newId)
 
       if (isNewOption) {
-        // Completely new option - add it
-        optionsToAdd.push({
-          id: newId,
-          value_ids: data.option_values?.[newId],
-        })
+        optionsToAdd.push(
+          data.option_values
+            ? {
+                id: newId,
+                value_ids: data.option_values[newId],
+              }
+            : newId
+        )
       } else {
-        // Option already exists - check if values have changed
         const currentOption = product.options?.find((opt) => opt.id === newId)
-        const currentValueIds = currentOption?.values?.map((v) => v.id).sort() || []
+        const currentValueIds =
+          currentOption?.values?.map((v) => v.id).sort() || []
         const newValueIds = [...(data.option_values?.[newId] || [])].sort()
 
-        // Compare value arrays
         const valuesChanged =
           currentValueIds.length !== newValueIds.length ||
           currentValueIds.some((id, index) => id !== newValueIds[index])
 
         if (valuesChanged) {
-          // Values changed - remove and re-add with new values
           optionsToRemove.push(newId)
-          optionsToAdd.push({
-            id: newId,
-            value_ids: data.option_values?.[newId],
-          })
+          optionsToAdd.push(
+            data.option_values
+              ? {
+                  id: newId,
+                  value_ids: data.option_values[newId],
+                }
+              : newId
+          )
         }
       }
     }
