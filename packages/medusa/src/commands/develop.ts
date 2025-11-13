@@ -12,6 +12,8 @@ import { EOL } from "os"
 import path from "path"
 import BackendHmrFeatureFlag from "../feature-flags/backend-hmr"
 import { initializeContainer } from "../loaders"
+import { default as startApp } from "./start"
+import { reloadResources } from "./utils/dev-server"
 
 const defaultConfig = {
   padding: 5,
@@ -27,10 +29,10 @@ export default async function ({ types, directory }) {
     BackendHmrFeatureFlag.key
   )
 
-  if (isBackendHmrEnabled) {
-    logger.info("⚡ Backend HMR enabled (experimental) - Hot reload is active")
-    return await startHmrDevServer({ types, directory, logger })
-  }
+  // if (isBackendHmrEnabled) {
+  //   logger.info("⚡ Backend HMR enabled (experimental) - Hot reload is active")
+  //   return await startHmrDevServer({ types, directory, logger })
+  // }
 
   // Legacy fork-based dev server
   logger.info("Using standard dev server (restart on file change)")
@@ -70,7 +72,13 @@ export default async function ({ types, directory }) {
      * restart the dev server instead of asking the user to re-run
      * the command.
      */
-    start() {
+    async start() {
+      if (isBackendHmrEnabled) {
+        ;(global as any).__MEDUSA_HMR_ROUTE_REGISTRY__ = true
+        await startApp({ directory })
+        return
+      }
+
       this.childProcess = fork(cliPath, ["start", ...args], {
         cwd: directory,
         env: {
@@ -90,7 +98,15 @@ export default async function ({ types, directory }) {
      * Restarts the development server by cleaning up the existing
      * child process and forking a new one
      */
-    restart() {
+    async restart(action, file) {
+      if (isBackendHmrEnabled) {
+        const absoluteFilePath = path.resolve(directory, file)
+        const reloaderArguments = { action, absoluteFilePath, logger }
+        await reloadResources(reloaderArguments)
+
+        return
+      }
+
       if (this.childProcess) {
         this.childProcess.removeAllListeners()
         if (process.platform === "win32") {
@@ -99,7 +115,7 @@ export default async function ({ types, directory }) {
           this.childProcess.kill("SIGINT")
         }
       }
-      this.start()
+      await this.start()
     },
 
     /**
@@ -125,23 +141,25 @@ export default async function ({ types, directory }) {
         ],
       })
 
-      this.watcher.on("add", (file) => {
+      const action = isBackendHmrEnabled ? "reloading" : "restarting"
+
+      this.watcher.on("add", async (file) => {
         logger.info(
-          `${path.relative(directory, file)} created: Restarting dev server`
+          `${path.relative(directory, file)} created: ${action} dev server`
         )
-        this.restart()
+        await this.restart("add", file)
       })
-      this.watcher.on("change", (file) => {
+      this.watcher.on("change", async (file) => {
         logger.info(
-          `${path.relative(directory, file)} modified: Restarting dev server`
+          `${path.relative(directory, file)} modified: ${action} dev server`
         )
-        this.restart()
+        await this.restart("change", file)
       })
-      this.watcher.on("unlink", (file) => {
+      this.watcher.on("unlink", async (file) => {
         logger.info(
-          `${path.relative(directory, file)} removed: Restarting dev server`
+          `${path.relative(directory, file)} removed: ${action} dev server`
         )
-        this.restart()
+        await this.restart("unlink", file)
       })
 
       this.watcher.on("ready", function () {
@@ -169,7 +187,7 @@ export default async function ({ types, directory }) {
     process.exit(0)
   })
 
-  devServer.start()
+  await devServer.start()
   devServer.watch()
 }
 
@@ -177,6 +195,7 @@ export default async function ({ types, directory }) {
  * Start the HMR-enabled dev server with Vite
  * This is used when the backend_hmr feature flag is enabled
  */
+// @ts-ignore
 async function startHmrDevServer({
   types,
   directory,

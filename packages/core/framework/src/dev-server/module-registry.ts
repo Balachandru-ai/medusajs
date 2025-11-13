@@ -73,7 +73,8 @@ export class ModuleRegistryImpl implements ModuleRegistry {
    * Get statistics about tracked modules
    */
   getStats(): {
-    total: number
+    totalFiles: number
+    totalModules: number
     byType: Record<string, number>
   } {
     const byType: Record<string, number> = {}
@@ -83,7 +84,8 @@ export class ModuleRegistryImpl implements ModuleRegistry {
     }
 
     return {
-      total: this.modules.size,
+      totalFiles: this.modules.size,
+      totalModules: this.modules.size,
       byType,
     }
   }
@@ -93,5 +95,5 @@ export class ModuleRegistryImpl implements ModuleRegistry {
  * Create a new module registry instance
  */
 export function createModuleRegistry(): ModuleRegistry {
-  return new ModuleRegistryImpl()
+  return new ModuleRegistryImpl() as any
 }

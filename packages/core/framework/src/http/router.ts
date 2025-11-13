@@ -1,6 +1,11 @@
 import { ContainerRegistrationKeys, parseCorsOrigins } from "@medusajs/utils"
 import cors, { CorsOptions } from "cors"
-import type { ErrorRequestHandler, Express, RequestHandler } from "express"
+import type {
+  ErrorRequestHandler,
+  Express,
+  IRouter,
+  RequestHandler,
+} from "express"
 import type {
   AdditionalDataValidatorRoute,
   BodyParserConfigRoute,
@@ -112,6 +117,51 @@ export class ApiLoader {
   }
 
   /**
+   * Remove a route from Express by manipulating the router stack
+   * This is the tricky part - Express doesn't have a built-in way to remove routes
+   */
+
+  async unregisterExpressHandler(absolutePath: string) {
+    let routePathToDelete
+    try {
+      const sourceDir = this.#sourceDirs.find((dir) =>
+        absolutePath.startsWith(dir)
+      )!
+      const relativePath = absolutePath.replace(sourceDir, "")
+      routePathToDelete = this.#routesLoader!.createRoutePath(relativePath)
+
+      const router = this.#app._router as IRouter
+
+      if (!router || !router.stack) {
+        return false
+      }
+
+      // Find the layer in the router stack
+      const layerIndex = router.stack.findIndex((layer: any) => {
+        // Match by route path and method
+        if (layer.route) {
+          const routePath = layer.route.path
+          // const routeMethods = layer.route.methods
+
+          return routePath === routePathToDelete
+        }
+        return false
+      })
+
+      if (layerIndex !== -1) {
+        // Remove the layer from the stack
+        router.stack.splice(layerIndex, 1)
+        return true
+      }
+
+      return false
+    } catch (error) {
+      console.error(`[HMR] Error removing route ${absolutePath}:`, error)
+      return false
+    }
+  }
+
+  /**
    * Registers a middleware or a route handler with Express
    */
   #registerExpressHandler(
@@ -128,20 +178,20 @@ export class ApiLoader {
 
       this.#app[route.method.toLowerCase()](route.matcher, wrapHandler(handler))
 
-      // Register with HMR route registry if available (experimental backend HMR)
-      const hmrRegistry = (global as any).__MEDUSA_HMR_ROUTE_REGISTRY__
-      if (hmrRegistry && route.absolutePath) {
-        hmrRegistry.register({
-          filePath: route.absolutePath,
-          type: "route",
-          loadedAt: Date.now(),
-          dependencies: new Set(),
-          meta: {
-            method: route.method,
-            path: route.matcher,
-          },
-        })
-      }
+      // // Register with HMR route registry if available (experimental backend HMR)
+      // const hmrRegistry = (global as any).__MEDUSA_HMR_ROUTE_REGISTRY__
+      // if (hmrRegistry && route.absolutePath) {
+      //   hmrRegistry.register({
+      //     filePath: route.absolutePath,
+      //     type: "route",
+      //     loadedAt: Date.now(),
+      //     dependencies: new Set(),
+      //     meta: {
+      //       method: route.method,
+      //       path: route.matcher,
+      //     },
+      //   })
+      // }
 
       return
     }

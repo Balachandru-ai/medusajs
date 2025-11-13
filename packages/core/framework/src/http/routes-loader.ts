@@ -54,7 +54,7 @@ export class RoutesLoader {
   /**
    * Creates the route path from its relative file path.
    */
-  #createRoutePath(relativePath: string): string {
+  createRoutePath(relativePath: string): string {
     const segments = relativePath.replace(/route(\.js|\.ts)$/, "").split(sep)
     const params: Record<string, boolean> = {}
 
@@ -186,7 +186,7 @@ export class RoutesLoader {
         .map(async (entry) => {
           const absolutePath = join(entry.path, entry.name)
           const relativePath = absolutePath.replace(sourceDir, "")
-          const route = this.#createRoutePath(relativePath)
+          const route = this.createRoutePath(relativePath)
           const routes = await this.#getRoutesForFile(route, absolutePath)
 
           routes.forEach((routeConfig) => {
@@ -243,7 +243,7 @@ export class RoutesLoader {
     sourceDir: string
   ): Promise<RouteDescriptor[]> {
     const relativePath = absolutePath.replace(sourceDir, "")
-    const route = this.#createRoutePath(relativePath)
+    const route = this.createRoutePath(relativePath)
     const routes = await this.#getRoutesForFile(route, absolutePath)
 
     // Register the new routes (will overwrite existing)
