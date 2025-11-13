@@ -32,6 +32,12 @@ export interface RouteConfig {
   nested?: NestedRoutePosition
 
   /**
+   * The ranking of the route among sibling routes. Routes are sorted in ascending order (lower rank appears first).
+   * If not provided, the route will be ranked after all routes with explicit ranks.
+   */
+  rank?: number
+
+  /**
    * An optional i18n namespace for translating the label. When provided, the label will be treated as a translation key.
    * @example
    * ```ts

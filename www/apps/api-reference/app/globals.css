@@ -41,7 +41,7 @@
   }
 
   *::selection {
-    @apply bg-medusa-bg-highlight;
+    @apply bg-medusa-fg-subtle text-medusa-fg-on-inverted;
   }
 
   * {

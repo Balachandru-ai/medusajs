@@ -44,7 +44,7 @@
  *     type: object
  *     description: The shipping method's data, useful for fulfillment handling by third-party services.
  *     externalDocs:
- *       url: https://docs.medusajs.com/v2/resources/commerce-modules/cart/concepts#data-property
+ *       url: https://docs.medusajs.com/resources/commerce-modules/cart/concepts#data-property
  *   metadata:
  *     type: object
  *     description: The shipping method's metadata, can hold custom key-value pairs.
