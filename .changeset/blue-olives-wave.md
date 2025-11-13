@@ -2,4 +2,4 @@
 "@medusajs/core-flows": patch
 ---
 
-Add order metadata for createFulfillment
+fix(core-flows): add order metadata for createFulfillment
