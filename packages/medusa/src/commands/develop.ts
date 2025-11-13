@@ -1,12 +1,16 @@
 import { MEDUSA_CLI_PATH } from "@medusajs/framework"
 import type { DevServerInstance } from "@medusajs/framework/dev-server"
-import { ContainerRegistrationKeys } from "@medusajs/framework/utils"
+import {
+  ContainerRegistrationKeys,
+  FeatureFlag,
+} from "@medusajs/framework/utils"
 import { Store } from "@medusajs/telemetry"
 import boxen from "boxen"
 import { ChildProcess, execSync, fork } from "child_process"
 import chokidar, { FSWatcher } from "chokidar"
 import { EOL } from "os"
 import path from "path"
+import BackendHmrFeatureFlag from "../feature-flags/backend-hmr"
 import { initializeContainer } from "../loaders"
 
 const defaultConfig = {
@@ -19,12 +23,9 @@ export default async function ({ types, directory }) {
   const container = await initializeContainer(directory)
   const logger = container.resolve(ContainerRegistrationKeys.LOGGER)
 
-  // Check if backend HMR feature flag is enabled
-  const featureFlagRouter = container.resolve(
-    ContainerRegistrationKeys.FEATURE_FLAG_ROUTER
+  const isBackendHmrEnabled = FeatureFlag.isFeatureEnabled(
+    BackendHmrFeatureFlag.key
   )
-  // @ts-ignore
-  const isBackendHmrEnabled = featureFlagRouter.isFeatureEnabled("backend_hmr")
 
   if (isBackendHmrEnabled) {
     logger.info("⚡ Backend HMR enabled (experimental) - Hot reload is active")
@@ -208,11 +209,14 @@ async function startHmrDevServer({
     // Create Express app
     const app = express.default()
 
+    const port = Number(process.env.PORT || 9000)
+    const verbose = process.env.MEDUSA_HMR_VERBOSE === "true"
+
     // Create the Vite-powered dev server (for file watching and HMR)
     hmrServer = await createDevServer({
       root: directory,
-      port: 9000,
-      verbose: process.env.MEDUSA_HMR_VERBOSE === "true",
+      port,
+      verbose,
       typeCheck: types,
       exclude: [
         "**/node_modules/**",
@@ -231,22 +235,24 @@ async function startHmrDevServer({
     ;(global as any).__MEDUSA_HMR_ROUTE_REGISTRY__ = hmrServer.routeRegistry
 
     // Load Medusa app with all loaders
-    logger.info("Loading Medusa application...")
     const { default: loaders } = require("../loaders")
     const { shutdown: medusaShutdown, container } = await loaders({
       directory,
       expressApp: app,
     })
 
-    logger.info("✨ HMR Dev Server is ready")
-    logger.info("   File changes will hot reload in <100ms")
-    logger.info("   Database connections and state will persist across reloads")
-    logger.warn(
-      "   Note: This is experimental. Route HMR is enabled, other features may require restart."
-    )
+    if (verbose) {
+      logger.info("✨ HMR Dev Server is ready")
+      logger.info("   File changes will hot reload in <100ms")
+      logger.info(
+        "   Database connections and state will persist across reloads"
+      )
+      logger.warn(
+        "   Note: This is experimental. Route HMR is enabled, other features may require restart."
+      )
+    }
 
     // Create HTTP server
-    const port = 9000
     const host = process.env.HOST
     const http_ = http.createServer(app)
 

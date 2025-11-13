@@ -1,17 +1,17 @@
-import type { ModuleRegistry, HmrUpdate } from "./types"
 import path from "path"
+import type { HmrUpdate } from "./types"
 
 // Use any types for Vite to avoid build-time dependency
 type Plugin = any
 type ViteDevServer = any
 type ModuleNode = any
+type ModuleGraph = any
 
 /**
  * Vite plugin for backend HMR
  * Tracks module changes and dependencies, and triggers selective reloads
  */
 export function createHmrPlugin(
-  registry: ModuleRegistry,
   onUpdate: (update: HmrUpdate) => Promise<void>
 ): Plugin {
   return {
@@ -21,7 +21,6 @@ export function createHmrPlugin(
      * Called when Vite dev server is created
      */
     configureServer(server) {
-
       // Listen to Vite's HMR updates
       server.watcher.on("all", async (event, filePath) => {
         // Normalize the file path
@@ -40,10 +39,15 @@ export function createHmrPlugin(
         // Get the module from Vite's module graph
         const module = server.moduleGraph.getModuleById(normalizedPath)
 
-        // Find all affected modules (the changed file + its dependents)
-        const affectedModules = getAffectedModules(normalizedPath, registry)
+        // This implements the dependency tree: finds all files that use the changed file (upstream dependents)
+        let affectedPaths: string[] = [normalizedPath] // At minimum, the changed file itself
+        if (module) {
+          const affectedSet = new Set<string>()
+          collectAffectedPaths(module, server.moduleGraph, affectedSet)
+          affectedPaths = Array.from(affectedSet)
+        }
 
-        // Invalidate modules in Vite's module graph
+        // Invalidate modules in Vite's module graph (already recurses on importers/dependents)
         if (module) {
           await invalidateModule(module, server)
         }
@@ -52,7 +56,7 @@ export function createHmrPlugin(
         const update: HmrUpdate = {
           type: event as "add" | "change" | "unlink",
           path: normalizedPath,
-          affectedModules,
+          affectedPaths,
           timestamp: Date.now(),
         }
 
@@ -106,32 +110,20 @@ function isSourceFile(filePath: string): boolean {
 }
 
 /**
- * Get all modules affected by a change to the given file
- * This includes the file itself and all modules that depend on it
+ * MODIFIED: Renamed and simplified to collect affected paths using Vite's ModuleGraph
+ * Recursively traverses importers (dependents) to find all files that use the changed module
  */
-function getAffectedModules(
-  filePath: string,
-  registry: ModuleRegistry
-): any[] {
-  const affected: any[] = []
-
-  // Add the file itself if it's tracked
-  const module = registry.get(filePath)
-  if (module) {
-    affected.push(module)
+function collectAffectedPaths(
+  module: ModuleNode,
+  graph: ModuleGraph,
+  set: Set<string>
+): void {
+  for (const importer of module.importers) {
+    if (importer.file && !set.has(importer.file)) {
+      set.add(importer.file)
+      collectAffectedPaths(importer, graph, set)
+    }
   }
-
-  // Add all dependents recursively
-  const dependents = registry.getDependents(filePath)
-  for (const dependent of dependents) {
-    affected.push(dependent)
-    // Recursively get dependents of dependents
-    const nestedDependents = getAffectedModules(dependent.filePath, registry)
-    affected.push(...nestedDependents)
-  }
-
-  // Remove duplicates
-  return Array.from(new Set(affected))
 }
 
 /**
@@ -158,14 +150,17 @@ async function invalidateModule(
 /**
  * Build dependency graph from Vite's module graph
  * This helps us understand which modules depend on which
+ * MODIFIED: Left as-is, but commented out in index.ts since HMR now uses direct ModuleGraph traversal.
+ * If needed for other purposes (e.g., initial stats), uncomment the call in index.ts.
  */
 export function buildDependencyGraph(
   server: ViteDevServer,
-  registry: ModuleRegistry
+  registry: any // MODIFIED: Added type for registry if used
 ): void {
   const moduleGraph = server.moduleGraph
 
   // Iterate through all tracked modules
+  // Note: Assumes registry has getAll() returning Map<string, {dependencies: Set<string>}>
   for (const metadata of registry.getAll().values()) {
     const viteModule = moduleGraph.getModuleById(metadata.filePath)
 

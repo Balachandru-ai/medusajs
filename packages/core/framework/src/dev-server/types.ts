@@ -11,6 +11,8 @@ export enum ModuleType {
   MIDDLEWARE = "middleware",
   SUBSCRIBER = "subscriber",
   WORKFLOW = "workflow",
+  LINK = "link",
+  MODULE = "module",
   PLUGIN = "plugin",
 }
 
@@ -61,6 +63,51 @@ export interface SubscriberMetadata extends ModuleMetadata {
 }
 
 /**
+ * Workflow-specific metadata
+ */
+export interface WorkflowMetadata extends ModuleMetadata {
+  type: ModuleType.WORKFLOW
+  meta: {
+    /** Workflow name/identifier */
+    workflowName?: string
+    /** Workflow handler function */
+    handler?: string
+    /** List of step IDs used in this workflow */
+    stepIds?: string[]
+  }
+}
+
+/**
+ * Link-specific metadata
+ */
+export interface LinkMetadata extends ModuleMetadata {
+  type: ModuleType.LINK
+  meta: {
+    /** Link module name */
+    linkName?: string
+    /** Source module key */
+    sourceModule?: string
+    /** Target module key */
+    targetModule?: string
+  }
+}
+
+/**
+ * Custom module-specific metadata
+ */
+export interface CustomModuleMetadata extends ModuleMetadata {
+  type: ModuleType.MODULE
+  meta: {
+    /** Module key/identifier */
+    moduleKey?: string
+    /** Module service name */
+    serviceName?: string
+    /** Module resolution path */
+    resolutionPath?: string
+  }
+}
+
+/**
  * Configuration for the HMR dev server
  */
 export interface DevServerConfig {
@@ -85,7 +132,7 @@ export interface HmrUpdate {
   /** File path that changed */
   path: string
   /** Modules affected by this change */
-  affectedModules: ModuleMetadata[]
+  affectedPaths: string[]
   /** Timestamp of the update */
   timestamp: number
 }
@@ -115,6 +162,52 @@ export interface RouteRegistry {
 }
 
 /**
+ * Workflow registry for tracking loaded workflows
+ */
+export interface WorkflowRegistry {
+  /** Register a workflow */
+  register: (metadata: WorkflowMetadata) => void
+  /** Register multiple workflows from the same file */
+  registerMany: (filePath: string, workflows: WorkflowMetadata[]) => void
+  /** Get workflows for a specific file */
+  getByFile: (filePath: string) => WorkflowMetadata[] | undefined
+  /** Get all tracked workflows */
+  getAll: () => Map<string, WorkflowMetadata[]>
+  /** Unregister workflows for a file */
+  unregister: (filePath: string) => Promise<boolean>
+  /** Clear all workflows */
+  clear: () => void
+  /** Get statistics */
+  getStats: () => {
+    totalFiles: number
+    totalWorkflows: number
+  }
+}
+
+/**
+ * Link registry for tracking loaded links
+ */
+export interface LinkRegistry {
+  /** Register a link */
+  register: (metadata: LinkMetadata) => void
+  /** Register multiple links from the same file */
+  registerMany: (filePath: string, links: LinkMetadata[]) => void
+  /** Get links for a specific file */
+  getByFile: (filePath: string) => LinkMetadata[] | undefined
+  /** Get all tracked links */
+  getAll: () => Map<string, LinkMetadata[]>
+  /** Unregister links for a file */
+  unregister: (filePath: string) => Promise<boolean>
+  /** Clear all links */
+  clear: () => void
+  /** Get statistics */
+  getStats: () => {
+    totalFiles: number
+    totalLinks: number
+  }
+}
+
+/**
  * Dev server instance
  */
 export interface DevServerInstance {
@@ -126,6 +219,11 @@ export interface DevServerInstance {
   registry: ModuleRegistry
   /** Route registry for tracking routes specifically */
   routeRegistry: RouteRegistry
+  /** Workflow registry for tracking workflows */
+  workflowRegistry: WorkflowRegistry
+  /** Link registry for tracking links */
+  linkRegistry: LinkRegistry
+
   /** Start the dev server */
   start: () => Promise<void>
   /** Stop the dev server */
@@ -152,4 +250,10 @@ export interface ModuleRegistry {
   clear: () => void
   /** Get all tracked modules */
   getAll: () => Map<string, ModuleMetadata>
+
+  /** Get statistics */
+  getStats: () => {
+    totalFiles: number
+    totalModules: number
+  }
 }

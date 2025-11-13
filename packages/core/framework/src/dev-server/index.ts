@@ -1,12 +1,14 @@
-import { createViteConfig } from "./vite-config"
 import { createHmrPlugin } from "./hmr-plugin"
+import { createLinkRegistry } from "./link-registry"
 import { createModuleRegistry } from "./module-registry"
+import { reloadRoute } from "./reload/api"
+import { reloadLink } from "./reload/link"
+import { reloadModule } from "./reload/module"
+import { reloadStep, reloadWorkflow } from "./reload/workflow"
 import { createRouteRegistry } from "./route-registry"
-import type {
-  DevServerConfig,
-  DevServerInstance,
-  HmrUpdate,
-} from "./types"
+import type { DevServerConfig, DevServerInstance, HmrUpdate } from "./types"
+import { createViteConfig } from "./vite-config"
+import { createWorkflowRegistry } from "./workflow-registry"
 
 // Use any type for Vite to avoid build-time dependency
 type ViteDevServer = any
@@ -20,11 +22,15 @@ export async function createDevServer(
 ): Promise<DevServerInstance> {
   const { createServer } = await import("vite")
 
-  // Create module registry for tracking loaded modules
+  // Create registries for tracking Medusa components
+  const routeRegistry = createRouteRegistry()
+
+  const workflowRegistry = createWorkflowRegistry()
+  const linkRegistry = createLinkRegistry()
   const registry = createModuleRegistry()
 
-  // Create route registry for tracking routes specifically
-  const routeRegistry = createRouteRegistry()
+  // Define search directories for dependency tracking
+  const searchDirs = [config.root]
 
   // Track HMR statistics
   let reloadCount = 0
@@ -40,13 +46,9 @@ export async function createDevServer(
    * This callback is triggered when files change
    */
   async function handleHmrUpdate(update: HmrUpdate): Promise<void> {
-    // Debounce: check if we recently reloaded this file
     const now = Date.now()
     const lastReload = reloadDebounceMap.get(update.path)
     if (lastReload && now - lastReload < DEBOUNCE_MS) {
-      if (config.verbose) {
-        console.log(`[HMR] Ignoring duplicate event for ${update.path}`)
-      }
       return
     }
     reloadDebounceMap.set(update.path, now)
@@ -54,20 +56,49 @@ export async function createDevServer(
 
     if (config.verbose) {
       console.log(`[HMR] ${update.type}: ${update.path}`)
-      console.log(
-        `[HMR] Affected modules: ${update.affectedModules.length}`
-      )
+      console.log(`[HMR] Affected paths: ${update.affectedPaths?.length || 1}`)
+
+      if (config.verbose && update.affectedPaths) {
+        console.log(`[HMR] Affected paths: ${update.affectedPaths.join(", ")}`)
+      }
     }
 
-    // Check if this is a route file
-    const isRouteFile = update.path.includes("/route.") &&
-      (update.path.endsWith(".ts") || update.path.endsWith(".js"))
+    // Include the changed path itself
+    const pathsToReload = update.affectedPaths
+      ? [update.path, ...update.affectedPaths.filter((p) => p !== update.path)]
+      : [update.path]
 
-    if (isRouteFile && instance.app) {
-      try {
-        await reloadRoute(update.path, instance.app, routeRegistry, vite)
-      } catch (error) {
-        console.error(`[HMR] Failed to reload route ${update.path}:`, error)
+    for (const path of pathsToReload) {
+      const fileType = determineFileType(path)
+
+      if (instance.app) {
+        try {
+          switch (fileType) {
+            case "route":
+              await reloadRoute(path, instance.app, routeRegistry, vite)
+              break
+            case "workflow":
+              await reloadWorkflow(path, vite, searchDirs)
+              break
+            case "step":
+              await reloadStep(path, vite, searchDirs)
+              break
+            case "link":
+              await reloadLink(path, vite)
+              break
+            case "module":
+              await reloadModule(path, vite)
+              break
+            default:
+              if (config.verbose) {
+                console.log(
+                  `[HMR] Skipping unsupported file type: ${fileType} for ${path}`
+                )
+              }
+          }
+        } catch (error) {
+          console.error(`[HMR] Failed to reload ${fileType} ${path}:`, error)
+        }
       }
     }
 
@@ -88,61 +119,46 @@ export async function createDevServer(
   }
 
   /**
-   * Reload a single route file
+   * Determine the type of file based on its path
    */
-  async function reloadRoute(
-    filePath: string,
-    app: any,
-    registry: any,
-    viteServer: any
-  ): Promise<void> {
-    console.log(`[HMR] Reloading route: ${filePath}`)
-
-    // Get ApiLoader instance from global
-    const apiLoader = (global as any).__MEDUSA_HMR_API_LOADER__
-    if (!apiLoader) {
-      console.error(`[HMR] ApiLoader not available - cannot reload routes`)
-      return
+  function determineFileType(filePath: string): string {
+    if (
+      filePath.includes("/workflows/") &&
+      (filePath.endsWith(".ts") || filePath.endsWith(".js"))
+    ) {
+      if (filePath.includes("/steps/")) {
+        return "step"
+      }
+      return "workflow"
     }
 
-    try {
-      // Step 1: Unregister old routes from Express
-      const existed = await registry.unregister(filePath, app)
-      if (!existed) {
-        console.log(`[HMR] New route file detected: ${filePath}`)
-      }
-
-      // Step 2: Invalidate module in Vite's module graph
-      const module = viteServer.moduleGraph.getModuleById(filePath)
-      if (module) {
-        viteServer.moduleGraph.invalidateModule(module)
-      }
-
-      // Step 3: Clear from Node.js require cache
-      delete require.cache[filePath]
-      if (require.cache[require.resolve(filePath)]) {
-        delete require.cache[require.resolve(filePath)]
-      }
-
-      // Step 4 & 5: Reload and re-register the route through ApiLoader
-      const routes = await apiLoader.reloadRoute(filePath)
-
-      console.log(
-        `[HMR] ✅ Route reloaded successfully: ${routes.length} route(s) from ${filePath}`
-      )
-
-      // Show which routes were reloaded
-      routes.forEach((route: any) => {
-        console.log(`[HMR]    ${route.method} ${route.matcher}`)
-      })
-    } catch (error) {
-      console.error(`[HMR] ❌ Failed to reload route ${filePath}:`, error)
-      console.error(`[HMR] You may need to restart the server`)
+    if (
+      filePath.includes("/links/") &&
+      (filePath.endsWith(".ts") || filePath.endsWith(".js"))
+    ) {
+      return "link"
     }
+
+    if (
+      filePath.includes("/modules/") &&
+      (filePath.endsWith(".ts") || filePath.endsWith(".js"))
+    ) {
+      return "module"
+    }
+
+    if (
+      filePath.includes("/route.") &&
+      (filePath.endsWith(".ts") || filePath.endsWith(".js"))
+    ) {
+      return "route"
+    }
+
+    return "unknown"
   }
 
   // Create HMR plugin
-  const hmrPlugin = createHmrPlugin(registry, handleHmrUpdate)
+  // MODIFIED: No longer pass registry to plugin, as affected paths are now computed using Vite's ModuleGraph directly
+  const hmrPlugin = createHmrPlugin(handleHmrUpdate)
 
   // Create Vite config
   const viteConfig = await createViteConfig(config, hmrPlugin)
@@ -165,14 +181,36 @@ export async function createDevServer(
     app: null as any, // Will be set by the caller
     registry,
     routeRegistry,
+    workflowRegistry,
+    linkRegistry,
 
     async start() {
       console.log("[HMR] Dev server started with hot module replacement")
       console.log("[HMR] Watching for file changes...")
 
       // Log route statistics
-      const stats = routeRegistry.getStats()
-      console.log(`[HMR] Tracking ${stats.totalRoutes} routes from ${stats.totalFiles} files`)
+      const routeStats = routeRegistry.getStats()
+      console.log(
+        `[HMR] Tracking ${routeStats.totalRoutes} routes from ${routeStats.totalFiles} files`
+      )
+
+      // Log workflow statistics
+      const workflowStats = workflowRegistry.getStats()
+      console.log(
+        `[HMR] Tracking ${workflowStats.totalWorkflows} workflows from ${workflowStats.totalFiles} files`
+      )
+
+      // Log link statistics
+      const linkStats = linkRegistry.getStats()
+      console.log(
+        `[HMR] Tracking ${linkStats.totalLinks} links from ${linkStats.totalFiles} files`
+      )
+
+      // Log module statistics
+      const moduleStats = registry.getStats()
+      console.log(
+        `[HMR] Tracking ${moduleStats.totalModules} custom modules from ${moduleStats.totalFiles} files`
+      )
     },
 
     async stop() {
@@ -180,6 +218,8 @@ export async function createDevServer(
       await vite.close()
       registry.clear()
       routeRegistry.clear()
+      workflowRegistry.clear()
+      linkRegistry.clear()
     },
 
     async reload(filePaths: string[]) {
@@ -234,23 +274,11 @@ export async function invalidateModule(
   delete require.cache[require.resolve(filePath)]
 }
 
-/**
- * Check if backend HMR is enabled
- * This checks the feature flag
- */
-export function isBackendHmrEnabled(container: any): boolean {
-  try {
-    const featureFlags = container.resolve("featureFlagRouter")
-    return featureFlags.isFeatureEnabled("backend_hmr")
-  } catch (error) {
-    // Feature flag router not available or flag not found
-    return false
-  }
-}
-
 // Export types and utilities
-export * from "./types"
+export { createHmrPlugin } from "./hmr-plugin"
+export { createLinkRegistry } from "./link-registry"
 export { createModuleRegistry } from "./module-registry"
 export { createRouteRegistry } from "./route-registry"
+export * from "./types"
 export { createViteConfig } from "./vite-config"
-export { createHmrPlugin } from "./hmr-plugin"
+export { createWorkflowRegistry } from "./workflow-registry"
