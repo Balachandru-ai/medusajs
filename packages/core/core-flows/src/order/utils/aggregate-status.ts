@@ -110,7 +110,38 @@ export const getLastFulfillmentStatus = (order: OrderDetailDTO) => {
     SHIPPED: "shipped",
     DELIVERED: "delivered",
     PARTIALLY_DELIVERED: "partially_delivered",
+    RETURNED: "returned",
     CANCELED: "canceled",
+  }
+
+  const { totalItems, totalReturnedItems } = (order.items || []).reduce(
+    (acc, item) => {
+      // TODO: this could be cleaner if we compute the quantity analog of the returns total fields
+      const returnReceivedQuantity = MathBN.div(
+        item.return_received_total,
+        item.unit_price
+      )
+      const returnDismissedQuantity = MathBN.div(
+        item.return_dismissed_total,
+        item.unit_price
+      )
+      const returnedQuantity = MathBN.add(
+        returnReceivedQuantity,
+        returnDismissedQuantity
+      )
+      return {
+        totalItems: acc.totalItems.plus(item.quantity),
+        totalReturnedItems: acc.totalReturnedItems.plus(returnedQuantity),
+      }
+    },
+    {
+      totalItems: MathBN.convert(0),
+      totalReturnedItems: MathBN.convert(0),
+    }
+  )
+
+  if (totalItems.eq(totalReturnedItems)) {
+    return FulfillmentStatus.RETURNED
   }
 
   let fulfillmentStatus = {}

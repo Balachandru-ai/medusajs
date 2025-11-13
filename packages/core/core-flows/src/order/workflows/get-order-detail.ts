@@ -81,6 +81,7 @@ export const getOrderDetailWorkflow = createWorkflow(
         "version",
         "payment_collections.*",
         "fulfillments.*",
+        "items.*"
       ])
     })
 
