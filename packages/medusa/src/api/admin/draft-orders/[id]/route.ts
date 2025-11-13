@@ -7,6 +7,7 @@ import {
   AuthenticatedMedusaRequest,
   MedusaRequest,
   MedusaResponse,
+  AuthType
 } from "@medusajs/framework/http"
 import { HttpTypes } from "@medusajs/framework/types"
 import { ContainerRegistrationKeys } from "@medusajs/framework/utils"
@@ -39,10 +40,23 @@ export const POST = async (
 ) => {
   const query = req.scope.resolve(ContainerRegistrationKeys.QUERY)
 
+  let userId = req.auth_context.actor_id
+  const authType = req.auth_context.actor_type as AuthType
+
+  const shouldResolveUser = authType === 'api-key'
+  if (shouldResolveUser) {
+    const {data: [apiKey]} = await query.graph({
+        entity: 'api_key',
+        fields: ['created_by'],
+        filters: { id: userId },
+    })
+    userId = apiKey.created_by
+  }
+
   await updateDraftOrderWorkflow(req.scope).run({
     input: {
       ...req.validatedBody,
-      user_id: req.auth_context.actor_id,
+      user_id: userId,
       id: req.params.id,
     },
   })
