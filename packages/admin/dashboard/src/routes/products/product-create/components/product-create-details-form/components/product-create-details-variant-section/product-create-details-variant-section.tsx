@@ -1,5 +1,19 @@
-import { Alert, Checkbox, clx, Heading, Hint, InlineTip, Label, Text, } from "@medusajs/ui"
-import { FieldArrayWithId, useFieldArray, UseFormReturn, useWatch, } from "react-hook-form"
+import {
+  Alert,
+  Checkbox,
+  clx,
+  Heading,
+  Hint,
+  InlineTip,
+  Label,
+  Text,
+} from "@medusajs/ui"
+import {
+  FieldArrayWithId,
+  useFieldArray,
+  UseFormReturn,
+  useWatch,
+} from "react-hook-form"
 import { useTranslation } from "react-i18next"
 import { useMemo, useState } from "react"
 
