@@ -235,7 +235,19 @@ export interface AdminCreateProduct {
   /**
    * The product's options.
    */
-  options: (AdminCreateProductOption | { id: string })[]
+  options: (
+    | AdminCreateProductOption
+    | {
+        /**
+         * The ID of the product option to link.
+         */
+        id: string
+        /**
+         * The IDs of specific option values to link. If undefined, every value will be linked by default.
+         */
+        value_ids?: string[]
+      }
+  )[]
   /**
    * The product's variants.
    */

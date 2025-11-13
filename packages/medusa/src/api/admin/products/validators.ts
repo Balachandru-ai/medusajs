@@ -256,7 +256,15 @@ export const CreateProduct = z
     categories: z.array(IdAssociation).optional(),
     tags: z.array(IdAssociation).optional(),
     options: z
-      .array(z.union([AdminCreateProductOption, IdAssociation]))
+      .array(
+        z.union([
+          AdminCreateProductOption,
+          z.object({
+            id: z.string(),
+            value_ids: z.array(z.string()).optional(),
+          }),
+        ])
+      )
       .optional(),
     variants: z.array(CreateProductVariant).optional(),
     sales_channels: z.array(z.object({ id: z.string() })).optional(),

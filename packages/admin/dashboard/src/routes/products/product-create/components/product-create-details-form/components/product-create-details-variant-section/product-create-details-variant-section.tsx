@@ -240,6 +240,7 @@ export const ProductCreateVariantsSection = ({
         id: option.id,
         title: option.title,
         values: selectedValues,
+        value_ids: selectedValueIds,
       }
     })
 

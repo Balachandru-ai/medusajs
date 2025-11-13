@@ -1919,6 +1919,7 @@ export default class ProductModuleService
             id: dbOption.id,
             title: dbOption.title,
             values: dbOption.values?.map((v) => ({ value: v.value })),
+            value_ids: option.value_ids,
           }
         }
         return option
@@ -2054,24 +2055,33 @@ export default class ProductModuleService
       const hydratedProduct = hydratedData.find(
         (p) => p.title === product.title
       )
-      const allOptionIds: string[] = []
+      const existingOptions: { id: string; value_ids?: string[] }[] = []
 
       if (hydratedProduct?.options?.length) {
         for (const option of hydratedProduct.options) {
           if ("id" in option) {
-            allOptionIds.push(option.id)
+            existingOptions.push({
+              id: option.id,
+              value_ids: option.value_ids,
+            })
           }
         }
       }
 
       const newOptionIds = productToOptionIdsMap.get(product.id) ?? []
-      const optionIds = [...new Set([...allOptionIds, ...newOptionIds])]
+      const newOptions = newOptionIds.map((id) => ({ id }))
+      const allOptions = [...existingOptions, ...newOptions]
 
-      for (const optionId of optionIds) {
-        linkPairs.push({
+      for (const option of allOptions) {
+        const pair: ProductTypes.ProductOptionProductPair = {
           product_id: product.id,
-          product_option_id: optionId,
-        })
+          product_option_id: option.id,
+          product_option_value_ids: (option as any).value_ids
+            ? (option as any).value_ids
+            : undefined,
+        }
+
+        linkPairs.push(pair)
       }
     }
 

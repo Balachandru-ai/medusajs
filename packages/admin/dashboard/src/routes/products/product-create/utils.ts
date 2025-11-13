@@ -44,8 +44,8 @@ export const normalizeProductFormValues = (
     height: values.height ? parseFloat(values.height) : undefined,
     weight: values.weight ? parseFloat(values.weight) : undefined,
     options: options.map((option) => {
-      const { id, ...rest } = option
-      return id ? { id } : rest
+      const { id, value_ids, ...rest } = option
+      return id ? { id, value_ids } : rest
     }),
     variants: normalizeVariants(
       values.variants.filter((variant) => variant.should_create),
