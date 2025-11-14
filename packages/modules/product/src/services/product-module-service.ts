@@ -2423,6 +2423,7 @@ export default class ProductModuleService
                 value: value,
               }
             }),
+            is_exclusive: (option as any).is_exclusive ?? true, // Always default to true for options created from product creation
             ...((option as any).id ? { id: (option as any).id } : {}),
           }
         })
