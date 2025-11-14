@@ -18,7 +18,7 @@ import {
   NotificationStatus,
   promiseAll,
 } from "@medusajs/framework/utils"
-import { Notification } from "@models"
+import { Notification, NotificationProvider } from "@models"
 import NotificationProviderService from "./notification-provider"
 
 type InjectedDependencies = {
@@ -33,7 +33,8 @@ type InjectedDependencies = {
 export default class NotificationModuleService
   extends MedusaService<{
     Notification: { dto: NotificationTypes.NotificationDTO }
-  }>({ Notification })
+    NotificationProvider: { dto: NotificationTypes.NotificationProviderDTO }
+  }>({ Notification, NotificationProvider })
   implements INotificationModuleService
 {
   protected baseRepository_: DAL.RepositoryService
@@ -231,5 +232,9 @@ export default class NotificationModuleService
     }
 
     return createdNotifications
+  }
+
+  async getProviderForChannels(channels: string[]) {
+    return this.notificationProviderService_.getProviderForChannels(channels)
   }
 }
