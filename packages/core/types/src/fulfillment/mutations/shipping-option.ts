@@ -90,7 +90,7 @@ export interface UpdateShippingOptionDTO {
 
   /**
    * The ID of the type of shipping option.
-   * Column doesn't exist on the entity -> normlized to `shipping_option_type_id`
+   * Column doesn't exist on the entity -> normalized to `shipping_option_type_id`
    */
   type_id?: string
 
