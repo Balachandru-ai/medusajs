@@ -1282,6 +1282,7 @@ export default class FulfillmentModuleService
       },
       sharedContext
     )
+
     const existingShippingOptions = new Map(
       shippingOptions.map((s) => [s.id, s])
     )
