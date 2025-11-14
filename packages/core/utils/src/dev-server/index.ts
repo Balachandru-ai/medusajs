@@ -1,9 +1,9 @@
 import { FeatureFlag } from "../feature-flags"
 
-type ResourcePath = string
-type ResourceType = "workflow" | "step"
-type ResourceEntry = { id: string; workflowId?: string }
-type ResourceMap = Map<ResourceType, ResourceEntry[]>
+export type ResourcePath = string
+export type ResourceType = "workflow" | "step"
+export type ResourceEntry = { id: string; workflowId?: string }
+export type ResourceMap = Map<ResourceType, ResourceEntry[]>
 
 export const globalDevServerRegistry = new Map<ResourcePath, ResourceMap>()
 export const inverseDevServerRegistry = new Map<ResourcePath, ResourcePath[]>()

@@ -28,6 +28,8 @@ export default async function ({ types, directory }) {
     BackendHmrFeatureFlag.key
   )
 
+  const reloadActionVerb = isBackendHmrEnabled ? "reloading" : "restarting"
+
   if (isBackendHmrEnabled) {
     logger.info("Using backend HMR dev server (reload on file change)")
   } else {
@@ -138,25 +140,36 @@ export default async function ({ types, directory }) {
         ],
       })
 
-      const action = isBackendHmrEnabled ? "reloading" : "restarting"
+      async function handleFileChange(
+        this: typeof devServer,
+        action: "add" | "change" | "unlink",
+        file: string
+      ) {
+        const actionVerb =
+          action === "add"
+            ? "created"
+            : action === "change"
+            ? "modified"
+            : "removed"
+
+        logger.info(
+          `${path.relative(
+            directory,
+            file
+          )} ${actionVerb}: ${reloadActionVerb} dev server`
+        )
+
+        await this.restart(action, file)
+      }
 
       this.watcher.on("add", async (file) => {
-        logger.info(
-          `${path.relative(directory, file)} created: ${action} dev server`
-        )
-        await this.restart("add", file)
+        handleFileChange.call(this, "add", file)
       })
       this.watcher.on("change", async (file) => {
-        logger.info(
-          `${path.relative(directory, file)} modified: ${action} dev server`
-        )
-        await this.restart("change", file)
+        handleFileChange.call(this, "change", file)
       })
       this.watcher.on("unlink", async (file) => {
-        logger.info(
-          `${path.relative(directory, file)} removed: ${action} dev server`
-        )
-        await this.restart("unlink", file)
+        handleFileChange.call(this, "unlink", file)
       })
 
       this.watcher.on("ready", function () {

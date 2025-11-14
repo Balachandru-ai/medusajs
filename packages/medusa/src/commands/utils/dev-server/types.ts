@@ -1,0 +1,52 @@
+import { ApiLoader } from "@medusajs/framework"
+import { Logger } from "@medusajs/framework/types"
+
+/**
+ * Action types that can be performed on files
+ */
+export type FileChangeAction = "add" | "change" | "unlink"
+
+/**
+ * Resource types that can be registered in the dev server
+ */
+export type ResourceType = "workflow" | "step"
+
+/**
+ * Configuration for path matching and exclusions
+ */
+export const CONFIG = {
+  EXCLUDED_PATH_PATTERNS: ["node_modules"],
+  RESOURCE_PATH_PATTERNS: {
+    route: "api/",
+    workflow: "workflows/",
+  },
+} as const
+
+/**
+ * Global dependencies available in the dev server environment
+ */
+export interface DevServerGlobals {
+  __MEDUSA_HMR_API_LOADER__?: ApiLoader
+  WorkflowManager?: {
+    unregister: (id: string) => void
+  }
+}
+
+/**
+ * Parameters for resource reload operations
+ */
+export interface ReloadParams {
+  action: FileChangeAction
+  absoluteFilePath: string
+  keepCache?: boolean
+  logger: Logger
+  skipRecovery?: boolean
+}
+
+/**
+ * Represents a resource registered in the dev server
+ */
+export interface Resource {
+  id: string
+  [key: string]: any
+}
