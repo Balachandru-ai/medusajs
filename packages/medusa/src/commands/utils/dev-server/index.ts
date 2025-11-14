@@ -1,3 +1,4 @@
+import { logger } from "@medusajs/framework/logger"
 import { ModuleCacheManager } from "./module-cache-manager"
 import { RecoveryService } from "./recovery-service"
 import { RouteReloader } from "./reloaders/routes"
@@ -7,6 +8,34 @@ import { DevServerGlobals, ReloadParams } from "./types"
 
 const sharedCacheManager = new ModuleCacheManager()
 const sharedRegistry = new ResourceRegistry()
+
+const reloaders = {} as {
+  routesReloader: RouteReloader
+  workflowsReloader: WorkflowReloader
+}
+
+function initializeReloaders() {
+  const globals = global as unknown as DevServerGlobals
+
+  if (!reloaders.routesReloader) {
+    const routeReloader = new RouteReloader(
+      globals.__MEDUSA_HMR_API_LOADER__,
+      logger
+    )
+    reloaders.routesReloader = routeReloader
+  }
+
+  if (!reloaders.workflowsReloader) {
+    const workflowReloader = new WorkflowReloader(
+      globals.WorkflowManager,
+      sharedRegistry,
+      sharedCacheManager,
+      reloadResources,
+      logger
+    )
+    reloaders.workflowsReloader = workflowReloader
+  }
+}
 
 /**
  * Main entry point for reloading resources (routes and workflows)
@@ -19,24 +48,10 @@ export async function reloadResources({
   logger,
   skipRecovery = false,
 }: ReloadParams): Promise<void> {
-  const globals = global as unknown as DevServerGlobals
+  initializeReloaders()
 
-  const routeReloader = new RouteReloader(
-    globals.__MEDUSA_HMR_API_LOADER__,
-    logger
-  )
-
-  const workflowReloader = new WorkflowReloader(
-    globals.WorkflowManager,
-    sharedRegistry,
-    sharedCacheManager,
-    reloadResources,
-    logger
-  )
-
-  // Reload routes and workflows
-  await routeReloader.reload(action, absoluteFilePath)
-  await workflowReloader.reload(
+  await reloaders.routesReloader.reload(action, absoluteFilePath)
+  await reloaders.workflowsReloader.reload(
     action,
     absoluteFilePath,
     keepCache,

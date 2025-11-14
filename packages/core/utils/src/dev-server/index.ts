@@ -1,80 +1,150 @@
 import { FeatureFlag } from "../feature-flags"
+import { StepHandler } from "./handlers/step-handler"
+import { WorkflowHandler } from "./handlers/workflow-handler"
+import {
+  addToInverseRegistry,
+  addToRegistry,
+  getOrCreateRegistry,
+} from "./registry-helpers"
+import {
+  BaseResourceData,
+  ResourceMap,
+  ResourcePath,
+  ResourceRegistrationData,
+  ResourceTypeHandler,
+} from "./types"
 
-export type ResourcePath = string
-export type ResourceType = "workflow" | "step"
-export type ResourceEntry = { id: string; workflowId?: string }
-export type ResourceMap = Map<ResourceType, ResourceEntry[]>
+export type {
+  BaseResourceData,
+  ResourceEntry,
+  ResourceMap,
+  ResourcePath,
+  ResourceType,
+  ResourceTypeHandler,
+} from "./types"
 
+/**
+ * Maps source file paths to their registered resources
+ * Structure: sourcePath -> Map<resourceType, ResourceEntry[]>
+ */
 export const globalDevServerRegistry = new Map<ResourcePath, ResourceMap>()
+
+/**
+ * Inverse registry for looking up source paths by resource
+ * Structure: "type:id" -> sourcePath[]
+ * Used to find which files contain a specific resource
+ */
 export const inverseDevServerRegistry = new Map<ResourcePath, ResourcePath[]>()
 
-export function registerDevServerResource(
-  data:
-    | {
-        sourcePath: string
-        id: string
-        type: "workflow"
-      }
-    | {
-        type: "step"
-        id: string
-        workflowId?: string
-        sourcePath?: string
-      }
-) {
+/**
+ * Registry of resource type handlers
+ * Each handler implements the logic for a specific resource type
+ */
+const resourceHandlers = new Map<string, ResourceTypeHandler>()
+
+/**
+ * Register a resource type handler
+ *
+ * @example
+ * ```typescript
+ * class RouteHandler implements ResourceTypeHandler<RouteData> {
+ *   readonly type = "route"
+ *   validate(data: RouteData): void { ... }
+ *   resolveSourcePath(data: RouteData): string { ... }
+ *   createEntry(data: RouteData): ResourceEntry { ... }
+ *   getInverseKey(data: RouteData): string { ... }
+ * }
+ *
+ * registerResourceTypeHandler(new RouteHandler())
+ * ```
+ */
+export function registerResourceTypeHandler(
+  handler: ResourceTypeHandler
+): void {
+  if (resourceHandlers.has(handler.type)) {
+    console.warn(
+      `Resource type handler for "${handler.type}" is being overridden`
+    )
+  }
+
+  resourceHandlers.set(handler.type, handler)
+}
+
+registerResourceTypeHandler(new WorkflowHandler())
+registerResourceTypeHandler(new StepHandler(inverseDevServerRegistry))
+
+/**
+ * Register a resource in the dev server for hot module reloading
+ *
+ * This function uses a strategy pattern where each resource type has its own handler.
+ * The handler is responsible for:
+ * - Validating the registration data
+ * - Resolving the source path
+ * - Creating the registry entry
+ * - Generating the inverse registry key
+ *
+ * @param data - Resource registration data
+ * @throws Error if validation fails or handler is not found
+ *
+ * @example
+ * ```typescript
+ * // Register a workflow
+ * registerDevServerResource({
+ *   type: "workflow",
+ *   id: "create-product",
+ *   sourcePath: "/src/workflows/create-product.ts"
+ * })
+ *
+ * // Register a step
+ * registerDevServerResource({
+ *   type: "step",
+ *   id: "validate-product",
+ *   workflowId: "create-product"
+ * })
+ * ```
+ */
+export function registerDevServerResource(data: ResourceRegistrationData): void
+export function registerDevServerResource<T extends BaseResourceData>(
+  data: T
+): void
+export function registerDevServerResource<T extends BaseResourceData>(
+  data: T
+): void {
+  // Skip registration in production or if HMR is disabled
   const isProduction = ["production", "prod"].includes(
     process.env.NODE_ENV || ""
   )
+
   if (!FeatureFlag.isFeatureEnabled("backend_hmr") || isProduction) {
     return
   }
 
-  if (data.type === "workflow") {
-    const registry =
-      globalDevServerRegistry.get(data.sourcePath) ||
-      new Map<ResourceType, ResourceEntry[]>()
-    globalDevServerRegistry.set(data.sourcePath, registry)
+  const handler = resourceHandlers.get(data.type)
 
-    registry.set(data.type, [
-      ...(registry.get(data.type) || []),
-      {
-        id: data.id,
-        workflowId: data.id,
-      },
-    ])
-
-    inverseDevServerRegistry.set(`${data.type}:${data.id}`, [data.sourcePath])
+  if (!handler) {
+    throw new Error(
+      `No handler registered for resource type "${data.type}". ` +
+        `Available types: ${Array.from(resourceHandlers.keys()).join(", ")}. ` +
+        `Use registerResourceTypeHandler() to add support for custom types.`
+    )
   }
 
-  if (data.type === "step") {
-    const sourcePath =
-      data.sourcePath ??
-      inverseDevServerRegistry.get(`workflow:${data.workflowId}`)?.[0]
+  try {
+    handler.validate(data)
 
-    if (!sourcePath) {
-      throw new Error(
-        `step workflow not found: ${data.workflowId} for step ${data.id}`
-      )
-    }
+    const sourcePath = handler.resolveSourcePath(data)
 
-    const registry =
-      globalDevServerRegistry.get(sourcePath!) ??
-      new Map<ResourceType, ResourceEntry[]>()
-    globalDevServerRegistry.set(sourcePath!, registry)
+    const registry = getOrCreateRegistry(globalDevServerRegistry, sourcePath)
 
-    registry.set(data.type, [
-      ...(registry.get(data.type) || []),
-      { id: data.id, workflowId: data.workflowId },
-    ])
+    const entry = handler.createEntry(data)
+    addToRegistry(registry, data.type, entry)
 
-    inverseDevServerRegistry.set(
-      `${data.type}:${data.id}`,
-      Array.from(
-        new Set([
-          ...(inverseDevServerRegistry.get(`${data.type}:${data.id}`) || []),
-          sourcePath!,
-        ])
-      )
+    const inverseKey = handler.getInverseKey(data)
+    addToInverseRegistry(inverseDevServerRegistry, inverseKey, sourcePath)
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : String(error)
+    throw new Error(
+      `Failed to register ${data.type} resource "${data.id}": ${errorMessage}`
     )
   }
 }
