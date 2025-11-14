@@ -75,7 +75,7 @@ const _Order = model
     {
       name: "IDX_order_custom_display_id",
       on: ["custom_display_id"],
-      unique: false,
+      unique: true,
       where: "deleted_at IS NULL",
     },
     {

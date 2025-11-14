@@ -1,12 +1,12 @@
-import { Migration } from "@mikro-orm/migrations"
+import { Migration } from "@medusajs/framework/mikro-orm/migrations"
 
-export class Migration20251113084802 extends Migration {
+export class Migration20251114100559 extends Migration {
   override async up(): Promise<void> {
     this.addSql(
       `alter table if exists "order" add column if not exists "custom_display_id" text null;`
     )
     this.addSql(
-      `CREATE INDEX IF NOT EXISTS "IDX_order_custom_display_id" ON "order" ("custom_display_id") WHERE deleted_at IS NULL;`
+      `CREATE UNIQUE INDEX IF NOT EXISTS "IDX_order_custom_display_id" ON "order" ("custom_display_id") WHERE deleted_at IS NULL;`
     )
 
     this.addSql(
