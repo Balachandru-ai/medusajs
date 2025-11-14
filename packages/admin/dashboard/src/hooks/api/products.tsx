@@ -11,15 +11,13 @@ import { sdk } from "../../lib/client"
 import { queryClient } from "../../lib/query-client"
 import { queryKeysFactory } from "../../lib/query-key-factory"
 import { inventoryItemsQueryKeys } from "./inventory.tsx"
+import { productOptionsQueryKeys } from "./product-options.tsx"
 
 const PRODUCTS_QUERY_KEY = "products" as const
 export const productsQueryKeys = queryKeysFactory(PRODUCTS_QUERY_KEY)
 
 const VARIANTS_QUERY_KEY = "product_variants" as const
 export const variantsQueryKeys = queryKeysFactory(VARIANTS_QUERY_KEY)
-
-const OPTIONS_QUERY_KEY = "product_options" as const
-export const optionsQueryKeys = queryKeysFactory(OPTIONS_QUERY_KEY)
 
 export const useProductVariant = (
   productId: string,
@@ -327,7 +325,9 @@ export const useLinkProductOptions = (
       queryClient.invalidateQueries({
         queryKey: productsQueryKeys.detail(productId),
       })
-      queryClient.invalidateQueries({ queryKey: optionsQueryKeys.lists() })
+      queryClient.invalidateQueries({
+        queryKey: productOptionsQueryKeys.lists(),
+      })
 
       options?.onSuccess?.(data, variables, context)
     },
