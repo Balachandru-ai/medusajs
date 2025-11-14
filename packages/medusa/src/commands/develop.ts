@@ -126,9 +126,9 @@ export default async function ({ types, directory }) {
      * - src/admin/**
      */
     watch() {
-      this.watcher = chokidar.watch(["."], {
+      this.watcher = chokidar.watch(".", {
         ignoreInitial: true,
-        cwd: process.cwd(),
+        cwd: directory,
         ignored: [
           /(^|[\\/\\])\../,
           "node_modules",
