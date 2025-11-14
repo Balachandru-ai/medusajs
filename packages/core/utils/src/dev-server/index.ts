@@ -1,6 +1,7 @@
 import { FeatureFlag } from "../feature-flags"
 import { StepHandler } from "./handlers/step-handler"
 import { WorkflowHandler } from "./handlers/workflow-handler"
+import { SubscriberHandler } from "./handlers/subscriber-handler"
 import {
   addToInverseRegistry,
   addToRegistry,
@@ -72,6 +73,7 @@ export function registerResourceTypeHandler(
 
 registerResourceTypeHandler(new WorkflowHandler())
 registerResourceTypeHandler(new StepHandler(inverseDevServerRegistry))
+registerResourceTypeHandler(new SubscriberHandler())
 
 /**
  * Register a resource in the dev server for hot module reloading

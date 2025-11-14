@@ -1,7 +1,9 @@
+import { container } from "@medusajs/framework"
 import { logger } from "@medusajs/framework/logger"
 import { ModuleCacheManager } from "./module-cache-manager"
 import { RecoveryService } from "./recovery-service"
 import { RouteReloader } from "./reloaders/routes"
+import { SubscriberReloader } from "./reloaders/subscribers"
 import { WorkflowReloader } from "./reloaders/workflows"
 import { ResourceRegistry } from "./resource-registry"
 import { DevServerGlobals, ReloadParams } from "./types"
@@ -11,6 +13,7 @@ const sharedRegistry = new ResourceRegistry()
 
 const reloaders = {} as {
   routesReloader: RouteReloader
+  subscribersReloader?: SubscriberReloader
   workflowsReloader: WorkflowReloader
 }
 
@@ -23,6 +26,15 @@ function initializeReloaders() {
       logger
     )
     reloaders.routesReloader = routeReloader
+  }
+
+  if (!reloaders.subscribersReloader) {
+    const subscriberReloader = new SubscriberReloader(
+      container,
+      sharedRegistry,
+      logger
+    )
+    reloaders.subscribersReloader = subscriberReloader
   }
 
   if (!reloaders.workflowsReloader) {
@@ -38,7 +50,7 @@ function initializeReloaders() {
 }
 
 /**
- * Main entry point for reloading resources (routes and workflows)
+ * Main entry point for reloading resources (routes, subscribers, and workflows)
  * Orchestrates the reload process and handles recovery of broken modules
  */
 export async function reloadResources({
@@ -51,6 +63,7 @@ export async function reloadResources({
   initializeReloaders()
 
   await reloaders.routesReloader.reload(action, absoluteFilePath)
+  await reloaders.subscribersReloader?.reload?.(action, absoluteFilePath)
   await reloaders.workflowsReloader.reload(
     action,
     absoluteFilePath,

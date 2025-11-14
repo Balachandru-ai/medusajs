@@ -7,11 +7,6 @@ import { Logger } from "@medusajs/framework/types"
 export type FileChangeAction = "add" | "change" | "unlink"
 
 /**
- * Resource types that can be registered in the dev server
- */
-export type ResourceType = "workflow" | "step"
-
-/**
  * Configuration for path matching and exclusions
  */
 export const CONFIG = {
@@ -19,6 +14,7 @@ export const CONFIG = {
   RESOURCE_PATH_PATTERNS: {
     route: "api/",
     workflow: "workflows/",
+    subscriber: "subscribers/",
   },
 } as const
 

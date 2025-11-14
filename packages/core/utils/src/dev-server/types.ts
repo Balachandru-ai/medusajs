@@ -24,7 +24,17 @@ export interface StepResourceData extends BaseResourceData {
   sourcePath?: string
 }
 
-export type ResourceRegistrationData = WorkflowResourceData | StepResourceData
+export interface SubscriberResourceData extends BaseResourceData {
+  type: "subscriber"
+  sourcePath: string
+  subscriberId: string
+  events: string[]
+}
+
+export type ResourceRegistrationData =
+  | WorkflowResourceData
+  | StepResourceData
+  | SubscriberResourceData
 
 export interface ResourceTypeHandler<
   T extends BaseResourceData = BaseResourceData
