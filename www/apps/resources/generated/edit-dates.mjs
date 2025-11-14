@@ -6716,5 +6716,6 @@ export const generatedEditDates = {
   "references/types/HttpTypes/interfaces/types.HttpTypes.AdminShippingOptionTypeListParams/page.mdx": "2025-10-31T09:41:31.507Z",
   "references/core_flows/Payment/Workflows_Payment/functions/core_flows.Payment.Workflows_Payment.validateRefundPaymentExceedsCapturedAmountStep/page.mdx": "2025-11-05T12:22:20.221Z",
   "references/core_flows/Product/Workflows_Product/functions/core_flows.Product.Workflows_Product.batchImageVariantsWorkflow/page.mdx": "2025-11-05T12:22:20.639Z",
-  "references/core_flows/Product/Workflows_Product/functions/core_flows.Product.Workflows_Product.batchVariantImagesWorkflow/page.mdx": "2025-11-05T12:22:20.671Z"
+  "references/core_flows/Product/Workflows_Product/functions/core_flows.Product.Workflows_Product.batchVariantImagesWorkflow/page.mdx": "2025-11-05T12:22:20.671Z",
+  "app/storefront-development/guides/react-native-expo/page.mdx": "2025-11-06T07:18:45.347Z"
 }

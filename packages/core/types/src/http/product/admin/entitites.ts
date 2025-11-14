@@ -59,11 +59,6 @@ export interface AdminProductVariant extends BaseProductVariant {
    * The variant's inventory items.
    */
   inventory_items?: AdminProductVariantInventoryItemLink[] | null
-
-  /**
-   * The variant's images.
-   */
-  images?: AdminProductImage[] | null
 }
 export interface AdminProductOption extends BaseProductOption {
   /**
