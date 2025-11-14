@@ -1,4 +1,8 @@
-import { ContainerRegistrationKeys, parseCorsOrigins } from "@medusajs/utils"
+import {
+  ContainerRegistrationKeys,
+  FeatureFlag,
+  parseCorsOrigins,
+} from "@medusajs/utils"
 import cors, { CorsOptions } from "cors"
 import type {
   ErrorRequestHandler,
@@ -65,6 +69,8 @@ export class ApiLoader {
 
   readonly #logger: Logger
 
+  #routesLoader: RoutesLoader
+
   constructor({
     app,
     sourceDir,
@@ -83,25 +89,19 @@ export class ApiLoader {
   }
 
   /**
-   * RoutesLoader instance (stored for HMR)
-   */
-  #routesLoader?: RoutesLoader
-
-  /**
    * Loads routes, middleware, bodyParserConfig routes, routes that have
    * opted out for Auth and CORS and the error handler.
    */
   async #loadHttpResources() {
     const routesLoader = new RoutesLoader()
+    this.#routesLoader = routesLoader
+
     const middlewareLoader = new MiddlewareFileLoader()
 
     for (let dir of this.#sourceDirs) {
       await routesLoader.scanDir(dir)
       await middlewareLoader.scanDir(dir)
     }
-
-    // Store for HMR access
-    this.#routesLoader = routesLoader
 
     return {
       routes: routesLoader.getRoutes(),
@@ -122,7 +122,7 @@ export class ApiLoader {
    */
 
   async unregisterExpressHandler(absolutePath: string) {
-    let routePathToDelete
+    let routePathToDelete: string | undefined
     try {
       const sourceDir = this.#sourceDirs.find((dir) =>
         absolutePath.startsWith(dir)
@@ -177,21 +177,6 @@ export class ApiLoader {
         : route.handler
 
       this.#app[route.method.toLowerCase()](route.matcher, wrapHandler(handler))
-
-      // // Register with HMR route registry if available (experimental backend HMR)
-      // const hmrRegistry = (global as any).__MEDUSA_HMR_ROUTE_REGISTRY__
-      // if (hmrRegistry && route.absolutePath) {
-      //   hmrRegistry.register({
-      //     filePath: route.absolutePath,
-      //     type: "route",
-      //     loadedAt: Date.now(),
-      //     dependencies: new Set(),
-      //     meta: {
-      //       method: route.method,
-      //       path: route.matcher,
-      //     },
-      //   })
-      // }
 
       return
     }
@@ -477,9 +462,7 @@ export class ApiLoader {
   }
 
   async load() {
-    // Store ApiLoader instance globally for HMR access
-    const hmrRegistry = (global as any).__MEDUSA_HMR_ROUTE_REGISTRY__
-    if (hmrRegistry) {
+    if (FeatureFlag.isFeatureEnabled("backend_hmr")) {
       ;(global as any).__MEDUSA_HMR_API_LOADER__ = this
     }
 

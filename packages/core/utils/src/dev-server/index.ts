@@ -1,7 +1,12 @@
-type ResourcePath = string
+import { FeatureFlag } from "../feature-flags"
 
-export const globalDevServerRegistry = new Map<ResourcePath, Map<any, any>>()
-export const inverseDevServerRegistry = new Map<string, string[]>()
+type ResourcePath = string
+type ResourceType = "workflow" | "step"
+type ResourceEntry = { id: string; workflowId?: string }
+type ResourceMap = Map<ResourceType, ResourceEntry[]>
+
+export const globalDevServerRegistry = new Map<ResourcePath, ResourceMap>()
+export const inverseDevServerRegistry = new Map<ResourcePath, ResourcePath[]>()
 
 export function registerDevServerResource(
   data:
@@ -17,10 +22,17 @@ export function registerDevServerResource(
         sourcePath?: string
       }
 ) {
+  const isProduction = ["production", "prod"].includes(
+    process.env.NODE_ENV || ""
+  )
+  if (!FeatureFlag.isFeatureEnabled("backend_hmr") || isProduction) {
+    return
+  }
+
   if (data.type === "workflow") {
     const registry =
       globalDevServerRegistry.get(data.sourcePath) ||
-      new Map<string, string[]>()
+      new Map<ResourceType, ResourceEntry[]>()
     globalDevServerRegistry.set(data.sourcePath, registry)
 
     registry.set(data.type, [
@@ -46,7 +58,8 @@ export function registerDevServerResource(
     }
 
     const registry =
-      globalDevServerRegistry.get(sourcePath!) ?? new Map<string, string[]>()
+      globalDevServerRegistry.get(sourcePath!) ??
+      new Map<ResourceType, ResourceEntry[]>()
     globalDevServerRegistry.set(sourcePath!, registry)
 
     registry.set(data.type, [
