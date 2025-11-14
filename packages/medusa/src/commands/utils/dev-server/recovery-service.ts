@@ -10,6 +10,7 @@ export class RecoveryService {
   constructor(
     private cacheManager: ModuleCacheManager,
     private reloadResources: (params: ReloadParams) => Promise<void>,
+    private logSource: string,
     private logger: Logger
   ) {}
 
@@ -22,7 +23,9 @@ export class RecoveryService {
       return
     }
 
-    this.logger.info(`Attempting to recover ${brokenCount} broken module(s)`)
+    this.logger.info(
+      `${this.logSource} Attempting to recover ${brokenCount} broken module(s)`
+    )
 
     const brokenModules = this.cacheManager.getBrokenModules()
 
@@ -40,11 +43,12 @@ export class RecoveryService {
     this.cacheManager.clearSingleModule(modulePath)
 
     const relativePath = path.relative(process.cwd(), modulePath)
-    this.logger.info(`Attempting to reload: ${relativePath}`)
+    this.logger.info(`${this.logSource} Attempting to reload: ${relativePath}`)
 
     try {
       // Attempt reload with skipRecovery=true to prevent infinite recursion
       await this.reloadResources({
+        logSource: this.logSource,
         action: "change",
         absoluteFilePath: modulePath,
         keepCache: false,
@@ -53,9 +57,13 @@ export class RecoveryService {
       })
 
       this.cacheManager.removeBrokenModule(modulePath)
-      this.logger.info(`Successfully recovered: ${relativePath}`)
+      this.logger.info(
+        `${this.logSource} Successfully recovered: ${relativePath}`
+      )
     } catch (error) {
-      this.logger.debug(`Could not recover ${relativePath}: ${error}`)
+      this.logger.debug(
+        `${this.logSource} Could not recover ${relativePath}: ${error}`
+      )
     }
   }
 
@@ -67,10 +75,12 @@ export class RecoveryService {
 
     if (remainingBroken) {
       this.logger.debug(
-        `${remainingBroken} module(s) remain broken. They may recover when additional dependencies are restored.`
+        `${this.logSource} ${remainingBroken} module(s) remain broken. They may recover when additional dependencies are restored.`
       )
     } else {
-      this.logger.info("All broken modules successfully recovered")
+      this.logger.info(
+        `${this.logSource} All broken modules successfully recovered`
+      )
     }
   }
 }

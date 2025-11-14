@@ -8,7 +8,7 @@ import { WorkflowReloader } from "./reloaders/workflows"
 import { ResourceRegistry } from "./resource-registry"
 import { DevServerGlobals, ReloadParams } from "./types"
 
-const sharedCacheManager = new ModuleCacheManager()
+let sharedCacheManager!: ModuleCacheManager
 const sharedRegistry = new ResourceRegistry()
 
 const reloaders = {} as {
@@ -17,12 +17,15 @@ const reloaders = {} as {
   workflowsReloader: WorkflowReloader
 }
 
-function initializeReloaders() {
+function initializeReloaders(logSource: string) {
+  sharedCacheManager ??= new ModuleCacheManager(logSource)
+
   const globals = global as unknown as DevServerGlobals
 
   if (!reloaders.routesReloader) {
     const routeReloader = new RouteReloader(
       globals.__MEDUSA_HMR_API_LOADER__,
+      logSource,
       logger
     )
     reloaders.routesReloader = routeReloader
@@ -32,6 +35,7 @@ function initializeReloaders() {
     const subscriberReloader = new SubscriberReloader(
       container,
       sharedRegistry,
+      logSource,
       logger
     )
     reloaders.subscribersReloader = subscriberReloader
@@ -43,6 +47,7 @@ function initializeReloaders() {
       sharedRegistry,
       sharedCacheManager,
       reloadResources,
+      logSource,
       logger
     )
     reloaders.workflowsReloader = workflowReloader
@@ -54,13 +59,14 @@ function initializeReloaders() {
  * Orchestrates the reload process and handles recovery of broken modules
  */
 export async function reloadResources({
+  logSource,
   action,
   absoluteFilePath,
   keepCache,
   logger,
   skipRecovery = false,
 }: ReloadParams): Promise<void> {
-  initializeReloaders()
+  initializeReloaders(logSource)
 
   await reloaders.routesReloader.reload(action, absoluteFilePath)
   await reloaders.subscribersReloader?.reload?.(action, absoluteFilePath)
@@ -76,6 +82,7 @@ export async function reloadResources({
     const recoveryService = new RecoveryService(
       sharedCacheManager,
       reloadResources,
+      logSource,
       logger
     )
 

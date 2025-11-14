@@ -32,6 +32,10 @@ export interface DevServerGlobals {
  * Parameters for resource reload operations
  */
 export interface ReloadParams {
+  /**
+   * The source of the log, used to prefix the log messages
+   */
+  logSource: string
   action: FileChangeAction
   absoluteFilePath: string
   keepCache?: boolean

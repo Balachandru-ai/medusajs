@@ -8,6 +8,7 @@ import { CONFIG, FileChangeAction } from "../types"
 export class RouteReloader {
   constructor(
     private apiLoader: ApiLoader | undefined,
+    private logSource: string,
     private logger: Logger
   ) {}
 
@@ -30,7 +31,9 @@ export class RouteReloader {
     }
 
     if (!this.apiLoader) {
-      this.logger.error("ApiLoader not available - cannot reload routes")
+      this.logger.error(
+        `${this.logSource} ApiLoader not available - cannot reload routes`
+      )
       return
     }
 

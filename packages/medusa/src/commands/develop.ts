@@ -29,11 +29,16 @@ export default async function ({ types, directory }) {
   )
 
   const reloadActionVerb = isBackendHmrEnabled ? "reloading" : "restarting"
+  const logSource = isBackendHmrEnabled ? "[HMR]" : "[Watcher]"
 
   if (isBackendHmrEnabled) {
-    logger.info("Using backend HMR dev server (reload on file change)")
+    logger.info(
+      `${logSource} Using backend HMR dev server (reload on file change)`
+    )
   } else {
-    logger.info("Using standard dev server (restart on file change)")
+    logger.info(
+      `${logSource} Using standard dev server (restart on file change)`
+    )
   }
 
   const args = process.argv
@@ -88,8 +93,10 @@ export default async function ({ types, directory }) {
       })
       this.childProcess.on("error", (error) => {
         // @ts-ignore
-        logger.error("Dev server failed to start", error)
-        logger.info("The server will restart automatically after your changes")
+        logger.error(`${logSource} Dev server failed to start`, error)
+        logger.info(
+          `${logSource} The server will restart automatically after your changes`
+        )
       })
     },
 
@@ -100,7 +107,12 @@ export default async function ({ types, directory }) {
     async restart(action, file) {
       if (isBackendHmrEnabled) {
         const absoluteFilePath = path.resolve(directory, file)
-        const reloaderArguments = { action, absoluteFilePath, logger }
+        const reloaderArguments = {
+          logSource,
+          action,
+          absoluteFilePath,
+          logger,
+        }
         await reloadResources(reloaderArguments)
 
         return
@@ -152,14 +164,18 @@ export default async function ({ types, directory }) {
             ? "modified"
             : "removed"
 
+        const now = performance.now()
         logger.info(
-          `${path.relative(
+          `${logSource} ${actionVerb} ${path.relative(
             directory,
             file
           )} ${actionVerb}: ${reloadActionVerb} dev server`
         )
 
         await this.restart(action, file)
+
+        const duration = performance.now() - now
+        logger.info(`${logSource} Reloaded in ${duration.toFixed(2)}ms`)
       }
 
       this.watcher.on("add", async (file) => {
@@ -173,7 +189,9 @@ export default async function ({ types, directory }) {
       })
 
       this.watcher.on("ready", function () {
-        logger.info(`Watching filesystem to reload dev server on file change`)
+        logger.info(
+          `${logSource} Watching filesystem to reload dev server on file change`
+        )
       })
     },
   }

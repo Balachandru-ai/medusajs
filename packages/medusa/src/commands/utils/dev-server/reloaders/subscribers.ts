@@ -25,6 +25,7 @@ export class SubscriberReloader {
   constructor(
     private container: MedusaContainer,
     private registry: ResourceRegistry,
+    private logSource: string,
     private logger: Logger
   ) {
     this.#eventBusService = container.resolve(Modules.EVENT_BUS, {
@@ -58,7 +59,7 @@ export class SubscriberReloader {
     }
 
     this.logger.debug(
-      `Unregistered subscriber ${
+      `${this.logSource} Unregistered subscriber ${
         metadata.subscriberId
       } from events: ${metadata.events.join(", ")}`
     )
@@ -86,10 +87,12 @@ export class SubscriberReloader {
         handler: subscriberModule.default,
       })
 
-      this.logger.debug(`Registered subscriber ${absoluteFilePath}`)
+      this.logger.debug(
+        `${this.logSource} Registered subscriber ${absoluteFilePath}`
+      )
     } catch (error) {
       this.logger.error(
-        `Failed to register subscriber from ${absoluteFilePath}: ${error}`
+        `${this.logSource} Failed to register subscriber from ${absoluteFilePath}: ${error}`
       )
     }
   }
@@ -117,7 +120,7 @@ export class SubscriberReloader {
 
     if (!this.#eventBusService) {
       this.logger.error(
-        "EventBusService not available - cannot reload subscribers"
+        `${this.logSource} EventBusService not available - cannot reload subscribers`
       )
       return
     }

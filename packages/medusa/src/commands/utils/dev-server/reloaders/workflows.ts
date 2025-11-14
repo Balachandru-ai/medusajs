@@ -18,6 +18,7 @@ export class WorkflowReloader {
     private registry: ResourceRegistry,
     private cacheManager: ModuleCacheManager,
     private reloadResources: (params: ReloadParams) => Promise<void>,
+    private logSource: string,
     private logger: Logger
   ) {}
 
@@ -43,7 +44,7 @@ export class WorkflowReloader {
 
     if (!this.workflowManager) {
       this.logger.error(
-        "WorkflowManager not available - cannot reload workflows"
+        `${this.logSource} WorkflowManager not available - cannot reload workflows`
       )
       return
     }
@@ -157,6 +158,7 @@ export class WorkflowReloader {
         // Create deferred reloader for each cleared module
         reloaders.push(async () =>
           this.reloadResources({
+            logSource: this.logSource,
             action: "change",
             absoluteFilePath: modulePath,
             keepCache: true,

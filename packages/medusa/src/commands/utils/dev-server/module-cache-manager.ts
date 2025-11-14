@@ -6,6 +6,8 @@ import path from "path"
  * Manages Node.js require cache operations and tracks broken modules
  */
 export class ModuleCacheManager {
+  constructor(private readonly logSource: string) {}
+
   private brokenModules: Set<string> = new Set()
 
   /**
@@ -130,7 +132,7 @@ export class ModuleCacheManager {
   ): void {
     if (logger) {
       const relativePath = path.relative(process.cwd(), modulePath)
-      logger.debug(`${message}: ${relativePath}`)
+      logger.debug(`${this.logSource} ${message}: ${relativePath}`)
     }
   }
 
@@ -165,7 +167,7 @@ export class ModuleCacheManager {
     if (logger) {
       const relativePath = path.relative(process.cwd(), filePath)
       logger.info(
-        `Cleared ${visitedModules.size} module(s) from cache for ${relativePath}`
+        `${this.logSource} Cleared ${visitedModules.size} module(s) from cache for ${relativePath}`
       )
     }
 
