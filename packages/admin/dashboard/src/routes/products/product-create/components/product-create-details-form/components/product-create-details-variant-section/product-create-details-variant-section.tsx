@@ -365,6 +365,9 @@ export const ProductCreateVariantsSection = ({
             } else {
               createDefaultOptionAndVariant()
             }
+            setSelectedOptionIds([])
+            setSelectedOptionValues({})
+            setCustomValues({})
           }}
         />
       </div>
