@@ -1300,7 +1300,7 @@ export default class FulfillmentModuleService
         shippingOption.id
       )! // Guaranteed to exist since the validation above have been performed
 
-      // `type_id` doesn't exsits on the entity/table, `type_id` argument is mapped to `shipping_option_type_id`
+      // `type_id` doesn't exist on the entity/table, `type_id` argument is mapped to `shipping_option_type_id`
       if (shippingOption.type_id) {
         shippingOption.shipping_option_type_id = shippingOption.type_id
         delete shippingOption.type_id
