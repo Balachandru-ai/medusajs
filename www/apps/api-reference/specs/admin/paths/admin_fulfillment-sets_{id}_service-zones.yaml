@@ -37,7 +37,7 @@ post:
     content:
       application/json:
         schema:
-          $ref: ../components/schemas/AdminCreateFulfillmentSetServiceZones.yaml
+          $ref: ../components/schemas/AdminCreateFulfillmentSetServiceZone.yaml
   x-codeSamples:
     - lang: JavaScript
       label: JS SDK

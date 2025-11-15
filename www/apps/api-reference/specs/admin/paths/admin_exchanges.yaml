@@ -1013,7 +1013,7 @@ post:
     content:
       application/json:
         schema:
-          $ref: ../components/schemas/AdminPostOrderExchangesReqSchema.yaml
+          $ref: ../components/schemas/AdminCreateExchange.yaml
   x-codeSamples:
     - lang: JavaScript
       label: JS SDK

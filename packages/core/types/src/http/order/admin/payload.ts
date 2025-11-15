@@ -100,8 +100,17 @@ export interface AdminCancelOrderFulfillment {
 }
 
 export interface AdminRequestOrderTransfer {
+  /**
+   * The ID of the customer to transfer the order to.
+   */
   customer_id: string
+  /**
+   * An internal note viewed by admins only.
+   */
   internal_note?: string
+  /**
+   * A description for the transfer request.
+   */
   description?: string
 }
 
@@ -158,6 +167,25 @@ export interface OrderAddress {
 
   /**
    * Holds custom data in key-value pairs.
+   */
+  metadata?: Record<string, unknown> | null
+}
+
+export interface AdminCreateOrderCreditLine {
+  /**
+   * The amount of the credit line.
+   */
+  amount: number
+  /**
+   * The name of the table this credit line is associated with.
+   */
+  reference: string
+  /**
+   * The ID of the reference entity in the reference table.
+   */
+  reference_id: string
+  /**
+   * Key-value pairs of custom data.
    */
   metadata?: Record<string, unknown> | null
 }

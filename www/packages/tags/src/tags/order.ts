@@ -44,6 +44,10 @@ export const order = [
     "path": "https://docs.medusajs.com/user-guide/orders/returns"
   },
   {
+    "title": "Manage Refund Reasons",
+    "path": "https://docs.medusajs.com/user-guide/settings/refund-reasons"
+  },
+  {
     "title": "Manage Return Reasons",
     "path": "https://docs.medusajs.com/user-guide/settings/return-reasons"
   },
@@ -94,6 +98,10 @@ export const order = [
   {
     "title": "Implement Express Checkout with Medusa",
     "path": "https://docs.medusajs.com/resources/storefront-development/guides/express-checkout"
+  },
+  {
+    "title": "Implement Mobile App with React Native, Expo, and Medusa",
+    "path": "https://docs.medusajs.com/resources/storefront-development/guides/react-native-expo"
   },
   {
     "title": "completeCartWorkflow",

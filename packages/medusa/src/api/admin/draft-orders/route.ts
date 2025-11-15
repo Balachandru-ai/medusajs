@@ -19,7 +19,6 @@ import {
   remoteQueryObjectFromString,
 } from "@medusajs/framework/utils"
 import { refetchOrder } from "./helpers"
-import { AdminCreateDraftOrderType } from "./validators"
 
 export const GET = async (
   req: MedusaRequest<HttpTypes.AdminOrderFilters>,
@@ -54,7 +53,10 @@ export const GET = async (
 }
 
 export const POST = async (
-  req: AuthenticatedMedusaRequest<AdminCreateDraftOrderType & AdditionalData>,
+  req: AuthenticatedMedusaRequest<
+    HttpTypes.AdminCreateDraftOrder & AdditionalData,
+    HttpTypes.AdminDraftOrderParams
+  >,
   res: MedusaResponse<HttpTypes.AdminDraftOrderResponse>
 ) => {
   const input = req.validatedBody

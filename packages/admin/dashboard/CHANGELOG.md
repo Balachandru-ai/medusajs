@@ -1,5 +1,115 @@
 # @medusajs/dashboard
 
+## 2.11.3
+
+### Patch Changes
+
+- [#13910](https://github.com/medusajs/medusa/pull/13910) [`224ab39a81e8d3cf3d6fa3ff5eee82541f64728d`](https://github.com/medusajs/medusa/commit/224ab39a81e8d3cf3d6fa3ff5eee82541f64728d) Thanks [@adrien2p](https://github.com/adrien2p)! - chore(): Dependencies cleanup and improvements
+
+- [#13940](https://github.com/medusajs/medusa/pull/13940) [`afb40d437b3cc4ceb015df70985b2f005f40eaff`](https://github.com/medusajs/medusa/commit/afb40d437b3cc4ceb015df70985b2f005f40eaff) Thanks [@adrien2p](https://github.com/adrien2p)! - chore(): Cleanup and organize deps
+
+- [#13958](https://github.com/medusajs/medusa/pull/13958) [`c6556d1256e4d0c1e001069a7ada4a902c6bbe86`](https://github.com/medusajs/medusa/commit/c6556d1256e4d0c1e001069a7ada4a902c6bbe86) Thanks [@NicolasGorga](https://github.com/NicolasGorga)! - Inlude missing Shipping Profile Id and Product Sales Channel 1 columns to product import CSV template
+
+- [#13949](https://github.com/medusajs/medusa/pull/13949) [`0426568569a2d6b2a0bd61c9378787e258221610`](https://github.com/medusajs/medusa/commit/0426568569a2d6b2a0bd61c9378787e258221610) Thanks [@NicolasGorga](https://github.com/NicolasGorga)! - Update problematic dependency array of InfiniteList useEffect to avoid infinite loop.
+
+- Updated dependencies [[`224ab39a81e8d3cf3d6fa3ff5eee82541f64728d`](https://github.com/medusajs/medusa/commit/224ab39a81e8d3cf3d6fa3ff5eee82541f64728d), [`afb40d437b3cc4ceb015df70985b2f005f40eaff`](https://github.com/medusajs/medusa/commit/afb40d437b3cc4ceb015df70985b2f005f40eaff), [`37563987b8fe75c9acfe62957a33e8398977647a`](https://github.com/medusajs/medusa/commit/37563987b8fe75c9acfe62957a33e8398977647a)]:
+  - @medusajs/admin-shared@2.11.3
+  - @medusajs/icons@2.11.3
+  - @medusajs/js-sdk@2.11.3
+  - @medusajs/ui@4.0.27
+
+## 2.11.2
+
+### Patch Changes
+
+- [#13860](https://github.com/medusajs/medusa/pull/13860) [`9f154c308ec62093c8e6c233767760be3148d917`](https://github.com/medusajs/medusa/commit/9f154c308ec62093c8e6c233767760be3148d917) Thanks [@NicolasGorga](https://github.com/NicolasGorga)! - fix(dashboard): Limit number of ids passed in tax region override queries to avoid PayloadTooLargeError
+
+- [#13881](https://github.com/medusajs/medusa/pull/13881) [`1594c13962436c78dbb1b304aa3c657cc8ff2d9c`](https://github.com/medusajs/medusa/commit/1594c13962436c78dbb1b304aa3c657cc8ff2d9c) Thanks [@fPolic](https://github.com/fPolic)! - fix(dashboard): preserve old image ids when deleting a product image
+
+- [#13874](https://github.com/medusajs/medusa/pull/13874) [`ac6754f008a5ecc3fa2677e74a681b0e23014043`](https://github.com/medusajs/medusa/commit/ac6754f008a5ecc3fa2677e74a681b0e23014043) Thanks [@bqst](https://github.com/bqst)! - feat(admin): Change admin order list default sort
+
+- [#13861](https://github.com/medusajs/medusa/pull/13861) [`c1c0e1490a25693f26852d74c56071d46e88d363`](https://github.com/medusajs/medusa/commit/c1c0e1490a25693f26852d74c56071d46e88d363) Thanks [@radeknapora](https://github.com/radeknapora)! - fix(dashboard) standardize heading levels for consistent hierarchy
+
+- [#13623](https://github.com/medusajs/medusa/pull/13623) [`47572816778e21432d0201f4b2642a765c86fdbc`](https://github.com/medusajs/medusa/commit/47572816778e21432d0201f4b2642a765c86fdbc) Thanks [@fPolic](https://github.com/fPolic)! - feat: scoped variant images
+
+- [#13905](https://github.com/medusajs/medusa/pull/13905) [`d5fc46b22240d73d94d4040189f98da0126773bd`](https://github.com/medusajs/medusa/commit/d5fc46b22240d73d94d4040189f98da0126773bd) Thanks [@fPolic](https://github.com/fPolic)! - feat(dashboard): variant images list thumbnail + refactor form state management
+
+- [#13872](https://github.com/medusajs/medusa/pull/13872) [`47b2f7f888edd006319d78cbfc3f3c5349ab08f7`](https://github.com/medusajs/medusa/commit/47b2f7f888edd006319d78cbfc3f3c5349ab08f7) Thanks [@bqst](https://github.com/bqst)! - 🐛 Fix admin promotion list sort
+
+- [#13851](https://github.com/medusajs/medusa/pull/13851) [`0244f029aae2fc077d51df277aab5b6564f364a6`](https://github.com/medusajs/medusa/commit/0244f029aae2fc077d51df277aab5b6564f364a6) Thanks [@leobenzol](https://github.com/leobenzol)! - feat(dashboard): type-safe i18n for UI extensions
+
+- [#13787](https://github.com/medusajs/medusa/pull/13787) [`2eca81ec0fc572409c36b0ade11c8ccf499469aa`](https://github.com/medusajs/medusa/commit/2eca81ec0fc572409c36b0ade11c8ccf499469aa) Thanks [@kevinresol](https://github.com/kevinresol)! - add input field for tracking_url and label_url in shipment form
+
+- [#13863](https://github.com/medusajs/medusa/pull/13863) [`ef798160ea689ece75f6ae9022faedf301b1306d`](https://github.com/medusajs/medusa/commit/ef798160ea689ece75f6ae9022faedf301b1306d) Thanks [@siddarthan007](https://github.com/siddarthan007)! - Fixed a bug in product attributes form such that it now accepts decimal values
+
+- Updated dependencies [[`47572816778e21432d0201f4b2642a765c86fdbc`](https://github.com/medusajs/medusa/commit/47572816778e21432d0201f4b2642a765c86fdbc)]:
+  - @medusajs/js-sdk@2.11.2
+  - @medusajs/admin-shared@2.11.2
+  - @medusajs/icons@2.11.2
+  - @medusajs/ui@4.0.26
+
+## 2.11.1
+
+### Patch Changes
+
+- [#13763](https://github.com/medusajs/medusa/pull/13763) [`226984cf0f229bec00ee33a3a1a981b57889c11a`](https://github.com/medusajs/medusa/commit/226984cf0f229bec00ee33a3a1a981b57889c11a) Thanks [@leobenzol](https://github.com/leobenzol)! - feat(admin-\*,dashboard): add dashboard i18n extensions
+
+- [#13766](https://github.com/medusajs/medusa/pull/13766) [`fe4e7481a9ee6e360623d15ecfaf51f3df00f9d7`](https://github.com/medusajs/medusa/commit/fe4e7481a9ee6e360623d15ecfaf51f3df00f9d7) Thanks [@willbouch](https://github.com/willbouch)! - feat(order,dashboard): version order credit lines
+
+- Updated dependencies [[`226984cf0f229bec00ee33a3a1a981b57889c11a`](https://github.com/medusajs/medusa/commit/226984cf0f229bec00ee33a3a1a981b57889c11a), [`22d23b148e610bd0dd1980620c2ebc85af65be55`](https://github.com/medusajs/medusa/commit/22d23b148e610bd0dd1980620c2ebc85af65be55)]:
+  - @medusajs/admin-shared@2.11.1
+  - @medusajs/js-sdk@2.11.1
+  - @medusajs/icons@2.11.1
+  - @medusajs/ui@4.0.25
+
+## 2.11.0
+
+### Patch Changes
+
+- [#13404](https://github.com/medusajs/medusa/pull/13404) [`294c37564ca035dc9b658bdce1f6afb4ced3d916`](https://github.com/medusajs/medusa/commit/294c37564ca035dc9b658bdce1f6afb4ced3d916) Thanks [@fPolic](https://github.com/fPolic)! - fix(dashboard): add campaign without currency to promotion
+
+- [#13596](https://github.com/medusajs/medusa/pull/13596) [`9538df2eaff8a30604291eda8f46b4ea87eb1ca9`](https://github.com/medusajs/medusa/commit/9538df2eaff8a30604291eda8f46b4ea87eb1ca9) Thanks [@bqst](https://github.com/bqst)! - fix(dashboard): copy phone on order customer info
+
+- [#13451](https://github.com/medusajs/medusa/pull/13451) [`7dc3b0c5ffdf8eb7070ee5cfd8155c6c4de5c0b1`](https://github.com/medusajs/medusa/commit/7dc3b0c5ffdf8eb7070ee5cfd8155c6c4de5c0b1) Thanks [@fPolic](https://github.com/fPolic)! - feat: support limiting promotion usage by attribute
+
+- [#13521](https://github.com/medusajs/medusa/pull/13521) [`a1c56d29d0c63521c00e3a54beffd7041023f430`](https://github.com/medusajs/medusa/commit/a1c56d29d0c63521c00e3a54beffd7041023f430) Thanks [@patelaryan0914](https://github.com/patelaryan0914)! - fix(dashboard):replace native select Element in CountrySelect & ProvinceSelect with Select(Medusa UI).
+
+- [#13631](https://github.com/medusajs/medusa/pull/13631) [`d30806533c181be39b97b0321a44390cd31acd3c`](https://github.com/medusajs/medusa/commit/d30806533c181be39b97b0321a44390cd31acd3c) Thanks [@willbouch](https://github.com/willbouch)! - fix(dashboard): create refund form broken when no payment id defined
+
+- [#13756](https://github.com/medusajs/medusa/pull/13756) [`8642d41aaca843d008b44b0fd9f1fecd0be4a7cf`](https://github.com/medusajs/medusa/commit/8642d41aaca843d008b44b0fd9f1fecd0be4a7cf) Thanks [@willbouch](https://github.com/willbouch)! - fix(dashboard): add error message in toaster on product delete
+
+- [#13578](https://github.com/medusajs/medusa/pull/13578) [`6e806942c7961eeb1d80abca0f9b4bf2e663f6b3`](https://github.com/medusajs/medusa/commit/6e806942c7961eeb1d80abca0f9b4bf2e663f6b3) Thanks [@fPolic](https://github.com/fPolic)! - fix(dashboard, order): set return status on cancel
+
+- [#13592](https://github.com/medusajs/medusa/pull/13592) [`c3ae529b40368eddb3265de9cf4a6f54e15d16d7`](https://github.com/medusajs/medusa/commit/c3ae529b40368eddb3265de9cf4a6f54e15d16d7) Thanks [@fPolic](https://github.com/fPolic)! - fix(dashboard): payment providers select
+
+- [#13575](https://github.com/medusajs/medusa/pull/13575) [`5e827ec95d0f721e62c0d4e8c603bda7ddc0929c`](https://github.com/medusajs/medusa/commit/5e827ec95d0f721e62c0d4e8c603bda7ddc0929c) Thanks [@willbouch](https://github.com/willbouch)! - feat(admin-shared,dashboard,js-sdk,types,payment): refund reasons in dashboard
+
+- [#13699](https://github.com/medusajs/medusa/pull/13699) [`e9b7a8c1f3c6f3d6d4447d8f57f15d20dedf0d28`](https://github.com/medusajs/medusa/commit/e9b7a8c1f3c6f3d6d4447d8f57f15d20dedf0d28) Thanks [@willbouch](https://github.com/willbouch)! - fix(dashboard): nan in tax total
+
+- [#13740](https://github.com/medusajs/medusa/pull/13740) [`723dc082f00d20eda7cb7d0fa01085509b4f5c47`](https://github.com/medusajs/medusa/commit/723dc082f00d20eda7cb7d0fa01085509b4f5c47) Thanks [@fPolic](https://github.com/fPolic)! - fix(dashboard): budget labels and remove promo code
+
+- [#13566](https://github.com/medusajs/medusa/pull/13566) [`459fbcdf998a506d80abb758bc7648126c6c96f8`](https://github.com/medusajs/medusa/commit/459fbcdf998a506d80abb758bc7648126c6c96f8) Thanks [@docloulou](https://github.com/docloulou)! - feat(medusa,dashboard): Add support for configurable additional columns in entity views
+
+- [#11252](https://github.com/medusajs/medusa/pull/11252) [`a75cf7fb36cf1858c6c9bda1126b092e923beff6`](https://github.com/medusajs/medusa/commit/a75cf7fb36cf1858c6c9bda1126b092e923beff6) Thanks [@MEClouds](https://github.com/MEClouds)! - feat(dashboard): support RTL in dashboard
+
+- [#13565](https://github.com/medusajs/medusa/pull/13565) [`55f89b2151cbdd506f91be5e08451c954caaf1fc`](https://github.com/medusajs/medusa/commit/55f89b2151cbdd506f91be5e08451c954caaf1fc) Thanks [@docloulou](https://github.com/docloulou)! - fix(dashboard): add offset and limit to query parameters in useTableConfiguration
+
+- [#13589](https://github.com/medusajs/medusa/pull/13589) [`7af9e3224cab141bf8c8283032cb508122a0f740`](https://github.com/medusajs/medusa/commit/7af9e3224cab141bf8c8283032cb508122a0f740) Thanks [@fPolic](https://github.com/fPolic)! - fix(dashboard): improve inventory level location management
+
+- [#13723](https://github.com/medusajs/medusa/pull/13723) [`c6896ffa6a1bc5c0ee8c4eea55feebea3497e47d`](https://github.com/medusajs/medusa/commit/c6896ffa6a1bc5c0ee8c4eea55feebea3497e47d) Thanks [@fPolic](https://github.com/fPolic)! - fix(dashboard): campaign UI improvements
+
+- [#13587](https://github.com/medusajs/medusa/pull/13587) [`edf29b3bd22de1a0f6a7e4eb8715641cd17b7956`](https://github.com/medusajs/medusa/commit/edf29b3bd22de1a0f6a7e4eb8715641cd17b7956) Thanks [@willbouch](https://github.com/willbouch)! - feat(dashboard): select refund reason in refund form
+
+- [#13711](https://github.com/medusajs/medusa/pull/13711) [`82f3b0413a0a56d09d5aefdabc1ae8f3adb7c82b`](https://github.com/medusajs/medusa/commit/82f3b0413a0a56d09d5aefdabc1ae8f3adb7c82b) Thanks [@willbouch](https://github.com/willbouch)! - fix(dashboard): export with filters not working
+
+- [#13571](https://github.com/medusajs/medusa/pull/13571) [`10787c865f04f231cd3d5b9709c417b1fd2e2130`](https://github.com/medusajs/medusa/commit/10787c865f04f231cd3d5b9709c417b1fd2e2130) Thanks [@fPolic](https://github.com/fPolic)! - feat(dashboard): refactor location list UI to use data table
+
+- Updated dependencies [[`7dc3b0c5ffdf8eb7070ee5cfd8155c6c4de5c0b1`](https://github.com/medusajs/medusa/commit/7dc3b0c5ffdf8eb7070ee5cfd8155c6c4de5c0b1), [`6a91f79f443ff72cba8ee7612a1e1c681af125ec`](https://github.com/medusajs/medusa/commit/6a91f79f443ff72cba8ee7612a1e1c681af125ec), [`76bf364440959b00926719db1c8a0e4a0e418879`](https://github.com/medusajs/medusa/commit/76bf364440959b00926719db1c8a0e4a0e418879), [`5e827ec95d0f721e62c0d4e8c603bda7ddc0929c`](https://github.com/medusajs/medusa/commit/5e827ec95d0f721e62c0d4e8c603bda7ddc0929c)]:
+  - @medusajs/js-sdk@2.11.0
+  - @medusajs/admin-shared@2.11.0
+  - @medusajs/icons@2.11.0
+  - @medusajs/ui@4.0.24
+
 ## 2.10.3
 
 ### Patch Changes

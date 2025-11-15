@@ -9,12 +9,15 @@ import {
 
 export const AdminGetOrdersOrderParams = createSelectParams().merge(
   z.object({
-    id: z.union([z.string(), z.array(z.string())]).optional(),
-    status: z.union([z.string(), z.array(z.string())]).optional(),
-    version: z.number().optional(),
-    created_at: createOperatorMap().optional(),
-    updated_at: createOperatorMap().optional(),
-    deleted_at: createOperatorMap().optional(),
+    version: z.preprocess(
+        (val) => {
+            if (val && typeof val === "string") {
+                return parseInt(val)
+            }
+            return val
+        },
+        z.number().optional()
+    )
   })
 )
 
@@ -31,7 +34,7 @@ export const AdminGetOrdersOrderItemsParams = createSelectParams().merge(
 )
 
 export type AdminGetOrdersOrderItemsParamsType = z.infer<
-  typeof AdminGetOrdersOrderParams
+  typeof AdminGetOrdersOrderItemsParams
 >
 
 export const AdminGetOrderShippingOptionList = z.object({})

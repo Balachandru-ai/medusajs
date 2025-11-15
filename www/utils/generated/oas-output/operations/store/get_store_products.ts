@@ -5,7 +5,7 @@
  * description: Retrieve a list of products. The products can be filtered by fields such as `id`. The products can also be sorted or paginated.
  * x-authenticated: false
  * externalDocs:
- *   url: https://docs.medusajs.com/v2/resources/storefront-development/products/price
+ *   url: https://docs.medusajs.com/resources/storefront-development/products/price
  *   description: "Storefront guide: How to retrieve a product variants' prices."
  * parameters:
  *   - name: x-publishable-api-key
@@ -143,7 +143,7 @@
  *     schema:
  *       description: Filter by a collection's ID to retrieve the products in it.
  *       externalDocs:
- *         url: https://docs.medusajs.com/v2/resources/storefront-development/products/collections/products
+ *         url: https://docs.medusajs.com/resources/storefront-development/products/collections/products
  *         description: "Storefront guide: Retrieve a collection's products."
  *       items:
  *         type: string
@@ -650,7 +650,7 @@
  *       title: region_id
  *       description: The ID of the region the products are being viewed from. This is required if you're retrieving product variant prices with taxes.
  *       externalDocs:
- *         url: https://docs.medusajs.com/v2/resources/storefront-development/products/price/examples/tax-price
+ *         url: https://docs.medusajs.com/resources/storefront-development/products/price/examples/tax-price
  *         description: "Storefront guide: How to show product variants' prices with taxes."
  *   - name: province
  *     in: query

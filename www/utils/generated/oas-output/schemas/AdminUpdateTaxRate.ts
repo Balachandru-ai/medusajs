@@ -16,22 +16,7 @@
  *     type: array
  *     description: The tax rate's rules.
  *     items:
- *       type: object
- *       description: A tax rate rule.
- *       required:
- *         - reference
- *         - reference_id
- *       properties:
- *         reference:
- *           type: string
- *           title: reference
- *           description: The name of the table this rule references.
- *           example: product_type
- *         reference_id:
- *           type: string
- *           title: reference_id
- *           description: The ID of the record in the table that the rule references.
- *           example: ptyp_123
+ *       $ref: "#/components/schemas/AdminCreateTaxRateRule"
  *   name:
  *     type: string
  *     title: name
@@ -45,13 +30,15 @@
  *     title: is_combinable
  *     description: Whether the tax rate should be combined with parent rates.
  *     externalDocs:
- *       url: https://docs.medusajs.com/v2/resources/commerce-modules/tax/tax-rates-and-rules#combinable-tax-rates
+ *       url: https://docs.medusajs.com/resources/commerce-modules/tax/tax-rates-and-rules#combinable-tax-rates
  *   metadata:
  *     type: object
  *     description: The tax rate's metadata, can hold custom key-value pairs.
  *     externalDocs:
  *       url: https://docs.medusajs.com/api/admin#manage-metadata
  *       description: Learn how to manage metadata
+ * required:
+ *   - code
  * 
 */
 

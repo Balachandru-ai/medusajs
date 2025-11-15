@@ -1,8 +1,10 @@
 import { BigNumberInput, BigNumberRawValue, IBigNumber } from "@medusajs/types"
-import { BigNumber as BigNumberJS } from "bignumber.js"
+import { BigNumber as BigNumberConstructor } from "bignumber.js"
 import { isBigNumber } from "../common/is-big-number"
 import { isString } from "../common/is-string"
 
+type BigNumberJS = InstanceType<typeof BigNumberConstructor>
+const BigNumberJS = BigNumberConstructor
 export class BigNumber implements IBigNumber {
   static DEFAULT_PRECISION = 20
 

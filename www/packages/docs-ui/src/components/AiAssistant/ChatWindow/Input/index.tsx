@@ -158,7 +158,7 @@ export const AiAssistantChatWindowInput = ({
           placeholder="Ask me a question about Medusa..."
           disabled={loading}
         />
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-end gap-docs_1">
           <Tooltip
             tooltipChildren={
               <span>

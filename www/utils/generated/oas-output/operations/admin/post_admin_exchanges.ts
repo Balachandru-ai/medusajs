@@ -25,7 +25,7 @@
  *   content:
  *     application/json:
  *       schema:
- *         $ref: "#/components/schemas/AdminPostOrderExchangesReqSchema"
+ *         $ref: "#/components/schemas/AdminCreateExchange"
  * x-codeSamples:
  *   - lang: JavaScript
  *     label: JS SDK

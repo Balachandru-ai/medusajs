@@ -181,6 +181,12 @@ tags:
       </Note>
     x-associatedSchema:
       $ref: "#/components/schemas/AdminGiftCard"
+  - name: Index
+    description: >
+      The Index Module is a tool to perform high-performance queries across modules, for example, to filter linked modules.
+
+      The Index Module is currently experimental and is hidden behind a feature flag. Learn more about it and how
+      to enable it in the [Index Module guide](https://docs.medusajs.com/learn/fundamentals/module-links/index-module).
   - name: Inventory Items
     description: |
       An inventory item is a stock-kept product whose inventory is managed.

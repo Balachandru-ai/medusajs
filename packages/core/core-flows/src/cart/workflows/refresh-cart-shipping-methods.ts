@@ -11,7 +11,7 @@ import {
 import { AdditionalData } from "@medusajs/types"
 import { useQueryGraphStep } from "../../common"
 import { acquireLockStep, releaseLockStep } from "../../locking"
-import { removeShippingMethodFromCartStep } from "../steps"
+import { removeShippingMethodFromCartStep, validateCartStep } from "../steps"
 import { updateShippingMethodsStep } from "../steps/update-shipping-methods"
 import { listShippingOptionsForCartWithPricingWorkflow } from "./list-shipping-options-for-cart-with-pricing"
 
@@ -108,6 +108,8 @@ export const refreshCartShippingMethodsWorkflow = createWorkflow(
     const cart = transform({ fetchCart, input }, ({ fetchCart, input }) => {
       return fetchCart ?? input.cart
     })
+
+    validateCartStep({ cart })
 
     acquireLockStep({
       key: cart.id,

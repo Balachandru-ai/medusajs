@@ -6,10 +6,12 @@ import { MedusaRequest, MedusaResponse } from "@medusajs/framework/http"
 import { AdditionalData, HttpTypes } from "@medusajs/framework/types"
 import { Modules } from "@medusajs/framework/utils"
 import { refetchCart } from "../../../helpers"
-import { StoreUpdateCartLineItemType } from "../../../validators"
 
 export const POST = async (
-  req: MedusaRequest<StoreUpdateCartLineItemType & AdditionalData>,
+  req: MedusaRequest<
+    HttpTypes.StoreUpdateCartLineItem & AdditionalData,
+    HttpTypes.SelectParams
+  >,
   res: MedusaResponse<HttpTypes.StoreCartResponse>
 ) => {
   const we = req.scope.resolve(Modules.WORKFLOW_ENGINE)
@@ -20,7 +22,6 @@ export const POST = async (
       update: req.validatedBody,
       additional_data: req.validatedBody.additional_data,
     },
-    transactionId: "cart-update-item-" + req.params.id,
   })
 
   const updatedCart = await refetchCart(
@@ -33,7 +34,7 @@ export const POST = async (
 }
 
 export const DELETE = async (
-  req: MedusaRequest,
+  req: MedusaRequest<{}, HttpTypes.SelectParams>,
   res: MedusaResponse<HttpTypes.StoreLineItemDeleteResponse>
 ) => {
   const id = req.params.line_id
@@ -44,7 +45,6 @@ export const DELETE = async (
       cart_id: req.params.id,
       ids: [id],
     },
-    transactionId: "cart-delete-item-" + req.params.id,
   })
 
   const cart = await refetchCart(

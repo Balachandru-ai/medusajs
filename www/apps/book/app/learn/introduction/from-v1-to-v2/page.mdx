@@ -70,17 +70,10 @@ A basic v2 project has the following dependencies in `package.json`:
     "@medusajs/admin-sdk": "2.8.2",
     "@medusajs/cli": "2.8.2",
     "@medusajs/framework": "2.8.2",
-    "@medusajs/medusa": "2.8.2",
-    "@mikro-orm/core": "6.4.3",
-    "@mikro-orm/knex": "6.4.3",
-    "@mikro-orm/migrations": "6.4.3",
-    "@mikro-orm/postgresql": "6.4.3",
-    "awilix": "^8.0.1",
-    "pg": "^8.13.0"
+    "@medusajs/medusa": "2.8.2"
   },
   "devDependencies": {
     "@medusajs/test-utils": "2.8.2",
-    "@mikro-orm/cli": "6.4.3",
     "@swc/core": "1.5.7",
     "@swc/jest": "^0.2.36",
     "@types/jest": "^29.5.13",
@@ -107,25 +100,15 @@ The main changes are:
     - `@medusajs/framework`
     - `@medusajs/medusa`
     - `@medusajs/test-utils` (as a dev dependency)
-- You need to install the following extra packages:
-    - Database packages:
-        - `@mikro-orm/core@6.4.3`
-        - `@mikro-orm/knex@6.4.3`
-        - `@mikro-orm/migrations@6.4.3`
-        - `@mikro-orm/postgresql@6.4.3`
-        - `@mikro-orm/cli@6.4.3` (as a dev dependency)
-        - `pg^8.13.0`
-    - Framework packages:
-        - `awilix@^8.0.1`
-    - Development and Testing packages:
-        - `@swc/core@1.5.7`
-        - `@swc/jest@^0.2.36`
-        - `@types/node@^20.0.0`
-        - `jest@^29.7.0`
-        - `ts-node@^10.9.2`
-        - `typescript@^5.6.2`
-        - `vite@^5.2.11`
-        - `yalc@^1.0.0-pre.53`
+- You need to install the following extra packages for development and testing:
+    - `@swc/core@1.5.7`
+    - `@swc/jest@^0.2.36`
+    - `@types/node@^20.0.0`
+    - `jest@^29.7.0`
+    - `ts-node@^10.9.2`
+    - `typescript@^5.6.2`
+    - `vite@^5.2.11`
+    - `yalc@^1.0.0-pre.53`
 - Other packages, such as `@types/react` and `@types/react-dom`, are necessary for admin development and TypeScript support.
 
 <Note>
@@ -142,7 +125,7 @@ npm install
 
 <Note title="Medusa Module Dependencies" forceMultiline>
 
-In Medusa v1, you needed to install Medusa modules like the Cache, Event, or Pricing modules.
+In Medusa v1, you needed to install Medusa modules like the Event, Product, or Pricing modules.
 
 These modules are now available out of the box, and you don't need to install or configure them separately.
 
@@ -392,7 +375,7 @@ While the `plugins` configuration hasn't changed, plugins available in Medusa v1
 
 In Medusa v1, you had to configure modules like Inventory, Stock Location, Pricing, and Product. These modules are now available out of the box, and you don't need to install or configure them separately.
 
-For the Cache and Event modules, refer to the [Redis Cache Module](!resources!/infrastructure-modules/cache/redis) and [Redis Event Module](!resources!/infrastructure-modules/event/redis) documentations to learn how to configure them in v2 if you had them configured in v1.
+For the Cache and Event modules, refer to the [Redis Caching Module Provider](!resources!/infrastructure-modules/caching/providers/redis) and [Redis Event Module](!resources!/infrastructure-modules/event/redis) documentations to learn how to configure them in v2 if you had them configured in v1.
 
 #### Feature Flags
 
@@ -1893,11 +1876,11 @@ In Medusa v2, the price selection process is now implemented in the [Pricing Mod
 
 If your use case is complex and these rules are not enough, you can create a new [module](../../fundamentals/modules/page.mdx) with the necessary logic, then use that module in your custom workflows.
 
-## Prices are Stored in Base Units
+## Prices are Stored in Major Units
 
 In Medusa v1, prices were stored in the smallest currency unit. For example, a price of $10.00 was stored as `1000` (cents).
 
-In Medusa v2, prices are stored in the base unit. For example, a price of $10.00 is stored as `10` (dollars).
+In Medusa v2, prices are stored in the major unit. For example, a price of $10.00 is stored as `10` (dollars).
 
 Learn more in the [Pricing Concepts](!resources!/commerce-modules/pricing/concepts) guide.
 
