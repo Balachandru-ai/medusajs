@@ -103,7 +103,7 @@ Specify in which directory should the files be outputted. Accepts relative and a
 If the directory doesn't exist, it will be created. Defaults to `./`.
 
 ```bash
-yarn medusa-oas docs --src-file ./store.oas.json --out-dir ./docs`
+yarn medusa-oas docs --src-file ./store.oas.json --out-dir ./docs
 ```
 
 #### `--config <path>`
