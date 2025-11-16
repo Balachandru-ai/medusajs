@@ -8,7 +8,8 @@
   },
   "files": [
     "dist",
-    "oas"
+    "oas",
+    "redocly"
   ],
   "repository": {
     "type": "git",
