@@ -48,6 +48,11 @@ export type UpdateCartPromotionsWorkflowInput = {
     | PromotionActions.ADD
     | PromotionActions.REMOVE
     | PromotionActions.REPLACE
+    /**
+     * Wether to force the refresh of the cart payment collection. If the caller doesn't refresh it explicitly,
+     * you should probably set this property to true.
+     */
+    force_refresh_payment_collection?: boolean
 }
 
 export const updateCartPromotionsWorkflowId = "update-cart-promotions"
@@ -154,8 +159,13 @@ export const updateCartPromotionsWorkflow = createWorkflow(
       })
     )
 
-    refreshPaymentCollectionForCartWorkflow.runAsStep({
+    when(
+      { input },
+      ({ input }) => input.force_refresh_payment_collection === true
+    ).then(() => {
+      refreshPaymentCollectionForCartWorkflow.runAsStep({
         input: { cart },
+      })
     })
 
     releaseLockStep({
