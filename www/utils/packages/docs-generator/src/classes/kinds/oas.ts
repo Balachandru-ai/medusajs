@@ -2478,7 +2478,7 @@ class OasKindGenerator extends FunctionKindGenerator {
     }
 
     if (oldSchemaObj?.deprecated !== newSchemaObj?.deprecated) {
-      // avoid many changes to exising OAS
+      // avoid many changes to existing OAS
       if (!newSchemaObj?.deprecated) {
         if (oldSchemaObj!.deprecated) {
           wasUpdated = true
@@ -2491,7 +2491,7 @@ class OasKindGenerator extends FunctionKindGenerator {
     }
 
     if (oldSchemaObj?.["x-featureFlag"] !== newSchemaObj?.["x-featureFlag"]) {
-      // avoid many changes to exising OAS
+      // avoid many changes to existing OAS
       if (!newSchemaObj?.["x-featureFlag"]) {
         if (oldSchemaObj!["x-featureFlag"]) {
           wasUpdated = true
