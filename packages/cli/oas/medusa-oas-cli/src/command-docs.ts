@@ -169,7 +169,8 @@ export async function execute(cliParams: OptionValues): Promise<void> {
   }
   if (shouldBuildHTML) {
     const outHTMLFile = path.resolve(outDir, "index.html")
-    await buildHTML(finalOASFile, outHTMLFile, configTmpFile)
+    const oasFilePath = path.resolve(outDir, finalOASFile)
+    await buildHTML(oasFilePath, outHTMLFile, configTmpFile)
   }
   console.log(`⚫️ API documentation generated - ${outDir}`)
 }
@@ -315,7 +316,6 @@ const buildHTML = async (
       srcFile,
       `--output=${outFile}`,
       `--config=${configFile}`,
-      `--cdn=true`,
     ],
     { cwd: basePath, all: true }
   )
