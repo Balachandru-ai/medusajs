@@ -52,7 +52,7 @@ moduleIntegrationTestRunner<INotificationModuleService>({
           service: NotificationModuleService,
         }).linkable
 
-        expect(Object.keys(linkable)).toEqual(["notification"])
+        expect(Object.keys(linkable)).toEqual(["notification", "notificationProvider"])
 
         Object.keys(linkable).forEach((key) => {
           delete linkable[key].toJSON
@@ -66,6 +66,15 @@ moduleIntegrationTestRunner<INotificationModuleService>({
               primaryKey: "id",
               serviceName: "notification",
               field: "notification",
+            },
+          },
+          notificationProvider: {
+            id: {
+              linkable: "notification_provider_id",
+              entity: "NotificationProvider",
+              primaryKey: "id",
+              serviceName: "notification",
+              field: "notificationProvider",
             },
           },
         })
