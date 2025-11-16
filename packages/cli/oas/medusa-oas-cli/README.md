@@ -46,7 +46,7 @@ Specify in which directory should the files be outputted. It accepts a relative 
 If the directory doesn't exist, it will be created. Defaults to `./`.
 
 ```bash
-yarm medusa-oas oas --out-dir
+yarn medusa-oas oas --out-dir
 ```
 
 #### `--paths <paths...>`
@@ -94,7 +94,7 @@ Will sanitize OAS for use with Redocly's API documentation viewer.
 Specify the path to the OAS JSON file.
 
 ```bash
-yarm medusa-oas docs --src-file ./store.oas.json
+yarn medusa-oas docs --src-file ./store.oas.json
 ```
 
 #### `--out-dir <path>`
