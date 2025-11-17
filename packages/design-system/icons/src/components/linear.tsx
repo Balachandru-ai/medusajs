@@ -28,3 +28,16 @@ const Linear = React.forwardRef<SVGSVGElement, Omit<IconProps, "color">>(
 )
 Linear.displayName = "Linear"
 export default Linear
+2={20}
+            gradientUnits="userSpaceOnUse"
+          >
+            <stop stopColor="#fff" />
+            <stop offset={1} stopColor="#fff" stopOpacity={0} />
+          </linearGradient>
+        </defs>
+      </svg>
+    )
+  }
+)
+Linear.displayName = "Linear"
+export default Linear
