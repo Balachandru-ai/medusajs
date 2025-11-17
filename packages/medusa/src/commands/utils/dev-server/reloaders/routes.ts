@@ -5,9 +5,10 @@ import { ModuleCacheManager } from "../module-cache-manager"
 import { BaseReloader } from "./base"
 
 /**
- * Handles hot reloading of API route files
+ * Handles hot reloading of API resources (routes, middlewares, validators, etc.)
  */
 export class RouteReloader extends BaseReloader {
+  #cacheManager: ModuleCacheManager
   #logSource: string
   #logger: Logger
 
@@ -18,40 +19,51 @@ export class RouteReloader extends BaseReloader {
     logger: Logger
   ) {
     super(cacheManager, logSource, logger)
+    this.#cacheManager = cacheManager
     this.#logSource = logSource
     this.#logger = logger
   }
 
   /**
-   * Check if a file path represents a route
+   * Check if a file path is in the API directory
    */
-  private isRoutePath(filePath: string): boolean {
+  private isApiPath(filePath: string): boolean {
     return filePath.includes(CONFIG.RESOURCE_PATH_PATTERNS.route)
   }
 
   /**
-   * Reload a route file if necessary
+   * Reload ALL API resources when any API file changes
+   * This clears all Express routes/middleware and reloads everything from scratch
    */
   async reload(
-    action: FileChangeAction,
+    _action: FileChangeAction,
     absoluteFilePath: string
   ): Promise<void> {
-    if (!this.isRoutePath(absoluteFilePath)) {
+    if (!this.isApiPath(absoluteFilePath)) {
       return
     }
 
     if (!this.apiLoader) {
       this.#logger.error(
-        `${this.#logSource} ApiLoader not available - cannot reload routes`
+        `${this.#logSource} ApiLoader not available - cannot reload API`
       )
       return
     }
 
-    await this.apiLoader.unregisterExpressHandler(absoluteFilePath)
+    this.#logger.info(
+      `${this.#logSource} API change detected: ${absoluteFilePath}`
+    )
 
-    if (action === "add" || action === "change") {
-      this.clearModuleCache(absoluteFilePath)
-      await this.apiLoader.reloadRoute(absoluteFilePath)
-    }
+    await this.#cacheManager.clear(
+      absoluteFilePath,
+      this.#logger,
+      undefined,
+      false // Don't track as broken since we're intentionally reloading
+    )
+
+    this.apiLoader.clearAllResources()
+
+    await this.apiLoader.load()
+    this.#logger.info(`${this.#logSource} API resources reloaded successfully`)
   }
 }

@@ -70,8 +70,6 @@ export class ApiLoader {
 
   readonly #logger: Logger
 
-  #routesLoader: RoutesLoader
-
   constructor({
     app,
     sourceDir,
@@ -95,7 +93,6 @@ export class ApiLoader {
    */
   async #loadHttpResources() {
     const routesLoader = new RoutesLoader()
-    this.#routesLoader = routesLoader
 
     const middlewareLoader = new MiddlewareFileLoader()
 
@@ -116,51 +113,6 @@ export class ApiLoader {
       bodyParserConfigRoutes: middlewareLoader.getBodyParserConfigRoutes(),
       additionalDataValidatorRoutes:
         middlewareLoader.getAdditionalDataValidatorRoutes(),
-    }
-  }
-
-  /**
-   * Remove a route from Express by manipulating the router stack
-   * This is the tricky part - Express doesn't have a built-in way to remove routes
-   */
-
-  async unregisterExpressHandler(absolutePath: string) {
-    let routePathToDelete: string | undefined
-    try {
-      const sourceDir = this.#sourceDirs.find((dir) =>
-        absolutePath.startsWith(dir)
-      )!
-      const relativePath = absolutePath.replace(sourceDir, "")
-      routePathToDelete = this.#routesLoader!.createRoutePath(relativePath)
-
-      const router = this.#app._router as IRouter
-
-      if (!router || !router.stack) {
-        return false
-      }
-
-      // Find the layer in the router stack
-      const layerIndex = router.stack.findIndex((layer: any) => {
-        // Match by route path and method
-        if (layer.route) {
-          const routePath = layer.route.path
-          // const routeMethods = layer.route.methods
-
-          return routePath === routePathToDelete
-        }
-        return false
-      })
-
-      if (layerIndex !== -1) {
-        // Remove the layer from the stack
-        router.stack.splice(layerIndex, 1)
-        return true
-      }
-
-      return false
-    } catch (error) {
-      console.error(`[HMR] Error removing route ${absolutePath}:`, error)
-      return false
     }
   }
 
@@ -415,55 +367,6 @@ export class ApiLoader {
     this.#app.use(namespace, middleware as RequestHandler)
   }
 
-  /**
-   * Register routes (public method for HMR)
-   * This allows HMR to register new routes with all the proper middleware
-   */
-  registerRoutes(routes: RouteDescriptor[]) {
-    routes.forEach((route) => {
-      this.#registerExpressHandler(route)
-    })
-  }
-
-  /**
-   * Get source directories (public method for HMR)
-   */
-  getSourceDirs(): string[] {
-    return this.#sourceDirs
-  }
-
-  /**
-   * Reload a single route file (public method for HMR)
-   * This reloads the route file and re-registers it with Express
-   */
-  async reloadRoute(absolutePath: string): Promise<RouteDescriptor[]> {
-    if (!this.#routesLoader) {
-      throw new Error("ApiLoader not initialized - call load() first")
-    }
-
-    // Find which source directory contains this file
-    const sourceDir = this.#sourceDirs.find((dir) =>
-      absolutePath.startsWith(dir)
-    )
-
-    if (!sourceDir) {
-      throw new Error(
-        `Route file ${absolutePath} is not in any source directory`
-      )
-    }
-
-    // Reload the route file
-    const routes = await this.#routesLoader.reloadRouteFile(
-      absolutePath,
-      sourceDir
-    )
-
-    // Register with Express (will go through all middleware, CORS, auth, etc.)
-    this.registerRoutes(routes)
-
-    return routes
-  }
-
   async load() {
     if (FeatureFlag.isFeatureEnabled("backend_hmr")) {
       ;(global as any).__MEDUSA_HMR_API_LOADER__ = this
@@ -576,5 +479,20 @@ export class ApiLoader {
      * Registering error handler as the final handler
      */
     this.#app.use(sourceErrorHandler ?? errorHandler())
+  }
+
+  /**
+   * Clear all API resources registered by this loader
+   * This removes all routes and middleware added after the initial stack state
+   * Used by HMR to reset the API state before reloading
+   */
+  clearAllResources() {
+    const router = this.#app._router as IRouter
+    const initialStackLength =
+      (global as any).__MEDUSA_HMR_INITIAL_STACK_LENGTH__ ?? 0
+
+    if (router && router.stack) {
+      router.stack.splice(initialStackLength)
+    }
   }
 }

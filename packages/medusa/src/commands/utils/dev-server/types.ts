@@ -24,6 +24,7 @@ export const CONFIG = {
  */
 export interface DevServerGlobals {
   __MEDUSA_HMR_API_LOADER__?: ApiLoader
+  __MEDUSA_HMR_INITIAL_STACK_LENGTH__?: number
   WorkflowManager?: {
     unregister: (id: string) => void
   }
