@@ -236,6 +236,49 @@ export class MedusaAppLoader {
   }
 
   /**
+   * Reload a single module by its key
+   * @param moduleKey - The key of the module to reload (e.g., 'contactUsModuleService')
+   */
+  async reloadSingleModule(moduleKey: string): Promise<LoadedModule | null> {
+    const configModule: ConfigModule = this.#container.resolve(
+      ContainerRegistrationKeys.CONFIG_MODULE
+    )
+
+    const moduleConfig = configModule.modules?.[moduleKey]
+    if (!moduleConfig) {
+      return null
+    }
+
+    const { sharedResourcesConfig, injectedDependencies } =
+      this.prepareSharedResourcesAndDeps()
+
+    const mergedModules = this.mergeDefaultModules({ [moduleKey]: moduleConfig })
+    const moduleDefinition = mergedModules[moduleKey]
+
+    // Bootstrap just this one module
+    const result = await MedusaApp({
+      modulesConfig: { [moduleKey]: moduleDefinition },
+      sharedContainer: this.#container,
+      linkModules: this.#customLinksModules,
+      sharedResourcesConfig,
+      injectedDependencies,
+      workerMode: configModule.projectConfig?.workerMode,
+      medusaConfigPath: this.#medusaConfigPath,
+      cwd: this.#cwd,
+    })
+
+    const loadedModule = result.modules[moduleKey] as LoadedModule
+    if (loadedModule) {
+      // Register the module in the container
+      this.#container.register({
+        [loadedModule.__definition.key]: asValue(loadedModule),
+      })
+    }
+
+    return loadedModule
+  }
+
+  /**
    * Load all modules and bootstrap all the modules and links to be ready to be consumed
    * @param config
    */

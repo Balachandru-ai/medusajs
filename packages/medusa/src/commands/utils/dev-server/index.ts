@@ -8,6 +8,7 @@ import { WorkflowReloader } from "./reloaders/workflows"
 import { ResourceRegistry } from "./resource-registry"
 import { DevServerGlobals, ReloadParams } from "./types"
 import { JobReloader } from "./reloaders/jobs"
+import { ModuleReloader } from "./reloaders/modules"
 
 let sharedCacheManager!: ModuleCacheManager
 const sharedRegistry = new ResourceRegistry()
@@ -17,9 +18,10 @@ const reloaders = {} as {
   subscribersReloader?: SubscriberReloader
   workflowsReloader: WorkflowReloader
   jobsReloader?: JobReloader
+  modulesReloader?: ModuleReloader
 }
 
-function initializeReloaders(logSource: string) {
+function initializeReloaders(logSource: string, rootDirectory: string) {
   sharedCacheManager ??= new ModuleCacheManager(logSource)
 
   const globals = global as unknown as DevServerGlobals
@@ -52,7 +54,8 @@ function initializeReloaders(logSource: string) {
       sharedRegistry,
       reloadResources,
       logSource,
-      logger
+      logger,
+      rootDirectory
     )
     reloaders.workflowsReloader = workflowReloader
   }
@@ -68,10 +71,20 @@ function initializeReloaders(logSource: string) {
     )
     reloaders.jobsReloader = jobReloader
   }
+
+  if (!reloaders.modulesReloader) {
+    const moduleReloader = new ModuleReloader(
+      sharedCacheManager,
+      rootDirectory,
+      logSource,
+      logger
+    )
+    reloaders.modulesReloader = moduleReloader
+  }
 }
 
 /**
- * Main entry point for reloading resources (routes, subscribers, and workflows)
+ * Main entry point for reloading resources (routes, subscribers, workflows, and modules)
  * Orchestrates the reload process and handles recovery of broken modules
  */
 export async function reloadResources({
@@ -81,8 +94,12 @@ export async function reloadResources({
   keepCache,
   logger,
   skipRecovery = false,
+  rootDirectory,
 }: ReloadParams): Promise<void> {
-  initializeReloaders(logSource)
+  initializeReloaders(logSource, rootDirectory)
+
+  // Reload modules first as other resources might depend on them
+  await reloaders.modulesReloader?.reload?.(action, absoluteFilePath)
 
   // Reload in dependency order: workflows → routes → subscribers → jobs
   // Jobs depend on workflows, so workflows must be reloaded first
@@ -102,7 +119,8 @@ export async function reloadResources({
       sharedCacheManager,
       reloadResources,
       logSource,
-      logger
+      logger,
+      rootDirectory
     )
 
     await recoveryService.recoverBrokenModules()

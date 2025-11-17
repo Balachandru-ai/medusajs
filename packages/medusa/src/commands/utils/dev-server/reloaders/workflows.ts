@@ -16,6 +16,7 @@ import { BaseReloader } from "./base"
 export class WorkflowReloader extends BaseReloader {
   #logSource: string
   #logger: Logger
+  #rootDirectory: string
 
   constructor(
     private workflowManager: DevServerGlobals["WorkflowManager"],
@@ -23,11 +24,13 @@ export class WorkflowReloader extends BaseReloader {
     private registry: ResourceRegistry,
     private reloadResources: (params: ReloadParams) => Promise<void>,
     logSource: string,
-    logger: Logger
+    logger: Logger,
+    rootDirectory: string
   ) {
     super(cacheManager, logSource, logger)
     this.#logSource = logSource
     this.#logger = logger
+    this.#rootDirectory = rootDirectory
   }
 
   /**
@@ -70,7 +73,8 @@ export class WorkflowReloader extends BaseReloader {
         absoluteFilePath,
         reloaders,
         this.reloadResources,
-        skipRecovery
+        skipRecovery,
+        this.#rootDirectory
       )
     }
 

@@ -26,8 +26,10 @@ export class BaseReloader {
       keepCache: boolean
       skipRecovery: boolean
       logger: Logger
+      rootDirectory: string
     }) => Promise<void>,
-    skipRecovery: boolean
+    skipRecovery: boolean,
+    rootDirectory: string
   ): Promise<void> {
     await this.cacheManager.clear(
       absoluteFilePath,
@@ -42,6 +44,7 @@ export class BaseReloader {
             keepCache: true,
             skipRecovery: true, // handled by the main caller
             logger: this.logger,
+            rootDirectory,
           })
         )
       },

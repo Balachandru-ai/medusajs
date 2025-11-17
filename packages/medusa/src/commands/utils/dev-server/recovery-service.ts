@@ -11,7 +11,8 @@ export class RecoveryService {
     private cacheManager: ModuleCacheManager,
     private reloadResources: (params: ReloadParams) => Promise<void>,
     private logSource: string,
-    private logger: Logger
+    private logger: Logger,
+    private rootDirectory: string
   ) {}
 
   /**
@@ -54,6 +55,7 @@ export class RecoveryService {
         keepCache: false,
         logger: this.logger,
         skipRecovery: true,
+        rootDirectory: this.rootDirectory,
       })
 
       this.cacheManager.removeBrokenModule(modulePath)

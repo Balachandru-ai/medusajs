@@ -16,6 +16,7 @@ export const CONFIG = {
     workflow: "workflows/",
     subscriber: "subscribers/",
     job: "jobs/",
+    module: "modules/",
   },
 } as const
 
@@ -43,6 +44,7 @@ export interface ReloadParams {
   keepCache?: boolean
   logger: Logger
   skipRecovery?: boolean
+  rootDirectory: string
 }
 
 /**

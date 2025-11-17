@@ -112,6 +112,7 @@ export default async function ({ types, directory }) {
           action,
           absoluteFilePath,
           logger,
+          rootDirectory: directory,
         }
         await reloadResources(reloaderArguments)
 
