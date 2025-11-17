@@ -619,7 +619,11 @@ export default class PaymentModuleService
 
     if (autoCapture) {
       await this.capturePayment(
-        { payment_id: payment.id, amount: session.amount as BigNumberInput },
+        {
+          payment_id: payment.id,
+          amount: session.amount as BigNumberInput,
+          auto_captured: autoCapture,
+        },
         sharedContext
       )
     }
@@ -646,8 +650,9 @@ export default class PaymentModuleService
     data: CreateCaptureDTO,
     @MedusaContext() sharedContext: Context = {}
   ): Promise<PaymentDTO> {
+    let { auto_captured, ...data_ } = data
     const payment = await this.paymentService_.retrieve(
-      data.payment_id,
+      data_.payment_id,
       {
         select: [
           "id",
@@ -665,8 +670,13 @@ export default class PaymentModuleService
       sharedContext
     )
 
+    if (!auto_captured) {
+      const isAutoCaptured = !!payment?.captured_at
+      auto_captured = isAutoCaptured
+    }
+
     const { isFullyCaptured, capture } = await this.capturePayment_(
-      data,
+      data_,
       payment,
       sharedContext
     )
@@ -675,7 +685,7 @@ export default class PaymentModuleService
       await this.capturePaymentFromProvider_(
         payment,
         capture,
-        isFullyCaptured,
+        { isFullyCaptured, auto_captured },
         sharedContext
       )
     } catch (error) {
@@ -763,27 +773,44 @@ export default class PaymentModuleService
   protected async capturePaymentFromProvider_(
     payment: InferEntityType<typeof Payment>,
     capture: InferEntityType<typeof Capture> | undefined,
-    isFullyCaptured: boolean,
+    options: {
+      isFullyCaptured?: boolean
+      auto_captured?: boolean
+    } = {},
     @MedusaContext() sharedContext: Context = {}
   ) {
-    const paymentData = await this.paymentProviderService_.capturePayment(
-      payment.provider_id,
-      {
-        data: payment.data!,
-        context: {
-          idempotency_key: capture?.id,
-        },
-      }
-    )
+    if (!options.auto_captured) {
+      const paymentData = await this.paymentProviderService_.capturePayment(
+        payment.provider_id,
+        {
+          data: payment.data!,
+          context: {
+            idempotency_key: capture?.id,
+          },
+        }
+      )
 
-    await this.paymentService_.update(
-      {
-        id: payment.id,
-        data: paymentData.data,
-        captured_at: isFullyCaptured ? new Date() : undefined,
-      },
-      sharedContext
-    )
+      await this.paymentService_.update(
+        {
+          id: payment.id,
+          data: paymentData.data,
+          captured_at: options.isFullyCaptured ? new Date() : undefined,
+        },
+        sharedContext
+      )
+    } else if (options.isFullyCaptured && !payment.captured_at) {
+      /**
+       * In the case of auto capture, we need to update the payment to set the captured_at date
+       * only if fully captured.
+       */
+      await this.paymentService_.update(
+        {
+          id: payment.id,
+          captured_at: options.isFullyCaptured ? new Date() : undefined,
+        },
+        sharedContext
+      )
+    }
 
     return payment
   }
