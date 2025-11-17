@@ -435,7 +435,7 @@ export const currencies: Record<string, CurrencyInfo> = {
   },
   MNT: {
     code: "MNT",
-    name: "Mongolian Tugrig",
+    name: "Mongolian Tugrik",
     symbol_native: "₮",
     decimal_digits: 0,
   },
