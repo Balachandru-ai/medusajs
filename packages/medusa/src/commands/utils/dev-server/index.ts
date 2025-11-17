@@ -27,6 +27,7 @@ function initializeReloaders(logSource: string) {
   if (!reloaders.routesReloader) {
     const routeReloader = new RouteReloader(
       globals.__MEDUSA_HMR_API_LOADER__,
+      sharedCacheManager,
       logSource,
       logger
     )
@@ -36,6 +37,7 @@ function initializeReloaders(logSource: string) {
   if (!reloaders.subscribersReloader) {
     const subscriberReloader = new SubscriberReloader(
       container,
+      sharedCacheManager,
       sharedRegistry,
       logSource,
       logger
@@ -46,8 +48,8 @@ function initializeReloaders(logSource: string) {
   if (!reloaders.workflowsReloader) {
     const workflowReloader = new WorkflowReloader(
       globals.WorkflowManager,
-      sharedRegistry,
       sharedCacheManager,
+      sharedRegistry,
       reloadResources,
       logSource,
       logger
@@ -58,6 +60,7 @@ function initializeReloaders(logSource: string) {
   if (!reloaders.jobsReloader) {
     const jobReloader = new JobReloader(
       globals.WorkflowManager,
+      sharedCacheManager,
       container,
       sharedRegistry,
       logSource,

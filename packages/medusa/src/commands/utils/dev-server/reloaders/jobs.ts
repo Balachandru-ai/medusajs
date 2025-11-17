@@ -1,7 +1,9 @@
 import { JobLoader } from "@medusajs/framework/jobs"
 import { Logger, MedusaContainer } from "@medusajs/framework/types"
+import { ModuleCacheManager } from "../module-cache-manager"
 import { ResourceRegistry } from "../resource-registry"
 import { CONFIG, DevServerGlobals, FileChangeAction } from "../types"
+import { BaseReloader } from "./base"
 
 /**
  * Metadata for a registered subscriber
@@ -11,14 +13,22 @@ interface JobMetadata {
   [key: string]: any
 }
 
-export class JobReloader {
+export class JobReloader extends BaseReloader {
+  #logSource: string
+  #logger: Logger
+
   constructor(
     private workflowManager: DevServerGlobals["WorkflowManager"],
+    cacheManager: ModuleCacheManager,
     private container: MedusaContainer,
     private registry: ResourceRegistry,
-    private logSource: string,
-    private logger: Logger
-  ) {}
+    logSource: string,
+    logger: Logger
+  ) {
+    super(cacheManager, logSource, logger)
+    this.#logSource = logSource
+    this.#logger = logger
+  }
 
   /**
    * Check if a file path represents a subscriber
@@ -32,7 +42,7 @@ export class JobReloader {
    */
   private unregisterJob(metadata: JobMetadata): void {
     this.workflowManager?.unregister(metadata.name)
-    this.logger.debug(`${this.logSource} Unregistered job ${metadata.name}`)
+    this.#logger.debug(`${this.#logSource} Unregistered job ${metadata.name}`)
   }
 
   /**
@@ -41,17 +51,7 @@ export class JobReloader {
   private async registerJob(absoluteFilePath: string) {
     const jobLoader = new JobLoader([], this.container)
     await jobLoader.loadFile(absoluteFilePath)
-    this.logger.debug(`${this.logSource} Registered job ${absoluteFilePath}`)
-  }
-
-  /**
-   * Clear require cache for a job file
-   */
-  private clearJobCache(absoluteFilePath: string): void {
-    const resolved = require.resolve(absoluteFilePath)
-    if (require.cache[resolved]) {
-      delete require.cache[resolved]
-    }
+    this.#logger.debug(`${this.#logSource} Registered job ${absoluteFilePath}`)
   }
 
   /**
@@ -78,7 +78,7 @@ export class JobReloader {
     }
 
     if (action === "add" || action === "change") {
-      this.clearJobCache(absoluteFilePath)
+      this.clearModuleCache(absoluteFilePath)
       await this.registerJob(absoluteFilePath)
     }
   }

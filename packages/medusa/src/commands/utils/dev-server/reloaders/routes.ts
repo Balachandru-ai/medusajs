@@ -1,16 +1,26 @@
 import { ApiLoader } from "@medusajs/framework"
 import { Logger } from "@medusajs/framework/types"
 import { CONFIG, FileChangeAction } from "../types"
+import { ModuleCacheManager } from "../module-cache-manager"
+import { BaseReloader } from "./base"
 
 /**
  * Handles hot reloading of API route files
  */
-export class RouteReloader {
+export class RouteReloader extends BaseReloader {
+  #logSource: string
+  #logger: Logger
+
   constructor(
     private apiLoader: ApiLoader | undefined,
-    private logSource: string,
-    private logger: Logger
-  ) {}
+    cacheManager: ModuleCacheManager,
+    logSource: string,
+    logger: Logger
+  ) {
+    super(cacheManager, logSource, logger)
+    this.#logSource = logSource
+    this.#logger = logger
+  }
 
   /**
    * Check if a file path represents a route
@@ -31,8 +41,8 @@ export class RouteReloader {
     }
 
     if (!this.apiLoader) {
-      this.logger.error(
-        `${this.logSource} ApiLoader not available - cannot reload routes`
+      this.#logger.error(
+        `${this.#logSource} ApiLoader not available - cannot reload routes`
       )
       return
     }
@@ -40,18 +50,8 @@ export class RouteReloader {
     await this.apiLoader.unregisterExpressHandler(absoluteFilePath)
 
     if (action === "add" || action === "change") {
-      this.clearRouteCache(absoluteFilePath)
+      this.clearModuleCache(absoluteFilePath)
       await this.apiLoader.reloadRoute(absoluteFilePath)
-    }
-  }
-
-  /**
-   * Clear require cache for a specific route
-   */
-  private clearRouteCache(absoluteFilePath: string): void {
-    const resolved = require.resolve(absoluteFilePath)
-    if (require.cache[resolved]) {
-      delete require.cache[resolved]
     }
   }
 }

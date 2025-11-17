@@ -8,19 +8,27 @@ import {
   FileChangeAction,
 } from "../types"
 import { ResourceEntry, ResourceMap } from "@medusajs/framework/utils"
+import { BaseReloader } from "./base"
 
 /**
  * Handles hot reloading of workflow and step files
  */
-export class WorkflowReloader {
+export class WorkflowReloader extends BaseReloader {
+  #logSource: string
+  #logger: Logger
+
   constructor(
     private workflowManager: DevServerGlobals["WorkflowManager"],
+    cacheManager: ModuleCacheManager,
     private registry: ResourceRegistry,
-    private cacheManager: ModuleCacheManager,
     private reloadResources: (params: ReloadParams) => Promise<void>,
-    private logSource: string,
-    private logger: Logger
-  ) {}
+    logSource: string,
+    logger: Logger
+  ) {
+    super(cacheManager, logSource, logger)
+    this.#logSource = logSource
+    this.#logger = logger
+  }
 
   /**
    * Check if a file path represents a workflow
@@ -43,8 +51,10 @@ export class WorkflowReloader {
     }
 
     if (!this.workflowManager) {
-      this.logger.error(
-        `${this.logSource} WorkflowManager not available - cannot reload workflows`
+      this.#logger.error(
+        `${
+          this.#logSource
+        } WorkflowManager not available - cannot reload workflows`
       )
       return
     }
@@ -56,10 +66,15 @@ export class WorkflowReloader {
     this.unregisterResources(absoluteFilePath, requirableWorkflowPaths)
 
     if (!keepCache) {
-      await this.clearWorkflowCache(absoluteFilePath, reloaders, skipRecovery)
+      await this.clearParentChildModulesCache(
+        absoluteFilePath,
+        reloaders,
+        this.reloadResources,
+        skipRecovery
+      )
     }
 
-    this.clearWorkflowFileCache(absoluteFilePath)
+    this.clearModuleCache(absoluteFilePath)
 
     // Reload workflows that were affected
     if (action !== "unlink") {
@@ -142,44 +157,6 @@ export class WorkflowReloader {
         affectedWorkflows.add(sourcePath)
       }
     }
-  }
-
-  /**
-   * Clear only the specific workflow file from cache
-   */
-  private clearWorkflowFileCache(absoluteFilePath: string): void {
-    const resolved = require.resolve(absoluteFilePath)
-    if (require.cache[resolved]) {
-      delete require.cache[resolved]
-    }
-  }
-
-  /**
-   * Clear workflow cache and collect deferred reloaders
-   */
-  private async clearWorkflowCache(
-    absoluteFilePath: string,
-    reloaders: Array<() => Promise<void>>,
-    skipRecovery: boolean
-  ): Promise<void> {
-    await this.cacheManager.clear(
-      absoluteFilePath,
-      this.logger,
-      async (modulePath) => {
-        // Create deferred reloader for each cleared module
-        reloaders.push(async () =>
-          this.reloadResources({
-            logSource: this.logSource,
-            action: "change",
-            absoluteFilePath: modulePath,
-            keepCache: true,
-            skipRecovery: true, // handled by the main caller
-            logger: this.logger,
-          })
-        )
-      },
-      !skipRecovery // Track broken modules unless we're in recovery mode
-    )
   }
 
   /**

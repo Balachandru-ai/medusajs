@@ -7,6 +7,8 @@ import {
 import { Modules } from "@medusajs/framework/utils"
 import { ResourceRegistry } from "../resource-registry"
 import { CONFIG, FileChangeAction } from "../types"
+import { BaseReloader } from "./base"
+import { ModuleCacheManager } from "../module-cache-manager"
 
 /**
  * Metadata for a registered subscriber
@@ -19,15 +21,21 @@ interface SubscriberMetadata {
 /**
  * Handles hot reloading of subscriber files with event-bus unregistration
  */
-export class SubscriberReloader {
+export class SubscriberReloader extends BaseReloader {
   #eventBusService: IEventBusModuleService | undefined
+  #logSource: string
+  #logger: Logger
 
   constructor(
     private container: MedusaContainer,
+    cacheManager: ModuleCacheManager,
     private registry: ResourceRegistry,
-    private logSource: string,
-    private logger: Logger
+    logSource: string,
+    logger: Logger
   ) {
+    super(cacheManager, logSource, logger)
+    this.#logSource = logSource
+    this.#logger = logger
     this.#eventBusService = container.resolve(Modules.EVENT_BUS, {
       allowUnregistered: true,
     }) as IEventBusModuleService
@@ -58,8 +66,8 @@ export class SubscriberReloader {
       })
     }
 
-    this.logger.debug(
-      `${this.logSource} Unregistered subscriber ${
+    this.#logger.debug(
+      `${this.#logSource} Unregistered subscriber ${
         metadata.subscriberId
       } from events: ${metadata.events.join(", ")}`
     )
@@ -87,23 +95,15 @@ export class SubscriberReloader {
         handler: subscriberModule.default,
       })
 
-      this.logger.debug(
-        `${this.logSource} Registered subscriber ${absoluteFilePath}`
+      this.#logger.debug(
+        `${this.#logSource} Registered subscriber ${absoluteFilePath}`
       )
     } catch (error) {
-      this.logger.error(
-        `${this.logSource} Failed to register subscriber from ${absoluteFilePath}: ${error}`
+      this.#logger.error(
+        `${
+          this.#logSource
+        } Failed to register subscriber from ${absoluteFilePath}: ${error}`
       )
-    }
-  }
-
-  /**
-   * Clear require cache for a subscriber file
-   */
-  private clearSubscriberCache(absoluteFilePath: string): void {
-    const resolved = require.resolve(absoluteFilePath)
-    if (require.cache[resolved]) {
-      delete require.cache[resolved]
     }
   }
 
@@ -119,8 +119,10 @@ export class SubscriberReloader {
     }
 
     if (!this.#eventBusService) {
-      this.logger.error(
-        `${this.logSource} EventBusService not available - cannot reload subscribers`
+      this.#logger.error(
+        `${
+          this.#logSource
+        } EventBusService not available - cannot reload subscribers`
       )
       return
     }
@@ -138,7 +140,7 @@ export class SubscriberReloader {
     }
 
     if (action === "add" || action === "change") {
-      this.clearSubscriberCache(absoluteFilePath)
+      this.clearModuleCache(absoluteFilePath)
       this.registerSubscriber(absoluteFilePath)
     }
   }
