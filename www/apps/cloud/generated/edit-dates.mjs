@@ -13,7 +13,7 @@ export const generatedEditDates = {
   "app/logs/page.mdx": "2025-10-15T15:24:53.277Z",
   "app/update-medusa/page.mdx": "2025-06-25T07:57:30.170Z",
   "app/connect-storefront/page.mdx": "2025-06-25T07:47:00.499Z",
-  "app/environments/environment-variables/page.mdx": "2025-10-15T15:26:47.364Z",
+  "app/environments/environment-variables/page.mdx": "2025-11-12T15:42:19.187Z",
   "app/environments/long-lived/page.mdx": "2025-10-15T15:27:08.743Z",
   "app/environments/preview/page.mdx": "2025-11-03T12:50:29.841Z",
   "app/faq/page.mdx": "2025-10-08T14:43:21.930Z",
@@ -24,6 +24,8 @@ export const generatedEditDates = {
   "app/sign-up/page.mdx": "2025-11-04T06:51:07.747Z",
   "app/comparison/page.mdx": "2025-10-22T14:44:01.898Z",
   "app/billing/plans/page.mdx": "2025-10-08T14:49:27.009Z",
-  "app/cache/page.mdx": "2025-10-21T14:27:54.005Z",
-  "app/deployments/troubleshooting/page.mdx": "2025-10-17T14:44:22.894Z"
+  "app/cache/page.mdx": "2025-11-12T14:37:24.809Z",
+  "app/deployments/troubleshooting/page.mdx": "2025-10-17T14:44:22.894Z",
+  "app/emails/page.mdx": "2025-11-12T15:41:36.777Z",
+  "app/emails/react-email/page.mdx": "2025-11-12T15:41:56.365Z"
 }
