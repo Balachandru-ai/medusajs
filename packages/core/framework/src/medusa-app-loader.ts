@@ -5,6 +5,7 @@ import {
   MedusaAppMigrateGenerate,
   MedusaAppMigrateUp,
   MedusaAppOutput,
+  MedusaModule,
   ModulesDefinition,
   RegisterModuleJoinerConfig,
 } from "@medusajs/modules-sdk"
@@ -12,6 +13,7 @@ import {
   CommonTypes,
   ConfigModule,
   ILinkMigrationsPlanner,
+  IModuleService,
   InternalModuleDeclaration,
   LoadedModule,
   ModuleDefinition,
@@ -239,10 +241,26 @@ export class MedusaAppLoader {
    * Reload a single module by its key
    * @param moduleKey - The key of the module to reload (e.g., 'contactUsModuleService')
    */
-  async reloadSingleModule(moduleKey: string): Promise<LoadedModule | null> {
+  async reloadSingleModule({
+    moduleKey,
+    serviceName,
+  }: {
+    /**
+     * the key of the module to reload in the medusa config (either infered or specified)
+     */
+    moduleKey: string
+    /**
+     * Registration name of the service to reload in the container
+     */
+    serviceName: string
+  }): Promise<LoadedModule | null> {
     const configModule: ConfigModule = this.#container.resolve(
       ContainerRegistrationKeys.CONFIG_MODULE
     )
+    MedusaModule.unregisterModuleResolution(moduleKey)
+    if (serviceName) {
+      this.#container.cache.delete(serviceName)
+    }
 
     const moduleConfig = configModule.modules?.[moduleKey]
     if (!moduleConfig) {
@@ -252,10 +270,11 @@ export class MedusaAppLoader {
     const { sharedResourcesConfig, injectedDependencies } =
       this.prepareSharedResourcesAndDeps()
 
-    const mergedModules = this.mergeDefaultModules({ [moduleKey]: moduleConfig })
+    const mergedModules = this.mergeDefaultModules({
+      [moduleKey]: moduleConfig,
+    })
     const moduleDefinition = mergedModules[moduleKey]
 
-    // Bootstrap just this one module
     const result = await MedusaApp({
       modulesConfig: { [moduleKey]: moduleDefinition },
       sharedContainer: this.#container,
@@ -267,12 +286,22 @@ export class MedusaAppLoader {
       cwd: this.#cwd,
     })
 
-    const loadedModule = result.modules[moduleKey] as LoadedModule
+    const loadedModule = result.modules[moduleKey] as LoadedModule &
+      IModuleService
     if (loadedModule) {
-      // Register the module in the container
       this.#container.register({
         [loadedModule.__definition.key]: asValue(loadedModule),
       })
+    }
+
+    if (loadedModule?.__hooks?.onApplicationStart) {
+      await loadedModule.__hooks.onApplicationStart
+        .bind(loadedModule)()
+        .catch((error: any) => {
+          injectedDependencies[ContainerRegistrationKeys.LOGGER].error(
+            `Error starting module "${loadedModule.__definition.key}": ${error.message}`
+          )
+        })
     }
 
     return loadedModule

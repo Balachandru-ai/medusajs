@@ -8,7 +8,6 @@ import { join, relative } from "path"
 import { ModuleCacheManager } from "../module-cache-manager"
 import { CONFIG, FileChangeAction } from "../types"
 import { BaseReloader } from "./base"
-import { MedusaModule } from "@medusajs/framework/modules-sdk"
 
 /**
  * Handles hot reloading of custom modules in the /modules directory
@@ -49,7 +48,6 @@ export class ModuleReloader extends BaseReloader {
       return null
     }
 
-    // Get the part after "modules/"
     const afterModules = parts[1]
     const moduleName = afterModules.split("/")[0]
 
@@ -131,17 +129,13 @@ export class ModuleReloader extends BaseReloader {
       if (moduleInstance?.__hooks?.onApplicationPrepareShutdown) {
         await moduleInstance.__hooks.onApplicationPrepareShutdown
           .bind(moduleInstance)()
-          .catch(() => {
-            // Module should handle and log this
-          })
+          .catch(() => {})
       }
 
       if (moduleInstance?.__hooks?.onApplicationShutdown) {
         await moduleInstance.__hooks.onApplicationShutdown
           .bind(moduleInstance)()
-          .catch(() => {
-            // Module should handle and log this
-          })
+          .catch(() => {})
       }
     } catch (error) {
       this.#logger.warn(
@@ -237,34 +231,17 @@ export class ModuleReloader extends BaseReloader {
         await this.shutdownModule(moduleInstance)
       }
 
-      // Clear module from require cache
       const moduleDirectory = this.getModuleDirectory(moduleName)
       this.clearModuleFilesCache(moduleDirectory)
 
-      MedusaModule.unregisterModuleResolution(moduleKey)
-      container.cache.delete(serviceName)
-
-      // Reload the module using MedusaAppLoader
       const medusaAppLoader = new MedusaAppLoader()
-      const newModuleInstance = (await medusaAppLoader.reloadSingleModule(
-        moduleKey
-      )) as unknown as IModuleService
+      const newModuleInstance = (await medusaAppLoader.reloadSingleModule({
+        moduleKey,
+        serviceName,
+      })) as unknown as IModuleService
 
       if (!newModuleInstance) {
         throw new Error(`Failed to reload module "${moduleKey}"`)
-      }
-
-      // Call onApplicationStart hook if available
-      if (newModuleInstance?.__hooks?.onApplicationStart) {
-        await newModuleInstance.__hooks.onApplicationStart
-          .bind(newModuleInstance)()
-          .catch((error: any) => {
-            this.#logger.error(
-              `${this.#logSource} Error starting module "${serviceName}": ${
-                error.message
-              }`
-            )
-          })
       }
 
       this.#logger.info(
