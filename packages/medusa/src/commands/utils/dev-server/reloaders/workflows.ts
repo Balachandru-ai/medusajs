@@ -57,11 +57,9 @@ export class WorkflowReloader {
 
     if (!keepCache) {
       await this.clearWorkflowCache(absoluteFilePath, reloaders, skipRecovery)
-    } else {
-      // Even when keepCache is true, we must clear the workflow file itself
-      // so it can be re-required and re-register the workflow later
-      this.clearSingleWorkflowFile(absoluteFilePath)
     }
+
+    this.clearWorkflowFileCache(absoluteFilePath)
 
     // Reload workflows that were affected
     if (action !== "unlink") {
@@ -149,13 +147,10 @@ export class WorkflowReloader {
   /**
    * Clear only the specific workflow file from cache
    */
-  private clearSingleWorkflowFile(absoluteFilePath: string): void {
+  private clearWorkflowFileCache(absoluteFilePath: string): void {
     const resolved = require.resolve(absoluteFilePath)
     if (require.cache[resolved]) {
       delete require.cache[resolved]
-      this.logger.debug(
-        `${this.logSource} Cleared cache for workflow file: ${absoluteFilePath}`
-      )
     }
   }
 
