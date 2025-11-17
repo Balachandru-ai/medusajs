@@ -4232,8 +4232,8 @@ const generatedgeneratedReferencesSidebarSidebar = {
                   "loaded": true,
                   "isPathHref": true,
                   "type": "link",
-                  "path": "/references/medusa-workflows/validateRefundStep",
-                  "title": "validateRefundStep",
+                  "path": "/references/medusa-workflows/validateRefundPaymentExceedsCapturedAmountStep",
+                  "title": "validateRefundPaymentExceedsCapturedAmountStep",
                   "description": "",
                   "children": []
                 }
@@ -4671,6 +4671,15 @@ const generatedgeneratedReferencesSidebarSidebar = {
                   "loaded": true,
                   "isPathHref": true,
                   "type": "link",
+                  "path": "/references/medusa-workflows/batchImageVariantsWorkflow",
+                  "title": "batchImageVariantsWorkflow",
+                  "description": "Manage image-variant associations in bulk.",
+                  "children": []
+                },
+                {
+                  "loaded": true,
+                  "isPathHref": true,
+                  "type": "link",
                   "path": "/references/medusa-workflows/batchLinkProductsToCategoryWorkflow",
                   "title": "batchLinkProductsToCategoryWorkflow",
                   "description": "Manage the links between a collection and products.",
@@ -4701,6 +4710,15 @@ const generatedgeneratedReferencesSidebarSidebar = {
                   "path": "/references/medusa-workflows/batchProductsWorkflow",
                   "title": "batchProductsWorkflow",
                   "description": "Manage products in bulk.",
+                  "children": []
+                },
+                {
+                  "loaded": true,
+                  "isPathHref": true,
+                  "type": "link",
+                  "path": "/references/medusa-workflows/batchVariantImagesWorkflow",
+                  "title": "batchVariantImagesWorkflow",
+                  "description": "Manage variant-image associations in bulk.",
                   "children": []
                 },
                 {
@@ -4913,6 +4931,24 @@ const generatedgeneratedReferencesSidebarSidebar = {
                   "loaded": true,
                   "isPathHref": true,
                   "type": "link",
+                  "path": "/references/medusa-workflows/steps/addImageToVariantsStep",
+                  "title": "addImageToVariantsStep",
+                  "description": "",
+                  "children": []
+                },
+                {
+                  "loaded": true,
+                  "isPathHref": true,
+                  "type": "link",
+                  "path": "/references/medusa-workflows/steps/addImagesToVariantStep",
+                  "title": "addImagesToVariantStep",
+                  "description": "",
+                  "children": []
+                },
+                {
+                  "loaded": true,
+                  "isPathHref": true,
+                  "type": "link",
                   "path": "/references/medusa-workflows/steps/batchLinkProductsToCategoryStep",
                   "title": "batchLinkProductsToCategoryStep",
                   "description": "",
@@ -5113,6 +5149,24 @@ const generatedgeneratedReferencesSidebarSidebar = {
                   "type": "link",
                   "path": "/references/medusa-workflows/steps/processImportChunksStep",
                   "title": "processImportChunksStep",
+                  "description": "",
+                  "children": []
+                },
+                {
+                  "loaded": true,
+                  "isPathHref": true,
+                  "type": "link",
+                  "path": "/references/medusa-workflows/steps/removeImageFromVariantsStep",
+                  "title": "removeImageFromVariantsStep",
+                  "description": "",
+                  "children": []
+                },
+                {
+                  "loaded": true,
+                  "isPathHref": true,
+                  "type": "link",
+                  "path": "/references/medusa-workflows/steps/removeImagesFromVariantStep",
+                  "title": "removeImagesFromVariantStep",
                   "description": "",
                   "children": []
                 },

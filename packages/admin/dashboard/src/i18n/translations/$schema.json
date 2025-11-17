@@ -1935,6 +1935,9 @@
             "invalidFileType": {
               "type": "string"
             },
+            "fileTooLarge": {
+              "type": "string"
+            },
             "failedToUpload": {
               "type": "string"
             },

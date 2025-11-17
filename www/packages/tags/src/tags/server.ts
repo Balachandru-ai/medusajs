@@ -100,6 +100,10 @@ export const server = [
     "path": "https://docs.medusajs.com/resources/how-to-tutorials/tutorials/product-feed"
   },
   {
+    "title": "Product Rentals",
+    "path": "https://docs.medusajs.com/resources/how-to-tutorials/tutorials/product-rentals"
+  },
+  {
     "title": "Product Reviews",
     "path": "https://docs.medusajs.com/resources/how-to-tutorials/tutorials/product-reviews"
   },

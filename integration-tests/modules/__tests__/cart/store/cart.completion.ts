@@ -872,6 +872,8 @@ medusaIntegrationTestRunner({
             }),
           ])
 
+          await new Promise((resolve) => setTimeout(resolve, 100))
+
           const { result: fullOrder } = await getOrderDetailWorkflow(
             appContainer
           ).run({
