@@ -13,7 +13,7 @@
  * 
  *   Make sure to configure the Manual System Payment Provider in your store's region. Learn more in the [Manage Region](https://docs.medusajs.com/user-guide/settings/regions#edit-region-details) user guide.
  * externalDocs:
- *   url: https://docs.medusajs.com/v2/resources/storefront-development/checkout/payment
+ *   url: https://docs.medusajs.com/resources/storefront-development/checkout/payment
  *   description: "Storefront guide: How to implement payment during checkout."
  * x-authenticated: false
  * parameters:

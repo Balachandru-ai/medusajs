@@ -9,6 +9,7 @@ export type BreadcrumbOptions = {
 
 export declare type DocsConfig = {
   titleSuffix?: string
+  description?: string
   baseUrl: string
   basePath?: string
   sidebars: Sidebar.Sidebar[]
