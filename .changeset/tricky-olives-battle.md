@@ -1,7 +1,7 @@
 ---
 "@medusajs/medusa": patch
 "@medusajs/order": patch
-"@medusajs/admin": patch
+"@medusajs/dashboard": patch
 "@medusajs/core-flows": patch
 "@medusajs/types": patch
 ---
