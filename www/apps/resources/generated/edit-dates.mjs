@@ -103,7 +103,7 @@ export const generatedEditDates = {
   "app/deployment/admin/vercel/page.mdx": "2024-10-16T08:10:29.377Z",
   "app/deployment/storefront/vercel/page.mdx": "2025-05-20T07:51:40.712Z",
   "app/deployment/page.mdx": "2025-09-29T10:23:47.833Z",
-  "app/integrations/page.mdx": "2025-10-22T07:14:23.467Z",
+  "app/integrations/page.mdx": "2025-11-17T09:41:11.910Z",
   "app/medusa-cli/page.mdx": "2024-08-28T11:25:32.382Z",
   "app/medusa-container-resources/page.mdx": "2025-07-31T13:24:15.786Z",
   "app/medusa-workflows-reference/page.mdx": "2025-01-20T08:21:29.962Z",
@@ -6556,7 +6556,7 @@ export const generatedEditDates = {
   "app/commerce-modules/user/invite-user-subscriber/page.mdx": "2025-08-01T12:01:54.551Z",
   "app/how-to-tutorials/tutorials/invoice-generator/page.mdx": "2025-10-09T11:26:43.515Z",
   "app/how-to-tutorials/tutorials/product-builder/page.mdx": "2025-10-09T11:28:24.756Z",
-  "app/integrations/guides/payload/page.mdx": "2025-10-22T15:05:39.648Z",
+  "app/integrations/guides/payload/page.mdx": "2025-11-17T09:40:53.465Z",
   "references/js_sdk/admin/Client/methods/js_sdk.admin.Client.getToken/page.mdx": "2025-08-14T12:59:55.678Z",
   "app/commerce-modules/order/draft-orders/page.mdx": "2025-08-26T09:21:49.780Z",
   "app/troubleshooting/scheduled-job-not-running/page.mdx": "2025-10-16T09:31:19.269Z",
@@ -6717,5 +6717,6 @@ export const generatedEditDates = {
   "references/core_flows/Payment/Workflows_Payment/functions/core_flows.Payment.Workflows_Payment.validateRefundPaymentExceedsCapturedAmountStep/page.mdx": "2025-11-05T12:22:20.221Z",
   "references/core_flows/Product/Workflows_Product/functions/core_flows.Product.Workflows_Product.batchImageVariantsWorkflow/page.mdx": "2025-11-05T12:22:20.639Z",
   "references/core_flows/Product/Workflows_Product/functions/core_flows.Product.Workflows_Product.batchVariantImagesWorkflow/page.mdx": "2025-11-05T12:22:20.671Z",
-  "app/storefront-development/guides/react-native-expo/page.mdx": "2025-11-06T07:18:45.347Z"
+  "app/storefront-development/guides/react-native-expo/page.mdx": "2025-11-06T07:18:45.347Z",
+  "app/integrations/guides/strapi/page.mdx": "2025-11-17T10:34:00.881Z"
 }

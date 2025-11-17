@@ -93,6 +93,14 @@ const generatedgeneratedIntegrationsSidebarSidebar = {
           "path": "/integrations/guides/sanity",
           "title": "Sanity",
           "children": []
+        },
+        {
+          "loaded": true,
+          "isPathHref": true,
+          "type": "link",
+          "path": "/integrations/guides/strapi",
+          "title": "Strapi",
+          "children": []
         }
       ]
     },

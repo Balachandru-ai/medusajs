@@ -11774,6 +11774,14 @@ const generatedgeneratedCommerceModulesSidebarSidebar = {
               "loaded": true,
               "isPathHref": true,
               "type": "ref",
+              "title": "Integrate Strapi",
+              "path": "https://docs.medusajs.com/resources/integrations/guides/strapi",
+              "children": []
+            },
+            {
+              "loaded": true,
+              "isPathHref": true,
+              "type": "ref",
               "title": "Localization with Contentful",
               "path": "https://docs.medusajs.com/resources/integrations/guides/contentful",
               "children": []
