@@ -6615,7 +6615,7 @@ export const generatedEditDates = {
   "app/how-to-tutorials/tutorials/agentic-commerce/page.mdx": "2025-10-09T11:25:48.831Z",
   "app/storefront-development/production-optimizations/page.mdx": "2025-10-03T13:28:37.909Z",
   "app/how-to-tutorials/tutorials/category-images/page.mdx": "2025-11-07T08:55:59.228Z",
-  "app/infrastructure-modules/caching/page.mdx": "2025-10-13T11:46:36.452Z",
+  "app/infrastructure-modules/caching/page.mdx": "2025-11-13T14:18:03.173Z",
   "app/troubleshooting/subscribers/not-working/page.mdx": "2025-10-16T09:25:57.376Z",
   "references/js_sdk/admin/RefundReason/methods/js_sdk.admin.RefundReason.create/page.mdx": "2025-10-21T08:10:56.630Z",
   "references/js_sdk/admin/RefundReason/methods/js_sdk.admin.RefundReason.delete/page.mdx": "2025-10-21T08:10:56.634Z",

@@ -28,9 +28,7 @@ const step_1_retry_interval = createStep(
 
     // Fail until we reach the target attempt
     if (attemptCount < input.attemptToSucceedOn) {
-      throw new Error(
-        `Step 1 failed on attempt ${attemptCount}, will retry`
-      )
+      throw new Error(`Step 1 failed on attempt ${attemptCount}, will retry`)
     }
 
     return new StepResponse({
@@ -47,7 +45,7 @@ const step_2_after_retry = createStep(
     name: "step_2_after_retry",
     async: true,
   },
-  async (input) => {
+  async (input: any) => {
     retryIntervalStep2InvokeMock(input)
 
     return new StepResponse({
