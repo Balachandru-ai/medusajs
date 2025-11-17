@@ -13,12 +13,22 @@ import {
 // Mock counters to track execution attempts
 export const retryIntervalStep1InvokeMock = jest.fn()
 export const retryIntervalStep2InvokeMock = jest.fn()
+export const retryIntervalStep0InvokeMock = jest.fn()
+
+const step_0_retry_interval = createStep(
+  {
+    name: "step_0_sync_retry_interval",
+  },
+  async (input: any) => {
+    retryIntervalStep0InvokeMock(input)
+    return new StepResponse(input)
+  }
+)
 
 // Step 1: Fails first 2 times, succeeds on 3rd attempt
 const step_1_retry_interval = createStep(
   {
-    name: "step_1_retry_interval",
-    async: true,
+    name: "step_1_sync_retry_interval",
     retryInterval: 1, // 1 second retry interval
     maxRetries: 3,
   },
@@ -42,8 +52,7 @@ const step_1_retry_interval = createStep(
 // Step 2: Always succeeds (to verify workflow continues after retry)
 const step_2_after_retry = createStep(
   {
-    name: "step_2_after_retry",
-    async: true,
+    name: "step_2_sync_after_retry",
   },
   async (input: any) => {
     retryIntervalStep2InvokeMock(input)
@@ -55,7 +64,7 @@ const step_2_after_retry = createStep(
   }
 )
 
-export const workflowRetryIntervalId = "workflow_retry_interval_test"
+export const workflowRetryIntervalId = "workflow_sync_retry_interval_test"
 
 createWorkflow(
   {
@@ -63,7 +72,8 @@ createWorkflow(
     retentionTime: 600, // Keep for 10 minutes for debugging
   },
   function (input: { attemptToSucceedOn: number }) {
-    const step1Result = step_1_retry_interval(input)
+    const step0Result = step_0_retry_interval(input)
+    const step1Result = step_1_retry_interval(step0Result)
     const step2Result = step_2_after_retry({ step1Result })
 
     return new WorkflowResponse({
