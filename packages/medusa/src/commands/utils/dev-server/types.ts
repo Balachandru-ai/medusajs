@@ -15,6 +15,7 @@ export const CONFIG = {
     route: "api/",
     workflow: "workflows/",
     subscriber: "subscribers/",
+    job: "jobs/",
   },
 } as const
 

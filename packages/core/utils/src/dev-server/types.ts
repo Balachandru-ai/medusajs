@@ -31,6 +31,14 @@ export interface SubscriberResourceData extends BaseResourceData {
   events: string[]
 }
 
+export interface JobResourceData extends BaseResourceData {
+  type: "job"
+  sourcePath: string
+  config: {
+    name: string
+  }
+}
+
 export type ResourceRegistrationData =
   | WorkflowResourceData
   | StepResourceData

@@ -55,9 +55,12 @@ export class WorkflowReloader {
     // Unregister resources and collect affected workflows
     this.unregisterResources(absoluteFilePath, requirableWorkflowPaths)
 
-    // Clear module cache if requested
     if (!keepCache) {
       await this.clearWorkflowCache(absoluteFilePath, reloaders, skipRecovery)
+    } else {
+      // Even when keepCache is true, we must clear the workflow file itself
+      // so it can be re-required and re-register the workflow later
+      this.clearSingleWorkflowFile(absoluteFilePath)
     }
 
     // Reload workflows that were affected
@@ -66,7 +69,7 @@ export class WorkflowReloader {
     }
 
     // Execute deferred reloaders
-    if (reloaders.length > 0) {
+    if (reloaders.length) {
       await Promise.all(reloaders.map(async (reloader) => reloader()))
     }
   }
@@ -140,6 +143,19 @@ export class WorkflowReloader {
         this.workflowManager!.unregister(workflow.id)
         affectedWorkflows.add(sourcePath)
       }
+    }
+  }
+
+  /**
+   * Clear only the specific workflow file from cache
+   */
+  private clearSingleWorkflowFile(absoluteFilePath: string): void {
+    const resolved = require.resolve(absoluteFilePath)
+    if (require.cache[resolved]) {
+      delete require.cache[resolved]
+      this.logger.debug(
+        `${this.logSource} Cleared cache for workflow file: ${absoluteFilePath}`
+      )
     }
   }
 

@@ -7,6 +7,7 @@ import { SubscriberReloader } from "./reloaders/subscribers"
 import { WorkflowReloader } from "./reloaders/workflows"
 import { ResourceRegistry } from "./resource-registry"
 import { DevServerGlobals, ReloadParams } from "./types"
+import { JobReloader } from "./reloaders/jobs"
 
 let sharedCacheManager!: ModuleCacheManager
 const sharedRegistry = new ResourceRegistry()
@@ -15,6 +16,7 @@ const reloaders = {} as {
   routesReloader: RouteReloader
   subscribersReloader?: SubscriberReloader
   workflowsReloader: WorkflowReloader
+  jobsReloader?: JobReloader
 }
 
 function initializeReloaders(logSource: string) {
@@ -52,6 +54,17 @@ function initializeReloaders(logSource: string) {
     )
     reloaders.workflowsReloader = workflowReloader
   }
+
+  if (!reloaders.jobsReloader) {
+    const jobReloader = new JobReloader(
+      globals.WorkflowManager,
+      container,
+      sharedRegistry,
+      logSource,
+      logger
+    )
+    reloaders.jobsReloader = jobReloader
+  }
 }
 
 /**
@@ -68,14 +81,17 @@ export async function reloadResources({
 }: ReloadParams): Promise<void> {
   initializeReloaders(logSource)
 
-  await reloaders.routesReloader.reload(action, absoluteFilePath)
-  await reloaders.subscribersReloader?.reload?.(action, absoluteFilePath)
+  // Reload in dependency order: workflows → routes → subscribers → jobs
+  // Jobs depend on workflows, so workflows must be reloaded first
   await reloaders.workflowsReloader.reload(
     action,
     absoluteFilePath,
     keepCache,
     skipRecovery
   )
+  await reloaders.routesReloader.reload(action, absoluteFilePath)
+  await reloaders.subscribersReloader?.reload?.(action, absoluteFilePath)
+  await reloaders.jobsReloader?.reload?.(action, absoluteFilePath)
 
   // Attempt recovery of broken modules (unless we're already in recovery mode)
   if (!skipRecovery) {

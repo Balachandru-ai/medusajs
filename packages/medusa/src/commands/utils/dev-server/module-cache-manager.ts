@@ -1,6 +1,6 @@
 import { Logger } from "@medusajs/framework/types"
-import { CONFIG } from "./types"
 import path from "path"
+import { CONFIG } from "./types"
 
 /**
  * Manages Node.js require cache operations and tracks broken modules
