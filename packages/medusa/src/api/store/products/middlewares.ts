@@ -8,6 +8,7 @@ import {
   MiddlewareRoute,
 } from "@medusajs/framework/http"
 import {
+  ContainerRegistrationKeys,
   FeatureFlag,
   isPresent,
   ProductStatus,
@@ -22,6 +23,37 @@ import {
 import * as QueryConfig from "./query-config"
 import { StoreGetProductsParams } from "./validators"
 
+async function ApplyMaybeLinkFilterIfNecessary(req, res, next) {
+  const canUseIndex = !(
+    isPresent(req.filterableFields.tags) ||
+    isPresent(req.filterableFields.categories)
+  )
+  if (FeatureFlag.isFeatureEnabled(IndexEngineFeatureFlag.key) && canUseIndex) {
+    return next()
+  }
+
+  const query = req.scope.resolve(ContainerRegistrationKeys.QUERY)
+  const {
+    metadata: { count: salesChannelCount },
+  } = await query.graph({
+    entity: "sales_channels",
+    fields: ["id"],
+    pagination: {
+      take: 1,
+    },
+  })
+
+  if (!(salesChannelCount > 1)) {
+    return next()
+  }
+
+  return maybeApplyLinkFilter({
+    entryPoint: "product_sales_channel",
+    resourceId: "product_id",
+    filterableField: "sales_channel_id",
+  })(req, res, next)
+}
+
 export const storeProductRoutesMiddlewares: MiddlewareRoute[] = [
   {
     method: ["GET"],
@@ -35,24 +67,7 @@ export const storeProductRoutesMiddlewares: MiddlewareRoute[] = [
         QueryConfig.listProductQueryConfig
       ),
       filterByValidSalesChannels(),
-      (req, res, next) => {
-        const canUseIndex = !(
-          isPresent(req.filterableFields.tags) ||
-          isPresent(req.filterableFields.categories)
-        )
-        if (
-          FeatureFlag.isFeatureEnabled(IndexEngineFeatureFlag.key) &&
-          canUseIndex
-        ) {
-          return next()
-        }
-
-        return maybeApplyLinkFilter({
-          entryPoint: "product_sales_channel",
-          resourceId: "product_id",
-          filterableField: "sales_channel_id",
-        })(req, res, next)
-      },
+      ApplyMaybeLinkFilterIfNecessary,
       applyDefaultFilters({
         status: ProductStatus.PUBLISHED,
         // TODO: the type here seems off and the implementation does not take into account $and and $or possible filters. Might be worth re working (original type used here was StoreGetProductsParamsType)
