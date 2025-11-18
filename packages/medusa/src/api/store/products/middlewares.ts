@@ -45,6 +45,7 @@ async function ApplyMaybeLinkFilterIfNecessary(req, res, next) {
   })
 
   if (!(salesChannelCount > 1)) {
+    delete req.filterableFields.sales_channel_id
     return next()
   }
 
