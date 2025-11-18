@@ -3757,6 +3757,14 @@ medusaIntegrationTestRunner({
                 operators: expect.anything(),
               }),
               expect.objectContaining({
+                id: "product_variant",
+                value: "items.variant_id",
+                label: "Product Variant",
+                required: false,
+                field_type: "multiselect",
+                operators: expect.anything(),
+              }),
+              expect.objectContaining({
                 id: "product_category",
                 value: "items.product.categories.id",
                 label: "Product Category",

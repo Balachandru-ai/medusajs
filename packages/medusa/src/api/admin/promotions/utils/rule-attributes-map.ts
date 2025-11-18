@@ -62,6 +62,14 @@ const itemsAttributes = [
     operators: Object.values(operatorsMap),
   },
   {
+    id: "product_variant",
+    value: "items.variant.id",
+    label: "Product Variant",
+    required: false,
+    field_type: "multiselect",
+    operators: Object.values(operatorsMap),
+  },
+  {
     id: "product_category",
     value: "items.product.categories.id",
     label: "Product Category",

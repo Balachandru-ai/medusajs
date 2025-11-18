@@ -29,6 +29,11 @@ export const ruleQueryConfigurations = {
     labelAttr: "title",
     valueAttr: "id",
   },
+  product_variant: {
+    entryPoint: "product_variant",
+    labelAttr: "sku",
+    valueAttr: "id",
+  },
   product_category: {
     entryPoint: "product_category",
     labelAttr: "name",

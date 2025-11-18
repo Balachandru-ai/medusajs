@@ -62,14 +62,30 @@ export const GET = async (
         filters: filterableFields,
         ...req.queryConfig.pagination,
       },
-      fields: [queryConfig.labelAttr, queryConfig.valueAttr],
+      fields: ruleAttributeId === "product_variant"
+        ? ["title", "sku", queryConfig.valueAttr]
+        : [queryConfig.labelAttr, queryConfig.valueAttr],
     })
   )
 
-  const values = rows.map((r) => ({
-    label: r[queryConfig.labelAttr],
-    value: r[queryConfig.valueAttr],
-  }))
+  const values = rows.map((r) => {
+    let label = r[queryConfig.labelAttr]
+
+    if (ruleAttributeId === "product_variant") {
+      const title = r.title
+      const sku = r.sku
+      if (sku) {
+        label = `${title} (SKU: ${sku})`
+      } else {
+        label = title
+      }
+    }
+
+    return {
+      label,
+      value: r[queryConfig.valueAttr],
+    }
+  })
 
   res.json({
     values,
