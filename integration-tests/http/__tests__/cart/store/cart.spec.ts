@@ -3692,7 +3692,7 @@ medusaIntegrationTestRunner({
           )
         })
 
-        it("should update email irregardless of registered customer", async () => {
+        it("should update email regardless of registered customer", async () => {
           const updateEmailWithoutCustomer = await api.post(
             `/store/carts/${cart.id}`,
             { email: "tony@stark.com" },
