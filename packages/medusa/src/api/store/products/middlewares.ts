@@ -39,6 +39,7 @@ async function ApplyMaybeLinkFilterIfNecessary(req, res, next) {
     entity: "sales_channels",
     fields: ["id"],
     pagination: {
+      skip: 0,
       take: 1,
     },
   })
