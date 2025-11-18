@@ -28,6 +28,7 @@ const Promotion = model
       pivotTable: "promotion_promotion_rule",
       mappedBy: "promotions",
     }),
+    metadata: model.json().nullable(),
   })
   .cascades({
     delete: ["application_method"],
