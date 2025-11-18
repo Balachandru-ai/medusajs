@@ -3,10 +3,10 @@
   "version": "2.11.3",
   "scripts": {
     "generate:static": "node ./scripts/generate-currencies.js && prettier --write ./src/lib/currencies.ts",
-    "dev": "vite",
+    "dev": "../../../node_modules/.bin/vite",
     "build": "yarn run -T tsup && node ./scripts/generate-types.js",
-    "build:preview": "vite build",
-    "preview": "vite preview",
+    "build:preview": "../../../node_modules/.bin/vite build",
+    "preview": "../../../node_modules/.bin/vite preview",
     "test": "../../../node_modules/.bin/vitest --run",
     "i18n:validate": "node ./scripts/i18n/validate-translation.js",
     "i18n:schema": "node ./scripts/i18n/generate-schema.js",
