@@ -65,9 +65,16 @@ import { storeReturnReasonRoutesMiddlewares } from "./store/return-reasons/middl
 import { storeShippingOptionRoutesMiddlewares } from "./store/shipping-options/middlewares"
 import { adminShippingOptionTypeRoutesMiddlewares } from "./admin/shipping-option-types/middlewares"
 import { adminIndexRoutesMiddlewares } from "./admin/index/middlewares"
+import { setSecretApiKeyContext } from "@medusajs/framework"
 
 export default defineMiddlewares([
   ...storeRoutesMiddlewares,
+  {
+    matcher: "/admin*",
+    middlewares: [
+        setSecretApiKeyContext,
+    ]
+  },
   ...adminCustomerGroupRoutesMiddlewares,
   ...adminCustomerRoutesMiddlewares,
   ...adminPromotionRoutesMiddlewares,
