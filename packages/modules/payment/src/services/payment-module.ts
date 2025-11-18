@@ -622,7 +622,7 @@ export default class PaymentModuleService
         {
           payment_id: payment.id,
           amount: session.amount as BigNumberInput,
-          isCaptured,
+          is_captured: isCaptured,
         },
         sharedContext
       )
@@ -650,7 +650,7 @@ export default class PaymentModuleService
     data: CreateCaptureDTO,
     @MedusaContext() sharedContext: Context = {}
   ): Promise<PaymentDTO> {
-    let { isCaptured, ...data_ } = data
+    let { is_captured, ...data_ } = data
     const payment = await this.paymentService_.retrieve(
       data_.payment_id,
       {
@@ -670,6 +670,7 @@ export default class PaymentModuleService
       sharedContext
     )
 
+    let isCaptured = is_captured
     if (!isCaptured) {
       const isAutoCaptured = !!payment?.captured_at
       isCaptured = isAutoCaptured
