@@ -220,7 +220,7 @@ medusaIntegrationTestRunner({
         expect(response.data.draft_order.email).toBe("test_new@test.com")
       })
 
-      it("should set created_by to id of user linked to secret key", async () => {
+      it("should use the secret key linked user to set created_by", async () => {
         apiKey = (await api.post('/admin/api-keys', {
             title: 'secret-key',
             type: ApiKeyType.SECRET
