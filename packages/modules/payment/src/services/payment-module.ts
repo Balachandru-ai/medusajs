@@ -806,7 +806,7 @@ export default class PaymentModuleService
       await this.paymentService_.update(
         {
           id: payment.id,
-          captured_at: options.isFullyCaptured ? new Date() : undefined,
+          captured_at: new Date(),
         },
         sharedContext
       )
