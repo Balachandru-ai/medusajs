@@ -21,7 +21,7 @@ medusaIntegrationTestRunner({
       const container = getContainer()
 
       await setupTaxStructure(container.resolve(ModuleRegistrationName.TAX))
-      userId = (await createAdminUser(dbConnection, adminHeaders, container)).user.id
+      userId = await createAdminUser(dbConnection, adminHeaders, container).then(user => user.id)
 
       region = (
         await api.post(
