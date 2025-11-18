@@ -585,10 +585,10 @@ export default class PaymentModuleService
     status: PaymentSessionStatus,
     @MedusaContext() sharedContext?: Context
   ): Promise<InferEntityType<typeof Payment>> {
-    let autoCapture = false
+    let isCaptured = false
     if (status === PaymentSessionStatus.CAPTURED) {
       status = PaymentSessionStatus.AUTHORIZED
-      autoCapture = true
+      isCaptured = true
     }
 
     await this.paymentSessionService_.update(
@@ -617,12 +617,12 @@ export default class PaymentModuleService
       sharedContext
     )
 
-    if (autoCapture) {
+    if (isCaptured) {
       await this.capturePayment(
         {
           payment_id: payment.id,
           amount: session.amount as BigNumberInput,
-          auto_captured: autoCapture,
+          isCaptured,
         },
         sharedContext
       )
@@ -650,7 +650,7 @@ export default class PaymentModuleService
     data: CreateCaptureDTO,
     @MedusaContext() sharedContext: Context = {}
   ): Promise<PaymentDTO> {
-    let { auto_captured, ...data_ } = data
+    let { isCaptured, ...data_ } = data
     const payment = await this.paymentService_.retrieve(
       data_.payment_id,
       {
@@ -670,9 +670,9 @@ export default class PaymentModuleService
       sharedContext
     )
 
-    if (!auto_captured) {
+    if (!isCaptured) {
       const isAutoCaptured = !!payment?.captured_at
-      auto_captured = isAutoCaptured
+      isCaptured = isAutoCaptured
     }
 
     const { isFullyCaptured, capture } = await this.capturePayment_(
@@ -685,7 +685,7 @@ export default class PaymentModuleService
       await this.capturePaymentFromProvider_(
         payment,
         capture,
-        { isFullyCaptured, auto_captured },
+        { isFullyCaptured, isCaptured },
         sharedContext
       )
     } catch (error) {
@@ -775,11 +775,11 @@ export default class PaymentModuleService
     capture: InferEntityType<typeof Capture> | undefined,
     options: {
       isFullyCaptured?: boolean
-      auto_captured?: boolean
+      isCaptured?: boolean
     } = {},
     @MedusaContext() sharedContext: Context = {}
   ) {
-    if (!options.auto_captured) {
+    if (!options.isCaptured) {
       const paymentData = await this.paymentProviderService_.capturePayment(
         payment.provider_id,
         {

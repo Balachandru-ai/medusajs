@@ -155,7 +155,7 @@ export interface CreateCaptureDTO {
   /**
    * Whether the capture was automatically captured.
    */
-  auto_captured?: boolean
+  isCaptured?: boolean
 }
 
 /**
