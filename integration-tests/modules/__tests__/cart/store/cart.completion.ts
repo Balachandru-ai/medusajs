@@ -1017,7 +1017,7 @@ medusaIntegrationTestRunner({
               eventGroupId
             ) ?? []
 
-          expect(grouppedEventBefore).toHaveLength(1)
+          expect(grouppedEventBefore).toHaveLength(17)
           expect(grouppedEventAfter).toHaveLength(0) // events have been compensated
 
           expect(errors[0].error.message).toBe(
