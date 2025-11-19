@@ -6,6 +6,7 @@ import {
   ThumbUp,
   Link as LinkIcon,
   CheckCircle,
+  SquareTwoStack,
 } from "@medusajs/icons"
 import {
   AiAssistantThreadItem as AiAssistantThreadItemType,
@@ -26,8 +27,11 @@ export const AiAssistantThreadItemActions = ({
   const {
     config: { baseUrl },
   } = useSiteConfig()
-  const { handleCopy, isCopied } = useCopy(
+  const { handleCopy: handleLinkCopy, isCopied: isLinkCopied } = useCopy(
     `${baseUrl}?query=${encodeURI(item.content)}`
+  )
+  const { handleCopy: handleAnswerCopy, isCopied: isAnswerCopied } = useCopy(
+    item.content
   )
 
   const handleFeedback = async (
@@ -55,8 +59,8 @@ export const AiAssistantThreadItemActions = ({
     >
       {item.type === "question" && (
         <div className="flex gap-docs_0.25 items-center text-medusa-fg-muted">
-          <ActionButton onClick={handleCopy}>
-            {isCopied ? <CheckCircle /> : <LinkIcon />}
+          <ActionButton onClick={handleLinkCopy}>
+            {isLinkCopied ? <CheckCircle /> : <LinkIcon />}
           </ActionButton>
         </div>
       )}
@@ -74,6 +78,9 @@ export const AiAssistantThreadItemActions = ({
             </div>
           )}
           <div className="flex gap-docs_0.25 items-center text-medusa-fg-muted">
+            <ActionButton onClick={handleAnswerCopy}>
+              {isAnswerCopied ? <CheckCircle /> : <SquareTwoStack />}
+            </ActionButton>
             {(feedback === null || feedback === "upvote") && (
               <ActionButton
                 onClick={async () => handleFeedback("upvote", item.question_id)}
