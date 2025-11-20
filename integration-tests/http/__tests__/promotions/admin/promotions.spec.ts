@@ -3758,7 +3758,7 @@ medusaIntegrationTestRunner({
               }),
               expect.objectContaining({
                 id: "product_variant",
-                value: "items.variant_id",
+                value: "items.variant.id",
                 label: "Product Variant",
                 required: false,
                 field_type: "multiselect",
@@ -4088,6 +4088,22 @@ medusaIntegrationTestRunner({
             expect.arrayContaining([
               { label: "test tag 1", value: tag1.id },
               { label: "test tag 2", value: tag2.id },
+            ])
+          )
+
+          response = await api.get(
+            `/admin/promotions/rule-value-options/target-rules/product_variant`,
+            adminHeaders
+          )
+
+          expect(response.status).toEqual(200)
+          expect(response.data.values.length).toEqual(4) // 2 products × 2 variants each
+          expect(response.data.values).toEqual(
+            expect.arrayContaining([
+              expect.objectContaining({ value: product1.variants[0].id }),
+              expect.objectContaining({ value: product1.variants[1].id }),
+              expect.objectContaining({ value: product2.variants[0].id }),
+              expect.objectContaining({ value: product2.variants[1].id }),
             ])
           )
 
