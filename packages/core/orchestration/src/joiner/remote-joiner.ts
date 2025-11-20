@@ -1384,6 +1384,7 @@ export class RemoteJoiner {
       const existingExpand = expands.find((exp) => exp.property === midProp)
 
       const extraExtends = {
+        fields: existingExpand?.fields,
         ...(midProp === fullAliasProp ? expand : {}),
         property: midProp,
         isAliasMapping: !existingExpand,
