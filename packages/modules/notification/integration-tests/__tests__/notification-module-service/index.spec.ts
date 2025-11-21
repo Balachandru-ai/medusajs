@@ -1,4 +1,7 @@
-import { INotificationModuleService } from "@medusajs/framework/types"
+import {
+  CreateNotificationDTO,
+  INotificationModuleService,
+} from "@medusajs/framework/types"
 import {
   CommonEvents,
   composeMessage,
@@ -74,19 +77,27 @@ moduleIntegrationTestRunner<INotificationModuleService>({
       it("should send a notification and stores it in the database", async () => {
         const notification = {
           to: "admin@medusa.com",
+          from: "sender@verified.com",
           template: "some-template",
           channel: "email",
           data: {},
-        }
+        } as CreateNotificationDTO
 
         const result = await service.createNotifications(notification)
-        expect(result).toEqual(
-          expect.objectContaining({
-            provider_id: "test-provider",
-            external_id: "external_id",
-            status: NotificationStatus.SUCCESS,
-          })
-        )
+        const retrieved = await service.retrieveNotification(result.id)
+
+        const expected = {
+          to: "admin@medusa.com",
+          from: "sender@verified.com",
+          template: "some-template",
+          channel: "email",
+          data: {},
+          provider_id: "test-provider",
+          external_id: "external_id",
+          status: NotificationStatus.SUCCESS,
+        }
+        expect(result).toEqual(expect.objectContaining(expected))
+        expect(retrieved).toEqual(expect.objectContaining(expected))
       })
 
       it("should send a notification and don't store the content in the database", async () => {

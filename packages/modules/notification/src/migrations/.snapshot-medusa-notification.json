@@ -96,7 +96,7 @@
           "constraint": false,
           "primary": false,
           "unique": false,
-          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_notification_provider_deleted_at\" ON \"notification_provider\" (deleted_at) WHERE deleted_at IS NULL"
+          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_notification_provider_deleted_at\" ON \"notification_provider\" (\"deleted_at\") WHERE deleted_at IS NULL"
         },
         {
           "keyName": "notification_provider_pkey",
@@ -131,6 +131,15 @@
           "autoincrement": false,
           "primary": false,
           "nullable": false,
+          "mappedType": "text"
+        },
+        "from": {
+          "name": "from",
+          "type": "text",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
           "mappedType": "text"
         },
         "channel": {
@@ -290,7 +299,7 @@
           "constraint": false,
           "primary": false,
           "unique": false,
-          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_notification_receiver_id\" ON \"notification\" (receiver_id) WHERE deleted_at IS NULL"
+          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_notification_receiver_id\" ON \"notification\" (\"receiver_id\") WHERE deleted_at IS NULL"
         },
         {
           "keyName": "IDX_notification_idempotency_key_unique",
@@ -299,7 +308,7 @@
           "constraint": false,
           "primary": false,
           "unique": false,
-          "expression": "CREATE UNIQUE INDEX IF NOT EXISTS \"IDX_notification_idempotency_key_unique\" ON \"notification\" (idempotency_key) WHERE deleted_at IS NULL"
+          "expression": "CREATE UNIQUE INDEX IF NOT EXISTS \"IDX_notification_idempotency_key_unique\" ON \"notification\" (\"idempotency_key\") WHERE deleted_at IS NULL"
         },
         {
           "keyName": "IDX_notification_provider_id",
@@ -308,7 +317,7 @@
           "constraint": false,
           "primary": false,
           "unique": false,
-          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_notification_provider_id\" ON \"notification\" (provider_id) WHERE deleted_at IS NULL"
+          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_notification_provider_id\" ON \"notification\" (\"provider_id\") WHERE deleted_at IS NULL"
         },
         {
           "keyName": "IDX_notification_deleted_at",
@@ -317,7 +326,7 @@
           "constraint": false,
           "primary": false,
           "unique": false,
-          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_notification_deleted_at\" ON \"notification\" (deleted_at) WHERE deleted_at IS NULL"
+          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_notification_deleted_at\" ON \"notification\" (\"deleted_at\") WHERE deleted_at IS NULL"
         },
         {
           "keyName": "notification_pkey",
