@@ -21,9 +21,9 @@ export interface ConfirmDraftOrderEditWorkflowInput {
    */
   order_id: string
   /**
-   * The ID of the user confirming the edit.
+   * The ID of the user confirming the changes.
    */
-  confirmed_by: string
+  confirmed_by?: string
 }
 
 /**
