@@ -20,6 +20,9 @@ const testNotification = {
   data: {
     link: "https://test.com",
   },
+  provider_data: {
+    cc: "cc@test.com",
+  },
 }
 
 moduleIntegrationTestRunner<INotificationModuleService>({
@@ -58,6 +61,9 @@ moduleIntegrationTestRunner<INotificationModuleService>({
             data: {
               link: "https://test.com",
             },
+            provider_data: {
+              cc: "cc@test.com",
+            },
             provider_id: "cloud",
             external_id: "external_id_1",
             status: NotificationStatus.SUCCESS,
@@ -78,6 +84,9 @@ moduleIntegrationTestRunner<INotificationModuleService>({
           template: "some-template",
           data: {
             link: "https://test.com",
+          },
+          provider_data: {
+            cc: "cc@test.com",
           },
         })
       })

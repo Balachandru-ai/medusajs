@@ -169,6 +169,15 @@
           "nullable": true,
           "mappedType": "json"
         },
+        "provider_data": {
+          "name": "provider_data",
+          "type": "jsonb",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "mappedType": "json"
+        },
         "trigger_type": {
           "name": "trigger_type",
           "type": "text",
