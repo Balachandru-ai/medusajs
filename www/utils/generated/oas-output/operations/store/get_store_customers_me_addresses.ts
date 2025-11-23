@@ -6,7 +6,7 @@
  * description: Retrieve the addresses of the logged-in customer. The addresses can be filtered by fields such as `country_code`. The addresses can also be sorted or paginated.
  * x-authenticated: true
  * externalDocs:
- *   url: https://docs.medusajs.com/v2/resources/storefront-development/customers/addresses#list-customer-addresses
+ *   url: https://docs.medusajs.com/resources/storefront-development/customers/addresses#list-customer-addresses
  *   description: "Storefront guide: How to retrieve the logged-in customer's addresses."
  * parameters:
  *   - name: x-publishable-api-key

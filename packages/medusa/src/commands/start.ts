@@ -200,6 +200,8 @@ async function start(args: {
       skipDbConnection: true,
     })
     const logger = container.resolve(ContainerRegistrationKeys.LOGGER)
+    const serverActivity = logger.activity(`Creating server`)
+
     await registerInstrumentation(directory)
 
     const app = express()
@@ -258,8 +260,6 @@ async function start(args: {
           logger.debug("Generated modules types")
         }
       }
-
-      const serverActivity = logger.activity(`Creating server`)
 
       // Register a health check endpoint. Ideally this also checks the readiness of the service, rather than just returning a static response.
       app.get("/health", (_, res) => {

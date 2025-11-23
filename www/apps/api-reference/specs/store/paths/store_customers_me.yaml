@@ -8,7 +8,7 @@ get:
   x-authenticated: true
   externalDocs:
     url: >-
-      https://docs.medusajs.com/v2/resources/storefront-development/customers/retrieve
+      https://docs.medusajs.com/resources/storefront-development/customers/retrieve
     description: 'Storefront guide: How to retrieve the logged-in customer.'
   parameters:
     - name: x-publishable-api-key
@@ -84,7 +84,7 @@ post:
   description: Update the logged-in customer's details.
   externalDocs:
     url: >-
-      https://docs.medusajs.com/v2/resources/storefront-development/customers/profile
+      https://docs.medusajs.com/resources/storefront-development/customers/profile
     description: 'Storefront guide: How to edit a customer''s profile.'
   x-authenticated: true
   parameters:

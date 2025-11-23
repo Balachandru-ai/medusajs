@@ -164,6 +164,10 @@ export interface BaseProductVariant {
    */
   thumbnail: string | null
   /**
+   * The variant's images.
+   */
+  images: BaseProductImage[] | null
+  /**
    * Whether the variant can be ordered even if it's out of stock.
    */
   allow_backorder: boolean | null
