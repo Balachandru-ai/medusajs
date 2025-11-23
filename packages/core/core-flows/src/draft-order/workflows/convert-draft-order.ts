@@ -12,7 +12,7 @@ import {
   WorkflowData,
   WorkflowResponse,
 } from "@medusajs/framework/workflows-sdk"
-import type { IOrderModuleService, OrderDTO } from "@medusajs/framework/types"
+import type { ConfirmVariantInventoryWorkflowInputDTO, IOrderModuleService, OrderDTO } from "@medusajs/framework/types"
 import { emitEventStep, useRemoteQueryStep } from "../../common"
 import { validateDraftOrderStep } from "../steps/validate-draft-order"
 import { acquireLockStep, releaseLockStep } from "../../locking"
@@ -131,8 +131,17 @@ export const convertDraftOrderWorkflow = createWorkflow(
     }).config({ name: "order-items-query" })
 
     const { variants, items } = transform({ orderItems }, ({ orderItems }) => {
-      const items: any[] = orderItems.items
-      const variants: any[] = orderItems.items.map((item) => item.variant)
+      const items: ConfirmVariantInventoryWorkflowInputDTO["items"] = []
+      const variants: ConfirmVariantInventoryWorkflowInputDTO["variants"] = []
+
+      for (const orderItem of orderItems) {
+        items.push({
+          variant_id: orderItem.variant.id,
+          quantity: orderItem.quantity,
+          id: orderItem.id,
+        })
+        variants.push(orderItem.variant)
+      }
 
       return {
         variants,
