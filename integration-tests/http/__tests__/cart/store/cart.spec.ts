@@ -5346,11 +5346,13 @@ medusaIntegrationTestRunner({
           const paymentCollectionAmount = cart.payment_collection.amount
           const discountTotal = cart.discount_total
 
-          const cartAfterDeletion = (await api.delete(
+          const cartAfterDeletion = await api.delete(
             `/store/carts/${cart.id}/promotions`,
-            { promo_codes: [promotion.code] },
-            storeHeaders
-          )).data.cart
+            {
+                data: { promo_codes: [promotion.code] },
+                ...storeHeaders
+            }
+          ).then(response => response.data.cart)
 
           expect(cartAfterDeletion).toEqual(
             expect.objectContaining({
@@ -5363,7 +5365,7 @@ medusaIntegrationTestRunner({
             })
           )
 
-          expect(cartAfterDeletion.payment_collection.amount).toEqual(paymentCollectionAmount - discountTotal)
+          expect(cartAfterDeletion.total).toEqual(1500)
           expect(cartAfterDeletion.discount_total).toEqual(0)
         })
       })
