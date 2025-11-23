@@ -23,7 +23,7 @@ export async function setSecretApiKeyContext(
 
   const shouldSkip = req.auth_context.actor_type !== "api-key"
   if (shouldSkip) {
-    next()
+    return next()
   }
 
   const query = req.scope.resolve(ContainerRegistrationKeys.QUERY)
