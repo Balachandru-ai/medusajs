@@ -5322,9 +5322,8 @@ medusaIntegrationTestRunner({
             storeHeaders
           )
 
-          cart = (
-            await api.get(`/store/carts/${cart.id}`, storeHeaders)
-          ).data.cart
+          cart = (await api.get(`/store/carts/${cart.id}`, storeHeaders)).data
+            .cart
 
           expect(cart).toEqual(
             expect.objectContaining({
@@ -5343,23 +5342,19 @@ medusaIntegrationTestRunner({
             })
           )
 
-          const paymentCollectionAmount = cart.payment_collection.amount
-          const discountTotal = cart.discount_total
-
-          const cartAfterDeletion = await api.delete(
-            `/store/carts/${cart.id}/promotions`,
-            {
-                data: { promo_codes: [promotion.code] },
-                ...storeHeaders
-            }
-          ).then(response => response.data.cart)
+          const cartAfterDeletion = await api
+            .delete(`/store/carts/${cart.id}/promotions`, {
+              data: { promo_codes: [promotion.code] },
+              ...storeHeaders,
+            })
+            .then((response) => response.data.cart)
 
           expect(cartAfterDeletion).toEqual(
             expect.objectContaining({
               id: cart.id,
               items: expect.arrayContaining([
                 expect.objectContaining({
-                  adjustments: []
+                  adjustments: [],
                 }),
               ]),
             })
