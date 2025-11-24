@@ -12,6 +12,10 @@ export interface CreateNotificationDTO {
    */
   to: string
   /**
+   * The sender of the notification. It can be email, phone number, or username, depending on the channel.
+   */
+  from?: string | null
+  /**
    * The channel through which the notification is sent, such as `email` or `sms`.
    */
   channel: string

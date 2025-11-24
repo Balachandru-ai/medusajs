@@ -6,6 +6,8 @@ export const Notification = model.define("notification", {
   id: model.id({ prefix: "noti" }).primaryKey(),
   // This can be an email, phone number, or username, depending on the channel.
   to: model.text().searchable(),
+  // This can be an email, phone number, or username, depending on the channel.
+  from: model.text().searchable().nullable(),
   channel: model.text(),
   // The template name in the provider's system.
   template: model.text().nullable(),

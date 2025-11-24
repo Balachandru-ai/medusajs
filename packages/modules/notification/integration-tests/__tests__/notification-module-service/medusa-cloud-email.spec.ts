@@ -14,6 +14,7 @@ const successMedusaCloudEmailResponse = {
 
 const testNotification = {
   to: "customer@test.com",
+  from: "sender@verified.com",
   template: "some-template",
   channel: "email",
   data: {
@@ -50,6 +51,13 @@ moduleIntegrationTestRunner<INotificationModuleService>({
         const result = await service.createNotifications(testNotification)
         expect(result).toEqual(
           expect.objectContaining({
+            to: "customer@test.com",
+            from: "sender@verified.com",
+            template: "some-template",
+            channel: "email",
+            data: {
+              link: "https://test.com",
+            },
             provider_id: "cloud",
             external_id: "external_id_1",
             status: NotificationStatus.SUCCESS,
@@ -66,6 +74,7 @@ moduleIntegrationTestRunner<INotificationModuleService>({
         )
         expect(JSON.parse(request.body)).toEqual({
           to: "customer@test.com",
+          from: "sender@verified.com",
           template: "some-template",
           data: {
             link: "https://test.com",

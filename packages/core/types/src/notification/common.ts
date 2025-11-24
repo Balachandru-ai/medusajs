@@ -148,6 +148,10 @@ export interface FilterableNotificationProps
    */
   to?: string | string[] | OperatorMap<string | string[]>
   /**
+   * Filter based on the recipient of the notification.
+   */
+  from?: string | string[] | OperatorMap<string | string[]>
+  /**
    * Filter based on the channel through which the notification is sent, such as 'email' or 'sms'
    */
   channel?: string | string[] | OperatorMap<string | string[]>

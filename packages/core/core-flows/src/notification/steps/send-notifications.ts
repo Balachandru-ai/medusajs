@@ -1,4 +1,8 @@
-import type { Attachment, INotificationModuleService, NotificationContent } from "@medusajs/framework/types"
+import type {
+  Attachment,
+  INotificationModuleService,
+  NotificationContent,
+} from "@medusajs/framework/types"
 import { Modules } from "@medusajs/framework/utils"
 import { StepResponse, createStep } from "@medusajs/framework/workflows-sdk"
 
@@ -11,6 +15,11 @@ export type SendNotificationsStepInput = {
    * the channel. For example, the email address for the email channel.
    */
   to: string
+  /**
+   * The address to send the notification from, depending on
+   * the channel. For example, the email address for the email channel.
+   */
+  from?: string | null
   /**
    * The channel to send the notification through. For example, `email`.
    */
