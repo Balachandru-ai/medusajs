@@ -82,7 +82,7 @@
  *         publishableKey: process.env.NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY,
  *       })
  * 
- *       await sdk.auth.callback(
+ *       const token = await sdk.auth.callback(
  *         "customer",
  *         "github",
  *         {
