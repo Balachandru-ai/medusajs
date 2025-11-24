@@ -12,7 +12,7 @@ import { HttpTypes } from "@medusajs/framework/types"
 import { refetchInventoryItem } from "../../../helpers"
 
 export const DELETE = async (
-  req: MedusaRequest<{}, HttpTypes.SelectParams>,
+  req: MedusaRequest<undefined, HttpTypes.SelectParams>,
   res: MedusaResponse<HttpTypes.AdminInventoryLevelDeleteResponse>
 ) => {
   const { id, location_id } = req.params

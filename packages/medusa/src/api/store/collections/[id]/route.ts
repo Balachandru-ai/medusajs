@@ -6,7 +6,7 @@ import {
 import { refetchCollection } from "../helpers"
 
 export const GET = async (
-  req: AuthenticatedMedusaRequest<HttpTypes.SelectParams>,
+  req: AuthenticatedMedusaRequest<undefined, HttpTypes.SelectParams>,
   res: MedusaResponse<HttpTypes.StoreCollectionResponse>
 ) => {
   const collection = await refetchCollection(
