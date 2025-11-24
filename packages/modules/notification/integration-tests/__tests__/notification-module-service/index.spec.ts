@@ -80,7 +80,8 @@ moduleIntegrationTestRunner<INotificationModuleService>({
           from: "sender@verified.com",
           template: "some-template",
           channel: "email",
-          data: {},
+          data: { link: "http://test.com" },
+          provider_data: { cc: "cc@test.com" },
         } as CreateNotificationDTO
 
         const result = await service.createNotifications(notification)
@@ -91,7 +92,8 @@ moduleIntegrationTestRunner<INotificationModuleService>({
           from: "sender@verified.com",
           template: "some-template",
           channel: "email",
-          data: {},
+          data: { link: "http://test.com" },
+          provider_data: { cc: "cc@test.com" },
           provider_id: "test-provider",
           external_id: "external_id",
           status: NotificationStatus.SUCCESS,

@@ -64,6 +64,10 @@ export interface NotificationDTO {
    */
   data: Record<string, unknown> | null
   /**
+   * Additional data specific to the provider or channel. For example, cc and bcc for emails.
+   */
+  provider_data?: Record<string, unknown> | null
+  /**
    * The event name, the workflow, or anything else that can help to identify what triggered the notification.
    */
   trigger_type?: string | null

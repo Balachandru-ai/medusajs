@@ -39,6 +39,10 @@ export type SendNotificationsStepInput = {
    */
   data?: Record<string, unknown> | null
   /**
+   * Additional data specific to the provider or channel. For example, cc and bcc for emails.
+   */
+  provider_data?: Record<string, unknown> | null
+  /**
    * The type of trigger that caused the notification to be sent. For example, `order_created`.
    */
   trigger_type?: string | null
