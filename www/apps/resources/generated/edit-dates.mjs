@@ -1,7 +1,7 @@
 export const generatedEditDates = {
   "app/commerce-modules/auth/auth-providers/emailpass/page.mdx": "2025-01-13T11:31:35.361Z",
   "app/commerce-modules/auth/auth-providers/page.mdx": "2025-05-20T07:51:40.707Z",
-  "app/commerce-modules/auth/authentication-route/page.mdx": "2025-03-04T09:13:45.919Z",
+  "app/commerce-modules/auth/authentication-route/page.mdx": "2025-11-24T07:39:10.358Z",
   "app/commerce-modules/auth/examples/page.mdx": "2024-10-15T15:02:13.794Z",
   "app/commerce-modules/auth/module-options/page.mdx": "2025-03-11T08:56:10.338Z",
   "app/commerce-modules/auth/page.mdx": "2025-04-17T08:48:17.286Z",
@@ -830,7 +830,7 @@ export const generatedEditDates = {
   "references/types/interfaces/types.BaseClaim/page.mdx": "2025-09-12T14:10:39.219Z",
   "app/commerce-modules/auth/auth-providers/github/page.mdx": "2025-01-13T11:31:35.361Z",
   "app/commerce-modules/auth/auth-providers/google/page.mdx": "2025-01-13T11:31:35.361Z",
-  "app/storefront-development/customers/third-party-login/page.mdx": "2025-09-17T11:42:53.434Z",
+  "app/storefront-development/customers/third-party-login/page.mdx": "2025-11-24T07:27:46.836Z",
   "references/types/HttpTypes/types/types.HttpTypes.AdminWorkflowRunResponse/page.mdx": "2024-12-09T13:21:34.761Z",
   "references/types/HttpTypes/types/types.HttpTypes.BatchResponse/page.mdx": "2025-04-11T09:04:46.523Z",
   "references/types/WorkflowsSdkTypes/types/types.WorkflowsSdkTypes.Acknowledgement/page.mdx": "2024-12-09T13:21:35.873Z",
