@@ -355,15 +355,12 @@ Finally, you'll add to the page a function that validates the authentication cal
 
 Add in the place of the new `TODO` the `validateCallback` function that runs when the page first loads to validate the authentication:
 
-<CodeTabs group="authenticated-request">
-  <CodeTab label="React" value="react">
-  
 export const validateReactHighlights = [
   ["2", "sendCallback", "Validate the callback in Medusa and retrieve the authentication token"],
-  ["4", "shouldCreateCustomer", "Check if the decoded token has an `actor_id` property to decide whether a customer needs to be created"],
-  ["7", "createCustomer", "Create a customer if the decoded token doesn't have `actor_id`"],
-  ["9", "refreshToken", "Fetch a new token for the created customer"],
-  ["13", "retrieve", "Retrieve the customer's details as an example of testing authentication"]
+  ["6", "shouldCreateCustomer", "Check if the decoded token has an `actor_id` property to decide whether a customer needs to be created"],
+  ["9", "createCustomer", "Create a customer if the decoded token doesn't have `actor_id`"],
+  ["11", "refreshToken", "Fetch a new token for the created customer"],
+  ["15", "retrieve", "Retrieve the customer's details as an example of testing authentication"]
 ]
 
 ```tsx highlights={validateReactHighlights}
@@ -387,45 +384,8 @@ const validateCallback = async () => {
   setLoading(false)
 }
 
-
 // TODO run validateCallback when the page loads
 ```
-
-  </CodeTab>
-  <CodeTab label="JS SDK" value="js-sdk">
-  
-export const validateFetchHighlights = [
-  ["2", "sendCallback", "Validate the callback in Medusa and retrieve the authentication token"],
-  ["4", "shouldCreateCustomer", "Check if the decoded token has an `actor_id` property to decide whether a customer needs to be created"],
-  ["7", "createCustomer", "Create a customer if the decoded token doesn't have `actor_id`"],
-  ["9", "refreshToken", "Fetch a new token for the created customer"],
-  ["13", "retrieve", "Retrieve the customer's details as an example of testing authentication"]
-]
-
-```ts highlights={validateFetchHighlights}
-const validateCallback = async () => {
-  const token = await sendCallback()
-
-  const shouldCreateCustomer = (decodeToken(token) as { actor_id: string }).actor_id === ""
-
-  if (shouldCreateCustomer) {
-    await createCustomer()
-
-    await refreshToken()
-  }
-
-  // use token to send authenticated requests
-  const { customer: customerData } =  await sdk.store.customer.retrieve()
-
-  setCustomer(customerData)
-  setLoading(false)
-}
-
-// TODO run validateCallback when the page loads
-```
-
-  </CodeTab>
-</CodeTabs>
 
 The `validateCallback` function uses the functions added earlier to implement the following flow:
 
@@ -527,15 +487,17 @@ export default function GoogleCallback() {
   const validateCallback = async () => {
     const token = await sendCallback()
 
-    const shouldCreateCustomer = (decodeToken(token) as { actor_id: string }).actor_id === ""
+    const decodedToken = decodeToken(token) as { actor_id: string, user_metadata: Record<string, unknown> }
+
+    const shouldCreateCustomer = decodedToken.actor_id === ""
 
     if (shouldCreateCustomer) {
-      await createCustomer()
+      await createCustomer(decodedToken.user_metadata.email as string)
 
       await refreshToken()
     }
 
-    // all subsequent requests are authenticated
+    // use token to send authenticated requests
     const { customer: customerData } =  await sdk.store.customer.retrieve()
 
     setCustomer(customerData)
