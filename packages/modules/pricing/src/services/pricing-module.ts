@@ -1820,7 +1820,7 @@ const hashPrice = (
   const parts: string[] = []
 
   if ("currency_code" in price) {
-    parts.push(`cc:${normalizeCurrencyCode(price.currency_code) ?? ""}`)
+    parts.push(`cc:${normalizeCurrencyCode(price.currency_code ?? "")}`)
   }
   if ("price_set_id" in price) {
     parts.push(`ps:${price.price_set_id ?? ""}`)
@@ -1873,7 +1873,7 @@ const buildPreNormalizationPriceConstraintsFromData = (
 
     const constraint: any = {}
 
-    if (price.currency_code !== undefined) {
+    if (!!price.currency_code) {
       constraint.currency_code = normalizeCurrencyCode(price.currency_code)
     }
     if ("price_set_id" in price && price.price_set_id !== undefined) {
