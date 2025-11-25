@@ -47,21 +47,34 @@ export const updateCartsStep = createStep(
       { select: selects, relations }
     )
 
-	// Since service factory udpate method will correctly keep the reference to the addresses,
-	// but won't update its fields, we do this separately
-	const addressesInput = data.flatMap(cart => [cart.shipping_address, cart.billing_address])
-		.filter(address => !!address)
-	const addressesToUpdate = addressesInput.filter(address => "id" in address)
-	const addressesBeforeUpdate = await cartModule.listAddresses(
-		{ id: addressesToUpdate.map(address => address.id as string)}
-	)
-	if (addressesToUpdate.length) {
-		await cartModule.updateAddresses(addressesToUpdate as unknown as UpdateAddressDTO[])
-	}
+    // Since service factory udpate method will correctly keep the reference to the addresses,
+    // but won't update its fields, we do this separately
+    const addressesInput = data
+      .flatMap((cart) => [cart.shipping_address, cart.billing_address])
+      .filter((address) => !!address)
+    let addressesToUpdateIds: string[] = []
+    const addressesToUpdate = addressesInput.filter(
+      (address): address is UpdateAddressDTO => {
+        if ("id" in address && !!address.id) {
+          addressesToUpdateIds.push(address.id as string)
+          return true
+        }
+        return false
+      }
+    )
+    const addressesBeforeUpdate = await cartModule.listAddresses({
+      id: addressesToUpdate.map((address) => address.id),
+    })
+    if (addressesToUpdate.length) {
+      await cartModule.updateAddresses(addressesToUpdate)
+    }
 
     const updatedCart = await cartModule.updateCarts(data)
 
-    return new StepResponse(updatedCart, {cartsBeforeUpdate, addressesBeforeUpdate})
+    return new StepResponse(updatedCart, {
+      cartsBeforeUpdate,
+      addressesBeforeUpdate,
+    })
   },
   async (dataToCompensate, { container }) => {
     if (!dataToCompensate) {
