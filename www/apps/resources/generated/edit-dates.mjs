@@ -1,7 +1,7 @@
 export const generatedEditDates = {
   "app/commerce-modules/auth/auth-providers/emailpass/page.mdx": "2025-01-13T11:31:35.361Z",
   "app/commerce-modules/auth/auth-providers/page.mdx": "2025-05-20T07:51:40.707Z",
-  "app/commerce-modules/auth/authentication-route/page.mdx": "2025-03-04T09:13:45.919Z",
+  "app/commerce-modules/auth/authentication-route/page.mdx": "2025-11-24T07:39:10.358Z",
   "app/commerce-modules/auth/examples/page.mdx": "2024-10-15T15:02:13.794Z",
   "app/commerce-modules/auth/module-options/page.mdx": "2025-03-11T08:56:10.338Z",
   "app/commerce-modules/auth/page.mdx": "2025-04-17T08:48:17.286Z",
@@ -830,7 +830,7 @@ export const generatedEditDates = {
   "references/types/interfaces/types.BaseClaim/page.mdx": "2025-09-12T14:10:39.219Z",
   "app/commerce-modules/auth/auth-providers/github/page.mdx": "2025-01-13T11:31:35.361Z",
   "app/commerce-modules/auth/auth-providers/google/page.mdx": "2025-01-13T11:31:35.361Z",
-  "app/storefront-development/customers/third-party-login/page.mdx": "2025-09-17T11:42:53.434Z",
+  "app/storefront-development/customers/third-party-login/page.mdx": "2025-11-24T07:27:46.836Z",
   "references/types/HttpTypes/types/types.HttpTypes.AdminWorkflowRunResponse/page.mdx": "2024-12-09T13:21:34.761Z",
   "references/types/HttpTypes/types/types.HttpTypes.BatchResponse/page.mdx": "2025-04-11T09:04:46.523Z",
   "references/types/WorkflowsSdkTypes/types/types.WorkflowsSdkTypes.Acknowledgement/page.mdx": "2024-12-09T13:21:35.873Z",
@@ -6039,7 +6039,7 @@ export const generatedEditDates = {
   "app/troubleshooting/workflow-errors/step-x-defined/page.mdx": "2025-03-21T07:09:02.741Z",
   "app/troubleshooting/workflow-errors/when-then/page.mdx": "2025-03-21T08:35:45.145Z",
   "app/how-to-tutorials/tutorials/abandoned-cart/page.mdx": "2025-06-26T11:45:57.112Z",
-  "app/integrations/guides/algolia/page.mdx": "2025-10-31T16:37:38.241Z",
+  "app/integrations/guides/algolia/page.mdx": "2025-11-20T15:20:38.696Z",
   "app/integrations/guides/magento/page.mdx": "2025-10-09T11:30:09.533Z",
   "app/js-sdk/auth/overview/page.mdx": "2025-03-28T08:05:32.622Z",
   "app/how-to-tutorials/tutorials/loyalty-points/page.mdx": "2025-10-09T11:27:14.961Z",
@@ -6600,7 +6600,7 @@ export const generatedEditDates = {
   "references/core_flows/Locking/Steps_Locking/variables/core_flows.Locking.Steps_Locking.acquireLockStepId/page.mdx": "2025-09-15T09:52:14.218Z",
   "references/core_flows/Locking/Steps_Locking/variables/core_flows.Locking.Steps_Locking.releaseLockStepId/page.mdx": "2025-09-15T09:52:14.219Z",
   "references/core_flows/Locking/core_flows.Locking.Steps_Locking/page.mdx": "2025-09-15T09:52:14.217Z",
-  "app/integrations/guides/meilisearch/page.mdx": "2025-10-31T16:38:53.945Z",
+  "app/integrations/guides/meilisearch/page.mdx": "2025-11-20T15:21:44.830Z",
   "app/nextjs-starter/guides/storefront-returns/page.mdx": "2025-09-22T06:02:00.580Z",
   "references/js_sdk/admin/Admin/properties/js_sdk.admin.Admin.views/page.mdx": "2025-10-31T09:41:41.343Z",
   "app/data-model-repository-reference/methods/create/page.mdx": "2025-10-28T16:02:14.959Z",
@@ -6615,7 +6615,7 @@ export const generatedEditDates = {
   "app/how-to-tutorials/tutorials/agentic-commerce/page.mdx": "2025-10-09T11:25:48.831Z",
   "app/storefront-development/production-optimizations/page.mdx": "2025-10-03T13:28:37.909Z",
   "app/how-to-tutorials/tutorials/category-images/page.mdx": "2025-11-07T08:55:59.228Z",
-  "app/infrastructure-modules/caching/page.mdx": "2025-10-13T11:46:36.452Z",
+  "app/infrastructure-modules/caching/page.mdx": "2025-11-13T14:18:03.173Z",
   "app/troubleshooting/subscribers/not-working/page.mdx": "2025-10-16T09:25:57.376Z",
   "references/js_sdk/admin/RefundReason/methods/js_sdk.admin.RefundReason.create/page.mdx": "2025-10-21T08:10:56.630Z",
   "references/js_sdk/admin/RefundReason/methods/js_sdk.admin.RefundReason.delete/page.mdx": "2025-10-21T08:10:56.634Z",
@@ -6716,5 +6716,6 @@ export const generatedEditDates = {
   "references/types/HttpTypes/interfaces/types.HttpTypes.AdminShippingOptionTypeListParams/page.mdx": "2025-10-31T09:41:31.507Z",
   "references/core_flows/Payment/Workflows_Payment/functions/core_flows.Payment.Workflows_Payment.validateRefundPaymentExceedsCapturedAmountStep/page.mdx": "2025-11-05T12:22:20.221Z",
   "references/core_flows/Product/Workflows_Product/functions/core_flows.Product.Workflows_Product.batchImageVariantsWorkflow/page.mdx": "2025-11-05T12:22:20.639Z",
-  "references/core_flows/Product/Workflows_Product/functions/core_flows.Product.Workflows_Product.batchVariantImagesWorkflow/page.mdx": "2025-11-05T12:22:20.671Z"
+  "references/core_flows/Product/Workflows_Product/functions/core_flows.Product.Workflows_Product.batchVariantImagesWorkflow/page.mdx": "2025-11-05T12:22:20.671Z",
+  "app/storefront-development/guides/react-native-expo/page.mdx": "2025-11-06T07:18:45.347Z"
 }
