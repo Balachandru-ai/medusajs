@@ -22,6 +22,7 @@ import {
   throwIfIsCancelled,
   throwIfOrderChangeIsNotActive,
 } from "../../utils/order-validation"
+import { computeAdjustmentsForPreviewWorkflow } from "./compute-adjustments-for-preview"
 import { fieldsToRefreshOrderEdit } from "./utils/fields"
 
 /**
@@ -105,6 +106,9 @@ export const updateOrderEditItemQuantityWorkflowId =
   "update-order-edit-update-quantity"
 /**
  * This workflow updates an existing order item that was previously added to the order edit.
+ * It is different from the `orderEditUpdateItemQuantityWorkflow` workflow in that this should be used
+ * when the item to update was added as part of the order edit. The other workflow is for items
+ * that were already in the order before the edit.
  *
  * You can use this workflow within your customizations or your own custom workflows, allowing you to update the quantity
  * of an existing item in an order edit in your custom flows.
@@ -184,6 +188,13 @@ export const updateOrderEditItemQuantityWorkflow = createWorkflow(
     )
 
     updateOrderChangeActionsStep([updateData])
+
+    computeAdjustmentsForPreviewWorkflow.runAsStep({
+      input: {
+        order,
+        orderChange,
+      },
+    })
 
     return new WorkflowResponse(previewOrderChangeStep(order.id))
   }
