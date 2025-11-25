@@ -45,6 +45,13 @@ export async function setSecretApiKeyContext(
     }
   )
 
+  if (!apiKey) {
+    throw new MedusaError(
+      MedusaErrorTypes.NOT_FOUND,
+      `API key with id ${req.auth_context.actor_id} not found`
+    )
+  }
+
   req.secret_key_context = {
     created_by: apiKey.created_by,
   }
