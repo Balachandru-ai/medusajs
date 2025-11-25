@@ -35,7 +35,6 @@
     "boxen": "^5.0.1",
     "ci-info": "^3.2.0",
     "configstore": "^5.0.1",
-    "global": "^4.4.0",
     "is-docker": "^2.2.1",
     "remove-trailing-slash": "^0.1.1",
     "uuid": "^9.0.0"

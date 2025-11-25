@@ -30,6 +30,7 @@ export type ChangeActionType =
   | "CREDIT_LINE_ADD"
   | "PROMOTION_ADD"
   | "PROMOTION_REMOVE"
+  | "ITEM_ADJUSTMENTS_REPLACE"
 
 export type OrderChangeStatus =
   | "confirmed"
@@ -1035,6 +1036,11 @@ export interface OrderDTO {
    * The order's display ID.
    */
   display_id: number
+
+  /**
+   * The order's custom display ID.
+   */
+  custom_display_id?: string
 
   /**
    * The active order change, if any.
@@ -2304,6 +2310,11 @@ export interface OrderChangeActionDTO {
    * The internal note of the order change action
    */
   internal_note: string | null
+
+  /**
+   * The ordering of the order change action
+   */
+  ordering: number
 
   /**
    * When the order change action was created
