@@ -3,4 +3,4 @@
 "@medusajs/types": minor
 ---
 
-fix(fulfillment): make relationship between SO and SO type M:1
+fix(fulfillment, types): make relationship between SO and SO type M:1
