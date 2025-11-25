@@ -633,29 +633,17 @@ describe("RemoteJoiner", () => {
           fields: ["*"],
         },
       ],
-      args: [
-        {
-          name: "filters",
-          value: {
-            id: "101",
-          },
-        },
-      ],
+      args: undefined,
     }
 
     const result = await joiner.query(query)
 
     expect(serviceMock.productService).toHaveBeenCalledTimes(1)
     expect(serviceMock.productService).toHaveBeenCalledWith({
-      args: [
-        {
-          name: "filters",
-          value: {},
-        },
-      ],
-      fields: expect.arrayContaining(["name"]),
+      args: undefined,
+      fields: expect.arrayContaining(["id", "name"]),
       expands: undefined,
-      options: { id: ["101"] },
+      options: { id: undefined },
     })
 
     expect(serviceMock.linkService).toHaveBeenCalledTimes(1)
