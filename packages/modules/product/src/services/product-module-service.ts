@@ -1748,7 +1748,7 @@ export default class ProductModuleService
         id: data.map((d) => d.id),
       },
       {
-        relations: ["options", "options.values", "variants", "images", "tags"],
+        relations: ["options", "options.values", "variants", "tags"],
       },
       sharedContext
     )
