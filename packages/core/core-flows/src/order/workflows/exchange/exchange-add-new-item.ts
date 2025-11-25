@@ -4,6 +4,7 @@ import {
   OrderExchangeDTO,
   OrderPreviewDTO,
   OrderWorkflow,
+  PromotionDTO,
 } from "@medusajs/framework/types"
 import { ChangeActionType, OrderChangeStatus } from "@medusajs/framework/utils"
 import {
@@ -21,6 +22,7 @@ import {
 } from "../../utils/order-validation"
 import { addOrderLineItemsWorkflow } from "../add-line-items"
 import { createOrderChangeActionsWorkflow } from "../create-order-change-actions"
+import { computeAdjustmentsForPreviewWorkflow } from "../order-edit/compute-adjustments-for-preview"
 import { updateOrderTaxLinesWorkflow } from "../update-tax-lines"
 import { refreshExchangeShippingWorkflow } from "./refresh-shipping"
 
@@ -123,7 +125,14 @@ export const orderExchangeAddNewItemWorkflow = createWorkflow(
 
     const order: OrderDTO = useRemoteQueryStep({
       entry_point: "orders",
-      fields: ["id", "status", "canceled_at", "items.*"],
+      fields: [
+        "id",
+        "status",
+        "canceled_at",
+        "currency_code",
+        "items.*",
+        "promotions.*",
+      ],
       variables: { id: orderExchange.order_id },
       list: false,
       throw_if_key_not_found: true,
@@ -131,7 +140,7 @@ export const orderExchangeAddNewItemWorkflow = createWorkflow(
 
     const orderChange: OrderChangeDTO = useRemoteQueryStep({
       entry_point: "order_change",
-      fields: ["id", "status"],
+      fields: ["id", "status", "version"],
       variables: {
         filters: {
           order_id: orderExchange.order_id,
@@ -190,6 +199,21 @@ export const orderExchangeAddNewItemWorkflow = createWorkflow(
 
     createOrderChangeActionsWorkflow.runAsStep({
       input: orderChangeActionInput,
+    })
+
+    const orderWithPromotions = transform({ order }, ({ order }) => {
+      return {
+        ...order,
+        promotions: (order as any).promotions ?? [],
+      } as OrderDTO & { promotions: PromotionDTO[] }
+    })
+
+    computeAdjustmentsForPreviewWorkflow.runAsStep({
+      input: {
+        order: orderWithPromotions,
+        orderChange,
+        exchange_id: orderExchange.id,
+      },
     })
 
     const refreshArgs = transform(

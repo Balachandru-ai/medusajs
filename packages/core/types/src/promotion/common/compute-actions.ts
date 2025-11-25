@@ -91,6 +91,11 @@ export interface RemoveItemAdjustmentAction {
   adjustment_id: string
 
   /**
+   * The associated item's ID.
+   */
+  item_id: string
+
+  /**
    * The promotion's description.
    */
   description?: string
@@ -144,6 +149,11 @@ export interface RemoveShippingMethodAdjustment {
    * The associated adjustment's ID.
    */
   adjustment_id: string
+
+  /**
+   * The associated shipping method's ID.
+   */
+  shipping_method_id: string
 
   /**
    * The promotion's code.
@@ -244,7 +254,7 @@ export interface ComputeActionContext extends Record<string, unknown> {
 
   /**
    * The cart's email
-   * 
+   *
    * @since 2.11.0
    */
   email?: string
