@@ -13,6 +13,9 @@ const container = {
       list: (...args) => {
         return serviceMock[serviceName].apply(this, args)
       },
+      getByProductId: (...args) => {
+        return serviceMock[serviceName].apply(this, args)
+      },
     }
   },
 } as MedusaContainer
@@ -609,5 +612,120 @@ describe("RemoteJoiner", () => {
       fields: ["name", "id"],
       options: { id: expect.arrayContaining([103, 102]) },
     })
+  })
+
+  it("should not lose fields when querying with specific nested fields and wildcard on deeply nested relations", async () => {
+    // Test scenario: product.name + links.metadata + links.post.*
+    // This ensures that when we have:
+    // - A specific field from the root entity (product.name)
+    // - A specific field from an intermediate relation (links.metadata)
+    // - A wildcard on a relation accessed through that intermediate (links.post.*)
+    // ...the intermediate field (links.metadata) is not lost
+    const query = {
+      alias: "product",
+      fields: ["id", "name"],
+      expands: [
+        {
+          property: "links",
+          fields: ["metadata"],
+        },
+        {
+          property: "posts",
+          fields: ["*"],
+        },
+      ],
+      args: [
+        {
+          name: "filters",
+          value: {
+            id: "101",
+          },
+        },
+      ],
+    }
+
+    const result = await joiner.query(query)
+
+    // Verify productService was called
+    expect(serviceMock.productService).toHaveBeenCalledTimes(1)
+    expect(serviceMock.productService).toHaveBeenCalledWith({
+      args: [
+        {
+          name: "filters",
+          value: {},
+        },
+      ],
+      fields: expect.arrayContaining(["name"]),
+      expands: undefined,
+      // {
+      //   posts: {
+      //     fields: ["*"],
+      //   },
+      // },
+      options: { id: ["101"] },
+    })
+
+    // Verify linkService was called with product_id filter
+    // Note: metadata is a field on link, not a relation, so it appears in fields array
+    expect(serviceMock.linkService).toHaveBeenCalledTimes(1)
+    expect(serviceMock.linkService).toHaveBeenCalledWith({
+      args: undefined,
+      expands: undefined,
+      fields: expect.arrayContaining(["metadata", "product_id"]),
+      options: { product_id: expect.arrayContaining([101, 102, 103]) },
+    })
+
+    // Verify postService was called for the post wildcard
+    // Note: wildcard "*" is passed as ["*", "id"], not undefined
+    expect(serviceMock.postService).toHaveBeenCalledTimes(1)
+    expect(serviceMock.postService).toHaveBeenCalledWith({
+      args: undefined,
+      expands: undefined,
+      fields: ["*", "id"], // "*" is in the fields array along with the primary key
+      options: { id: [501, 502, 503] }, // All posts are fetched
+    })
+
+    // Verify result structure - all fields should be present
+    // Result comes back in productService format with { rows: [...] }
+    expect(result.rows).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          id: 101,
+          name: "Product 1",
+          links: expect.objectContaining({
+            metadata: expect.objectContaining({
+              source: expect.any(String),
+              category: expect.any(String),
+            }),
+          }),
+          posts: expect.objectContaining({
+            id: 501,
+            title: expect.any(String),
+            content: expect.any(String),
+            author: expect.any(String),
+            published: expect.any(Boolean),
+            views: expect.any(Number),
+          }),
+        }),
+      ])
+    )
+
+    // Critical assertion: metadata must not be lost
+    const firstProduct = result.rows[0]
+    expect(firstProduct.links).toBeDefined()
+    expect(firstProduct.links).toHaveProperty("metadata")
+    expect(firstProduct.links.metadata).toEqual({
+      source: "blog",
+      category: "tech",
+    })
+
+    // posts.* should include all fields
+    expect(firstProduct).toHaveProperty("posts")
+    expect(firstProduct.posts).toHaveProperty("id")
+    expect(firstProduct.posts).toHaveProperty("title")
+    expect(firstProduct.posts).toHaveProperty("content")
+    expect(firstProduct.posts).toHaveProperty("author")
+    expect(firstProduct.posts).toHaveProperty("published")
+    expect(firstProduct.posts).toHaveProperty("views")
   })
 })
