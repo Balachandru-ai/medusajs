@@ -301,6 +301,11 @@ export interface CreateOrderAdjustmentDTO {
    * Whether the adjustment is tax inclusive.
    */
   is_tax_inclusive?: boolean
+
+  /**
+   * The version of the adjustment.
+   */
+  version?: number
 }
 
 /**

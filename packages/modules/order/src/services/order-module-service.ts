@@ -2540,19 +2540,29 @@ export default class OrderModuleService
       sharedContext
     )
 
-    const { itemsToUpsert, shippingMethodsToUpsert, calculatedOrders } =
-      await applyChangesToOrder(
-        [order],
-        { [order.id]: orderChange.actions },
-        { addActionReferenceToObject: true }
-      )
+    // We need to apply the latest ordering actions last
+    const sortedActions = orderChange.actions.sort((a, b) => {
+      return a.ordering - b.ordering
+    })
+
+    const {
+      itemsToUpsert,
+      shippingMethodsToUpsert,
+      calculatedOrders,
+      lineItemAdjustmentsToCreate,
+    } = await applyChangesToOrder(
+      [order],
+      { [order.id]: sortedActions },
+      { addActionReferenceToObject: true }
+    )
 
     const calculated = calculatedOrders[order.id]
 
-    await this.includeTaxLinesAndAdjustementsToPreview(
+    await this.includeTaxLinesAndAdjustmentsToPreview(
       calculated.order,
       itemsToUpsert,
       shippingMethodsToUpsert,
+      lineItemAdjustmentsToCreate, // this will add "virtual" adjustments for the preview version but no actual adjustments will be created in the DB
       sharedContext
     )
 
@@ -2568,10 +2578,11 @@ export default class OrderModuleService
     return calcOrder
   }
 
-  private async includeTaxLinesAndAdjustementsToPreview(
+  private async includeTaxLinesAndAdjustmentsToPreview(
     order,
     itemsToUpsert,
     shippingMethodsToUpsert,
+    lineItemAdjustmentsToCreate,
     sharedContext: Context = {}
   ) {
     const addedItems = {}
@@ -2619,6 +2630,11 @@ export default class OrderModuleService
 
         //@ts-ignore
         const newItem = itemsToUpsert.find((d) => d.item_id === item.id)!
+
+        const adjustments = lineItemAdjustmentsToCreate.filter(
+          (d) => d.item_id === newItem.item_id
+        )
+
         const unitPrice = newItem?.unit_price ?? item.unit_price
         const compareAtUnitPrice =
           newItem?.compare_at_unit_price ?? item.compare_at_unit_price
@@ -2632,6 +2648,7 @@ export default class OrderModuleService
           quantity: newItem.quantity,
           unit_price: unitPrice,
           compare_at_unit_price: compareAtUnitPrice || null,
+          adjustments: adjustments,
           detail: {
             ...newItem,
             ...item,
@@ -3539,11 +3556,12 @@ export default class OrderModuleService
       summariesToUpsert,
       orderToUpdate,
       creditLinesToUpsert,
+      lineItemAdjustmentsToCreate,
     } = await applyChangesToOrder(orders, actionsMap, {
       addActionReferenceToObject: true,
-      includeTaxLinesAndAdjustementsToPreview: async (...args) => {
+      includeTaxLinesAndAdjustmentsToPreview: async (...args) => {
         args.push(sharedContext)
-        return await this.includeTaxLinesAndAdjustementsToPreview.apply(
+        return await this.includeTaxLinesAndAdjustmentsToPreview.apply(
           this,
           args
         )
@@ -3579,6 +3597,14 @@ export default class OrderModuleService
       creditLinesToUpsert.length
         ? this.orderCreditLineService_.upsert(
             creditLinesToUpsert,
+            sharedContext
+          )
+        : null,
+      lineItemAdjustmentsToCreate.length
+        ? this.orderLineItemAdjustmentService_.create(
+            // this is called when a new order version is confirmed so we only create a new set of adjustments for that version
+            // there is no removal or upsert
+            lineItemAdjustmentsToCreate,
             sharedContext
           )
         : null,
