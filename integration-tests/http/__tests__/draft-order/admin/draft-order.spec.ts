@@ -1,7 +1,10 @@
 import { medusaIntegrationTestRunner } from "@medusajs/test-utils"
 import { HttpTypes } from "@medusajs/types"
 import { ModuleRegistrationName, ProductStatus } from "@medusajs/utils"
-import { adminHeaders, createAdminUser, } from "../../../../helpers/create-admin-user"
+import {
+  adminHeaders,
+  createAdminUser,
+} from "../../../../helpers/create-admin-user"
 import { setupTaxStructure } from "../../../../modules/__tests__/fixtures"
 
 jest.setTimeout(300000)
@@ -374,6 +377,8 @@ medusaIntegrationTestRunner({
 
         let reservations = (await api.get(`/admin/reservations`, adminHeaders))
           .data.reservations
+
+        expect(reservations.length).toBe(0)
 
         await api.post(
           `/admin/draft-orders/${testDraftOrder.id}/edit/confirm`,

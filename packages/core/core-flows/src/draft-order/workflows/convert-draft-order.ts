@@ -12,11 +12,18 @@ import {
   WorkflowData,
   WorkflowResponse,
 } from "@medusajs/framework/workflows-sdk"
-import type { ConfirmVariantInventoryWorkflowInputDTO, IOrderModuleService, OrderDTO } from "@medusajs/framework/types"
+import type {
+  ConfirmVariantInventoryWorkflowInputDTO,
+  IOrderModuleService,
+  OrderDTO,
+} from "@medusajs/framework/types"
 import { emitEventStep, useRemoteQueryStep } from "../../common"
 import { validateDraftOrderStep } from "../steps/validate-draft-order"
 import { acquireLockStep, releaseLockStep } from "../../locking"
-import { prepareConfirmInventoryInput, requiredOrderFieldsForInventoryConfirmation } from "../../cart/utils/prepare-confirm-inventory-input"
+import {
+  prepareConfirmInventoryInput,
+  requiredOrderFieldsForInventoryConfirmation,
+} from "../../cart/utils/prepare-confirm-inventory-input"
 import { reserveInventoryStep } from "../../cart"
 
 export const convertDraftOrderWorkflowId = "convert-draft-order"
@@ -134,7 +141,7 @@ export const convertDraftOrderWorkflow = createWorkflow(
       const items: ConfirmVariantInventoryWorkflowInputDTO["items"] = []
       const variants: ConfirmVariantInventoryWorkflowInputDTO["variants"] = []
 
-      for (const orderItem of orderItems) {
+      for (const orderItem of orderItems.items ?? []) {
         items.push({
           variant_id: orderItem.variant.id,
           quantity: orderItem.quantity,
