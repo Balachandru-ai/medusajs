@@ -5,6 +5,9 @@ import {
   authenticate,
   clearFiltersByKey,
   maybeApplyLinkFilter,
+  MedusaNextFunction,
+  MedusaRequest,
+  MedusaResponse,
   MiddlewareRoute,
 } from "@medusajs/framework/http"
 import {
@@ -23,7 +26,11 @@ import {
 import * as QueryConfig from "./query-config"
 import { StoreGetProductsParams } from "./validators"
 
-async function ApplyMaybeLinkFilterIfNecessary(req, res, next) {
+async function applyMaybeLinkFilterIfNecessary(
+  req: MedusaRequest,
+  res: MedusaResponse,
+  next: MedusaNextFunction
+) {
   const canUseIndex = !(
     isPresent(req.filterableFields.tags) ||
     isPresent(req.filterableFields.categories)
@@ -33,9 +40,7 @@ async function ApplyMaybeLinkFilterIfNecessary(req, res, next) {
   }
 
   const query = req.scope.resolve(ContainerRegistrationKeys.QUERY)
-  const {
-    metadata: { count: salesChannelCount },
-  } = await query.graph({
+  const salesChannelsQueryRes = await query.graph({
     entity: "sales_channels",
     fields: ["id"],
     pagination: {
@@ -44,6 +49,7 @@ async function ApplyMaybeLinkFilterIfNecessary(req, res, next) {
     },
   })
 
+  const salesChannelCount = salesChannelsQueryRes.metadata?.count ?? 0
   if (!(salesChannelCount > 1)) {
     delete req.filterableFields.sales_channel_id
     return next()
@@ -69,7 +75,7 @@ export const storeProductRoutesMiddlewares: MiddlewareRoute[] = [
         QueryConfig.listProductQueryConfig
       ),
       filterByValidSalesChannels(),
-      ApplyMaybeLinkFilterIfNecessary,
+      applyMaybeLinkFilterIfNecessary,
       applyDefaultFilters({
         status: ProductStatus.PUBLISHED,
         // TODO: the type here seems off and the implementation does not take into account $and and $or possible filters. Might be worth re working (original type used here was StoreGetProductsParamsType)
