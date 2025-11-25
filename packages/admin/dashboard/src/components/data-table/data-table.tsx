@@ -303,7 +303,8 @@ export const DataTable = <TData,>({
       }
 
       const href = rowHref(row)
-      const hrefWithBasePath = `${__BASE__ || "/"}${href}`
+      const basePath = __BASE__ || "/"
+      const hrefWithBasePath = `${basePath === "/" ? "" : basePath}${href}`
 
       if (event.metaKey || event.ctrlKey || event.button === 1) {
         window.open(hrefWithBasePath, "_blank", "noreferrer")
