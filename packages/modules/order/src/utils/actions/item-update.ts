@@ -27,6 +27,10 @@ OrderChangeProcessing.registerActionType(ChangeActionType.ITEM_UPDATE, {
     existing.quantity = currentQuantity
     existing.detail.quantity = currentQuantity
 
+    if (action.details.adjustments) {
+      existing.adjustments = action.details.adjustments
+    }
+
     if (action.details.unit_price) {
       const currentUnitPrice = MathBN.convert(action.details.unit_price)
       const originalTotal = MathBN.mult(originalUnitPrice, originalQuantity)

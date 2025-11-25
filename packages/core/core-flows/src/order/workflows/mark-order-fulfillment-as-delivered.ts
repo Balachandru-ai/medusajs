@@ -27,6 +27,7 @@ import {
   throwIfItemsDoesNotExistsInOrder,
   throwIfOrderIsCancelled,
 } from "../utils/order-validation"
+import { acquireLockStep, releaseLockStep } from "../../locking"
 
 type OrderItemWithVariantDTO = OrderLineItemDTO & {
   variant?: ProductVariantDTO & {
@@ -258,8 +259,18 @@ export const markOrderFulfillmentAsDeliveredWorkflow = createWorkflow(
       prepareRegisterDeliveryData
     )
 
+    acquireLockStep({
+      key: orderId,
+      timeout: 2,
+      ttl: 10,
+    })
+
     const deliveredFulfillment = markFulfillmentAsDeliveredWorkflow.runAsStep({
       input: { id: fulfillment.id },
+    })
+
+    releaseLockStep({
+      key: orderId,
     })
 
     registerOrderDeliveryStep(deliveryData)
