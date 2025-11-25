@@ -186,7 +186,7 @@ export const TierRule = model.define("tier_rule", {
   {
     on: ["tier_id", "currency_code"],
     unique: true,
-  }
+  },
 ])
 ```
 
@@ -345,7 +345,7 @@ import CustomerModule from "@medusajs/medusa/customer"
 export default defineLink(
   {
     linkable: TierModule.linkable.tier,
-    filterable: ["id"]
+    filterable: ["id"],
   },
   {
     linkable: CustomerModule.linkable.customer,
@@ -537,7 +537,7 @@ export const createTierRulesStep = createStep(
     const tierModuleService = container.resolve(TIER_MODULE)
 
     const createdRules = await tierModuleService.createTierRules(
-      input.tier_rules.map(rule => ({
+      input.tier_rules.map((rule) => ({
         tier_id: input.tier_id,
         min_purchase_value: rule.min_purchase_value,
         currency_code: rule.currency_code,
@@ -552,7 +552,7 @@ export const createTierRulesStep = createStep(
     }
 
     const tierModuleService = container.resolve(TIER_MODULE)
-    await tierModuleService.deleteTierRules(createdRules.map(rule => rule.id))
+    await tierModuleService.deleteTierRules(createdRules.map((rule) => rule.id))
   }
 )
 ```
@@ -602,7 +602,7 @@ export const createTierWorkflow = createWorkflow(
           },
           options: {
             throwIfKeyNotFound: true,
-          }
+          },
         })
       })
     // Create the tier
@@ -1613,7 +1613,7 @@ export const deleteTierRulesStep = createStep(
     const tierModuleService: TierModuleService = container.resolve(TIER_MODULE)
     // Restore deleted rules
     await tierModuleService.createTierRules(
-      compensationData.map(rule => ({
+      compensationData.map((rule) => ({
         tier_id: rule.tier_id,
         min_purchase_value: rule.min_purchase_value,
         currency_code: rule.currency_code,
@@ -1668,7 +1668,7 @@ export const updateTierWorkflow = createWorkflow(
       },
       options: {
         throwIfKeyNotFound: true,
-      }
+      },
     })
     // Validate promotion if provided
     when({ input }, (data) => !!data.input.promo_id)
@@ -1681,7 +1681,7 @@ export const updateTierWorkflow = createWorkflow(
           },
           options: {
             throwIfKeyNotFound: true,
-          }
+          },
         }).config({ name: "retrieve-promotion" })
       })
     // Update the tier
@@ -1697,10 +1697,10 @@ export const updateTierWorkflow = createWorkflow(
       const ids = transform({
         tiers,
       }, (data) => {
-        return (data.tiers[0].tier_rules?.map(rule => rule?.id) || []) as string[]
+        return (data.tiers[0].tier_rules?.map((rule) => rule?.id) || []) as string[]
       })
       deleteTierRulesStep({
-        ids
+        ids,
       })
       return createTierRulesStep({
         tier_id: input.id,
@@ -1817,8 +1817,8 @@ export default defineMiddlewares({
       matcher: "/admin/tiers/:id",
       methods: ["POST"],
       middlewares: [validateAndTransformBody(UpdateTierSchema)],
-    }
-  ]
+    },
+  ],
 })
 ```
 
@@ -1900,7 +1900,7 @@ export default defineMiddlewares({
         }),
       ],
     },
-  ]
+  ],
 })
 ```
 
@@ -1931,8 +1931,8 @@ export default config({
     // ...
     {
       resolve: "@medusajs/index",
-    }
-  ]
+    },
+  ],
 })
 ```
 
@@ -2042,7 +2042,7 @@ const { data: storeData } = useQuery({
 
 const updateTierMutation = useMutation({
   mutationFn: async (data: EditTierFormData) => {
-    if (!tier) return
+    if (!tier) {return}
     return await sdk.client.fetch(`/admin/tiers/${tier.id}`, {
       method: "POST",
       body: data,
@@ -2600,7 +2600,7 @@ In `src/admin/routes/tiers/page.tsx`, find the `onRowClick` handler and replace 
 ```tsx title="src/admin/routes/tiers/page.tsx"
 onRowClick: (_event, row) => {
   navigate(`/tiers/${row.id}`)
-},
+}
 ```
 
 You navigate to the tier details page when the user clicks on a tier in the tiers list.
@@ -2658,12 +2658,12 @@ class TierModuleService extends MedusaService({
 }) {
   async calculateQualifyingTier(
     currencyCode: string,
-    purchaseValue: number,
+    purchaseValue: number
   ) {
     const rules = await this.listTierRules(
       {
         currency_code: currencyCode,
-      },
+      }
     )
 
     if (!rules || rules.length === 0) {
@@ -2876,7 +2876,7 @@ export const updateCustomerTierOnOrderWorkflow = createWorkflow(
       },
       options: {
         throwIfKeyNotFound: true,
-      }
+      },
     })
 
     const validatedCustomer = validateCustomerStep({
@@ -2894,8 +2894,8 @@ export const updateCustomerTierOnOrderWorkflow = createWorkflow(
           $nin: [
             OrderStatus.CANCELED,
             OrderStatus.DRAFT,
-          ]
-        }
+          ],
+        },
       },
     }).config({ name: "completed-orders" })
 
@@ -3356,8 +3356,8 @@ updateCartPromotionsWorkflow.hooks.validate(async ({ input, cart }, { container 
     entity: "tier",
     fields: ["id", "promo_id"],
     filters: {
-      promo_id: promotions.map((p) => p.id)
-    }
+      promo_id: promotions.map((p) => p.id),
+    },
   })
 
   // Validate each promotion being added
@@ -3432,8 +3432,8 @@ completeCartWorkflow.hooks.validate(async ({ cart }, { container }) => {
     entity: "tier",
     fields: ["id", "promo_id"],
     filters: {
-      promo_id: detailedCart.promotions.map((p) => p?.id).filter(Boolean) as string[]
-    }
+      promo_id: detailedCart.promotions.map((p) => p?.id).filter(Boolean) as string[],
+    },
   })
 
   // Validate that if a tier promotion is applied, the customer belongs to that tier
@@ -3479,7 +3479,7 @@ class TierModuleService extends MedusaService({
   // ...
   async calculateNextTierUpgrade(
     currencyCode: string,
-    currentPurchaseValue: number,
+    currentPurchaseValue: number
   ) {
     const rules = await this.listTierRules(
       {
@@ -3584,7 +3584,7 @@ export async function GET(
 
   // Get currency code from cart or region context
   // Try to get from cart first, then region
-  let regionId = req.validatedQuery.region_id
+  const regionId = req.validatedQuery.region_id
 
   // Calculate total purchase value
   const { data: orders } = await query.graph({
@@ -3597,7 +3597,7 @@ export async function GET(
         $nin: [
           OrderStatus.CANCELED,
           OrderStatus.DRAFT,
-        ]
+        ],
       },
     },
   })
@@ -3629,7 +3629,7 @@ export async function GET(
   const currentTier = customer.tier || null
 
   // Determine next tier upgrade
-  let nextTierUpgrade = await tierModuleService.calculateNextTierUpgrade(
+  const nextTierUpgrade = await tierModuleService.calculateNextTierUpgrade(
     currencyCode as string,
     totalPurchaseValue
   )
@@ -3736,9 +3736,9 @@ export const retrieveCustomerNextTier =
     const authHeaders = await getAuthHeaders()
     const region = await getRegion(countryCode)
 
-    if (!region) return null
+    if (!region) {return null}
 
-    if (!authHeaders) return null
+    if (!authHeaders) {return null}
 
     const headers = {
       ...authHeaders,
@@ -3755,7 +3755,7 @@ export const retrieveCustomerNextTier =
         next,
         query: {
           region_id: region.id,
-        }
+        },
       })
       .then((data) => data)
       .catch(() => null)
