@@ -1038,6 +1038,11 @@ export interface OrderDTO {
   display_id: number
 
   /**
+   * The order's custom display ID.
+   */
+  custom_display_id?: string
+
+  /**
    * The active order change, if any.
    *
    * @expandable

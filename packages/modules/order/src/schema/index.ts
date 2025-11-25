@@ -249,6 +249,8 @@ type Order {
   status: OrderStatus!
   region_id: String
   customer_id: String
+  display_id: String
+  custom_display_id: String
   sales_channel_id: String
   email: String
   currency_code: String!

@@ -1,7 +1,7 @@
 export const generatedEditDates = {
   "app/page.mdx": "2025-10-13T10:56:37.352Z",
   "app/organization/page.mdx": "2025-06-12T14:43:20.772Z",
-  "app/projects/page.mdx": "2025-10-17T13:38:32.827Z",
+  "app/projects/page.mdx": "2025-11-20T09:48:32.899Z",
   "app/environments/page.mdx": "2025-10-15T15:25:09.940Z",
   "app/deployments/page.mdx": "2025-10-17T14:40:07.793Z",
   "app/organizations/page.mdx": "2025-10-02T11:31:07.315Z",
@@ -17,7 +17,7 @@ export const generatedEditDates = {
   "app/environments/long-lived/page.mdx": "2025-10-15T15:27:08.743Z",
   "app/environments/preview/page.mdx": "2025-11-03T12:50:29.841Z",
   "app/faq/page.mdx": "2025-10-08T14:43:21.930Z",
-  "app/billing/page.mdx": "2025-11-03T13:16:46.330Z",
+  "app/billing/page.mdx": "2025-11-20T09:46:30.191Z",
   "app/usage/page.mdx": "2025-11-03T12:45:13.760Z",
   "app/billing/manage/page.mdx": "2025-10-08T14:40:23.629Z",
   "app/pricing/page.mdx": "2025-09-05T10:31:59.059Z",
