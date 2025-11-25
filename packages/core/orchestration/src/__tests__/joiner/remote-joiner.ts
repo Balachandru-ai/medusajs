@@ -615,7 +615,6 @@ describe("RemoteJoiner", () => {
   })
 
   it("should not lose fields when querying with specific nested fields and wildcard on deeply nested relations", async () => {
-    // Test scenario: product.name + links.metadata + links.post.*
     // This ensures that when we have:
     // - A specific field from the root entity (product.name)
     // - A specific field from an intermediate relation (links.metadata)
@@ -646,7 +645,6 @@ describe("RemoteJoiner", () => {
 
     const result = await joiner.query(query)
 
-    // Verify productService was called
     expect(serviceMock.productService).toHaveBeenCalledTimes(1)
     expect(serviceMock.productService).toHaveBeenCalledWith({
       args: [
@@ -657,16 +655,9 @@ describe("RemoteJoiner", () => {
       ],
       fields: expect.arrayContaining(["name"]),
       expands: undefined,
-      // {
-      //   posts: {
-      //     fields: ["*"],
-      //   },
-      // },
       options: { id: ["101"] },
     })
 
-    // Verify linkService was called with product_id filter
-    // Note: metadata is a field on link, not a relation, so it appears in fields array
     expect(serviceMock.linkService).toHaveBeenCalledTimes(1)
     expect(serviceMock.linkService).toHaveBeenCalledWith({
       args: undefined,
@@ -675,18 +666,14 @@ describe("RemoteJoiner", () => {
       options: { product_id: expect.arrayContaining([101, 102, 103]) },
     })
 
-    // Verify postService was called for the post wildcard
-    // Note: wildcard "*" is passed as ["*", "id"], not undefined
     expect(serviceMock.postService).toHaveBeenCalledTimes(1)
     expect(serviceMock.postService).toHaveBeenCalledWith({
       args: undefined,
       expands: undefined,
-      fields: ["*", "id"], // "*" is in the fields array along with the primary key
+      fields: ["*", "id"],
       options: { id: [501, 502, 503] }, // All posts are fetched
     })
 
-    // Verify result structure - all fields should be present
-    // Result comes back in productService format with { rows: [...] }
     expect(result.rows).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
