@@ -6,6 +6,7 @@ import { useTranslation } from "react-i18next"
 import { ActionMenu } from "../../../../../components/common/action-menu"
 import { useDeletePriceListAction } from "../../../common/hooks/use-delete-price-list-action"
 import { getPriceListStatus } from "../../../common/utils"
+import { usePriceListPrices } from "../../../../../hooks/api"
 
 type PriceListGeneralSectionProps = {
   priceList: HttpTypes.AdminPriceList
@@ -15,8 +16,11 @@ export const PriceListGeneralSection = ({
   priceList,
 }: PriceListGeneralSectionProps) => {
   const { t } = useTranslation()
+  const { count, isLoading, error } = usePriceListPrices(priceList.id, {
+    limit: 1,
+  })
 
-  const overrideCount = priceList.prices?.length || 0
+  const overrideCount = count
 
   const { color, text } = getPriceListStatus(t, priceList)
 
@@ -77,9 +81,11 @@ export const PriceListGeneralSection = ({
         <Text leading="compact" size="small" weight="plus">
           {t("priceLists.fields.priceOverrides.label")}
         </Text>
-        <Text size="small" className="text-pretty">
-          {overrideCount || "-"}
-        </Text>
+        {!isLoading && !error && (
+          <Text size="small" className="text-pretty">
+            {overrideCount || "-"}
+          </Text>
+        )}
       </div>
     </Container>
   )
