@@ -234,12 +234,12 @@ export default async function inviteCreatedHandler({
 export const config: SubscriberConfig = {
   event: [
     "invite.created",
-    "invite.resend",
+    "invite.resent",
   ],
 }
 ```
 
-This subscriber listens for the `invite.created` and `invite.resend` events. When triggered, it:
+This subscriber listens for the `invite.created` and `invite.resent` events. When triggered, it:
 
 1. Retrieves the store name and invite details.
 2. Constructs the invite URL. Invites to the admin dashboard are at the `/admin/invite` path and include the invite token as a `token` query parameter.
