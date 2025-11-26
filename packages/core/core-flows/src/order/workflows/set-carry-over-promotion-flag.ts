@@ -84,8 +84,8 @@ export const validateCarryOverPromotionFlagStep = createStep(
         const type = applicationMethod.type
 
         if (
-          allocation === ApplicationMethodAllocation.ACROSS ||
-          allocation === ApplicationMethodAllocation.EACH
+          allocation !== ApplicationMethodAllocation.ACROSS ||
+          allocation !== ApplicationMethodAllocation.EACH
         ) {
           throw new MedusaError(
             MedusaError.Types.INVALID_DATA,
