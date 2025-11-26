@@ -764,6 +764,10 @@ export const filesMap = [
     "pathname": "/how-to-tutorials/tutorials/category-images"
   },
   {
+    "filePath": "/www/apps/resources/app/how-to-tutorials/tutorials/customer-tiers/page.mdx",
+    "pathname": "/how-to-tutorials/tutorials/customer-tiers"
+  },
+  {
     "filePath": "/www/apps/resources/app/how-to-tutorials/tutorials/first-purchase-discounts/page.mdx",
     "pathname": "/how-to-tutorials/tutorials/first-purchase-discounts"
   },
