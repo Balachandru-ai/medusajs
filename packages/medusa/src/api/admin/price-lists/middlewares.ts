@@ -44,7 +44,7 @@ export const adminPriceListsRoutesMiddlewares: MiddlewareRoute[] = [
     middlewares: [
       validateAndTransformBody(AdminCreatePriceList),
       validateAndTransformQuery(
-        AdminGetPriceListPricesParams,
+        AdminGetPriceListsParams,
         QueryConfig.retrivePriceListQueryConfig
       ),
     ],
@@ -55,7 +55,7 @@ export const adminPriceListsRoutesMiddlewares: MiddlewareRoute[] = [
     middlewares: [
       validateAndTransformBody(AdminUpdatePriceList),
       validateAndTransformQuery(
-        AdminGetPriceListPricesParams,
+        AdminGetPriceListParams,
         QueryConfig.retrivePriceListQueryConfig
       ),
     ],
