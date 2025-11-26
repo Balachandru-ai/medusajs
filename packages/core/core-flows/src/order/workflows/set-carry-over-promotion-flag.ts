@@ -83,6 +83,18 @@ export const validateCarryOverPromotionFlagStep = createStep(
         const allocation = applicationMethod.allocation
         const type = applicationMethod.type
 
+        if (
+          allocation === ApplicationMethodAllocation.ACROSS ||
+          allocation === ApplicationMethodAllocation.EACH
+        ) {
+          throw new MedusaError(
+            MedusaError.Types.INVALID_DATA,
+            `Promotion ${
+              promotion.code || promotion.id
+            } has invalid allocation. Only promotions with EACH or ACROSS allocation can be carried over to outbound exchange items.`
+          )
+        }
+
         // For fixed promotions, allocation must be EACH
         if (
           type === "fixed" &&
