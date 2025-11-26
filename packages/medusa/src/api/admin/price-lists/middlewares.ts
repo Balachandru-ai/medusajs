@@ -10,6 +10,7 @@ import {
   AdminCreatePriceList,
   AdminCreatePriceListPrice,
   AdminGetPriceListParams,
+  AdminGetPriceListPriceParams,
   AdminGetPriceListPricesParams,
   AdminGetPriceListsParams,
   AdminRemoveProductsPriceList,
@@ -72,6 +73,16 @@ export const adminPriceListsRoutesMiddlewares: MiddlewareRoute[] = [
     ],
   },
   {
+    method: ["GET"],
+    matcher: "/admin/price-lists/:id/prices",
+    middlewares: [
+      validateAndTransformQuery(
+        AdminGetPriceListPricesParams,
+        QueryConfig.listPriceListPriceQueryConfig
+      ),
+    ],
+  },
+  {
     method: ["POST"],
     matcher: "/admin/price-lists/:id/prices/batch",
     bodyParser: {
@@ -82,7 +93,7 @@ export const adminPriceListsRoutesMiddlewares: MiddlewareRoute[] = [
         createBatchBody(AdminCreatePriceListPrice, AdminUpdatePriceListPrice)
       ),
       validateAndTransformQuery(
-        AdminGetPriceListPricesParams,
+        AdminGetPriceListPriceParams,
         QueryConfig.listPriceListPriceQueryConfig
       ),
     ],
