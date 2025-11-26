@@ -1016,6 +1016,11 @@ export interface UpdateOrderChangeDTO {
    * Holds custom data in key-value pairs.
    */
   metadata?: Record<string, unknown> | null
+
+  /**
+   * Whether to carry over promotions to outbound exchange items.
+   */
+  carry_over_promotions?: boolean | null
 }
 
 /**

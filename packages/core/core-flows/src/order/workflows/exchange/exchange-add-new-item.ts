@@ -13,6 +13,7 @@ import {
   createStep,
   createWorkflow,
   transform,
+  when,
 } from "@medusajs/framework/workflows-sdk"
 import { useRemoteQueryStep } from "../../../common"
 import { previewOrderChangeStep } from "../../steps/preview-order-change"
@@ -140,7 +141,7 @@ export const orderExchangeAddNewItemWorkflow = createWorkflow(
 
     const orderChange: OrderChangeDTO = useRemoteQueryStep({
       entry_point: "order_change",
-      fields: ["id", "status", "version"],
+      fields: ["id", "status", "version", "carry_over_promotions"],
       variables: {
         filters: {
           order_id: orderExchange.order_id,
@@ -208,12 +209,17 @@ export const orderExchangeAddNewItemWorkflow = createWorkflow(
       } as OrderDTO & { promotions: PromotionDTO[] }
     })
 
-    computeAdjustmentsForPreviewWorkflow.runAsStep({
-      input: {
-        order: orderWithPromotions,
-        orderChange,
-        exchange_id: orderExchange.id,
-      },
+    when(
+      { orderChange },
+      ({ orderChange }) => !!orderChange.carry_over_promotions
+    ).then(() => {
+      computeAdjustmentsForPreviewWorkflow.runAsStep({
+        input: {
+          order: orderWithPromotions,
+          orderChange,
+          exchange_id: orderExchange.id,
+        },
+      })
     })
 
     const refreshArgs = transform(

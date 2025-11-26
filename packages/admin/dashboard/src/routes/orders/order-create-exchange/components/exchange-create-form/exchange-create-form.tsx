@@ -31,6 +31,7 @@ import {
   useUpdateExchangeInboundShipping,
   useUpdateExchangeOutboundShipping,
 } from "../../../../../hooks/api/exchanges"
+import { useUpdateOrderChange } from "../../../../../hooks/api/orders"
 import { currencies } from "../../../../../lib/data/currencies"
 import { ExchangeInboundSection } from "./exchange-inbound-section.tsx"
 import { ExchangeOutboundSection } from "./exchange-outbound-section"
@@ -92,6 +93,15 @@ export const ExchangeCreateForm = ({
     isPending: isUpdatingInboundShipping,
   } = useUpdateExchangeOutboundShipping(exchange.id, order.id)
 
+  const { mutateAsync: updateOrderChange } = useUpdateOrderChange(
+    preview?.order_change?.id!,
+    {
+      onError: (error) => {
+        toast.error(error.message)
+      },
+    }
+  )
+
   const isRequestLoading =
     isConfirming ||
     isCanceling ||
@@ -116,6 +126,14 @@ export const ExchangeCreateForm = ({
   const outboundPreviewItems = previewItems.filter(
     (item) => !!item.actions?.find((a) => a.action === "ITEM_ADD")
   )
+
+  const hasPromotions = useMemo(() => {
+    return (
+      (order as any).promotions &&
+      Array.isArray((order as any).promotions) &&
+      (order as any).promotions.length > 0
+    )
+  }, [order])
 
   /**
    * FORM
@@ -161,6 +179,8 @@ export const ExchangeCreateForm = ({
           : "",
         location_id: orderReturn?.location_id,
         send_notification: false,
+        carry_over_promotion:
+          preview?.order_change?.carry_over_promotions ?? false,
       })
     },
     resolver: zodResolver(ExchangeCreateSchema),
@@ -498,6 +518,50 @@ export const ExchangeCreateForm = ({
                 </span>
               </div>
             </div>
+
+            {/* CARRY OVER PROMOTION */}
+            {hasPromotions && (
+              <div className="bg-ui-bg-field mt-4 rounded-lg border py-2 pl-2 pr-4">
+                <Form.Field
+                  control={form.control}
+                  name="carry_over_promotion"
+                  render={({ field: { onChange, value, ...field } }) => {
+                    return (
+                      <Form.Item>
+                        <div className="flex items-center">
+                          <Form.Control className="mr-4 self-start">
+                            <Switch
+                              dir="ltr"
+                              className="mt-[2px] rtl:rotate-180"
+                              checked={!!value}
+                              onCheckedChange={async (checked) => {
+                                onChange(checked)
+                                if (preview?.order_change?.id) {
+                                  await updateOrderChange({
+                                    carry_over_promotions: checked,
+                                  })
+                                }
+                              }}
+                              {...field}
+                            />
+                          </Form.Control>
+                          <div className="block">
+                            <Form.Label>
+                              {t("orders.exchanges.carryOverPromotion")}
+                            </Form.Label>
+                            <Form.Hint className="!mt-1">
+                              {t("orders.exchanges.carryOverPromotionHint")}
+                            </Form.Hint>
+                          </div>
+                        </div>
+                        <Form.ErrorMessage />
+                      </Form.Item>
+                    )
+                  }}
+                />
+              </div>
+            )}
+
             {/* SEND NOTIFICATION*/}
             <div className="bg-ui-bg-field mt-8 rounded-lg border py-2 pl-2 pr-4">
               <Form.Field

@@ -81,6 +81,7 @@ export const defaultAdminRetrieveOrderChangesFields = [
   "canceled_at",
   "created_at",
   "updated_at",
+  "carry_over_promotions",
 ]
 
 export const defaultAdminOrderItemsFields = [

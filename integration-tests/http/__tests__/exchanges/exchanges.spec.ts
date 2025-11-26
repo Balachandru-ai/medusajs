@@ -1214,6 +1214,303 @@ medusaIntegrationTestRunner({
           expect(orderResult2.total).toEqual(11.016)
           expect(orderResult2.original_total).toEqual(12.24)
         })
+
+        it("should enable carry_over_promotions flag and apply promotions to outbound items", async () => {
+          // fulfill item so it can be returned
+          await api.post(
+            `/admin/orders/${orderWithPromotion.id}/fulfillments`,
+            {
+              items: [
+                {
+                  id: orderWithPromotion.items[0].id,
+                  quantity: 1,
+                },
+              ],
+            },
+            adminHeaders
+          )
+
+          let result = await api.post(
+            "/admin/exchanges",
+            {
+              order_id: orderWithPromotion.id,
+              description: "Test",
+            },
+            adminHeaders
+          )
+
+          const exchangeId = result.data.exchange.id
+
+          // Query order change for the exchange
+          const orderChange = (
+            await api.get(
+              `/admin/orders/${orderWithPromotion.id}/preview`,
+              adminHeaders
+            )
+          ).data.order.order_change
+
+          const orderChangeId = orderChange.id
+
+          // Add outbound item
+          await api.post(
+            `/admin/exchanges/${exchangeId}/outbound/items`,
+            {
+              items: [
+                {
+                  variant_id: productForAdjustmentTest.variants[0].id,
+                  quantity: 1,
+                },
+              ],
+            },
+            adminHeaders
+          )
+
+          // Initially, promotions should be applied by default when adding outbound items
+          let orderPreview = (
+            await api.get(
+              `/admin/orders/${orderWithPromotion.id}/preview`,
+              adminHeaders
+            )
+          ).data.order
+
+          const outboundItem = orderPreview.items.find((item) =>
+            item.actions?.find((action) => action.action === "ITEM_ADD")
+          )
+          expect(outboundItem.adjustments.length).toBeGreaterThan(0)
+
+          // Disable carry_over_promotions
+          await api.post(
+            `/admin/order-changes/${orderChangeId}`,
+            {
+              carry_over_promotions: false,
+            },
+            adminHeaders
+          )
+
+          // Verify adjustments are removed
+          orderPreview = (
+            await api.get(
+              `/admin/orders/${orderWithPromotion.id}/preview`,
+              adminHeaders
+            )
+          ).data.order
+
+          const updatedOutboundItem = orderPreview.items.find((item) =>
+            item.actions?.find((action) => action.action === "ITEM_ADD")
+          )
+          expect(updatedOutboundItem.adjustments.length).toBe(0)
+
+          // Enable carry_over_promotions
+          await api.post(
+            `/admin/order-changes/${orderChangeId}`,
+            {
+              carry_over_promotions: true,
+            },
+            adminHeaders
+          )
+
+          // Verify adjustments are applied again
+          orderPreview = (
+            await api.get(
+              `/admin/orders/${orderWithPromotion.id}/preview`,
+              adminHeaders
+            )
+          ).data.order
+
+          const reEnabledOutboundItem = orderPreview.items.find((item) =>
+            item.actions?.find((action) => action.action === "ITEM_ADD")
+          )
+          expect(reEnabledOutboundItem.adjustments.length).toBeGreaterThan(0)
+        })
+
+        it("should validate that order change is active", async () => {
+          await api.post(
+            `/admin/orders/${orderWithPromotion.id}/fulfillments`,
+            {
+              items: [
+                {
+                  id: orderWithPromotion.items[0].id,
+                  quantity: 1,
+                },
+              ],
+            },
+            adminHeaders
+          )
+
+          let result = await api.post(
+            "/admin/exchanges",
+            {
+              order_id: orderWithPromotion.id,
+              description: "Test",
+            },
+            adminHeaders
+          )
+
+          const exchangeId = result.data.exchange.id
+
+          // Query order change for the exchange
+          const orderChange = (
+            await api.get(
+              `/admin/orders/${orderWithPromotion.id}/preview`,
+              adminHeaders
+            )
+          ).data.order.order_change
+
+          const orderChangeId = orderChange.id
+
+          await api.post(
+            `/admin/exchanges/${exchangeId}/request`,
+            {},
+            adminHeaders
+          )
+
+          const { response } = await api
+            .post(
+              `/admin/order-changes/${orderChangeId}`,
+              {
+                carry_over_promotions: true,
+              },
+              adminHeaders
+            )
+            .catch((e) => e)
+
+          expect(response.status).toBe(400)
+          expect(response.data.message).toContain("not active")
+        })
+
+        it("should validate that order change is an exchange", async () => {
+          await api.post(
+            `/admin/orders/${order.id}/fulfillments`,
+            {
+              items: [
+                {
+                  id: order.items[0].id,
+                  quantity: 2,
+                },
+              ],
+            },
+            adminHeaders
+          )
+
+          const returnOrderChange = (
+            await api.get(`/admin/orders/${order.id}/preview`, adminHeaders)
+          ).data.order.order_change
+
+          const { response } = await api
+            .post(
+              `/admin/order-changes/${returnOrderChange.id}`,
+              {
+                carry_over_promotions: true,
+              },
+              adminHeaders
+            )
+            .catch((e) => e)
+
+          expect(response.status).toBe(400)
+          expect(response.data.message).toContain("not an exchange")
+        })
+
+        it("should validate promotion allocation for fixed promotions", async () => {
+          const invalidPromotion = await promotionModule.createPromotions({
+            code: "INVALID_FIXED_PROMOTION",
+            type: PromotionType.STANDARD,
+            status: PromotionStatus.ACTIVE,
+            application_method: {
+              type: "fixed",
+              target_type: "order",
+              allocation: "across", // Invalid: fixed should be EACH
+              value: 5,
+              currency_code: "usd",
+              target_rules: [],
+            },
+          })
+
+          const orderWithInvalidPromotion = await orderModule.createOrders({
+            email: "foo@bar2.com",
+            region_id: (
+              await api.get("/admin/regions", adminHeaders)
+            ).data.regions[0].id,
+            sales_channel_id: (
+              await api.get("/admin/sales-channels", adminHeaders)
+            ).data.sales_channels[0].id,
+            items: [
+              {
+                // @ts-ignore
+                id: "item-invalid-promo",
+                title: "Custom Item",
+                quantity: 1,
+                unit_price: 10,
+              },
+            ],
+            shipping_address: {
+              first_name: "Test",
+              last_name: "Test",
+              address_1: "Test",
+              city: "Test",
+              country_code: "US",
+              postal_code: "12345",
+              phone: "12345",
+            },
+            billing_address: {
+              first_name: "Test",
+              last_name: "Test",
+              address_1: "Test",
+              city: "Test",
+              country_code: "US",
+              postal_code: "12345",
+            },
+            currency_code: "usd",
+          })
+
+          await remoteLink.create({
+            [Modules.ORDER]: { order_id: orderWithInvalidPromotion.id },
+            [Modules.PROMOTION]: { promotion_id: invalidPromotion.id },
+          })
+
+          await api.post(
+            `/admin/orders/${orderWithInvalidPromotion.id}/fulfillments`,
+            {
+              items: [
+                {
+                  id: orderWithInvalidPromotion.items[0].id,
+                  quantity: 1,
+                },
+              ],
+            },
+            adminHeaders
+          )
+
+          await api.post(
+            `/admin/exchanges`,
+            {
+              order_id: orderWithInvalidPromotion.id,
+              description: "Test",
+            },
+            adminHeaders
+          )
+
+          const orderChange = (
+            await api.get(
+              `/admin/orders/${orderWithInvalidPromotion.id}/preview`,
+              adminHeaders
+            )
+          ).data.order.order_change
+
+          const orderChangeId = orderChange.id
+
+          const { response } = await api
+            .post(
+              `/admin/order-changes/${orderChangeId}`,
+              {
+                carry_over_promotions: true,
+              },
+              adminHeaders
+            )
+            .catch((e) => e)
+
+          expect(response.status).toBe(400)
+          expect(response.data.message).toContain("invalid allocation")
+        })
       })
     })
   },
