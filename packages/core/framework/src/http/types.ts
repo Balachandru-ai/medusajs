@@ -218,7 +218,7 @@ export interface AuthenticatedMedusaRequest<
 
 export interface MedusaStoreRequest<
   Body = unknown,
-  QueryFields = Record<string, unknown>
+  QueryFields extends Record<string, unknown> = Record<string, unknown>
 > extends MedusaRequest<Body, QueryFields> {
   auth_context?: AuthContext
   publishable_key_context: PublishableKeyContext
