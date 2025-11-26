@@ -326,7 +326,14 @@ export const ExchangeCreateForm = ({
                       const action = item.actions?.find(
                         (act) => act.action === "RETURN_ITEM"
                       )
-                      acc = acc + (action?.amount || 0)
+                      /**
+                       * TODO: update this when the change actions return amounts are revamped
+                       * it is might not cover all the cases but is more accurate then just using `unit_price` which does't consider adjustments
+                       */
+                      acc =
+                        acc +
+                        ((action?.details.quantity || 0) / item.quantity) *
+                          item.total
 
                       return acc
                     }, 0) * -1,
@@ -343,10 +350,7 @@ export const ExchangeCreateForm = ({
                 <span className="txt-small text-ui-fg-subtle">
                   {getStylizedAmount(
                     outboundPreviewItems.reduce((acc, item) => {
-                      const action = item.actions?.find(
-                        (act) => act.action === "ITEM_ADD"
-                      )
-                      acc = acc + (action?.amount || 0)
+                      acc = acc + (item.total || 0) // outbound items entire quantity is used for calculating outbound total
 
                       return acc
                     }, 0),
