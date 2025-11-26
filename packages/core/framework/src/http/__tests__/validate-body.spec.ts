@@ -21,7 +21,7 @@ describe("validateAndTransformBody", () => {
       body: {
         additional_data: {},
       },
-    } as MedusaRequest
+    } as unknown as MedusaRequest
 
     const mockResponse = {} as MedusaResponse
     const nextFunction = jest.fn()
@@ -57,7 +57,7 @@ describe("validateAndTransformBody", () => {
     let mockRequest = {
       query: {},
       body: {},
-    } as MedusaRequest
+    } as unknown as MedusaRequest
 
     const mockResponse = {} as MedusaResponse
     const nextFunction = jest.fn()
@@ -90,7 +90,7 @@ describe("validateAndTransformBody", () => {
       body: {
         additional_data: {},
       },
-    } as MedusaRequest
+    } as unknown as MedusaRequest
 
     const mockResponse = {} as MedusaResponse
     const nextFunction = jest.fn()
