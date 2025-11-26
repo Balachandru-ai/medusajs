@@ -9823,9 +9823,9 @@ paths:
         - name: product-collection.created
           payload: |-
             ```ts
-            [{
+            {
               id, // The ID of the product collection
-            }]
+            }
             ```
           description: Emitted when product collections are created.
           deprecated: false
@@ -10007,9 +10007,9 @@ paths:
         - name: product-collection.updated
           payload: |-
             ```ts
-            [{
+            {
               id, // The ID of the product collection
-            }]
+            }
             ```
           description: Emitted when product collections are updated.
           deprecated: false
@@ -10078,9 +10078,9 @@ paths:
         - name: product-collection.deleted
           payload: |-
             ```ts
-            [{
+            {
               id, // The ID of the product collection
-            }]
+            }
             ```
           description: Emitted when product collections are deleted.
           deprecated: false
@@ -15221,9 +15221,9 @@ paths:
         - name: customer.created
           payload: |-
             ```ts
-            [{
+            {
               id, // The ID of the customer
-            }]
+            }
             ```
           description: Emitted when a customer is created.
           deprecated: false
@@ -15430,9 +15430,9 @@ paths:
         - name: customer.updated
           payload: |-
             ```ts
-            [{
+            {
               id, // The ID of the customer
-            }]
+            }
             ```
           description: Emitted when a customer is updated.
           deprecated: false
@@ -15519,9 +15519,9 @@ paths:
         - name: customer.deleted
           payload: |-
             ```ts
-            [{
+            {
               id, // The ID of the customer
-            }]
+            }
             ```
           description: Emitted when a customer is deleted.
           deprecated: false
@@ -25607,9 +25607,9 @@ paths:
         - name: invite.created
           payload: |-
             ```ts
-            [{
+            {
               id, // The ID of the invite
-            }]
+            }
             ```
           description: |-
             Emitted when invites are created. You can listen to this event
@@ -25711,9 +25711,9 @@ paths:
         - name: user.created
           payload: |-
             ```ts
-            [{
+            {
               id, // The ID of the user
-            }]
+            }
             ```
           description: Emitted when users are created.
           deprecated: false
@@ -25877,9 +25877,9 @@ paths:
         - name: invite.deleted
           payload: |-
             ```ts
-            [{
+            {
               id, // The ID of the invite
-            }]
+            }
             ```
           description: Emitted when invites are deleted.
           deprecated: false
@@ -25957,9 +25957,9 @@ paths:
         - name: invite.resent
           payload: |-
             ```ts
-            [{
+            {
               id, // The ID of the invite
-            }]
+            }
             ```
           description: |-
             Emitted when invites should be resent because their token was
@@ -27957,9 +27957,9 @@ paths:
         - name: order.archived
           payload: |-
             ```ts
-            [{
+            {
               id, // The ID of the order
-            }]
+            }
             ```
           description: Emitted when an order is archived.
           deprecated: false
@@ -29022,9 +29022,9 @@ paths:
         - name: order.completed
           payload: |-
             ```ts
-            [{
+            {
               id, // The ID of the order
-            }]
+            }
             ```
           description: Emitted when orders are completed.
           deprecated: false
@@ -33779,9 +33779,9 @@ paths:
         - name: product-category.created
           payload: |-
             ```ts
-            [{
+            {
               id, // The ID of the product category
-            }]
+            }
             ```
           description: Emitted when product categories are created.
           deprecated: false
@@ -34820,9 +34820,9 @@ paths:
         - name: product-category.updated
           payload: |-
             ```ts
-            [{
+            {
               id, // The ID of the product category
-            }]
+            }
             ```
           description: Emitted when product categories are updated.
           deprecated: false
@@ -34891,9 +34891,9 @@ paths:
         - name: product-category.deleted
           payload: |-
             ```ts
-            [{
+            {
               id, // The ID of the product category
-            }]
+            }
             ```
           description: Emitted when product categories are deleted.
           deprecated: false
@@ -35588,9 +35588,9 @@ paths:
         - name: product-tag.created
           payload: |-
             ```ts
-            [{
+            {
               id, // The ID of the product tag
-            }]
+            }
             ```
           description: Emitted when product tags are created.
           deprecated: false
@@ -35751,9 +35751,9 @@ paths:
         - name: product-tag.updated
           payload: |-
             ```ts
-            [{
+            {
               id, // The ID of the product tag
-            }]
+            }
             ```
           description: Emitted when product tags are updated.
           deprecated: false
@@ -35822,9 +35822,9 @@ paths:
         - name: product-tag.deleted
           payload: |-
             ```ts
-            [{
+            {
               id, // The ID of the product tag
-            }]
+            }
             ```
           description: Emitted when product tags are deleted.
           deprecated: false
@@ -36421,9 +36421,9 @@ paths:
         - name: product-type.created
           payload: |-
             ```ts
-            [{
+            {
               id, // The ID of the product type
-            }]
+            }
             ```
           description: Emitted when product types are created.
           deprecated: false
@@ -36584,9 +36584,9 @@ paths:
         - name: product-type.updated
           payload: |-
             ```ts
-            [{
+            {
               id, // The ID of the product type
-            }]
+            }
             ```
           description: Emitted when product types are updated.
           deprecated: false
@@ -36655,9 +36655,9 @@ paths:
         - name: product-type.deleted
           payload: |-
             ```ts
-            [{
+            {
               id, // The ID of the product type
-            }]
+            }
             ```
           description: Emitted when product types are deleted.
           deprecated: false
@@ -38458,18 +38458,18 @@ paths:
         - name: product-variant.created
           payload: |-
             ```ts
-            [{
+            {
               id, // The ID of the product variant
-            }]
+            }
             ```
           description: Emitted when product variants are created.
           deprecated: false
         - name: product.created
           payload: |-
             ```ts
-            [{
+            {
               id, // The ID of the product
-            }]
+            }
             ```
           description: Emitted when products are created.
           deprecated: false
@@ -38577,36 +38577,36 @@ paths:
         - name: product-variant.created
           payload: |-
             ```ts
-            [{
+            {
               id, // The ID of the product variant
-            }]
+            }
             ```
           description: Emitted when product variants are created.
           deprecated: false
         - name: product.updated
           payload: |-
             ```ts
-            [{
+            {
               id, // The ID of the product
-            }]
+            }
             ```
           description: Emitted when products are updated.
           deprecated: false
         - name: product.created
           payload: |-
             ```ts
-            [{
+            {
               id, // The ID of the product
-            }]
+            }
             ```
           description: Emitted when products are created.
           deprecated: false
         - name: product.deleted
           payload: |-
             ```ts
-            [{
+            {
               id, // The ID of the product
-            }]
+            }
             ```
           description: Emitted when products are deleted.
           deprecated: false
@@ -39351,36 +39351,36 @@ paths:
         - name: product-variant.created
           payload: |-
             ```ts
-            [{
+            {
               id, // The ID of the product variant
-            }]
+            }
             ```
           description: Emitted when product variants are created.
           deprecated: false
         - name: product.updated
           payload: |-
             ```ts
-            [{
+            {
               id, // The ID of the product
-            }]
+            }
             ```
           description: Emitted when products are updated.
           deprecated: false
         - name: product.created
           payload: |-
             ```ts
-            [{
+            {
               id, // The ID of the product
-            }]
+            }
             ```
           description: Emitted when products are created.
           deprecated: false
         - name: product.deleted
           payload: |-
             ```ts
-            [{
+            {
               id, // The ID of the product
-            }]
+            }
             ```
           description: Emitted when products are deleted.
           deprecated: false
@@ -39736,9 +39736,9 @@ paths:
         - name: product.updated
           payload: |-
             ```ts
-            [{
+            {
               id, // The ID of the product
-            }]
+            }
             ```
           description: Emitted when products are updated.
           deprecated: false
@@ -39807,9 +39807,9 @@ paths:
         - name: product.deleted
           payload: |-
             ```ts
-            [{
+            {
               id, // The ID of the product
-            }]
+            }
             ```
           description: Emitted when products are deleted.
           deprecated: false
@@ -40191,9 +40191,9 @@ paths:
         - name: product-option.created
           payload: |-
             ```ts
-            [{
+            {
               id, // The ID of the product option
-            }]
+            }
             ```
           description: Emitted when product options are created.
           deprecated: false
@@ -40379,9 +40379,9 @@ paths:
         - name: product-option.updated
           payload: |-
             ```ts
-            [{
+            {
               id, // The ID of the product option
-            }]
+            }
             ```
           description: Emitted when product options are updated.
           deprecated: false
@@ -40470,9 +40470,9 @@ paths:
         - name: product-option.deleted
           payload: |-
             ```ts
-            [{
+            {
               id, // The ID of the product option
-            }]
+            }
             ```
           description: Emitted when product options are deleted.
           deprecated: false
@@ -41175,9 +41175,9 @@ paths:
         - name: product-variant.created
           payload: |-
             ```ts
-            [{
+            {
               id, // The ID of the product variant
-            }]
+            }
             ```
           description: Emitted when product variants are created.
           deprecated: false
@@ -41280,27 +41280,27 @@ paths:
         - name: product-variant.updated
           payload: |-
             ```ts
-            [{
+            {
               id, // The ID of the product variant
-            }]
+            }
             ```
           description: Emitted when product variants are updated.
           deprecated: false
         - name: product-variant.created
           payload: |-
             ```ts
-            [{
+            {
               id, // The ID of the product variant
-            }]
+            }
             ```
           description: Emitted when product variants are created.
           deprecated: false
         - name: product-variant.deleted
           payload: |-
             ```ts
-            [{
+            {
               id, // The ID of the product variant
-            }]
+            }
             ```
           description: Emitted when product variants are deleted.
           deprecated: false
@@ -41645,9 +41645,9 @@ paths:
         - name: product-variant.updated
           payload: |-
             ```ts
-            [{
+            {
               id, // The ID of the product variant
-            }]
+            }
             ```
           description: Emitted when product variants are updated.
           deprecated: false
@@ -41733,9 +41733,9 @@ paths:
         - name: product-variant.deleted
           payload: |-
             ```ts
-            [{
+            {
               id, // The ID of the product variant
-            }]
+            }
             ```
           description: Emitted when product variants are deleted.
           deprecated: false
@@ -45412,9 +45412,9 @@ paths:
         - name: region.created
           payload: |-
             ```ts
-            [{
+            {
               id, // The ID of the region
-            }]
+            }
             ```
           description: Emitted when regions are created.
           deprecated: false
@@ -45575,9 +45575,9 @@ paths:
         - name: region.updated
           payload: |-
             ```ts
-            [{
+            {
               id, // The ID of the region
-            }]
+            }
             ```
           description: Emitted when regions are updated.
           deprecated: false
@@ -45665,9 +45665,9 @@ paths:
         - name: region.deleted
           payload: |-
             ```ts
-            [{
+            {
               id, // The ID of the region
-            }]
+            }
             ```
           description: Emitted when regions are deleted.
           deprecated: false
@@ -52456,9 +52456,9 @@ paths:
         - name: sales-channel.created
           payload: |-
             ```ts
-            [{
+            {
               id, // The ID of the sales channel
-            }]
+            }
             ```
           description: Emitted when sales channels are created.
           deprecated: false
@@ -52623,9 +52623,9 @@ paths:
         - name: sales-channel.updated
           payload: |-
             ```ts
-            [{
+            {
               id, // The ID of the sales channel
-            }]
+            }
             ```
           description: Emitted when sales channels are updated.
           deprecated: false
@@ -52694,9 +52694,9 @@ paths:
         - name: sales-channel.deleted
           payload: |-
             ```ts
-            [{
+            {
               id, // The ID of the sales channel
-            }]
+            }
             ```
           description: Emitted when sales channels are deleted.
           deprecated: false
@@ -53402,9 +53402,9 @@ paths:
         - name: shipping-option-type.created
           payload: |-
             ```ts
-            [{
+            {
               id, // The ID of the shipping option type
-            }]
+            }
             ```
           description: Emitted when shipping option types are created.
           deprecated: false
@@ -53570,9 +53570,9 @@ paths:
         - name: shipping-option-type.updated
           payload: |-
             ```ts
-            [{
+            {
               id, // The ID of the shipping option type
-            }]
+            }
             ```
           description: Emitted when shipping option types are updated.
           deprecated: false
@@ -53644,9 +53644,9 @@ paths:
         - name: shipping-option-type.deleted
           payload: |-
             ```ts
-            [{
+            {
               id, // The ID of the shipping option type
-            }]
+            }
             ```
           description: Emitted when shipping option types are deleted.
           deprecated: false
@@ -62249,9 +62249,9 @@ paths:
         - name: user.updated
           payload: |-
             ```ts
-            [{
+            {
               id, // The ID of the user
-            }]
+            }
             ```
           description: Emitted when users are updated.
           deprecated: false
@@ -62317,9 +62317,9 @@ paths:
         - name: user.deleted
           payload: |-
             ```ts
-            [{
+            {
               id, // The ID of the user
-            }]
+            }
             ```
           description: Emitted when users are deleted.
           deprecated: false
