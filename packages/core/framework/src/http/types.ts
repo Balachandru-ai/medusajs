@@ -115,11 +115,17 @@ export type GlobalMiddlewareDescriptor = {
 }
 
 export interface MedusaRequest<
-  Body = unknown,
-  QueryFields = Record<string, unknown>
-> extends Request<{ [key: string]: string }, any, Body> {
-  validatedBody: Body
-  validatedQuery: RequestQueryFields & QueryFields
+  BodyOrQueryFields = unknown,
+  QueryFields extends Record<string, unknown> = {}
+> extends Request<
+    { [key: string]: string },
+    any,
+    {} extends QueryFields ? undefined : BodyOrQueryFields
+  > {
+  validatedBody: {} extends QueryFields ? undefined : BodyOrQueryFields
+  validatedQuery: {} extends QueryFields
+    ? RequestQueryFields & BodyOrQueryFields
+    : RequestQueryFields & QueryFields
   /**
    * TODO: shouldn't this correspond to returnable fields instead of allowed fields? also it is used by the cleanResponseData util
    */
@@ -198,9 +204,14 @@ export interface PublishableKeyContext {
 }
 
 export interface AuthenticatedMedusaRequest<
-  Body = unknown,
-  QueryFields = Record<string, unknown>
-> extends MedusaRequest<Body, QueryFields> {
+  BodyOrQueryFields = unknown,
+  QueryFields extends Record<string, unknown> = {}
+> extends MedusaRequest<
+    {} extends QueryFields ? undefined : BodyOrQueryFields,
+    {} extends QueryFields
+      ? BodyOrQueryFields & Record<string, unknown>
+      : QueryFields
+  > {
   auth_context: AuthContext
   publishable_key_context?: PublishableKeyContext
 }
