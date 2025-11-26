@@ -848,6 +848,10 @@ export const filesMap = [
     "pathname": "/infrastructure-modules/caching/concepts"
   },
   {
+    "filePath": "/www/apps/resources/app/infrastructure-modules/caching/guides/clear-cache/page.mdx",
+    "pathname": "/infrastructure-modules/caching/guides/clear-cache"
+  },
+  {
     "filePath": "/www/apps/resources/app/infrastructure-modules/caching/guides/memcached/page.mdx",
     "pathname": "/infrastructure-modules/caching/guides/memcached"
   },

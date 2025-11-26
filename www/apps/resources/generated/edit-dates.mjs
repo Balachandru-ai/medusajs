@@ -6718,5 +6718,6 @@ export const generatedEditDates = {
   "references/core_flows/Product/Workflows_Product/functions/core_flows.Product.Workflows_Product.batchImageVariantsWorkflow/page.mdx": "2025-11-05T12:22:20.639Z",
   "references/core_flows/Product/Workflows_Product/functions/core_flows.Product.Workflows_Product.batchVariantImagesWorkflow/page.mdx": "2025-11-05T12:22:20.671Z",
   "app/storefront-development/guides/react-native-expo/page.mdx": "2025-11-06T07:18:45.347Z",
-  "app/how-to-tutorials/tutorials/customer-tiers/page.mdx": "2025-11-25T08:24:24.566Z"
+  "app/how-to-tutorials/tutorials/customer-tiers/page.mdx": "2025-11-25T08:24:24.566Z",
+  "app/infrastructure-modules/caching/guides/clear-cache/page.mdx": "2025-11-26T13:19:26.629Z"
 }
