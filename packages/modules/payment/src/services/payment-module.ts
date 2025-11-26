@@ -211,7 +211,9 @@ export default class PaymentModuleService
   ): Promise<InferEntityType<typeof PaymentCollection>[]> {
     const normalizedData = data.map((d) => ({
       ...d,
-      currency_code: normalizeCurrencyCode(d.currency_code ?? ""),
+      currency_code: d.currency_code
+        ? normalizeCurrencyCode(d.currency_code)
+        : d.currency_code,
     }))
     return await this.paymentCollectionService_.create(
       normalizedData,

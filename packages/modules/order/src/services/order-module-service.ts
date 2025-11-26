@@ -778,7 +778,9 @@ export default class OrderModuleService
         totals: calculated.summary,
       }
 
-      ord.currency_code = normalizeCurrencyCode(ord.currency_code ?? "")
+      if (ord.currency_code) {
+        ord.currency_code = normalizeCurrencyCode(ord.currency_code)
+      }
 
       const created = await this.orderService_.create(ord, sharedContext)
 
