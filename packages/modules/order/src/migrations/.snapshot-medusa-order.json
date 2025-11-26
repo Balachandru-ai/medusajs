@@ -1979,6 +1979,15 @@
           "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_item_order_id_version\" ON \"order_item\" (\"order_id\", \"version\") WHERE deleted_at IS NULL"
         },
         {
+          "keyName": "IDX_order_item_version",
+          "columnNames": [],
+          "composite": false,
+          "constraint": false,
+          "primary": false,
+          "unique": false,
+          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_item_version\" ON \"order_item\" (version) WHERE deleted_at IS NULL"
+        },
+        {
           "keyName": "IDX_order_item_item_id",
           "columnNames": [],
           "composite": false,
@@ -2047,6 +2056,16 @@
           "primary": false,
           "nullable": false,
           "mappedType": "text"
+        },
+        "version": {
+          "name": "version",
+          "type": "integer",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "default": "1",
+          "mappedType": "integer"
         },
         "description": {
           "name": "description",

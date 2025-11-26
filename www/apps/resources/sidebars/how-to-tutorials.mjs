@@ -122,6 +122,13 @@ While tutorials show you a specific use case, they also help you understand how 
       },
       {
         type: "link",
+        title: "Customer Tiers",
+        path: "/how-to-tutorials/tutorials/customer-tiers",
+        description:
+          "Learn how to implement customer tiers in your Medusa store.",
+      },
+      {
+        type: "link",
         title: "First-Purchase Discounts",
         path: "/how-to-tutorials/tutorials/first-purchase-discounts",
         description:

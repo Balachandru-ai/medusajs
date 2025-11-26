@@ -16,6 +16,10 @@ export const customer = [
     "path": "https://docs.medusajs.com/resources/commerce-modules/customer/extend"
   },
   {
+    "title": "Implement Customer Tiers",
+    "path": "https://docs.medusajs.com/resources/how-to-tutorials/tutorials/customer-tiers"
+  },
+  {
     "title": "Implement First-Purchase Discount",
     "path": "https://docs.medusajs.com/resources/how-to-tutorials/tutorials/first-purchase-discounts"
   },
