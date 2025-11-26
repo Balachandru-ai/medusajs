@@ -748,6 +748,10 @@ export const filesMap = [
     "pathname": "/examples"
   },
   {
+    "filePath": "/www/apps/resources/app/how-to-tutorials/how-to/admin/auth/page.mdx",
+    "pathname": "/how-to-tutorials/how-to/admin/auth"
+  },
+  {
     "filePath": "/www/apps/resources/app/how-to-tutorials/page.mdx",
     "pathname": "/how-to-tutorials"
   },

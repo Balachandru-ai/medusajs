@@ -830,7 +830,7 @@ export const generatedEditDates = {
   "references/types/interfaces/types.BaseClaim/page.mdx": "2025-09-12T14:10:39.219Z",
   "app/commerce-modules/auth/auth-providers/github/page.mdx": "2025-01-13T11:31:35.361Z",
   "app/commerce-modules/auth/auth-providers/google/page.mdx": "2025-01-13T11:31:35.361Z",
-  "app/storefront-development/customers/third-party-login/page.mdx": "2025-11-24T07:27:46.836Z",
+  "app/storefront-development/customers/third-party-login/page.mdx": "2025-11-26T10:42:33.123Z",
   "references/types/HttpTypes/types/types.HttpTypes.AdminWorkflowRunResponse/page.mdx": "2024-12-09T13:21:34.761Z",
   "references/types/HttpTypes/types/types.HttpTypes.BatchResponse/page.mdx": "2025-04-11T09:04:46.523Z",
   "references/types/WorkflowsSdkTypes/types/types.WorkflowsSdkTypes.Acknowledgement/page.mdx": "2024-12-09T13:21:35.873Z",
@@ -6718,5 +6718,6 @@ export const generatedEditDates = {
   "references/core_flows/Product/Workflows_Product/functions/core_flows.Product.Workflows_Product.batchImageVariantsWorkflow/page.mdx": "2025-11-05T12:22:20.639Z",
   "references/core_flows/Product/Workflows_Product/functions/core_flows.Product.Workflows_Product.batchVariantImagesWorkflow/page.mdx": "2025-11-05T12:22:20.671Z",
   "app/storefront-development/guides/react-native-expo/page.mdx": "2025-11-06T07:18:45.347Z",
-  "app/how-to-tutorials/tutorials/customer-tiers/page.mdx": "2025-11-25T08:24:24.566Z"
+  "app/how-to-tutorials/tutorials/customer-tiers/page.mdx": "2025-11-25T08:24:24.566Z",
+  "app/how-to-tutorials/how-to/admin/auth/page.mdx": "2025-11-26T11:01:53.802Z"
 }
