@@ -7,8 +7,24 @@ export default async function migrateNormalizeCurrencyCodes({
   const knex = container.resolve(ContainerRegistrationKeys.PG_CONNECTION)
 
   await knex.transaction(async (trx) => {
-    return await trx("price").update({
-      currency_code: knex.raw("LOWER(currency_code)"),
-    })
+    const tables = [
+      "cart",
+      "payment_collection",
+      "payment_session",
+      "payment",
+      "order",
+      "order_transaction",
+      "price",
+      "region",
+      "store_currency",
+    ]
+
+    for (const table of tables) {
+      await trx(table)
+        .whereNotNull("currency_code")
+        .update({
+          currency_code: knex.raw("LOWER(currency_code)"),
+        })
+    }
   })
 }
