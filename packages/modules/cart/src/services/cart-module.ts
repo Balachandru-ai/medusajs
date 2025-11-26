@@ -23,6 +23,7 @@ import {
   MedusaError,
   ModulesSdkUtils,
   promiseAll,
+  normalizeCurrencyCode,
 } from "@medusajs/framework/utils"
 import {
   Address,
@@ -297,7 +298,11 @@ export default class CartModuleService
     const cartsWithItems = data.map(({ items, ...cart }) => {
       const cartId = generateEntityId((cart as any).id, "cart")
       return {
-        cart: { ...cart, id: cartId },
+        cart: {
+          ...cart,
+          currency_code: normalizeCurrencyCode(cart.currency_code ?? ""),
+          id: cartId,
+        },
         items: items || [],
       }
     })
@@ -395,10 +400,14 @@ export default class CartModuleService
         {
           id: dataOrIdOrSelector,
           ...data,
+          currency_code: normalizeCurrencyCode(data?.currency_code ?? ""),
         },
       ]
     } else if (Array.isArray(dataOrIdOrSelector)) {
-      toUpdate = dataOrIdOrSelector
+      toUpdate = dataOrIdOrSelector.map((d) => ({
+        ...d,
+        currency_code: normalizeCurrencyCode(d.currency_code ?? ""),
+      }))
     } else {
       const carts = await this.cartService_.list(
         { ...dataOrIdOrSelector },

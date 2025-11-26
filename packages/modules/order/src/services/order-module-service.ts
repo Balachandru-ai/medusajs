@@ -38,6 +38,7 @@ import {
   MedusaContext,
   MedusaError,
   ModulesSdkUtils,
+  normalizeCurrencyCode,
   OrderChangeStatus,
   OrderStatus,
   promiseAll,
@@ -776,6 +777,8 @@ export default class OrderModuleService
       ord.summary = {
         totals: calculated.summary,
       }
+
+      ord.currency_code = normalizeCurrencyCode(ord.currency_code ?? "")
 
       const created = await this.orderService_.create(ord, sharedContext)
 
@@ -3634,8 +3637,13 @@ export default class OrderModuleService
       }
     }
 
+    const normalizedData = data.map((d) => ({
+      ...d,
+      currency_code: normalizeCurrencyCode(d.currency_code ?? ""),
+    }))
+
     const created = (await this.orderTransactionService_.create(
-      data,
+      normalizedData,
       sharedContext
     )) as (InferEntityType<typeof OrderTransaction> & { order_id: string })[]
 
