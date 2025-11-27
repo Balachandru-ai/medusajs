@@ -1,11 +1,11 @@
 import { setCarryOverPromotionFlagForOrderChangeWorkflow } from "@medusajs/core-flows"
-import { HttpTypes } from "@medusajs/framework/types"
+import { HttpTypes, RemoteQueryFunction } from "@medusajs/framework/types"
 import {
   AuthenticatedMedusaRequest,
   MedusaResponse,
-  refetchEntity,
 } from "@medusajs/framework/http"
 import { AdminPostOrderChangesReqSchemaType } from "../validators"
+import { ContainerRegistrationKeys } from "@medusajs/framework/utils"
 
 export const POST = async (
   req: AuthenticatedMedusaRequest<AdminPostOrderChangesReqSchemaType>,
@@ -13,6 +13,9 @@ export const POST = async (
 ) => {
   const { id } = req.params
   const { carry_over_promotions } = req.validatedBody
+  const queryGraph = req.scope.resolve<RemoteQueryFunction>(
+    ContainerRegistrationKeys.QUERY
+  )
 
   const workflow = setCarryOverPromotionFlagForOrderChangeWorkflow(req.scope)
   await workflow.run({
@@ -22,12 +25,14 @@ export const POST = async (
     },
   })
 
-  const orderChange = await refetchEntity({
+  const orderChange = await queryGraph.graph({
     entity: "order_change",
-    idOrFilter: id,
-    scope: req.scope,
+    filters: {
+      ...req.filterableFields,
+      id,
+    },
     fields: req.queryConfig.fields,
   })
 
-  res.status(200).json({ order_change: orderChange })
+  res.status(200).json({ order_change: orderChange.data[0] })
 }

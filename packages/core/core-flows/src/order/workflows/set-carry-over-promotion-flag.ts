@@ -251,7 +251,7 @@ export const setCarryOverPromotionFlagForOrderChangeWorkflow = createWorkflow(
     when(
       "should-apply-promotions",
       { flag: input.carry_over_promotions },
-      ({ flag }) => flag === true
+      ({ flag }) => !!flag
     ).then(() => {
       // Apply promotions by computing adjustments
       computeAdjustmentsForPreviewWorkflow.runAsStep({
