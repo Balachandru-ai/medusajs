@@ -2,7 +2,6 @@ import { MEDUSA_CLI_PATH } from "@medusajs/framework"
 import {
   ContainerRegistrationKeys,
   FeatureFlag,
-  GracefulShutdownServer,
 } from "@medusajs/framework/utils"
 import { Store } from "@medusajs/telemetry"
 import boxen from "boxen"
@@ -12,14 +11,6 @@ import { EOL } from "os"
 import path from "path"
 import BackendHmrFeatureFlag from "../feature-flags/backend-hmr"
 import { initializeContainer } from "../loaders"
-import { default as startApp } from "./start"
-import { reloadResources } from "./utils/dev-server"
-import { HMRReloadError } from "./utils/dev-server/errors"
-
-type Server = {
-  server: GracefulShutdownServer
-  gracefulShutDown: () => void
-} | null
 
 const defaultConfig = {
   padding: 5,
@@ -73,7 +64,6 @@ export default async function ({ types, directory }) {
   const devServer = {
     childProcess: null as ChildProcess | null,
     watcher: null as FSWatcher | null,
-    server: null as Server,
 
     /**
      * Start the development server by forking a new process.
@@ -85,20 +75,23 @@ export default async function ({ types, directory }) {
      * the command.
      */
     async start() {
-      if (isBackendHmrEnabled) {
-        ;(global as any).__MEDUSA_HMR_ROUTE_REGISTRY__ = true
-        this.server = (await startApp({ directory })) as Server
-        return
-      }
-
-      this.childProcess = fork(cliPath, ["start", ...args], {
+      const forkOptions: any = {
         cwd: directory,
         env: {
           ...process.env,
           NODE_ENV: "development",
+          ...(isBackendHmrEnabled && { MEDUSA_HMR_ENABLED: "true" }),
         },
         execArgv: argv,
-      })
+      }
+
+      // Enable IPC for HMR mode to communicate reload requests
+      if (isBackendHmrEnabled) {
+        forkOptions.stdio = ["inherit", "inherit", "inherit", "ipc"]
+      }
+
+      this.childProcess = fork(cliPath, ["start", ...args], forkOptions)
+
       this.childProcess.on("error", (error) => {
         // @ts-ignore
         logger.error(`${logSource} Dev server failed to start`, error)
@@ -109,39 +102,55 @@ export default async function ({ types, directory }) {
     },
 
     /**
+     * Sends an HMR reload request to the child process and waits for result.
+     * Returns true if reload succeeded, false if it failed.
+     */
+    async sendHmrReload(
+      action: "add" | "change" | "unlink",
+      file: string
+    ): Promise<boolean> {
+      return new Promise((resolve) => {
+        if (!this.childProcess) {
+          resolve(false)
+          return
+        }
+
+        const timeout = setTimeout(() => {
+          resolve(false)
+        }, 30000) // 30s timeout
+
+        const messageHandler = (msg: any) => {
+          if (msg?.type === "hmr-result") {
+            clearTimeout(timeout)
+            this.childProcess?.off("message", messageHandler)
+            resolve(msg.success === true)
+          }
+        }
+
+        this.childProcess.on("message", messageHandler)
+        this.childProcess.send({
+          type: "hmr-reload",
+          action,
+          file: path.resolve(directory, file),
+          rootDirectory: directory,
+        })
+      })
+    },
+
+    /**
      * Restarts the development server by cleaning up the existing
      * child process and forking a new one
      */
-    async restart(action, file) {
-      if (isBackendHmrEnabled) {
-        const absoluteFilePath = path.resolve(directory, file)
-        const reloaderArguments = {
-          logSource,
-          action,
-          absoluteFilePath,
-          logger,
-          rootDirectory: directory,
-        }
-
-        const success = await reloadResources(reloaderArguments)
-          .then(() => true)
-          .catch((error) => {
-            if (HMRReloadError.isHMRReloadError(error)) {
-              return false
-            }
-            throw error
-          })
+    async restart(action: "add" | "change" | "unlink", file: string) {
+      if (isBackendHmrEnabled && this.childProcess) {
+        const success = await this.sendHmrReload(action, file)
 
         if (success) {
           return
         }
 
-        // HMR reload failed, shutdown the server and restart
+        // HMR reload failed, kill the process and restart
         logger.info(`${logSource} HMR reload failed, restarting server...`)
-        if (this.server?.server) {
-          await this.server.server.shutdown()
-          this.server = null
-        }
       }
 
       if (this.childProcess) {
