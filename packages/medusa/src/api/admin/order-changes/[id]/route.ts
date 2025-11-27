@@ -1,4 +1,4 @@
-import { setCarryOverPromotionFlagForOrderChangeWorkflow } from "@medusajs/core-flows"
+import { updateOrderChangeWorkflow } from "@medusajs/core-flows"
 import { HttpTypes, RemoteQueryFunction } from "@medusajs/framework/types"
 import {
   AuthenticatedMedusaRequest,
@@ -17,10 +17,10 @@ export const POST = async (
     ContainerRegistrationKeys.QUERY
   )
 
-  const workflow = setCarryOverPromotionFlagForOrderChangeWorkflow(req.scope)
+  const workflow = updateOrderChangeWorkflow(req.scope)
   await workflow.run({
     input: {
-      order_change_id: id,
+      id,
       carry_over_promotions,
     },
   })
