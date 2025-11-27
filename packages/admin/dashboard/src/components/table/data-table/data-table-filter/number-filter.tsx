@@ -60,17 +60,17 @@ export const NumberFilter = ({
         }
 
         if (curr && !value) {
-          delete curr[operator]
+          delete curr[`$${operator}`]
           selectedParams.add(JSON.stringify(curr))
           return
         }
 
         if (!curr) {
-          selectedParams.add(JSON.stringify({ [operator]: value }))
+          selectedParams.add(JSON.stringify({ [`$${operator}`]: value }))
           return
         }
 
-        selectedParams.add(JSON.stringify({ ...curr, [operator]: value }))
+        selectedParams.add(JSON.stringify({ ...curr, [`$${operator}`]: value }))
       }
 
       switch (operator) {
