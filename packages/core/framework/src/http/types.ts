@@ -120,9 +120,11 @@ export interface MedusaRequest<
 > extends Request<
     { [key: string]: string },
     any,
-    {} extends QueryFields ? undefined : BodyOrQueryFields
+    {} extends QueryFields ? Record<string, any> : BodyOrQueryFields
   > {
-  validatedBody: {} extends QueryFields ? undefined : BodyOrQueryFields
+  validatedBody: {} extends QueryFields
+    ? Record<string, any>
+    : BodyOrQueryFields
   validatedQuery: {} extends QueryFields
     ? RequestQueryFields & BodyOrQueryFields
     : RequestQueryFields & QueryFields
@@ -207,7 +209,7 @@ export interface AuthenticatedMedusaRequest<
   BodyOrQueryFields = unknown,
   QueryFields extends Record<string, unknown> = {}
 > extends MedusaRequest<
-    {} extends QueryFields ? undefined : BodyOrQueryFields,
+    {} extends QueryFields ? Record<string, any> : BodyOrQueryFields,
     {} extends QueryFields
       ? BodyOrQueryFields & Record<string, unknown>
       : QueryFields
@@ -218,7 +220,7 @@ export interface AuthenticatedMedusaRequest<
 
 export interface MedusaStoreRequest<
   Body = unknown,
-  QueryFields extends Record<string, unknown> = Record<string, unknown>
+  QueryFields extends Record<string, any> = Record<string, any>
 > extends MedusaRequest<Body, QueryFields> {
   auth_context?: AuthContext
   publishable_key_context: PublishableKeyContext
