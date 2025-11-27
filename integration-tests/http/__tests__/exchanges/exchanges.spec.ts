@@ -1228,7 +1228,7 @@ medusaIntegrationTestRunner({
           expect(orderResult2.original_total).toEqual(12.24)
         })
 
-        it("should enable carry_over_promotions flag and apply promotions to outbound items", async () => {
+        it("should enable carry_over_promotions flag and apply promotions to outbound items (flag disabled before request)", async () => {
           // fulfill item so it can be returned
           await api.post(
             `/admin/orders/${orderWithPromotion.id}/fulfillments`,
@@ -1264,7 +1264,21 @@ medusaIntegrationTestRunner({
 
           const orderChangeId = orderChange.id
 
-          // Add outbound item
+          // return original item
+          await api.post(
+            `/admin/exchanges/${exchangeId}/inbound/items`,
+            {
+              items: [
+                {
+                  id: orderWithPromotion.items[0].id,
+                  quantity: 1,
+                },
+              ],
+            },
+            adminHeaders
+          )
+
+          // add outbound item
           await api.post(
             `/admin/exchanges/${exchangeId}/outbound/items`,
             {
@@ -1286,13 +1300,24 @@ medusaIntegrationTestRunner({
             )
           ).data.order
 
-          const outboundItem = orderPreview.items.find((item) =>
-            item.actions?.find((action) => action.action === "ITEM_ADD")
+          expect(orderPreview.items).toEqual(
+            expect.arrayContaining([
+              expect.objectContaining({
+                id: "item-1", // original item
+                adjustments: [
+                  expect.objectContaining({
+                    amount: 1,
+                  }),
+                ],
+              }),
+              expect.objectContaining({
+                variant_id: productForAdjustmentTest.variants[0].id,
+                adjustments: [], // outbound item has no adjustments initially
+              }),
+            ])
           )
 
-          expect(outboundItem.adjustments.length).toBe(0)
-
-          // Disable carry_over_promotions
+          // Enable carry_over_promotions
           await api.post(
             `/admin/order-changes/${orderChangeId}`,
             {
@@ -1309,12 +1334,29 @@ medusaIntegrationTestRunner({
             )
           ).data.order
 
-          const updatedOutboundItem = orderPreview.items.find((item) =>
-            item.actions?.find((action) => action.action === "ITEM_ADD")
+          expect(orderPreview.items).toEqual(
+            expect.arrayContaining([
+              expect.objectContaining({
+                id: "item-1", // original item
+                adjustments: [
+                  expect.objectContaining({
+                    amount: 1,
+                  }),
+                ],
+              }),
+              expect.objectContaining({
+                variant_id: productForAdjustmentTest.variants[0].id,
+                adjustments: [
+                  // outbound item has adjustments after carry_over_promotions is enabled
+                  expect.objectContaining({
+                    amount: 1.2,
+                  }),
+                ],
+              }),
+            ])
           )
-          expect(updatedOutboundItem.adjustments.length).toBe(1)
 
-          // Enable carry_over_promotions
+          // Disable carry_over_promotions
           await api.post(
             `/admin/order-changes/${orderChangeId}`,
             {
@@ -1331,10 +1373,216 @@ medusaIntegrationTestRunner({
             )
           ).data.order
 
-          const reEnabledOutboundItem = orderPreview.items.find((item) =>
-            item.actions?.find((action) => action.action === "ITEM_ADD")
+          expect(orderPreview.items).toEqual(
+            expect.arrayContaining([
+              expect.objectContaining({
+                id: "item-1", // original item
+                adjustments: [
+                  expect.objectContaining({
+                    amount: 1,
+                  }),
+                ],
+              }),
+              expect.objectContaining({
+                variant_id: productForAdjustmentTest.variants[0].id,
+                adjustments: [], // outbound item has no adjustments
+              }),
+            ])
           )
-          expect(reEnabledOutboundItem.adjustments.length).toBe(0)
+
+          await api.post(
+            `/admin/exchanges/${exchangeId}/request`,
+            {},
+            adminHeaders
+          )
+
+          const finalOrder = (
+            await api.get(
+              `/admin/orders/${orderWithPromotion.id}`,
+              adminHeaders
+            )
+          ).data.order
+
+          // items adjustment state is equal to the last state of the order preview (flag disabled)
+          expect(finalOrder.items).toEqual(
+            expect.arrayContaining([
+              expect.objectContaining({
+                id: "item-1", // original item
+                adjustments: [
+                  expect.objectContaining({
+                    amount: 1,
+                  }),
+                ],
+              }),
+              expect.objectContaining({
+                variant_id: productForAdjustmentTest.variants[0].id,
+                adjustments: [],
+              }),
+            ])
+          )
+        })
+
+        it("should enable carry_over_promotions flag and apply promotions to outbound items (flag enabled before request)", async () => {
+          // fulfill item so it can be returned
+          await api.post(
+            `/admin/orders/${orderWithPromotion.id}/fulfillments`,
+            {
+              items: [
+                {
+                  id: orderWithPromotion.items[0].id,
+                  quantity: 1,
+                },
+              ],
+            },
+            adminHeaders
+          )
+
+          let result = await api.post(
+            "/admin/exchanges",
+            {
+              order_id: orderWithPromotion.id,
+              description: "Test",
+            },
+            adminHeaders
+          )
+
+          const exchangeId = result.data.exchange.id
+
+          // Query order change for the exchange
+          const orderChange = (
+            await api.get(
+              `/admin/orders/${orderWithPromotion.id}/preview`,
+              adminHeaders
+            )
+          ).data.order.order_change
+
+          const orderChangeId = orderChange.id
+
+          // return original item
+          await api.post(
+            `/admin/exchanges/${exchangeId}/inbound/items`,
+            {
+              items: [
+                {
+                  id: orderWithPromotion.items[0].id,
+                  quantity: 1,
+                },
+              ],
+            },
+            adminHeaders
+          )
+
+          // add outbound item
+          await api.post(
+            `/admin/exchanges/${exchangeId}/outbound/items`,
+            {
+              items: [
+                {
+                  variant_id: productForAdjustmentTest.variants[0].id,
+                  quantity: 1,
+                },
+              ],
+            },
+            adminHeaders
+          )
+
+          let orderPreview = (
+            await api.get(
+              `/admin/orders/${orderWithPromotion.id}/preview`,
+              adminHeaders
+            )
+          ).data.order
+
+          expect(orderPreview.items).toEqual(
+            expect.arrayContaining([
+              expect.objectContaining({
+                id: "item-1", // original item
+                adjustments: [
+                  expect.objectContaining({
+                    amount: 1,
+                  }),
+                ],
+              }),
+              expect.objectContaining({
+                variant_id: productForAdjustmentTest.variants[0].id,
+                adjustments: [], // outbound item has no adjustments initially
+              }),
+            ])
+          )
+
+          // Enable carry_over_promotions
+          await api.post(
+            `/admin/order-changes/${orderChangeId}`,
+            {
+              carry_over_promotions: true,
+            },
+            adminHeaders
+          )
+
+          // Verify adjustments are added
+          orderPreview = (
+            await api.get(
+              `/admin/orders/${orderWithPromotion.id}/preview`,
+              adminHeaders
+            )
+          ).data.order
+
+          expect(orderPreview.items).toEqual(
+            expect.arrayContaining([
+              expect.objectContaining({
+                id: "item-1", // original item
+                adjustments: [
+                  expect.objectContaining({
+                    amount: 1,
+                  }),
+                ],
+              }),
+              expect.objectContaining({
+                variant_id: productForAdjustmentTest.variants[0].id,
+                adjustments: [
+                  // outbound item has adjustments after carry_over_promotions is enabled
+                  expect.objectContaining({
+                    amount: 1.2,
+                  }),
+                ],
+              }),
+            ])
+          )
+
+          await api.post(
+            `/admin/exchanges/${exchangeId}/request`,
+            {},
+            adminHeaders
+          )
+
+          const finalOrder = (
+            await api.get(
+              `/admin/orders/${orderWithPromotion.id}`,
+              adminHeaders
+            )
+          ).data.order
+
+          // items adjustment state is equal to the last state of the order preview (flag enabled)
+          expect(finalOrder.items).toEqual(
+            expect.arrayContaining([
+              expect.objectContaining({
+                id: "item-1", // original item
+                adjustments: [
+                  expect.objectContaining({
+                    amount: 1,
+                  }),
+                ],
+              }),
+              expect.objectContaining({
+                variant_id: productForAdjustmentTest.variants[0].id,
+                adjustments: [
+                  expect.objectContaining({
+                    amount: 1.2,
+                  }),
+                ],
+              }),
+            ])
+          )
         })
 
         it("should validate that order change is an exchange", async () => {
