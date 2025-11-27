@@ -41,7 +41,6 @@ export default async function exec({ file, args }: Options) {
       throw new Error(`File doesn't default export a function to execute.`)
     }
 
-    // set worker mode
     process.env.MEDUSA_WORKER_MODE = "server"
 
     const { container } = await loaders({
