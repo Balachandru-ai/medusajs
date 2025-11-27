@@ -635,6 +635,7 @@ export const syncProductsWorkflow = createWorkflow(
         "categories.handle",
         "tags.id",
         "tags.value",
+        "status",
       ],
       pagination: {
         take: limit,
@@ -645,7 +646,7 @@ export const syncProductsWorkflow = createWorkflow(
 
     const {
       publishedProducts,
-      unpublishedProductsToDelete
+      unpublishedProductsToDelete,
     } = transform({
       products,
     }, (data) => {
@@ -663,16 +664,16 @@ export const syncProductsWorkflow = createWorkflow(
 
       return {
         publishedProducts,
-        unpublishedProductsToDelete
+        unpublishedProductsToDelete,
       }
     })
 
     syncProductsStep({
-      products: publishedProducts
+      products: publishedProducts,
     })
 
     deleteProductsFromAlgoliaStep({
-      ids: unpublishedProductsToDelete
+      ids: unpublishedProductsToDelete,
     })
 
     return new WorkflowResponse({
