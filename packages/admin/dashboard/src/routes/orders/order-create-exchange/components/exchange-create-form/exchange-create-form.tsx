@@ -1,5 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod"
-import { PencilSquare } from "@medusajs/icons"
+import { InformationCircleSolid, PencilSquare } from "@medusajs/icons"
 import { AdminExchange, AdminOrder, AdminOrderPreview } from "@medusajs/types"
 import {
   Button,
@@ -8,6 +8,7 @@ import {
   IconButton,
   Switch,
   toast,
+  Tooltip,
   usePrompt,
 } from "@medusajs/ui"
 import { useEffect, useMemo, useState } from "react"
@@ -550,8 +551,17 @@ export const ExchangeCreateForm = ({
                             />
                           </Form.Control>
                           <div className="block">
-                            <Form.Label>
+                            <Form.Label className="flex items-center gap-x-2">
                               {t("orders.exchanges.carryOverPromotion")}
+                              <Form.Hint>
+                                <Tooltip
+                                  content={t(
+                                    "orders.exchanges.carryOverPromotionTooltip"
+                                  )}
+                                >
+                                  <InformationCircleSolid />
+                                </Tooltip>
+                              </Form.Hint>
                             </Form.Label>
                             <Form.Hint className="!mt-1">
                               {t("orders.exchanges.carryOverPromotionHint")}

@@ -1307,6 +1307,7 @@
       "refundAmount": "Estimated difference",
       "carryOverPromotion": "Carry over promotions",
       "carryOverPromotionHint": "Apply the order's promotions to the exchange items",
+      "carryOverPromotionTooltip": "Only fixed type promotions with EACH allocation and percentage type promotions with EACH or ACROSS allocation can be carried over to outbound exchange items.",
       "activeChangeError": "There is an active order change on this order. Please finish or discard the previous change.",
       "actions": {
         "cancelExchange": {
