@@ -20,10 +20,15 @@ export const useOrderTableFilters = () => {
     fields: "id,name",
   })
 
-  // Until we migrate to the new DataTable component, we can't use `createDataTableFilterHelper` filter structure, since th identifier there is `is` 
+  // Until we migrate to the new DataTable component, we can't use `createDataTableFilterHelper` filter structure, since th identifier there is `is`
   // while deprecated component expexts `key`. Will be ready to migrate once SUP-2651 is done
   return useMemo(() => {
     const filters: Filter[] = [
+      {
+        key: "total",
+        label: t("fields.total"),
+        type: "number",
+      },
       {
         key: "created_at",
         label: t("fields.createdAt"),
