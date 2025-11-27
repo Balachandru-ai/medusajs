@@ -9,6 +9,7 @@ import { ResourceRegistry } from "./resource-registry"
 import { DevServerGlobals, ReloadParams } from "./types"
 import { JobReloader } from "./reloaders/jobs"
 import { ModuleReloader } from "./reloaders/modules"
+import { HMRReloadError } from "./errors"
 
 let sharedCacheManager!: ModuleCacheManager
 const sharedRegistry = new ResourceRegistry()
@@ -83,6 +84,8 @@ function initializeReloaders(logSource: string, rootDirectory: string) {
   }
 }
 
+const unmanagedFiles = ["medusa-config", ".env"]
+
 /**
  * Main entry point for reloading resources (routes, subscribers, workflows, and modules)
  * Orchestrates the reload process and handles recovery of broken modules
@@ -96,6 +99,12 @@ export async function reloadResources({
   skipRecovery = false,
   rootDirectory,
 }: ReloadParams): Promise<void> {
+  if (unmanagedFiles.some((file) => absoluteFilePath.includes(file))) {
+    throw new HMRReloadError(
+      `File ${absoluteFilePath} is not managed by the dev server HMR. Server restart may be required.`
+    )
+  }
+
   initializeReloaders(logSource, rootDirectory)
 
   // Reload modules first as other resources might depend on them

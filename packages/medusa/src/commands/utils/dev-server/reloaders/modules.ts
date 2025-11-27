@@ -8,6 +8,7 @@ import { join, relative } from "path"
 import { ModuleCacheManager } from "../module-cache-manager"
 import { CONFIG, FileChangeAction } from "../types"
 import { BaseReloader } from "./base"
+import { HMRReloadError } from "../errors"
 
 /**
  * Handles hot reloading of custom modules in the /modules directory
@@ -193,7 +194,9 @@ export class ModuleReloader extends BaseReloader {
           this.#logSource
         } Module file removed: ${relativePath}. Server restart may be required.`
       )
-      return
+      throw new HMRReloadError(
+        `Module file removed: ${relativePath}. Server restart may be required.`
+      )
     }
 
     if (absoluteFilePath.includes("migrations")) {
@@ -202,6 +205,7 @@ export class ModuleReloader extends BaseReloader {
           this.#logSource
         } Migrations file changed: ${relativePath}. You may need to apply migrations and restart the server.`
       )
+
       return
     }
 
@@ -253,10 +257,8 @@ export class ModuleReloader extends BaseReloader {
           error.message
         }`
       )
-      this.#logger.error(
-        `${
-          this.#logSource
-        } Server restart may be required for module "${serviceName}"`
+      throw new HMRReloadError(
+        `Failed to reload module "${serviceName}": ${error.message}. Server restart may be required.`
       )
     }
   }

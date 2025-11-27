@@ -2,6 +2,7 @@ import { MEDUSA_CLI_PATH } from "@medusajs/framework"
 import {
   ContainerRegistrationKeys,
   FeatureFlag,
+  GracefulShutdownServer,
 } from "@medusajs/framework/utils"
 import { Store } from "@medusajs/telemetry"
 import boxen from "boxen"
@@ -13,6 +14,12 @@ import BackendHmrFeatureFlag from "../feature-flags/backend-hmr"
 import { initializeContainer } from "../loaders"
 import { default as startApp } from "./start"
 import { reloadResources } from "./utils/dev-server"
+import { HMRReloadError } from "./utils/dev-server/errors"
+
+type Server = {
+  server: GracefulShutdownServer
+  gracefulShutDown: () => void
+} | null
 
 const defaultConfig = {
   padding: 5,
@@ -66,6 +73,7 @@ export default async function ({ types, directory }) {
   const devServer = {
     childProcess: null as ChildProcess | null,
     watcher: null as FSWatcher | null,
+    server: null as Server,
 
     /**
      * Start the development server by forking a new process.
@@ -79,7 +87,7 @@ export default async function ({ types, directory }) {
     async start() {
       if (isBackendHmrEnabled) {
         ;(global as any).__MEDUSA_HMR_ROUTE_REGISTRY__ = true
-        await startApp({ directory })
+        this.server = (await startApp({ directory })) as Server
         return
       }
 
@@ -114,9 +122,26 @@ export default async function ({ types, directory }) {
           logger,
           rootDirectory: directory,
         }
-        await reloadResources(reloaderArguments)
 
-        return
+        const success = await reloadResources(reloaderArguments)
+          .then(() => true)
+          .catch((error) => {
+            if (HMRReloadError.isHMRReloadError(error)) {
+              return false
+            }
+            throw error
+          })
+
+        if (success) {
+          return
+        }
+
+        // HMR reload failed, shutdown the server and restart
+        logger.info(`${logSource} HMR reload failed, restarting server...`)
+        if (this.server?.server) {
+          await this.server.server.shutdown()
+          this.server = null
+        }
       }
 
       if (this.childProcess) {

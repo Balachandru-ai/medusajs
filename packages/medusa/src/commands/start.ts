@@ -171,7 +171,10 @@ async function start(args: {
   cluster?: string
   workers?: string
   servers?: string
-}) {
+}): Promise<{
+  server: GracefulShutdownServer
+  gracefulShutDown: () => void
+} | void> {
   const {
     port = 9000,
     host,
@@ -296,7 +299,7 @@ async function start(args: {
         track("PING")
       })
 
-      return { server }
+      return { server, gracefulShutDown }
     } catch (err) {
       logger.error("Error starting server", err)
       process.exit(1)
@@ -357,14 +360,14 @@ async function start(args: {
           process.env.PLUGIN_ADMIN_UI_SKIP_CACHE = "true"
         }
 
-        await internalStart(!!types && msg.index === 0)
+        return await internalStart(!!types && msg.index === 0)
       })
     }
   } else {
     /**
      * Not in cluster mode
      */
-    await internalStart(!!types)
+    return await internalStart(!!types)
   }
 }
 
