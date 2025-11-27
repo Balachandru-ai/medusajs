@@ -75,9 +75,9 @@ export const CustomerWorkflowEvents = {
    *
    * @eventPayload
    * ```ts
-   * [{
+   * {
    *   id, // The ID of the customer
-   * }]
+   * }
    * ```
    */
   CREATED: "customer.created",
@@ -86,9 +86,9 @@ export const CustomerWorkflowEvents = {
    *
    * @eventPayload
    * ```ts
-   * [{
+   * {
    *   id, // The ID of the customer
-   * }]
+   * }
    * ```
    */
   UPDATED: "customer.updated",
@@ -97,9 +97,9 @@ export const CustomerWorkflowEvents = {
    *
    * @eventPayload
    * ```ts
-   * [{
+   * {
    *   id, // The ID of the customer
-   * }]
+   * }
    * ```
    */
   DELETED: "customer.deleted",
@@ -151,9 +151,9 @@ export const OrderWorkflowEvents = {
    *
    * @eventPayload
    * ```ts
-   * [{
+   * {
    *   id, // The ID of the order
-   * }]
+   * }
    * ```
    */
   COMPLETED: "order.completed",
@@ -162,9 +162,9 @@ export const OrderWorkflowEvents = {
    *
    * @eventPayload
    * ```ts
-   * [{
+   * {
    *   id, // The ID of the order
-   * }]
+   * }
    * ```
    */
   ARCHIVED: "order.archived",
@@ -320,9 +320,9 @@ export const UserWorkflowEvents = {
    *
    * @eventPayload
    * ```ts
-   * [{
+   * {
    *   id, // The ID of the user
-   * }]
+   * }
    * ```
    */
   CREATED: "user.created",
@@ -331,9 +331,9 @@ export const UserWorkflowEvents = {
    *
    * @eventPayload
    * ```ts
-   * [{
+   * {
    *   id, // The ID of the user
-   * }]
+   * }
    * ```
    */
   UPDATED: "user.updated",
@@ -342,9 +342,9 @@ export const UserWorkflowEvents = {
    *
    * @eventPayload
    * ```ts
-   * [{
+   * {
    *   id, // The ID of the user
-   * }]
+   * }
    * ```
    */
   DELETED: "user.deleted",
@@ -381,9 +381,9 @@ export const SalesChannelWorkflowEvents = {
    *
    * @eventPayload
    * ```ts
-   * [{
+   * {
    *   id, // The ID of the sales channel
-   * }]
+   * }
    * ```
    */
   CREATED: "sales-channel.created",
@@ -392,9 +392,9 @@ export const SalesChannelWorkflowEvents = {
    *
    * @eventPayload
    * ```ts
-   * [{
+   * {
    *   id, // The ID of the sales channel
-   * }]
+   * }
    * ```
    */
   UPDATED: "sales-channel.updated",
@@ -403,9 +403,9 @@ export const SalesChannelWorkflowEvents = {
    *
    * @eventPayload
    * ```ts
-   * [{
+   * {
    *   id, // The ID of the sales channel
-   * }]
+   * }
    * ```
    */
   DELETED: "sales-channel.deleted",
@@ -421,9 +421,9 @@ export const ProductCategoryWorkflowEvents = {
    *
    * @eventPayload
    * ```ts
-   * [{
+   * {
    *   id, // The ID of the product category
-   * }]
+   * }
    * ```
    */
   CREATED: "product-category.created",
@@ -432,9 +432,9 @@ export const ProductCategoryWorkflowEvents = {
    *
    * @eventPayload
    * ```ts
-   * [{
+   * {
    *   id, // The ID of the product category
-   * }]
+   * }
    * ```
    */
   UPDATED: "product-category.updated",
@@ -443,9 +443,9 @@ export const ProductCategoryWorkflowEvents = {
    *
    * @eventPayload
    * ```ts
-   * [{
+   * {
    *   id, // The ID of the product category
-   * }]
+   * }
    * ```
    */
   DELETED: "product-category.deleted",
@@ -461,9 +461,9 @@ export const ProductCollectionWorkflowEvents = {
    *
    * @eventPayload
    * ```ts
-   * [{
+   * {
    *   id, // The ID of the product collection
-   * }]
+   * }
    * ```
    */
   CREATED: "product-collection.created",
@@ -472,9 +472,9 @@ export const ProductCollectionWorkflowEvents = {
    *
    * @eventPayload
    * ```ts
-   * [{
+   * {
    *   id, // The ID of the product collection
-   * }]
+   * }
    * ```
    */
   UPDATED: "product-collection.updated",
@@ -483,9 +483,9 @@ export const ProductCollectionWorkflowEvents = {
    *
    * @eventPayload
    * ```ts
-   * [{
+   * {
    *   id, // The ID of the product collection
-   * }]
+   * }
    * ```
    */
   DELETED: "product-collection.deleted",
@@ -501,9 +501,9 @@ export const ProductVariantWorkflowEvents = {
    *
    * @eventPayload
    * ```ts
-   * [{
+   * {
    *   id, // The ID of the product variant
-   * }]
+   * }
    * ```
    */
   UPDATED: "product-variant.updated",
@@ -512,9 +512,9 @@ export const ProductVariantWorkflowEvents = {
    *
    * @eventPayload
    * ```ts
-   * [{
+   * {
    *   id, // The ID of the product variant
-   * }]
+   * }
    * ```
    */
   CREATED: "product-variant.created",
@@ -523,9 +523,9 @@ export const ProductVariantWorkflowEvents = {
    *
    * @eventPayload
    * ```ts
-   * [{
+   * {
    *   id, // The ID of the product variant
-   * }]
+   * }
    * ```
    */
   DELETED: "product-variant.deleted",
@@ -541,9 +541,9 @@ export const ProductWorkflowEvents = {
    *
    * @eventPayload
    * ```ts
-   * [{
+   * {
    *   id, // The ID of the product
-   * }]
+   * }
    * ```
    */
   UPDATED: "product.updated",
@@ -552,9 +552,9 @@ export const ProductWorkflowEvents = {
    *
    * @eventPayload
    * ```ts
-   * [{
+   * {
    *   id, // The ID of the product
-   * }]
+   * }
    * ```
    */
   CREATED: "product.created",
@@ -563,9 +563,9 @@ export const ProductWorkflowEvents = {
    *
    * @eventPayload
    * ```ts
-   * [{
+   * {
    *   id, // The ID of the product
-   * }]
+   * }
    * ```
    */
   DELETED: "product.deleted",
@@ -581,9 +581,9 @@ export const ProductTypeWorkflowEvents = {
    *
    * @eventPayload
    * ```ts
-   * [{
+   * {
    *   id, // The ID of the product type
-   * }]
+   * }
    * ```
    */
   UPDATED: "product-type.updated",
@@ -592,9 +592,9 @@ export const ProductTypeWorkflowEvents = {
    *
    * @eventPayload
    * ```ts
-   * [{
+   * {
    *   id, // The ID of the product type
-   * }]
+   * }
    * ```
    */
   CREATED: "product-type.created",
@@ -603,9 +603,9 @@ export const ProductTypeWorkflowEvents = {
    *
    * @eventPayload
    * ```ts
-   * [{
+   * {
    *   id, // The ID of the product type
-   * }]
+   * }
    * ```
    */
   DELETED: "product-type.deleted",
@@ -621,9 +621,9 @@ export const ProductTagWorkflowEvents = {
    *
    * @eventPayload
    * ```ts
-   * [{
+   * {
    *   id, // The ID of the product tag
-   * }]
+   * }
    * ```
    */
   UPDATED: "product-tag.updated",
@@ -632,9 +632,9 @@ export const ProductTagWorkflowEvents = {
    *
    * @eventPayload
    * ```ts
-   * [{
+   * {
    *   id, // The ID of the product tag
-   * }]
+   * }
    * ```
    */
   CREATED: "product-tag.created",
@@ -643,9 +643,9 @@ export const ProductTagWorkflowEvents = {
    *
    * @eventPayload
    * ```ts
-   * [{
+   * {
    *   id, // The ID of the product tag
-   * }]
+   * }
    * ```
    */
   DELETED: "product-tag.deleted",
@@ -661,9 +661,9 @@ export const ProductOptionWorkflowEvents = {
    *
    * @eventPayload
    * ```ts
-   * [{
+   * {
    *   id, // The ID of the product option
-   * }]
+   * }
    * ```
    */
   UPDATED: "product-option.updated",
@@ -672,9 +672,9 @@ export const ProductOptionWorkflowEvents = {
    *
    * @eventPayload
    * ```ts
-   * [{
+   * {
    *   id, // The ID of the product option
-   * }]
+   * }
    * ```
    */
   CREATED: "product-option.created",
@@ -683,9 +683,9 @@ export const ProductOptionWorkflowEvents = {
    *
    * @eventPayload
    * ```ts
-   * [{
+   * {
    *   id, // The ID of the product option
-   * }]
+   * }
    * ```
    */
   DELETED: "product-option.deleted",
@@ -713,9 +713,9 @@ export const InviteWorkflowEvents = {
    *
    * @eventPayload
    * ```ts
-   * [{
+   * {
    *   id, // The ID of the invite
-   * }]
+   * }
    * ```
    */
   CREATED: "invite.created",
@@ -724,9 +724,9 @@ export const InviteWorkflowEvents = {
    *
    * @eventPayload
    * ```ts
-   * [{
+   * {
    *   id, // The ID of the invite
-   * }]
+   * }
    * ```
    */
   DELETED: "invite.deleted",
@@ -737,9 +737,9 @@ export const InviteWorkflowEvents = {
    *
    * @eventPayload
    * ```ts
-   * [{
+   * {
    *   id, // The ID of the invite
-   * }]
+   * }
    * ```
    */
   RESENT: "invite.resent",
@@ -755,9 +755,9 @@ export const RegionWorkflowEvents = {
    *
    * @eventPayload
    * ```ts
-   * [{
+   * {
    *   id, // The ID of the region
-   * }]
+   * }
    * ```
    */
   UPDATED: "region.updated",
@@ -766,9 +766,9 @@ export const RegionWorkflowEvents = {
    *
    * @eventPayload
    * ```ts
-   * [{
+   * {
    *   id, // The ID of the region
-   * }]
+   * }
    * ```
    */
   CREATED: "region.created",
@@ -777,9 +777,9 @@ export const RegionWorkflowEvents = {
    *
    * @eventPayload
    * ```ts
-   * [{
+   * {
    *   id, // The ID of the region
-   * }]
+   * }
    * ```
    */
   DELETED: "region.deleted",
@@ -827,9 +827,9 @@ export const ShippingOptionTypeWorkflowEvents = {
    *
    * @eventPayload
    * ```ts
-   * [{
+   * {
    *   id, // The ID of the shipping option type
-   * }]
+   * }
    * ```
    */
   UPDATED: "shipping-option-type.updated",
@@ -840,9 +840,9 @@ export const ShippingOptionTypeWorkflowEvents = {
    *
    * @eventPayload
    * ```ts
-   * [{
+   * {
    *   id, // The ID of the shipping option type
-   * }]
+   * }
    * ```
    */
   CREATED: "shipping-option-type.created",
@@ -853,9 +853,9 @@ export const ShippingOptionTypeWorkflowEvents = {
    *
    * @eventPayload
    * ```ts
-   * [{
+   * {
    *   id, // The ID of the shipping option type
-   * }]
+   * }
    * ```
    */
   DELETED: "shipping-option-type.deleted",

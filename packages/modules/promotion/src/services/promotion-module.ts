@@ -719,6 +719,7 @@ export default class PromotionModuleService
           action: ComputedActions.REMOVE_ITEM_ADJUSTMENT,
           adjustment_id: adjustment.id,
           code,
+          item_id: adjustment.item_id as string,
         })
       }
 
@@ -727,11 +728,12 @@ export default class PromotionModuleService
           action: ComputedActions.REMOVE_SHIPPING_METHOD_ADJUSTMENT,
           adjustment_id: adjustment.id,
           code,
+          shipping_method_id: adjustment.shipping_method_id as string,
         })
       }
     }
 
-    const promotionCodeSet = new Set<string>(promotionCodes)
+    const promotionCodeSet = new Set<string>(promotionCodes) // TODO: uniquePromotionCodes
     const automaticPromotionCodeSet = new Set<string>(automaticPromotionCodes)
 
     const sortedPromotionsToApply = promotions

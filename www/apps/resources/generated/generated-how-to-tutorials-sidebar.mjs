@@ -463,6 +463,15 @@ const generatedgeneratedHowToTutorialsSidebarSidebar = {
         {
           "loaded": true,
           "isPathHref": true,
+          "type": "link",
+          "title": "Customer Tiers",
+          "path": "/how-to-tutorials/tutorials/customer-tiers",
+          "description": "Learn how to implement customer tiers in your Medusa store.",
+          "children": []
+        },
+        {
+          "loaded": true,
+          "isPathHref": true,
           "type": "sub-category",
           "title": "Extend Modules",
           "autogenerate_tags": "tutorial+extendModule",

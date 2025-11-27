@@ -28,7 +28,7 @@ The Index Module solves this problem by ingesting data into a central data store
 
 ### Ingested Data Models
 
-All core data models in Medusa are ingested, including `Product`, `Price`, `SalesChannel`, and more. You can also index custom data models if they are linked to an ingested data model. You'll learn more about this in the [Ingest Custom Data Models](#how-to-ingest-custom-data-models) section.
+Data models are ingested if they're linked to other data models with the `filterable` property set, as you'll learn in the [Ingest Custom Data Models](#how-to-ingest-custom-data-models) section. Medusa also ingests some core data models by default, such as `Product`, `ProductVariant`, `Price`, and `SalesChannel`.
 
 <Note>
 
@@ -68,7 +68,7 @@ npx medusa db:migrate
 
 ### Ingest Data
 
-The Index Module only ingests data when you start your Medusa server. So, to ingest the [currently supported data models](#ingested-data-models), start the Medusa application:
+The Index Module only ingests data when you start your Medusa server. So, to [ingest data models](#ingested-data-models), start the Medusa application:
 
 ```bash npm2yarn
 npm run dev
@@ -177,7 +177,7 @@ The `index` method accepts an object with the same properties as the `graph` met
 
 ## How to Ingest Custom Data Models
 
-Aside from the [core data models](#ingested-data-models), you can also ingest your own custom data models into the Index Module. You can do so by defining a link between your custom data model and one of the core data models, and setting the `filterable` property in the link definition.
+You can ingest core and custom data models into the Index Module. You can do so by defining a link between your custom data model and one of the core data models, and setting the `filterable` property in the link definition.
 
 <Note>
 
@@ -185,7 +185,7 @@ Read-only links are not supported by the Index Module.
 
 </Note>
 
-For example, assuming you have a Brand Module with a Brand data model (as explained in the [Customizations](../../../customization/custom-features/module/page.mdx)), you can ingest it into the Index Module using the `filterable` property in its link definition to the Product data model:
+For example, assuming you have a Brand Module with a Brand data model (as explained in the [Customizations](../../../customization/custom-features/module/page.mdx)), you can ingest it into the Index Module using the `filterable` property in its link definition to the `Product` data model:
 
 export const filterableHighlights = [
   ["12", "filterable", "Ingest Brand by setting its filterable properties."]
