@@ -1,5 +1,9 @@
 import { ExecArgs } from "@medusajs/framework/types"
-import { ContainerRegistrationKeys, dynamicImport, isFileSkipped, } from "@medusajs/framework/utils"
+import {
+  ContainerRegistrationKeys,
+  dynamicImport,
+  isFileSkipped,
+} from "@medusajs/framework/utils"
 import express from "express"
 import { existsSync } from "fs"
 import path from "path"
@@ -38,7 +42,7 @@ export default async function exec({ file, args }: Options) {
     }
 
     // set worker mode
-    process.env.MEDUSA_WORKER_MODE = "worker"
+    process.env.MEDUSA_WORKER_MODE = "server"
 
     const { container } = await loaders({
       directory,
