@@ -1,7 +1,6 @@
 extends: substitution
 message: "Use '%s' instead of '%s'."
 level: error
-scope: sentence
 action:
   name: replace
 swap:
