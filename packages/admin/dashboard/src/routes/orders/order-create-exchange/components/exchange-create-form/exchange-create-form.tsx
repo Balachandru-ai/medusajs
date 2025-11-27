@@ -179,7 +179,7 @@ export const ExchangeCreateForm = ({
           : "",
         location_id: orderReturn?.location_id,
         send_notification: false,
-        carry_over_promotion:
+        carry_over_promotions:
           preview?.order_change?.carry_over_promotions ?? false,
       })
     },
@@ -528,7 +528,7 @@ export const ExchangeCreateForm = ({
               <div className="bg-ui-bg-field mt-4 rounded-lg border py-2 pl-2 pr-4">
                 <Form.Field
                   control={form.control}
-                  name="carry_over_promotion"
+                  name="carry_over_promotions"
                   render={({ field: { onChange, value, ...field } }) => {
                     return (
                       <Form.Item>
