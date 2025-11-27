@@ -13,7 +13,7 @@ export const POST = async (
 ) => {
   const { id } = req.params
   const { carry_over_promotions } = req.validatedBody
-  const queryGraph = req.scope.resolve<RemoteQueryFunction>(
+  const query = req.scope.resolve<RemoteQueryFunction>(
     ContainerRegistrationKeys.QUERY
   )
 
@@ -25,7 +25,7 @@ export const POST = async (
     },
   })
 
-  const orderChange = await queryGraph.graph({
+  const result = await query.graph({
     entity: "order_change",
     filters: {
       ...req.filterableFields,
@@ -34,5 +34,5 @@ export const POST = async (
     fields: req.queryConfig.fields,
   })
 
-  res.status(200).json({ order_change: orderChange.data[0] })
+  res.status(200).json({ order_change: result.data[0] })
 }
