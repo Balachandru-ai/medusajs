@@ -160,7 +160,14 @@ export const updateExchangeAddItemWorkflow = createWorkflow(
 
     const orderChange: OrderChangeDTO = useRemoteQueryStep({
       entry_point: "order_change",
-      fields: ["id", "status", "version", "actions.*", "carry_over_promotions"],
+      fields: [
+        "id",
+        "status",
+        "version",
+        "exchange_id",
+        "actions.*",
+        "carry_over_promotions",
+      ],
       variables: {
         filters: {
           order_id: orderExchange.order_id,
