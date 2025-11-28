@@ -28,6 +28,7 @@ import ko from "./ko.json"
 import nl from "./nl.json"
 import bs from "./bs.json"
 import id from "./id.json"
+import sk from "./sk.json"
 export default {
   bs: {
     translation: bs,
@@ -118,5 +119,8 @@ export default {
   },
   id: {
     translation: id,
+  },
+  sk: {
+    translation: sk,
   },
 }

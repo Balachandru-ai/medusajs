@@ -24,6 +24,7 @@ import {
   ptBR,
   ro,
   ru,
+  sk,
   th,
   tr,
   uk,
@@ -212,5 +213,11 @@ export const languages: Language[] = [
     display_name: "Nederlands",
     ltr: true,
     date_locale: nl,
+  },
+  {
+    code: "sk",
+    display_name: "Slovak",
+    ltr: true,
+    date_locale: sk,
   },
 ]
