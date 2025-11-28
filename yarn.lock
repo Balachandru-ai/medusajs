@@ -3191,10 +3191,10 @@ __metadata:
   resolution: "@medusajs/analytics-posthog@workspace:packages/modules/providers/analytics-posthog"
   dependencies:
     "@medusajs/framework": 2.11.3
-    posthog-node: ^5.11.0
+    posthog-node: ^5.14.0
   peerDependencies:
     "@medusajs/framework": 2.11.3
-    posthog-node: ^5.11.0
+    posthog-node: ^5.14.0
   languageName: unknown
   linkType: soft
 
@@ -3820,7 +3820,7 @@ __metadata:
   peerDependencies:
     "@medusajs/framework": 2.11.3
     "@swc/core": ^1.7.28
-    posthog-node: ^5.11.0
+    posthog-node: ^5.14.0
     react-dom: ^18.3.1
     yalc: ^1.0.0-pre.53
   peerDependenciesMeta:
@@ -5096,10 +5096,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@posthog/core@npm:1.5.0":
-  version: 1.5.0
-  resolution: "@posthog/core@npm:1.5.0"
-  checksum: b2f78962cc9c450687655d4723ae1fc25026d831c9a4e5097cf606eec449f94b5ab2e519b355f853e905ac18489480c40a455809936f92708d35890698126e23
+"@posthog/core@npm:1.6.0":
+  version: 1.6.0
+  resolution: "@posthog/core@npm:1.6.0"
+  dependencies:
+    cross-spawn: ^7.0.6
+  checksum: 28aa907bb21b18587bc5f47c44349ebc834b37d9a4cedb1a18d7b673d4d7cdad2120dda80deceaee707b2f52333e9a08a8e591e1fc4066521ce05e820b76309f
   languageName: node
   linkType: hard
 
@@ -23026,12 +23028,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"posthog-node@npm:^5.11.0":
-  version: 5.11.0
-  resolution: "posthog-node@npm:5.11.0"
+"posthog-node@npm:^5.14.0":
+  version: 5.14.1
+  resolution: "posthog-node@npm:5.14.1"
   dependencies:
-    "@posthog/core": 1.5.0
-  checksum: 72cd439c64f5d8647cc8e89f635e5a5d72c1bfb48caa5cb9c5545410db1ed48fec24ef1d111545607cbddfb41d42bb6ffb84bb03d4d70b09bb59a1597265582b
+    "@posthog/core": 1.6.0
+  checksum: 2725963ad04a2dbd9c9a361d000d2d07c7247508f2571fbfc8a8055d200fd5ead97360c593f68229cdd9364d642905279f996d40a2d28a78c931e1cd7377b8bd
   languageName: node
   linkType: hard
 
@@ -24710,7 +24712,7 @@ __metadata:
     nodemon: ^2.0.20
     pg-god: ^1.0.12
     postcss: ^8.4.38
-    posthog-node: ^5.11.0
+    posthog-node: ^5.14.0
     prettier: ^2.8.8
     prettier-plugin-tailwindcss: ^0.2.3
     prop-types: ^15.8.1
