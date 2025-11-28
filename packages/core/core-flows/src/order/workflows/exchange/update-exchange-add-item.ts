@@ -14,7 +14,6 @@ import {
   createStep,
   createWorkflow,
   transform,
-  when,
 } from "@medusajs/framework/workflows-sdk"
 import { useRemoteQueryStep } from "../../../common"
 import {
@@ -26,7 +25,7 @@ import {
   throwIfOrderChangeIsNotActive,
 } from "../../utils/order-validation"
 import { refreshExchangeShippingWorkflow } from "./refresh-shipping"
-import { computeAdjustmentsForPreviewWorkflow } from "../order-edit/compute-adjustments-for-preview"
+import { computeAdjustmentsForPreviewWorkflow } from "../compute-adjustments-for-preview"
 
 /**
  * The data to validate that an outbound or new item in an exchange can be updated.
@@ -217,17 +216,11 @@ export const updateExchangeAddItemWorkflow = createWorkflow(
       } as OrderDTO & { promotions: PromotionDTO[] }
     })
 
-    when(
-      { orderChange },
-      ({ orderChange }) => !!orderChange.carry_over_promotions
-    ).then(() => {
-      computeAdjustmentsForPreviewWorkflow.runAsStep({
-        input: {
-          order: orderWithPromotions,
-          orderChange,
-          exchange_id: orderExchange.id,
-        },
-      })
+    computeAdjustmentsForPreviewWorkflow.runAsStep({
+      input: {
+        order: orderWithPromotions,
+        orderChange,
+      },
     })
 
     refreshExchangeShippingWorkflow.runAsStep({

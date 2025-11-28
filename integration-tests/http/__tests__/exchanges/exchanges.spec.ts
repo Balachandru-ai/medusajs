@@ -1584,34 +1584,6 @@ medusaIntegrationTestRunner({
             ])
           )
         })
-
-        it("should validate that order change is an exchange", async () => {
-          // start order edit instead of an exchange
-          await api.post(
-            `/admin/order-edits`,
-            { order_id: order.id },
-            adminHeaders
-          )
-
-          const orderEditOrderChange = (
-            await api.get(`/admin/orders/${order.id}/preview`, adminHeaders)
-          ).data.order.order_change
-
-          const { response } = await api
-            .post(
-              `/admin/order-changes/${orderEditOrderChange.id}`,
-              {
-                carry_over_promotions: true,
-              },
-              adminHeaders
-            )
-            .catch((e) => e)
-
-          expect(response.status).toBe(400)
-          expect(response.data.message).toContain(
-            `Order change ${orderEditOrderChange.id} is not an exchange.`
-          )
-        })
       })
     })
   },

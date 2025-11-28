@@ -7,13 +7,13 @@ import {
   when,
 } from "@medusajs/framework/workflows-sdk"
 import { updateOrderChangesStep } from "../steps/update-order-changes"
-import { setCarryOverPromotionFlagForOrderChangeWorkflow } from "./set-carry-over-promotion-flag"
+import { onCarryPromotionsFlagSet } from "./on-carry-promotions-flag-set"
 
 export const updateOrderChangeWorkflowId = "update-order-change-workflow"
 
 /**
  * This workflow updates an order change.
- * If the carry_over_promotions flag is provided, it calls setCarryOverPromotionFlagForOrderChangeWorkflow
+ * If the carry_over_promotions flag is provided, it calls onCarryPromotionsFlagSet
  * to handle the promotion logic. Otherwise, it updates the order change directly.
  *
  * @example
@@ -34,22 +34,14 @@ export const updateOrderChangeWorkflow = createWorkflow(
   function (
     input: WorkflowData<UpdateOrderChangeDTO>
   ): WorkflowResponse<OrderChangeDTO> {
-    // Check if carry_over_promotions is provided (not null/undefined)
-    const hasCarryOverPromotions = transform(
-      { input },
-      ({ input }) =>
-        input.carry_over_promotions !== null &&
-        input.carry_over_promotions !== undefined
-    )
+    const updatedOrderChange = updateOrderChangesStep([input])
 
-    // If carry_over_promotions is provided, call the dedicated workflow
-    const promotionWorkflowResult = when(
+    when(
       "should-call-carry-over-promotion-workflow",
-      { hasCarryOverPromotions },
-      ({ hasCarryOverPromotions }) => hasCarryOverPromotions
+      input,
+      ({ carry_over_promotions }) => typeof carry_over_promotions === "boolean"
     ).then(() => {
-      // Call the carry over promotion workflow which returns the updated order change
-      return setCarryOverPromotionFlagForOrderChangeWorkflow.runAsStep({
+      return onCarryPromotionsFlagSet.runAsStep({
         input: {
           order_change_id: input.id,
           carry_over_promotions: input.carry_over_promotions!,
@@ -57,21 +49,11 @@ export const updateOrderChangeWorkflow = createWorkflow(
       })
     })
 
-    const updatedOrderChanges = when(
-      "should-update-order-change-directly",
-      { hasCarryOverPromotions },
-      // TODO: update this condition when other fileds can be updated with the flow
-      ({ hasCarryOverPromotions }) => !hasCarryOverPromotions
-    ).then(() => {
-      return updateOrderChangesStep([input])
-    })
-
-    const updatedOrderChange = transform(
-      { promotionWorkflowResult, updatedOrderChanges },
-      ({ promotionWorkflowResult, updatedOrderChanges }) =>
-        (promotionWorkflowResult ?? updatedOrderChanges?.[0]) as OrderChangeDTO
+    return new WorkflowResponse(
+      transform(
+        { updatedOrderChange },
+        ({ updatedOrderChange }) => updatedOrderChange?.[0]
+      )
     )
-
-    return new WorkflowResponse(updatedOrderChange)
   }
 )
