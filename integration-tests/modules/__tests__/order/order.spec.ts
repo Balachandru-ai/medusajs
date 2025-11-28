@@ -372,6 +372,7 @@ medusaIntegrationTestRunner({
                     value: "5e-18",
                     precision: 20,
                   },
+                  version: 1,
                   provider_id: expect.any(String),
                   created_at: expect.any(String),
                   updated_at: expect.any(String),
