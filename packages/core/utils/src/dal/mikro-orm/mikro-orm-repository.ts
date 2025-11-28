@@ -1,4 +1,16 @@
 import {
+  EntityClass,
+  EntityManager,
+  EntityName,
+  EntityProperty,
+  EntitySchema,
+  LoadStrategy,
+  FilterQuery as MikroFilterQuery,
+  FindOptions as MikroOptions,
+  ReferenceKind,
+} from "@medusajs/deps/mikro-orm/core"
+import { SqlEntityManager } from "@medusajs/deps/mikro-orm/postgresql"
+import {
   Context,
   DAL,
   FilterQuery,
@@ -11,18 +23,6 @@ import {
   RepositoryTransformOptions,
   UpsertWithReplaceConfig,
 } from "@medusajs/types"
-import {
-  EntityClass,
-  EntityManager,
-  EntityName,
-  EntityProperty,
-  EntitySchema,
-  LoadStrategy,
-  FilterQuery as MikroFilterQuery,
-  FindOptions as MikroOptions,
-  ReferenceKind,
-} from "@medusajs/deps/mikro-orm/core"
-import { SqlEntityManager } from "@medusajs/deps/mikro-orm/postgresql"
 import {
   arrayDifference,
   isString,
