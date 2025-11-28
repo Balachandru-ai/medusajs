@@ -1,4 +1,5 @@
 import {
+  CreateOrderLineItemAdjustmentDTO,
   InferEntityType,
   OrderChangeActionDTO,
   OrderDTO,
@@ -25,13 +26,14 @@ export async function applyChangesToOrder(
   actionsMap: Record<string, any[]>,
   options?: {
     addActionReferenceToObject?: boolean
-    includeTaxLinesAndAdjustementsToPreview?: (...args) => void
+    includeTaxLinesAndAdjustmentsToPreview?: (...args) => void
   }
 ) {
   const itemsToUpsert: InferEntityType<typeof OrderItem>[] = []
   const creditLinesToUpsert: InferEntityType<typeof OrderCreditLine>[] = []
   const shippingMethodsToUpsert: InferEntityType<typeof OrderShippingMethod>[] =
     []
+  const lineItemAdjustmentsToCreate: CreateOrderLineItemAdjustmentDTO[] = []
   const summariesToUpsert: any[] = []
   const orderToUpdate: any[] = []
 
@@ -93,6 +95,20 @@ export async function applyChangesToOrder(
         written_off_quantity: orderItem.written_off_quantity ?? 0,
         metadata: orderItem.metadata,
       } as any
+
+      if (version > order.version) {
+        item.adjustments?.forEach((adjustment) => {
+          lineItemAdjustmentsToCreate.push({
+            item_id: itemId,
+            version,
+            amount: adjustment.amount,
+            description: adjustment.description,
+            promotion_id: adjustment.promotion_id,
+            code: adjustment.code,
+            is_tax_inclusive: adjustment.is_tax_inclusive,
+          })
+        })
+      }
 
       itemsToUpsert.push(itemToUpsert)
     }
@@ -157,11 +173,12 @@ export async function applyChangesToOrder(
     }
 
     // Including tax lines and adjustments for added items and shipping methods
-    if (options?.includeTaxLinesAndAdjustementsToPreview) {
-      await options?.includeTaxLinesAndAdjustementsToPreview(
+    if (options?.includeTaxLinesAndAdjustmentsToPreview) {
+      await options?.includeTaxLinesAndAdjustmentsToPreview(
         calculated.order,
         itemsToUpsert,
-        shippingMethodsToUpsert
+        shippingMethodsToUpsert,
+        lineItemAdjustmentsToCreate
       )
       decorateCartTotals(calculated.order)
     }
@@ -194,6 +211,7 @@ export async function applyChangesToOrder(
   }
 
   return {
+    lineItemAdjustmentsToCreate,
     itemsToUpsert,
     creditLinesToUpsert,
     shippingMethodsToUpsert,

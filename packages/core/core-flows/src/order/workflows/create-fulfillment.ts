@@ -400,6 +400,7 @@ export const createOrderFulfillmentWorkflow = createWorkflow(
       fields: [
         "id",
         "display_id",
+        "custom_display_id",
         "status",
         "customer_id",
         "customer.*",

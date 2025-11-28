@@ -38,7 +38,7 @@ export const generatedEditDates = {
   "app/products/edit/page.mdx": "2025-10-30T11:24:51.589Z",
   "app/products/variants/page.mdx": "2025-10-30T11:26:37.612Z",
   "app/products/create/bundle/page.mdx": "2025-05-30T13:29:15.958Z",
-  "app/products/create/multi-part/page.mdx": "2025-05-30T13:29:20.321Z",
+  "app/products/create/multi-part/page.mdx": "2025-11-27T08:28:54.245Z",
   "app/promotions/campaigns/page.mdx": "2025-10-13T10:14:17.948Z",
   "app/promotions/create/page.mdx": "2025-10-14T12:09:22.188Z",
   "app/promotions/manage/page.mdx": "2025-10-14T12:09:22.188Z",

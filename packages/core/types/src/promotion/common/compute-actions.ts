@@ -107,6 +107,11 @@ export interface RemoveItemAdjustmentAction {
   adjustment_id: string
 
   /**
+   * The associated item's ID.
+   */
+  item_id: string
+
+  /**
    * The promotion's description.
    */
   description?: string
@@ -160,6 +165,11 @@ export interface RemoveShippingMethodAdjustment {
    * The associated adjustment's ID.
    */
   adjustment_id: string
+
+  /**
+   * The associated shipping method's ID.
+   */
+  shipping_method_id: string
 
   /**
    * The promotion's code.

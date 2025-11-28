@@ -764,6 +764,10 @@ export const filesMap = [
     "pathname": "/how-to-tutorials/tutorials/category-images"
   },
   {
+    "filePath": "/www/apps/resources/app/how-to-tutorials/tutorials/customer-tiers/page.mdx",
+    "pathname": "/how-to-tutorials/tutorials/customer-tiers"
+  },
+  {
     "filePath": "/www/apps/resources/app/how-to-tutorials/tutorials/first-purchase-discounts/page.mdx",
     "pathname": "/how-to-tutorials/tutorials/first-purchase-discounts"
   },
@@ -842,6 +846,10 @@ export const filesMap = [
   {
     "filePath": "/www/apps/resources/app/infrastructure-modules/caching/concepts/page.mdx",
     "pathname": "/infrastructure-modules/caching/concepts"
+  },
+  {
+    "filePath": "/www/apps/resources/app/infrastructure-modules/caching/guides/clear-cache/page.mdx",
+    "pathname": "/infrastructure-modules/caching/guides/clear-cache"
   },
   {
     "filePath": "/www/apps/resources/app/infrastructure-modules/caching/guides/memcached/page.mdx",

@@ -4,16 +4,13 @@ import {
   OrderPreviewDTO,
   OrderWorkflow,
 } from "@medusajs/framework/types"
+import { ChangeActionType, OrderChangeStatus } from "@medusajs/framework/utils"
 import {
-  ChangeActionType,
-  OrderChangeStatus
-} from "@medusajs/framework/utils"
-import {
-  WorkflowData,
-  WorkflowResponse,
   createStep,
   createWorkflow,
   transform,
+  WorkflowData,
+  WorkflowResponse,
 } from "@medusajs/framework/workflows-sdk"
 import { useQueryGraphStep } from "../../../common"
 import { previewOrderChangeStep } from "../../steps/preview-order-change"
@@ -25,6 +22,7 @@ import { addOrderLineItemsWorkflow } from "../add-line-items"
 import { createOrderChangeActionsWorkflow } from "../create-order-change-actions"
 import { updateOrderTaxLinesWorkflow } from "../update-tax-lines"
 import { fieldsToRefreshOrderEdit } from "./utils/fields"
+import { computeAdjustmentsForPreviewWorkflow } from "./compute-adjustments-for-preview"
 
 /**
  * The data to validate that new items can be added to an order edit.
@@ -158,7 +156,12 @@ export const orderEditAddNewItemWorkflow = createWorkflow(
     })
 
     const orderChangeActionInput = transform(
-      { order, orderChange, items: input.items, lineItems },
+      {
+        order,
+        orderChange,
+        items: input.items,
+        lineItems,
+      },
       ({ order, orderChange, items, lineItems }) => {
         return items.map((item, index) => ({
           order_change_id: orderChange.id,
@@ -181,6 +184,13 @@ export const orderEditAddNewItemWorkflow = createWorkflow(
 
     createOrderChangeActionsWorkflow.runAsStep({
       input: orderChangeActionInput,
+    })
+
+    computeAdjustmentsForPreviewWorkflow.runAsStep({
+      input: {
+        order,
+        orderChange,
+      },
     })
 
     return new WorkflowResponse(previewOrderChangeStep(input.order_id))

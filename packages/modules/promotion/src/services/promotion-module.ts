@@ -7,7 +7,6 @@ import {
   FindConfig,
   InferEntityType,
   InternalModuleDeclaration,
-  ModuleJoinerConfig,
   ModulesSdkTypes,
   PromotionDTO,
   PromotionTypes,
@@ -62,7 +61,6 @@ import {
   validateApplicationMethodAttributes,
   validatePromotionRuleAttributes,
 } from "@utils"
-import { joinerConfig } from "../joiner-config"
 import { CreatePromotionRuleValueDTO } from "../types/promotion-rule-value"
 import { buildPromotionRuleQueryFilterFromContext } from "../utils/compute-actions/build-promotion-rule-query-filter-from-context"
 
@@ -145,10 +143,6 @@ export default class PromotionModuleService
     this.campaignService_ = campaignService
     this.campaignBudgetService_ = campaignBudgetService
     this.campaignBudgetUsageService_ = campaignBudgetUsageService
-  }
-
-  __joinerConfig(): ModuleJoinerConfig {
-    return joinerConfig
   }
 
   @InjectManager()
@@ -766,6 +760,7 @@ export default class PromotionModuleService
           action: ComputedActions.REMOVE_ITEM_ADJUSTMENT,
           adjustment_id: adjustment.id,
           code,
+          item_id: adjustment.item_id as string,
         })
       }
 
@@ -774,11 +769,12 @@ export default class PromotionModuleService
           action: ComputedActions.REMOVE_SHIPPING_METHOD_ADJUSTMENT,
           adjustment_id: adjustment.id,
           code,
+          shipping_method_id: adjustment.shipping_method_id as string,
         })
       }
     }
 
-    const promotionCodeSet = new Set<string>(promotionCodes)
+    const promotionCodeSet = new Set<string>(promotionCodes) // TODO: uniquePromotionCodes
     const automaticPromotionCodeSet = new Set<string>(automaticPromotionCodes)
 
     const sortedPromotionsToApply = promotions

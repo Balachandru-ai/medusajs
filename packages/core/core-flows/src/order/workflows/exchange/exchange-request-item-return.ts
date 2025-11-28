@@ -4,6 +4,7 @@ import {
   OrderExchangeDTO,
   OrderPreviewDTO,
   OrderWorkflow,
+  PromotionDTO,
   ReturnDTO,
 } from "@medusajs/framework/types"
 import {
@@ -32,6 +33,7 @@ import {
   throwIfOrderChangeIsNotActive,
 } from "../../utils/order-validation"
 import { createOrderChangeActionsWorkflow } from "../create-order-change-actions"
+import { computeAdjustmentsForPreviewWorkflow } from "../order-edit/compute-adjustments-for-preview"
 import { refreshExchangeShippingWorkflow } from "./refresh-shipping"
 
 /**
@@ -178,10 +180,12 @@ export const orderExchangeRequestItemReturnWorkflow = createWorkflow(
       fields: [
         "id",
         "status",
+        "currency_code",
         "items.*",
         "items.variant.manage_inventory",
         "items.variant.inventory_items.inventory_item_id",
         "items.variant.inventory_items.inventory.location_levels.location_id",
+        "promotions.*",
       ],
       variables: { id: orderExchange.order_id },
       list: false,
@@ -190,7 +194,7 @@ export const orderExchangeRequestItemReturnWorkflow = createWorkflow(
 
     const orderChange: OrderChangeDTO = useRemoteQueryStep({
       entry_point: "order_change",
-      fields: ["id", "status"],
+      fields: ["id", "status", "version"],
       variables: {
         filters: {
           order_id: orderExchange.order_id,
@@ -304,6 +308,21 @@ export const orderExchangeRequestItemReturnWorkflow = createWorkflow(
 
     createOrderChangeActionsWorkflow.runAsStep({
       input: orderChangeActionInput,
+    })
+
+    const orderWithPromotions = transform({ order }, ({ order }) => {
+      return {
+        ...order,
+        promotions: (order as any).promotions ?? [],
+      } as OrderDTO & { promotions: PromotionDTO[] }
+    })
+
+    computeAdjustmentsForPreviewWorkflow.runAsStep({
+      input: {
+        order: orderWithPromotions,
+        orderChange,
+        exchange_id: orderExchange.id,
+      },
     })
 
     const refreshArgs = transform(

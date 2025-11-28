@@ -3,7 +3,6 @@ import {
   isDefined,
   MedusaError,
   OrderChangeStatus,
-  PromotionActions,
   ShippingOptionPriceType,
 } from "@medusajs/framework/utils"
 import {
@@ -30,8 +29,8 @@ import { createOrderShippingMethods } from "../../order/steps/create-order-shipp
 import { prepareShippingMethod } from "../../order/utils/prepare-shipping-method"
 import { validateDraftOrderChangeStep } from "../steps/validate-draft-order-change"
 import { draftOrderFieldsForRefreshSteps } from "../utils/fields"
-import { refreshDraftOrderAdjustmentsWorkflow } from "./refresh-draft-order-adjustments"
 import { acquireLockStep, releaseLockStep } from "../../locking"
+import { computeDraftOrderAdjustmentsWorkflow } from "./compute-draft-order-adjustments"
 
 const validateShippingOptionStep = createStep(
   "validate-shipping-option",
@@ -187,19 +186,9 @@ export const addDraftOrderShippingMethodsWorkflow = createWorkflow(
       appliedPromoCodes,
       (appliedPromoCodes) => appliedPromoCodes.length > 0
     ).then(() => {
-      const refetchedOrder = useRemoteQueryStep({
-        entry_point: "orders",
-        fields: draftOrderFieldsForRefreshSteps,
-        variables: { id: input.order_id },
-        list: false,
-        throw_if_key_not_found: true,
-      }).config({ name: "refetched-order-query" })
-
-      refreshDraftOrderAdjustmentsWorkflow.runAsStep({
+      computeDraftOrderAdjustmentsWorkflow.runAsStep({
         input: {
-          order: refetchedOrder,
-          promo_codes: appliedPromoCodes,
-          action: PromotionActions.REPLACE,
+          order_id: input.order_id,
         },
       })
     })

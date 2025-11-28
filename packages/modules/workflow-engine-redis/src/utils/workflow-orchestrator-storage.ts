@@ -145,37 +145,37 @@ export class RedisDistributedTransactionStorage
     // Remove all repeatable jobs from the old queue since now we have a queue dedicated to scheduled jobs
     await this.removeAllRepeatableJobs(this.queue)
 
-    this.worker = new Worker(
-      this.queueName,
-      async (job) => {
-        this.logger_.debug(
-          `executing job ${job.name} from queue ${
-            this.queueName
-          } with the following data: ${JSON.stringify(job.data)}`
-        )
-        if (allowedJobs.includes(job.name as JobType)) {
-          try {
-            await this.executeTransaction(
-              job.data.workflowId,
-              job.data.transactionId,
-              job.data.transactionMetadata
-            )
-          } catch (error) {
-            if (!SkipExecutionError.isSkipExecutionError(error)) {
-              throw error
+    if (this.#isWorkerMode) {
+      this.worker = new Worker(
+        this.queueName,
+        async (job) => {
+          this.logger_.debug(
+            `executing job ${job.name} from queue ${
+              this.queueName
+            } with the following data: ${JSON.stringify(job.data)}`
+          )
+          if (allowedJobs.includes(job.name as JobType)) {
+            try {
+              await this.executeTransaction(
+                job.data.workflowId,
+                job.data.transactionId,
+                job.data.transactionMetadata
+              )
+            } catch (error) {
+              if (!SkipExecutionError.isSkipExecutionError(error)) {
+                throw error
+              }
             }
           }
-        }
 
-        if (job.name === JobType.SCHEDULE) {
-          // Remove repeatable job from the old queue since now we have a queue dedicated to scheduled jobs
-          await this.remove(job.data.jobId)
-        }
-      },
-      workerOptions
-    )
+          if (job.name === JobType.SCHEDULE) {
+            // Remove repeatable job from the old queue since now we have a queue dedicated to scheduled jobs
+            await this.remove(job.data.jobId)
+          }
+        },
+        workerOptions
+      )
 
-    if (this.#isWorkerMode) {
       this.jobWorker = new Worker(
         this.jobQueueName,
         async (job) => {
@@ -291,7 +291,6 @@ export class RedisDistributedTransactionStorage
 
     const stepsArray = Object.values(data.flow.steps) as TransactionStep[]
     let currentStep!: TransactionStep
-    let currentStepsIsAsync = false
 
     const targetStates = isFlowInvoking
       ? new Set([
@@ -316,6 +315,7 @@ export class RedisDistributedTransactionStorage
       }
     }
 
+    let shouldStoreCurrentSteps = false
     if (currentStep) {
       for (const step of stepsArray) {
         if (step.id === "_root") {
@@ -324,9 +324,9 @@ export class RedisDistributedTransactionStorage
 
         if (
           step.depth === currentStep.depth &&
-          step?.definition?.async === true
+          step?.definition?.store === true
         ) {
-          currentStepsIsAsync = true
+          shouldStoreCurrentSteps = true
           break
         }
       }
@@ -334,7 +334,7 @@ export class RedisDistributedTransactionStorage
 
     if (
       !(isNotStarted || isFinished || isWaitingToCompensate) &&
-      !currentStepsIsAsync &&
+      !shouldStoreCurrentSteps &&
       !asyncVersion
     ) {
       return
