@@ -2051,6 +2051,8 @@
       "addCondition": "Add condition",
       "clearAll": "Clear all",
       "taxInclusive": "Tax Inclusive",
+      "usageLimit": "Usage Limit",
+      "usage": "Usage",
       "amount": {
         "tooltip": "Select the currency code to enable setting the amount"
       },
@@ -2212,6 +2214,10 @@
           "title": "Percentage",
           "description": "The percentage to discount off the amount. eg. 8%"
         }
+      },
+      "limit": {
+        "title": "Usage Limit",
+        "description": "Maximum number of times this promotion can be used across all orders. Leave empty for unlimited usage."
       }
     },
     "deleteWarning": "You are about to delete the promotion {{code}}. This action cannot be undone.",
