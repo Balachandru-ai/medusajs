@@ -721,6 +721,15 @@
           "length": 6,
           "mappedType": "datetime"
         },
+        "carry_over_promotions": {
+          "name": "carry_over_promotions",
+          "type": "boolean",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "mappedType": "boolean"
+        },
         "order_id": {
           "name": "order_id",
           "type": "text",
@@ -1977,15 +1986,6 @@
           "primary": false,
           "unique": false,
           "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_item_order_id_version\" ON \"order_item\" (\"order_id\", \"version\") WHERE deleted_at IS NULL"
-        },
-        {
-          "keyName": "IDX_order_item_version",
-          "columnNames": [],
-          "composite": false,
-          "constraint": false,
-          "primary": false,
-          "unique": false,
-          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_order_item_version\" ON \"order_item\" (version) WHERE deleted_at IS NULL"
         },
         {
           "keyName": "IDX_order_item_item_id",

@@ -24,7 +24,7 @@ import {
   throwIfOrderChangeIsNotActive,
 } from "../../utils/order-validation"
 import { createOrderChangeActionsWorkflow } from "../create-order-change-actions"
-import { computeAdjustmentsForPreviewWorkflow } from "./compute-adjustments-for-preview"
+import { computeAdjustmentsForPreviewWorkflow } from "../compute-adjustments-for-preview"
 import { fieldsToRefreshOrderEdit } from "./utils/fields"
 
 /**
@@ -128,7 +128,7 @@ export const orderEditUpdateItemQuantityWorkflow = createWorkflow(
 
     const orderChangeResult = useQueryGraphStep({
       entity: "order_change",
-      fields: ["id", "status", "version", "actions.*"],
+      fields: ["id", "status", "version", "actions.*", "carry_over_promotions"],
       filters: {
         order_id: input.order_id,
         status: [OrderChangeStatus.PENDING, OrderChangeStatus.REQUESTED],

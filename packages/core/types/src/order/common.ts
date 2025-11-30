@@ -2118,6 +2118,11 @@ export interface OrderChangeDTO {
   change_type?: "return" | "exchange" | "claim" | "edit" | "transfer"
 
   /**
+   * Whether to carry over promotions (apply promotions to outbound exchange items).
+   */
+  carry_over_promotions?: boolean | null
+
+  /**
    * The ID of the associated order
    */
   order_id: string
