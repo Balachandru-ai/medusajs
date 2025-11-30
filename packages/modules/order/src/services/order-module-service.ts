@@ -3336,6 +3336,7 @@ export default class OrderModuleService
         "status",
         "description",
         "internal_note",
+        "carry_over_promotions",
       ],
       relations: [] as string[],
       order: {},
