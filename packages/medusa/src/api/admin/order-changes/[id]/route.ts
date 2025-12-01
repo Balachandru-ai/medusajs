@@ -4,11 +4,16 @@ import {
   AuthenticatedMedusaRequest,
   MedusaResponse,
 } from "@medusajs/framework/http"
-import { AdminPostOrderChangesReqSchemaType } from "../validators"
 import { ContainerRegistrationKeys } from "@medusajs/framework/utils"
 
+/**
+ * @since v2.11.4
+ */
 export const POST = async (
-  req: AuthenticatedMedusaRequest<AdminPostOrderChangesReqSchemaType>,
+  req: AuthenticatedMedusaRequest<
+    HttpTypes.AdminUpdateOrderChange,
+    HttpTypes.AdminOrderChangesFilters
+  >,
   res: MedusaResponse<HttpTypes.AdminOrderChangeResponse>
 ) => {
   const { id } = req.params

@@ -638,6 +638,8 @@ export class Order {
    * This method updates an order change. It sends a request to the
    * [Update Order Change](https://docs.medusajs.com/api/admin#order-changes_postorder-changesid)
    * API route.
+   * 
+   * @since v2.11.4
    *
    * @param id - The order change's ID.
    * @param body - The update details.
@@ -658,8 +660,8 @@ export class Order {
    */
   async updateOrderChange(
     id: string,
-    body: { carry_over_promotions: boolean },
-    query?: SelectParams,
+    body: HttpTypes.AdminUpdateOrderChange,
+    query?: HttpTypes.AdminOrderChangesFilters,
     headers?: ClientHeaders
   ) {
     return await this.client.fetch<HttpTypes.AdminOrderChangeResponse>(
