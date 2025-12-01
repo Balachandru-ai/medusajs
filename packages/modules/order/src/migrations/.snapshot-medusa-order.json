@@ -721,6 +721,15 @@
           "length": 6,
           "mappedType": "datetime"
         },
+        "carry_over_promotions": {
+          "name": "carry_over_promotions",
+          "type": "boolean",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "mappedType": "boolean"
+        },
         "order_id": {
           "name": "order_id",
           "type": "text",
@@ -2047,6 +2056,16 @@
           "primary": false,
           "nullable": false,
           "mappedType": "text"
+        },
+        "version": {
+          "name": "version",
+          "type": "integer",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "default": "1",
+          "mappedType": "integer"
         },
         "description": {
           "name": "description",

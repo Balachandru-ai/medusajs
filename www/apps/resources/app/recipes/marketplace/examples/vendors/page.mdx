@@ -1283,45 +1283,73 @@ In this step, you’ll create a workflow that’s executed when the customer pla
       },
       {
         type: "step",
+        name: "acquireLockStep",
+        description: "Acquire a lock on the cart to avoid concurrent modifications.",
+        depth: 2,
+        link: "/references/medusa-workflows/steps/acquireLockStep"
+      },
+      {
+        type: "step",
         name: "completeCartWorkflow", 
         description: "Create the parent order from the cart.",
-        depth: 1,
+        depth: 3,
         link: "/references/medusa-workflows/completeCartWorkflow"
       },
       {
         type: "step",
-        name: "groupVendorItemsStep",
-        description: "Group the items by their vendor.",
-        depth: 1,
-        link: "#groupvendoritemssstep"
+        name: "useQueryGraphStep",
+        description: "Retrieve existing links between the order and variant to ensure idempotency.",
+        depth: 4,
+        link: "/references/helper-steps/useQueryGraphStep"
       },
       {
-        type: "step",
+        type: "workflow",
         name: "getOrderDetailWorkflow",
         description: "Retrieve the parent order's details.",
-        depth: 1,
+        depth: 5,
         link: "/references/medusa-workflows/getOrderDetailWorkflow"
       },
       {
-        type: "step",
-        name: "createVendorOrdersStep", 
-        description: "Create child orders for each vendor.",
-        depth: 1,
-        link: "#createvendorordersstep"
+        type: "when",
+        condition: "existingLinks.length === 0",
+        steps: [
+          {
+            type: "step",
+            name: "groupVendorItemsStep",
+            description: "Group the items by their vendor.",
+            depth: 4,
+            link: "#groupvendoritemssstep"
+          },
+          {
+            type: "step",
+            name: "createVendorOrdersStep", 
+            description: "Create child orders for each vendor.",
+            depth: 6,
+            link: "#createvendorordersstep"
+          },
+          {
+            type: "step",
+            name: "createRemoteLinkStep",
+            description: "Create links between vendors and orders.",
+            depth: 7,
+            link: "/references/helper-steps/createRemoteLinkStep"
+          },
+        ],
+        depth: 6
       },
       {
         type: "step",
-        name: "createRemoteLinkStep",
-        description: "Create links between vendors and orders.",
-        depth: 1,
-        link: "/references/helper-steps/createRemoteLinkStep"
-      }
+        name: "releaseLockStep",
+        description: "Release the lock on the cart.",
+        depth: 7,
+        link: "/references/medusa-workflows/steps/releaseLockStep"
+      },
     ]
   }}
   hideLegend
 />
 
-You only need to implement the third and fourth steps, as Medusa provides the rest of the steps in its `@medusajs/medusa/core-flows` package.
+You only need to implement the `groupVendorItemsStep` and `createVendorOrdersStep` steps, as Medusa provides the rest of the steps in its `@medusajs/medusa/core-flows` package.
 
 ### groupVendorItemsStep
 
@@ -1647,17 +1675,22 @@ Now that you have all the necessary steps, you can create the workflow.
 Create the workflow at the file `src/workflows/marketplace/create-vendor-orders/index.ts`:
 
 export const createVendorOrdersWorkflowHighlights = [
-  ["21", "useQueryGraphStep", "Retrieve the cart's details."],
-  ["30", "completeCartWorkflow", "Create the parent order from the cart."],
-  ["36", "groupVendorItemsStep", "Group the items by their vendor."],
-  ["40", "getOrderDetailWorkflow", "Retrieve the parent order's details."],
-  ["61", "createVendorOrdersStep", "Create child orders for each vendor"],
-  ["66", "createRemoteLinkStep", "Create the links returned by the previous step."]
+  ["25", "useQueryGraphStep", "Retrieve the cart's details."],
+  ["34", "acquireLockStep", "Acquire a lock on the cart to avoid concurrent modifications."],
+  ["40", "completeCartWorkflow", "Create the parent order from the cart."],
+  ["46", "useQueryGraphStep", "Retrieve existing links between the order and variant to ensure idempotency."],
+  ["52", "getOrderDetailWorkflow", "Retrieve the parent order's details."],
+  ["70", "when", "Check if there are existing links to ensure idempotency."],
+  ["76", "groupVendorItemsStep", "Group the items by their vendor."],
+  ["83", "createVendorOrdersStep", "Create child orders for each vendor"],
+  ["88", "createRemoteLinkStep", "Create the links returned by the previous step."],
+  ["93", "releaseLockStep", "Release the lock on the cart."],
 ]
 
-```ts title="src/workflows/marketplace/create-vendor-orders/index.ts" collapsibleLines="1-13" expandMoreLabel="Show Imports"
+```ts title="src/workflows/marketplace/create-vendor-orders/index.ts" collapsibleLines="1-17" expandMoreLabel="Show Imports"
 import { 
   createWorkflow,
+  when,
   WorkflowResponse,
 } from "@medusajs/framework/workflows-sdk"
 import { 
@@ -1665,9 +1698,12 @@ import {
   createRemoteLinkStep,
   completeCartWorkflow,
   getOrderDetailWorkflow,
+  acquireLockStep,
+  releaseLockStep,
 } from "@medusajs/medusa/core-flows"
-import groupVendorItemsStep from "./steps/group-vendor-items"
+import groupVendorItemsStep, { GroupVendorItemsStepInput } from "./steps/group-vendor-items"
 import createVendorOrdersStep from "./steps/create-vendor-orders"
+import vendorOrderLink from "../../../links/vendor-order"
 
 type WorkflowInput = {
   cart_id: string
@@ -1685,16 +1721,24 @@ const createVendorOrdersWorkflow = createWorkflow(
       },
     })
 
+    acquireLockStep({
+      key: input.cart_id,
+      timeout: 2,
+      ttl: 10,
+    })
+
     const { id: orderId } = completeCartWorkflow.runAsStep({
       input: {
         id: carts[0].id,
       },
     })
 
-    const { vendorsItems } = groupVendorItemsStep({
-      cart: carts[0],
-    } as unknown as GroupVendorItemsStepInput)
-    
+    const { data: existingLinks } = useQueryGraphStep({
+      entity: vendorOrderLink.entryPoint,
+      fields: ["vendor.id"],
+      filters: { order_id: orderId },
+    }).config({ name: "retrieve-existing-links" })
+      
     const order = getOrderDetailWorkflow.runAsStep({
       input: {
         order_id: orderId,
@@ -1713,19 +1757,36 @@ const createVendorOrdersWorkflow = createWorkflow(
       },
     })
 
-    const { 
-      orders: vendorOrders, 
-      linkDefs,
-    } = createVendorOrdersStep({
-      parentOrder: order,
-      vendorsItems,
+    const vendorOrders = when(
+      "create-vendor-order-links",
+      { existingLinks },
+      (data) => data.existingLinks.length === 0
+    ).then(() => {
+
+      const { vendorsItems } = groupVendorItemsStep({
+        cart: carts[0],
+      } as unknown as GroupVendorItemsStepInput)
+  
+      const { 
+        orders: vendorOrders, 
+        linkDefs,
+      } = createVendorOrdersStep({
+        parentOrder: order,
+        vendorsItems,
+      })
+  
+      createRemoteLinkStep(linkDefs)
+
+      return vendorOrders
     })
 
-    createRemoteLinkStep(linkDefs)
+    releaseLockStep({
+      key: input.cart_id,
+    })
 
     return new WorkflowResponse({
-      parent_order: order,
-      vendor_orders: vendorOrders,
+      order,
+      vendorOrders,
     })
   }
 )
@@ -1736,11 +1797,16 @@ export default createVendorOrdersWorkflow
 The workflow receives the cart's ID as an input. In the workflow, you run the following steps:
 
 1. `useQueryGraphStep` to retrieve the cart's details.
-2. `completeCartWorkflow` to complete the cart and create a parent order.
-3. `groupVendorItemsStep` to group the order's items by their vendor.
-4. `getOrderDetailWorkflow` to retrieve the parent order's details.
-5. `createVendorOrdersStep` to create child orders for each vendor's items.
-6. `createRemoteLinkStep` to create the links returned by the previous step.
+2. `acquireLockStep` to acquire a lock on the cart.
+3. `completeCartWorkflow` to complete the cart and create a parent order.
+4. `useQueryGraphStep` to retrieve existing links between the order and variant to ensure idempotency.
+    - This is essential, as the workflow might be executed multiple times for the same cart. So, if links already exist, you skip creating vendor orders again.
+5. `getOrderDetailWorkflow` to retrieve the parent order's details.
+6. Perform a condition with `when` to check if there are existing links. If not, you run the following steps:
+    - `groupVendorItemsStep` to group the items by their vendor.
+    - `createVendorOrdersStep` to create child orders for each vendor.
+    - `createRemoteLinkStep` to create the links returned by the previous step.
+7. `releaseLockStep` to release the lock on the cart.
 
 You return the parent and vendor orders.
 

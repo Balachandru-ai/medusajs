@@ -30,6 +30,12 @@ This workflow is executed by the [Update Line Item Store API Route](https://docs
 
 You can use this workflow within your own customizations or custom workflows, allowing you to update a line item's details in your custom flows.
 
+:::note
+
+If you use this workflow in another, you must acquire a lock before running it and release the lock after. Learn more in the [Locking Operations in Workflows](https://docs.medusajs.com/learn/fundamentals/workflows/locks#locks-in-nested-workflows) guide.
+
+:::
+
 <SourceCodeLink link="https://github.com/medusajs/medusa/blob/147ce2fdc35366e591f552404ec949f6a5b92a11/packages/core/core-flows/src/cart/workflows/update-line-item-in-cart.ts#L111" />
 
 ## Examples
@@ -136,6 +142,7 @@ import { updateLineItemInCartWorkflow } from "@medusajs/medusa/core-flows"
 const myWorkflow = createWorkflow(
   "my-workflow",
   () => {
+    // Acquire lock from nested workflow here
     const result = updateLineItemInCartWorkflow
       .runAsStep({
         input: {
@@ -146,6 +153,7 @@ const myWorkflow = createWorkflow(
           }
         }
       })
+    // Release lock here
   }
 )
 ```

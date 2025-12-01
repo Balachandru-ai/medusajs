@@ -58,11 +58,6 @@ export default class LocalEventBusService extends AbstractEventBusModuleService 
       const eventListenersCount = this.eventEmitter_.listenerCount(
         eventData.name
       )
-      const startSubscribersCount = this.eventEmitter_.listenerCount("*")
-
-      if (eventListenersCount === 0 && startSubscribersCount === 0) {
-        continue
-      }
 
       if (!options.internal && !eventData.options?.internal) {
         this.logger_?.info(
@@ -93,11 +88,18 @@ export default class LocalEventBusService extends AbstractEventBusModuleService 
       const options_ = eventData.options as { delay: number }
       const delay = (ms?: number) => (ms ? setTimeout(ms) : Promise.resolve())
 
+      const eventListenersCount = this.eventEmitter_.listenerCount(
+        eventData.name
+      )
+
       delay(options_?.delay).then(async () => {
         // Call interceptors before emitting
         void this.callInterceptors(eventData, { isGrouped: false })
 
-        this.eventEmitter_.emit(eventData.name, eventBody)
+        if (eventListenersCount) {
+          this.eventEmitter_.emit(eventData.name, eventBody)
+        }
+
         if (hasStarSubscriber) {
           this.eventEmitter_.emit("*", eventBody)
         }
@@ -120,10 +122,13 @@ export default class LocalEventBusService extends AbstractEventBusModuleService 
   async releaseGroupedEvents(eventGroupId: string) {
     let groupedEvents = this.groupedEventsMap_.get(eventGroupId) || []
     groupedEvents = JSON.parse(JSON.stringify(groupedEvents))
+
     const hasStarSubscriber = this.eventEmitter_.listenerCount("*") > 0
 
     for (const event of groupedEvents) {
       const { options, ...eventBody } = event
+
+      const eventListenersCount = this.eventEmitter_.listenerCount(event.name)
 
       const options_ = options as { delay: number }
       const delay = (ms?: number) => (ms ? setTimeout(ms) : Promise.resolve())
@@ -132,7 +137,10 @@ export default class LocalEventBusService extends AbstractEventBusModuleService 
         // Call interceptors before emitting grouped events
         void this.callInterceptors(event, { isGrouped: true, eventGroupId })
 
-        this.eventEmitter_.emit(event.name, eventBody)
+        if (eventListenersCount) {
+          this.eventEmitter_.emit(event.name, eventBody)
+        }
+
         if (hasStarSubscriber) {
           this.eventEmitter_.emit("*", eventBody)
         }

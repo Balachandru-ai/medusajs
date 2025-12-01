@@ -21,9 +21,10 @@ import {
 } from "../../order"
 import { validateDraftOrderChangeStep } from "../steps/validate-draft-order-change"
 import { validatePromoCodesToRemoveStep } from "../steps/validate-promo-codes-to-remove"
+import { updateDraftOrderPromotionsStep } from "../steps/update-draft-order-promotions"
 import { draftOrderFieldsForRefreshSteps } from "../utils/fields"
-import { refreshDraftOrderAdjustmentsWorkflow } from "./refresh-draft-order-adjustments"
 import { acquireLockStep, releaseLockStep } from "../../locking"
+import { computeDraftOrderAdjustmentsWorkflow } from "./compute-draft-order-adjustments"
 
 export const removeDraftOrderPromotionsWorkflowId =
   "remove-draft-order-promotions"
@@ -83,7 +84,7 @@ export const removeDraftOrderPromotionsWorkflow = createWorkflow(
 
     const orderChange: OrderChangeDTO = useRemoteQueryStep({
       entry_point: "order_change",
-      fields: ["id", "status"],
+      fields: ["id", "status", "version"],
       variables: {
         filters: {
           order_id: input.order_id,
@@ -111,11 +112,15 @@ export const removeDraftOrderPromotionsWorkflow = createWorkflow(
       promotions,
     })
 
-    refreshDraftOrderAdjustmentsWorkflow.runAsStep({
+    updateDraftOrderPromotionsStep({
+      id: input.order_id,
+      promo_codes: input.promo_codes,
+      action: PromotionActions.REMOVE,
+    })
+
+    computeDraftOrderAdjustmentsWorkflow.runAsStep({
       input: {
-        order,
-        promo_codes: input.promo_codes,
-        action: PromotionActions.REMOVE,
+        order_id: input.order_id,
       },
     })
 

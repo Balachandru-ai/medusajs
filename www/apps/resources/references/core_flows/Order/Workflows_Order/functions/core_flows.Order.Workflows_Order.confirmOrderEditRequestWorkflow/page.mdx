@@ -24,6 +24,12 @@ This workflow confirms an order edit request. It's used by the
 You can use this workflow within your customizations or your own custom workflows, allowing you to confirm an order edit
 in your custom flow.
 
+:::note
+
+If you use this workflow in another, you must acquire a lock before running it and release the lock after. Learn more in the [Locking Operations in Workflows](https://docs.medusajs.com/learn/fundamentals/workflows/locks#locks-in-nested-workflows) guide.
+
+:::
+
 <SourceCodeLink link="https://github.com/medusajs/medusa/blob/147ce2fdc35366e591f552404ec949f6a5b92a11/packages/core/core-flows/src/order/workflows/order-edit/confirm-order-edit-request.ts#L121" />
 
 ## Examples
@@ -118,12 +124,14 @@ import { confirmOrderEditRequestWorkflow } from "@medusajs/medusa/core-flows"
 const myWorkflow = createWorkflow(
   "my-workflow",
   () => {
+    // Acquire lock from nested workflow here
     const result = confirmOrderEditRequestWorkflow
       .runAsStep({
         input: {
           order_id: "order_123",
         }
       })
+    // Release lock here
   }
 )
 ```
