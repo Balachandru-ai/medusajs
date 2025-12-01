@@ -78,12 +78,14 @@ export const completeCartWorkflowId = "complete-cart"
  * 
  * ## Cart Completion Idempotency
  * 
- * This workflow is idempotent, meaning that if it is executed multiple times with the same input, it will not create duplicate orders. The
+ * This workflow's logic is idempotent, meaning that if it is executed multiple times with the same input, it will not create duplicate orders. The
  * same order will be returned for subsequent executions with the same cart ID. This is necessary to avoid rolling back payments or causing
  * other side effects if the workflow is retried or fails due to transient errors.
  * 
- * So, if you use this workflow within your own, make sure your workflow's steps are idempotent as well to avoid unintended side effects. The following
- * sections cover some common scenarios and how to handle them.
+ * So, if you use this workflow within your own, make sure your workflow's steps are idempotent as well to avoid unintended side effects.
+ * Your workflow must also acquire and release locks around this workflow to prevent concurrent executions for the same cart.
+ * 
+ * The following sections cover some common scenarios and how to handle them.
  * 
  * ### Creating Links and Linked Records
  * 
