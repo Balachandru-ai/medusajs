@@ -29,7 +29,12 @@ export type ComputeAdjustmentsForPreviewWorkflowInput = {
   /**
    * The order's details.
    */
-  order: OrderDTO & { promotions: PromotionDTO[] }
+  order: OrderDTO & { 
+    /**
+     * The promotions applied to the order.
+     */
+    promotions: PromotionDTO[]
+  }
   /**
    * The order change's details.
    */
@@ -42,13 +47,13 @@ export const computeAdjustmentsForPreviewWorkflowId =
  * This workflow computes adjustments for an order change if the carry over promotions flag is true on the order change.
  * If the flag is false, it deletes the existing adjustments replacement actions.
  *
- * It is currently used as a part of the order edit and exchange flows.
- * It's used by the [Add Items to Order Edit Admin API Route](https://docs.medusajs.com/api/admin#order-edits_postordereditsiditems),
- * [Add Outbound Items Admin API Route](https://docs.medusajs.com/api/admin#exchanges_postexchangesidoutbounditems),
- * and [Add Inbound Items Admin API Route](https://docs.medusajs.com/api/admin#exchanges_postexchangesidinbounditems).
+ * It is currently used as a part of the order edit and exchange flows. It's used by workflows
+ * like {@link orderExchangeAddNewItemWorkflow} and {@link orderEditAddNewItemWorkflow}.
  *
  * You can use this workflow within your customizations or your own custom workflows, allowing you to compute adjustments
  * in your custom flows.
+ * 
+ * @since v2.11.4
  *
  * @example
  * const { result } = await computeAdjustmentsForPreviewWorkflow(container)
@@ -62,7 +67,6 @@ export const computeAdjustmentsForPreviewWorkflowId =
  *       id: "orch_123",
  *       // other order change details...
  *     },
- *     exchange_id: "exchange_123", // optional, for exchanges
  *   }
  * })
  *
