@@ -129,8 +129,8 @@ export const NumberFilter = ({
     },
   ]
 
-  const GT_KEY = `${key}-gt`
-  const LT_KEY = `${key}-lt`
+  const GT_KEY = `${key}-$gt`
+  const LT_KEY = `${key}-$lt`
   const EQ_KEY = key
 
   const displayValue = parseDisplayValue(currentValue, t)
@@ -258,14 +258,14 @@ const parseDisplayValue = (
 
   if (typeof parsed === "object") {
     const parts = []
-    if (parsed.gt) {
-      parts.push(t("filters.compare.greaterThanLabel", { value: parsed.gt }))
+    if (parsed.$gt) {
+      parts.push(t("filters.compare.greaterThanLabel", { value: parsed.$gt }))
     }
 
-    if (parsed.lt) {
+    if (parsed.$lt) {
       parts.push(
         t("filters.compare.lessThanLabel", {
-          value: parsed.lt,
+          value: parsed.$lt,
         })
       )
     }
