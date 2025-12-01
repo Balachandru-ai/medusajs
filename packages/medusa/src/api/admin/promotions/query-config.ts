@@ -4,6 +4,8 @@ export const defaultAdminPromotionFields = [
   "is_automatic",
   "is_tax_inclusive",
   "type",
+  "limit",
+  "used",
   "status",
   "created_at",
   "updated_at",
