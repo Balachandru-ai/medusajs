@@ -9,6 +9,7 @@ export type ComputeActions =
   | AddShippingMethodAdjustment
   | RemoveShippingMethodAdjustment
   | CampaignBudgetExceededAction
+  | PromotionLimitExceededAction
 
 /**
  * These computed action types can affect a campaign's budget.
@@ -34,6 +35,21 @@ export interface CampaignBudgetExceededAction {
    * The type of action.
    */
   action: "campaignBudgetExceeded"
+
+  /**
+   * The promotion's code.
+   */
+  code: string
+}
+
+/**
+ * This action indicates that a promotion usage limit has been exceeded.
+ */
+export interface PromotionLimitExceededAction {
+  /**
+   * The type of action.
+   */
+  action: "promotionLimitExceeded"
 
   /**
    * The promotion's code.
