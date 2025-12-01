@@ -1013,6 +1013,11 @@ export interface BaseOrderChange {
   actions: BaseOrderChangeAction[]
 
   /**
+   * Whether to carry over promotions (apply promotions to outbound exchange items).
+   */
+  carry_over_promotions?: boolean | null
+
+  /**
    * The status of the order change
    */
   status: OrderChangeStatus

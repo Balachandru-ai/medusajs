@@ -1297,6 +1297,16 @@ medusaIntegrationTestRunner({
           adminHeaders
         )
 
+        // allow carry over promotions flag on the edit
+        const orderChangeId = result.data.order_change.id
+        await api.post(
+          `/admin/order-changes/${orderChangeId}`,
+          {
+            carry_over_promotions: true,
+          },
+          adminHeaders
+        )
+
         const orderId = result.data.order_change.order_id
 
         result = (await api.get(`/admin/orders/${orderId}`, adminHeaders)).data
@@ -1375,6 +1385,16 @@ medusaIntegrationTestRunner({
 
         const orderId = result.data.order_change.order_id
 
+        // allow carry over promotions flag on the edit
+        const orderChangeId = result.data.order_change.id
+        await api.post(
+          `/admin/order-changes/${orderChangeId}`,
+          {
+            carry_over_promotions: true,
+          },
+          adminHeaders
+        )
+
         const item = order.items[0]
 
         result = (await api.get(`/admin/orders/${orderId}`, adminHeaders)).data
@@ -1450,6 +1470,16 @@ medusaIntegrationTestRunner({
         )
 
         const orderId = result.data.order_change.order_id
+
+        // allow carry over promotions flag on the edit
+        const orderChangeId = result.data.order_change.id
+        await api.post(
+          `/admin/order-changes/${orderChangeId}`,
+          {
+            carry_over_promotions: true,
+          },
+          adminHeaders
+        )
 
         const item = order.items[0]
 
@@ -1559,6 +1589,16 @@ medusaIntegrationTestRunner({
         )
         const orderChange1 = response.data.order_change
 
+        // allow carry over promotions flag on the edit
+        const orderChangeId = response.data.order_change.id
+        await api.post(
+          `/admin/order-changes/${orderChangeId}`,
+          {
+            carry_over_promotions: true,
+          },
+          adminHeaders
+        )
+
         // 2. Add a new item in the first edit
         response = await api.post(
           `/admin/order-edits/${orderChange1.order_id}/items`,
@@ -1648,6 +1688,13 @@ medusaIntegrationTestRunner({
           adminHeaders
         )
         const orderChange2 = response.data.order_change
+        await api.post(
+          `/admin/order-changes/${orderChange2.id}`,
+          {
+            carry_over_promotions: true,
+          },
+          adminHeaders
+        )
 
         // 5. Add another productExtra item
         response = await api.post(
@@ -1943,6 +1990,17 @@ medusaIntegrationTestRunner({
           },
           adminHeaders
         )
+
+        // allow carry over promotions flag on the edit
+        const orderChangeId = editRes.data.order_change.id
+        await api.post(
+          `/admin/order-changes/${orderChangeId}`,
+          {
+            carry_over_promotions: true,
+          },
+          adminHeaders
+        )
+
         const editOrderId = editRes.data.order_change.order_id
         const extraVariantId = productExtra.variants[0].id
 
@@ -2037,6 +2095,16 @@ medusaIntegrationTestRunner({
 
         const orderId = result.data.order_change.order_id
         const originalItem = order.items[0]
+
+        // allow carry over promotions flag on the edit
+        const orderChangeId = result.data.order_change.id
+        await api.post(
+          `/admin/order-changes/${orderChangeId}`,
+          {
+            carry_over_promotions: true,
+          },
+          adminHeaders
+        )
 
         // Add a new item
         result = (
@@ -2150,6 +2218,16 @@ medusaIntegrationTestRunner({
           {
             order_id: order.id,
             description: "Test",
+          },
+          adminHeaders
+        )
+
+        // allow carry over promotions flag on the edit
+        const orderChangeId = result.data.order_change.id
+        await api.post(
+          `/admin/order-changes/${orderChangeId}`,
+          {
+            carry_over_promotions: true,
           },
           adminHeaders
         )
@@ -2328,6 +2406,16 @@ medusaIntegrationTestRunner({
           {
             order_id: order.id,
             description: "Test",
+          },
+          adminHeaders
+        )
+
+        // allow carry over promotions flag on the edit
+        const orderChangeId = result.data.order_change.id
+        await api.post(
+          `/admin/order-changes/${orderChangeId}`,
+          {
+            carry_over_promotions: true,
           },
           adminHeaders
         )
