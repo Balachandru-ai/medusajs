@@ -20,6 +20,13 @@ export interface AdminOrderChangesResponse {
   order_changes: AdminOrderChange[]
 }
 
+export interface AdminOrderChangeResponse {
+  /**
+   * The order change's details.
+   */
+  order_change: AdminOrderChange
+}
+
 export type AdminOrderListResponse = PaginatedResponse<{
   /**
    * The list of orders.

@@ -3073,6 +3073,13 @@ The workflow to add a customer's tier promotion to a cart has the following step
         depth: 1,
       },
       {
+        type: "step",
+        name: "acquireLockStep",
+        description: "Acquire a lock on the cart to prevent concurrent modifications.",
+        link: "/references/medusa-workflows/steps/acquireLockStep",
+        depth: 2,
+      },
+      {
         type: "when",
         condition: "!!data.carts[0].customer",
         steps: [
@@ -3083,7 +3090,7 @@ The workflow to add a customer's tier promotion to a cart has the following step
             depth: 1,
           }
         ],
-        depth: 2,
+        depth: 3,
       },
       {
         type: "when",
@@ -3096,7 +3103,14 @@ The workflow to add a customer's tier promotion to a cart has the following step
             depth: 1
           }
         ],
-        depth: 3,
+        depth: 4,
+      },
+      {
+        type: "step",
+        name: "releaseLockStep",
+        description: "Release the lock on the cart.",
+        link: "/references/medusa-workflows/steps/releaseLockStep",
+        depth: 5,
       }
     ]
   }}
@@ -3157,14 +3171,19 @@ You can now create the workflow that adds a customer's tier promotion to a cart.
 
 To create the workflow, create the file `src/workflows/add-tier-promotion-to-cart.ts` with the following content:
 
-```ts title="src/workflows/add-tier-promotion-to-cart.ts" collapsibleLines="1-10" expandButtonLabel="Show Imports"
+```ts title="src/workflows/add-tier-promotion-to-cart.ts" collapsibleLines="1-15" expandButtonLabel="Show Imports"
 import {
   createWorkflow,
   WorkflowResponse,
   transform,
   when,
 } from "@medusajs/framework/workflows-sdk"
-import { updateCartPromotionsWorkflow, useQueryGraphStep } from "@medusajs/medusa/core-flows"
+import { 
+  acquireLockStep,
+  releaseLockStep,
+  updateCartPromotionsWorkflow, 
+  useQueryGraphStep,
+} from "@medusajs/medusa/core-flows"
 import { PromotionActions } from "@medusajs/framework/utils"
 import { validateTierPromotionStep } from "./steps/validate-tier-promotion"
 
@@ -3195,6 +3214,12 @@ export const addTierPromotionToCartWorkflow = createWorkflow(
       options: {
         throwIfKeyNotFound: true,
       },
+    })
+
+    acquireLockStep({
+      key: input.cart_id,
+      timeout: 2,
+      ttl: 10,
     })
 
 
@@ -3240,6 +3265,10 @@ export const addTierPromotionToCartWorkflow = createWorkflow(
       })
     })
 
+    releaseLockStep({
+      key: input.cart_id,
+    })
+
     return new WorkflowResponse(void 0)
   }
 )
@@ -3250,8 +3279,10 @@ The workflow receives the cart's ID as input.
 In the workflow, you:
 
 - Retrieve the cart details using `useQueryGraphStep`.
+- Acquire a lock on the cart using `acquireLockStep`.
 - Validate that the customer exists and has a tier promotion using `validateTierPromotionStep`.
 - Update the cart's promotions if the customer has a tier promotion that hasn't been applied yet, using `updateCartPromotionsWorkflow`.
+- Release the lock on the cart using `releaseLockStep`.
 
 ### b. Cart Updated Subscriber
 
