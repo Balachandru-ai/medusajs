@@ -2481,6 +2481,14 @@ const generatedgeneratedCommerceModulesSidebarSidebar = {
               "loaded": true,
               "isPathHref": true,
               "type": "ref",
+              "title": "Implement Customer Tiers",
+              "path": "https://docs.medusajs.com/resources/how-to-tutorials/tutorials/customer-tiers",
+              "children": []
+            },
+            {
+              "loaded": true,
+              "isPathHref": true,
+              "type": "ref",
               "title": "Implement First-Purchase Discount",
               "path": "https://docs.medusajs.com/resources/how-to-tutorials/tutorials/first-purchase-discounts",
               "children": []
@@ -13539,6 +13547,14 @@ const generatedgeneratedCommerceModulesSidebarSidebar = {
               "type": "link",
               "path": "/commerce-modules/promotion/extend",
               "title": "Extend Module",
+              "children": []
+            },
+            {
+              "loaded": true,
+              "isPathHref": true,
+              "type": "ref",
+              "title": "Implement Customer Tiers",
+              "path": "https://docs.medusajs.com/resources/how-to-tutorials/tutorials/customer-tiers",
               "children": []
             },
             {
