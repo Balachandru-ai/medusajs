@@ -29,7 +29,7 @@ export type ComputeAdjustmentsForPreviewWorkflowInput = {
   /**
    * The order's details.
    */
-  order: OrderDTO & { 
+  order: OrderDTO & {
     /**
      * The promotions applied to the order.
      */
@@ -52,7 +52,7 @@ export const computeAdjustmentsForPreviewWorkflowId =
  *
  * You can use this workflow within your customizations or your own custom workflows, allowing you to compute adjustments
  * in your custom flows.
- * 
+ *
  * @since v2.12.0
  *
  * @example
@@ -110,6 +110,9 @@ export const computeAdjustmentsForPreviewWorkflow = createWorkflow(
       const actions = getActionsToComputeFromPromotionsStep({
         computeActionContext: actionsToComputeItemsInput,
         promotionCodesToApply: orderPromotions,
+        options: {
+          skip_usage_limit_checks: true,
+        },
       })
 
       const { lineItemAdjustmentsToCreate } =
