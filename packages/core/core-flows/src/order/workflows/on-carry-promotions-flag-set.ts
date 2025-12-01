@@ -34,7 +34,33 @@ export type OnCarryPromotionsFlagSetWorkflowInput = {
 }
 
 /**
- * This step validates that the order change is an exchange and validates promotion allocation.
+ * This step validates that the order change is an exchange and validates that
+ * the promotion allocation is valid for carrying over promotions.
+ *
+ * :::note
+ *
+ * You can retrieve details of the order and order change using [Query](https://docs.medusajs.com/learn/fundamentals/module-links/query),
+ * or [useQueryGraphStep](https://docs.medusajs.com/resources/references/medusa-workflows/steps/useQueryGraphStep).
+ *
+ * :::
+ * 
+ * @since v2.11.4
+ *
+ * @example
+ * const data = validateCarryPromotionsFlagStep({
+ *   order: {
+ *     id: "order_123",
+ *     // other order details...
+ *   },
+ *   orderChange: {
+ *     id: "orch_123",
+ *     // other order change details...
+ *   },
+ *   input: {
+ *     order_change_id: "orch_123",
+ *     carry_over_promotions: true,
+ *   }
+ * })
  */
 export const validateCarryPromotionsFlagStep = createStep(
   "validate-carry-promotions-flag",
@@ -114,9 +140,17 @@ export const validateCarryPromotionsFlagStep = createStep(
 export const onCarryPromotionsFlagSetId = "on-carry-promotions-flag-set"
 
 /**
- * This workflow sets the carry over promotions flag for an order change.
- * It validates that the order change is active and is an exchange, validates promotion allocation,
- * and either applies or removes promotion adjustments based on the flag value.
+ * This workflow toggles whether promotions are carried over to outbound items of an exchange.
+ * It validates that the order change is an exchange and that it's active. It also validates that the promotion allocation
+ * is valid for carrying over promotions. Finally, it computes adjustments for the order change
+ * and either applies or removes promotion adjustments based on whether promotions are to be carried over.
+ * 
+ * This workflow is used by other workflows, such as the {@link updateOrderChangeWorkflow}.
+ * 
+ * You can use this workflow within your customizations or your own custom workflows, allowing you to 
+ * set the carry over promotions flag for an order change in your custom flows.
+ * 
+ * @since v2.11.4
  *
  * @example
  * const { result } = await onCarryPromotionsFlagSet(container)
@@ -129,7 +163,7 @@ export const onCarryPromotionsFlagSetId = "on-carry-promotions-flag-set"
  *
  * @summary
  *
- * Set the carry over promotions flag for an order change.
+ * Toggle carrying over promotions to outbound exchange items.
  */
 export const onCarryPromotionsFlagSet = createWorkflow(
   onCarryPromotionsFlagSetId,
