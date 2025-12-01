@@ -70,7 +70,7 @@ export const generatedEditDates = {
   "app/commerce-modules/promotion/actions/page.mdx": "2025-06-27T15:42:19.142Z",
   "app/commerce-modules/promotion/application-method/page.mdx": "2025-10-14T12:09:22.188Z",
   "app/commerce-modules/promotion/campaign/page.mdx": "2025-10-13T07:34:59.008Z",
-  "app/commerce-modules/promotion/concepts/page.mdx": "2025-02-26T11:31:54.391Z",
+  "app/commerce-modules/promotion/concepts/page.mdx": "2025-12-01T09:38:54.102Z",
   "app/commerce-modules/promotion/page.mdx": "2025-04-17T08:48:14.643Z",
   "app/commerce-modules/region/_events/_events-table/page.mdx": "2024-07-03T19:27:13+03:00",
   "app/commerce-modules/region/_events/page.mdx": "2024-07-03T19:27:13+03:00",
@@ -6720,5 +6720,6 @@ export const generatedEditDates = {
   "app/storefront-development/guides/react-native-expo/page.mdx": "2025-11-06T07:18:45.347Z",
   "app/how-to-tutorials/tutorials/customer-tiers/page.mdx": "2025-11-28T08:34:06.912Z",
   "app/how-to-tutorials/how-to/admin/auth/page.mdx": "2025-11-26T11:01:53.802Z",
-  "app/infrastructure-modules/caching/guides/clear-cache/page.mdx": "2025-11-26T13:19:26.629Z"
+  "app/infrastructure-modules/caching/guides/clear-cache/page.mdx": "2025-11-26T13:19:26.629Z",
+  "app/commerce-modules/order/custom-display-id/page.mdx": "2025-12-01T09:34:27.436Z"
 }

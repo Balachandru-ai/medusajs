@@ -288,6 +288,10 @@ export const filesMap = [
     "pathname": "/commerce-modules/order/concepts"
   },
   {
+    "filePath": "/www/apps/resources/app/commerce-modules/order/custom-display-id/page.mdx",
+    "pathname": "/commerce-modules/order/custom-display-id"
+  },
+  {
     "filePath": "/www/apps/resources/app/commerce-modules/order/draft-orders/page.mdx",
     "pathname": "/commerce-modules/order/draft-orders"
   },

@@ -6155,6 +6155,14 @@ const generatedgeneratedCommerceModulesSidebarSidebar = {
               "loaded": true,
               "isPathHref": true,
               "type": "link",
+              "path": "/commerce-modules/order/custom-display-id",
+              "title": "Custom Order Display ID",
+              "children": []
+            },
+            {
+              "loaded": true,
+              "isPathHref": true,
+              "type": "link",
               "path": "/commerce-modules/order/promotion-adjustments",
               "title": "Promotions Adjustments",
               "children": []
