@@ -9,6 +9,8 @@ const Promotion = model
     code: model.text().searchable(),
     is_automatic: model.boolean().default(false),
     is_tax_inclusive: model.boolean().default(false),
+    limit: model.number().nullable(),
+    used: model.number().default(0),
     type: model.enum(PromotionUtils.PromotionType).index("IDX_promotion_type"),
     status: model
       .enum(PromotionUtils.PromotionStatus)
@@ -28,6 +30,7 @@ const Promotion = model
       pivotTable: "promotion_promotion_rule",
       mappedBy: "promotions",
     }),
+    metadata: model.json().nullable(),
   })
   .cascades({
     delete: ["application_method"],

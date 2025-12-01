@@ -441,7 +441,7 @@ export const sidebars = [
               {
                 type: "link",
                 path: "/learn/fundamentals/workflows/execute-another-workflow",
-                title: "Execute Nested Workflows",
+                title: "Nested Workflows",
               },
               {
                 type: "link",

@@ -85,6 +85,39 @@ If you execute the workflow, the event is emitted and you can see it in your app
 
 Any subscribers listening to the event are executed.
 
+### Emit Event Multiple Times
+
+You can also emit the event multiple times with `emitEventStep` by passing an array of objects to the `data` property. The event is emitted once per each object in the array.
+
+For example:
+
+```ts highlights={highlights}
+import { 
+  createWorkflow,
+} from "@medusajs/framework/workflows-sdk"
+import {
+  emitEventStep,
+} from "@medusajs/medusa/core-flows"
+
+const helloWorldWorkflow = createWorkflow(
+  "hello-world",
+  () => {
+    // ...
+
+    emitEventStep({
+      eventName: "custom.created",
+      data: [
+        { id: "123" },
+        { id: "456" },
+        { id: "789" },
+      ]
+    })
+  }
+)
+```
+
+The event `custom.created` will be emitted three times, once per each object in the array passed to the `data` property. The subscriber listening to the event will be executed three times, each time receiving one of the objects in the array as the event's payload.
+
 ---
 
 ## Emit Event in a Service

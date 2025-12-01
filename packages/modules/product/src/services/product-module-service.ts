@@ -1784,11 +1784,13 @@ export default class ProductModuleService
     sharedContext?: Context
   ): Promise<ProductTypes.ProductOptionValueDTO[]>
 
+  @InjectManager()
+  @EmitEvents()
   // @ts-expect-error
   async updateProductOptionValues(
     idOrSelector: string | FilterableProductOptionValueProps,
     data: ProductTypes.UpdateProductOptionValueDTO,
-    sharedContext: Context = {}
+    @MedusaContext() sharedContext: Context = {}
   ): Promise<
     ProductTypes.ProductOptionValueDTO | ProductTypes.ProductOptionValueDTO[]
   > {

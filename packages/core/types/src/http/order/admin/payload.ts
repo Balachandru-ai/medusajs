@@ -189,3 +189,10 @@ export interface AdminCreateOrderCreditLine {
    */
   metadata?: Record<string, unknown> | null
 }
+
+export interface AdminUpdateOrderChange {
+  /**
+   * Whether to carry over promotions to outbound exchange items.
+   */
+  carry_over_promotions?: boolean
+}
