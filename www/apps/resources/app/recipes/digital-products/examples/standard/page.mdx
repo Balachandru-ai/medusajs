@@ -1960,14 +1960,17 @@ In the compensation function, you delete the digital product order.
 Create the file `src/workflows/create-digital-product-order/index.ts` with the following content:
 
 export const createDpoWorkflowHighlights = [
-  ["29", "completeCartWorkflow", "Create an order for the cart."],
-  ["35", "useQueryGraphStep", "Retrieve the order's items and their associated variants and linked digital products."],
-  ["60", "when", "Check whether the order has any digital products."],
-  ["66", "then", "Perform the callback function if an order has digital products."],
-  ["69", "createDigitalProductOrderStep", "Create the digital product order."],
-  ["73", "createRemoteLinkStep", "Link the digital product order to the Medusa order."],
-  ["82", "createOrderFulfillmentWorkflow", "Create a fulfillment for the digital products in the order."],
-  ["96", "emitEventStep", "Emit the `digital_product_order.created` event."]
+  ["32", "acquireLockStep", "Acquire a lock on the cart ID"],
+  ["37", "completeCartWorkflow", "Completes the cart and creates the Medusa order."],
+  ["43", "useQueryGraphStep", "Retrieve the order's items with their associated variants and linked digital products."],
+  ["60", "useQueryGraphStep", "Retrieve any existing links between the digital product order and the Medusa order."],
+  ["66", "transform", "Filter the order's items to only those having digital products."],
+  ["77", "when", "Check whether the order has digital products and no existing links."],
+  ["89", "createDigitalProductOrderStep", "Create the digital product order."],
+  ["93", "createRemoteLinkStep", "Link the digital product order to the Medusa order."],
+  ["102", "createOrderFulfillmentWorkflow", "Create a fulfillment for the digital products in the order."],
+  ["116", "emitEventStep", "Emit a custom event."],
+  ["126", "releaseLockStep", "Release the lock on the cart ID."],
 ]
 
 ```ts title="src/workflows/create-digital-product-order/index.ts" highlights={createDpoWorkflowHighlights} collapsibleLines="1-17" expandMoreLabel="Show Imports"
