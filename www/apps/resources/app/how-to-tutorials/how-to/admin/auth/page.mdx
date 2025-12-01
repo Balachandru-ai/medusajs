@@ -244,7 +244,7 @@ The widget should display a button that authenticates or redirects the user to t
 
 For example, the widget may look like this:
 
-```tsx
+```tsx title="src/admin/widgets/custom-login.tsx"
 import { defineWidgetConfig } from "@medusajs/admin-sdk"
 import { Button, toast } from "@medusajs/ui"
 import { decodeToken } from "react-jwt"
