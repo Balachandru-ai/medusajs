@@ -639,7 +639,7 @@ export class Order {
    * [Update Order Change](https://docs.medusajs.com/api/admin#order-changes_postorder-changesid)
    * API route.
    * 
-   * @since v2.11.4
+   * @since v2.12.0
    *
    * @param id - The order change's ID.
    * @param body - The update details.
