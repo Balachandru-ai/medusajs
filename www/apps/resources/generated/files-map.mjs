@@ -288,6 +288,10 @@ export const filesMap = [
     "pathname": "/commerce-modules/order/concepts"
   },
   {
+    "filePath": "/www/apps/resources/app/commerce-modules/order/custom-display-id/page.mdx",
+    "pathname": "/commerce-modules/order/custom-display-id"
+  },
+  {
     "filePath": "/www/apps/resources/app/commerce-modules/order/draft-orders/page.mdx",
     "pathname": "/commerce-modules/order/draft-orders"
   },
@@ -746,6 +750,10 @@ export const filesMap = [
   {
     "filePath": "/www/apps/resources/app/examples/page.mdx",
     "pathname": "/examples"
+  },
+  {
+    "filePath": "/www/apps/resources/app/how-to-tutorials/how-to/admin/auth/page.mdx",
+    "pathname": "/how-to-tutorials/how-to/admin/auth"
   },
   {
     "filePath": "/www/apps/resources/app/how-to-tutorials/page.mdx",

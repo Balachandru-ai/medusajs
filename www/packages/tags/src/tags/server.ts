@@ -56,6 +56,10 @@ export const server = [
     "path": "https://docs.medusajs.com/resources/examples/guides/quote-management"
   },
   {
+    "title": "Custom Admin Authentication",
+    "path": "https://docs.medusajs.com/resources/how-to-tutorials/how-to/admin/auth"
+  },
+  {
     "title": "Abandoned Cart Notification",
     "path": "https://docs.medusajs.com/resources/how-to-tutorials/tutorials/abandoned-cart"
   },
