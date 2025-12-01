@@ -1,7 +1,7 @@
 import { Constructor, Context, DAL } from "@medusajs/framework/types"
 import { toMikroORMEntity } from "@medusajs/framework/utils"
 import { LoadStrategy } from "@medusajs/framework/mikro-orm/core"
-import { Order, OrderClaim, OrderSummary } from "@models"
+import { Order, OrderClaim } from "@models"
 import { mapRepositoryToOrderModel } from "."
 
 export function setFindMethods<T>(klass: Constructor<T>, entity: any) {
@@ -164,21 +164,6 @@ function getVersionSubQuery(manager, alias, field = "order_id") {
   return knex.raw(`(${sql})`)
 }
 
-function getMaxSummaryVersionSubQuery(manager, orderAlias = "o0") {
-  const knex = manager.getKnex()
-  const sql = manager
-    .qb(toMikroORMEntity(OrderSummary), "_sub_summary")
-    .select(knex.raw("MAX(version)"))
-    .where({
-      order_id: knex.raw(`"${orderAlias}"."id"`),
-      deleted_at: null,
-    })
-    .getKnexQuery()
-    .toString()
-
-  return knex.raw(`(${sql})`)
-}
-
 function configurePopulateWhere(
   config: any,
   isRelatedEntity: boolean,
@@ -191,10 +176,6 @@ function configurePopulateWhere(
     requestedPopulate.some(
       (p) => p === relation || p.startsWith(`${relation}.`)
     )
-
-  // Check if summary is being filtered in the where clause and if an explicit version is provided in the summary filter
-  const hasSummaryFilter = config.where?.summary !== undefined
-  const explicitSummaryVersion = config.where?.summary?.version
 
   config.options.populateWhere ??= {}
   const popWhere = config.options.populateWhere
@@ -231,14 +212,6 @@ function configurePopulateWhere(
         : version
     }
 
-    // For `summary`, use explicit version if provided, otherwise use MAX version subquery as we want to get the latest version of the summary
-    if (hasRelation("summary") || hasRelation("order.summary") || hasSummaryFilter) {
-      popWhereOrder.summary ??= {}
-      popWhereOrder.summary.version = explicitSummaryVersion !== undefined
-        ? explicitSummaryVersion
-        : getMaxSummaryVersionSubQuery(manager, "o0")
-    }
-
     return
   }
 
@@ -246,11 +219,9 @@ function configurePopulateWhere(
     version = getVersionSubQuery(manager, "o0")
   }
 
-  if (hasRelation("summary") || hasSummaryFilter) {
+  if (hasRelation("summary")) {
     popWhere.summary ??= {}
-    popWhere.summary.version = explicitSummaryVersion !== undefined
-      ? explicitSummaryVersion
-      : getMaxSummaryVersionSubQuery(manager, "o0")
+    popWhere.summary.version = version
   }
 
   if (hasRelation("credit_lines")) {
