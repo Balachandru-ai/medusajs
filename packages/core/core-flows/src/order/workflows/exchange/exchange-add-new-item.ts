@@ -22,7 +22,7 @@ import {
 } from "../../utils/order-validation"
 import { addOrderLineItemsWorkflow } from "../add-line-items"
 import { createOrderChangeActionsWorkflow } from "../create-order-change-actions"
-import { computeAdjustmentsForPreviewWorkflow } from "../order-edit/compute-adjustments-for-preview"
+import { computeAdjustmentsForPreviewWorkflow } from "../compute-adjustments-for-preview"
 import { updateOrderTaxLinesWorkflow } from "../update-tax-lines"
 import { refreshExchangeShippingWorkflow } from "./refresh-shipping"
 
@@ -140,7 +140,13 @@ export const orderExchangeAddNewItemWorkflow = createWorkflow(
 
     const orderChange: OrderChangeDTO = useRemoteQueryStep({
       entry_point: "order_change",
-      fields: ["id", "status", "version"],
+      fields: [
+        "id",
+        "status",
+        "version",
+        "exchange_id",
+        "carry_over_promotions",
+      ],
       variables: {
         filters: {
           order_id: orderExchange.order_id,
@@ -212,7 +218,6 @@ export const orderExchangeAddNewItemWorkflow = createWorkflow(
       input: {
         order: orderWithPromotions,
         orderChange,
-        exchange_id: orderExchange.id,
       },
     })
 
