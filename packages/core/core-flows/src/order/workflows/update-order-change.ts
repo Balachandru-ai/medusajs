@@ -13,8 +13,13 @@ export const updateOrderChangeWorkflowId = "update-order-change-workflow"
 
 /**
  * This workflow updates an order change.
- * If the carry_over_promotions flag is provided, it calls onCarryPromotionsFlagSet
- * to handle the promotion logic. Otherwise, it updates the order change directly.
+ * If the `carry_over_promotions` flag is provided, it calls {@link onCarryPromotionsFlagSet}
+ * to handle the promotion update logic. Otherwise, it updates the order change directly.
+ * 
+ * You can use this workflow within your customizations or your own custom workflows, allowing you to wrap custom logic around
+ * updating an order change and conditionally handling promotion carry-over.
+ * 
+ * @since v2.11.4
  *
  * @example
  * const { result } = await updateOrderChangeWorkflow(container)
@@ -27,7 +32,7 @@ export const updateOrderChangeWorkflowId = "update-order-change-workflow"
  *
  * @summary
  *
- * Update an order change, conditionally handling promotion carry-over if specified.
+ * Update an order change.
  */
 export const updateOrderChangeWorkflow = createWorkflow(
   updateOrderChangeWorkflowId,
