@@ -1,5 +1,11 @@
 # Change Log
 
+## 2.12.0
+
+### Patch Changes
+
+- [#14083](https://github.com/medusajs/medusa/pull/14083) [`beb91d88a2f224075e4fcf35a0ee9483b3124504`](https://github.com/medusajs/medusa/commit/beb91d88a2f224075e4fcf35a0ee9483b3124504) Thanks [@adrien2p](https://github.com/adrien2p)! - chore(): Update glob package
+
 ## 2.11.3
 
 ### Patch Changes

@@ -1,5 +1,7 @@
 # @medusajs/admin-shared
 
+## 2.12.0
+
 ## 2.11.3
 
 ### Patch Changes

@@ -1,5 +1,49 @@
 # @medusajs/dashboard
 
+## 2.12.0
+
+### Patch Changes
+
+- [#14021](https://github.com/medusajs/medusa/pull/14021) [`2b6c39535f1157a1c0432b64dd93132d88a6280b`](https://github.com/medusajs/medusa/commit/2b6c39535f1157a1c0432b64dd93132d88a6280b) Thanks [@NicolasGorga](https://github.com/NicolasGorga)! - feat(dashboard): include product material in product general section
+
+- [#14121](https://github.com/medusajs/medusa/pull/14121) [`1e761345be9fd179b03682b8291158147485135d`](https://github.com/medusajs/medusa/commit/1e761345be9fd179b03682b8291158147485135d) Thanks [@fPolic](https://github.com/fPolic)! - feat(dashboard): show promo tooltip on edit flows
+
+- [#14041](https://github.com/medusajs/medusa/pull/14041) [`657a16c4622d1c075e9e40cb9babbf15f04a3aa7`](https://github.com/medusajs/medusa/commit/657a16c4622d1c075e9e40cb9babbf15f04a3aa7) Thanks [@adrien2p](https://github.com/adrien2p)! - chore(): Remove lodash.set entirely
+
+- [#13843](https://github.com/medusajs/medusa/pull/13843) [`3852efbcfffbfd10b7f7cae7d1a15de2a5f3afee`](https://github.com/medusajs/medusa/commit/3852efbcfffbfd10b7f7cae7d1a15de2a5f3afee) Thanks [@leobenzol](https://github.com/leobenzol)! - feat(admin-\*,dashboard): i18n labels for menu item extensions
+
+- [#13991](https://github.com/medusajs/medusa/pull/13991) [`5a96bb7da463280a058177cc246aa5d9b0ba70f4`](https://github.com/medusajs/medusa/commit/5a96bb7da463280a058177cc246aa5d9b0ba70f4) Thanks [@juanzgc](https://github.com/juanzgc)! - Improve error messaging for file uploads
+
+- [#14049](https://github.com/medusajs/medusa/pull/14049) [`f2f3a8e1e1e656f4aea2b25402df25fced6f768e`](https://github.com/medusajs/medusa/commit/f2f3a8e1e1e656f4aea2b25402df25fced6f768e) Thanks [@fPolic](https://github.com/fPolic)! - fix(dashboard): reference global vite bin from scripts
+
+- [#13994](https://github.com/medusajs/medusa/pull/13994) [`6898ca758c6efc33f9f519e4d7db9b5bd549a87b`](https://github.com/medusajs/medusa/commit/6898ca758c6efc33f9f519e4d7db9b5bd549a87b) Thanks [@NicolasGorga](https://github.com/NicolasGorga)! - fix(dashboard): update orders page filters to match interface expected by old DataTable component
+
+- [#14167](https://github.com/medusajs/medusa/pull/14167) [`8f1b97898b8abf0b860d89480fa8f1c58ed239f3`](https://github.com/medusajs/medusa/commit/8f1b97898b8abf0b860d89480fa8f1c58ed239f3) Thanks [@adevinwild](https://github.com/adevinwild)! - Enable sorting by default based on the `apiColumn` state
+
+- [#13547](https://github.com/medusajs/medusa/pull/13547) [`1762f73bd903d7e447f9067cc63e172ac58a0f39`](https://github.com/medusajs/medusa/commit/1762f73bd903d7e447f9067cc63e172ac58a0f39) Thanks [@leobenzol](https://github.com/leobenzol)! - feat(admin-vite-plugin,dashboard): support for react-router's splat and optional segments
+
+- [#13946](https://github.com/medusajs/medusa/pull/13946) [`213c344804fb1077aaca3e3cefbd1653ae559899`](https://github.com/medusajs/medusa/commit/213c344804fb1077aaca3e3cefbd1653ae559899) Thanks [@bqst](https://github.com/bqst)! - feat(dashboard): add custom admin route ranking feature
+
+- [#13760](https://github.com/medusajs/medusa/pull/13760) [`536a3f802c92960b1eab48c37db25a8c542fd231`](https://github.com/medusajs/medusa/commit/536a3f802c92960b1eab48c37db25a8c542fd231) Thanks [@fPolic](https://github.com/fPolic)! - feat: promotion usage limit
+
+- [#14128](https://github.com/medusajs/medusa/pull/14128) [`5da51064d7936c6d7a459cfa8b34eada65163e03`](https://github.com/medusajs/medusa/commit/5da51064d7936c6d7a459cfa8b34eada65163e03) Thanks [@fPolic](https://github.com/fPolic)! - feat: carry over promotions toggle on exchanges
+
+- [#13935](https://github.com/medusajs/medusa/pull/13935) [`67744f45795636ff0702b4d0626ed8a44fb5cb76`](https://github.com/medusajs/medusa/commit/67744f45795636ff0702b4d0626ed8a44fb5cb76) Thanks [@ZeB4la](https://github.com/ZeB4la)! - feat(dashboard): add pt-PT translation and register locale
+
+- [#13986](https://github.com/medusajs/medusa/pull/13986) [`3ca1e1df3314370580507a864b12128770d37273`](https://github.com/medusajs/medusa/commit/3ca1e1df3314370580507a864b12128770d37273) Thanks [@willbouch](https://github.com/willbouch)! - fix(dashboard): fix import for ptPT locale
+
+- [#13997](https://github.com/medusajs/medusa/pull/13997) [`4bbf0d23674856f2d9fd0a9d137a478bc90b4cdb`](https://github.com/medusajs/medusa/commit/4bbf0d23674856f2d9fd0a9d137a478bc90b4cdb) Thanks [@NicolasGorga](https://github.com/NicolasGorga)! - fix(dashboard): use order version 1 for the initial node of activity timeline
+
+- [#14024](https://github.com/medusajs/medusa/pull/14024) [`6746fecd727823b233a90edb1819d08555124464`](https://github.com/medusajs/medusa/commit/6746fecd727823b233a90edb1819d08555124464) Thanks [@adrien2p](https://github.com/adrien2p)! - Chore/order custom display
+
+- [#14013](https://github.com/medusajs/medusa/pull/14013) [`c93f77d1b20395db171016b2710a6ddf95da9851`](https://github.com/medusajs/medusa/commit/c93f77d1b20395db171016b2710a6ddf95da9851) Thanks [@olivermrbl](https://github.com/olivermrbl)! - chore: Allow injection of our JS-SDK's auth type in dashboard
+
+- Updated dependencies [[`00aa2c13bc37223029e40b38f3e2bedd8ed1e816`](https://github.com/medusajs/medusa/commit/00aa2c13bc37223029e40b38f3e2bedd8ed1e816), [`5da51064d7936c6d7a459cfa8b34eada65163e03`](https://github.com/medusajs/medusa/commit/5da51064d7936c6d7a459cfa8b34eada65163e03)]:
+  - @medusajs/js-sdk@2.12.0
+  - @medusajs/admin-shared@2.12.0
+  - @medusajs/icons@2.12.0
+  - @medusajs/ui@4.0.28
+
 ## 2.11.3
 
 ### Patch Changes
