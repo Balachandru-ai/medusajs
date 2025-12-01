@@ -92,9 +92,9 @@
  *   - name: invite.created
  *     payload: |-
  *       ```ts
- *       [{
+ *       {
  *         id, // The ID of the invite
- *       }]
+ *       }
  *       ```
  *     description: |-
  *       Emitted when invites are created. You can listen to this event

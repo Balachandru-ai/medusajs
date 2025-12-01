@@ -28,6 +28,12 @@ This workflow deletes line items from a cart. It's used by the
 You can use this workflow within your customizations or your own custom workflows, allowing you to
 delete line items from a cart within your custom flows.
 
+:::note
+
+If you use this workflow in another, you must acquire a lock before running it and release the lock after. Learn more in the [Locking Operations in Workflows](https://docs.medusajs.com/learn/fundamentals/workflows/locks#locks-in-nested-workflows) guide.
+
+:::
+
 <SourceCodeLink link="https://github.com/medusajs/medusa/blob/147ce2fdc35366e591f552404ec949f6a5b92a11/packages/core/core-flows/src/line-item/workflows/delete-line-items.ts#L42" />
 
 ## Examples
@@ -125,6 +131,7 @@ import { deleteLineItemsWorkflow } from "@medusajs/medusa/core-flows"
 const myWorkflow = createWorkflow(
   "my-workflow",
   () => {
+    // Acquire lock from nested workflow here
     const result = deleteLineItemsWorkflow
       .runAsStep({
         input: {
@@ -132,6 +139,7 @@ const myWorkflow = createWorkflow(
           ids: ["li_123"]
         }
       })
+    // Release lock here
   }
 )
 ```

@@ -833,6 +833,14 @@ const generatedgeneratedToolsSidebarSidebar = {
                   "loaded": true,
                   "isPathHref": true,
                   "type": "ref",
+                  "title": "Customer Tiers",
+                  "path": "https://docs.medusajs.com/resources/how-to-tutorials/tutorials/customer-tiers",
+                  "children": []
+                },
+                {
+                  "loaded": true,
+                  "isPathHref": true,
+                  "type": "ref",
                   "title": "First-Purchase Discount",
                   "path": "https://docs.medusajs.com/resources/how-to-tutorials/tutorials/first-purchase-discounts",
                   "children": []

@@ -4,6 +4,7 @@ export const DEFAULT_PROPERTIES = [
   "created_at",
   "email",
   "display_id",
+  "custom_display_id",
   "payment_status",
   "fulfillment_status",
   "total",
