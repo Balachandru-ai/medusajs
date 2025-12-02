@@ -63,6 +63,7 @@ import { joinerConfig } from "./../joiner-config"
 import { eventBuilders } from "../utils/events"
 import { EntityManager } from "@mikro-orm/core"
 import { CreateProductOptionDTO } from "@medusajs/types"
+import { joinerConfig } from "./../joiner-config"
 
 type InjectedDependencies = {
   baseRepository: DAL.RepositoryService
@@ -2154,8 +2155,6 @@ export default class ProductModuleService
             "options",
             "options.values",
             "options.products",
-            "variants",
-            "images",
             "tags",
           ],
         },
@@ -2259,11 +2258,13 @@ export default class ProductModuleService
     sharedContext?: Context
   ): Promise<ProductTypes.ProductOptionValueDTO[]>
 
+  @InjectManager()
+  @EmitEvents()
   // @ts-expect-error
   async updateProductOptionValues(
     idOrSelector: string | FilterableProductOptionValueProps,
     data: ProductTypes.UpdateProductOptionValueDTO,
-    sharedContext: Context = {}
+    @MedusaContext() sharedContext: Context = {}
   ): Promise<
     ProductTypes.ProductOptionValueDTO | ProductTypes.ProductOptionValueDTO[]
   > {
@@ -2486,6 +2487,19 @@ export default class ProductModuleService
       : UpdateProductInput
   >(products: T): TOutput {
     const products_ = Array.isArray(products) ? products : [products]
+    const productsIds = products_.map((p) => p.id).filter(Boolean)
+
+    let dbOptions: InferEntityType<typeof ProductOption>[] = []
+
+    if (productsIds.length) {
+      // Re map options to handle non serialized data as well
+      dbOptions =
+        originalProducts
+          ?.flatMap((originalProduct) =>
+            originalProduct.options.map((option) => option)
+          )
+          .filter(Boolean) ?? []
+    }
 
     const normalizedProducts: UpdateProductInput[] = []
 

@@ -162,9 +162,17 @@ export default class RedisEventBusService extends AbstractEventBusModuleService 
         this.callInterceptors(eventData, { isGrouped: false })
       )
 
-      const emitData = this.buildEvents(eventsToEmit, options)
+      const eventsWithSubscribers = eventsToEmit.filter((eventData) => {
+        const eventSubscribers =
+          this.eventToSubscribersMap.get(eventData.name) || []
+        const wildcardSubscribers = this.eventToSubscribersMap.get("*") || []
+        return eventSubscribers.length || wildcardSubscribers.length
+      })
 
-      promises.push(this.queue_.addBulk(emitData))
+      if (eventsWithSubscribers.length) {
+        const emitData = this.buildEvents(eventsWithSubscribers, options)
+        promises.push(this.queue_.addBulk(emitData))
+      }
     }
 
     for (const [groupId, events] of groupEventsMap.entries()) {
@@ -220,7 +228,6 @@ export default class RedisEventBusService extends AbstractEventBusModuleService 
     // Call interceptors before emitting grouped events
     // Extract the original messages from the job data structure
     groupedEvents.map((jobData) => {
-      // Reconstruct the message from the job data
       const message = {
         name: jobData.name,
         data: jobData.data,
@@ -232,7 +239,16 @@ export default class RedisEventBusService extends AbstractEventBusModuleService 
       })
     })
 
-    await this.queue_.addBulk(groupedEvents)
+    const eventsWithSubscribers = groupedEvents.filter((jobData) => {
+      const eventSubscribers =
+        this.eventToSubscribersMap.get(jobData.name) || []
+      const wildcardSubscribers = this.eventToSubscribersMap.get("*") || []
+      return eventSubscribers.length || wildcardSubscribers.length
+    })
+
+    if (eventsWithSubscribers.length) {
+      await this.queue_.addBulk(eventsWithSubscribers)
+    }
 
     await this.clearGroupedEvents(eventGroupId)
   }

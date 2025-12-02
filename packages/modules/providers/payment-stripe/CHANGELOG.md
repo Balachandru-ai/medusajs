@@ -1,5 +1,14 @@
 # @medusajs/payment-stripe
 
+## 2.12.0
+
+### Patch Changes
+
+- [#13805](https://github.com/medusajs/medusa/pull/13805) [`3a1ed748390865c80d487133e4c8e9df030eb4f7`](https://github.com/medusajs/medusa/commit/3a1ed748390865c80d487133e4c8e9df030eb4f7) Thanks [@angelbanderasudg](https://github.com/angelbanderasudg)! - feat(payment-stripe): OXXO payment provider support with configurable expiration
+
+- Updated dependencies [[`c2c3ad5ba53f1959422fb2d37297a8de8d714782`](https://github.com/medusajs/medusa/commit/c2c3ad5ba53f1959422fb2d37297a8de8d714782), [`7e3eb6e41316d7b04d32bc7186ed0c78de1aa539`](https://github.com/medusajs/medusa/commit/7e3eb6e41316d7b04d32bc7186ed0c78de1aa539), [`beb91d88a2f224075e4fcf35a0ee9483b3124504`](https://github.com/medusajs/medusa/commit/beb91d88a2f224075e4fcf35a0ee9483b3124504)]:
+  - @medusajs/framework@2.12.0
+
 ## 2.11.3
 
 ### Patch Changes

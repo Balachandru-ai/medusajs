@@ -1,5 +1,24 @@
 # @medusajs/promotion
 
+## 2.12.0
+
+### Patch Changes
+
+- [#13999](https://github.com/medusajs/medusa/pull/13999) [`ef15868ca8b309dc902470b2da0096255da82c5d`](https://github.com/medusajs/medusa/commit/ef15868ca8b309dc902470b2da0096255da82c5d) Thanks [@juanzgc](https://github.com/juanzgc)! - Add metadata support in the promotion model.
+
+- [#13306](https://github.com/medusajs/medusa/pull/13306) [`78842af1c30de9c7561f10b4129aba4e1f30db27`](https://github.com/medusajs/medusa/commit/78842af1c30de9c7561f10b4129aba4e1f30db27) Thanks [@olivermrbl](https://github.com/olivermrbl)! - fix: Compute "virtual" adjustments for order previews
+
+- [#14115](https://github.com/medusajs/medusa/pull/14115) [`91499081f4584d53690db07f6a9c9f104cd5674e`](https://github.com/medusajs/medusa/commit/91499081f4584d53690db07f6a9c9f104cd5674e) Thanks [@adrien2p](https://github.com/adrien2p)! - chore(): Promotion auto managed joiner config
+
+- [#14176](https://github.com/medusajs/medusa/pull/14176) [`8ddf8b4d764ae359d279498f08d85146d55077f0`](https://github.com/medusajs/medusa/commit/8ddf8b4d764ae359d279498f08d85146d55077f0) Thanks [@fPolic](https://github.com/fPolic)! - fix: skip promotion usage limit checks on edit flows
+
+- [#13760](https://github.com/medusajs/medusa/pull/13760) [`536a3f802c92960b1eab48c37db25a8c542fd231`](https://github.com/medusajs/medusa/commit/536a3f802c92960b1eab48c37db25a8c542fd231) Thanks [@fPolic](https://github.com/fPolic)! - feat: promotion usage limit
+
+- [#14172](https://github.com/medusajs/medusa/pull/14172) [`6bc5bf4fc976a827ea1d1a5b095e370e717a9b24`](https://github.com/medusajs/medusa/commit/6bc5bf4fc976a827ea1d1a5b095e370e717a9b24) Thanks [@pepijn-vanvlaanderen](https://github.com/pepijn-vanvlaanderen)! - Fix not in promotion rule empty value validation
+
+- Updated dependencies [[`c2c3ad5ba53f1959422fb2d37297a8de8d714782`](https://github.com/medusajs/medusa/commit/c2c3ad5ba53f1959422fb2d37297a8de8d714782), [`7e3eb6e41316d7b04d32bc7186ed0c78de1aa539`](https://github.com/medusajs/medusa/commit/7e3eb6e41316d7b04d32bc7186ed0c78de1aa539), [`beb91d88a2f224075e4fcf35a0ee9483b3124504`](https://github.com/medusajs/medusa/commit/beb91d88a2f224075e4fcf35a0ee9483b3124504)]:
+  - @medusajs/framework@2.12.0
+
 ## 2.11.3
 
 ### Patch Changes

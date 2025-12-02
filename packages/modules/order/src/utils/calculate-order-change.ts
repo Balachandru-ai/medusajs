@@ -228,6 +228,8 @@ export class OrderChangeProcessing {
   public getSummaryFromOrder(order: OrderDTO): OrderSummaryDTO {
     const summary_ = this.summary
     const total = order.total
+    // const pendingDifference = MathBN.sub(total, summary_.transaction_total)
+
     const orderSummary = {
       transaction_total: new BigNumber(summary_.transaction_total),
       original_order_total: new BigNumber(summary_.original_order_total),

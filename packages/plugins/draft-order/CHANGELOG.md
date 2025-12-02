@@ -1,5 +1,22 @@
 # @medusajs/draft-order
 
+## 2.12.0
+
+### Patch Changes
+
+- [#14044](https://github.com/medusajs/medusa/pull/14044) [`e75e67f27d2966a16214ac4aa780fe15ef2501c1`](https://github.com/medusajs/medusa/commit/e75e67f27d2966a16214ac4aa780fe15ef2501c1) Thanks [@juanzgc](https://github.com/juanzgc)! - fix(draft-order): copy functionality for phone numbers in draft orders
+
+- [#14013](https://github.com/medusajs/medusa/pull/14013) [`c93f77d1b20395db171016b2710a6ddf95da9851`](https://github.com/medusajs/medusa/commit/c93f77d1b20395db171016b2710a6ddf95da9851) Thanks [@olivermrbl](https://github.com/olivermrbl)! - chore: Allow injection of our JS-SDK's auth type in dashboard
+
+- Updated dependencies [[`c2c3ad5ba53f1959422fb2d37297a8de8d714782`](https://github.com/medusajs/medusa/commit/c2c3ad5ba53f1959422fb2d37297a8de8d714782), [`3852efbcfffbfd10b7f7cae7d1a15de2a5f3afee`](https://github.com/medusajs/medusa/commit/3852efbcfffbfd10b7f7cae7d1a15de2a5f3afee), [`7e3eb6e41316d7b04d32bc7186ed0c78de1aa539`](https://github.com/medusajs/medusa/commit/7e3eb6e41316d7b04d32bc7186ed0c78de1aa539), [`beb91d88a2f224075e4fcf35a0ee9483b3124504`](https://github.com/medusajs/medusa/commit/beb91d88a2f224075e4fcf35a0ee9483b3124504), [`213c344804fb1077aaca3e3cefbd1653ae559899`](https://github.com/medusajs/medusa/commit/213c344804fb1077aaca3e3cefbd1653ae559899), [`00aa2c13bc37223029e40b38f3e2bedd8ed1e816`](https://github.com/medusajs/medusa/commit/00aa2c13bc37223029e40b38f3e2bedd8ed1e816), [`5da51064d7936c6d7a459cfa8b34eada65163e03`](https://github.com/medusajs/medusa/commit/5da51064d7936c6d7a459cfa8b34eada65163e03), [`9d9d0397a88c398683f75ac3d6f539c1a686d278`](undefined)]:
+  - @medusajs/framework@2.12.0
+  - @medusajs/admin-sdk@2.12.0
+  - @medusajs/cli@2.12.0
+  - @medusajs/js-sdk@2.12.0
+  - @medusajs/test-utils@2.12.0
+  - @medusajs/icons@2.12.0
+  - @medusajs/ui@4.0.28
+
 ## 2.11.3
 
 ### Patch Changes
