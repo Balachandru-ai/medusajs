@@ -62,17 +62,30 @@ export const ProductOptionSection = ({
           <SectionRow
             title={option.title}
             key={option.id}
-            value={option.values?.map((val) => {
-              return (
-                <Badge
-                  key={val.value}
-                  size="2xsmall"
-                  className="flex min-w-[20px] items-center justify-center"
-                >
-                  {val.value}
-                </Badge>
-              )
-            })}
+            value={option.values
+              ?.sort((a, b) => {
+                if (a.rank == null && b.rank == null) {
+                  return 0
+                }
+                if (a.rank == null) {
+                  return 1
+                }
+                if (b.rank == null) {
+                  return -1
+                }
+                return a.rank - b.rank
+              })
+              .map((val) => {
+                return (
+                  <Badge
+                    key={val.value}
+                    size="2xsmall"
+                    className="flex min-w-[20px] items-center justify-center"
+                  >
+                    {val.value}
+                  </Badge>
+                )
+              })}
             actions={<OptionActions option={option} />}
           />
         )

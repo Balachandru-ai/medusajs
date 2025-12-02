@@ -240,6 +240,7 @@ export const ProductCreateVariantsSection = ({
         id: option.id,
         title: option.title,
         values: selectedValues,
+        value_ids: selectedValueIds,
       }
     })
 
@@ -364,6 +365,9 @@ export const ProductCreateVariantsSection = ({
             } else {
               createDefaultOptionAndVariant()
             }
+            setSelectedOptionIds([])
+            setSelectedOptionValues({})
+            setCustomValues({})
           }}
         />
       </div>
@@ -387,6 +391,7 @@ export const ProductCreateVariantsSection = ({
               options={productOptionChoices}
               placeholder={t("products.fields.options.optionTitlePlaceholder")}
               disabled={isLoading}
+              displayMode="chips"
             />
           </div>
           {selectedOptionIds.length > 0 && (
@@ -430,6 +435,7 @@ export const ProductCreateVariantsSection = ({
                           placeholder={t(
                             "products.fields.options.variantionsPlaceholder"
                           )}
+                          displayMode="chips"
                         />
                       </div>
                     )

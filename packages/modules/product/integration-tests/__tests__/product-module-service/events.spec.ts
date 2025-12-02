@@ -77,8 +77,9 @@ moduleIntegrationTestRunner<IProductModuleService>({
           // 4. Product variants created (2 variants)
           // 5. Product images created (2 images)
           // 6. Product product options created (pivot table) (2 product-productOption links)
+          // 7. Product product option values created (pivot table) (5 product-productOptionValue links)
 
-          const expectedEventsCount = 1 + 2 + 5 + 2 + 2 + 2 // 14 total events
+          const expectedEventsCount = 1 + 2 + 5 + 2 + 2 + 2 + 5 // 19 total events
           expect(emittedEvents).toHaveLength(expectedEventsCount)
 
           // Verify product created event
@@ -244,8 +245,8 @@ moduleIntegrationTestRunner<IProductModuleService>({
           expect(eventBusSpy).toHaveBeenCalledTimes(1)
           const emittedEvents = eventBusSpy.mock.calls[0][0]
 
-          // Total count should include: 1 product update + 1 option linked + 1 option unlinked + 1 variant created + 1 variant updated + 2 images created + 1 image deleted = 8 events
-          expect(emittedEvents).toHaveLength(8)
+          // Total count should include: 1 product update + 1 option linked + 2 option values linked + 1 option unlinked + 1 option value unlinked + 1 variant created + 1 variant updated + 2 images created + 1 image deleted = 11 events
+          expect(emittedEvents).toHaveLength(11)
 
           // Should emit product update event
           expect(emittedEvents).toEqual(
@@ -271,6 +272,22 @@ moduleIntegrationTestRunner<IProductModuleService>({
             ])
           )
 
+          // Should emit option values link event for new option
+          expect(emittedEvents.filter(e => e.name === ProductEvents.PRODUCT_PRODUCT_OPTION_VALUE_CREATED).length).toEqual(2)
+          expect(emittedEvents).toEqual(
+            expect.arrayContaining([
+              composeMessage(
+                ProductEvents.PRODUCT_PRODUCT_OPTION_VALUE_CREATED,
+                {
+                  data: expect.objectContaining({ id: expect.any(String) }),
+                  object: "product_product_option_value",
+                  source: Modules.PRODUCT,
+                  action: CommonEvents.CREATED,
+                }
+              ),
+            ])
+          )
+
           // Should emit option unlink event for new option
           expect(emittedEvents).toEqual(
             expect.arrayContaining([
@@ -280,6 +297,21 @@ moduleIntegrationTestRunner<IProductModuleService>({
                 source: Modules.PRODUCT,
                 action: CommonEvents.DELETED,
               }),
+            ])
+          )
+
+          // Should emit option value unlink event for new option
+          expect(emittedEvents).toEqual(
+            expect.arrayContaining([
+              composeMessage(
+                ProductEvents.PRODUCT_PRODUCT_OPTION_VALUE_DELETED,
+                {
+                  data: expect.objectContaining({ id: expect.any(String) }),
+                  object: "product_product_option_value",
+                  source: Modules.PRODUCT,
+                  action: CommonEvents.DELETED,
+                }
+              ),
             ])
           )
 
