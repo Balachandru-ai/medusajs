@@ -37,6 +37,12 @@ const ProductImage = model
       where: "deleted_at IS NULL",
     },
     {
+      name: "IDX_product_image_product_id",
+      on: ["product_id"],
+      unique: false,
+      where: "deleted_at IS NULL",
+    },
+    {
       name: "IDX_product_image_url_rank_product_id",
       on: ["url", "rank", "product_id"],
       unique: false,
