@@ -6,11 +6,12 @@ import {
   createSelectParams,
   WithAdditionalData,
 } from "../../utils/validators"
+import { isString } from "@medusajs/framework/utils"
 
 export const AdminGetOrdersOrderParams = createSelectParams().merge(
   z.object({
     version: z.preprocess((val) => {
-      if (val && typeof val === "string") {
+      if (isString(val)) {
         return parseInt(val)
       }
       return val
