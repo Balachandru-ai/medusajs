@@ -1,8 +1,6 @@
 import { ModuleJoinerConfig } from "@medusajs/framework/types"
 import { Modules } from "@medusajs/framework/utils"
 
-export const TRANSLATION_MODULE = "translation"
-
 export const ProductTranslation: ModuleJoinerConfig = {
   isLink: true,
   isReadOnlyLink: true,
@@ -11,7 +9,7 @@ export const ProductTranslation: ModuleJoinerConfig = {
       serviceName: Modules.PRODUCT,
       entity: "Product",
       relationship: {
-        serviceName: TRANSLATION_MODULE,
+        serviceName: Modules.TRANSLATION,
         entity: "Translation",
         primaryKey: "entity_id",
         foreignKey: "id",
@@ -26,7 +24,7 @@ export const ProductTranslation: ModuleJoinerConfig = {
       serviceName: Modules.PRODUCT,
       entity: "ProductVariant",
       relationship: {
-        serviceName: TRANSLATION_MODULE,
+        serviceName: Modules.TRANSLATION,
         entity: "Translation",
         primaryKey: "entity_id",
         foreignKey: "id",
@@ -41,7 +39,7 @@ export const ProductTranslation: ModuleJoinerConfig = {
       serviceName: Modules.PRODUCT,
       entity: "ProductCategory",
       relationship: {
-        serviceName: TRANSLATION_MODULE,
+        serviceName: Modules.TRANSLATION,
         entity: "Translation",
         primaryKey: "entity_id",
         foreignKey: "id",
@@ -56,7 +54,7 @@ export const ProductTranslation: ModuleJoinerConfig = {
       serviceName: Modules.PRODUCT,
       entity: "ProductCollection",
       relationship: {
-        serviceName: TRANSLATION_MODULE,
+        serviceName: Modules.TRANSLATION,
         entity: "Translation",
         primaryKey: "entity_id",
         foreignKey: "id",
@@ -71,7 +69,7 @@ export const ProductTranslation: ModuleJoinerConfig = {
       serviceName: Modules.PRODUCT,
       entity: "ProductTag",
       relationship: {
-        serviceName: TRANSLATION_MODULE,
+        serviceName: Modules.TRANSLATION,
         entity: "Translation",
         primaryKey: "entity_id",
         foreignKey: "id",
@@ -86,7 +84,7 @@ export const ProductTranslation: ModuleJoinerConfig = {
       serviceName: Modules.PRODUCT,
       entity: "ProductType",
       relationship: {
-        serviceName: TRANSLATION_MODULE,
+        serviceName: Modules.TRANSLATION,
         entity: "Translation",
         primaryKey: "entity_id",
         foreignKey: "id",
@@ -101,7 +99,7 @@ export const ProductTranslation: ModuleJoinerConfig = {
       serviceName: Modules.PRODUCT,
       entity: "ProductOption",
       relationship: {
-        serviceName: TRANSLATION_MODULE,
+        serviceName: Modules.TRANSLATION,
         entity: "Translation",
         primaryKey: "entity_id",
         foreignKey: "id",
@@ -116,7 +114,7 @@ export const ProductTranslation: ModuleJoinerConfig = {
       serviceName: Modules.PRODUCT,
       entity: "ProductOptionValue",
       relationship: {
-        serviceName: TRANSLATION_MODULE,
+        serviceName: Modules.TRANSLATION,
         entity: "Translation",
         primaryKey: "entity_id",
         foreignKey: "id",
@@ -128,7 +126,7 @@ export const ProductTranslation: ModuleJoinerConfig = {
       },
     },
     {
-      serviceName: TRANSLATION_MODULE,
+      serviceName: Modules.TRANSLATION,
       entity: "Translation",
       relationship: {
         serviceName: Modules.PRODUCT,
