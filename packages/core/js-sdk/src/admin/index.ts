@@ -270,6 +270,7 @@ export class Admin {
     this.store = new Store(client)
     this.productTag = new ProductTag(client)
     this.user = new User(client)
+    this.locale = new Locale(client)
     this.currency = new Currency(client)
     this.payment = new Payment(client)
     this.productVariant = new ProductVariant(client)
