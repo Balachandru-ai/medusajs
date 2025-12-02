@@ -1,3 +1,5 @@
+import { EntityManager } from "@mikro-orm/core"
+import { CreateProductOptionDTO } from "@medusajs/types"
 import {
   Context,
   DAL,
@@ -61,9 +63,6 @@ import {
 } from "../types"
 import { joinerConfig } from "./../joiner-config"
 import { eventBuilders } from "../utils/events"
-import { EntityManager } from "@mikro-orm/core"
-import { CreateProductOptionDTO } from "@medusajs/types"
-import { joinerConfig } from "./../joiner-config"
 
 type InjectedDependencies = {
   baseRepository: DAL.RepositoryService
@@ -1929,10 +1928,10 @@ export default class ProductModuleService
       return { ...product, options: hydratedOptions }
     })
 
-    const normalizedProducts = this.normalizeCreateProductInput(
+    const normalizedProducts = (await this.normalizeCreateProductInput(
       hydratedData,
       sharedContext
-    )
+    )) as ProductTypes.CreateProductDTO[]
 
     for (const product of normalizedProducts) {
       this.validateProductCreatePayload(product)
@@ -2151,12 +2150,7 @@ export default class ProductModuleService
       this.productService_.list(
         { id: data.map((d) => d.id) },
         {
-          relations: [
-            "options",
-            "options.values",
-            "options.products",
-            "tags",
-          ],
+          relations: ["options", "options.values", "options.products", "tags"],
         },
         sharedContext
       ),
@@ -2227,7 +2221,9 @@ export default class ProductModuleService
 
     await (sharedContext.transactionManager as any).flush()
 
-    const normalizedProducts = this.normalizeUpdateProductInput(data)
+    const normalizedProducts = (await this.normalizeUpdateProductInput(
+      data
+    )) as UpdateProductInput[]
 
     for (const product of normalizedProducts) {
       this.validateProductUpdatePayload(product)
@@ -2402,19 +2398,22 @@ export default class ProductModuleService
     this.validateProductPayload(productData)
   }
 
-  protected normalizeCreateProductInput<
+  protected async normalizeCreateProductInput<
     T extends ProductTypes.CreateProductDTO | ProductTypes.CreateProductDTO[],
     TOutput = T extends ProductTypes.CreateProductDTO[]
       ? ProductTypes.CreateProductDTO[]
       : ProductTypes.CreateProductDTO
-  >(products: T, @MedusaContext() sharedContext: Context = {}): TOutput {
+  >(
+    products: T,
+    @MedusaContext() sharedContext: Context = {}
+  ): Promise<TOutput> {
     const products_ = Array.isArray(products) ? products : [products]
 
-    const normalizedProducts = this.normalizeUpdateProductInput(
+    const normalizedProducts = (await this.normalizeUpdateProductInput(
       products_ as UpdateProductInput[]
-    ) as ProductTypes.CreateProductDTO[]
+    )) as ProductTypes.CreateProductDTO[]
 
-    for (const productData of normalizedProducts) {
+    for await (const productData of normalizedProducts) {
       if (productData.options?.length) {
         ;(productData as any).options = productData.options?.map((option) => {
           return {
@@ -2480,26 +2479,16 @@ export default class ProductModuleService
    * @param originalProducts - The original products to use for the normalization (must include options and option values relations)
    * @returns The normalized products
    */
-  protected normalizeUpdateProductInput<
+  protected async normalizeUpdateProductInput<
     T extends UpdateProductInput | UpdateProductInput[],
     TOutput = T extends UpdateProductInput[]
       ? UpdateProductInput[]
       : UpdateProductInput
-  >(products: T): TOutput {
+  >(
+    products: T,
+    originalProducts?: InferEntityType<typeof Product>[]
+  ): Promise<TOutput> {
     const products_ = Array.isArray(products) ? products : [products]
-    const productsIds = products_.map((p) => p.id).filter(Boolean)
-
-    let dbOptions: InferEntityType<typeof ProductOption>[] = []
-
-    if (productsIds.length) {
-      // Re map options to handle non serialized data as well
-      dbOptions =
-        originalProducts
-          ?.flatMap((originalProduct) =>
-            originalProduct.options.map((option) => option)
-          )
-          .filter(Boolean) ?? []
-    }
 
     const normalizedProducts: UpdateProductInput[] = []
 
@@ -2510,8 +2499,8 @@ export default class ProductModuleService
       }
 
       if (productData.tag_ids) {
-        ;(productData as any).tags = productData.tag_ids.map((tid) => ({
-          id: tid,
+        ;(productData as any).tags = productData.tag_ids.map((cid) => ({
+          id: cid,
         }))
         delete productData.tag_ids
       }
