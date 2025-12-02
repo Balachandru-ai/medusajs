@@ -2822,7 +2822,7 @@
           "placeholder": "gesto_dobrej_vôle"
         },
         "description": {
-          "label": "Description",
+          "label": "Popis",
           "placeholder": "Zákazník mal zlú skúsenosť s nakupovaním"
         }
       }
