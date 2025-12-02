@@ -40,6 +40,21 @@ export default class TranslationModuleService
     this.translationService_ = translationService
   }
 
+  static prepareFilters(
+    filters: FilterableTranslationProps
+  ): FilterableTranslationProps {
+    let { q, ...restFilters } = filters
+
+    if (q) {
+      restFilters = {
+        ...restFilters,
+        [raw(`translations::text ILIKE ?`, [`%${q}%`])]: [],
+      }
+    }
+
+    return restFilters
+  }
+
   @InjectManager()
   // @ts-expect-error
   async listTranslations(
@@ -47,21 +62,16 @@ export default class TranslationModuleService
     config: FindConfig<TranslationTypes.TranslationDTO> = {},
     @MedusaContext() sharedContext: Context = {}
   ): Promise<TranslationTypes.TranslationDTO[]> {
-    const { q, ...restFilters } = filters
+    let { q, ...restFilters } = filters
 
     if (q) {
-      // Add raw SQL condition for JSONB text search using MikroORM's raw helper
-      // This searches within all values of the translations JSON object
-      const queryOptions = ModulesSdkUtils.buildQuery<any>(restFilters, config)
-      queryOptions.where = {
-        ...queryOptions.where,
-        [raw(`translations::text ILIKE ?`, [`%${q}%`])]: [],
-      }
+      restFilters = TranslationModuleService.prepareFilters(restFilters)
 
-      const manager = sharedContext.manager ?? this.baseRepository_["manager_"]
-      const results = await manager.find(Translation, queryOptions.where, {
-        ...queryOptions.options,
-      })
+      const results = await this.translationService_.list(
+        restFilters,
+        config,
+        sharedContext
+      )
 
       return await this.baseRepository_.serialize<
         TranslationTypes.TranslationDTO[]
@@ -89,10 +99,7 @@ export default class TranslationModuleService
     let { q, ...restFilters } = filters
 
     if (q) {
-      restFilters = {
-        ...restFilters,
-        [raw(`translations::text ILIKE ?`, [`%${q}%`])]: [],
-      }
+      restFilters = TranslationModuleService.prepareFilters(restFilters)
 
       const [results, count] = await this.translationService_.listAndCount(
         restFilters,
