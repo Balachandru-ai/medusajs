@@ -216,7 +216,7 @@ export const languages: Language[] = [
   },
   {
     code: "sk",
-    display_name: "Slovak",
+    display_name: "Slovenčina",
     ltr: true,
     date_locale: sk,
   },

@@ -344,7 +344,7 @@
     "badRequestTitle": "400 - Zlá požiadavka",
     "badRequestMessage": "Požiadavka nemohla býť pochopená serverom kvôli zlej syntaxi.",
     "notFoundTitle": "404 - Na tejto adrese nie je Žiadna stránka",
-    "notFoundMessage": "Skontrolujte URL a skúste to znovu, akebi použite vyhľadávaciu lištu k nájdeniu toho, čo hľadáte.",
+    "notFoundMessage": "Skontrolujte URL a skúste to znovu, alebo použite vyhľadávaciu lištu k nájdeniu toho, čo hľadáte.",
     "internalServerErrorTitle": "500 - Interná chyba serveru",
     "internalServerErrorMessage": "Na servere došlo k neočekávanej chybe. Skúste to prosím neskôr.",
     "defaultTitle": "Došlo k chybe",
@@ -388,7 +388,7 @@
     },
     "newOwner": {
       "label": "Nový vlastník",
-      "hint": "Nový vlastník, na kterého sa objednávka převede."
+      "hint": "Nový vlastník, na ktorého  sa objednávka převede."
     },
     "validation": {
       "mustBeDifferent": "Nový vlastník musí byť odlišný od současného vlastníka.",
