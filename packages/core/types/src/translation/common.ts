@@ -18,6 +18,21 @@ export interface LocaleDTO {
    * The human-readable name of the locale (e.g., "English (United States)").
    */
   name: string
+
+  /**
+   * The date and time the locale was created.
+   */
+  created_at: Date | string
+
+  /**
+   * The date and time the locale was last updated.
+   */
+  updated_at: Date | string
+
+  /**
+   * The date and time the locale was deleted.
+   */
+  deleted_at: Date | string | null
 }
 
 /**
@@ -48,6 +63,21 @@ export interface TranslationDTO {
    * The translated fields as key-value pairs.
    */
   translations: Record<string, unknown>
+
+  /**
+   * The date and time the translation was created.
+   */
+  created_at: Date | string
+
+  /**
+   * The date and time the translation was last updated.
+   */
+  updated_at: Date | string
+
+  /**
+   * The date and time the translation was deleted.
+   */
+  deleted_at: Date | string | null
 }
 
 /**
@@ -76,6 +106,12 @@ export interface FilterableLocaleProps
  */
 export interface FilterableTranslationProps
   extends BaseFilterable<FilterableTranslationProps> {
+  /**
+   * Search through translated content using this search term.
+   * This searches within the JSONB translations field values.
+   */
+  q?: string
+
   /**
    * The IDs to filter the translations by.
    */

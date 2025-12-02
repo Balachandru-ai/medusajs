@@ -13,13 +13,7 @@ import {
   CreateTranslationDTO,
   UpdateLocaleDTO,
   UpdateTranslationDTO,
-  UpsertLocaleDTO,
-  UpsertTranslationDTO,
 } from "./mutations"
-
-/**
- * The main service interface for the Translation Module.
- */
 export interface ITranslationModuleService extends IModuleService {
   /**
    * This method creates locales.
@@ -42,30 +36,6 @@ export interface ITranslationModuleService extends IModuleService {
    */
   createLocales(
     data: CreateLocaleDTO,
-    sharedContext?: Context
-  ): Promise<LocaleDTO>
-
-  /**
-   * This method updates or creates locales if they don't exist.
-   *
-   * @param {UpsertLocaleDTO[]} data - The attributes in the locales to be created or updated.
-   * @param {Context} sharedContext - A context used to share resources, such as transaction manager, between the application and the module.
-   * @returns {Promise<LocaleDTO[]>} The created or updated locales.
-   */
-  upsertLocales(
-    data: UpsertLocaleDTO[],
-    sharedContext?: Context
-  ): Promise<LocaleDTO[]>
-
-  /**
-   * This method updates or creates a locale if it doesn't exist.
-   *
-   * @param {UpsertLocaleDTO} data - The attributes in the locale to be created or updated.
-   * @param {Context} sharedContext - A context used to share resources, such as transaction manager, between the application and the module.
-   * @returns {Promise<LocaleDTO>} The created or updated locale.
-   */
-  upsertLocales(
-    data: UpsertLocaleDTO,
     sharedContext?: Context
   ): Promise<LocaleDTO>
 
@@ -178,30 +148,6 @@ export interface ITranslationModuleService extends IModuleService {
    */
   createTranslations(
     data: CreateTranslationDTO,
-    sharedContext?: Context
-  ): Promise<TranslationDTO>
-
-  /**
-   * This method updates or creates translations if they don't exist.
-   *
-   * @param {UpsertTranslationDTO[]} data - The attributes in the translations to be created or updated.
-   * @param {Context} sharedContext - A context used to share resources, such as transaction manager, between the application and the module.
-   * @returns {Promise<TranslationDTO[]>} The created or updated translations.
-   */
-  upsertTranslations(
-    data: UpsertTranslationDTO[],
-    sharedContext?: Context
-  ): Promise<TranslationDTO[]>
-
-  /**
-   * This method updates or creates a translation if it doesn't exist.
-   *
-   * @param {UpsertTranslationDTO} data - The attributes in the translation to be created or updated.
-   * @param {Context} sharedContext - A context used to share resources, such as transaction manager, between the application and the module.
-   * @returns {Promise<TranslationDTO>} The created or updated translation.
-   */
-  upsertTranslations(
-    data: UpsertTranslationDTO,
     sharedContext?: Context
   ): Promise<TranslationDTO>
 
