@@ -4,7 +4,7 @@ import {
   ModulesSdkTypes,
 } from "@medusajs/framework/types"
 import { ContainerRegistrationKeys } from "@medusajs/framework/utils"
-import Locale from "../models/locale"
+import Locale from "@models/locale"
 
 /**
  * BCP 47 Language Tags

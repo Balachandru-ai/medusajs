@@ -1,4 +1,4 @@
-import TranslationModuleService from "./services/translation-module"
+import TranslationModuleService from "@services/translation-module"
 import loadDefaults from "./loaders/defaults"
 import { Module } from "@medusajs/framework/utils"
 

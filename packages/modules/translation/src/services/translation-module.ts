@@ -14,8 +14,8 @@ import {
   MedusaService,
   ModulesSdkUtils,
 } from "@medusajs/framework/utils"
-import Locale from "../models/locale"
-import Translation from "../models/translation"
+import Locale from "@models/locale"
+import Translation from "@models/translation"
 
 type InjectedDependencies = {
   baseRepository: DAL.RepositoryService

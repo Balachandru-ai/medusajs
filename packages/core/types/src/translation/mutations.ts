@@ -18,6 +18,11 @@ export interface CreateLocaleDTO {
  */
 export interface UpdateLocaleDTO {
   /**
+   * The ID of the locale to update.
+   */
+  id: string
+
+  /**
    * The BCP 47 language tag code of the locale.
    */
   code?: string
@@ -77,6 +82,11 @@ export interface CreateTranslationDTO {
  * The attributes to update in the translation.
  */
 export interface UpdateTranslationDTO {
+  /**
+   * The ID of the translation to update.
+   */
+  id: string
+
   /**
    * The ID of the entity being translated.
    */
