@@ -45,6 +45,7 @@ import { User } from "./user"
 import { Views } from "./views"
 import { WorkflowExecution } from "./workflow-execution"
 import { ShippingOptionType } from "./shipping-option-type"
+import { Locale } from "./locale"
 
 export class Admin {
   /**
@@ -179,6 +180,10 @@ export class Admin {
    * @tags currency
    */
   public currency: Currency
+  /**
+   * @tags locale
+   */
+  public locale: Locale
   /**
    * @tags payment
    */
