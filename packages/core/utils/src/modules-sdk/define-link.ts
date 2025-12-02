@@ -517,7 +517,10 @@ ${serviceBObj.module}: {
             entity: serviceBObj.entity,
             primaryKey: serviceBObj.primaryKey,
             foreignKey: serviceAObj.field,
-            alias: serviceBObj.alias,
+            alias:
+              readOnlyLinkOptions?.isList ?? serviceAObj.isList
+                ? pluralize(serviceBObj.alias)
+                : serviceBObj.alias,
             isList: readOnlyLinkOptions?.isList ?? serviceAObj.isList,
           },
         },
