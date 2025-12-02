@@ -8,6 +8,7 @@ import { SingleColumnPageSkeleton } from "../../../components/common/skeleton"
 import { SingleColumnPage } from "../../../components/layout/pages"
 import { useExtension } from "../../../providers/extension-provider"
 import { StoreCurrencySection } from "./components/store-currency-section"
+import { StoreLocaleSection } from "./components/store-locale-section"
 
 export const StoreDetail = () => {
   const initialData = useLoaderData() as Awaited<ReturnType<typeof storeLoader>>
@@ -39,6 +40,7 @@ export const StoreDetail = () => {
     >
       <StoreGeneralSection store={store} />
       <StoreCurrencySection store={store} />
+      <StoreLocaleSection store={store} />
     </SingleColumnPage>
   )
 }

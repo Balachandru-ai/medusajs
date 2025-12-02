@@ -20,6 +20,7 @@ export const StoreGeneralSection = ({ store }: StoreGeneralSectionProps) => {
   })
 
   const defaultCurrency = store.supported_currencies?.find((c) => c.is_default)
+  const defaultLocale = store.supported_locales?.find((l) => l.is_default)
 
   const { sales_channel } = useSalesChannel(store.default_sales_channel_id!, {
     enabled: !!store.default_sales_channel_id,
@@ -77,6 +78,25 @@ export const StoreGeneralSection = ({ store }: StoreGeneralSectionProps) => {
             </Badge>
             <Text size="small" leading="compact">
               {defaultCurrency.currency?.name}
+            </Text>
+          </div>
+        ) : (
+          <Text size="small" leading="compact">
+            -
+          </Text>
+        )}
+      </div>
+      <div className="text-ui-fg-subtle grid grid-cols-2 px-6 py-4">
+        <Text size="small" leading="compact" weight="plus">
+          {t("store.defaultLocale")}
+        </Text>
+        {defaultLocale ? (
+          <div className="flex items-center gap-x-2">
+            <Badge size="2xsmall">
+              {defaultLocale.locale_code?.toUpperCase()}
+            </Badge>
+            <Text size="small" leading="compact">
+              {defaultLocale.locale?.name}
             </Text>
           </div>
         ) : (
