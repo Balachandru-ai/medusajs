@@ -1,4 +1,3 @@
-import { ContainerRegistrationKeys } from "@medusajs/utils"
 import type {
   MedusaNextFunction,
   MedusaRequest,
