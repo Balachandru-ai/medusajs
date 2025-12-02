@@ -16,6 +16,7 @@
     "@medusajs/core-flows": "workspace:*",
     "@medusajs/customer": "workspace:^",
     "@medusajs/event-bus-local": "workspace:*",
+    "@medusajs/event-bus-redis": "workspace:*",
     "@medusajs/framework": "workspace:*",
     "@medusajs/fulfillment": "workspace:^",
     "@medusajs/fulfillment-manual": "workspace:^",
