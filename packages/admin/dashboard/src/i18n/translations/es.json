@@ -2465,12 +2465,14 @@
     "removeLocaleWarning_one": "Estás a punto de eliminar {{count}} idioma de tu tienda. Cualquier traducción que use este idioma será eliminada.",
     "removeLocaleWarning_other": "Estás a punto de eliminar {{count}} idiomas de tu tienda. Cualquier traducción que use estos idiomas será eliminada.",
     "currencyAlreadyAdded": "La moneda ya ha sido agregada a tu tienda.",
+    "localeAlreadyAdded": "El idioma ya ha sido agregado a tu tienda.",
     "edit": {
       "header": "Editar Tienda"
     },
     "toast": {
       "update": "Tienda actualizada exitosamente",
       "currenciesUpdated": "Monedas actualizadas exitosamente",
+      "localesUpdated": "Idiomas actualizados exitosamente",
       "currenciesRemoved": "Monedas eliminadas de la tienda exitosamente",
       "localesRemoved": "Idiomas eliminados de la tienda exitosamente",
       "updatedTaxInclusivitySuccessfully": "Precios con impuestos incluidos actualizados exitosamente"

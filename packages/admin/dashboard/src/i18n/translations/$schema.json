@@ -9351,6 +9351,9 @@
         "removeLocaleWarning_other": {
           "type": "string"
         },
+        "localeAlreadyAdded": {
+          "type": "string"
+        },
         "currencyAlreadyAdded": {
           "type": "string"
         },
@@ -9370,6 +9373,9 @@
             "update": {
               "type": "string"
             },
+            "localesUpdated": {
+              "type": "string"
+            },
             "currenciesUpdated": {
               "type": "string"
             },
@@ -9385,6 +9391,7 @@
           },
           "required": [
             "update",
+            "localesUpdated",
             "currenciesUpdated",
             "currenciesRemoved",
             "localesRemoved",
@@ -9415,6 +9422,7 @@
         "removeLocaleWarning_one",
         "removeLocaleWarning_other",
         "currencyAlreadyAdded",
+        "localeAlreadyAdded",
         "edit",
         "toast"
       ],
