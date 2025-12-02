@@ -1,5 +1,13 @@
 # @medusajs/js-sdk
 
+## 2.12.0
+
+### Patch Changes
+
+- [#14169](https://github.com/medusajs/medusa/pull/14169) [`00aa2c13bc37223029e40b38f3e2bedd8ed1e816`](https://github.com/medusajs/medusa/commit/00aa2c13bc37223029e40b38f3e2bedd8ed1e816) Thanks [@shahednasser](https://github.com/shahednasser)! - fix(js-sdk,types,medusa): add HTTP types for update order change API route
+
+- [#14128](https://github.com/medusajs/medusa/pull/14128) [`5da51064d7936c6d7a459cfa8b34eada65163e03`](https://github.com/medusajs/medusa/commit/5da51064d7936c6d7a459cfa8b34eada65163e03) Thanks [@fPolic](https://github.com/fPolic)! - feat: carry over promotions toggle on exchanges
+
 ## 2.11.3
 
 ### Patch Changes

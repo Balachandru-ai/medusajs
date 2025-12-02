@@ -214,7 +214,6 @@ export function decorateCartTotals(
     shippingOriginalSubtotal
   )
 
-  // TODO: subtract (cart.gift_card_total + cart.gift_card_tax_total)
   const tempTotal = MathBN.add(subtotal, taxTotal)
   const total = MathBN.sub(tempTotal, discountSubtotal, creditLinesTotal)
 

@@ -400,6 +400,7 @@ export const createOrderFulfillmentWorkflow = createWorkflow(
       fields: [
         "id",
         "display_id",
+        "custom_display_id",
         "status",
         "customer_id",
         "customer.*",
@@ -429,6 +430,7 @@ export const createOrderFulfillmentWorkflow = createWorkflow(
         "items.variant.product.mid_code",
         "items.variant.product.material",
         "items.tax_lines.rate",
+        "metadata",
         "subtotal",
         "discount_total",
         "tax_total",

@@ -1,12 +1,12 @@
 {
-	"id": 62128,
+	"id": 62581,
 	"name": "caching",
 	"variant": "project",
 	"kind": 1,
 	"flags": {},
 	"children": [
 		{
-			"id": 62129,
+			"id": 62582,
 			"name": "ICachingModuleService",
 			"variant": "declaration",
 			"kind": 256,
@@ -27,7 +27,7 @@
 			},
 			"children": [
 				{
-					"id": 62130,
+					"id": 62583,
 					"name": "get",
 					"variant": "declaration",
 					"kind": 2048,
@@ -37,12 +37,12 @@
 							"fileName": "caching/index.ts",
 							"line": 74,
 							"character": 2,
-							"url": "https://github.com/medusajs/medusa/blob/147ce2fdc35366e591f552404ec949f6a5b92a11/packages/core/types/src/caching/index.ts#L74"
+							"url": "https://github.com/medusajs/medusa/blob/e4513fab88f5ba7d5c078d3e251e04b104268a56/packages/core/types/src/caching/index.ts#L74"
 						}
 					],
 					"signatures": [
 						{
-							"id": 62131,
+							"id": 62584,
 							"name": "get",
 							"variant": "signature",
 							"kind": 4096,
@@ -168,12 +168,12 @@
 									"fileName": "caching/index.ts",
 									"line": 74,
 									"character": 2,
-									"url": "https://github.com/medusajs/medusa/blob/147ce2fdc35366e591f552404ec949f6a5b92a11/packages/core/types/src/caching/index.ts#L74"
+									"url": "https://github.com/medusajs/medusa/blob/e4513fab88f5ba7d5c078d3e251e04b104268a56/packages/core/types/src/caching/index.ts#L74"
 								}
 							],
 							"parameters": [
 								{
-									"id": 62132,
+									"id": 62585,
 									"name": "param0",
 									"variant": "param",
 									"kind": 32768,
@@ -189,14 +189,14 @@
 									"type": {
 										"type": "reflection",
 										"declaration": {
-											"id": 62133,
+											"id": 62586,
 											"name": "__type",
 											"variant": "declaration",
 											"kind": 65536,
 											"flags": {},
 											"children": [
 												{
-													"id": 62134,
+													"id": 62587,
 													"name": "key",
 													"variant": "declaration",
 													"kind": 1024,
@@ -248,7 +248,7 @@
 															"fileName": "caching/index.ts",
 															"line": 83,
 															"character": 4,
-															"url": "https://github.com/medusajs/medusa/blob/147ce2fdc35366e591f552404ec949f6a5b92a11/packages/core/types/src/caching/index.ts#L83"
+															"url": "https://github.com/medusajs/medusa/blob/e4513fab88f5ba7d5c078d3e251e04b104268a56/packages/core/types/src/caching/index.ts#L83"
 														}
 													],
 													"type": {
@@ -257,7 +257,7 @@
 													}
 												},
 												{
-													"id": 62135,
+													"id": 62588,
 													"name": "tags",
 													"variant": "declaration",
 													"kind": 1024,
@@ -277,7 +277,7 @@
 															"fileName": "caching/index.ts",
 															"line": 88,
 															"character": 4,
-															"url": "https://github.com/medusajs/medusa/blob/147ce2fdc35366e591f552404ec949f6a5b92a11/packages/core/types/src/caching/index.ts#L88"
+															"url": "https://github.com/medusajs/medusa/blob/e4513fab88f5ba7d5c078d3e251e04b104268a56/packages/core/types/src/caching/index.ts#L88"
 														}
 													],
 													"type": {
@@ -289,7 +289,7 @@
 													}
 												},
 												{
-													"id": 62136,
+													"id": 62589,
 													"name": "providers",
 													"variant": "declaration",
 													"kind": 1024,
@@ -309,7 +309,7 @@
 															"fileName": "caching/index.ts",
 															"line": 94,
 															"character": 4,
-															"url": "https://github.com/medusajs/medusa/blob/147ce2fdc35366e591f552404ec949f6a5b92a11/packages/core/types/src/caching/index.ts#L94"
+															"url": "https://github.com/medusajs/medusa/blob/e4513fab88f5ba7d5c078d3e251e04b104268a56/packages/core/types/src/caching/index.ts#L94"
 														}
 													],
 													"type": {
@@ -325,9 +325,9 @@
 												{
 													"title": "Properties",
 													"children": [
-														62134,
-														62135,
-														62136
+														62587,
+														62588,
+														62589
 													]
 												}
 											],
@@ -336,7 +336,7 @@
 													"fileName": "caching/index.ts",
 													"line": 78,
 													"character": 5,
-													"url": "https://github.com/medusajs/medusa/blob/147ce2fdc35366e591f552404ec949f6a5b92a11/packages/core/types/src/caching/index.ts#L78"
+													"url": "https://github.com/medusajs/medusa/blob/e4513fab88f5ba7d5c078d3e251e04b104268a56/packages/core/types/src/caching/index.ts#L78"
 												}
 											]
 										}
@@ -362,7 +362,7 @@
 					]
 				},
 				{
-					"id": 62137,
+					"id": 62590,
 					"name": "set",
 					"variant": "declaration",
 					"kind": 2048,
@@ -372,12 +372,12 @@
 							"fileName": "caching/index.ts",
 							"line": 166,
 							"character": 2,
-							"url": "https://github.com/medusajs/medusa/blob/147ce2fdc35366e591f552404ec949f6a5b92a11/packages/core/types/src/caching/index.ts#L166"
+							"url": "https://github.com/medusajs/medusa/blob/e4513fab88f5ba7d5c078d3e251e04b104268a56/packages/core/types/src/caching/index.ts#L166"
 						}
 					],
 					"signatures": [
 						{
-							"id": 62138,
+							"id": 62591,
 							"name": "set",
 							"variant": "signature",
 							"kind": 4096,
@@ -487,12 +487,12 @@
 									"fileName": "caching/index.ts",
 									"line": 166,
 									"character": 2,
-									"url": "https://github.com/medusajs/medusa/blob/147ce2fdc35366e591f552404ec949f6a5b92a11/packages/core/types/src/caching/index.ts#L166"
+									"url": "https://github.com/medusajs/medusa/blob/e4513fab88f5ba7d5c078d3e251e04b104268a56/packages/core/types/src/caching/index.ts#L166"
 								}
 							],
 							"parameters": [
 								{
-									"id": 62139,
+									"id": 62592,
 									"name": "param0",
 									"variant": "param",
 									"kind": 32768,
@@ -508,14 +508,14 @@
 									"type": {
 										"type": "reflection",
 										"declaration": {
-											"id": 62140,
+											"id": 62593,
 											"name": "__type",
 											"variant": "declaration",
 											"kind": 65536,
 											"flags": {},
 											"children": [
 												{
-													"id": 62141,
+													"id": 62594,
 													"name": "key",
 													"variant": "declaration",
 													"kind": 1024,
@@ -533,7 +533,7 @@
 															"fileName": "caching/index.ts",
 															"line": 177,
 															"character": 4,
-															"url": "https://github.com/medusajs/medusa/blob/147ce2fdc35366e591f552404ec949f6a5b92a11/packages/core/types/src/caching/index.ts#L177"
+															"url": "https://github.com/medusajs/medusa/blob/e4513fab88f5ba7d5c078d3e251e04b104268a56/packages/core/types/src/caching/index.ts#L177"
 														}
 													],
 													"type": {
@@ -542,7 +542,7 @@
 													}
 												},
 												{
-													"id": 62142,
+													"id": 62595,
 													"name": "data",
 													"variant": "declaration",
 													"kind": 1024,
@@ -560,7 +560,7 @@
 															"fileName": "caching/index.ts",
 															"line": 181,
 															"character": 4,
-															"url": "https://github.com/medusajs/medusa/blob/147ce2fdc35366e591f552404ec949f6a5b92a11/packages/core/types/src/caching/index.ts#L181"
+															"url": "https://github.com/medusajs/medusa/blob/e4513fab88f5ba7d5c078d3e251e04b104268a56/packages/core/types/src/caching/index.ts#L181"
 														}
 													],
 													"type": {
@@ -569,7 +569,7 @@
 													}
 												},
 												{
-													"id": 62143,
+													"id": 62596,
 													"name": "ttl",
 													"variant": "declaration",
 													"kind": 1024,
@@ -589,7 +589,7 @@
 															"fileName": "caching/index.ts",
 															"line": 186,
 															"character": 4,
-															"url": "https://github.com/medusajs/medusa/blob/147ce2fdc35366e591f552404ec949f6a5b92a11/packages/core/types/src/caching/index.ts#L186"
+															"url": "https://github.com/medusajs/medusa/blob/e4513fab88f5ba7d5c078d3e251e04b104268a56/packages/core/types/src/caching/index.ts#L186"
 														}
 													],
 													"type": {
@@ -598,7 +598,7 @@
 													}
 												},
 												{
-													"id": 62144,
+													"id": 62597,
 													"name": "tags",
 													"variant": "declaration",
 													"kind": 1024,
@@ -618,7 +618,7 @@
 															"fileName": "caching/index.ts",
 															"line": 191,
 															"character": 4,
-															"url": "https://github.com/medusajs/medusa/blob/147ce2fdc35366e591f552404ec949f6a5b92a11/packages/core/types/src/caching/index.ts#L191"
+															"url": "https://github.com/medusajs/medusa/blob/e4513fab88f5ba7d5c078d3e251e04b104268a56/packages/core/types/src/caching/index.ts#L191"
 														}
 													],
 													"type": {
@@ -630,7 +630,7 @@
 													}
 												},
 												{
-													"id": 62145,
+													"id": 62598,
 													"name": "options",
 													"variant": "declaration",
 													"kind": 1024,
@@ -666,20 +666,20 @@
 															"fileName": "caching/index.ts",
 															"line": 196,
 															"character": 4,
-															"url": "https://github.com/medusajs/medusa/blob/147ce2fdc35366e591f552404ec949f6a5b92a11/packages/core/types/src/caching/index.ts#L196"
+															"url": "https://github.com/medusajs/medusa/blob/e4513fab88f5ba7d5c078d3e251e04b104268a56/packages/core/types/src/caching/index.ts#L196"
 														}
 													],
 													"type": {
 														"type": "reflection",
 														"declaration": {
-															"id": 62146,
+															"id": 62599,
 															"name": "__type",
 															"variant": "declaration",
 															"kind": 65536,
 															"flags": {},
 															"children": [
 																{
-																	"id": 62147,
+																	"id": 62600,
 																	"name": "autoInvalidate",
 																	"variant": "declaration",
 																	"kind": 1024,
@@ -710,7 +710,7 @@
 																			"fileName": "caching/index.ts",
 																			"line": 202,
 																			"character": 6,
-																			"url": "https://github.com/medusajs/medusa/blob/147ce2fdc35366e591f552404ec949f6a5b92a11/packages/core/types/src/caching/index.ts#L202"
+																			"url": "https://github.com/medusajs/medusa/blob/e4513fab88f5ba7d5c078d3e251e04b104268a56/packages/core/types/src/caching/index.ts#L202"
 																		}
 																	],
 																	"type": {
@@ -723,7 +723,7 @@
 																{
 																	"title": "Properties",
 																	"children": [
-																		62147
+																		62600
 																	]
 																}
 															],
@@ -732,14 +732,14 @@
 																	"fileName": "caching/index.ts",
 																	"line": 196,
 																	"character": 14,
-																	"url": "https://github.com/medusajs/medusa/blob/147ce2fdc35366e591f552404ec949f6a5b92a11/packages/core/types/src/caching/index.ts#L196"
+																	"url": "https://github.com/medusajs/medusa/blob/e4513fab88f5ba7d5c078d3e251e04b104268a56/packages/core/types/src/caching/index.ts#L196"
 																}
 															]
 														}
 													}
 												},
 												{
-													"id": 62148,
+													"id": 62601,
 													"name": "providers",
 													"variant": "declaration",
 													"kind": 1024,
@@ -759,7 +759,7 @@
 															"fileName": "caching/index.ts",
 															"line": 208,
 															"character": 4,
-															"url": "https://github.com/medusajs/medusa/blob/147ce2fdc35366e591f552404ec949f6a5b92a11/packages/core/types/src/caching/index.ts#L208"
+															"url": "https://github.com/medusajs/medusa/blob/e4513fab88f5ba7d5c078d3e251e04b104268a56/packages/core/types/src/caching/index.ts#L208"
 														}
 													],
 													"type": {
@@ -777,12 +777,12 @@
 												{
 													"title": "Properties",
 													"children": [
-														62141,
-														62142,
-														62143,
-														62144,
-														62145,
-														62148
+														62594,
+														62595,
+														62596,
+														62597,
+														62598,
+														62601
 													]
 												}
 											],
@@ -791,7 +791,7 @@
 													"fileName": "caching/index.ts",
 													"line": 173,
 													"character": 5,
-													"url": "https://github.com/medusajs/medusa/blob/147ce2fdc35366e591f552404ec949f6a5b92a11/packages/core/types/src/caching/index.ts#L173"
+													"url": "https://github.com/medusajs/medusa/blob/e4513fab88f5ba7d5c078d3e251e04b104268a56/packages/core/types/src/caching/index.ts#L173"
 												}
 											]
 										}
@@ -817,7 +817,7 @@
 					]
 				},
 				{
-					"id": 62149,
+					"id": 62602,
 					"name": "clear",
 					"variant": "declaration",
 					"kind": 2048,
@@ -827,12 +827,12 @@
 							"fileName": "caching/index.ts",
 							"line": 274,
 							"character": 2,
-							"url": "https://github.com/medusajs/medusa/blob/147ce2fdc35366e591f552404ec949f6a5b92a11/packages/core/types/src/caching/index.ts#L274"
+							"url": "https://github.com/medusajs/medusa/blob/e4513fab88f5ba7d5c078d3e251e04b104268a56/packages/core/types/src/caching/index.ts#L274"
 						}
 					],
 					"signatures": [
 						{
-							"id": 62150,
+							"id": 62603,
 							"name": "clear",
 							"variant": "signature",
 							"kind": 4096,
@@ -1062,12 +1062,12 @@
 									"fileName": "caching/index.ts",
 									"line": 274,
 									"character": 2,
-									"url": "https://github.com/medusajs/medusa/blob/147ce2fdc35366e591f552404ec949f6a5b92a11/packages/core/types/src/caching/index.ts#L274"
+									"url": "https://github.com/medusajs/medusa/blob/e4513fab88f5ba7d5c078d3e251e04b104268a56/packages/core/types/src/caching/index.ts#L274"
 								}
 							],
 							"parameters": [
 								{
-									"id": 62151,
+									"id": 62604,
 									"name": "param0",
 									"variant": "param",
 									"kind": 32768,
@@ -1083,14 +1083,14 @@
 									"type": {
 										"type": "reflection",
 										"declaration": {
-											"id": 62152,
+											"id": 62605,
 											"name": "__type",
 											"variant": "declaration",
 											"kind": 65536,
 											"flags": {},
 											"children": [
 												{
-													"id": 62153,
+													"id": 62606,
 													"name": "key",
 													"variant": "declaration",
 													"kind": 1024,
@@ -1110,7 +1110,7 @@
 															"fileName": "caching/index.ts",
 															"line": 283,
 															"character": 4,
-															"url": "https://github.com/medusajs/medusa/blob/147ce2fdc35366e591f552404ec949f6a5b92a11/packages/core/types/src/caching/index.ts#L283"
+															"url": "https://github.com/medusajs/medusa/blob/e4513fab88f5ba7d5c078d3e251e04b104268a56/packages/core/types/src/caching/index.ts#L283"
 														}
 													],
 													"type": {
@@ -1119,7 +1119,7 @@
 													}
 												},
 												{
-													"id": 62154,
+													"id": 62607,
 													"name": "tags",
 													"variant": "declaration",
 													"kind": 1024,
@@ -1139,7 +1139,7 @@
 															"fileName": "caching/index.ts",
 															"line": 288,
 															"character": 4,
-															"url": "https://github.com/medusajs/medusa/blob/147ce2fdc35366e591f552404ec949f6a5b92a11/packages/core/types/src/caching/index.ts#L288"
+															"url": "https://github.com/medusajs/medusa/blob/e4513fab88f5ba7d5c078d3e251e04b104268a56/packages/core/types/src/caching/index.ts#L288"
 														}
 													],
 													"type": {
@@ -1151,7 +1151,7 @@
 													}
 												},
 												{
-													"id": 62155,
+													"id": 62608,
 													"name": "options",
 													"variant": "declaration",
 													"kind": 1024,
@@ -1195,20 +1195,20 @@
 															"fileName": "caching/index.ts",
 															"line": 294,
 															"character": 4,
-															"url": "https://github.com/medusajs/medusa/blob/147ce2fdc35366e591f552404ec949f6a5b92a11/packages/core/types/src/caching/index.ts#L294"
+															"url": "https://github.com/medusajs/medusa/blob/e4513fab88f5ba7d5c078d3e251e04b104268a56/packages/core/types/src/caching/index.ts#L294"
 														}
 													],
 													"type": {
 														"type": "reflection",
 														"declaration": {
-															"id": 62156,
+															"id": 62609,
 															"name": "__type",
 															"variant": "declaration",
 															"kind": 65536,
 															"flags": {},
 															"children": [
 																{
-																	"id": 62157,
+																	"id": 62610,
 																	"name": "autoInvalidate",
 																	"variant": "declaration",
 																	"kind": 1024,
@@ -1228,7 +1228,7 @@
 																			"fileName": "caching/index.ts",
 																			"line": 298,
 																			"character": 6,
-																			"url": "https://github.com/medusajs/medusa/blob/147ce2fdc35366e591f552404ec949f6a5b92a11/packages/core/types/src/caching/index.ts#L298"
+																			"url": "https://github.com/medusajs/medusa/blob/e4513fab88f5ba7d5c078d3e251e04b104268a56/packages/core/types/src/caching/index.ts#L298"
 																		}
 																	],
 																	"type": {
@@ -1241,7 +1241,7 @@
 																{
 																	"title": "Properties",
 																	"children": [
-																		62157
+																		62610
 																	]
 																}
 															],
@@ -1250,14 +1250,14 @@
 																	"fileName": "caching/index.ts",
 																	"line": 294,
 																	"character": 14,
-																	"url": "https://github.com/medusajs/medusa/blob/147ce2fdc35366e591f552404ec949f6a5b92a11/packages/core/types/src/caching/index.ts#L294"
+																	"url": "https://github.com/medusajs/medusa/blob/e4513fab88f5ba7d5c078d3e251e04b104268a56/packages/core/types/src/caching/index.ts#L294"
 																}
 															]
 														}
 													}
 												},
 												{
-													"id": 62158,
+													"id": 62611,
 													"name": "providers",
 													"variant": "declaration",
 													"kind": 1024,
@@ -1277,7 +1277,7 @@
 															"fileName": "caching/index.ts",
 															"line": 304,
 															"character": 4,
-															"url": "https://github.com/medusajs/medusa/blob/147ce2fdc35366e591f552404ec949f6a5b92a11/packages/core/types/src/caching/index.ts#L304"
+															"url": "https://github.com/medusajs/medusa/blob/e4513fab88f5ba7d5c078d3e251e04b104268a56/packages/core/types/src/caching/index.ts#L304"
 														}
 													],
 													"type": {
@@ -1293,10 +1293,10 @@
 												{
 													"title": "Properties",
 													"children": [
-														62153,
-														62154,
-														62155,
-														62158
+														62606,
+														62607,
+														62608,
+														62611
 													]
 												}
 											],
@@ -1305,7 +1305,7 @@
 													"fileName": "caching/index.ts",
 													"line": 279,
 													"character": 5,
-													"url": "https://github.com/medusajs/medusa/blob/147ce2fdc35366e591f552404ec949f6a5b92a11/packages/core/types/src/caching/index.ts#L279"
+													"url": "https://github.com/medusajs/medusa/blob/e4513fab88f5ba7d5c078d3e251e04b104268a56/packages/core/types/src/caching/index.ts#L279"
 												}
 											]
 										}
@@ -1331,7 +1331,7 @@
 					]
 				},
 				{
-					"id": 62159,
+					"id": 62612,
 					"name": "computeKey",
 					"variant": "declaration",
 					"kind": 2048,
@@ -1341,12 +1341,12 @@
 							"fileName": "caching/index.ts",
 							"line": 320,
 							"character": 2,
-							"url": "https://github.com/medusajs/medusa/blob/147ce2fdc35366e591f552404ec949f6a5b92a11/packages/core/types/src/caching/index.ts#L320"
+							"url": "https://github.com/medusajs/medusa/blob/e4513fab88f5ba7d5c078d3e251e04b104268a56/packages/core/types/src/caching/index.ts#L320"
 						}
 					],
 					"signatures": [
 						{
-							"id": 62160,
+							"id": 62613,
 							"name": "computeKey",
 							"variant": "signature",
 							"kind": 4096,
@@ -1384,12 +1384,12 @@
 									"fileName": "caching/index.ts",
 									"line": 320,
 									"character": 2,
-									"url": "https://github.com/medusajs/medusa/blob/147ce2fdc35366e591f552404ec949f6a5b92a11/packages/core/types/src/caching/index.ts#L320"
+									"url": "https://github.com/medusajs/medusa/blob/e4513fab88f5ba7d5c078d3e251e04b104268a56/packages/core/types/src/caching/index.ts#L320"
 								}
 							],
 							"parameters": [
 								{
-									"id": 62161,
+									"id": 62614,
 									"name": "input",
 									"variant": "param",
 									"kind": 32768,
@@ -1427,7 +1427,7 @@
 					]
 				},
 				{
-					"id": 62162,
+					"id": 62615,
 					"name": "computeTags",
 					"variant": "declaration",
 					"kind": 2048,
@@ -1437,12 +1437,12 @@
 							"fileName": "caching/index.ts",
 							"line": 337,
 							"character": 2,
-							"url": "https://github.com/medusajs/medusa/blob/147ce2fdc35366e591f552404ec949f6a5b92a11/packages/core/types/src/caching/index.ts#L337"
+							"url": "https://github.com/medusajs/medusa/blob/e4513fab88f5ba7d5c078d3e251e04b104268a56/packages/core/types/src/caching/index.ts#L337"
 						}
 					],
 					"signatures": [
 						{
-							"id": 62163,
+							"id": 62616,
 							"name": "computeTags",
 							"variant": "signature",
 							"kind": 4096,
@@ -1480,12 +1480,12 @@
 									"fileName": "caching/index.ts",
 									"line": 337,
 									"character": 2,
-									"url": "https://github.com/medusajs/medusa/blob/147ce2fdc35366e591f552404ec949f6a5b92a11/packages/core/types/src/caching/index.ts#L337"
+									"url": "https://github.com/medusajs/medusa/blob/e4513fab88f5ba7d5c078d3e251e04b104268a56/packages/core/types/src/caching/index.ts#L337"
 								}
 							],
 							"parameters": [
 								{
-									"id": 62164,
+									"id": 62617,
 									"name": "input",
 									"variant": "param",
 									"kind": 32768,
@@ -1504,7 +1504,7 @@
 									}
 								},
 								{
-									"id": 62165,
+									"id": 62618,
 									"name": "options",
 									"variant": "param",
 									"kind": 32768,
@@ -1566,11 +1566,11 @@
 				{
 					"title": "Methods",
 					"children": [
-						62130,
-						62137,
-						62149,
-						62159,
-						62162
+						62583,
+						62590,
+						62602,
+						62612,
+						62615
 					]
 				}
 			],
@@ -1579,7 +1579,7 @@
 					"fileName": "caching/index.ts",
 					"line": 18,
 					"character": 17,
-					"url": "https://github.com/medusajs/medusa/blob/147ce2fdc35366e591f552404ec949f6a5b92a11/packages/core/types/src/caching/index.ts#L18"
+					"url": "https://github.com/medusajs/medusa/blob/e4513fab88f5ba7d5c078d3e251e04b104268a56/packages/core/types/src/caching/index.ts#L18"
 				}
 			],
 			"extendedTypes": [
@@ -1595,7 +1595,7 @@
 			]
 		},
 		{
-			"id": 62179,
+			"id": 62632,
 			"name": "ICachingProviderService",
 			"variant": "declaration",
 			"kind": 256,
@@ -1654,7 +1654,7 @@
 			},
 			"children": [
 				{
-					"id": 62180,
+					"id": 62633,
 					"name": "get",
 					"variant": "declaration",
 					"kind": 2048,
@@ -1664,12 +1664,12 @@
 							"fileName": "caching/index.ts",
 							"line": 432,
 							"character": 2,
-							"url": "https://github.com/medusajs/medusa/blob/147ce2fdc35366e591f552404ec949f6a5b92a11/packages/core/types/src/caching/index.ts#L432"
+							"url": "https://github.com/medusajs/medusa/blob/e4513fab88f5ba7d5c078d3e251e04b104268a56/packages/core/types/src/caching/index.ts#L432"
 						}
 					],
 					"signatures": [
 						{
-							"id": 62181,
+							"id": 62634,
 							"name": "get",
 							"variant": "signature",
 							"kind": 4096,
@@ -1787,12 +1787,12 @@
 									"fileName": "caching/index.ts",
 									"line": 432,
 									"character": 2,
-									"url": "https://github.com/medusajs/medusa/blob/147ce2fdc35366e591f552404ec949f6a5b92a11/packages/core/types/src/caching/index.ts#L432"
+									"url": "https://github.com/medusajs/medusa/blob/e4513fab88f5ba7d5c078d3e251e04b104268a56/packages/core/types/src/caching/index.ts#L432"
 								}
 							],
 							"parameters": [
 								{
-									"id": 62182,
+									"id": 62635,
 									"name": "param0",
 									"variant": "param",
 									"kind": 32768,
@@ -1808,14 +1808,14 @@
 									"type": {
 										"type": "reflection",
 										"declaration": {
-											"id": 62183,
+											"id": 62636,
 											"name": "__type",
 											"variant": "declaration",
 											"kind": 65536,
 											"flags": {},
 											"children": [
 												{
-													"id": 62184,
+													"id": 62637,
 													"name": "key",
 													"variant": "declaration",
 													"kind": 1024,
@@ -1851,7 +1851,7 @@
 															"fileName": "caching/index.ts",
 															"line": 436,
 															"character": 4,
-															"url": "https://github.com/medusajs/medusa/blob/147ce2fdc35366e591f552404ec949f6a5b92a11/packages/core/types/src/caching/index.ts#L436"
+															"url": "https://github.com/medusajs/medusa/blob/e4513fab88f5ba7d5c078d3e251e04b104268a56/packages/core/types/src/caching/index.ts#L436"
 														}
 													],
 													"type": {
@@ -1860,7 +1860,7 @@
 													}
 												},
 												{
-													"id": 62185,
+													"id": 62638,
 													"name": "tags",
 													"variant": "declaration",
 													"kind": 1024,
@@ -1880,7 +1880,7 @@
 															"fileName": "caching/index.ts",
 															"line": 440,
 															"character": 4,
-															"url": "https://github.com/medusajs/medusa/blob/147ce2fdc35366e591f552404ec949f6a5b92a11/packages/core/types/src/caching/index.ts#L440"
+															"url": "https://github.com/medusajs/medusa/blob/e4513fab88f5ba7d5c078d3e251e04b104268a56/packages/core/types/src/caching/index.ts#L440"
 														}
 													],
 													"type": {
@@ -1896,8 +1896,8 @@
 												{
 													"title": "Properties",
 													"children": [
-														62184,
-														62185
+														62637,
+														62638
 													]
 												}
 											],
@@ -1906,7 +1906,7 @@
 													"fileName": "caching/index.ts",
 													"line": 432,
 													"character": 21,
-													"url": "https://github.com/medusajs/medusa/blob/147ce2fdc35366e591f552404ec949f6a5b92a11/packages/core/types/src/caching/index.ts#L432"
+													"url": "https://github.com/medusajs/medusa/blob/e4513fab88f5ba7d5c078d3e251e04b104268a56/packages/core/types/src/caching/index.ts#L432"
 												}
 											]
 										}
@@ -1932,7 +1932,7 @@
 					]
 				},
 				{
-					"id": 62186,
+					"id": 62639,
 					"name": "set",
 					"variant": "declaration",
 					"kind": 2048,
@@ -1942,12 +1942,12 @@
 							"fileName": "caching/index.ts",
 							"line": 465,
 							"character": 2,
-							"url": "https://github.com/medusajs/medusa/blob/147ce2fdc35366e591f552404ec949f6a5b92a11/packages/core/types/src/caching/index.ts#L465"
+							"url": "https://github.com/medusajs/medusa/blob/e4513fab88f5ba7d5c078d3e251e04b104268a56/packages/core/types/src/caching/index.ts#L465"
 						}
 					],
 					"signatures": [
 						{
-							"id": 62187,
+							"id": 62640,
 							"name": "set",
 							"variant": "signature",
 							"kind": 4096,
@@ -1993,12 +1993,12 @@
 									"fileName": "caching/index.ts",
 									"line": 465,
 									"character": 2,
-									"url": "https://github.com/medusajs/medusa/blob/147ce2fdc35366e591f552404ec949f6a5b92a11/packages/core/types/src/caching/index.ts#L465"
+									"url": "https://github.com/medusajs/medusa/blob/e4513fab88f5ba7d5c078d3e251e04b104268a56/packages/core/types/src/caching/index.ts#L465"
 								}
 							],
 							"parameters": [
 								{
-									"id": 62188,
+									"id": 62641,
 									"name": "param0",
 									"variant": "param",
 									"kind": 32768,
@@ -2014,14 +2014,14 @@
 									"type": {
 										"type": "reflection",
 										"declaration": {
-											"id": 62189,
+											"id": 62642,
 											"name": "__type",
 											"variant": "declaration",
 											"kind": 65536,
 											"flags": {},
 											"children": [
 												{
-													"id": 62190,
+													"id": 62643,
 													"name": "key",
 													"variant": "declaration",
 													"kind": 1024,
@@ -2039,7 +2039,7 @@
 															"fileName": "caching/index.ts",
 															"line": 475,
 															"character": 4,
-															"url": "https://github.com/medusajs/medusa/blob/147ce2fdc35366e591f552404ec949f6a5b92a11/packages/core/types/src/caching/index.ts#L475"
+															"url": "https://github.com/medusajs/medusa/blob/e4513fab88f5ba7d5c078d3e251e04b104268a56/packages/core/types/src/caching/index.ts#L475"
 														}
 													],
 													"type": {
@@ -2048,7 +2048,7 @@
 													}
 												},
 												{
-													"id": 62191,
+													"id": 62644,
 													"name": "data",
 													"variant": "declaration",
 													"kind": 1024,
@@ -2066,7 +2066,7 @@
 															"fileName": "caching/index.ts",
 															"line": 479,
 															"character": 4,
-															"url": "https://github.com/medusajs/medusa/blob/147ce2fdc35366e591f552404ec949f6a5b92a11/packages/core/types/src/caching/index.ts#L479"
+															"url": "https://github.com/medusajs/medusa/blob/e4513fab88f5ba7d5c078d3e251e04b104268a56/packages/core/types/src/caching/index.ts#L479"
 														}
 													],
 													"type": {
@@ -2075,7 +2075,7 @@
 													}
 												},
 												{
-													"id": 62192,
+													"id": 62645,
 													"name": "ttl",
 													"variant": "declaration",
 													"kind": 1024,
@@ -2095,7 +2095,7 @@
 															"fileName": "caching/index.ts",
 															"line": 484,
 															"character": 4,
-															"url": "https://github.com/medusajs/medusa/blob/147ce2fdc35366e591f552404ec949f6a5b92a11/packages/core/types/src/caching/index.ts#L484"
+															"url": "https://github.com/medusajs/medusa/blob/e4513fab88f5ba7d5c078d3e251e04b104268a56/packages/core/types/src/caching/index.ts#L484"
 														}
 													],
 													"type": {
@@ -2104,7 +2104,7 @@
 													}
 												},
 												{
-													"id": 62193,
+													"id": 62646,
 													"name": "tags",
 													"variant": "declaration",
 													"kind": 1024,
@@ -2124,7 +2124,7 @@
 															"fileName": "caching/index.ts",
 															"line": 488,
 															"character": 4,
-															"url": "https://github.com/medusajs/medusa/blob/147ce2fdc35366e591f552404ec949f6a5b92a11/packages/core/types/src/caching/index.ts#L488"
+															"url": "https://github.com/medusajs/medusa/blob/e4513fab88f5ba7d5c078d3e251e04b104268a56/packages/core/types/src/caching/index.ts#L488"
 														}
 													],
 													"type": {
@@ -2136,7 +2136,7 @@
 													}
 												},
 												{
-													"id": 62194,
+													"id": 62647,
 													"name": "options",
 													"variant": "declaration",
 													"kind": 1024,
@@ -2172,20 +2172,20 @@
 															"fileName": "caching/index.ts",
 															"line": 493,
 															"character": 4,
-															"url": "https://github.com/medusajs/medusa/blob/147ce2fdc35366e591f552404ec949f6a5b92a11/packages/core/types/src/caching/index.ts#L493"
+															"url": "https://github.com/medusajs/medusa/blob/e4513fab88f5ba7d5c078d3e251e04b104268a56/packages/core/types/src/caching/index.ts#L493"
 														}
 													],
 													"type": {
 														"type": "reflection",
 														"declaration": {
-															"id": 62195,
+															"id": 62648,
 															"name": "__type",
 															"variant": "declaration",
 															"kind": 65536,
 															"flags": {},
 															"children": [
 																{
-																	"id": 62196,
+																	"id": 62649,
 																	"name": "autoInvalidate",
 																	"variant": "declaration",
 																	"kind": 1024,
@@ -2205,7 +2205,7 @@
 																			"fileName": "caching/index.ts",
 																			"line": 497,
 																			"character": 6,
-																			"url": "https://github.com/medusajs/medusa/blob/147ce2fdc35366e591f552404ec949f6a5b92a11/packages/core/types/src/caching/index.ts#L497"
+																			"url": "https://github.com/medusajs/medusa/blob/e4513fab88f5ba7d5c078d3e251e04b104268a56/packages/core/types/src/caching/index.ts#L497"
 																		}
 																	],
 																	"type": {
@@ -2218,7 +2218,7 @@
 																{
 																	"title": "Properties",
 																	"children": [
-																		62196
+																		62649
 																	]
 																}
 															],
@@ -2227,7 +2227,7 @@
 																	"fileName": "caching/index.ts",
 																	"line": 493,
 																	"character": 14,
-																	"url": "https://github.com/medusajs/medusa/blob/147ce2fdc35366e591f552404ec949f6a5b92a11/packages/core/types/src/caching/index.ts#L493"
+																	"url": "https://github.com/medusajs/medusa/blob/e4513fab88f5ba7d5c078d3e251e04b104268a56/packages/core/types/src/caching/index.ts#L493"
 																}
 															]
 														}
@@ -2238,11 +2238,11 @@
 												{
 													"title": "Properties",
 													"children": [
-														62190,
-														62191,
-														62192,
-														62193,
-														62194
+														62643,
+														62644,
+														62645,
+														62646,
+														62647
 													]
 												}
 											],
@@ -2251,7 +2251,7 @@
 													"fileName": "caching/index.ts",
 													"line": 471,
 													"character": 5,
-													"url": "https://github.com/medusajs/medusa/blob/147ce2fdc35366e591f552404ec949f6a5b92a11/packages/core/types/src/caching/index.ts#L471"
+													"url": "https://github.com/medusajs/medusa/blob/e4513fab88f5ba7d5c078d3e251e04b104268a56/packages/core/types/src/caching/index.ts#L471"
 												}
 											]
 										}
@@ -2277,7 +2277,7 @@
 					]
 				},
 				{
-					"id": 62197,
+					"id": 62650,
 					"name": "clear",
 					"variant": "declaration",
 					"kind": 2048,
@@ -2287,12 +2287,12 @@
 							"fileName": "caching/index.ts",
 							"line": 533,
 							"character": 2,
-							"url": "https://github.com/medusajs/medusa/blob/147ce2fdc35366e591f552404ec949f6a5b92a11/packages/core/types/src/caching/index.ts#L533"
+							"url": "https://github.com/medusajs/medusa/blob/e4513fab88f5ba7d5c078d3e251e04b104268a56/packages/core/types/src/caching/index.ts#L533"
 						}
 					],
 					"signatures": [
 						{
-							"id": 62198,
+							"id": 62651,
 							"name": "clear",
 							"variant": "signature",
 							"kind": 4096,
@@ -2378,12 +2378,12 @@
 									"fileName": "caching/index.ts",
 									"line": 533,
 									"character": 2,
-									"url": "https://github.com/medusajs/medusa/blob/147ce2fdc35366e591f552404ec949f6a5b92a11/packages/core/types/src/caching/index.ts#L533"
+									"url": "https://github.com/medusajs/medusa/blob/e4513fab88f5ba7d5c078d3e251e04b104268a56/packages/core/types/src/caching/index.ts#L533"
 								}
 							],
 							"parameters": [
 								{
-									"id": 62199,
+									"id": 62652,
 									"name": "param0",
 									"variant": "param",
 									"kind": 32768,
@@ -2399,14 +2399,14 @@
 									"type": {
 										"type": "reflection",
 										"declaration": {
-											"id": 62200,
+											"id": 62653,
 											"name": "__type",
 											"variant": "declaration",
 											"kind": 65536,
 											"flags": {},
 											"children": [
 												{
-													"id": 62201,
+													"id": 62654,
 													"name": "key",
 													"variant": "declaration",
 													"kind": 1024,
@@ -2426,7 +2426,7 @@
 															"fileName": "caching/index.ts",
 															"line": 541,
 															"character": 4,
-															"url": "https://github.com/medusajs/medusa/blob/147ce2fdc35366e591f552404ec949f6a5b92a11/packages/core/types/src/caching/index.ts#L541"
+															"url": "https://github.com/medusajs/medusa/blob/e4513fab88f5ba7d5c078d3e251e04b104268a56/packages/core/types/src/caching/index.ts#L541"
 														}
 													],
 													"type": {
@@ -2435,7 +2435,7 @@
 													}
 												},
 												{
-													"id": 62202,
+													"id": 62655,
 													"name": "tags",
 													"variant": "declaration",
 													"kind": 1024,
@@ -2455,7 +2455,7 @@
 															"fileName": "caching/index.ts",
 															"line": 545,
 															"character": 4,
-															"url": "https://github.com/medusajs/medusa/blob/147ce2fdc35366e591f552404ec949f6a5b92a11/packages/core/types/src/caching/index.ts#L545"
+															"url": "https://github.com/medusajs/medusa/blob/e4513fab88f5ba7d5c078d3e251e04b104268a56/packages/core/types/src/caching/index.ts#L545"
 														}
 													],
 													"type": {
@@ -2467,7 +2467,7 @@
 													}
 												},
 												{
-													"id": 62203,
+													"id": 62656,
 													"name": "options",
 													"variant": "declaration",
 													"kind": 1024,
@@ -2511,20 +2511,20 @@
 															"fileName": "caching/index.ts",
 															"line": 551,
 															"character": 4,
-															"url": "https://github.com/medusajs/medusa/blob/147ce2fdc35366e591f552404ec949f6a5b92a11/packages/core/types/src/caching/index.ts#L551"
+															"url": "https://github.com/medusajs/medusa/blob/e4513fab88f5ba7d5c078d3e251e04b104268a56/packages/core/types/src/caching/index.ts#L551"
 														}
 													],
 													"type": {
 														"type": "reflection",
 														"declaration": {
-															"id": 62204,
+															"id": 62657,
 															"name": "__type",
 															"variant": "declaration",
 															"kind": 65536,
 															"flags": {},
 															"children": [
 																{
-																	"id": 62205,
+																	"id": 62658,
 																	"name": "autoInvalidate",
 																	"variant": "declaration",
 																	"kind": 1024,
@@ -2544,7 +2544,7 @@
 																			"fileName": "caching/index.ts",
 																			"line": 555,
 																			"character": 6,
-																			"url": "https://github.com/medusajs/medusa/blob/147ce2fdc35366e591f552404ec949f6a5b92a11/packages/core/types/src/caching/index.ts#L555"
+																			"url": "https://github.com/medusajs/medusa/blob/e4513fab88f5ba7d5c078d3e251e04b104268a56/packages/core/types/src/caching/index.ts#L555"
 																		}
 																	],
 																	"type": {
@@ -2557,7 +2557,7 @@
 																{
 																	"title": "Properties",
 																	"children": [
-																		62205
+																		62658
 																	]
 																}
 															],
@@ -2566,7 +2566,7 @@
 																	"fileName": "caching/index.ts",
 																	"line": 551,
 																	"character": 14,
-																	"url": "https://github.com/medusajs/medusa/blob/147ce2fdc35366e591f552404ec949f6a5b92a11/packages/core/types/src/caching/index.ts#L551"
+																	"url": "https://github.com/medusajs/medusa/blob/e4513fab88f5ba7d5c078d3e251e04b104268a56/packages/core/types/src/caching/index.ts#L551"
 																}
 															]
 														}
@@ -2577,9 +2577,9 @@
 												{
 													"title": "Properties",
 													"children": [
-														62201,
-														62202,
-														62203
+														62654,
+														62655,
+														62656
 													]
 												}
 											],
@@ -2588,7 +2588,7 @@
 													"fileName": "caching/index.ts",
 													"line": 537,
 													"character": 5,
-													"url": "https://github.com/medusajs/medusa/blob/147ce2fdc35366e591f552404ec949f6a5b92a11/packages/core/types/src/caching/index.ts#L537"
+													"url": "https://github.com/medusajs/medusa/blob/e4513fab88f5ba7d5c078d3e251e04b104268a56/packages/core/types/src/caching/index.ts#L537"
 												}
 											]
 										}
@@ -2618,9 +2618,9 @@
 				{
 					"title": "Methods",
 					"children": [
-						62180,
-						62186,
-						62197
+						62633,
+						62639,
+						62650
 					]
 				}
 			],
@@ -2629,7 +2629,7 @@
 					"fileName": "caching/index.ts",
 					"line": 409,
 					"character": 17,
-					"url": "https://github.com/medusajs/medusa/blob/147ce2fdc35366e591f552404ec949f6a5b92a11/packages/core/types/src/caching/index.ts#L409"
+					"url": "https://github.com/medusajs/medusa/blob/e4513fab88f5ba7d5c078d3e251e04b104268a56/packages/core/types/src/caching/index.ts#L409"
 				}
 			]
 		}
@@ -2638,270 +2638,270 @@
 		{
 			"title": "Interfaces",
 			"children": [
-				62129,
-				62179
+				62582,
+				62632
 			]
 		}
 	],
 	"packageName": "@medusajs/types",
 	"symbolIdMap": {
-		"62128": {
+		"62581": {
 			"sourceFileName": "../../../../packages/core/types/src/caching/index.ts",
 			"qualifiedName": ""
 		},
-		"62129": {
+		"62582": {
 			"sourceFileName": "../../../../packages/core/types/src/caching/index.ts",
 			"qualifiedName": "ICachingModuleService"
 		},
-		"62130": {
+		"62583": {
 			"sourceFileName": "../../../../packages/core/types/src/caching/index.ts",
 			"qualifiedName": "ICachingModuleService.get"
 		},
-		"62131": {
+		"62584": {
 			"sourceFileName": "../../../../packages/core/types/src/caching/index.ts",
 			"qualifiedName": "ICachingModuleService.get"
 		},
-		"62132": {
+		"62585": {
 			"sourceFileName": "../../../../packages/core/types/src/caching/index.ts",
 			"qualifiedName": "__0"
 		},
-		"62133": {
+		"62586": {
 			"sourceFileName": "../../../../packages/core/types/src/caching/index.ts",
 			"qualifiedName": "__type"
 		},
-		"62134": {
+		"62587": {
 			"sourceFileName": "../../../../packages/core/types/src/caching/index.ts",
 			"qualifiedName": "__type.key"
 		},
-		"62135": {
+		"62588": {
 			"sourceFileName": "../../../../packages/core/types/src/caching/index.ts",
 			"qualifiedName": "__type.tags"
 		},
-		"62136": {
+		"62589": {
 			"sourceFileName": "../../../../packages/core/types/src/caching/index.ts",
 			"qualifiedName": "__type.providers"
 		},
-		"62137": {
+		"62590": {
 			"sourceFileName": "../../../../packages/core/types/src/caching/index.ts",
 			"qualifiedName": "ICachingModuleService.set"
 		},
-		"62138": {
+		"62591": {
 			"sourceFileName": "../../../../packages/core/types/src/caching/index.ts",
 			"qualifiedName": "ICachingModuleService.set"
 		},
-		"62139": {
+		"62592": {
 			"sourceFileName": "../../../../packages/core/types/src/caching/index.ts",
 			"qualifiedName": "__0"
 		},
-		"62140": {
+		"62593": {
 			"sourceFileName": "../../../../packages/core/types/src/caching/index.ts",
 			"qualifiedName": "__type"
 		},
-		"62141": {
+		"62594": {
 			"sourceFileName": "../../../../packages/core/types/src/caching/index.ts",
 			"qualifiedName": "__type.key"
 		},
-		"62142": {
+		"62595": {
 			"sourceFileName": "../../../../packages/core/types/src/caching/index.ts",
 			"qualifiedName": "__type.data"
 		},
-		"62143": {
+		"62596": {
 			"sourceFileName": "../../../../packages/core/types/src/caching/index.ts",
 			"qualifiedName": "__type.ttl"
 		},
-		"62144": {
+		"62597": {
 			"sourceFileName": "../../../../packages/core/types/src/caching/index.ts",
 			"qualifiedName": "__type.tags"
 		},
-		"62145": {
+		"62598": {
 			"sourceFileName": "../../../../packages/core/types/src/caching/index.ts",
 			"qualifiedName": "__type.options"
 		},
-		"62146": {
+		"62599": {
 			"sourceFileName": "../../../../packages/core/types/src/caching/index.ts",
 			"qualifiedName": "__type"
 		},
-		"62147": {
+		"62600": {
 			"sourceFileName": "../../../../packages/core/types/src/caching/index.ts",
 			"qualifiedName": "__type.autoInvalidate"
 		},
-		"62148": {
+		"62601": {
 			"sourceFileName": "../../../../packages/core/types/src/caching/index.ts",
 			"qualifiedName": "__type.providers"
 		},
-		"62149": {
+		"62602": {
 			"sourceFileName": "../../../../packages/core/types/src/caching/index.ts",
 			"qualifiedName": "ICachingModuleService.clear"
 		},
-		"62150": {
+		"62603": {
 			"sourceFileName": "../../../../packages/core/types/src/caching/index.ts",
 			"qualifiedName": "ICachingModuleService.clear"
 		},
-		"62151": {
+		"62604": {
 			"sourceFileName": "../../../../packages/core/types/src/caching/index.ts",
 			"qualifiedName": "__0"
 		},
-		"62152": {
+		"62605": {
 			"sourceFileName": "../../../../packages/core/types/src/caching/index.ts",
 			"qualifiedName": "__type"
 		},
-		"62153": {
+		"62606": {
 			"sourceFileName": "../../../../packages/core/types/src/caching/index.ts",
 			"qualifiedName": "__type.key"
 		},
-		"62154": {
+		"62607": {
 			"sourceFileName": "../../../../packages/core/types/src/caching/index.ts",
 			"qualifiedName": "__type.tags"
 		},
-		"62155": {
+		"62608": {
 			"sourceFileName": "../../../../packages/core/types/src/caching/index.ts",
 			"qualifiedName": "__type.options"
 		},
-		"62156": {
+		"62609": {
 			"sourceFileName": "../../../../packages/core/types/src/caching/index.ts",
 			"qualifiedName": "__type"
 		},
-		"62157": {
+		"62610": {
 			"sourceFileName": "../../../../packages/core/types/src/caching/index.ts",
 			"qualifiedName": "__type.autoInvalidate"
 		},
-		"62158": {
+		"62611": {
 			"sourceFileName": "../../../../packages/core/types/src/caching/index.ts",
 			"qualifiedName": "__type.providers"
 		},
-		"62159": {
+		"62612": {
 			"sourceFileName": "../../../../packages/core/types/src/caching/index.ts",
 			"qualifiedName": "ICachingModuleService.computeKey"
 		},
-		"62160": {
+		"62613": {
 			"sourceFileName": "../../../../packages/core/types/src/caching/index.ts",
 			"qualifiedName": "ICachingModuleService.computeKey"
 		},
-		"62161": {
+		"62614": {
 			"sourceFileName": "../../../../packages/core/types/src/caching/index.ts",
 			"qualifiedName": "input"
 		},
-		"62162": {
+		"62615": {
 			"sourceFileName": "../../../../packages/core/types/src/caching/index.ts",
 			"qualifiedName": "ICachingModuleService.computeTags"
 		},
-		"62163": {
+		"62616": {
 			"sourceFileName": "../../../../packages/core/types/src/caching/index.ts",
 			"qualifiedName": "ICachingModuleService.computeTags"
 		},
-		"62164": {
+		"62617": {
 			"sourceFileName": "../../../../packages/core/types/src/caching/index.ts",
 			"qualifiedName": "input"
 		},
-		"62165": {
+		"62618": {
 			"sourceFileName": "../../../../packages/core/types/src/caching/index.ts",
 			"qualifiedName": "options"
 		},
-		"62179": {
+		"62632": {
 			"sourceFileName": "../../../../packages/core/types/src/caching/index.ts",
 			"qualifiedName": "ICachingProviderService"
 		},
-		"62180": {
+		"62633": {
 			"sourceFileName": "../../../../packages/core/types/src/caching/index.ts",
 			"qualifiedName": "ICachingProviderService.get"
 		},
-		"62181": {
+		"62634": {
 			"sourceFileName": "../../../../packages/core/types/src/caching/index.ts",
 			"qualifiedName": "ICachingProviderService.get"
 		},
-		"62182": {
+		"62635": {
 			"sourceFileName": "../../../../packages/core/types/src/caching/index.ts",
 			"qualifiedName": "__0"
 		},
-		"62183": {
+		"62636": {
 			"sourceFileName": "../../../../packages/core/types/src/caching/index.ts",
 			"qualifiedName": "__type"
 		},
-		"62184": {
+		"62637": {
 			"sourceFileName": "../../../../packages/core/types/src/caching/index.ts",
 			"qualifiedName": "__type.key"
 		},
-		"62185": {
+		"62638": {
 			"sourceFileName": "../../../../packages/core/types/src/caching/index.ts",
 			"qualifiedName": "__type.tags"
 		},
-		"62186": {
+		"62639": {
 			"sourceFileName": "../../../../packages/core/types/src/caching/index.ts",
 			"qualifiedName": "ICachingProviderService.set"
 		},
-		"62187": {
+		"62640": {
 			"sourceFileName": "../../../../packages/core/types/src/caching/index.ts",
 			"qualifiedName": "ICachingProviderService.set"
 		},
-		"62188": {
+		"62641": {
 			"sourceFileName": "../../../../packages/core/types/src/caching/index.ts",
 			"qualifiedName": "__0"
 		},
-		"62189": {
+		"62642": {
 			"sourceFileName": "../../../../packages/core/types/src/caching/index.ts",
 			"qualifiedName": "__type"
 		},
-		"62190": {
+		"62643": {
 			"sourceFileName": "../../../../packages/core/types/src/caching/index.ts",
 			"qualifiedName": "__type.key"
 		},
-		"62191": {
+		"62644": {
 			"sourceFileName": "../../../../packages/core/types/src/caching/index.ts",
 			"qualifiedName": "__type.data"
 		},
-		"62192": {
+		"62645": {
 			"sourceFileName": "../../../../packages/core/types/src/caching/index.ts",
 			"qualifiedName": "__type.ttl"
 		},
-		"62193": {
+		"62646": {
 			"sourceFileName": "../../../../packages/core/types/src/caching/index.ts",
 			"qualifiedName": "__type.tags"
 		},
-		"62194": {
+		"62647": {
 			"sourceFileName": "../../../../packages/core/types/src/caching/index.ts",
 			"qualifiedName": "__type.options"
 		},
-		"62195": {
+		"62648": {
 			"sourceFileName": "../../../../packages/core/types/src/caching/index.ts",
 			"qualifiedName": "__type"
 		},
-		"62196": {
+		"62649": {
 			"sourceFileName": "../../../../packages/core/types/src/caching/index.ts",
 			"qualifiedName": "__type.autoInvalidate"
 		},
-		"62197": {
+		"62650": {
 			"sourceFileName": "../../../../packages/core/types/src/caching/index.ts",
 			"qualifiedName": "ICachingProviderService.clear"
 		},
-		"62198": {
+		"62651": {
 			"sourceFileName": "../../../../packages/core/types/src/caching/index.ts",
 			"qualifiedName": "ICachingProviderService.clear"
 		},
-		"62199": {
+		"62652": {
 			"sourceFileName": "../../../../packages/core/types/src/caching/index.ts",
 			"qualifiedName": "__0"
 		},
-		"62200": {
+		"62653": {
 			"sourceFileName": "../../../../packages/core/types/src/caching/index.ts",
 			"qualifiedName": "__type"
 		},
-		"62201": {
+		"62654": {
 			"sourceFileName": "../../../../packages/core/types/src/caching/index.ts",
 			"qualifiedName": "__type.key"
 		},
-		"62202": {
+		"62655": {
 			"sourceFileName": "../../../../packages/core/types/src/caching/index.ts",
 			"qualifiedName": "__type.tags"
 		},
-		"62203": {
+		"62656": {
 			"sourceFileName": "../../../../packages/core/types/src/caching/index.ts",
 			"qualifiedName": "__type.options"
 		},
-		"62204": {
+		"62657": {
 			"sourceFileName": "../../../../packages/core/types/src/caching/index.ts",
 			"qualifiedName": "__type"
 		},
-		"62205": {
+		"62658": {
 			"sourceFileName": "../../../../packages/core/types/src/caching/index.ts",
 			"qualifiedName": "__type.autoInvalidate"
 		}
@@ -2911,7 +2911,7 @@
 			"1": "../../../../packages/core/types/src/caching/index.ts"
 		},
 		"reflections": {
-			"1": 62128
+			"1": 62581
 		}
 	}
 }

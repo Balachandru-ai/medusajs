@@ -115,6 +115,12 @@ export type TransactionStepsDefinition = {
    */
   next?: TransactionStepsDefinition | TransactionStepsDefinition[]
 
+  /**
+   * @private
+   * Whether we need to store checkpoint at this step.
+   */
+  store?: boolean
+
   // TODO: add metadata field for customizations
 }
 
