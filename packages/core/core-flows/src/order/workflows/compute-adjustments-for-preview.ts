@@ -53,7 +53,7 @@ export const computeAdjustmentsForPreviewWorkflowId =
  * You can use this workflow within your customizations or your own custom workflows, allowing you to compute adjustments
  * in your custom flows.
  *
- * @since v2.12.0
+ * @since 2.12.0
  *
  * @example
  * const { result } = await computeAdjustmentsForPreviewWorkflow(container)
