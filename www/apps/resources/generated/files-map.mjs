@@ -3560,6 +3560,10 @@ export const filesMap = [
     "pathname": "/references/core_flows/Draft_Order/Workflows_Draft_Order/functions/core_flows.Draft_Order.Workflows_Draft_Order.cancelDraftOrderEditWorkflow"
   },
   {
+    "filePath": "/www/apps/resources/references/core_flows/Draft_Order/Workflows_Draft_Order/functions/core_flows.Draft_Order.Workflows_Draft_Order.computeDraftOrderAdjustmentsWorkflow/page.mdx",
+    "pathname": "/references/core_flows/Draft_Order/Workflows_Draft_Order/functions/core_flows.Draft_Order.Workflows_Draft_Order.computeDraftOrderAdjustmentsWorkflow"
+  },
+  {
     "filePath": "/www/apps/resources/references/core_flows/Draft_Order/Workflows_Draft_Order/functions/core_flows.Draft_Order.Workflows_Draft_Order.confirmDraftOrderEditWorkflow/page.mdx",
     "pathname": "/references/core_flows/Draft_Order/Workflows_Draft_Order/functions/core_flows.Draft_Order.Workflows_Draft_Order.confirmDraftOrderEditWorkflow"
   },
@@ -3638,6 +3642,10 @@ export const filesMap = [
   {
     "filePath": "/www/apps/resources/references/core_flows/Draft_Order/Workflows_Draft_Order/variables/core_flows.Draft_Order.Workflows_Draft_Order.cancelDraftOrderEditWorkflowId/page.mdx",
     "pathname": "/references/core_flows/Draft_Order/Workflows_Draft_Order/variables/core_flows.Draft_Order.Workflows_Draft_Order.cancelDraftOrderEditWorkflowId"
+  },
+  {
+    "filePath": "/www/apps/resources/references/core_flows/Draft_Order/Workflows_Draft_Order/variables/core_flows.Draft_Order.Workflows_Draft_Order.computeDraftOrderAdjustmentsWorkflowId/page.mdx",
+    "pathname": "/references/core_flows/Draft_Order/Workflows_Draft_Order/variables/core_flows.Draft_Order.Workflows_Draft_Order.computeDraftOrderAdjustmentsWorkflowId"
   },
   {
     "filePath": "/www/apps/resources/references/core_flows/Draft_Order/Workflows_Draft_Order/variables/core_flows.Draft_Order.Workflows_Draft_Order.confirmDraftOrderEditWorkflowId/page.mdx",
@@ -4484,6 +4492,10 @@ export const filesMap = [
     "pathname": "/references/core_flows/Order/Steps_Order/functions/core_flows.Order.Steps_Order.deleteReturnsStep"
   },
   {
+    "filePath": "/www/apps/resources/references/core_flows/Order/Steps_Order/functions/core_flows.Order.Steps_Order.listOrderChangeActionsByTypeStep/page.mdx",
+    "pathname": "/references/core_flows/Order/Steps_Order/functions/core_flows.Order.Steps_Order.listOrderChangeActionsByTypeStep"
+  },
+  {
     "filePath": "/www/apps/resources/references/core_flows/Order/Steps_Order/functions/core_flows.Order.Steps_Order.previewOrderChangeStep/page.mdx",
     "pathname": "/references/core_flows/Order/Steps_Order/functions/core_flows.Order.Steps_Order.previewOrderChangeStep"
   },
@@ -4820,6 +4832,10 @@ export const filesMap = [
     "pathname": "/references/core_flows/Order/Workflows_Order/functions/core_flows.Order.Workflows_Order.completeOrderWorkflow"
   },
   {
+    "filePath": "/www/apps/resources/references/core_flows/Order/Workflows_Order/functions/core_flows.Order.Workflows_Order.computeAdjustmentsForPreviewWorkflow/page.mdx",
+    "pathname": "/references/core_flows/Order/Workflows_Order/functions/core_flows.Order.Workflows_Order.computeAdjustmentsForPreviewWorkflow"
+  },
+  {
     "filePath": "/www/apps/resources/references/core_flows/Order/Workflows_Order/functions/core_flows.Order.Workflows_Order.confirmClaimRequestValidationStep/page.mdx",
     "pathname": "/references/core_flows/Order/Workflows_Order/functions/core_flows.Order.Workflows_Order.confirmClaimRequestValidationStep"
   },
@@ -5010,6 +5026,10 @@ export const filesMap = [
   {
     "filePath": "/www/apps/resources/references/core_flows/Order/Workflows_Order/functions/core_flows.Order.Workflows_Order.maybeRefreshShippingMethodsWorkflow/page.mdx",
     "pathname": "/references/core_flows/Order/Workflows_Order/functions/core_flows.Order.Workflows_Order.maybeRefreshShippingMethodsWorkflow"
+  },
+  {
+    "filePath": "/www/apps/resources/references/core_flows/Order/Workflows_Order/functions/core_flows.Order.Workflows_Order.onCarryPromotionsFlagSet/page.mdx",
+    "pathname": "/references/core_flows/Order/Workflows_Order/functions/core_flows.Order.Workflows_Order.onCarryPromotionsFlagSet"
   },
   {
     "filePath": "/www/apps/resources/references/core_flows/Order/Workflows_Order/functions/core_flows.Order.Workflows_Order.orderClaimAddNewItemValidationStep/page.mdx",
@@ -5236,6 +5256,10 @@ export const filesMap = [
     "pathname": "/references/core_flows/Order/Workflows_Order/functions/core_flows.Order.Workflows_Order.updateOrderChangeActionsWorkflow"
   },
   {
+    "filePath": "/www/apps/resources/references/core_flows/Order/Workflows_Order/functions/core_flows.Order.Workflows_Order.updateOrderChangeWorkflow/page.mdx",
+    "pathname": "/references/core_flows/Order/Workflows_Order/functions/core_flows.Order.Workflows_Order.updateOrderChangeWorkflow"
+  },
+  {
     "filePath": "/www/apps/resources/references/core_flows/Order/Workflows_Order/functions/core_flows.Order.Workflows_Order.updateOrderChangesWorkflow/page.mdx",
     "pathname": "/references/core_flows/Order/Workflows_Order/functions/core_flows.Order.Workflows_Order.updateOrderChangesWorkflow"
   },
@@ -5306,6 +5330,10 @@ export const filesMap = [
   {
     "filePath": "/www/apps/resources/references/core_flows/Order/Workflows_Order/functions/core_flows.Order.Workflows_Order.updateReturnWorkflow/page.mdx",
     "pathname": "/references/core_flows/Order/Workflows_Order/functions/core_flows.Order.Workflows_Order.updateReturnWorkflow"
+  },
+  {
+    "filePath": "/www/apps/resources/references/core_flows/Order/Workflows_Order/functions/core_flows.Order.Workflows_Order.validateCarryPromotionsFlagStep/page.mdx",
+    "pathname": "/references/core_flows/Order/Workflows_Order/functions/core_flows.Order.Workflows_Order.validateCarryPromotionsFlagStep"
   },
   {
     "filePath": "/www/apps/resources/references/core_flows/Order/Workflows_Order/functions/core_flows.Order.Workflows_Order.validateOrderCreditLinesStep/page.mdx",
@@ -5394,6 +5422,10 @@ export const filesMap = [
   {
     "filePath": "/www/apps/resources/references/core_flows/Order/Workflows_Order/variables/core_flows.Order.Workflows_Order.completeOrderWorkflowId/page.mdx",
     "pathname": "/references/core_flows/Order/Workflows_Order/variables/core_flows.Order.Workflows_Order.completeOrderWorkflowId"
+  },
+  {
+    "filePath": "/www/apps/resources/references/core_flows/Order/Workflows_Order/variables/core_flows.Order.Workflows_Order.computeAdjustmentsForPreviewWorkflowId/page.mdx",
+    "pathname": "/references/core_flows/Order/Workflows_Order/variables/core_flows.Order.Workflows_Order.computeAdjustmentsForPreviewWorkflowId"
   },
   {
     "filePath": "/www/apps/resources/references/core_flows/Order/Workflows_Order/variables/core_flows.Order.Workflows_Order.confirmClaimRequestWorkflowId/page.mdx",
@@ -5520,6 +5552,10 @@ export const filesMap = [
     "pathname": "/references/core_flows/Order/Workflows_Order/variables/core_flows.Order.Workflows_Order.maybeRefreshShippingMethodsWorkflowId"
   },
   {
+    "filePath": "/www/apps/resources/references/core_flows/Order/Workflows_Order/variables/core_flows.Order.Workflows_Order.onCarryPromotionsFlagSetId/page.mdx",
+    "pathname": "/references/core_flows/Order/Workflows_Order/variables/core_flows.Order.Workflows_Order.onCarryPromotionsFlagSetId"
+  },
+  {
     "filePath": "/www/apps/resources/references/core_flows/Order/Workflows_Order/variables/core_flows.Order.Workflows_Order.orderClaimAddNewItemWorkflowId/page.mdx",
     "pathname": "/references/core_flows/Order/Workflows_Order/variables/core_flows.Order.Workflows_Order.orderClaimAddNewItemWorkflowId"
   },
@@ -5634,6 +5670,10 @@ export const filesMap = [
   {
     "filePath": "/www/apps/resources/references/core_flows/Order/Workflows_Order/variables/core_flows.Order.Workflows_Order.updateOrderChangeActionsWorkflowId/page.mdx",
     "pathname": "/references/core_flows/Order/Workflows_Order/variables/core_flows.Order.Workflows_Order.updateOrderChangeActionsWorkflowId"
+  },
+  {
+    "filePath": "/www/apps/resources/references/core_flows/Order/Workflows_Order/variables/core_flows.Order.Workflows_Order.updateOrderChangeWorkflowId/page.mdx",
+    "pathname": "/references/core_flows/Order/Workflows_Order/variables/core_flows.Order.Workflows_Order.updateOrderChangeWorkflowId"
   },
   {
     "filePath": "/www/apps/resources/references/core_flows/Order/Workflows_Order/variables/core_flows.Order.Workflows_Order.updateOrderChangesWorkflowId/page.mdx",
@@ -7900,6 +7940,10 @@ export const filesMap = [
     "pathname": "/references/core_flows/interfaces/core_flows.CancelDraftOrderEditWorkflowInput"
   },
   {
+    "filePath": "/www/apps/resources/references/core_flows/interfaces/core_flows.ComputeDraftOrderAdjustmentsWorkflowInput/page.mdx",
+    "pathname": "/references/core_flows/interfaces/core_flows.ComputeDraftOrderAdjustmentsWorkflowInput"
+  },
+  {
     "filePath": "/www/apps/resources/references/core_flows/interfaces/core_flows.ConfirmDraftOrderEditWorkflowInput/page.mdx",
     "pathname": "/references/core_flows/interfaces/core_flows.ConfirmDraftOrderEditWorkflowInput"
   },
@@ -8398,6 +8442,10 @@ export const filesMap = [
   {
     "filePath": "/www/apps/resources/references/core_flows/types/core_flows.CompleteOrdersWorkflowInput/page.mdx",
     "pathname": "/references/core_flows/types/core_flows.CompleteOrdersWorkflowInput"
+  },
+  {
+    "filePath": "/www/apps/resources/references/core_flows/types/core_flows.ComputeAdjustmentsForPreviewWorkflowInput/page.mdx",
+    "pathname": "/references/core_flows/types/core_flows.ComputeAdjustmentsForPreviewWorkflowInput"
   },
   {
     "filePath": "/www/apps/resources/references/core_flows/types/core_flows.ConfirmClaimRequestValidationStepInput/page.mdx",
@@ -9222,6 +9270,10 @@ export const filesMap = [
   {
     "filePath": "/www/apps/resources/references/core_flows/types/core_flows.NotifyOnFailureStepInput/page.mdx",
     "pathname": "/references/core_flows/types/core_flows.NotifyOnFailureStepInput"
+  },
+  {
+    "filePath": "/www/apps/resources/references/core_flows/types/core_flows.OnCarryPromotionsFlagSetWorkflowInput/page.mdx",
+    "pathname": "/references/core_flows/types/core_flows.OnCarryPromotionsFlagSetWorkflowInput"
   },
   {
     "filePath": "/www/apps/resources/references/core_flows/types/core_flows.OrderAddLineItemWorkflowOutput/page.mdx",
@@ -12906,6 +12958,10 @@ export const filesMap = [
   {
     "filePath": "/www/apps/resources/references/js_sdk/admin/Order/methods/js_sdk.admin.Order.update/page.mdx",
     "pathname": "/references/js_sdk/admin/Order/methods/js_sdk.admin.Order.update"
+  },
+  {
+    "filePath": "/www/apps/resources/references/js_sdk/admin/Order/methods/js_sdk.admin.Order.updateOrderChange/page.mdx",
+    "pathname": "/references/js_sdk/admin/Order/methods/js_sdk.admin.Order.updateOrderChange"
   },
   {
     "filePath": "/www/apps/resources/references/js_sdk/admin/Order/properties/js_sdk.admin.Order.client/page.mdx",
@@ -17876,6 +17932,10 @@ export const filesMap = [
     "pathname": "/references/promotion/interfaces/promotion.PromotionDTO"
   },
   {
+    "filePath": "/www/apps/resources/references/promotion/interfaces/promotion.PromotionLimitExceededAction/page.mdx",
+    "pathname": "/references/promotion/interfaces/promotion.PromotionLimitExceededAction"
+  },
+  {
     "filePath": "/www/apps/resources/references/promotion/interfaces/promotion.PromotionRuleDTO/page.mdx",
     "pathname": "/references/promotion/interfaces/promotion.PromotionRuleDTO"
   },
@@ -20776,6 +20836,10 @@ export const filesMap = [
     "pathname": "/references/types/HttpTypes/interfaces/types.HttpTypes.AdminOrderChangeAction"
   },
   {
+    "filePath": "/www/apps/resources/references/types/HttpTypes/interfaces/types.HttpTypes.AdminOrderChangeResponse/page.mdx",
+    "pathname": "/references/types/HttpTypes/interfaces/types.HttpTypes.AdminOrderChangeResponse"
+  },
+  {
     "filePath": "/www/apps/resources/references/types/HttpTypes/interfaces/types.HttpTypes.AdminOrderChangesFilters/page.mdx",
     "pathname": "/references/types/HttpTypes/interfaces/types.HttpTypes.AdminOrderChangesFilters"
   },
@@ -21538,6 +21602,10 @@ export const filesMap = [
   {
     "filePath": "/www/apps/resources/references/types/HttpTypes/interfaces/types.HttpTypes.AdminUpdateOrder/page.mdx",
     "pathname": "/references/types/HttpTypes/interfaces/types.HttpTypes.AdminUpdateOrder"
+  },
+  {
+    "filePath": "/www/apps/resources/references/types/HttpTypes/interfaces/types.HttpTypes.AdminUpdateOrderChange/page.mdx",
+    "pathname": "/references/types/HttpTypes/interfaces/types.HttpTypes.AdminUpdateOrderChange"
   },
   {
     "filePath": "/www/apps/resources/references/types/HttpTypes/interfaces/types.HttpTypes.AdminUpdateOrderEditItem/page.mdx",
