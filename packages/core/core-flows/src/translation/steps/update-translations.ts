@@ -50,10 +50,10 @@ export const updateTranslationsStep = createStep(
       return new StepResponse(prevData, [])
     }
 
-    const translations = await service.updateTranslations(
-      data.selector,
-      data.update
-    )
+    const translations = await service.updateTranslations({
+      selector: data.selector,
+      data: data.update,
+    })
 
     return new StepResponse(translations, prevData)
   },
@@ -66,7 +66,7 @@ export const updateTranslationsStep = createStep(
       Modules.TRANSLATION
     )
 
-    await service.upsertTranslations(
+    await service.updateTranslations(
       prevData.map((t) => ({
         id: t.id,
         entity_id: t.entity_id,
