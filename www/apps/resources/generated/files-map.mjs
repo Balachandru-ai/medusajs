@@ -1008,6 +1008,10 @@ export const filesMap = [
     "pathname": "/integrations/guides/slack"
   },
   {
+    "filePath": "/www/apps/resources/app/integrations/guides/strapi/page.mdx",
+    "pathname": "/integrations/guides/strapi"
+  },
+  {
     "filePath": "/www/apps/resources/app/integrations/page.mdx",
     "pathname": "/integrations"
   },
