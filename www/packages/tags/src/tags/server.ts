@@ -160,6 +160,10 @@ export const server = [
     "path": "https://docs.medusajs.com/resources/integrations/guides/slack"
   },
   {
+    "title": "Integrate Strapi",
+    "path": "https://docs.medusajs.com/resources/integrations/guides/strapi"
+  },
+  {
     "title": "Build Wishlist Plugin",
     "path": "https://docs.medusajs.com/resources/plugins/guides/wishlist"
   },

@@ -103,7 +103,7 @@ export const generatedEditDates = {
   "app/deployment/admin/vercel/page.mdx": "2024-10-16T08:10:29.377Z",
   "app/deployment/storefront/vercel/page.mdx": "2025-05-20T07:51:40.712Z",
   "app/deployment/page.mdx": "2025-09-29T10:23:47.833Z",
-  "app/integrations/page.mdx": "2025-10-22T07:14:23.467Z",
+  "app/integrations/page.mdx": "2025-11-17T09:41:11.910Z",
   "app/medusa-cli/page.mdx": "2024-08-28T11:25:32.382Z",
   "app/medusa-container-resources/page.mdx": "2025-07-31T13:24:15.786Z",
   "app/medusa-workflows-reference/page.mdx": "2025-01-20T08:21:29.962Z",
@@ -6738,5 +6738,6 @@ export const generatedEditDates = {
   "references/types/HttpTypes/interfaces/types.HttpTypes.AdminOrderChangeResponse/page.mdx": "2025-12-01T18:33:00.993Z",
   "references/types/HttpTypes/interfaces/types.HttpTypes.AdminUpdateOrderChange/page.mdx": "2025-12-01T18:33:00.960Z",
   "references/promotion/types/promotion.ComputeActions/page.mdx": "2025-12-01T18:33:06.048Z",
-  "references/utils/PromotionUtils/enums/utils.PromotionUtils.ComputedActions/page.mdx": "2025-12-01T18:33:07.491Z"
+  "references/utils/PromotionUtils/enums/utils.PromotionUtils.ComputedActions/page.mdx": "2025-12-01T18:33:07.491Z",
+  "app/integrations/guides/strapi/page.mdx": "2025-11-17T10:34:00.881Z"
 }
