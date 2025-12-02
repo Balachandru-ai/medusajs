@@ -57,7 +57,9 @@
     "unsavedChangesDescription": "You have unsaved changes that will be lost if you exit this form.",
     "includesTaxTooltip": "Prices in this column are tax inclusive.",
     "excludesTaxTooltip": "Prices in this column are tax exclusive.",
-    "noMoreData": "No more data"
+    "noMoreData": "No more data",
+    "exclusive": "Product-specific",
+    "global": "Global"
   },
   "json": {
     "header": "JSON",
@@ -141,7 +143,8 @@
     "hide": "Hide",
     "export": "Export",
     "import": "Import",
-    "cannotUndo": "This action cannot be undone"
+    "cannotUndo": "This action cannot be undone",
+    "manage": "Manage"
   },
   "operators": {
     "in": "In"
@@ -448,7 +451,8 @@
         "productOptions": {
           "label": "Product options",
           "hint": "Define the options for the product, e.g. color, size, etc."
-        }
+        },
+        "selectValuesHint": "Select which values to use for each option"
       },
       "successToast": "Product {{title}} was successfully created."
     },
@@ -705,6 +709,13 @@
         "header": "Create Option",
         "successToast": "Option {{title}} was successfully created."
       },
+      "manage": {
+        "header": "Manage Product Options",
+        "description": "Associate or disassociate product options from this product.",
+        "label": "Product Options",
+        "hint": "Select which options should be associated to this product.",
+        "placeholder": "Select options"
+      },
       "deleteWarning": "You are about to delete the product option: {{title}}. This action cannot be undone."
     },
     "organization": {
@@ -838,6 +849,41 @@
       },
       "new": {
         "label": "New"
+      }
+    }
+  },
+  "productOptions": {
+    "domain": "Options",
+    "subtitle": "Manage product options and their associated values.",
+    "values": {
+      "header": "Values"
+    },
+    "create": {
+      "header": "Create Product Option",
+      "hint": "Create a new product option and manage its values.",
+      "successToast": "Product option \"{{title}}\" was successfully created.",
+      "tabs": {
+        "details": "Details",
+        "organize": "Organize"
+      }
+    },
+    "edit": {
+      "header": "Edit Product Option",
+      "description": "Edit the product option to update its details and associated values.",
+      "successToast": "Product option \"{{title}}\" was successfully updated."
+    },
+    "delete": {
+      "confirmation": "You are about to delete the product option \"{{title}}\". This action cannot be undone.",
+      "successToast": "Product option was successfully deleted."
+    },
+    "fields": {
+      "title": {
+        "label": "Title",
+        "placeholder": "Size"
+      },
+      "values": {
+        "label": "Values",
+        "placeholder": "S, M, L"
       }
     }
   },

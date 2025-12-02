@@ -1556,7 +1556,19 @@ export interface CreateProductDTO {
   /**
    * The product options to be created and/or associated with the product.
    */
-  options?: (CreateProductOptionDTO | { id: string })[]
+  options?: (
+    | CreateProductOptionDTO
+    | {
+        /**
+         * The ID of the product option to link.
+         */
+        id: string
+        /**
+         * The IDs of specific option values to link. If undefined, every value will be linked by default.
+         */
+        value_ids?: string[]
+      }
+  )[]
   /**
    * The product variants to be created and associated with the product.
    */
@@ -1735,4 +1747,9 @@ export type ProductOptionProductPair = {
    * The product's ID.
    */
   product_id: string
+
+  /**
+   * The IDs of specific option values to link. If not provided, all values will be linked.
+   */
+  product_option_value_ids?: string[]
 }

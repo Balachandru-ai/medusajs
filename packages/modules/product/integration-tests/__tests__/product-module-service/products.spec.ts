@@ -231,7 +231,7 @@ moduleIntegrationTestRunner<IProductModuleService>({
           productBefore.length = 201
           productBefore.height = 301
           productBefore.width = 401
-          productBefore.option_ids = [productOne.options.map((o) => o.id)]
+          productBefore.option_ids = productOne.options.map((o) => o.id)
           delete productBefore.options
           const updatedProducts = await service.upsertProducts([productBefore])
           expect(updatedProducts).toHaveLength(1)

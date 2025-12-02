@@ -178,6 +178,12 @@
         },
         "noMoreData": {
           "type": "string"
+        },
+        "exclusive": {
+          "type": "string"
+        },
+        "global": {
+          "type": "string"
         }
       },
       "required": [
@@ -237,7 +243,9 @@
         "unsavedChangesDescription",
         "includesTaxTooltip",
         "excludesTaxTooltip",
-        "noMoreData"
+        "noMoreData",
+        "exclusive",
+        "global"
       ],
       "additionalProperties": false
     },
@@ -509,6 +517,9 @@
         },
         "cannotUndo": {
           "type": "string"
+        },
+        "manage": {
+          "type": "string"
         }
       },
       "required": [
@@ -555,7 +566,8 @@
         "hide",
         "export",
         "import",
-        "cannotUndo"
+        "cannotUndo",
+        "manage"
       ],
       "additionalProperties": false
     },
@@ -1692,6 +1704,9 @@
                   },
                   "required": ["label", "hint"],
                   "additionalProperties": false
+                },
+                "selectValuesHint": {
+                  "type": "string"
                 }
               },
               "required": [
@@ -1701,7 +1716,8 @@
                 "optionTitle",
                 "optionValues",
                 "productVariants",
-                "productOptions"
+                "productOptions",
+                "selectValuesHint"
               ],
               "additionalProperties": false
             },
@@ -2008,6 +2024,7 @@
             "uploadImagesLabel",
             "uploadImagesHint",
             "invalidFileType",
+            "fileTooLarge",
             "failedToUpload",
             "deleteWarning_one",
             "deleteWarning_other",
@@ -2651,11 +2668,39 @@
               "required": ["header", "successToast"],
               "additionalProperties": false
             },
+            "manage": {
+              "type": "object",
+              "properties": {
+                "header": {
+                  "type": "string"
+                },
+                "description": {
+                  "type": "string"
+                },
+                "label": {
+                  "type": "string"
+                },
+                "hint": {
+                  "type": "string"
+                },
+                "placeholder": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "header",
+                "description",
+                "label",
+                "hint",
+                "placeholder"
+              ],
+              "additionalProperties": false
+            },
             "deleteWarning": {
               "type": "string"
             }
           },
-          "required": ["header", "edit", "create", "deleteWarning"],
+          "required": ["header", "edit", "create", "manage", "deleteWarning"],
           "additionalProperties": false
         },
         "organization": {
@@ -3152,6 +3197,128 @@
         "delete",
         "products",
         "organize",
+        "fields"
+      ],
+      "additionalProperties": false
+    },
+    "productOptions": {
+      "type": "object",
+      "properties": {
+        "domain": {
+          "type": "string"
+        },
+        "subtitle": {
+          "type": "string"
+        },
+        "values": {
+          "type": "object",
+          "properties": {
+            "header": {
+              "type": "string"
+            }
+          },
+          "required": ["header"],
+          "additionalProperties": false
+        },
+        "create": {
+          "type": "object",
+          "properties": {
+            "header": {
+              "type": "string"
+            },
+            "hint": {
+              "type": "string"
+            },
+            "successToast": {
+              "type": "string"
+            },
+            "tabs": {
+              "type": "object",
+              "properties": {
+                "details": {
+                  "type": "string"
+                },
+                "organize": {
+                  "type": "string"
+                }
+              },
+              "required": ["details", "organize"],
+              "additionalProperties": false
+            }
+          },
+          "required": ["header", "hint", "successToast", "tabs"],
+          "additionalProperties": false
+        },
+        "edit": {
+          "type": "object",
+          "properties": {
+            "header": {
+              "type": "string"
+            },
+            "description": {
+              "type": "string"
+            },
+            "successToast": {
+              "type": "string"
+            }
+          },
+          "required": ["header", "description", "successToast"],
+          "additionalProperties": false
+        },
+        "delete": {
+          "type": "object",
+          "properties": {
+            "confirmation": {
+              "type": "string"
+            },
+            "successToast": {
+              "type": "string"
+            }
+          },
+          "required": ["confirmation", "successToast"],
+          "additionalProperties": false
+        },
+        "fields": {
+          "type": "object",
+          "properties": {
+            "title": {
+              "type": "object",
+              "properties": {
+                "label": {
+                  "type": "string"
+                },
+                "placeholder": {
+                  "type": "string"
+                }
+              },
+              "required": ["label", "placeholder"],
+              "additionalProperties": false
+            },
+            "values": {
+              "type": "object",
+              "properties": {
+                "label": {
+                  "type": "string"
+                },
+                "placeholder": {
+                  "type": "string"
+                }
+              },
+              "required": ["label", "placeholder"],
+              "additionalProperties": false
+            }
+          },
+          "required": ["title", "values"],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "domain",
+        "subtitle",
+        "values",
+        "create",
+        "edit",
+        "delete",
         "fields"
       ],
       "additionalProperties": false
@@ -12038,6 +12205,7 @@
     "products",
     "collections",
     "categories",
+    "productOptions",
     "inventory",
     "giftCards",
     "customers",

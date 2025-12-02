@@ -4,10 +4,10 @@ import ProductCategory from "./product-category"
 import ProductCollection from "./product-collection"
 import ProductImage from "./product-image"
 import ProductOption from "./product-option"
+import ProductProductOption from "./product-product-option"
 import ProductTag from "./product-tag"
 import ProductType from "./product-type"
 import ProductVariant from "./product-variant"
-import ProductProductOption from "./product-product-option"
 
 const Product = model
   .define("Product", {
@@ -46,6 +46,9 @@ const Product = model
     }),
     options: model.manyToMany(() => ProductOption, {
       pivotEntity: () => ProductProductOption,
+    }),
+    product_options: model.hasMany(() => ProductProductOption, {
+      mappedBy: "product",
     }),
     images: model.hasMany(() => ProductImage, {
       mappedBy: "product",

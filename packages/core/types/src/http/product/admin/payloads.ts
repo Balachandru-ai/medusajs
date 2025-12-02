@@ -235,7 +235,19 @@ export interface AdminCreateProduct {
   /**
    * The product's options.
    */
-  options: (AdminCreateProductOption | { id: string })[]
+  options: (
+    | AdminCreateProductOption
+    | {
+        /**
+         * The ID of the product option to link.
+         */
+        id: string
+        /**
+         * The IDs of specific option values to link. If undefined, every value will be linked by default.
+         */
+        value_ids?: string[]
+      }
+  )[]
   /**
    * The product's variants.
    */
@@ -657,11 +669,22 @@ export interface AdminImportProductsRequest {
   mime_type: string
 }
 
+export interface AdminLinkProductOptionWithValues {
+  /**
+   * The ID of the product option to link.
+   */
+  id: string
+  /**
+   * The IDs of specific option values to link.
+   */
+  value_ids: string[]
+}
+
 export interface AdminLinkProductOptions {
   /**
    * The list of options to link to the product.
    */
-  add?: (string | AdminCreateProductOption)[]
+  add?: (string | AdminCreateProductOption | AdminLinkProductOptionWithValues)[]
   /**
    * The list of options to unlink to the product.
    */
