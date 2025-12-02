@@ -4086,6 +4086,17 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@medusajs/translation@workspace:packages/modules/translation":
+  version: 0.0.0-use.local
+  resolution: "@medusajs/translation@workspace:packages/modules/translation"
+  dependencies:
+    "@medusajs/framework": 2.12.0
+    "@medusajs/test-utils": 2.12.0
+  peerDependencies:
+    "@medusajs/framework": 2.12.0
+  languageName: unknown
+  linkType: soft
+
 "@medusajs/types@2.12.0, @medusajs/types@workspace:^, @medusajs/types@workspace:packages/core/types":
   version: 0.0.0-use.local
   resolution: "@medusajs/types@workspace:packages/core/types"
