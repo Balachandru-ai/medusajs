@@ -1,23 +1,24 @@
 "use client"
 
-import { Feedback as UiFeedback, FeedbackProps } from "docs-ui"
-import { usePathname } from "next/navigation"
+import {
+  Feedback as UiFeedback,
+  FeedbackProps,
+  DocsTrackingEvents,
+} from "docs-ui"
 import { useArea } from "../../providers/area"
 
 export const Feedback = (props: Partial<FeedbackProps>) => {
-  const pathname = usePathname()
   const { area } = useArea()
 
   return (
     <UiFeedback
       vertical={true}
       {...props}
-      event="survey_api-ref"
+      event={DocsTrackingEvents.SURVEY_API}
       extraData={{
         area,
         ...props.extraData,
       }}
-      pathName={`/api/${pathname}`}
     />
   )
 }
