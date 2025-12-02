@@ -17,7 +17,7 @@ export const useLocalesTableColumns = () => {
     () => [
       columnHelper.accessor("code", {
         header: () => <TextHeader text={t("fields.code")} />,
-        cell: ({ getValue }) => <TextCell text={getValue().toUpperCase()} />,
+        cell: ({ getValue }) => <TextCell text={getValue()} />,
       }),
       columnHelper.accessor("name", {
         header: () => <TextHeader text={t("fields.name")} />,
