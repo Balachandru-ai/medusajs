@@ -82,6 +82,11 @@ export interface StoreDTO {
   supported_currencies?: StoreCurrencyDTO[]
 
   /**
+   * The supported locale codes of the store.
+   */
+  supported_locales?: StoreLocaleDTO[]
+
+  /**
    * The associated default sales channel's ID.
    */
   default_sales_channel_id?: string
