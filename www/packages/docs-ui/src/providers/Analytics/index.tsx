@@ -87,7 +87,7 @@ export const AnalyticsProvider = ({
         })
       )
     },
-    [trackWithSegment, trackWithPostHog]
+    [trackWithSegment, trackWithPostHog, pathname]
   )
 
   const track = ({ event }: { event: TrackedEvent }) => {
