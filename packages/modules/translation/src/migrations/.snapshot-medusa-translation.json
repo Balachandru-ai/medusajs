@@ -6,15 +6,6 @@
   "tables": [
     {
       "columns": {
-        "id": {
-          "name": "id",
-          "type": "text",
-          "unsigned": false,
-          "autoincrement": false,
-          "primary": false,
-          "nullable": false,
-          "mappedType": "text"
-        },
         "code": {
           "name": "code",
           "type": "text",
@@ -81,7 +72,7 @@
         {
           "keyName": "locale_pkey",
           "columnNames": [
-            "id"
+            "code"
           ],
           "composite": false,
           "constraint": true,
