@@ -367,7 +367,7 @@
 			"transactions": "The associated transactions, which include amounts captured and refunded.\n\n@expandable",
 			"credit_lines": "The associated credit lines, which include additional payment amounts for an order.\n\n@expandable",
 			"returns": "The associated returns.\n\n@expandable",
-			"custom_display_id": "The custom display id of the order"
+			"custom_display_id": "The custom display ID of the order"
 		},
 		"deprecated": {
 			"is_deprecated": false
@@ -444,7 +444,7 @@
 			"canceled_at": "The date that the change was canceled",
 			"order": "The associated order that the change applies to.\n\n@expandable",
 			"actions": "The associated actions.\n\n@expandable",
-			"carry_over_promotions": "Whether the order change carry over promotions.\n\n@since v2.12.0"
+			"carry_over_promotions": "Whether the order change carries over promotions from the parent order.\n\n@since v2.12.0"
 		},
 		"deprecated": {
 			"is_deprecated": false

@@ -71,7 +71,7 @@
 			"status": "The status of the promotion",
 			"is_tax_inclusive": "Whether the promotion is tax inclusive.",
 			"limit": "The limit of the promotion\n\n@since v2.12.0",
-			"used": "The used of the promotion\n\n@since v2.12.0",
+			"used": "How much of the limit has been used.\n\n@since v2.12.0",
 			"metadata": "Holds custom data in key-value pairs.\n\n@since v2.12.0"
 		},
 		"deprecated": {
