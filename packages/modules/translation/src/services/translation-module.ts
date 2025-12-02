@@ -22,23 +22,8 @@ type InjectedDependencies = {
   translationService: ModulesSdkTypes.IMedusaInternalService<typeof Translation>
 }
 
-/**
- * Extended filterable props with JSONB search support.
- * The `q` field is defined in core types but may not be available until types are rebuilt.
- */
-type FilterableTranslationPropsWithSearch = FilterableTranslationProps & {
-  q?: string
-}
-
 export default class TranslationModuleService
-  extends MedusaService<{
-    Locale: {
-      dto: TranslationTypes.LocaleDTO
-    }
-    Translation: {
-      dto: TranslationTypes.TranslationDTO
-    }
-  }>({
+  extends MedusaService({
     Locale,
     Translation,
   })
@@ -58,7 +43,7 @@ export default class TranslationModuleService
   @InjectManager()
   // @ts-expect-error
   async listTranslations(
-    filters: FilterableTranslationPropsWithSearch = {},
+    filters: FilterableTranslationProps = {},
     config: FindConfig<TranslationTypes.TranslationDTO> = {},
     @MedusaContext() sharedContext: Context = {}
   ): Promise<TranslationTypes.TranslationDTO[]> {
@@ -97,7 +82,7 @@ export default class TranslationModuleService
   @InjectManager()
   // @ts-expect-error
   async listAndCountTranslations(
-    filters: FilterableTranslationPropsWithSearch = {},
+    filters: FilterableTranslationProps = {},
     config: FindConfig<TranslationTypes.TranslationDTO> = {},
     @MedusaContext() sharedContext: Context = {}
   ): Promise<[TranslationTypes.TranslationDTO[], number]> {
