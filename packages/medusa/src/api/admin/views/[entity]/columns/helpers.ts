@@ -472,8 +472,13 @@ export const generateEntityColumns = (
       ? getTypeInfoFromGraphQLType(fieldDef.type, fieldName)
       : getTypeInfoFromGraphQLType(null, fieldName)
 
+    const nonSortableFields = (entityMapping.nonSortableFields ??
+      []) as string[]
+    const isNonSortable = nonSortableFields.includes(fieldName)
     const sortable =
-      !fieldName.includes("metadata") && typeInfo.data_type !== "object"
+      !isNonSortable &&
+      !fieldName.includes("metadata") &&
+      typeInfo.data_type !== "object"
 
     const isDefaultField =
       entityMapping.defaultVisibleFields.includes(fieldName)

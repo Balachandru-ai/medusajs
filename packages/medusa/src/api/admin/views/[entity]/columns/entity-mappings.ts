@@ -20,6 +20,8 @@ export const ENTITY_MAPPINGS = {
       // Specific field names to exclude
       excludeFields: ["order_change"],
     },
+    // Fields that cannot be sorted (virtual/computed fields)
+    nonSortableFields: ["total", "payment_status", "fulfillment_status"],
     computedColumns: {
       customer_display: {
         name: "Customer",
@@ -84,32 +86,26 @@ export const ENTITY_MAPPINGS = {
       excludePrefixes: ["raw_"],
       excludeFields: [],
     },
+    nonSortableFields: [] as string[],
     computedColumns: {
       product_display: {
         name: "Product",
         render_type: "product_info",
-        required_fields: [
-          "title",
-          "thumbnail",
-        ],
+        required_fields: ["title", "thumbnail"],
         optional_fields: ["handle"],
         default_visible: true,
       },
       variants_count: {
         name: "Variants",
         render_type: "count",
-        required_fields: [
-          "variants",
-        ],
+        required_fields: ["variants"],
         optional_fields: [],
         default_visible: true,
       },
       sales_channels_display: {
         name: "Sales Channels",
         render_type: "sales_channels_list",
-        required_fields: [
-          "sales_channels",
-        ],
+        required_fields: ["sales_channels"],
         optional_fields: [],
         default_visible: true,
       },
@@ -130,6 +126,7 @@ export const ENTITY_MAPPINGS = {
       excludePrefixes: ["raw_"],
       excludeFields: [],
     },
+    nonSortableFields: [] as string[],
     computedColumns: {},
   },
   users: {
@@ -147,6 +144,7 @@ export const ENTITY_MAPPINGS = {
       excludePrefixes: ["raw_"],
       excludeFields: [],
     },
+    nonSortableFields: [] as string[],
     computedColumns: {},
   },
   regions: {
@@ -158,6 +156,7 @@ export const ENTITY_MAPPINGS = {
       excludePrefixes: ["raw_"],
       excludeFields: [],
     },
+    nonSortableFields: [] as string[],
     computedColumns: {},
   },
   "sales-channels": {
@@ -175,6 +174,7 @@ export const ENTITY_MAPPINGS = {
       excludePrefixes: ["raw_"],
       excludeFields: [],
     },
+    nonSortableFields: [] as string[],
     computedColumns: {},
   },
 }
