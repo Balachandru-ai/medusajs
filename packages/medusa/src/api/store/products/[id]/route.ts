@@ -1,11 +1,7 @@
-import { MedusaRequest, MedusaResponse } from "@medusajs/framework/http"
-import { HttpTypes, MedusaContainer } from "@medusajs/framework/types"
-import {
-  isObject,
-  isPresent,
-  MedusaError,
-  QueryContext,
-} from "@medusajs/framework/utils"
+import { MedusaResponse } from "@medusajs/framework/http"
+import { HttpTypes } from "@medusajs/framework/types"
+import { isPresent, MedusaError, QueryContext } from "@medusajs/framework/utils"
+import { applyTranslations } from "../../../../utils/apply-translations"
 import { wrapVariantsWithInventoryQuantityForSalesChannel } from "../../../utils/middlewares"
 import {
   filterOutInternalProductCategories,
@@ -74,78 +70,10 @@ export const GET = async (
   }
 
   await wrapProductsWithTaxPrices(req, [product])
-  await applyTranslations({ req, products: [product], container: req.scope })
-  res.json({ product })
-}
-
-async function applyTranslations({
-  req,
-  products,
-  container,
-}: {
-  req: MedusaRequest
-  products: HttpTypes.StoreProduct[]
-  container: MedusaContainer
-}) {
-  const locale = req.locale ?? "en-US"
-
-  const gatheredIds: Set<string> = new Set()
-  function gatherIds(object: Record<string, any>) {
-    gatheredIds.add(object.id)
-    Object.entries(object).forEach(([, value]) => {
-      if (Array.isArray(value)) {
-        value.forEach((item) => gatherIds(item))
-      } else if (isObject(value)) {
-        gatherIds(value)
-      }
-    })
-  }
-
-  for (const product of products) {
-    gatherIds(product)
-  }
-
-  const query = container.resolve("query")
-  const { data: translations } = await query.graph({
-    entity: "translations",
-    fields: ["translations", "entity_id"],
-    filters: {
-      entity_id: Array.from(gatheredIds),
-      locale_code: locale,
-    },
-    pagination: {
-      take: gatheredIds.size,
-    },
+  await applyTranslations({
+    req,
+    inputObjects: [product],
+    container: req.scope,
   })
-
-  const entityIdToTranslation = new Map<string, Record<string, any>>()
-  for (const translation of translations) {
-    entityIdToTranslation.set(
-      translation.entity_id,
-      translation.translations ?? {}
-    )
-  }
-
-  function applyTranslation(object: Record<string, any>) {
-    const translation = entityIdToTranslation.get(object.id)
-    if (translation) {
-      Object.keys(translation).forEach((key) => {
-        if (key in object) {
-          if (Array.isArray(object[key])) {
-            for (const item of object[key]) {
-              applyTranslation(item)
-            }
-          } else if (isObject(object[key])) {
-            applyTranslation(object[key])
-          } else {
-            object[key] = translation[key]
-          }
-        }
-      })
-    }
-  }
-
-  for (const product of products) {
-    applyTranslation(product)
-  }
+  res.json({ product })
 }

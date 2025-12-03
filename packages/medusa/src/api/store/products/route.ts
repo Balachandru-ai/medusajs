@@ -9,6 +9,7 @@ import {
 import IndexEngineFeatureFlag from "../../../feature-flags/index-engine"
 import { wrapVariantsWithInventoryQuantityForSalesChannel } from "../../utils/middlewares"
 import { RequestWithContext, wrapProductsWithTaxPrices } from "./helpers"
+import { applyTranslations } from "../../../utils/apply-translations"
 
 export const GET = async (
   req: RequestWithContext<HttpTypes.StoreProductListParams>,
@@ -141,6 +142,13 @@ async function getProducts(
   }
 
   await wrapProductsWithTaxPrices(req, products)
+
+  await applyTranslations({
+    req,
+    inputObjects: products,
+    container: req.scope,
+  })
+
   res.json({
     products,
     count: metadata!.count,
