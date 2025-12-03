@@ -182,6 +182,14 @@ export default async ({
   )
   await new LinkLoader(linksSourcePaths, logger).load()
 
+  // Subscribers should be loaded no matter the worker mode, simply they will never handle anything
+  // since worker/shared instances only will have a running worker to process events.
+  await subscribersLoader(plugins, container)
+
+  if (shouldLoadBackgroundProcessors(configModule)) {
+    await jobsLoader(plugins, container)
+  }
+
   const {
     onApplicationStart,
     onApplicationShutdown,
@@ -193,14 +201,6 @@ export default async ({
   const workflowsSourcePaths = plugins.map((p) => join(p.resolve, "workflows"))
   const workflowLoader = new WorkflowLoader(workflowsSourcePaths, container)
   await workflowLoader.load()
-
-  // Subscribers should be loaded no matter the worker mode, simply they will never handle anything
-  // since worker/shared instances only will have a running worker to process events.
-  await subscribersLoader(plugins, container)
-
-  if (shouldLoadBackgroundProcessors(configModule)) {
-    await jobsLoader(plugins, container)
-  }
 
   const entrypointsShutdown = skipLoadingEntryPoints
     ? () => {}
