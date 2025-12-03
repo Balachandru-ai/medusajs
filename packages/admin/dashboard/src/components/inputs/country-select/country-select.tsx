@@ -10,42 +10,48 @@ import { Combobox } from "../combobox"
 
 export const CountrySelect = forwardRef<
   HTMLInputElement,
-  Omit<ComponentPropsWithoutRef<typeof Combobox>, "options" | "multiple"> & {
+  Omit<
+    ComponentPropsWithoutRef<typeof Combobox>,
+    "options" | "multiple" | "value" | "onChange"
+  > & {
     placeholder?: string
     defaultValue?: string
     allowClear?: boolean
+    value?: string
+    onChange?: (value: string | undefined) => void
   }
->(({ placeholder, defaultValue, allowClear, onChange, value, ...props }, ref) => {
-  const { t } = useTranslation()
-  const innerRef = useRef<HTMLInputElement>(null)
+>(
+  (
+    { placeholder, defaultValue, allowClear, onChange, value, ...props },
+    ref
+  ) => {
+    const { t } = useTranslation()
+    const innerRef = useRef<HTMLInputElement>(null)
 
-  useImperativeHandle(ref, () => innerRef.current as HTMLInputElement)
+    useImperativeHandle(ref, () => innerRef.current as HTMLInputElement)
 
-  // Normalize the value: convert to lowercase
-  // Keep empty string as empty string (don't convert to undefined)
-  const normalizedValue = typeof value === "string"
-    ? (value ? value.toLowerCase() : "")
-    : ""
+    // Keep empty string as empty string for Combobox controlled state
+    const normalizedValue = value || ""
 
-  const handleChange = (newValue: string | undefined) => {
-    // Convert undefined to empty string when clearing
-    onChange?.(newValue || "")
+    const handleChange = (newValue: string | undefined) => {
+      onChange?.(newValue || "")
+    }
+
+    return (
+      <Combobox
+        {...props}
+        ref={innerRef}
+        value={normalizedValue}
+        onChange={handleChange}
+        options={countries.map((country) => ({
+          label: country.display_name,
+          value: country.iso_2.toLowerCase(),
+        }))}
+        placeholder={placeholder || t("fields.selectCountry")}
+        allowClear={allowClear}
+      />
+    )
   }
-
-  return (
-    <Combobox
-      {...props}
-      ref={innerRef}
-      value={normalizedValue}
-      onChange={handleChange}
-      options={countries.map((country) => ({
-        label: country.display_name,
-        value: country.iso_2.toLowerCase(),
-      }))}
-      placeholder={placeholder || t("fields.selectCountry")}
-      allowClear={allowClear}
-    />
-  )
-})
+)
 
 CountrySelect.displayName = "CountrySelect"

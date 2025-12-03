@@ -123,7 +123,7 @@ export const ProductOrganizationForm = ({
                     <Form.Control>
                       <Combobox
                         {...field}
-                        value={field.value || undefined}
+                        value={field.value || ""}
                         onChange={(value) => field.onChange(value || "")}
                         options={types.options}
                         searchValue={types.searchValue}
@@ -149,7 +149,7 @@ export const ProductOrganizationForm = ({
                     <Form.Control>
                       <Combobox
                         {...field}
-                        value={field.value || undefined}
+                        value={field.value || ""}
                         onChange={(value) => field.onChange(value || "")}
                         multiple={false}
                         options={collections.options}

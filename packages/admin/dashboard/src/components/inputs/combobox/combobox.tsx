@@ -199,7 +199,10 @@ const ComboboxImpl = <T extends Value = string>(
     setOpen(open)
   }
 
-  const hasValue = selectedValues?.length > 0
+  // Treat empty string as no value for single-select
+  const hasValue = isArrayValue
+    ? selectedValues?.length > 0
+    : selectedValues?.length > 0 && selectedValues !== ""
 
   const showTag = hasValue && isArrayValue
   const showSelected = showTag && !searchValue && !open
@@ -312,7 +315,7 @@ const ComboboxImpl = <T extends Value = string>(
             {...inputProps}
           />
         </div>
-        {allowClear && controlledValue && (
+        {allowClear && controlledValue && controlledValue !== "" && (
           <button
             type="button"
             onClick={(e) => {
