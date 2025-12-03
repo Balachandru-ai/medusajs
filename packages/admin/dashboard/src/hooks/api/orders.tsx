@@ -10,8 +10,8 @@ import {
 import { sdk } from "../../lib/client"
 import { queryClient } from "../../lib/query-client"
 import { queryKeysFactory, TQueryKey } from "../../lib/query-key-factory"
-import { inventoryItemsQueryKeys } from "./inventory"
 import { reservationItemsQueryKeys } from "./reservations"
+import { inventoryItemsQueryKeys } from "./inventory"
 
 const ORDERS_QUERY_KEY = "orders" as const
 const _orderKeys = queryKeysFactory(ORDERS_QUERY_KEY) as TQueryKey<"orders"> & {
@@ -399,6 +399,38 @@ export const useCreateOrderCreditLine = (
 
       queryClient.invalidateQueries({
         queryKey: ordersQueryKeys.preview(orderId),
+      })
+
+      options?.onSuccess?.(data, variables, context)
+    },
+    ...options,
+  })
+}
+
+export const useUpdateOrderChange = (
+  orderChangeId: string,
+  options?: UseMutationOptions<
+    HttpTypes.AdminOrderChangeResponse,
+    FetchError,
+    { carry_over_promotions: boolean }
+  >
+) => {
+  return useMutation({
+    mutationFn: (payload: { carry_over_promotions: boolean }) =>
+      sdk.admin.order.updateOrderChange(orderChangeId, payload),
+    onSuccess: (data, variables, context) => {
+      const orderId = data.order_change.order_id
+
+      queryClient.invalidateQueries({
+        queryKey: ordersQueryKeys.details(),
+      })
+
+      queryClient.invalidateQueries({
+        queryKey: ordersQueryKeys.preview(orderId),
+      })
+
+      queryClient.invalidateQueries({
+        queryKey: ordersQueryKeys.changes(orderId),
       })
 
       options?.onSuccess?.(data, variables, context)

@@ -410,6 +410,9 @@
   "POST /admin/orders/{orderid}/credit-lines": {
     "js-sdk": "sdk.admin.order.createCreditLine(\n  \"order_123\",\n  {\n    amount: 100,\n    reference: \"order\",\n    reference_id: \"order_123\",\n  }\n)\n.then(({ order }) => {\n  console.log(order)\n})"
   },
+  "POST /admin/order-changes/{id}": {
+    "js-sdk": "sdk.admin.order.updateOrderChange(\n  \"ordch_123\",\n  {\n    carry_over_promotions: true\n  }\n)\n.then(({ order_change }) => {\n  console.log(order_change)\n})"
+  },
   "POST /admin/order-edits": {
     "js-sdk": "sdk.admin.orderEdit.initiateRequest({\n  order_id: \"order_123\"\n})\n.then(({ order_change }) => {\n  console.log(order_change)\n})"
   },

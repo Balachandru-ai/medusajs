@@ -78,10 +78,10 @@ export const DELETE = async (
   const { id } = req.params
   const { actor_id } = req.auth_context
 
-  if (actor_id !== id) {
+  if (actor_id === id) {
     throw new MedusaError(
       MedusaError.Types.NOT_ALLOWED,
-      "You are not allowed to delete other users"
+      "A user cannot delete itself"
     )
   }
 

@@ -108,6 +108,10 @@ export const product = [
     "path": "https://docs.medusajs.com/resources/integrations/guides/payload"
   },
   {
+    "title": "Integrate Strapi",
+    "path": "https://docs.medusajs.com/resources/integrations/guides/strapi"
+  },
+  {
     "title": "Build Wishlist Plugin",
     "path": "https://docs.medusajs.com/resources/plugins/guides/wishlist"
   },
@@ -126,6 +130,10 @@ export const product = [
   {
     "title": "Implement Express Checkout with Medusa",
     "path": "https://docs.medusajs.com/resources/storefront-development/guides/express-checkout"
+  },
+  {
+    "title": "Implement Mobile App with React Native, Expo, and Medusa",
+    "path": "https://docs.medusajs.com/resources/storefront-development/guides/react-native-expo"
   },
   {
     "title": "Show Product Categories in Storefront",

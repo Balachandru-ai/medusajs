@@ -236,8 +236,14 @@
               "name": "e",
               "type": {
                 "name": "FocusEvent",
-                "elements": [],
-                "raw": "FocusEvent&#60;Element, Element&#62;"
+                "elements": [
+                  {
+                    "name": "Element"
+                  },
+                  {
+                    "name": "Element"
+                  }
+                ]
               },
               "rest": false
             }
@@ -261,8 +267,14 @@
               "name": "e",
               "type": {
                 "name": "FocusEvent",
-                "elements": [],
-                "raw": "FocusEvent&#60;Element, Element&#62;"
+                "elements": [
+                  {
+                    "name": "Element"
+                  },
+                  {
+                    "name": "Element"
+                  }
+                ]
               },
               "rest": false
             }
@@ -309,8 +321,8 @@
               "name": "e",
               "type": {
                 "name": "KeyboardEvent",
-                "elements": [],
-                "raw": "KeyboardEvent"
+                "raw": "KeyboardEvent",
+                "elements": []
               },
               "rest": false
             }
@@ -334,8 +346,8 @@
               "name": "e",
               "type": {
                 "name": "KeyboardEvent",
-                "elements": [],
-                "raw": "KeyboardEvent"
+                "raw": "KeyboardEvent",
+                "elements": []
               },
               "rest": false
             }
