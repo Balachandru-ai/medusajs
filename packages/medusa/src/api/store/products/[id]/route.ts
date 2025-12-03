@@ -120,7 +120,10 @@ async function applyTranslations({
 
   const entityIdToTranslation = new Map<string, Record<string, any>>()
   for (const translation of translations) {
-    entityIdToTranslation.set(translation.entity_id, translation.translation)
+    entityIdToTranslation.set(
+      translation.entity_id,
+      translation.translations ?? {}
+    )
   }
 
   function applyTranslation(object: Record<string, any>) {
