@@ -13,6 +13,7 @@ import { useUpdateStore } from "../../../../../hooks/api/store"
 import { useComboboxData } from "../../../../../hooks/use-combobox-data"
 import { sdk } from "../../../../../lib/client"
 import { useDocumentDirection } from "../../../../../hooks/use-document-direction"
+import { useFeatureFlag } from "../../../../../providers/feature-flag-provider"
 
 type EditStoreFormProps = {
   store: HttpTypes.AdminStore
@@ -29,6 +30,7 @@ const EditStoreSchema = z.object({
 
 export const EditStoreForm = ({ store }: EditStoreFormProps) => {
   const { t } = useTranslation()
+  const isTranslationsEnabled = useFeatureFlag("translation")
   const { handleSuccess } = useRouteModal()
   const direction = useDocumentDirection()
   const form = useForm<z.infer<typeof EditStoreSchema>>({
@@ -154,38 +156,40 @@ export const EditStoreForm = ({ store }: EditStoreFormProps) => {
                 )
               }}
             />
-            <Form.Field
-              control={form.control}
-              name="default_locale_code"
-              render={({ field: { onChange, ...field } }) => {
-                return (
-                  <Form.Item>
-                    <Form.Label>{t("store.defaultLocale")}</Form.Label>
-                    <Form.Control>
-                      <Select
-                        dir={direction}
-                        {...field}
-                        onValueChange={onChange}
-                      >
-                        <Select.Trigger ref={field.ref}>
-                          <Select.Value />
-                        </Select.Trigger>
-                        <Select.Content>
-                          {store.supported_locales?.map((locale) => (
-                            <Select.Item
-                              key={locale.locale_code}
-                              value={locale.locale_code}
-                            >
-                              {locale.locale_code}
-                            </Select.Item>
-                          ))}
-                        </Select.Content>
-                      </Select>
-                    </Form.Control>
-                  </Form.Item>
-                )
-              }}
-            />
+            {isTranslationsEnabled && (
+              <Form.Field
+                control={form.control}
+                name="default_locale_code"
+                render={({ field: { onChange, ...field } }) => {
+                  return (
+                    <Form.Item>
+                      <Form.Label>{t("store.defaultLocale")}</Form.Label>
+                      <Form.Control>
+                        <Select
+                          dir={direction}
+                          {...field}
+                          onValueChange={onChange}
+                        >
+                          <Select.Trigger ref={field.ref}>
+                            <Select.Value />
+                          </Select.Trigger>
+                          <Select.Content>
+                            {store.supported_locales?.map((locale) => (
+                              <Select.Item
+                                key={locale.locale_code}
+                                value={locale.locale_code}
+                              >
+                                {locale.locale_code}
+                              </Select.Item>
+                            ))}
+                          </Select.Content>
+                        </Select>
+                      </Form.Control>
+                    </Form.Item>
+                  )
+                }}
+              />
+            )}
             <Form.Field
               control={form.control}
               name="default_region_id"
