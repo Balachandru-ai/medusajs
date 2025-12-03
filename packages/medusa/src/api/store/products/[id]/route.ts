@@ -1,6 +1,12 @@
 import { MedusaRequest, MedusaResponse } from "@medusajs/framework/http"
 import { HttpTypes, MedusaContainer } from "@medusajs/framework/types"
-import { isPresent, MedusaError, QueryContext } from "@medusajs/framework/utils"
+import {
+  getSelectsAndRelationsFromObjectArray,
+  isObject,
+  isPresent,
+  MedusaError,
+  QueryContext,
+} from "@medusajs/framework/utils"
 import { wrapVariantsWithInventoryQuantityForSalesChannel } from "../../../utils/middlewares"
 import {
   filterOutInternalProductCategories,
@@ -83,15 +89,29 @@ async function applyTranslations({
   container: MedusaContainer
 }) {
   const locale = req.locale ?? "en-US"
-  const productIds = new Set(products.map((product) => product.id))
+
+  const gatheredIds: Set<string> = new Set()
+  function gatherIds(object: Record<string, any>) {
+    gatheredIds.add(object.id)
+    Object.entries(object).forEach(([, value]) => {
+      if (Array.isArray(value)) {
+        value.forEach((item) => gatherIds(item))
+      } else if (isObject(value)) {
+        gatherIds(value)
+      }
+    })
+  }
+
+  for (const product of products) {
+    gatherIds(product)
+  }
 
   const query = container.resolve("query")
   const translations = await query.graph({
     entity: "translations",
     fields: ["translations", "entity_id"],
     filters: {
-      id: Array.from(productIds),
-      entity_type: "product",
+      id: Array.from(gatheredIds),
       locale_code: locale,
     },
   })
@@ -101,12 +121,20 @@ async function applyTranslations({
     entityIdToTranslation.set(translation.entity_id, translation.translation)
   }
 
-  function applyTranslation(product: HttpTypes.StoreProduct) {
-    const translation = entityIdToTranslation.get(product.id)
+  function applyTranslation(object: Record<string, any>) {
+    const translation = entityIdToTranslation.get(object.id)
     if (translation) {
       Object.keys(translation).forEach((key) => {
-        if (key in product) {
-          product[key] = translation[key]
+        if (key in object) {
+          if (Array.isArray(object[key])) {
+            for (const item of object[key]) {
+              applyTranslation(item)
+            }
+          } else if (isObject(object[key])) {
+            applyTranslation(object[key])
+          } else {
+            object[key] = translation[key]
+          }
         }
       })
     }
