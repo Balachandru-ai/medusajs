@@ -1,4 +1,3 @@
-import { asValue } from "@medusajs/framework/awilix"
 import { Logger } from "@medusajs/framework/types"
 import redisLoader from "../redis"
 
