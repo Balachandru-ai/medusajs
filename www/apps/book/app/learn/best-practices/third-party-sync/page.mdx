@@ -31,7 +31,7 @@ Before diving into best practices, it's important to understand the general appr
 
 [Workflows](../../fundamentals/workflows/page.mdx) are special functions designed for long-running, asynchronous tasks. They provide features like [compensation](../../fundamentals/workflows/compensation-function/page.mdx), [retries](../../fundamentals/workflows/retry-failed-steps/page.mdx), and [async execution](../../fundamentals/workflows/long-running-workflow/page.mdx) that are essential for reliable data syncing.
 
-When defining your syncing logic, such as pushing product data to a third-party API or pulling inventory data into Medusa, you should define a workflow that encapsulates this logic.
+When defining your syncing logic, such as pushing product data to a third-party service or pulling inventory data into Medusa, you should define a workflow that encapsulates this logic.
 
 Medusa also exposes [built-in workflows](!resources!/medusa-workflows-reference) for common commerce operations, like creating or updating products, that you can leverage in your syncing logic.
 
@@ -67,9 +67,9 @@ If you've set up [server and worker instances](../../production/worker-mode/page
 
 </Note>
 
-In the scheduled job or subscriber, you retrieve the data to be synced from the third-party API or from Medusa itself. Then, you execute the workflow, passing it the data to be synced.
+In the scheduled job or subscriber, you retrieve the data to be synced from the third-party service or from Medusa itself. Then, you execute the workflow, passing it the data to be synced.
 
-For example, the following scheduled job fetches products from a third-party API and syncs them to Medusa using a workflow:
+For example, the following scheduled job fetches products from a third-party service and syncs them to Medusa using a workflow:
 
 ```ts title="src/jobs/sync-products.ts"
 import { MedusaContainer } from "@medusajs/framework/types"
@@ -392,7 +392,7 @@ First, install the `stream-json` library in your Medusa project:
 npm install stream-json @types/stream-json
 ```
 
-Then, use it in your scheduled job or subscriber to stream and parse JSON data from the third-party API:
+Then, use it in your scheduled job or subscriber to stream and parse JSON data from the third-party service:
 
 export const streamDataHighlights = [
   ["19", "nodeStream", "Create a Node.js Readable stream from the response body"],
@@ -510,9 +510,9 @@ In the above snippet, you catch stream errors and check for specific error codes
 
 ### Retrieve Only Necessary Fields
 
-A common performance pitfall when syncing data is retrieving more fields than necessary from third-party APIs or Medusa's [Query](../../fundamentals/module-links/query/page.mdx). This leads to increased data size, slower performance, and higher memory usage.
+A common performance pitfall when syncing data is retrieving more fields than necessary from third-party services or Medusa's [Query](../../fundamentals/module-links/query/page.mdx). This leads to increased data size, slower performance, and higher memory usage.
 
-When retrieving data from third-party APIs or with Medusa's Query, only request the necessary fields. Then, to efficiently group existing data for updates, use a [Map](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map) for quick lookups.
+When retrieving data from third-party services or with Medusa's Query, only request the necessary fields. Then, to efficiently group existing data for updates, use a [Map](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map) for quick lookups.
 
 For example, don't retrieve all product fields like this:
 
@@ -655,7 +655,7 @@ export default async function syncProductsJob(container: MedusaContainer) {
 
 In the above snippet, you define two async generators:
 
-1. `streamProductsFromApi`: Yields individual products from the third-party API one at a time.
+1. `streamProductsFromApi`: Yields individual products from the third-party service one at a time.
 2. `batchProducts`: Takes an async generator of products and yields them in batches of a specified size.
 
 Then, in your scheduled job, you consume these generators using [for await...of](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/for-await...of) loops to process product batches incrementally.
@@ -724,7 +724,7 @@ This approach keeps memory usage controlled and prevents the system from being o
 
 Errors can occur during data syncing due to transient network issues, rate limiting, or temporary unavailability of third-party services. To improve reliability, implement retry logic with exponential backoff for transient errors.
 
-For example, implement a custom function that fetches data with retry logic, then use it to fetch data from the third-party API:
+For example, implement a custom function that fetches data with retry logic, then use it to fetch data from the third-party service:
 
 export const retryHighlights = [
   ["1", "MAX_RETRIES", "Maximum number of retry attempts"],
