@@ -40,7 +40,6 @@ export async function migrate({
   /**
    * Setup
    */
-  process.env.MEDUSA_WORKER_MODE = "server"
 
   await ensureDbExists(container)
 
@@ -114,6 +113,7 @@ const main = async function ({
   executeAllLinks,
   executeSafeLinks,
 }) {
+  process.env.MEDUSA_WORKER_MODE = "server"
   const container = await initializeContainer(directory)
   const logger = container.resolve(ContainerRegistrationKeys.LOGGER)
 

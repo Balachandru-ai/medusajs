@@ -13,6 +13,8 @@ import { ensureDbExists } from "../utils"
 const TERMINAL_SIZE = process.stdout.columns
 
 const main = async function ({ directory, modules }) {
+  process.env.MEDUSA_WORKER_MODE = "server"
+
   const container = await initializeContainer(directory)
   const logger = container.resolve(ContainerRegistrationKeys.LOGGER)
 
@@ -22,7 +24,6 @@ const main = async function ({ directory, modules }) {
      */
 
     await ensureDbExists(container)
-    process.env.MEDUSA_WORKER_MODE = "server"
 
     const medusaAppLoader = new MedusaAppLoader()
     const configModule = container.resolve(
