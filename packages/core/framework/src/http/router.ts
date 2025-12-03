@@ -1,8 +1,4 @@
-import {
-  ContainerRegistrationKeys,
-  parseCorsOrigins,
-  promiseAll,
-} from "@medusajs/utils"
+import { ContainerRegistrationKeys, parseCorsOrigins } from "@medusajs/utils"
 import cors, { CorsOptions } from "cors"
 import type { ErrorRequestHandler, Express, RequestHandler } from "express"
 import type {
