@@ -11,6 +11,7 @@ const _Order = model
   .define("Order", {
     id: model.id({ prefix: "order" }).primaryKey(),
     display_id: model.autoincrement().searchable(),
+    custom_display_id: model.text().nullable(),
     region_id: model.text().nullable(),
     customer_id: model.text().nullable(),
     version: model.number().default(1),
@@ -69,6 +70,12 @@ const _Order = model
       name: "IDX_order_display_id",
       on: ["display_id"],
       unique: false,
+      where: "deleted_at IS NULL",
+    },
+    {
+      name: "IDX_order_custom_display_id",
+      on: ["custom_display_id"],
+      unique: true,
       where: "deleted_at IS NULL",
     },
     {

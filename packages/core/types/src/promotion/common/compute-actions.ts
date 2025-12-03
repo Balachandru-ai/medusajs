@@ -9,6 +9,7 @@ export type ComputeActions =
   | AddShippingMethodAdjustment
   | RemoveShippingMethodAdjustment
   | CampaignBudgetExceededAction
+  | PromotionLimitExceededAction
 
 /**
  * These computed action types can affect a campaign's budget.
@@ -34,6 +35,21 @@ export interface CampaignBudgetExceededAction {
    * The type of action.
    */
   action: "campaignBudgetExceeded"
+
+  /**
+   * The promotion's code.
+   */
+  code: string
+}
+
+/**
+ * This action indicates that a promotion usage limit has been exceeded.
+ */
+export interface PromotionLimitExceededAction {
+  /**
+   * The type of action.
+   */
+  action: "promotionLimitExceeded"
 
   /**
    * The promotion's code.
@@ -91,6 +107,11 @@ export interface RemoveItemAdjustmentAction {
   adjustment_id: string
 
   /**
+   * The associated item's ID.
+   */
+  item_id: string
+
+  /**
    * The promotion's description.
    */
   description?: string
@@ -144,6 +165,11 @@ export interface RemoveShippingMethodAdjustment {
    * The associated adjustment's ID.
    */
   adjustment_id: string
+
+  /**
+   * The associated shipping method's ID.
+   */
+  shipping_method_id: string
 
   /**
    * The promotion's code.
@@ -244,7 +270,7 @@ export interface ComputeActionContext extends Record<string, unknown> {
 
   /**
    * The cart's email
-   * 
+   *
    * @since 2.11.0
    */
   email?: string
@@ -269,4 +295,11 @@ export interface ComputeActionOptions {
    * automatically. If not provided, the automatic promotions are applied.
    */
   prevent_auto_promotions?: boolean
+
+  /**
+   * Whether to skip the usage limit checks.
+   * Useful when recomputing adjustment for promotions that are already applied as a part of edit/exchange flows.
+   *
+   */
+  skip_usage_limit_checks?: boolean
 }

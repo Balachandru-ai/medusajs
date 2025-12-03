@@ -6,26 +6,23 @@ import {
 } from "@medusajs/framework/types"
 import {
   ChangeActionType,
+  deduplicate,
   MathBN,
   OrderChangeStatus,
   OrderEditWorkflowEvents,
 } from "@medusajs/framework/utils"
 import {
-  WorkflowResponse,
   createStep,
   createWorkflow,
   transform,
+  WorkflowResponse,
 } from "@medusajs/framework/workflows-sdk"
 import { reserveInventoryStep } from "../../../cart/steps/reserve-inventory"
 import {
   prepareConfirmInventoryInput,
   requiredOrderFieldsForInventoryConfirmation,
 } from "../../../cart/utils/prepare-confirm-inventory-input"
-import {
-  emitEventStep,
-  useQueryGraphStep,
-  useRemoteQueryStep,
-} from "../../../common"
+import { emitEventStep, useQueryGraphStep } from "../../../common"
 import { deleteReservationsByLineItemsStep } from "../../../reservation"
 import { previewOrderChangeStep } from "../../steps"
 import { confirmOrderChanges } from "../../steps/confirm-order-changes"
@@ -176,22 +173,27 @@ export const confirmOrderEditRequestWorkflow = createWorkflow(
       confirmed_by: input.confirmed_by,
     })
 
-    const orderItems = useRemoteQueryStep({
-      entry_point: "order",
-      fields: requiredOrderFieldsForInventoryConfirmation,
-      variables: { id: input.order_id },
-      list: false,
-      throw_if_key_not_found: true,
+    const { data: refreshedOrder } = useQueryGraphStep({
+      entity: "order",
+      fields: deduplicate([
+        ...requiredOrderFieldsForInventoryConfirmation,
+        ...fieldsToRefreshOrderEdit,
+      ]),
+      filters: { id: input.order_id },
+      options: {
+        throwIfKeyNotFound: true,
+        isList: false,
+      },
     }).config({ name: "order-items-query" })
 
     const { variants, items, toRemoveReservationLineItemIds } = transform(
-      { orderItems, previousOrderItems: order.items, orderPreview },
-      ({ orderItems, previousOrderItems, orderPreview }) => {
+      { refreshedOrder, previousOrderItems: order.items, orderPreview },
+      ({ refreshedOrder, previousOrderItems, orderPreview }) => {
         const allItems: any[] = []
         const allVariants: any[] = []
 
         const previousItemIds = (previousOrderItems || []).map(({ id }) => id)
-        const currentItemIds = orderItems.items.map(({ id }) => id)
+        const currentItemIds = refreshedOrder.items.map(({ id }) => id)
 
         const removedItemIds = previousItemIds.filter(
           (id) => !currentItemIds.includes(id)
@@ -199,7 +201,7 @@ export const confirmOrderEditRequestWorkflow = createWorkflow(
 
         const updatedItemIds: string[] = []
 
-        orderItems.items.forEach((ordItem) => {
+        refreshedOrder.items.forEach((ordItem) => {
           const itemAction = orderPreview.items?.find(
             (item) =>
               item.id === ordItem.id &&
@@ -213,13 +215,6 @@ export const confirmOrderEditRequestWorkflow = createWorkflow(
           if (!itemAction) {
             return
           }
-
-          const unitPrice: BigNumberInput =
-            itemAction.raw_unit_price ?? itemAction.unit_price
-
-          const compareAtUnitPrice: BigNumberInput | undefined =
-            itemAction.raw_compare_at_unit_price ??
-            itemAction.compare_at_unit_price
 
           const updateAction = itemAction.actions!.find(
             (a) => a.action === ChangeActionType.ITEM_UPDATE
@@ -241,8 +236,6 @@ export const confirmOrderEditRequestWorkflow = createWorkflow(
             id: ordItem.id,
             variant_id: ordItem.variant_id,
             quantity: reservationQuantity,
-            unit_price: unitPrice,
-            compare_at_unit_price: compareAtUnitPrice,
           })
           allVariants.push(ordItem.variant)
         })
@@ -261,7 +254,7 @@ export const confirmOrderEditRequestWorkflow = createWorkflow(
     const formatedInventoryItems = transform(
       {
         input: {
-          sales_channel_id: (orderItems as any).sales_channel_id,
+          sales_channel_id: (refreshedOrder as any).sales_channel_id,
           variants,
           items,
         },
