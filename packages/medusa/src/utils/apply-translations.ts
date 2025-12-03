@@ -81,7 +81,11 @@ export async function applyTranslations({
     return
   }
 
-  const locale = req.locale ?? "en-US"
+  const locale = req.locale
+
+  if (!locale) {
+    return
+  }
 
   const gatheredIds: Set<string> = new Set()
 
