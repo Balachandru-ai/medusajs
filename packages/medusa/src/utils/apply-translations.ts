@@ -79,19 +79,17 @@ export async function applyTranslations({
     const translation = entityIdToTranslation.get(object.id)
     if (translation) {
       Object.keys(translation).forEach((key) => {
-        if (key in object) {
-          if (Array.isArray(object[key])) {
-            for (const item of object[key]) {
-              applyTranslation(item)
-            }
-          } else if (isObject(object[key])) {
-            applyTranslation(object[key])
-          } else {
-            object[key] = translation[key]
-          }
-        }
+        object[key] = translation[key]
       })
     }
+
+    Object.entries(object).forEach(([, value]) => {
+      if (Array.isArray(value)) {
+        value.forEach((item) => applyTranslation(item))
+      } else if (isObject(value)) {
+        applyTranslation(value)
+      }
+    })
   }
 
   for (const inputObject of inputObjects) {
