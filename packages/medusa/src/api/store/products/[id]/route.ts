@@ -110,7 +110,7 @@ async function applyTranslations({
     entity: "translations",
     fields: ["translations", "entity_id"],
     filters: {
-      id: Array.from(gatheredIds),
+      entity_id: Array.from(gatheredIds),
       locale_code: locale,
     },
     pagination: {
