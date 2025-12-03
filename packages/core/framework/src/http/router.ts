@@ -1,9 +1,4 @@
-import {
-  ContainerRegistrationKeys,
-  FeatureFlag,
-  parseCorsOrigins,
-  promiseAll,
-} from "@medusajs/utils"
+import { ContainerRegistrationKeys, parseCorsOrigins, FeatureFlag } from "@medusajs/utils"
 import cors, { CorsOptions } from "cors"
 import type {
   ErrorRequestHandler,
@@ -96,12 +91,10 @@ export class ApiLoader {
 
     const middlewareLoader = new MiddlewareFileLoader()
 
-    await promiseAll(
-      this.#sourceDirs.flatMap((dir) => [
-        routesLoader.scanDir(dir),
-        middlewareLoader.scanDir(dir),
-      ])
-    )
+    for (const dir of this.#sourceDirs) {
+      await routesLoader.scanDir(dir)
+      await middlewareLoader.scanDir(dir)
+    }
 
     return {
       routes: routesLoader.getRoutes(),
