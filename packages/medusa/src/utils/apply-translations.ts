@@ -102,6 +102,7 @@ export async function applyTranslations({
   const entityIdToTranslation = new Map<string, Record<string, any>>()
 
   for (let i = 0; i < queryBatches; i++) {
+    // TODO: concurrently fetch if needed
     const queryBatch = Array.from(gatheredIds).slice(
       i * queryBatchSize,
       (i + 1) * queryBatchSize
