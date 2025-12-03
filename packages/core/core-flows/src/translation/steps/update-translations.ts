@@ -3,22 +3,30 @@ import {
   ITranslationModuleService,
   UpdateTranslationDTO,
 } from "@medusajs/framework/types"
-import { Modules } from "@medusajs/framework/utils"
+import {
+  MedusaError,
+  MedusaErrorTypes,
+  Modules,
+} from "@medusajs/framework/utils"
 import { StepResponse, createStep } from "@medusajs/framework/workflows-sdk"
 
 /**
  * The data to update translations.
  */
-export type UpdateTranslationsStepInput = {
-  /**
-   * The filters to select the translations to update.
-   */
-  selector: FilterableTranslationProps
-  /**
-   * The data to update in the translations.
-   */
-  update: UpdateTranslationDTO
-}
+export type UpdateTranslationsStepInput =
+  | {
+      /**
+       * The filters to select the translations to update.
+       */
+      selector: FilterableTranslationProps
+      /**
+       * The data to update in the translations.
+       */
+      update: UpdateTranslationDTO
+    }
+  | {
+      translations: UpdateTranslationDTO[]
+    }
 
 export const updateTranslationsStepId = "update-translations"
 /**
@@ -41,6 +49,26 @@ export const updateTranslationsStep = createStep(
     const service = container.resolve<ITranslationModuleService>(
       Modules.TRANSLATION
     )
+
+    if ("translations" in data) {
+      if (data.translations.some((t) => !t.id)) {
+        throw new MedusaError(
+          MedusaErrorTypes.INVALID_DATA,
+          "Translation ID is required when doing a batch update of translations"
+        )
+      }
+
+      if (!data.translations.length) {
+        return new StepResponse([], [])
+      }
+
+      const prevData = await service.listTranslations({
+        id: data.translations.map((t) => t.id) as string[],
+      })
+
+      const translations = await service.updateTranslations(data.translations)
+      return new StepResponse(translations, prevData)
+    }
 
     const prevData = await service.listTranslations(data.selector, {
       select: ["id", "entity_id", "entity_type", "locale_code", "translations"],

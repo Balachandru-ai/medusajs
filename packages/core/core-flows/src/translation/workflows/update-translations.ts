@@ -7,6 +7,7 @@ import {
 } from "@medusajs/framework/workflows-sdk"
 import { emitEventStep } from "../../common/steps/emit-event"
 import { updateTranslationsStep, UpdateTranslationsStepInput } from "../steps"
+import { validateTranslationsStep } from "../steps"
 
 export type UpdateTranslationsWorkflowInput = UpdateTranslationsStepInput
 
@@ -40,6 +41,11 @@ export const updateTranslationsWorkflow = createWorkflow(
   (
     input: WorkflowData<UpdateTranslationsWorkflowInput>
   ): WorkflowResponse<TranslationDTO[]> => {
+    const validateInput = transform(input, (input) => {
+      return "translations" in input ? input.translations : [input.update]
+    })
+    validateTranslationsStep(validateInput)
+
     const translations = updateTranslationsStep(input)
 
     const translationIdEvents = transform(
