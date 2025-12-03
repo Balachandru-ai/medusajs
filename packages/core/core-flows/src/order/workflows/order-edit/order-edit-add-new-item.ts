@@ -22,7 +22,7 @@ import { addOrderLineItemsWorkflow } from "../add-line-items"
 import { createOrderChangeActionsWorkflow } from "../create-order-change-actions"
 import { updateOrderTaxLinesWorkflow } from "../update-tax-lines"
 import { fieldsToRefreshOrderEdit } from "./utils/fields"
-import { computeAdjustmentsForPreviewWorkflow } from "./compute-adjustments-for-preview"
+import { computeAdjustmentsForPreviewWorkflow } from "../compute-adjustments-for-preview"
 
 /**
  * The data to validate that new items can be added to an order edit.
@@ -118,7 +118,7 @@ export const orderEditAddNewItemWorkflow = createWorkflow(
 
     const orderChangeResult = useQueryGraphStep({
       entity: "order_change",
-      fields: ["id", "status", "version", "actions.*"],
+      fields: ["id", "status", "version", "actions.*", "carry_over_promotions"],
       filters: {
         order_id: input.order_id,
         status: [OrderChangeStatus.PENDING, OrderChangeStatus.REQUESTED],

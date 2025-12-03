@@ -33,7 +33,7 @@ import {
   throwIfOrderChangeIsNotActive,
 } from "../../utils/order-validation"
 import { createOrderChangeActionsWorkflow } from "../create-order-change-actions"
-import { computeAdjustmentsForPreviewWorkflow } from "../order-edit/compute-adjustments-for-preview"
+import { computeAdjustmentsForPreviewWorkflow } from "../compute-adjustments-for-preview"
 import { refreshExchangeShippingWorkflow } from "./refresh-shipping"
 
 /**
@@ -194,7 +194,13 @@ export const orderExchangeRequestItemReturnWorkflow = createWorkflow(
 
     const orderChange: OrderChangeDTO = useRemoteQueryStep({
       entry_point: "order_change",
-      fields: ["id", "status", "version"],
+      fields: [
+        "id",
+        "status",
+        "version",
+        "exchange_id",
+        "carry_over_promotions",
+      ],
       variables: {
         filters: {
           order_id: orderExchange.order_id,
@@ -321,7 +327,6 @@ export const orderExchangeRequestItemReturnWorkflow = createWorkflow(
       input: {
         order: orderWithPromotions,
         orderChange,
-        exchange_id: orderExchange.id,
       },
     })
 

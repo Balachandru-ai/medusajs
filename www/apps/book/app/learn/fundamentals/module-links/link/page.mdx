@@ -175,7 +175,7 @@ The keys (names of linked modules) must be in the same [direction](../directions
 
 ## Cascade Delete Linked Records
 
-If a record is deleted, use the `delete` method of Link to delete all linked records.
+If you delete a record using a workflow or its module's service, use the `delete` method of Link to delete all linked records whose links are defined with [cascade deletion](../page.mdx#set-delete-cascades-on-link).
 
 For example:
 
@@ -184,7 +184,7 @@ import { Modules } from "@medusajs/framework/utils"
 
 // ...
 
-await productModuleService.deleteVariants([variant.id])
+await productModuleService.deleteProducts(["prod_123"])
 
 await link.delete({
   [Modules.PRODUCT]: {
