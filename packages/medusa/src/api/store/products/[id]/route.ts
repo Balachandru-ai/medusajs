@@ -1,5 +1,5 @@
-import { MedusaResponse } from "@medusajs/framework/http"
-import { HttpTypes } from "@medusajs/framework/types"
+import { MedusaRequest, MedusaResponse } from "@medusajs/framework/http"
+import { HttpTypes, MedusaContainer } from "@medusajs/framework/types"
 import { isPresent, MedusaError, QueryContext } from "@medusajs/framework/utils"
 import { wrapVariantsWithInventoryQuantityForSalesChannel } from "../../../utils/middlewares"
 import {
@@ -69,5 +69,50 @@ export const GET = async (
   }
 
   await wrapProductsWithTaxPrices(req, [product])
+  await applyTranslations({ req, products: [product], container: req.scope })
   res.json({ product })
+}
+
+async function applyTranslations({
+  req,
+  products,
+  container,
+}: {
+  req: MedusaRequest
+  products: HttpTypes.StoreProduct[]
+  container: MedusaContainer
+}) {
+  const locale = req.locale ?? "en-US"
+  const productIds = new Set(products.map((product) => product.id))
+
+  const query = container.resolve("query")
+  const translations = await query.graph({
+    entity: "translations",
+    fields: ["translations", "entity_id"],
+    filters: {
+      id: Array.from(productIds),
+      entity_type: "product",
+      locale_code: locale,
+    },
+  })
+
+  const entityIdToTranslation = new Map()
+  for (const translation of translations.data) {
+    entityIdToTranslation.set(translation.entity_id, translation.translation)
+  }
+
+  function applyTranslation(product: HttpTypes.StoreProduct) {
+    const translation = entityIdToTranslation.get(product.id)
+    if (translation) {
+      Object.keys(translation).forEach((key) => {
+        if (key in product) {
+          product[key] = translation[key]
+        }
+      })
+    }
+  }
+
+  for (const product of products) {
+    applyTranslation(product)
+  }
 }
