@@ -14,6 +14,7 @@ import {
   SqlEntityManager,
   wrap,
 } from "@medusajs/framework/mikro-orm/postgresql"
+import { Knex } from "knex"
 
 export class ProductRepository extends DALUtils.mikroOrmBaseRepositoryFactory(
   Product
@@ -219,5 +220,77 @@ export class ProductRepository extends DALUtils.mikroOrmBaseRepositoryFactory(
         }
       }
     }
+  }
+
+  /**
+   * Checks if any variants of products use the specified option values.
+   * Queries the product_variant_option pivot table directly in bulk.
+   *
+   * @param pairs - Array of { productId, optionValueIds } pairs to check
+   * @param context - The context
+   * @returns Map keyed by `${productId}_${valueId}` with arrays of variant info (id and title) that use those values
+   */
+  async checkVariantsUsingOptionValues(
+    pairs: Array<{ productId: string; optionValueIds: string[] }>,
+    context: Context = {}
+  ): Promise<
+    Map<
+      string,
+      Array<{ variant_id: string; title: string | null; product_id: string }>
+    >
+  > {
+    if (pairs.length === 0) {
+      return new Map()
+    }
+
+    // Filter out pairs with empty value arrays
+    const validPairs = pairs.filter((p) => p.optionValueIds.length > 0)
+    if (validPairs.length === 0) {
+      return new Map()
+    }
+
+    const manager = this.getActiveManager<SqlEntityManager>(context)
+    const connection = manager.getConnection()
+    const knex = connection.getKnex() as Knex
+
+    // Collect all unique product IDs and value IDs
+    const allProductIds = [...new Set(validPairs.map((p) => p.productId))]
+    const allValueIds = [
+      ...new Set(validPairs.flatMap((p) => p.optionValueIds)),
+    ]
+
+    const result = await knex
+      .select(
+        "pvo.variant_id",
+        "pv.title",
+        "pv.product_id",
+        "pvo.option_value_id"
+      )
+      .distinct()
+      .from("product_variant_option as pvo")
+      .innerJoin("product_variant as pv", "pv.id", "pvo.variant_id")
+      .whereIn("pv.product_id", allProductIds)
+      .whereNull("pv.deleted_at")
+      .whereIn("pvo.option_value_id", allValueIds)
+
+    // Group results by product_id and option_value_id
+    const resultMap = new Map<
+      string,
+      Array<{ variant_id: string; title: string | null; product_id: string }>
+    >()
+
+    for (const row of result) {
+      const key = `${row.product_id}_${row.option_value_id}`
+      if (!resultMap.has(key)) {
+        resultMap.set(key, [])
+      }
+      resultMap.get(key)!.push({
+        variant_id: row.variant_id,
+        title: row.title,
+        product_id: row.product_id,
+      })
+    }
+
+    return resultMap
   }
 }
