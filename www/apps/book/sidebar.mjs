@@ -681,6 +681,22 @@ export const sidebars = [
       },
       {
         type: "category",
+        title: "Best Practices",
+        children: [
+          {
+            type: "link",
+            path: "/learn/best-practices/third-party-sync",
+            title: "Third-Party Syncing",
+          },
+          {
+            type: "ref",
+            path: "/learn/fundamentals/scheduled-jobs/interval",
+            title: "Scheduled Job Intervals",
+          },
+        ],
+      },
+      {
+        type: "category",
         title: "Production",
         children: [
           {
