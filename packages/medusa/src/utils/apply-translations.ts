@@ -3,7 +3,6 @@ import {
   ContainerRegistrationKeys,
   FeatureFlag,
   isObject,
-  upperCaseFirst,
 } from "@medusajs/framework/utils"
 import { MedusaContainer } from "@medusajs/types"
 import TranslationFeatureFlag from "../feature-flags/translation"
@@ -131,27 +130,4 @@ export async function applyTranslations({
   for (const inputObject of inputObjects) {
     applyTranslation(inputObject, entityIdToTranslation)
   }
-}
-
-function normalizeLocale(locale: string) {
-  const segments = locale.split("-")
-
-  // e.g en
-  if (segments.length === 1) {
-    return segments[0].toLowerCase()
-  }
-
-  // e.g en-US
-  if (segments.length === 2) {
-    return `${segments[0].toLowerCase()}-${segments[1].toUpperCase()}`
-  }
-
-  // e.g ru-Cyrl-BY
-  if (segments.length === 3) {
-    return `${segments[0].toLowerCase()}-${upperCaseFirst(
-      segments[1]
-    )}-${segments[2].toUpperCase()}`
-  }
-
-  return locale
 }
