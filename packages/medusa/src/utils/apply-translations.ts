@@ -1,6 +1,7 @@
 import { MedusaRequest } from "@medusajs/framework/http"
-import { isObject } from "@medusajs/framework/utils"
+import { FeatureFlag, isObject } from "@medusajs/framework/utils"
 import { MedusaContainer } from "@medusajs/types"
+import TranslationFeatureFlag from "../feature-flags/translation"
 
 export async function applyTranslations({
   req,
@@ -11,6 +12,14 @@ export async function applyTranslations({
   inputObjects: Record<string, any>[]
   container: MedusaContainer
 }) {
+  const isTranslationEnabled = FeatureFlag.isFeatureEnabled(
+    TranslationFeatureFlag.key
+  )
+
+  if (!isTranslationEnabled) {
+    return
+  }
+
   const locale = req.locale ?? "en-US"
 
   const gatheredIds: Set<string> = new Set()
