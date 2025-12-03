@@ -1,10 +1,13 @@
 import { raw } from "@medusajs/framework/mikro-orm/core"
 import {
   Context,
+  CreateLocaleDTO,
+  CreateTranslationDTO,
   DAL,
   FilterableTranslationProps,
   FindConfig,
   ITranslationModuleService,
+  LocaleDTO,
   ModulesSdkTypes,
   TranslationTypes,
 } from "@medusajs/framework/types"
@@ -12,6 +15,7 @@ import {
   InjectManager,
   MedusaContext,
   MedusaService,
+  normalizeLocale,
 } from "@medusajs/framework/utils"
 import Locale from "@models/locale"
 import Translation from "@models/translation"
@@ -19,6 +23,7 @@ import Translation from "@models/translation"
 type InjectedDependencies = {
   baseRepository: DAL.RepositoryService
   translationService: ModulesSdkTypes.IMedusaInternalService<typeof Translation>
+  localeService: ModulesSdkTypes.IMedusaInternalService<typeof Locale>
 }
 
 export default class TranslationModuleService
@@ -32,11 +37,19 @@ export default class TranslationModuleService
   protected translationService_: ModulesSdkTypes.IMedusaInternalService<
     typeof Translation
   >
+  protected localeService_: ModulesSdkTypes.IMedusaInternalService<
+    typeof Locale
+  >
 
-  constructor({ baseRepository, translationService }: InjectedDependencies) {
+  constructor({
+    baseRepository,
+    translationService,
+    localeService,
+  }: InjectedDependencies) {
     super(...arguments)
     this.baseRepository_ = baseRepository
     this.translationService_ = translationService
+    this.localeService_ = localeService
   }
 
   static prepareFilters(
@@ -95,5 +108,45 @@ export default class TranslationModuleService
       ),
       count,
     ]
+  }
+
+  @InjectManager()
+  // @ts-expect-error
+  async createLocales(
+    data: CreateLocaleDTO[],
+    @MedusaContext() sharedContext: Context = {}
+  ): Promise<LocaleDTO[]> {
+    const normalizedData = data.map((locale) => ({
+      ...locale,
+      code: normalizeLocale(locale.code),
+    }))
+
+    const createdLocales = await this.localeService_.create(
+      normalizedData,
+      sharedContext
+    )
+
+    return await this.baseRepository_.serialize<LocaleDTO[]>(createdLocales)
+  }
+
+  @InjectManager()
+  // @ts-expect-error
+  async createTranslations(
+    data: CreateTranslationDTO[],
+    @MedusaContext() sharedContext: Context = {}
+  ): Promise<TranslationTypes.TranslationDTO[]> {
+    const normalizedData = data.map((translation) => ({
+      ...translation,
+      locale_code: normalizeLocale(translation.locale_code),
+    }))
+
+    const createdTranslations = await this.translationService_.create(
+      normalizedData,
+      sharedContext
+    )
+
+    return await this.baseRepository_.serialize<
+      TranslationTypes.TranslationDTO[]
+    >(createdTranslations)
   }
 }
