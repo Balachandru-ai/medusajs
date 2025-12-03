@@ -136,5 +136,6 @@ export const generatedEditDates = {
   "app/learn/codemods/page.mdx": "2025-09-29T15:40:03.620Z",
   "app/learn/codemods/replace-imports/page.mdx": "2025-10-09T11:37:44.754Z",
   "app/learn/fundamentals/admin/translations/page.mdx": "2025-10-30T11:55:32.221Z",
-  "app/learn/configurations/medusa-config/asymmetric-encryption/page.mdx": "2025-10-31T09:53:38.607Z"
+  "app/learn/configurations/medusa-config/asymmetric-encryption/page.mdx": "2025-10-31T09:53:38.607Z",
+  "app/learn/best-practices/third-party-sync/page.mdx": "2025-12-03T11:48:58.209Z"
 }
