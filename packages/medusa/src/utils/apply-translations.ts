@@ -1,5 +1,9 @@
 import { MedusaRequest } from "@medusajs/framework/http"
-import { FeatureFlag, isObject } from "@medusajs/framework/utils"
+import {
+  ContainerRegistrationKeys,
+  FeatureFlag,
+  isObject,
+} from "@medusajs/framework/utils"
 import { MedusaContainer } from "@medusajs/types"
 import TranslationFeatureFlag from "../feature-flags/translation"
 
@@ -38,25 +42,37 @@ export async function applyTranslations({
     gatherIds(inputObject)
   }
 
-  const query = container.resolve("query")
-  const { data: translations } = await query.graph({
-    entity: "translations",
-    fields: ["translations", "entity_id"],
-    filters: {
-      entity_id: Array.from(gatheredIds),
-      locale_code: locale,
-    },
-    pagination: {
-      take: gatheredIds.size,
-    },
-  })
+  const query = container.resolve(ContainerRegistrationKeys.QUERY)
+
+  const queryBatchSize = 250
+  const queryBatches = Math.ceil(gatheredIds.size / queryBatchSize)
 
   const entityIdToTranslation = new Map<string, Record<string, any>>()
-  for (const translation of translations) {
-    entityIdToTranslation.set(
-      translation.entity_id,
-      translation.translations ?? {}
+
+  for (let i = 0; i < queryBatches; i++) {
+    const queryBatch = Array.from(gatheredIds).slice(
+      i * queryBatchSize,
+      (i + 1) * queryBatchSize
     )
+
+    const { data: translations } = await query.graph({
+      entity: "translations",
+      fields: ["translations", "entity_id"],
+      filters: {
+        entity_id: queryBatch,
+        locale_code: locale,
+      },
+      pagination: {
+        take: queryBatchSize,
+      },
+    })
+
+    for (const translation of translations) {
+      entityIdToTranslation.set(
+        translation.entity_id,
+        translation.translations ?? {}
+      )
+    }
   }
 
   function applyTranslation(object: Record<string, any>) {
