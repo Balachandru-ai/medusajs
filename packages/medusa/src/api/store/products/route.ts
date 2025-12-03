@@ -87,6 +87,13 @@ async function getProductsWithIndexEngine(
   }
 
   await wrapProductsWithTaxPrices(req, products)
+
+  await applyTranslations({
+    req,
+    inputObjects: products,
+    container: req.scope,
+  })
+
   res.json({
     products,
     count: metadata!.estimate_count,
