@@ -7,6 +7,63 @@ import {
 import { MedusaContainer } from "@medusajs/types"
 import TranslationFeatureFlag from "../feature-flags/translation"
 
+const excludedKeys = [
+  "id",
+  "created_at",
+  "updated_at",
+  "deleted_at",
+  "metadata",
+]
+
+function canApplyTranslationTo(object: Record<string, any>) {
+  return "id" in object && !!object.id
+}
+
+function gatherIds(object: Record<string, any>, gatheredIds: Set<string>) {
+  gatheredIds.add(object.id)
+  Object.entries(object).forEach(([, value]) => {
+    if (Array.isArray(value)) {
+      value.forEach((item) => gatherIds(item, gatheredIds))
+    } else if (isObject(value)) {
+      gatherIds(value, gatheredIds)
+    }
+  })
+}
+
+function applyTranslation(
+  object: Record<string, any>,
+  entityIdToTranslation: Map<string, Record<string, any>>
+) {
+  const translation = entityIdToTranslation.get(object.id)
+  const hasTranslation = !!translation
+
+  Object.entries(object).forEach(([key, value]) => {
+    if (excludedKeys.includes(key)) {
+      return
+    }
+
+    if (hasTranslation) {
+      if (
+        key in translation &&
+        typeof object[key] === typeof translation[key]
+      ) {
+        object[key] = translation[key]
+        return
+      }
+    }
+
+    if (Array.isArray(value)) {
+      value.forEach(
+        (item) =>
+          canApplyTranslationTo(item) &&
+          applyTranslation(item, entityIdToTranslation)
+      )
+    } else if (isObject(value) && canApplyTranslationTo(value)) {
+      applyTranslation(value, entityIdToTranslation)
+    }
+  })
+}
+
 export async function applyTranslations({
   req,
   inputObjects,
@@ -27,19 +84,9 @@ export async function applyTranslations({
   const locale = req.locale ?? "en-US"
 
   const gatheredIds: Set<string> = new Set()
-  function gatherIds(object: Record<string, any>) {
-    gatheredIds.add(object.id)
-    Object.entries(object).forEach(([, value]) => {
-      if (Array.isArray(value)) {
-        value.forEach((item) => gatherIds(item))
-      } else if (isObject(value)) {
-        gatherIds(value)
-      }
-    })
-  }
 
   for (const inputObject of inputObjects) {
-    gatherIds(inputObject)
+    gatherIds(inputObject, gatheredIds)
   }
 
   const query = container.resolve(ContainerRegistrationKeys.QUERY)
@@ -75,24 +122,7 @@ export async function applyTranslations({
     }
   }
 
-  function applyTranslation(object: Record<string, any>) {
-    const translation = entityIdToTranslation.get(object.id)
-    if (translation) {
-      Object.keys(translation).forEach((key) => {
-        object[key] = translation[key]
-      })
-    }
-
-    Object.entries(object).forEach(([, value]) => {
-      if (Array.isArray(value)) {
-        value.forEach((item) => applyTranslation(item))
-      } else if (isObject(value)) {
-        applyTranslation(value)
-      }
-    })
-  }
-
   for (const inputObject of inputObjects) {
-    applyTranslation(inputObject)
+    applyTranslation(inputObject, entityIdToTranslation)
   }
 }
