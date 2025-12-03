@@ -1,3 +1,4 @@
+import { normalizeLocale } from "@medusajs/utils"
 import type {
   MedusaNextFunction,
   MedusaRequest,
@@ -23,14 +24,14 @@ export async function applyLocale(
   // 1. Check query parameter
   const queryLocale = req.query.locale as string | undefined
   if (queryLocale) {
-    req.locale = queryLocale
+    req.locale = normalizeLocale(queryLocale)
     return next()
   }
 
   // 2. Check Content-Language header
   const headerLocale = req.get(CONTENT_LANGUAGE_HEADER)
   if (headerLocale) {
-    req.locale = headerLocale
+    req.locale = normalizeLocale(headerLocale)
     return next()
   }
 
