@@ -65,7 +65,7 @@ async function applyMaybeLinkFilterIfNecessary(
 
 export const storeProductRoutesMiddlewares: MiddlewareRoute[] = [
   {
-    matcher: "/store/products",
+    matcher: "/store/products/*",
     middlewares: [applyLocale],
   },
   {

@@ -1,7 +1,6 @@
 import { MedusaRequest, MedusaResponse } from "@medusajs/framework/http"
 import { HttpTypes, MedusaContainer } from "@medusajs/framework/types"
 import {
-  getSelectsAndRelationsFromObjectArray,
   isObject,
   isPresent,
   MedusaError,
@@ -107,17 +106,20 @@ async function applyTranslations({
   }
 
   const query = container.resolve("query")
-  const translations = await query.graph({
+  const { data: translations } = await query.graph({
     entity: "translations",
     fields: ["translations", "entity_id"],
     filters: {
       id: Array.from(gatheredIds),
       locale_code: locale,
     },
+    pagination: {
+      take: gatheredIds.size,
+    },
   })
 
-  const entityIdToTranslation = new Map()
-  for (const translation of translations.data) {
+  const entityIdToTranslation = new Map<string, Record<string, any>>()
+  for (const translation of translations) {
     entityIdToTranslation.set(translation.entity_id, translation.translation)
   }
 
