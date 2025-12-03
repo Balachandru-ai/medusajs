@@ -156,117 +156,81 @@ medusaIntegrationTestRunner({
       })
 
       describe("filter by total using operators", () => {
-        it("should filter orders by total using $eq operator - matching value", async () => {
-          // Get the order with summary to find the current_order_total
-          const orderResponse = await api.get(
-            `/admin/orders/${order.id}?fields=+summary`,
-            adminHeaders
-          )
-          const orderTotal =
-            orderResponse.data.order.summary.current_order_total
+        it.each([
+          {
+            operator: "$eq",
+            matchType: "matching",
+            getValue: (orderTotal: number) => orderTotal,
+            expectedLength: 1,
+            shouldMatchOrder: true,
+          },
+          {
+            operator: "$eq",
+            matchType: "non-matching",
+            getValue: (orderTotal: number) => orderTotal + 1000,
+            expectedLength: 0,
+            shouldMatchOrder: false,
+          },
+          {
+            operator: "$gte",
+            matchType: "matching",
+            getValue: (orderTotal: number) => orderTotal - 100,
+            expectedLength: 1,
+            shouldMatchOrder: true,
+          },
+          {
+            operator: "$gte",
+            matchType: "non-matching",
+            getValue: (orderTotal: number) => orderTotal + 1000,
+            expectedLength: 0,
+            shouldMatchOrder: false,
+          },
+          {
+            operator: "$lte",
+            matchType: "matching",
+            getValue: (orderTotal: number) => orderTotal + 100,
+            expectedLength: 1,
+            shouldMatchOrder: true,
+          },
+          {
+            operator: "$lte",
+            matchType: "non-matching",
+            getValue: (_orderTotal: number) => 0,
+            expectedLength: 0,
+            shouldMatchOrder: false,
+          },
+        ])(
+          "should filter orders by total using $operator operator - $matchType value",
+          async ({ operator, getValue, expectedLength, shouldMatchOrder }) => {
+            let filterValue: number
 
-          const response = await api.get(
-            `/admin/orders?total[$eq]=${orderTotal}`,
-            adminHeaders
-          )
+            const orderResponse = await api.get(
+              `/admin/orders/${order.id}?fields=+summary`,
+              adminHeaders
+            )
+            const orderTotal =
+              orderResponse.data.order.summary.current_order_total
+            filterValue = getValue(orderTotal)
 
-          expect(response.data.orders).toHaveLength(1)
-          expect(response.data.orders).toEqual([
-            expect.objectContaining({
-              id: order.id,
-            }),
-          ])
-        })
+            const queryParams = `total[${operator}]=${filterValue}`
 
-        it("should filter orders by total using $eq operator - non-matching value", async () => {
-          // Get the order with summary to find the current_order_total
-          const orderResponse = await api.get(
-            `/admin/orders/${order.id}?fields=+summary`,
-            adminHeaders
-          )
-          const orderTotal =
-            orderResponse.data.order.summary.current_order_total
+            const response = await api.get(
+              `/admin/orders?${queryParams}`,
+              adminHeaders
+            )
 
-          const response = await api.get(
-            `/admin/orders?total[$eq]=${orderTotal + 1000}`,
-            adminHeaders
-          )
-
-          expect(response.data.orders).toHaveLength(0)
-          expect(response.data.orders).toEqual([])
-        })
-
-        it("should filter orders by total using $gte operator - matching value", async () => {
-          // Get the order with summary to find the current_order_total
-          const orderResponse = await api.get(
-            `/admin/orders/${order.id}?fields=+summary`,
-            adminHeaders
-          )
-          const orderTotal =
-            orderResponse.data.order.summary.current_order_total
-
-          const response = await api.get(
-            `/admin/orders?total[$gte]=${orderTotal - 100}`,
-            adminHeaders
-          )
-
-          expect(response.data.orders).toHaveLength(1)
-          expect(response.data.orders).toEqual([
-            expect.objectContaining({
-              id: order.id,
-            }),
-          ])
-        })
-
-        it("should filter orders by total using $gte operator - non-matching value", async () => {
-          // Get the order with summary to find the current_order_total
-          const orderResponse = await api.get(
-            `/admin/orders/${order.id}?fields=+summary`,
-            adminHeaders
-          )
-          const orderTotal =
-            orderResponse.data.order.summary.current_order_total
-
-          const response = await api.get(
-            `/admin/orders?total[$gte]=${orderTotal + 1000}`,
-            adminHeaders
-          )
-
-          expect(response.data.orders).toHaveLength(0)
-          expect(response.data.orders).toEqual([])
-        })
-
-        it("should filter orders by total using $lte operator - matching value", async () => {
-          // Get the order with summary to find the current_order_total
-          const orderResponse = await api.get(
-            `/admin/orders/${order.id}?fields=+summary`,
-            adminHeaders
-          )
-          const orderTotal =
-            orderResponse.data.order.summary.current_order_total
-
-          const response = await api.get(
-            `/admin/orders?total[$lte]=${orderTotal + 100}`,
-            adminHeaders
-          )
-
-          expect(response.data.orders).toHaveLength(1)
-          expect(response.data.orders).toEqual([
-            expect.objectContaining({
-              id: order.id,
-            }),
-          ])
-        })
-
-        it("should filter orders by total using $lte operator - non-matching value", async () => {
-          const response = await api.get(
-            `/admin/orders?fields=id&total[$lte]=10`,
-            adminHeaders
-          )
-
-          expect(response.data.orders).toHaveLength(0)
-          expect(response.data.orders).toEqual([])
-        })
+            expect(response.data.orders).toHaveLength(expectedLength)
+            if (shouldMatchOrder) {
+              expect(response.data.orders).toEqual([
+                expect.objectContaining({
+                  id: order.id,
+                }),
+              ])
+            } else {
+              expect(response.data.orders).toEqual([])
+            }
+          }
+        )
       })
     })
 
