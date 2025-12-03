@@ -28,6 +28,8 @@ export async function runMigrationScripts({
   container: MedusaContainer
   logger: Logger
 }): Promise<boolean> {
+  process.env.MEDUSA_WORKER_MODE = "server"
+
   let onApplicationPrepareShutdown: () => Promise<void> = async () =>
     Promise.resolve()
   let onApplicationShutdown: () => Promise<void> = async () => Promise.resolve()

@@ -40,6 +40,7 @@ export async function migrate({
   /**
    * Setup
    */
+  process.env.MEDUSA_WORKER_MODE = "server"
 
   await ensureDbExists(container)
 

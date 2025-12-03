@@ -22,6 +22,7 @@ const main = async function ({ directory, modules }) {
      */
 
     await ensureDbExists(container)
+    process.env.MEDUSA_WORKER_MODE = "server"
 
     const medusaAppLoader = new MedusaAppLoader()
     const configModule = container.resolve(
