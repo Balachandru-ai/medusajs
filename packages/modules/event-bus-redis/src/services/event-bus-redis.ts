@@ -118,7 +118,7 @@ export default class RedisEventBusService extends AbstractEventBusModuleService 
       // default options
       removeOnComplete: true,
       attempts: 1,
-      // global options (from container or moduleOptions)
+      // global options
       ...this.jobOptions_,
       ...options,
     }
