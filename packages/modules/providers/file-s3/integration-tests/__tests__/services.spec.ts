@@ -99,6 +99,23 @@ describe.skip("S3 File Plugin", () => {
     })
   })
 
+  it("uploads a file with special URL characters in the name", async () => {
+    const fileContent = await fs.readFile(fixtureImagePath)
+    const fixtureAsBinary = fileContent.toString("base64")
+
+    const resp = await s3Service.upload({
+      filename: "cat?photo.jpg",
+      mimeType: "image/jpeg",
+      content: fixtureAsBinary,
+      access: "private",
+    })
+
+    expect(resp).toEqual({
+      key: expect.stringMatching(/tests\/catphoto.*\.jpg/),
+      url: expect.stringMatching(/https:\/\/.*\/cat%3Fphoto.*\.jpg/),
+    })
+  })
+
   it("gets a presigned upload URL and uploads a file successfully", async () => {
     const fileContent = await fs.readFile(fixtureImagePath)
     const fixtureAsBinary = fileContent.toString("binary")
