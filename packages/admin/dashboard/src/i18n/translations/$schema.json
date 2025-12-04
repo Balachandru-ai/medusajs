@@ -9289,25 +9289,34 @@
       "additionalProperties": false
     },
     "translations": {
-        "type": "object",
-        "properties": {
-            "domain": {
-                "type": "string"
-            },
-            "subtitle": {
-                "type": "string"
-            },
-            "actions": {
-                "type": "object",
-                "properties": {
-                    "manageLocales": {
-                        "type": "string"
-                    }
-                },
-                "required": ["manageLocales"]
-            }
+      "type": "object",
+      "properties": {
+        "domain": {
+          "type": "string"
         },
-        "required": ["domain", "actions", "subtitle"]
+        "subtitle": {
+          "type": "string"
+        },
+        "actions": {
+          "type": "object",
+          "properties": {
+            "manageLocales": {
+              "type": "string"
+            }
+          },
+          "required": ["manageLocales"]
+        },
+        "bulk": {
+          "type": "object",
+          "properties": {
+            "header": {
+              "type": "string"
+            }
+          },
+          "required": ["header"]
+        }
+      },
+      "required": ["domain", "actions", "subtitle", "bulk"]
     },
     "store": {
       "type": "object",

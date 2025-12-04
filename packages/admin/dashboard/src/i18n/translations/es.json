@@ -2448,7 +2448,10 @@
     "actions": {
       "manageLocales": "Gestionar idiomas"
     },
-    "subtitle": "Gestiona las traducciones de tus datos en Medusa."
+    "subtitle": "Gestiona las traducciones de tus datos en Medusa.",
+    "bulk": {
+      "header": "Editor de Traducciones en Masa"
+    }
   },
   "store": {
     "domain": "Tienda",

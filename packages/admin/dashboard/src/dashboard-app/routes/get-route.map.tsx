@@ -952,6 +952,11 @@ export function getRouteMap({
                   lazy: () =>
                     import("../../routes/translations/translation-list"),
                 },
+                {
+                  path: "edit",
+                  lazy: () =>
+                    import("../../routes/translations/translations-edit"),
+                },
               ],
             },
             {

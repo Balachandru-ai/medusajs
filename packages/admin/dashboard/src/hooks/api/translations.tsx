@@ -1,8 +1,15 @@
 import { FetchError } from "@medusajs/js-sdk"
 import { HttpTypes } from "@medusajs/types"
-import { QueryKey, useQuery, UseQueryOptions } from "@tanstack/react-query"
+import {
+  QueryKey,
+  useMutation,
+  UseMutationOptions,
+  useQuery,
+  UseQueryOptions,
+} from "@tanstack/react-query"
 import { sdk } from "../../lib/client"
 import { queryKeysFactory } from "../../lib/query-key-factory"
+import { queryClient } from "../../lib/query-client"
 
 const TRANSLATIONS_QUERY_KEY = "translations" as const
 export const translationsQueryKeys = queryKeysFactory(TRANSLATIONS_QUERY_KEY)
@@ -26,4 +33,31 @@ export const useTranslations = (
   })
 
   return { ...data, ...rest }
+}
+
+export const useBatchTranslations = (
+  options?: UseMutationOptions<
+    HttpTypes.AdminTranslationsBatchResponse,
+    FetchError,
+    HttpTypes.AdminBatchTranslations
+  >
+) => {
+  return useMutation({
+    mutationFn: (payload: HttpTypes.AdminBatchTranslations) =>
+      sdk.client.fetch<HttpTypes.AdminTranslationsBatchResponse>(
+        `/admin/translations/batch`,
+        {
+          method: "POST",
+          body: payload,
+        }
+      ),
+    onSuccess: (data, variables, context) => {
+      queryClient.invalidateQueries({
+        queryKey: translationsQueryKeys.all,
+      })
+
+      options?.onSuccess?.(data, variables, context)
+    },
+    ...options,
+  })
 }

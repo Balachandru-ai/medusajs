@@ -2497,7 +2497,10 @@
     "actions": {
       "manageLocales": "Manage locales"
     },
-    "subtitle": "Manage translations of your data in Medusa."
+    "subtitle": "Manage translations of your data in Medusa.",
+    "bulk": {
+      "header": "Translations Bulk Editor"
+    }
   },
   "store": {
     "domain": "Store",
