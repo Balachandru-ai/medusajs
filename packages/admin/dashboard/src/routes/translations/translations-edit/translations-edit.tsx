@@ -6,22 +6,24 @@ import { RouteFocusModal } from "../../../components/modals"
 import { useFeatureFlag } from "../../../providers/feature-flag-provider"
 
 export const TranslationsEdit = () => {
-  const [searchParams] = useSearchParams()
-  const navigate = useNavigate()
-  const reference = searchParams.get("reference")
   const isTranslationsEnabled = useFeatureFlag("translation")
+  const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
+  const reference = searchParams.get("reference")
+  const referenceId = searchParams.getAll("reference_id")
 
   useEffect(() => {
     if (!reference || !isTranslationsEnabled) {
       navigate(-1)
       return
     }
-  }, [reference, navigate])
+  }, [reference, navigate, isTranslationsEnabled])
 
   // TODO: change entity_type to reference once we update that across the board
   const { translations, isPending, isError, error } = useTranslations(
     {
       entity_type: reference!,
+      ...(referenceId.length && { entity_id: referenceId }),
     },
     { enabled: !!reference }
   )
