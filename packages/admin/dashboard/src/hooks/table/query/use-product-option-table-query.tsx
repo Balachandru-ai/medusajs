@@ -23,7 +23,7 @@ export const useProductOptionTableQuery = ({
     order,
     created_at: created_at ? JSON.parse(created_at) : undefined,
     updated_at: updated_at ? JSON.parse(updated_at) : undefined,
-    is_exclusive: is_exclusive === "true" ? true : is_exclusive === "false" ? false : undefined,
+    is_exclusive: is_exclusive ? JSON.parse(is_exclusive) : undefined,
     q,
   }
 
