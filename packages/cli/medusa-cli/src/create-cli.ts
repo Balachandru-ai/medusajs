@@ -196,6 +196,10 @@ function buildLocalCommands(cli, isLocalProject) {
           describe:
             "Skip prompts and execute only safe actions from sync links",
         })
+        builder.option("concurrency", {
+          type: "number",
+          describe: "Number of concurrent migrations to run",
+        })
       },
       handler: handlerP(
         getCommandHandler("db/migrate", (args, cmd) => {
@@ -269,6 +273,10 @@ function buildLocalCommands(cli, isLocalProject) {
         builder.option("execute-safe", {
           type: "boolean",
           describe: "Skip prompts and execute only safe actions",
+        })
+        builder.option("concurrency", {
+          type: "number",
+          describe: "Number of concurrent migrations to run",
         })
       },
       handler: handlerP(
