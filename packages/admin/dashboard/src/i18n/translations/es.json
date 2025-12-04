@@ -2444,7 +2444,11 @@
     "invite": "Invitar"
   },
   "translations": {
-    "domain": "Traducciones"
+    "domain": "Traducciones",
+    "actions": {
+      "manageLocales": "Gestionar idiomas"
+    },
+    "subtitle": "Gestiona las traducciones de tus datos en Medusa."
   },
   "store": {
     "domain": "Tienda",

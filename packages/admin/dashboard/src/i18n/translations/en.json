@@ -2493,7 +2493,11 @@
     "invite": "Invite"
   },
   "translations": {
-    "domain": "Translations"
+    "domain": "Translations",
+    "actions": {
+      "manageLocales": "Manage locales"
+    },
+    "subtitle": "Manage translations of your data in Medusa."
   },
   "store": {
     "domain": "Store",
