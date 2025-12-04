@@ -18,6 +18,7 @@ import { By } from "../../../../../components/common/user-link"
 import {
   useCancelOrderTransfer,
   useCustomer,
+  useOrder,
   useOrderChanges,
   useOrderLineItems,
 } from "../../../../../hooks/api"
@@ -122,6 +123,11 @@ type Activity = {
 
 const useActivityItems = (order: AdminOrder): Activity[] => {
   const { t } = useTranslation()
+
+  const { order: initialOrder = order } = useOrder(order.id, {
+    version: 1,
+    fields: "created_at,total,currency_code",
+  }, { enabled: order.version !== 1})
 
   const { order_changes: orderChanges = [] } = useOrderChanges(order.id, {
     change_type: [
@@ -520,19 +526,23 @@ const useActivityItems = (order: AdminOrder): Activity[] => {
       return new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
     })
 
-    const createdAt = {
-      title: t("orders.activity.events.placed.title"),
-      timestamp: order.created_at,
-      children: (
-        <Text size="small" className="text-ui-fg-subtle">
-          {getStylizedAmount(order.total, order.currency_code)}
-        </Text>
-      ),
+    if (initialOrder.created_at) {
+        const createdAt = {
+          title: t("orders.activity.events.placed.title"),
+          timestamp: initialOrder.created_at,
+          children: (
+            <Text size="small" className="text-ui-fg-subtle">
+              {getStylizedAmount(initialOrder.total, initialOrder.currency_code)}
+            </Text>
+          ),
+        }
+        sortedActivities.push(createdAt)
     }
 
-    return [...sortedActivities, createdAt]
+    return [...sortedActivities]
   }, [
     order,
+    initialOrder,
     payments,
     returns,
     exchanges,

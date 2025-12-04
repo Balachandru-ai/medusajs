@@ -441,7 +441,7 @@ export const sidebars = [
               {
                 type: "link",
                 path: "/learn/fundamentals/workflows/execute-another-workflow",
-                title: "Execute Nested Workflows",
+                title: "Nested Workflows",
               },
               {
                 type: "link",
@@ -676,6 +676,22 @@ export const sidebars = [
                 title: "Create Feature Flag",
               },
             ],
+          },
+        ],
+      },
+      {
+        type: "category",
+        title: "Best Practices",
+        children: [
+          {
+            type: "link",
+            path: "/learn/best-practices/third-party-sync",
+            title: "Third-Party Syncing",
+          },
+          {
+            type: "ref",
+            path: "/learn/fundamentals/scheduled-jobs/interval",
+            title: "Scheduled Job Intervals",
           },
         ],
       },

@@ -2,11 +2,24 @@ import Handlebars from "handlebars"
 import { DeclarationReflection, SignatureReflection } from "typedoc"
 import { getReflectionTypeFakeValueStr, getWorkflowInputType } from "utils"
 import beautifyCode from "../../utils/beautify-code.js"
+import { MarkdownTheme } from "../../theme.js"
+import { getPageFrontmatter } from "../../utils/frontmatter.js"
 
-export default function () {
+export default function (theme: MarkdownTheme) {
   Handlebars.registerHelper(
     "workflowExamples",
     function (this: SignatureReflection): string {
+      const frontmatter = getPageFrontmatter({
+        frontmatterData:
+          theme.getFormattingOptionsForLocation().frontmatterData,
+        reflection: this,
+      })
+      const hasLocking =
+        frontmatter?.tags?.some((tag) => {
+          return typeof tag === "string"
+            ? tag === "locking"
+            : tag.name === "locking"
+        }) ?? false
       const workflowReflection = this.parent
       const exampleStr: string[] = []
 
@@ -19,6 +32,7 @@ export default function () {
           getExecutionCodeTabs({
             exampleCode: generateWorkflowExample(workflowReflection),
             workflowName: workflowReflection.name,
+            hasLocking,
           })
         )
       } else {
@@ -42,6 +56,7 @@ export default function () {
               getExecutionCodeTabs({
                 exampleCode: part.text,
                 workflowName: workflowReflection.name,
+                hasLocking,
               })
             )
           })
@@ -58,9 +73,11 @@ export default function () {
 function getExecutionCodeTabs({
   exampleCode,
   workflowName,
+  hasLocking,
 }: {
   exampleCode: string
   workflowName: string
+  hasLocking: boolean
 }): string {
   exampleCode = exampleCode.replace("```ts\n", "").replace("\n```", "")
 
@@ -139,12 +156,14 @@ import { ${workflowName} } from "@medusajs/medusa/core-flows"
 
 const myWorkflow = createWorkflow(
   "my-workflow",
-  () => {
+  () => {${hasLocking ? "\n    // Acquire lock from nested workflow here" : ""}
     ${exampleCode
       .replace(`{ result }`, "result")
       .replace(`await `, "")
       .replace(`(container)`, "")
-      .replace(".run(", ".runAsStep(")}
+      .replace(".run(", ".runAsStep(")}${
+      hasLocking ? "\n    // Release lock here" : ""
+    }
   }
 )`)}
 \`\`\`

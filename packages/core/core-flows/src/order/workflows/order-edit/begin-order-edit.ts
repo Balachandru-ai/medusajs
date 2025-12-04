@@ -104,6 +104,8 @@ export const beginOrderEditOrderWorkflow = createWorkflow(
       }
     })
 
-    return new WorkflowResponse(createOrderChangeStep(orderChangeInput))
+    const orderChange = createOrderChangeStep(orderChangeInput)
+
+    return new WorkflowResponse(orderChange)
   }
 )

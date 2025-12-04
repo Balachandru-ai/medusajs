@@ -62,6 +62,11 @@ export const integrationsSidebar = [
         path: "/integrations/guides/sanity",
         title: "Sanity",
       },
+      {
+        type: "link",
+        path: "/integrations/guides/strapi",
+        title: "Strapi",
+      },
     ],
   },
   {

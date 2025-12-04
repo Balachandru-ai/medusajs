@@ -157,6 +157,23 @@ export const generatedSidebars = [
             "title": "Cache",
             "path": "/cache",
             "children": []
+          },
+          {
+            "loaded": true,
+            "isPathHref": true,
+            "type": "link",
+            "title": "Emails",
+            "path": "/emails",
+            "children": [
+              {
+                "loaded": true,
+                "isPathHref": true,
+                "type": "link",
+                "title": "React Email Templates",
+                "path": "/emails/react-email",
+                "children": []
+              }
+            ]
           }
         ]
       },

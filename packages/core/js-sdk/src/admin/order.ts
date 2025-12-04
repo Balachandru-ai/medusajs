@@ -633,4 +633,45 @@ export class Order {
       }
     )
   }
+
+  /**
+   * This method updates an order change. It sends a request to the
+   * [Update Order Change](https://docs.medusajs.com/api/admin#order-changes_postorder-changesid)
+   * API route.
+   * 
+   * @since 2.12.0
+   *
+   * @param id - The order change's ID.
+   * @param body - The update details.
+   * @param query - Configure the fields to retrieve in the order change.
+   * @param headers - Headers to pass in the request
+   * @returns The order change's details.
+   *
+   * @example
+   * sdk.admin.order.updateOrderChange(
+   *   "ordch_123",
+   *   {
+   *     carry_over_promotions: true
+   *   }
+   * )
+   * .then(({ order_change }) => {
+   *   console.log(order_change)
+   * })
+   */
+  async updateOrderChange(
+    id: string,
+    body: HttpTypes.AdminUpdateOrderChange,
+    query?: HttpTypes.AdminOrderChangesFilters,
+    headers?: ClientHeaders
+  ) {
+    return await this.client.fetch<HttpTypes.AdminOrderChangeResponse>(
+      `/admin/order-changes/${id}`,
+      {
+        method: "POST",
+        headers,
+        body,
+        query,
+      }
+    )
+  }
 }

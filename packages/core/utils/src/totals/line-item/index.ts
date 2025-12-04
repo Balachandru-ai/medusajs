@@ -107,7 +107,7 @@ function setRefundableTotal(
   totals.refundable_total = new BigNumber(refundableTotal)
 }
 
-function getLineItemTotals(
+export function getLineItemTotals(
   item: GetItemTotalInput,
   context: GetLineItemsTotalsContext
 ) {
