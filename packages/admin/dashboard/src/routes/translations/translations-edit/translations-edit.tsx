@@ -3,14 +3,16 @@ import { useStore, useTranslations } from "../../../hooks/api"
 import { TranslationsEditForm } from "./components/translations-edit-form"
 import { useEffect } from "react"
 import { RouteFocusModal } from "../../../components/modals"
+import { useFeatureFlag } from "../../../providers/feature-flag-provider"
 
 export const TranslationsEdit = () => {
   const [searchParams] = useSearchParams()
   const navigate = useNavigate()
   const reference = searchParams.get("reference")
+  const isTranslationsEnabled = useFeatureFlag("translation")
 
   useEffect(() => {
-    if (!reference) {
+    if (!reference || !isTranslationsEnabled) {
       navigate(-1)
       return
     }
