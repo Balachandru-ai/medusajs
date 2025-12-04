@@ -2492,6 +2492,9 @@
     "deleteUserSuccess": "User {{name}} deleted successfully",
     "invite": "Invite"
   },
+  "translations": {
+    "domain": "Translations"
+  },
   "store": {
     "domain": "Store",
     "manageYourStoresDetails": "Manage your store's details",

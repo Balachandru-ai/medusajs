@@ -2443,6 +2443,9 @@
     "deleteUserSuccess": "Usuario {{name}} eliminado correctamente",
     "invite": "Invitar"
   },
+  "translations": {
+    "domain": "Traducciones"
+  },
   "store": {
     "domain": "Tienda",
     "manageYourStoresDetails": "Gestiona los detalles de tu tienda",

@@ -9288,6 +9288,15 @@
       ],
       "additionalProperties": false
     },
+    "translations": {
+        "type": "object",
+        "properties": {
+            "domain": {
+                "type": "string"
+            }
+        },
+        "required": ["domain"]
+    },
     "store": {
       "type": "object",
       "properties": {

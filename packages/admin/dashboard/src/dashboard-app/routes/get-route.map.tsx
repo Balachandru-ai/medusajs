@@ -940,6 +940,21 @@ export function getRouteMap({
               ],
             },
             {
+              path: "translations",
+              errorElement: <ErrorBoundary />,
+              element: <Outlet />,
+              handle: {
+                breadcrumb: () => t("translations.domain"),
+              },
+              children: [
+                {
+                  path: "",
+                  lazy: () =>
+                    import("../../routes/translations/translation-list"),
+                },
+              ],
+            },
+            {
               path: "regions",
               errorElement: <ErrorBoundary />,
               element: <Outlet />,

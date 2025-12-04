@@ -9,6 +9,7 @@ import { useExtension } from "../../../providers/extension-provider"
 import { INavItem, NavItem } from "../nav-item"
 import { Shell } from "../shell"
 import { UserMenu } from "../user-menu"
+import { useFeatureFlag } from "../../../providers/feature-flag-provider"
 
 export const SettingsLayout = () => {
   return (
@@ -19,10 +20,19 @@ export const SettingsLayout = () => {
 }
 
 const useSettingRoutes = (): INavItem[] => {
+  const isTranslationsEnabled = useFeatureFlag("translation")
   const { t } = useTranslation()
 
   return useMemo(
     () => [
+      ...(isTranslationsEnabled
+        ? [
+            {
+              label: t("translations.domain"),
+              to: "/settings/translations",
+            },
+          ]
+        : []),
       {
         label: t("store.domain"),
         to: "/settings/store",
@@ -64,7 +74,7 @@ const useSettingRoutes = (): INavItem[] => {
         to: "/settings/locations",
       },
     ],
-    [t]
+    [t, isTranslationsEnabled]
   )
 }
 
