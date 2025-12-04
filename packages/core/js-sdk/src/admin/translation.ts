@@ -75,4 +75,43 @@ export class Translation {
       }
     )
   }
+
+  /**
+   * This method manages allows bulk operations on translations. It sends a request to the
+   * [Manage Translations](https://docs.medusajs.com/api/admin#translations_posttranslationsbatch)
+   * API route.
+   *
+   * @param payload - The translations to create, update, or delete.
+   * @param headers - Headers to pass in the request.
+   * @returns The translations' details.
+   *
+   * @example
+   * sdk.admin.translation.batch({
+   *   create: [
+   *     {
+   *       entity_id: "prod_123",
+   *       entity_type: "product",
+   *       locale_code: "en-US",
+   *       translations: { title: "Shirt" }
+   *     }
+   *   ],
+   *   update: [
+   *     {
+   *       id: "trans_123",
+   *       translations: { title: "Pants" }
+   *     }
+   *   ],
+   *   delete: ["trans_321"]
+   * })
+   * .then(({ created, updated, deleted }) => {
+   *   console.log(created, updated, deleted)
+   * })
+   * ```
+   */
+  async batch(body: HttpTypes.AdminBatchTranslations, headers?: ClientHeaders) {
+    return await this.client.fetch<HttpTypes.AdminTranslationsBatchResponse>(
+      `/admin/translations/batch`,
+      { headers, body }
+    )
+  }
 }

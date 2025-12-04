@@ -44,13 +44,7 @@ export const useBatchTranslations = (
 ) => {
   return useMutation({
     mutationFn: (payload: HttpTypes.AdminBatchTranslations) =>
-      sdk.client.fetch<HttpTypes.AdminTranslationsBatchResponse>(
-        `/admin/translations/batch`,
-        {
-          method: "POST",
-          body: payload,
-        }
-      ),
+      sdk.admin.translation.batch(payload),
     onSuccess: (data, variables, context) => {
       queryClient.invalidateQueries({
         queryKey: translationsQueryKeys.all,
