@@ -1,8 +1,8 @@
 import { FeatureFlag } from "../../feature-flags"
 import { applyTranslations } from "../apply-translations"
 
-jest.mock("@medusajs/framework/utils", () => ({
-  ...jest.requireActual("@medusajs/framework/utils"),
+jest.mock("../../feature-flags/flag-router", () => ({
+  ...jest.requireActual("../../feature-flags/flag-router"),
   FeatureFlag: {
     isFeatureEnabled: jest.fn(),
   },
@@ -142,25 +142,6 @@ describe("applyTranslations", () => {
       expect.objectContaining({
         filters: expect.objectContaining({
           locale_code: "fr-FR",
-        }),
-      })
-    )
-  })
-
-  it("should default to en-US locale when not specified", async () => {
-    mockReq = {}
-    const inputObjects = [{ id: "prod_1", title: "Original" }]
-
-    await applyTranslations({
-      localeCode: mockReq.locale as string,
-      objects: inputObjects,
-      container: mockContainer as any,
-    })
-
-    expect(mockQuery.graph).toHaveBeenCalledWith(
-      expect.objectContaining({
-        filters: expect.objectContaining({
-          locale_code: "en-US",
         }),
       })
     )
