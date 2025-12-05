@@ -14,7 +14,6 @@ import {
   SqlEntityManager,
   wrap,
 } from "@medusajs/framework/mikro-orm/postgresql"
-import { Knex } from "knex"
 
 export class ProductRepository extends DALUtils.mikroOrmBaseRepositoryFactory(
   Product
@@ -251,7 +250,7 @@ export class ProductRepository extends DALUtils.mikroOrmBaseRepositoryFactory(
 
     const manager = this.getActiveManager<SqlEntityManager>(context)
     const connection = manager.getConnection()
-    const knex = connection.getKnex() as Knex
+    const knex = connection.getKnex()
 
     // Collect all unique product IDs and value IDs
     const allProductIds = [...new Set(validPairs.map((p) => p.productId))]
