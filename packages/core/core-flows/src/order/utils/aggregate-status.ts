@@ -1,5 +1,10 @@
 import type { OrderDetailDTO } from "@medusajs/framework/types"
-import { isDefined, MathBN, MEDUSA_PAYMENTS_EPSILON } from "@medusajs/framework/utils"
+import { isDefined, MathBN } from "@medusajs/framework/utils"
+import { BigNumber } from "@medusajs/utils/src"
+
+const MEDUSA_PAYMENTS_EPSILON = new BigNumber(
+  process.env.MEDUSA_PAYMENTS_EPSILON || "0.01"
+)
 
 export const getLastPaymentStatus = (order: OrderDetailDTO) => {
   const PaymentStatus = {
