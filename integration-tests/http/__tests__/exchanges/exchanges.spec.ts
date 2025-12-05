@@ -1437,6 +1437,16 @@ medusaIntegrationTestRunner({
             adminHeaders
           )
 
+          const promotionModule = getContainer().resolve(Modules.PROMOTION)
+
+          // check that adjustments are computed for promotions that exceeded usage limit (we ignore usage limits on edit flows)
+          // @ts-ignore
+          await promotionModule.updatePromotions({
+            id: appliedPromotion.id,
+            limit: 1,
+            used: 1,
+          })
+
           let result = await api.post(
             "/admin/exchanges",
             {

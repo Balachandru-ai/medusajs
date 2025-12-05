@@ -494,3 +494,10 @@ export const products: Product[] = [
     image: "/images/user-icon.png",
   },
 ]
+
+export enum DocsTrackingEvents {
+  SURVEY = "survey",
+  SURVEY_API = "survey_api-ref",
+  CODE_BLOCK_COPY = "code_block_copy",
+  AI_ASSISTANT_START_CHAT = "ai_assistant_start_chat",
+}

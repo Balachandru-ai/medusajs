@@ -10,11 +10,11 @@ const Promotion = model
     is_automatic: model.boolean().default(false),
     is_tax_inclusive: model.boolean().default(false),
     /**
-     * @since v2.12.0
+     * @since 2.12.0
      */
     limit: model.number().nullable(),
     /**
-     * @since v2.12.0
+     * @since 2.12.0
      */
     used: model.number().default(0),
     type: model.enum(PromotionUtils.PromotionType).index("IDX_promotion_type"),
@@ -37,7 +37,7 @@ const Promotion = model
       mappedBy: "promotions",
     }),
     /**
-     * @since v2.12.0
+     * @since 2.12.0
      */
     metadata: model.json().nullable(),
   })

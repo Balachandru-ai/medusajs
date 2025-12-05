@@ -44,7 +44,7 @@ export type OnCarryPromotionsFlagSetWorkflowInput = {
  *
  * :::
  * 
- * @since v2.12.0
+ * @since 2.12.0
  *
  * @example
  * const data = validateCarryPromotionsFlagStep({
@@ -150,7 +150,7 @@ export const onCarryPromotionsFlagSetId = "on-carry-promotions-flag-set"
  * You can use this workflow within your customizations or your own custom workflows, allowing you to 
  * set the carry over promotions flag for an order change in your custom flows.
  * 
- * @since v2.12.0
+ * @since 2.12.0
  *
  * @example
  * const { result } = await onCarryPromotionsFlagSet(container)
