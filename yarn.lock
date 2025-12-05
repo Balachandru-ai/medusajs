@@ -4052,6 +4052,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@medusajs/test-utils@workspace:packages/medusa-test-utils"
   dependencies:
+    "@medusajs/core-flows": 2.12.1
     "@medusajs/framework": 2.12.1
     "@types/express": ^4.17.21
     axios: ^1.13.1
@@ -4059,9 +4060,12 @@ __metadata:
     get-port: ^5.1.1
     ulid: ^2.3.0
   peerDependencies:
+    "@medusajs/core-flows": 2.12.1
     "@medusajs/framework": 2.12.1
     "@medusajs/medusa": 2.12.1
   peerDependenciesMeta:
+    "@medusajs/core-flows":
+      optional: true
     "@medusajs/medusa":
       optional: true
   languageName: unknown

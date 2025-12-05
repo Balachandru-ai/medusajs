@@ -21,7 +21,7 @@ import {
 } from "./medusa-test-runner-utils"
 import { waitWorkflowExecutions } from "./medusa-test-runner-utils/wait-workflow-executions"
 import { ulid } from "ulid"
-import { createDefaultsWorkflow } from "@medusajs/medusa/core-flows"
+import { createDefaultsWorkflow } from "@medusajs/core-flows"
 
 export interface MedusaSuiteOptions {
   dbConnection: any // knex instance
