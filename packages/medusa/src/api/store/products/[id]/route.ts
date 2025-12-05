@@ -75,8 +75,8 @@ export const GET = async (
 
   await wrapProductsWithTaxPrices(req, [product])
   await applyTranslations({
-    req,
-    inputObjects: [product],
+    localeCode: req.locale,
+    objects: [product],
     container: req.scope,
   })
   res.json({ product })

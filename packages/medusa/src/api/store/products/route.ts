@@ -89,8 +89,8 @@ async function getProductsWithIndexEngine(
   await wrapProductsWithTaxPrices(req, products)
 
   await applyTranslations({
-    req,
-    inputObjects: products,
+    localeCode: req.locale,
+    objects: products,
     container: req.scope,
   })
 
@@ -151,8 +151,8 @@ async function getProducts(
   await wrapProductsWithTaxPrices(req, products)
 
   await applyTranslations({
-    req,
-    inputObjects: products,
+    localeCode: req.locale,
+    objects: products,
     container: req.scope,
   })
 
