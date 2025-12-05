@@ -5,7 +5,7 @@
   "license": "MIT",
   "private": true,
   "scripts": {
-    "test:integration": "jest --no-cache --bail --detectOpenHandles --forceExit --logHeapUsage",
+    "test:integration": "jest --no-cache --bail --detectOpenHandles --forceExit --logHeapUsage -- __tests__/cart/store/cart-translation.spec.ts",
     "test:integration:chunk": "jest --silent --no-cache --bail --forceExit",
     "build": "tsc --allowJs --outDir ./dist"
   },
