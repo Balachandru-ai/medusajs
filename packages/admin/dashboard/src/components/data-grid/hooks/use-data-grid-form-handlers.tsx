@@ -1,4 +1,3 @@
-import set from "lodash.set"
 import { useCallback } from "react"
 import { FieldValues, Path, PathValue, UseFormReturn } from "react-hook-form"
 
@@ -17,7 +16,7 @@ type UseDataGridFormHandlersOptions<TData, TFieldValues extends FieldValues> = {
 
 export const useDataGridFormHandlers = <
   TData,
-  TFieldValues extends FieldValues,
+  TFieldValues extends FieldValues
 >({
   matrix,
   form,
@@ -139,7 +138,7 @@ function convertToggleableNumber(value: any): {
 }
 
 function setValue<
-  T extends DataGridToggleableNumber = DataGridToggleableNumber,
+  T extends DataGridToggleableNumber = DataGridToggleableNumber
 >(
   currentValues: any,
   field: string,
@@ -148,7 +147,13 @@ function setValue<
   isHistory?: boolean
 ) {
   if (type !== "togglable-number") {
-    set(currentValues, field, newValue)
+    field.split(".").reduce((curr, key, index) => {
+      if (index === field.split(".").length - 1) {
+        curr[key] = newValue
+      }
+      curr[key] ??= {}
+      return curr[key]
+    }, currentValues)
     return
   }
 
@@ -187,11 +192,18 @@ function setValueToggleableNumber(
       : newValue.checked
     : determineChecked(quantity)
 
-  set(currentValues, field, {
-    ...currentValue,
-    quantity,
-    checked,
-  })
+  const fieldParts = field.split(".")
+  fieldParts.reduce((curr, key: string, index) => {
+    if (index === fieldParts.length - 1) {
+      curr[key] = {
+        ...currentValues,
+        quantity,
+        checked,
+      }
+    }
+    curr[key] ??= {}
+    return curr[key]
+  }, currentValues)
 }
 
 export function convertArrayToPrimitive(

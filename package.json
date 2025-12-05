@@ -129,7 +129,7 @@
     "turbo": "^1.6.3",
     "typescript": "^5.6.2",
     "uuid": "^9.0.0",
-    "vite": "^5.4.14",
+    "vite": "^5.4.21",
     "vite-plugin-inspect": "^0.8.7",
     "vite-plugin-turbosnap": "^1.0.2",
     "vitest": "^3.0.5",
@@ -165,14 +165,12 @@
   "dependencies": {
     "@changesets/changelog-github": "^0.4.8",
     "@changesets/cli": "^2.26.0",
-    "global": "^4.4.0",
     "import-from": "^3.0.0"
   },
   "resolutions": {
     "@redocly/cli/react": "^17.0.1",
     "@redocly/cli/react-dom": "^17.0.1",
     "pg": "8.16.3",
-    "@changesets/assemble-release-plan@^6.0.0": "patch:@changesets/assemble-release-plan@npm:^6.0.0#.yarn/patches/changesets.patch",
     "@changesets/get-github-info@^0.5.2": "patch:@changesets/get-github-info@npm:^0.5.2#.yarn/patches/changesets-github-info.patch",
     "@types/react": "^18.3.2",
     "@types/react-dom": "^18.2.25",
@@ -180,7 +178,8 @@
     "axios": "^1.13.1",
     "esbuild": "^0.25.0",
     "on-headers": "^1.1.0",
-    "validator": "^13.15.20"
+    "validator": "^13.15.20",
+    "@changesets/assemble-release-plan@6.0.9": "patch:@changesets/assemble-release-plan@npm:6.0.9#.yarn/patches/@changesets-assemble-release-plan-npm-6.0.9-e01af97ef4.patch"
   },
   "packageManager": "yarn@3.2.1"
 }

@@ -1,7 +1,7 @@
 "use client"
 
 import React, { useEffect, useState } from "react"
-import { CopyButton } from "../../../.."
+import { CopyButton, DocsTrackingEvents, useAnalytics } from "../../../.."
 import clsx from "clsx"
 import { CheckMini, SquareTwoStack } from "@medusajs/icons"
 
@@ -15,6 +15,7 @@ export const CodeBlockCopyAction = ({
   inHeader,
 }: CodeBlockCopyActionProps) => {
   const [copied, setCopied] = useState(false)
+  const { track } = useAnalytics()
 
   useEffect(() => {
     if (copied) {
@@ -22,6 +23,12 @@ export const CodeBlockCopyAction = ({
         setCopied(false)
       }, 1000)
     }
+
+    track({
+      event: {
+        event: DocsTrackingEvents.CODE_BLOCK_COPY,
+      },
+    })
   }, [copied])
 
   const iconClassName = [

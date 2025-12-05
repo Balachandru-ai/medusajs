@@ -1,6 +1,7 @@
 export const defaultAdminOrderFields = [
   "id",
   "display_id",
+  "custom_display_id",
   "status",
   "version",
   "summary",
@@ -16,7 +17,6 @@ export const defaultAdminRetrieveOrderFields = [
   "total",
   "subtotal",
   "tax_total",
-  "order_change",
   "discount_total",
   "discount_tax_total",
   "original_total",
@@ -80,6 +80,7 @@ export const defaultAdminRetrieveOrderChangesFields = [
   "canceled_at",
   "created_at",
   "updated_at",
+  "carry_over_promotions",
 ]
 
 export const defaultAdminOrderItemsFields = [

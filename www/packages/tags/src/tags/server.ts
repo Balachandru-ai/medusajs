@@ -56,6 +56,10 @@ export const server = [
     "path": "https://docs.medusajs.com/resources/examples/guides/quote-management"
   },
   {
+    "title": "Custom Admin Authentication",
+    "path": "https://docs.medusajs.com/resources/how-to-tutorials/how-to/admin/auth"
+  },
+  {
     "title": "Abandoned Cart Notification",
     "path": "https://docs.medusajs.com/resources/how-to-tutorials/tutorials/abandoned-cart"
   },
@@ -66,6 +70,10 @@ export const server = [
   {
     "title": "Product Category Images",
     "path": "https://docs.medusajs.com/resources/how-to-tutorials/tutorials/category-images"
+  },
+  {
+    "title": "Customer Tiers",
+    "path": "https://docs.medusajs.com/resources/how-to-tutorials/tutorials/customer-tiers"
   },
   {
     "title": "First-Purchase Discount",
@@ -150,6 +158,10 @@ export const server = [
   {
     "title": "Integrate Slack",
     "path": "https://docs.medusajs.com/resources/integrations/guides/slack"
+  },
+  {
+    "title": "Integrate Strapi",
+    "path": "https://docs.medusajs.com/resources/integrations/guides/strapi"
   },
   {
     "title": "Build Wishlist Plugin",
