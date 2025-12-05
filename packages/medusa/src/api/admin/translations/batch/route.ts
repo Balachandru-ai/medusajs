@@ -24,16 +24,28 @@ export const POST = async (
     },
   })
 
-  const [created, updated] = await Promise.all([
-    listTranslations(
-      result.created.map((t) => t.id),
-      req.scope
-    ),
-    listTranslations(
-      result.updated.map((t) => t.id),
-      req.scope
-    ),
-  ])
+  const ids = Array.from(
+    new Set([
+      ...result.created.map((t) => t.id),
+      ...result.updated.map((t) => t.id),
+    ])
+  )
+
+  const query = req.scope.resolve(ContainerRegistrationKeys.QUERY)
+  const { data: translations } = await query.graph({
+    entity: "translation",
+    fields: defaultAdminTranslationFields,
+    filters: {
+      id: ids,
+    },
+  })
+
+  const created = translations.filter((t) =>
+    result.created.some((r) => r.id === t.id)
+  )
+  const updated = translations.filter((t) =>
+    result.updated.some((r) => r.id === t.id)
+  )
 
   return res.status(200).json({
     created,
@@ -44,14 +56,4 @@ export const POST = async (
       deleted: true,
     },
   })
-}
-
-const listTranslations = async (ids: string[], scope: MedusaContainer) => {
-  const query = scope.resolve(ContainerRegistrationKeys.QUERY)
-  const { data } = await query.graph({
-    entity: "translation",
-    fields: defaultAdminTranslationFields,
-    filters: { id: ids },
-  })
-  return data
 }

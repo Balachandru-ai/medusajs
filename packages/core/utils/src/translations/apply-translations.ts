@@ -98,22 +98,26 @@ export async function applyTranslations({
 
   for (let i = 0; i < queryBatches; i++) {
     // TODO: concurrently fetch if needed
-    const queryBatch = Array.from(gatheredIds).slice(
-      i * queryBatchSize,
-      (i + 1) * queryBatchSize
-    )
+    const queryBatch = Array.from(gatheredIds)
+      .slice(i * queryBatchSize, (i + 1) * queryBatchSize)
+      .sort()
 
-    const { data: translations } = await query.graph({
-      entity: "translations",
-      fields: ["translations", "entity_id"],
-      filters: {
-        entity_id: queryBatch,
-        locale_code: locale,
+    const { data: translations } = await query.graph(
+      {
+        entity: "translations",
+        fields: ["translations", "entity_id"],
+        filters: {
+          entity_id: queryBatch,
+          locale_code: locale,
+        },
+        pagination: {
+          take: queryBatchSize,
+        },
       },
-      pagination: {
-        take: queryBatchSize,
-      },
-    })
+      {
+        cache: { enable: true },
+      }
+    )
 
     for (const translation of translations) {
       entityIdToTranslation.set(

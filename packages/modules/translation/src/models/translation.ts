@@ -10,7 +10,7 @@ const Translation = model
   })
   .indexes([
     {
-      on: ["entity_id", "entity_type", "locale_code"],
+      on: ["entity_id", "locale_code"],
       unique: true,
     },
     {

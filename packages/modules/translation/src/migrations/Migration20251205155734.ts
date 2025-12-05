@@ -1,12 +1,12 @@
 import { Migration } from "@medusajs/framework/mikro-orm/migrations"
 
-export class Migration20251202124048 extends Migration {
+export class Migration20251205155734 extends Migration {
   override async up(): Promise<void> {
     this.addSql(
-      `alter table if exists "translation" drop constraint if exists "translation_entity_id_entity_type_locale_code_unique";`
+      `alter table if exists "translation" drop constraint if exists "translation_entity_id_locale_code_unique";`
     )
     this.addSql(
-      `create table if not exists "locale" ("id" text not null, "code" text not null, "name" text not null, "created_at" timestamptz not null default now(), "updated_at" timestamptz not null default now(), "deleted_at" timestamptz null, constraint "locale_pkey" primary key ("id"));`
+      `create table if not exists "locale" ("code" text not null, "name" text not null, "created_at" timestamptz not null default now(), "updated_at" timestamptz not null default now(), "deleted_at" timestamptz null, constraint "locale_pkey" primary key ("code"));`
     )
     this.addSql(
       `CREATE INDEX IF NOT EXISTS "IDX_locale_deleted_at" ON "locale" ("deleted_at") WHERE deleted_at IS NULL;`
@@ -19,7 +19,7 @@ export class Migration20251202124048 extends Migration {
       `CREATE INDEX IF NOT EXISTS "IDX_translation_deleted_at" ON "translation" ("deleted_at") WHERE deleted_at IS NULL;`
     )
     this.addSql(
-      `CREATE UNIQUE INDEX IF NOT EXISTS "IDX_translation_entity_id_entity_type_locale_code_unique" ON "translation" ("entity_id", "entity_type", "locale_code") WHERE deleted_at IS NULL;`
+      `CREATE UNIQUE INDEX IF NOT EXISTS "IDX_translation_entity_id_locale_code_unique" ON "translation" ("entity_id", "locale_code") WHERE deleted_at IS NULL;`
     )
     this.addSql(
       `CREATE INDEX IF NOT EXISTS "IDX_translation_entity_id_entity_type" ON "translation" ("entity_id", "entity_type") WHERE deleted_at IS NULL;`

@@ -177,13 +177,13 @@
           "expression": "CREATE INDEX IF NOT EXISTS \"IDX_translation_deleted_at\" ON \"translation\" (\"deleted_at\") WHERE deleted_at IS NULL"
         },
         {
-          "keyName": "IDX_translation_entity_id_entity_type_locale_code_unique",
+          "keyName": "IDX_translation_entity_id_locale_code_unique",
           "columnNames": [],
           "composite": false,
           "constraint": false,
           "primary": false,
           "unique": false,
-          "expression": "CREATE UNIQUE INDEX IF NOT EXISTS \"IDX_translation_entity_id_entity_type_locale_code_unique\" ON \"translation\" (\"entity_id\", \"entity_type\", \"locale_code\") WHERE deleted_at IS NULL"
+          "expression": "CREATE UNIQUE INDEX IF NOT EXISTS \"IDX_translation_entity_id_locale_code_unique\" ON \"translation\" (\"entity_id\", \"locale_code\") WHERE deleted_at IS NULL"
         },
         {
           "keyName": "IDX_translation_entity_id_entity_type",

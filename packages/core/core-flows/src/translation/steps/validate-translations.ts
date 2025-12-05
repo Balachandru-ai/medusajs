@@ -21,13 +21,18 @@ export const validateTranslationsStep = createStep(
     const query = container.resolve(ContainerRegistrationKeys.QUERY)
     const {
       data: [store],
-    } = await query.graph({
-      entity: "store",
-      fields: ["supported_locales.*"],
-      pagination: {
-        take: 1,
+    } = await query.graph(
+      {
+        entity: "store",
+        fields: ["supported_locales.*"],
+        pagination: {
+          take: 1,
+        },
       },
-    })
+      {
+        cache: { enable: true },
+      }
+    )
 
     const enabledLocales = (store.supported_locales ?? []).map(
       (locale) => locale.locale_code
