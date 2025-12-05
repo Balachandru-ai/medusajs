@@ -328,7 +328,7 @@ export const addToCartWorkflow = createWorkflow(
       })
     )
 
-    return new WorkflowResponse(void 0, {
+    return new WorkflowResponse(createdLineItems, {
       hooks: [validate, setPricingContext] as const,
     })
   }
