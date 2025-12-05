@@ -5299,6 +5299,72 @@ medusaIntegrationTestRunner({
         })
       })
 
+      describe("DELETE /store/carts/:id/promotions", () => {
+        it("should remove promotions and recalculate payment_collection amount", async () => {
+          cart = (
+            await api.post(
+              `/store/carts`,
+              {
+                currency_code: "usd",
+                sales_channel_id: salesChannel.id,
+                region_id: region.id,
+                shipping_address: shippingAddressData,
+                items: [{ variant_id: product.variants[0].id, quantity: 1 }],
+                promo_codes: [promotion.code],
+              },
+              storeHeaders
+            )
+          ).data.cart
+
+          await api.post(
+            `/store/payment-collections`,
+            { cart_id: cart.id },
+            storeHeaders
+          )
+
+          cart = (await api.get(`/store/carts/${cart.id}`, storeHeaders)).data
+            .cart
+
+          expect(cart).toEqual(
+            expect.objectContaining({
+              id: cart.id,
+              items: expect.arrayContaining([
+                expect.objectContaining({
+                  adjustments: expect.arrayContaining([
+                    expect.objectContaining({
+                      code: "PROMOTION_APPLIED",
+                      promotion_id: promotion.id,
+                      amount: 100,
+                    }),
+                  ]),
+                }),
+              ]),
+            })
+          )
+
+          const cartAfterDeletion = await api
+            .delete(`/store/carts/${cart.id}/promotions`, {
+              data: { promo_codes: [promotion.code] },
+              ...storeHeaders,
+            })
+            .then((response) => response.data.cart)
+
+          expect(cartAfterDeletion).toEqual(
+            expect.objectContaining({
+              id: cart.id,
+              items: expect.arrayContaining([
+                expect.objectContaining({
+                  adjustments: [],
+                }),
+              ]),
+            })
+          )
+
+          expect(cartAfterDeletion.total).toEqual(1500)
+          expect(cartAfterDeletion.discount_total).toEqual(0)
+        })
+      })
+
       describe("POST /store/carts/:id/customer", () => {
         beforeEach(async () => {
           cart = (
