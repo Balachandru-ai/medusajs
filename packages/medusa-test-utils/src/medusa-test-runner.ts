@@ -21,7 +21,7 @@ import {
 } from "./medusa-test-runner-utils"
 import { waitWorkflowExecutions } from "./medusa-test-runner-utils/wait-workflow-executions"
 import { ulid } from "ulid"
-import { createDefaultsWorkflow } from "@medusajs/core-flows"
+import { createDefaultsWorkflow } from "@medusajs/medusa/core-flows"
 
 export interface MedusaSuiteOptions {
   dbConnection: any // knex instance
@@ -288,6 +288,7 @@ class MedusaTestRunner {
         cwd: this.cwd,
       })
       await medusaAppLoader.runModulesLoader()
+
       await createDefaultsWorkflow(copiedContainer).run()
     } catch (error) {
       await copiedContainer.dispose?.()

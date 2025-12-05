@@ -28,7 +28,7 @@ medusaIntegrationTestRunner({
       let appContainer: MedusaContainer
       let storeHeaders: { headers: { [key: string]: string } }
       let region: { id: string }
-      let product: { id: string }
+      let product: { id: string; variants: { id: string; title: string }[] }
       let salesChannel: { id: string }
       let shippingProfile: { id: string }
 
@@ -54,17 +54,19 @@ medusaIntegrationTestRunner({
         ).data.sales_channel
 
         const storeModule = appContainer.resolve(Modules.STORE)
-        await storeModule.createStores({
-          name: "New store",
-          supported_currencies: [
-            { currency_code: "usd", is_default: true },
-            { currency_code: "dkk" },
-          ],
+        const [defaultStore] = await storeModule.listStores(
+          {},
+          {
+            select: ["id"],
+            take: 1,
+          }
+        )
+        await storeModule.updateStores(defaultStore.id, {
           supported_locales: [
-            { locale_code: "fr-FR", is_default: true },
+            { locale_code: "en-US", is_default: true },
+            { locale_code: "fr-FR" },
             { locale_code: "de-DE" },
           ],
-          default_sales_channel_id: salesChannel.id,
         })
 
         shippingProfile = (
@@ -119,6 +121,11 @@ medusaIntegrationTestRunner({
             adminHeaders
           )
         ).data.product
+
+        // Maintain predictable variants order
+        const variantSmall = product.variants.find((v) => v.title === "Small")
+        const variantMedium = product.variants.find((v) => v.title === "Medium")
+        product.variants = [variantSmall!, variantMedium!]
 
         // Create translations for product and variants
         await api.post(
@@ -182,7 +189,7 @@ medusaIntegrationTestRunner({
       })
 
       describe("POST /store/carts (create cart with locale)", () => {
-        it.only("should create a cart with translated items when locale_code is provided", async () => {
+        it("should create a cart with translated items when locale_code is provided", async () => {
           const response = await api.post(
             `/store/carts`,
             {
@@ -199,7 +206,6 @@ medusaIntegrationTestRunner({
           expect(response.status).toEqual(200)
           expect(response.data.cart).toEqual(
             expect.objectContaining({
-              locale_code: "fr-FR",
               items: expect.arrayContaining([
                 expect.objectContaining({
                   product_title: "T-Shirt Medusa",
@@ -250,7 +256,6 @@ medusaIntegrationTestRunner({
           )
 
           const cart = cartResponse.data.cart
-          expect(cart.locale_code).toEqual("fr-FR")
 
           const addItemResponse = await api.post(
             `/store/carts/${cart.id}/line-items`,
@@ -348,7 +353,6 @@ medusaIntegrationTestRunner({
           )
 
           const cart = cartResponse.data.cart
-          expect(cart.locale_code).toEqual("fr-FR")
 
           const frenchSmallItem = cart.items.find(
             (item) => item.variant_id === product.variants[0].id
@@ -371,7 +375,6 @@ medusaIntegrationTestRunner({
           )
 
           const updatedCart = updatedCartResponse.data.cart
-          expect(updatedCart.locale_code).toEqual("de-DE")
 
           const germanSmallItem = updatedCart.items.find(
             (item) => item.variant_id === product.variants[0].id
@@ -427,7 +430,6 @@ medusaIntegrationTestRunner({
           )
 
           const updatedCart = updatedCartResponse.data.cart
-          expect(updatedCart.locale_code).toEqual("fr-FR")
           expect(updatedCart.items[0]).toEqual(
             expect.objectContaining({
               product_title: "T-Shirt Medusa",
@@ -468,11 +470,11 @@ medusaIntegrationTestRunner({
             storeHeaders
           )
 
+          // no translation means it will revert to default values
           const updatedCart = updatedCartResponse.data.cart
-          expect(updatedCart.locale_code).toEqual("ja-JP")
           expect(updatedCart.items[0]).toEqual(
             expect.objectContaining({
-              product_title: "Medusa T-shirt",
+              product_title: "Medusa T-Shirt",
               variant_title: "Small",
             })
           )

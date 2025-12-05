@@ -244,20 +244,27 @@ export const refreshCartItemsWorkflow = createWorkflow(
       },
     })
 
+    // TODO: Currently the prepareLineItemData function is overriding the translated item data
+    // by always re assigning the product/variants info
+
     // Keep as the last action to be performed on the items
-    when(
-      "should-update-item-translations",
-      { input },
-      ({ input }) => {
-        return !!input.locale_code
-      }
-    ).then(() => {
-      updateCartItemsTranslationsStep({
-        cart_id: input.cart_id,
-        locale_code: input.locale_code!,
-        items: refetchedCart.items,
-      })
+    // when(
+    //   "should-update-item-translations",
+    //   { input },
+    //   ({ input }) => {
+    //     return !!input.locale_code
+    //   }
+    // ).then(() => {
+    updateCartItemsTranslationsStep({
+      cart_id: input.cart_id,
+      locale_code: transform(
+        { refetchedCart, input },
+        ({ refetchedCart, input }) =>
+          input.locale_code ?? refetchedCart.locale_code!
+      ), // input.locale_code!,
+      items: refetchedCart.items,
     })
+    // })
 
     const beforeRefreshingPaymentCollection = createHook(
       "beforeRefreshingPaymentCollection",

@@ -301,8 +301,12 @@ export const addToCartWorkflow = createWorkflow(
         variants: PrepareVariantLineItemInput[]
       },
       (data) => {
+        if (!data.itemsToCreate?.length) {
+          return []
+        }
+
         const variantsMap = new Map(data.variants?.map((v) => [v.id, v]))
-        return itemsToCreate
+        return data.itemsToCreate
           .map((item) => item.variant_id && variantsMap.get(item.variant_id))
           .filter(Boolean) as PrepareVariantLineItemInput[]
       }
