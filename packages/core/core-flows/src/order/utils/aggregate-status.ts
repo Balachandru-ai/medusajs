@@ -7,7 +7,7 @@ const MEDUSA_PAYMENTS_EPSILON = new BigNumber(
 
 export const getLastPaymentStatus = (order: OrderDetailDTO) => {
   const PaymentStatus = {
-    NOT_PAID: "not_paid",ø
+    NOT_PAID: "not_paid",
     AWAITING: "awaiting",
     CAPTURED: "captured",
     PARTIALLY_CAPTURED: "partially_captured",
