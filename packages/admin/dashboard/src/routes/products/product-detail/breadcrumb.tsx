@@ -13,7 +13,9 @@ export const ProductDetailBreadcrumb = (
   const { product } = useProduct(
     id!,
     {
-      fields: PRODUCT_DETAIL_FIELDS,
+      // TODO: Remove exclusion once we avoid including unnecessary relations by default in the query config
+      fields:
+        "-type,-collection,-options,-tags,-images,-variants,-sales_channels",
     },
     {
       initialData: props.data,
