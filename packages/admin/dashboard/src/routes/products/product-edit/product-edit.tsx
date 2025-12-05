@@ -4,7 +4,6 @@ import { useParams } from "react-router-dom"
 
 import { RouteDrawer } from "../../../components/modals"
 import { useProduct } from "../../../hooks/api/products"
-import { PRODUCT_DETAIL_FIELDS } from "../product-detail/constants"
 import { EditProductForm } from "./components/edit-product-form"
 
 export const ProductEdit = () => {
