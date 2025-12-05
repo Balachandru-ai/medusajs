@@ -42,12 +42,12 @@ export interface TranslationDTO {
   /**
    * The ID of the entity being translated.
    */
-  entity_id: string
+  reference_id: string
 
   /**
    * The type of entity being translated (e.g., "product", "product_variant").
    */
-  entity_type: string
+  reference: string
 
   /**
    * The BCP 47 language tag code for this translation (e.g., "en-US", "fr-FR").
@@ -115,12 +115,12 @@ export interface FilterableTranslationProps
   /**
    * Filter translations by entity ID.
    */
-  entity_id?: string | string[] | OperatorMap<string>
+  reference_id?: string | string[] | OperatorMap<string>
 
   /**
    * Filter translations by entity type.
    */
-  entity_type?: string | string[] | OperatorMap<string>
+  reference?: string | string[] | OperatorMap<string>
 
   /**
    * Filter translations by locale code.

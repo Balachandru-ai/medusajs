@@ -11,11 +11,11 @@ export interface AdminTranslationsListParams
   /**
    * Filter by entity ID.
    */
-  entity_id?: string | string[]
+  reference_id?: string | string[]
   /**
    * Filter by entity type.
    */
-  entity_type?: string
+  reference?: string
   /**
    * Filter by locale code.
    */

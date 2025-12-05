@@ -111,9 +111,9 @@ export async function applyTranslations({
     const { data: translations } = await query.graph(
       {
         entity: "translations",
-        fields: ["translations", "entity_id"],
+        fields: ["translations", "reference_id"],
         filters: {
-          entity_id: queryBatch,
+          reference_id: queryBatch,
           locale_code: locale,
         },
         pagination: {
@@ -127,7 +127,7 @@ export async function applyTranslations({
 
     for (const translation of translations) {
       entityIdToTranslation.set(
-        translation.entity_id,
+        translation.reference_id,
         translation.translations ?? {}
       )
     }

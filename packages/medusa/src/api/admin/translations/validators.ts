@@ -10,8 +10,8 @@ export const AdminGetTranslationParams = createSelectParams()
 
 export const AdminGetTranslationParamsFields = z.object({
   q: z.string().optional(),
-  entity_id: z.string().optional(),
-  entity_type: z.string().optional(),
+  reference_id: z.string().optional(),
+  reference: z.string().optional(),
   locale_code: z.string().optional(),
 })
 
@@ -28,8 +28,8 @@ export const AdminGetTranslationsParams = createFindParams({
 
 export type AdminCreateTranslationType = z.infer<typeof AdminCreateTranslation>
 export const AdminCreateTranslation = z.object({
-  entity_id: z.string(),
-  entity_type: z.string(),
+  reference_id: z.string(),
+  reference: z.string(),
   locale_code: z.string(),
   translations: z.record(z.string()),
 })
@@ -37,8 +37,8 @@ export const AdminCreateTranslation = z.object({
 export type AdminUpdateTranslationType = z.infer<typeof AdminUpdateTranslation>
 export const AdminUpdateTranslation = z.object({
   id: z.string(),
-  entity_id: z.string().optional(),
-  entity_type: z.string().optional(),
+  reference_id: z.string().optional(),
+  reference: z.string().optional(),
   locale_code: z.string().optional(),
   translations: z.record(z.string()).optional(),
 })

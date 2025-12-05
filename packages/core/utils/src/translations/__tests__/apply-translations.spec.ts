@@ -38,7 +38,7 @@ describe("applyTranslations", () => {
     mockQuery.graph.mockResolvedValue({
       data: [
         {
-          entity_id: "prod_1",
+          reference_id: "prod_1",
           translations: { title: "Translated Title" },
         },
       ],
@@ -68,11 +68,11 @@ describe("applyTranslations", () => {
     mockQuery.graph.mockResolvedValue({
       data: [
         {
-          entity_id: "prod_1",
+          reference_id: "prod_1",
           translations: { title: "Translated Product Title", category: true },
         },
         {
-          entity_id: "cat_1",
+          reference_id: "cat_1",
           translations: { name: "Translated Category Name" },
         },
       ],
@@ -103,15 +103,15 @@ describe("applyTranslations", () => {
     mockQuery.graph.mockResolvedValue({
       data: [
         {
-          entity_id: "prod_1",
+          reference_id: "prod_1",
           translations: { title: "Translated Product" },
         },
         {
-          entity_id: "var_1",
+          reference_id: "var_1",
           translations: { name: "Translated Variant 1" },
         },
         {
-          entity_id: "var_2",
+          reference_id: "var_2",
           translations: { name: "Translated Variant 2" },
         },
       ],
@@ -170,8 +170,8 @@ describe("applyTranslations", () => {
 
     mockQuery.graph.mockResolvedValue({
       data: [
-        { entity_id: "prod_1", translations: { title: "Translated 1" } },
-        { entity_id: "prod_2", translations: { title: "Translated 2" } },
+        { reference_id: "prod_1", translations: { title: "Translated 1" } },
+        { reference_id: "prod_2", translations: { title: "Translated 2" } },
       ],
     })
 
@@ -191,7 +191,7 @@ describe("applyTranslations", () => {
     mockQuery.graph.mockResolvedValue({
       data: [
         {
-          entity_id: "prod_1",
+          reference_id: "prod_1",
           translations: null,
         },
       ],
@@ -255,7 +255,7 @@ describe("applyTranslations", () => {
     mockQuery.graph.mockResolvedValue({
       data: [
         {
-          entity_id: "prod_1",
+          reference_id: "prod_1",
           translations: { description: "Translated Description" },
         },
       ],
@@ -295,7 +295,7 @@ describe("applyTranslations", () => {
     mockQuery.graph.mockResolvedValue({
       data: [
         {
-          entity_id: "prod_1",
+          reference_id: "prod_1",
           translations: { title: "Translated Title" },
         },
       ],
@@ -331,15 +331,15 @@ describe("applyTranslations", () => {
     mockQuery.graph.mockResolvedValue({
       data: [
         {
-          entity_id: "prod_1",
+          reference_id: "prod_1",
           translations: { title: "Translated Product" },
         },
         {
-          entity_id: "cat_1",
+          reference_id: "cat_1",
           translations: { name: "Translated Category" },
         },
         {
-          entity_id: "cat_parent",
+          reference_id: "cat_parent",
           translations: { name: "Translated Parent" },
         },
       ],

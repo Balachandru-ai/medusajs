@@ -12,8 +12,8 @@ export const createTranslationsStepId = "create-translations"
  * @example
  * const data = createTranslationsStep([
  *   {
- *     entity_id: "prod_123",
- *     entity_type: "product",
+ *     reference_id: "prod_123",
+ *     reference: "product",
  *     locale_code: "fr-FR",
  *     translations: { title: "Produit", description: "Description du produit" }
  *   }

@@ -7,12 +7,12 @@ export interface AdminTranslation {
   /**
    * The ID of the entity being translated.
    */
-  entity_id: string
+  reference_id: string
 
   /**
    * The type of entity being translated (e.g., "product", "product_variant").
    */
-  entity_type: string
+  reference: string
 
   /**
    * The BCP 47 language tag code for this translation (e.g., "en-US", "fr-FR").

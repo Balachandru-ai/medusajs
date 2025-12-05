@@ -6,8 +6,8 @@ export const createLocaleFixture: TranslationTypes.CreateLocaleDTO = {
 }
 
 export const createTranslationFixture: TranslationTypes.CreateTranslationDTO = {
-  entity_id: "prod_123",
-  entity_type: "product",
+  reference_id: "prod_123",
+  reference: "product",
   locale_code: "fr-FR",
   translations: {
     title: "Titre du produit",

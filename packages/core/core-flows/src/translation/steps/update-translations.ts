@@ -35,7 +35,7 @@ export const updateTranslationsStepId = "update-translations"
  * @example
  * const data = updateTranslationsStep({
  *   selector: {
- *     entity_id: "prod_123",
+ *     reference_id: "prod_123",
  *     locale_code: "fr-FR"
  *   },
  *   update: {
@@ -71,7 +71,13 @@ export const updateTranslationsStep = createStep(
     }
 
     const prevData = await service.listTranslations(data.selector, {
-      select: ["id", "entity_id", "entity_type", "locale_code", "translations"],
+      select: [
+        "id",
+        "reference_id",
+        "reference",
+        "locale_code",
+        "translations",
+      ],
     })
 
     if (Object.keys(data.update).length === 0) {
@@ -97,8 +103,8 @@ export const updateTranslationsStep = createStep(
     await service.updateTranslations(
       prevData.map((t) => ({
         id: t.id,
-        entity_id: t.entity_id,
-        entity_type: t.entity_type,
+        reference_id: t.reference_id,
+        reference: t.reference,
         locale_code: t.locale_code,
         translations: t.translations,
       }))

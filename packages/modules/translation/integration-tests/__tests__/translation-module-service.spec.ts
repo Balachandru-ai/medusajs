@@ -244,8 +244,8 @@ moduleIntegrationTestRunner<ITranslationModuleService>({
             expect(translation).toEqual(
               expect.objectContaining({
                 id: expect.stringMatching(/^trans_/),
-                entity_id: "prod_123",
-                entity_type: "product",
+                reference_id: "prod_123",
+                reference: "product",
                 locale_code: "fr-FR",
                 translations: {
                   title: "Titre du produit",
@@ -261,8 +261,8 @@ moduleIntegrationTestRunner<ITranslationModuleService>({
             const translations = await service.createTranslations([
               createTranslationFixture,
               {
-                entity_id: "prod_123",
-                entity_type: "product",
+                reference_id: "prod_123",
+                reference: "product",
                 locale_code: "de-DE",
                 translations: {
                   title: "Produkttitel",
@@ -299,8 +299,8 @@ moduleIntegrationTestRunner<ITranslationModuleService>({
             expect(retrieved).toEqual(
               expect.objectContaining({
                 id: created.id,
-                entity_id: "prod_123",
-                entity_type: "product",
+                reference_id: "prod_123",
+                reference: "product",
                 locale_code: "fr-FR",
               })
             )
@@ -321,26 +321,26 @@ moduleIntegrationTestRunner<ITranslationModuleService>({
           beforeEach(async () => {
             await service.createTranslations([
               {
-                entity_id: "prod_1",
-                entity_type: "product",
+                reference_id: "prod_1",
+                reference: "product",
                 locale_code: "fr-FR",
                 translations: { title: "Produit Un" },
               },
               {
-                entity_id: "prod_1",
-                entity_type: "product",
+                reference_id: "prod_1",
+                reference: "product",
                 locale_code: "de-DE",
                 translations: { title: "Produkt Eins" },
               },
               {
-                entity_id: "prod_2",
-                entity_type: "product",
+                reference_id: "prod_2",
+                reference: "product",
                 locale_code: "fr-FR",
                 translations: { title: "Produit Deux" },
               },
               {
-                entity_id: "cat_1",
-                entity_type: "product_category",
+                reference_id: "cat_1",
+                reference: "product_category",
                 locale_code: "fr-FR",
                 translations: { name: "Catégorie" },
               },
@@ -353,21 +353,21 @@ moduleIntegrationTestRunner<ITranslationModuleService>({
             expect(translations.length).toBeGreaterThanOrEqual(4)
           })
 
-          it("should filter by entity_id", async () => {
+          it("should filter by reference_id", async () => {
             const translations = await service.listTranslations({
-              entity_id: "prod_1",
+              reference_id: "prod_1",
             })
 
             expect(translations).toHaveLength(2)
           })
 
-          it("should filter by entity_type", async () => {
+          it("should filter by reference", async () => {
             const translations = await service.listTranslations({
-              entity_type: "product_category",
+              reference: "product_category",
             })
 
             expect(translations).toHaveLength(1)
-            expect(translations[0].entity_id).toEqual("cat_1")
+            expect(translations[0].reference_id).toEqual("cat_1")
           })
 
           it("should filter by locale_code", async () => {
@@ -376,12 +376,12 @@ moduleIntegrationTestRunner<ITranslationModuleService>({
             })
 
             expect(translations).toHaveLength(1)
-            expect(translations[0].entity_id).toEqual("prod_1")
+            expect(translations[0].reference_id).toEqual("prod_1")
           })
 
           it("should filter by multiple criteria", async () => {
             const translations = await service.listTranslations({
-              entity_id: "prod_1",
+              reference_id: "prod_1",
               locale_code: "fr-FR",
             })
 
@@ -405,8 +405,8 @@ moduleIntegrationTestRunner<ITranslationModuleService>({
           beforeEach(async () => {
             await service.createTranslations([
               {
-                entity_id: "prod_search_1",
-                entity_type: "product",
+                reference_id: "prod_search_1",
+                reference: "product",
                 locale_code: "fr-FR",
                 translations: {
                   title: "Chaussures de sport",
@@ -414,8 +414,8 @@ moduleIntegrationTestRunner<ITranslationModuleService>({
                 },
               },
               {
-                entity_id: "prod_search_2",
-                entity_type: "product",
+                reference_id: "prod_search_2",
+                reference: "product",
                 locale_code: "fr-FR",
                 translations: {
                   title: "T-shirt de sport",
@@ -423,8 +423,8 @@ moduleIntegrationTestRunner<ITranslationModuleService>({
                 },
               },
               {
-                entity_id: "prod_search_3",
-                entity_type: "product",
+                reference_id: "prod_search_3",
+                reference: "product",
                 locale_code: "de-DE",
                 translations: {
                   title: "Sportschuhe",
@@ -440,7 +440,7 @@ moduleIntegrationTestRunner<ITranslationModuleService>({
             })
 
             expect(translations).toHaveLength(1)
-            expect(translations[0].entity_id).toEqual("prod_search_1")
+            expect(translations[0].reference_id).toEqual("prod_search_1")
           })
 
           it("should search case-insensitively", async () => {
@@ -457,7 +457,7 @@ moduleIntegrationTestRunner<ITranslationModuleService>({
             })
 
             expect(translations).toHaveLength(1)
-            expect(translations[0].entity_id).toEqual("prod_search_1")
+            expect(translations[0].reference_id).toEqual("prod_search_1")
           })
 
           it("should combine q filter with other filters", async () => {
@@ -482,20 +482,20 @@ moduleIntegrationTestRunner<ITranslationModuleService>({
           beforeEach(async () => {
             await service.createTranslations([
               {
-                entity_id: "cnt_1",
-                entity_type: "product",
+                reference_id: "cnt_1",
+                reference: "product",
                 locale_code: "fr-FR",
                 translations: { title: "Un" },
               },
               {
-                entity_id: "cnt_2",
-                entity_type: "product",
+                reference_id: "cnt_2",
+                reference: "product",
                 locale_code: "fr-FR",
                 translations: { title: "Deux" },
               },
               {
-                entity_id: "cnt_3",
-                entity_type: "product",
+                reference_id: "cnt_3",
+                reference: "product",
                 locale_code: "fr-FR",
                 translations: { title: "Trois" },
               },
@@ -505,7 +505,7 @@ moduleIntegrationTestRunner<ITranslationModuleService>({
           it("should list and count translations", async () => {
             const [translations, count] =
               await service.listAndCountTranslations({
-                entity_type: "product",
+                reference: "product",
                 locale_code: "fr-FR",
               })
 
@@ -521,7 +521,7 @@ moduleIntegrationTestRunner<ITranslationModuleService>({
 
             expect(count).toEqual(1)
             expect(translations).toHaveLength(1)
-            expect(translations[0].entity_id).toEqual("cnt_2")
+            expect(translations[0].reference_id).toEqual("cnt_2")
           })
         })
 
@@ -547,14 +547,14 @@ moduleIntegrationTestRunner<ITranslationModuleService>({
           it("should update multiple translations", async () => {
             const created = await service.createTranslations([
               {
-                entity_id: "upd_1",
-                entity_type: "product",
+                reference_id: "upd_1",
+                reference: "product",
                 locale_code: "fr-FR",
                 translations: { title: "Original 1" },
               },
               {
-                entity_id: "upd_2",
-                entity_type: "product",
+                reference_id: "upd_2",
+                reference: "product",
                 locale_code: "fr-FR",
                 translations: { title: "Original 2" },
               },
@@ -596,14 +596,14 @@ moduleIntegrationTestRunner<ITranslationModuleService>({
           it("should delete multiple translations", async () => {
             const created = await service.createTranslations([
               {
-                entity_id: "del_1",
-                entity_type: "product",
+                reference_id: "del_1",
+                reference: "product",
                 locale_code: "fr-FR",
                 translations: { title: "Delete 1" },
               },
               {
-                entity_id: "del_2",
-                entity_type: "product",
+                reference_id: "del_2",
+                reference: "product",
                 locale_code: "fr-FR",
                 translations: { title: "Delete 2" },
               },
@@ -612,7 +612,7 @@ moduleIntegrationTestRunner<ITranslationModuleService>({
             await service.deleteTranslations([created[0].id, created[1].id])
 
             const translations = await service.listTranslations({
-              entity_id: ["del_1", "del_2"],
+              reference_id: ["del_1", "del_2"],
             })
 
             expect(translations).toHaveLength(0)

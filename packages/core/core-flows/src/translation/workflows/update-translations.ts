@@ -23,7 +23,7 @@ export const updateTranslationsWorkflowId = "update-translations"
  * .run({
  *   input: {
  *     selector: {
- *       entity_id: "prod_123",
+ *       reference_id: "prod_123",
  *       locale_code: "fr-FR"
  *     },
  *     update: {

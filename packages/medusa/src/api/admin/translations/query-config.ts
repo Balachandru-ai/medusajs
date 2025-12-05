@@ -1,7 +1,7 @@
 export const defaultAdminTranslationFields = [
   "id",
-  "entity_id",
-  "entity_type",
+  "reference_id",
+  "reference",
   "locale_code",
   "translations",
 ]

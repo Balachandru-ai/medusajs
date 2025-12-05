@@ -11,7 +11,7 @@ export const ProductTranslation: ModuleJoinerConfig = {
       relationship: {
         serviceName: Modules.TRANSLATION,
         entity: "Translation",
-        primaryKey: "entity_id",
+        primaryKey: "reference_id",
         foreignKey: "id",
         alias: "translations",
         isList: true,
@@ -26,7 +26,7 @@ export const ProductTranslation: ModuleJoinerConfig = {
       relationship: {
         serviceName: Modules.TRANSLATION,
         entity: "Translation",
-        primaryKey: "entity_id",
+        primaryKey: "reference_id",
         foreignKey: "id",
         alias: "translations",
         isList: true,
@@ -41,7 +41,7 @@ export const ProductTranslation: ModuleJoinerConfig = {
       relationship: {
         serviceName: Modules.TRANSLATION,
         entity: "Translation",
-        primaryKey: "entity_id",
+        primaryKey: "reference_id",
         foreignKey: "id",
         alias: "translations",
         isList: true,
@@ -56,7 +56,7 @@ export const ProductTranslation: ModuleJoinerConfig = {
       relationship: {
         serviceName: Modules.TRANSLATION,
         entity: "Translation",
-        primaryKey: "entity_id",
+        primaryKey: "reference_id",
         foreignKey: "id",
         alias: "translations",
         isList: true,
@@ -71,7 +71,7 @@ export const ProductTranslation: ModuleJoinerConfig = {
       relationship: {
         serviceName: Modules.TRANSLATION,
         entity: "Translation",
-        primaryKey: "entity_id",
+        primaryKey: "reference_id",
         foreignKey: "id",
         alias: "translations",
         isList: true,
@@ -86,7 +86,7 @@ export const ProductTranslation: ModuleJoinerConfig = {
       relationship: {
         serviceName: Modules.TRANSLATION,
         entity: "Translation",
-        primaryKey: "entity_id",
+        primaryKey: "reference_id",
         foreignKey: "id",
         alias: "translations",
         isList: true,
@@ -101,7 +101,7 @@ export const ProductTranslation: ModuleJoinerConfig = {
       relationship: {
         serviceName: Modules.TRANSLATION,
         entity: "Translation",
-        primaryKey: "entity_id",
+        primaryKey: "reference_id",
         foreignKey: "id",
         alias: "translations",
         isList: true,
@@ -116,7 +116,7 @@ export const ProductTranslation: ModuleJoinerConfig = {
       relationship: {
         serviceName: Modules.TRANSLATION,
         entity: "Translation",
-        primaryKey: "entity_id",
+        primaryKey: "reference_id",
         foreignKey: "id",
         alias: "translations",
         isList: true,
@@ -132,7 +132,7 @@ export const ProductTranslation: ModuleJoinerConfig = {
         serviceName: Modules.PRODUCT,
         entity: "Product",
         primaryKey: "id",
-        foreignKey: "entity_id",
+        foreignKey: "reference_id",
         alias: "product",
         args: {
           methodSuffix: "Products",
