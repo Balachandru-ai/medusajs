@@ -1,4 +1,4 @@
-import { normalizeLocale } from "@medusajs/utils"
+import { ContainerRegistrationKeys, normalizeLocale } from "@medusajs/utils"
 import type {
   MedusaNextFunction,
   MedusaRequest,
