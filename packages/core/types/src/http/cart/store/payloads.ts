@@ -76,6 +76,10 @@ export interface StoreUpdateCart {
    * The promotion codes to apply on the cart.
    */
   promo_codes?: string[]
+  /**
+   * The locale code of the cart.
+   */
+  locale_code?: string
 }
 
 export interface StoreUpdateCartCustomer {}

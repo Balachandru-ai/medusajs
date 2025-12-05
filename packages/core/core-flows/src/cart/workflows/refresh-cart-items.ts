@@ -10,7 +10,11 @@ import {
 } from "@medusajs/framework/workflows-sdk"
 import { useQueryGraphStep } from "../../common"
 import { acquireLockStep, releaseLockStep } from "../../locking"
-import { updateLineItemsStep, validateCartStep } from "../steps"
+import {
+  updateCartItemsTranslationsStep,
+  updateLineItemsStep,
+  validateCartStep,
+} from "../steps"
 import { cartFieldsForRefreshSteps } from "../utils/fields"
 import { pricingContextResult } from "../utils/schemas"
 import { getVariantsAndItemsWithPrices } from "./get-variants-and-items-with-prices"
@@ -54,6 +58,12 @@ export type RefreshCartItemsWorkflowInput = {
    * on the configurations of the cart's tax region.
    */
   force_tax_calculation?: boolean
+
+  /**
+   * The new locale code to update cart items translations.
+   * When provided, all cart items will be re-translated using this locale.
+   */
+  locale_code?: string
 }
 
 export const refreshCartItemsWorkflowId = "refresh-cart-items"
@@ -232,6 +242,21 @@ export const refreshCartItemsWorkflow = createWorkflow(
         action: PromotionActions.REPLACE,
         force_refresh_payment_collection: false,
       },
+    })
+
+    // Keep as the last action to be performed on the items
+    when(
+      "should-update-item-translations",
+      { input },
+      ({ input }) => {
+        return !!input.locale_code
+      }
+    ).then(() => {
+      updateCartItemsTranslationsStep({
+        cart_id: input.cart_id,
+        locale_code: input.locale_code!,
+        items: refetchedCart.items,
+      })
     })
 
     const beforeRefreshingPaymentCollection = createHook(

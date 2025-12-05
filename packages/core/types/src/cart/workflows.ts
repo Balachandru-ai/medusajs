@@ -342,6 +342,11 @@ export interface UpdateCartWorkflowInputDTO {
   currency_code?: string
 
   /**
+   * The locale code for the cart.
+   */
+  locale_code?: string | null
+
+  /**
    * Custom key-value pairs of data related to the cart.
    */
   metadata?: Record<string, unknown> | null
