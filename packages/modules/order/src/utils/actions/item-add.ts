@@ -29,7 +29,6 @@ OrderChangeProcessing.registerActionType(ChangeActionType.ITEM_ADD, {
         return_id: action.return_id,
         claim_id: action.claim_id,
         exchange_id: action.exchange_id,
-
         unit_price: action.details.unit_price,
         compare_at_unit_price: action.details.compare_at_unit_price,
         quantity: action.details.quantity,

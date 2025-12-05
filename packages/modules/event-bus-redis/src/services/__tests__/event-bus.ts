@@ -3,13 +3,6 @@ import { Queue, Worker } from "bullmq"
 import { Redis } from "ioredis"
 import RedisEventBusService from "../event-bus-redis"
 
-// const redisURL = "redis://localhost:6379"
-// const client = new Redis(6379, redisURL, {
-//   // Lazy connect to properly handle connection errors
-//   lazyConnect: true,
-//   maxRetriesPerRequest: 0,
-// })
-
 jest.mock("bullmq")
 jest.mock("ioredis")
 
@@ -28,11 +21,16 @@ const redisMock = {
   unlink: () => jest.fn(),
 } as unknown as Redis
 
-const simpleModuleOptions = { redisUrl: "test-url" }
 const moduleDeps = {
   logger: loggerMock,
   eventBusRedisConnection: redisMock,
+  eventBusRedisQueueName: "events-queue",
+  eventBusRedisQueueOptions: {},
+  eventBusRedisWorkerOptions: {},
+  eventBusRedisJobOptions: {},
 }
+
+const moduleDeclaration = { scope: "internal" } as any
 
 describe("RedisEventBusService", () => {
   let eventBus: RedisEventBusService
@@ -43,9 +41,7 @@ describe("RedisEventBusService", () => {
     beforeEach(async () => {
       jest.clearAllMocks()
 
-      eventBus = new RedisEventBusService(moduleDeps, simpleModuleOptions, {
-        scope: "internal",
-      })
+      eventBus = new RedisEventBusService(moduleDeps, {}, moduleDeclaration)
     })
 
     it("Creates a queue + worker", () => {
@@ -69,9 +65,7 @@ describe("RedisEventBusService", () => {
 
     it("Throws on isolated module declaration", () => {
       try {
-        eventBus = new RedisEventBusService(moduleDeps, simpleModuleOptions, {
-          scope: "internal",
-        })
+        eventBus = new RedisEventBusService(moduleDeps, {}, moduleDeclaration)
       } catch (error) {
         expect(error.message).toEqual(
           "At the moment this module can only be used with shared resources"
@@ -85,9 +79,7 @@ describe("RedisEventBusService", () => {
       beforeEach(async () => {
         jest.clearAllMocks()
 
-        eventBus = new RedisEventBusService(moduleDeps, simpleModuleOptions, {
-          scope: "internal",
-        })
+        eventBus = new RedisEventBusService(moduleDeps, {}, moduleDeclaration)
 
         queue = (eventBus as any).queue_
         queue.addBulk = jest.fn()
@@ -96,6 +88,8 @@ describe("RedisEventBusService", () => {
       })
 
       it("should add job to queue with default options", async () => {
+        eventBus.subscribe("eventName", () => Promise.resolve())
+
         await eventBus.emit([
           {
             name: "eventName",
@@ -119,6 +113,8 @@ describe("RedisEventBusService", () => {
       })
 
       it("should add job to queue with custom options passed directly upon emitting", async () => {
+        eventBus.subscribe("eventName", () => Promise.resolve())
+
         await eventBus.emit([{ name: "eventName", data: { hi: "1234" } }], {
           attempts: 3,
           backoff: 5000,
@@ -142,21 +138,21 @@ describe("RedisEventBusService", () => {
 
       it("should add job to queue with module job options", async () => {
         eventBus = new RedisEventBusService(
-          moduleDeps,
           {
-            ...simpleModuleOptions,
-            jobOptions: {
+            ...moduleDeps,
+            eventBusRedisJobOptions: {
               removeOnComplete: { age: 5 },
               attempts: 7,
             },
           },
-          {
-            scope: "internal",
-          }
+          {},
+          moduleDeclaration
         )
 
         queue = (eventBus as any).queue_
         queue.addBulk = jest.fn()
+
+        eventBus.subscribe("eventName", () => Promise.resolve())
 
         await eventBus.emit(
           [
@@ -187,20 +183,20 @@ describe("RedisEventBusService", () => {
 
       it("should add job to queue with default, local, and global options merged", async () => {
         eventBus = new RedisEventBusService(
-          moduleDeps,
           {
-            ...simpleModuleOptions,
-            jobOptions: {
+            ...moduleDeps,
+            eventBusRedisJobOptions: {
               removeOnComplete: 5,
             },
           },
-          {
-            scope: "internal",
-          }
+          {},
+          moduleDeclaration
         )
 
         queue = (eventBus as any).queue_
         queue.addBulk = jest.fn()
+
+        eventBus.subscribe("eventName", () => Promise.resolve())
 
         await eventBus.emit(
           {
@@ -268,12 +264,15 @@ describe("RedisEventBusService", () => {
           },
         ]
 
+        eventBus.subscribe("ungrouped-event-2", () => Promise.resolve())
+        eventBus.subscribe("grouped-event-1", () => Promise.resolve())
+        eventBus.subscribe("grouped-event-2", () => Promise.resolve())
+        eventBus.subscribe("grouped-event-3", () => Promise.resolve())
+
         redis.unlink = jest.fn()
 
         await eventBus.emit(events, options)
 
-        // Expect 1 event to have been send
-        // Expect 2 pushes to redis as there are 2 groups of events to push
         expect(queue.addBulk).toHaveBeenCalledTimes(1)
         expect(redis.rpush).toHaveBeenCalledTimes(2)
         expect(redis.unlink).not.toHaveBeenCalled()
@@ -331,6 +330,147 @@ describe("RedisEventBusService", () => {
         expect(redis.unlink).toHaveBeenCalledWith("staging:test-group-2")
       })
     })
+
+    describe("Events without subscribers", () => {
+      beforeEach(async () => {
+        jest.clearAllMocks()
+
+        eventBus = new RedisEventBusService(moduleDeps, {}, moduleDeclaration)
+
+        queue = (eventBus as any).queue_
+        queue.addBulk = jest.fn()
+        redis = (eventBus as any).eventBusRedisConnection_
+        redis.rpush = jest.fn()
+      })
+
+      it("should not add events to queue when there are no subscribers", async () => {
+        await eventBus.emit([
+          {
+            name: "eventWithoutSubscribers",
+            data: { test: "data" },
+          },
+        ])
+
+        expect(queue.addBulk).not.toHaveBeenCalled()
+      })
+
+      it("should still call interceptors even when there are no subscribers", async () => {
+        const callInterceptorsSpy = jest.spyOn(
+          eventBus as any,
+          "callInterceptors"
+        )
+
+        await eventBus.emit([
+          {
+            name: "eventWithoutSubscribers",
+            data: { test: "data" },
+          },
+        ])
+
+        expect(callInterceptorsSpy).toHaveBeenCalledTimes(1)
+        expect(callInterceptorsSpy).toHaveBeenCalledWith(
+          {
+            name: "eventWithoutSubscribers",
+            data: { test: "data" },
+          },
+          { isGrouped: false }
+        )
+
+        expect(queue.addBulk).not.toHaveBeenCalled()
+
+        callInterceptorsSpy.mockRestore()
+      })
+
+      it("should add events to queue only for events with subscribers using wildcard", async () => {
+        eventBus.subscribe("*", () => Promise.resolve())
+
+        await eventBus.emit([
+          {
+            name: "anyEvent",
+            data: { test: "data" },
+          },
+        ])
+
+        expect(queue.addBulk).toHaveBeenCalledTimes(1)
+      })
+
+      it("should not add grouped events to queue when releasing if there are no subscribers", async () => {
+        const options = { delay: 1000 }
+        const event = {
+          name: "grouped-event-no-sub",
+          data: { hi: "1234" },
+          metadata: { eventGroupId: "test-group-no-sub" },
+        }
+
+        await eventBus.emit(event, options)
+
+        expect(redis.rpush).toHaveBeenCalledTimes(1)
+        expect(queue.addBulk).not.toHaveBeenCalled()
+
+        const [builtEvent] = (eventBus as any).buildEvents([event], options)
+
+        redis.lrange = jest.fn((key) => {
+          if (key === "staging:test-group-no-sub") {
+            return Promise.resolve([JSON.stringify(builtEvent)])
+          }
+          return Promise.resolve([])
+        })
+
+        redis.unlink = jest.fn()
+        queue.addBulk = jest.fn()
+
+        await eventBus.releaseGroupedEvents("test-group-no-sub")
+
+        expect(queue.addBulk).not.toHaveBeenCalled()
+
+        expect(redis.unlink).toHaveBeenCalledWith("staging:test-group-no-sub")
+      })
+
+      it("should still call interceptors for grouped events without subscribers", async () => {
+        const options = { delay: 1000 }
+        const event = {
+          name: "grouped-event-no-sub-2",
+          data: { hi: "1234" },
+          metadata: { eventGroupId: "test-group-no-sub-2" },
+        }
+
+        await eventBus.emit(event, options)
+
+        const [builtEvent] = (eventBus as any).buildEvents([event], options)
+
+        redis.lrange = jest.fn((key) => {
+          if (key === "staging:test-group-no-sub-2") {
+            return Promise.resolve([JSON.stringify(builtEvent)])
+          }
+          return Promise.resolve([])
+        })
+
+        redis.unlink = jest.fn()
+        queue.addBulk = jest.fn()
+
+        const callInterceptorsSpy = jest.spyOn(
+          eventBus as any,
+          "callInterceptors"
+        )
+
+        await eventBus.releaseGroupedEvents("test-group-no-sub-2")
+
+        expect(callInterceptorsSpy).toHaveBeenCalledTimes(1)
+        expect(callInterceptorsSpy).toHaveBeenCalledWith(
+          expect.objectContaining({
+            name: "grouped-event-no-sub-2",
+          }),
+          {
+            isGrouped: true,
+            eventGroupId: "test-group-no-sub-2",
+          }
+        )
+
+        expect(queue.addBulk).not.toHaveBeenCalled()
+
+        callInterceptorsSpy.mockRestore()
+      })
+    })
   })
 
   describe("worker_", () => {
@@ -338,9 +478,7 @@ describe("RedisEventBusService", () => {
       beforeEach(async () => {
         jest.clearAllMocks()
 
-        eventBus = new RedisEventBusService(moduleDeps, simpleModuleOptions, {
-          scope: "internal",
-        })
+        eventBus = new RedisEventBusService(moduleDeps, {}, moduleDeclaration)
       })
 
       it("should process a simple event with no options", async () => {
@@ -352,7 +490,6 @@ describe("RedisEventBusService", () => {
           return Promise.resolve()
         })
 
-        // TODO: The typing for this is all over the place
         await eventBus.worker_({
           name: "eventName",
           data: { data: { test: 1 } },

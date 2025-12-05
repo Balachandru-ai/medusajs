@@ -107,6 +107,18 @@ export const sidebar = [
             title: "Cache",
             path: "/cache",
           },
+          {
+            type: "link",
+            title: "Emails",
+            path: "/emails",
+            children: [
+              {
+                type: "link",
+                title: "React Email Templates",
+                path: "/emails/react-email",
+              },
+            ],
+          },
         ],
       },
       {

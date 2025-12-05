@@ -156,7 +156,7 @@ export default defineLink(
 
 ## Set Delete Cascades on Link
 
-To enable delete cascade on a link so that when a record is deleted, its linked records are also deleted, pass the `deleteCascade` property in the object passed to `defineLink`.
+To enable delete cascade on a link so that when a record is deleted with [link.delete](./link/page.mdx#cascade-delete-linked-records), its linked records are also deleted, pass the `deleteCascade` property in the object passed to `defineLink`.
 
 For example:
 
@@ -174,7 +174,7 @@ export default defineLink(
 )
 ```
 
-In this example, when a product is deleted, its linked `post` record is also deleted.
+In this example, when a product is deleted with [link.delete](./link/page.mdx#cascade-delete-linked-records), all linked blog posts are also deleted.
 
 ---
 
