@@ -150,3 +150,7 @@ export class BigNumber implements IBigNumber {
 export const MEDUSA_EPSILON = new BigNumber(
   process.env.MEDUSA_EPSILON || "0.0001"
 )
+
+export const MEDUSA_PAYMENTS_EPSILON = new BigNumber(
+  process.env.MEDUSA_PAYMENTS_EPSILON || "0.01"
+)
