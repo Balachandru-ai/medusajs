@@ -12,7 +12,7 @@ export const ProductOrganization = () => {
 
   const { product, isLoading, isError, error } = useProduct(id!, {
     // TODO: Remove exclusion once we avoid including unnecessary relations by default in the query config
-    fields: "-options,-images,-variants,-sales_channels",
+    fields: "*categories,-options,-images,-variants,-sales_channels",
   })
 
   if (isError) {

@@ -13,7 +13,7 @@ export const ProductShippingProfile = () => {
   const { product, isLoading, isError, error } = useProduct(id!, {
     // TODO: Remove exclusion once we avoid including unnecessary relations by default in the query config
     fields:
-      "-type,-collection,-options,-tags,-images,-variants,-sales_channels",
+      "*shipping_profile,-type,-collection,-options,-tags,-images,-variants,-sales_channels",
   })
 
   if (isError) {
