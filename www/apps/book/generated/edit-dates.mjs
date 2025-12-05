@@ -96,7 +96,7 @@ export const generatedEditDates = {
   "app/learn/build/page.mdx": "2025-10-27T09:30:26.957Z",
   "app/learn/deployment/general/page.mdx": "2025-10-21T07:39:08.998Z",
   "app/learn/fundamentals/workflows/multiple-step-usage/page.mdx": "2025-08-01T14:59:59.501Z",
-  "app/learn/installation/page.mdx": "2025-11-26T12:14:47.372Z",
+  "app/learn/installation/page.mdx": "2025-12-04T14:30:00.510Z",
   "app/learn/fundamentals/data-models/check-constraints/page.mdx": "2025-07-25T13:50:21.065Z",
   "app/learn/fundamentals/module-links/link/page.mdx": "2025-11-28T13:42:03.037Z",
   "app/learn/fundamentals/workflows/store-executions/page.mdx": "2025-04-17T08:29:10.166Z",
