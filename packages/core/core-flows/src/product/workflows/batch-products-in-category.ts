@@ -1,6 +1,10 @@
 import type { ProductCategoryWorkflow } from "@medusajs/framework/types"
-import { WorkflowData, createWorkflow } from "@medusajs/framework/workflows-sdk"
+import {
+  WorkflowData, createWorkflow
+} from "@medusajs/framework/workflows-sdk"
 import { batchLinkProductsToCategoryStep } from "../steps/batch-link-products-in-category"
+import { emitEventStep } from "../../common"
+import { ProductCategoryWorkflowEvents } from "@medusajs/framework/utils"
 
 export const batchLinkProductsToCategoryWorkflowId =
   "batch-link-products-to-category"
@@ -30,6 +34,10 @@ export const batchLinkProductsToCategoryWorkflow = createWorkflow(
     // eslint-disable-next-line max-len
     input: WorkflowData<ProductCategoryWorkflow.BatchUpdateProductsOnCategoryWorkflowInput>
   ): WorkflowData<void> => {
-    return batchLinkProductsToCategoryStep(input)
+    batchLinkProductsToCategoryStep(input)
+    emitEventStep({
+      eventName: ProductCategoryWorkflowEvents.UPDATED,
+      data: [{ id: input.id }],
+    })
   }
 )
