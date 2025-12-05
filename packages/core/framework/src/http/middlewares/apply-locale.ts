@@ -35,5 +35,35 @@ export async function applyLocale(
     return next()
   }
 
+  const query = req.scope.resolve(ContainerRegistrationKeys.QUERY)
+  const {
+    data: [store],
+  } = await query.graph(
+    {
+      entity: "store",
+      fields: ["id", "supported_locales"],
+      filters: {
+        supported_locales: {
+          is_default: true,
+        },
+      },
+      pagination: {
+        take: 1,
+      },
+    },
+    {
+      cache: {
+        enable: true,
+      },
+    }
+  )
+
+  if (store.supported_locales.length) {
+    req.locale = store.supported_locales.find(
+      (locale) => locale.is_default
+    )?.locale_code
+    return next()
+  }
+
   return next()
 }

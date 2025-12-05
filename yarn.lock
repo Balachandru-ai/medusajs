@@ -4087,7 +4087,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@medusajs/translation@2.12.1, @medusajs/translation@workspace:packages/modules/translation":
+"@medusajs/translation@2.12.1, @medusajs/translation@workspace:*, @medusajs/translation@workspace:packages/modules/translation":
   version: 0.0.0-use.local
   resolution: "@medusajs/translation@workspace:packages/modules/translation"
   dependencies:
@@ -18385,6 +18385,7 @@ __metadata:
     "@medusajs/store": "workspace:^"
     "@medusajs/tax": "workspace:^"
     "@medusajs/test-utils": "workspace:*"
+    "@medusajs/translation": "workspace:*"
     "@medusajs/types": "workspace:^"
     "@medusajs/user": "workspace:^"
     "@medusajs/utils": "workspace:^"

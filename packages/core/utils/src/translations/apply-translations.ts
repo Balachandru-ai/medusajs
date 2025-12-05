@@ -19,7 +19,7 @@ function gatherIds(object: Record<string, any>, gatheredIds: Set<string>) {
   gatheredIds.add(object.id)
   Object.entries(object).forEach(([, value]) => {
     if (Array.isArray(value)) {
-      value.forEach((item) => gatherIds(item, gatheredIds))
+      value.forEach((item) => item && gatherIds(item, gatheredIds))
     } else if (isObject(value)) {
       gatherIds(value, gatheredIds)
     }
@@ -51,6 +51,7 @@ function applyTranslation(
     if (Array.isArray(value)) {
       value.forEach(
         (item) =>
+          item &&
           canApplyTranslationTo(item) &&
           applyTranslation(item, entityIdToTranslation)
       )
@@ -65,7 +66,7 @@ export async function applyTranslations({
   objects,
   container,
 }: {
-  localeCode: string
+  localeCode: string | undefined
   objects: Record<string, any>[]
   container: MedusaContainer
 }) {
@@ -81,9 +82,14 @@ export async function applyTranslations({
     return
   }
 
+  const objects_ = objects.filter((o) => !!o)
+  if (!objects_.length) {
+    return
+  }
+
   const gatheredIds: Set<string> = new Set()
 
-  for (const inputObject of objects) {
+  for (const inputObject of objects_) {
     gatherIds(inputObject, gatheredIds)
   }
 
@@ -127,7 +133,7 @@ export async function applyTranslations({
     }
   }
 
-  for (const inputObject of objects) {
+  for (const inputObject of objects_) {
     applyTranslation(inputObject, entityIdToTranslation)
   }
 }
