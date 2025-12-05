@@ -39,6 +39,11 @@ export interface StoreCreateCart {
    * Key-value pairs of custom data.
    */
   metadata?: Record<string, unknown>
+
+  /**
+   * The locale code of the cart.
+   */
+  locale_code?: string
 }
 
 export interface StoreUpdateCart {

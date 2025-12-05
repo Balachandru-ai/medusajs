@@ -1,4 +1,5 @@
 export * from "./create-translations"
 export * from "./delete-translations"
+export * from "./get-translated-objects"
 export * from "./update-translations"
 export * from "./validate-translations"

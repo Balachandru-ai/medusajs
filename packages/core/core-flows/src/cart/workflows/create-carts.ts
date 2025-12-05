@@ -3,6 +3,7 @@ import {
   ConfirmVariantInventoryWorkflowInputDTO,
   CreateCartDTO,
   CreateCartWorkflowInputDTO,
+  CreateLineItemDTO,
 } from "@medusajs/framework/types"
 import {
   CartWorkflowEvents,
@@ -18,6 +19,7 @@ import {
   WorkflowResponse,
 } from "@medusajs/framework/workflows-sdk"
 import { emitEventStep } from "../../common/steps/emit-event"
+import { getTranslatedObjectsStep } from "../../translation"
 import {
   createCartsStep,
   findOneOrAnyRegionStep,
@@ -209,12 +211,28 @@ export const createCartWorkflow = createWorkflow(
       }
     )
 
-    const cartToCreate = transform({ lineItems, cartInput }, (data) => {
+    let cartToCreate = transform({ lineItems, cartInput }, (data) => {
       return {
         ...data.cartInput,
         items: data.lineItems.map((i) => i.data),
       } as unknown as CreateCartDTO
     })
+
+    const translatedItems = getTranslatedObjectsStep({
+      objects: cartToCreate.items,
+      localeCode: input.locale_code,
+    })
+
+    cartToCreate = transform(
+      { cartToCreate, translatedItems } as {
+        cartToCreate: CreateCartDTO
+        translatedItems: CreateLineItemDTO[]
+      },
+      (data) => {
+        data.cartToCreate.items = data.translatedItems
+        return data.cartToCreate
+      }
+    )
 
     const validate = createHook("validate", {
       input: cartInput,
