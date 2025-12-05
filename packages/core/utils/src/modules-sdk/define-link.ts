@@ -504,8 +504,23 @@ ${serviceBObj.module}: {
 }`)
     }
 
-    const extendsConfig: any[] = []
-    if (readOnlyLinkOptions?.isList ?? serviceAObj.isList) {
+    const extendsConfig: ModuleJoinerConfig["extends"] = [
+      {
+        serviceName: serviceAObj.module,
+        entity: serviceAObj.entity,
+        fieldAlias: buildFieldAlias(readOnlyLinkOptions?.shortcut),
+        relationship: {
+          serviceName: serviceBObj.module,
+          entity: serviceBObj.entity,
+          primaryKey: serviceBObj.primaryKey,
+          foreignKey: serviceAObj.field,
+          alias: serviceBObj.alias,
+          isList: readOnlyLinkOptions?.isList ?? serviceAObj.isList,
+        },
+      },
+    ]
+
+    if (readOnlyLinkOptions?.isList || serviceAObj.isList) {
       extendsConfig.push({
         serviceName: serviceAObj.module,
         entity: serviceAObj.entity,
@@ -519,33 +534,6 @@ ${serviceBObj.module}: {
             readOnlyLinkOptions?.isList ?? serviceAObj.isList
               ? pluralize(serviceBObj.alias)
               : serviceBObj.alias,
-          isList: readOnlyLinkOptions?.isList ?? serviceAObj.isList,
-        },
-      })
-      extendsConfig.push({
-        serviceName: serviceAObj.module,
-        entity: serviceAObj.entity,
-        fieldAlias: buildFieldAlias(readOnlyLinkOptions?.shortcut),
-        relationship: {
-          serviceName: serviceBObj.module,
-          entity: serviceBObj.entity,
-          primaryKey: serviceBObj.primaryKey,
-          foreignKey: serviceAObj.field,
-          alias: serviceBObj.alias,
-          isList: readOnlyLinkOptions?.isList ?? serviceAObj.isList,
-        },
-      })
-    } else {
-      extendsConfig.push({
-        serviceName: serviceAObj.module,
-        entity: serviceAObj.entity,
-        fieldAlias: buildFieldAlias(readOnlyLinkOptions?.shortcut),
-        relationship: {
-          serviceName: serviceBObj.module,
-          entity: serviceBObj.entity,
-          primaryKey: serviceBObj.primaryKey,
-          foreignKey: serviceAObj.field,
-          alias: serviceBObj.alias,
           isList: readOnlyLinkOptions?.isList ?? serviceAObj.isList,
         },
       })
