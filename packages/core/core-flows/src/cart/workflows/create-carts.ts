@@ -207,7 +207,7 @@ export const createCartWorkflow = createWorkflow(
           }
         }
 
-        return data_
+        return data_ as CreateCartDTO
       }
     )
 
@@ -217,19 +217,18 @@ export const createCartWorkflow = createWorkflow(
 
     const translatedItems = getTranslatedLineItemsStep({
       items: itemsToCreate,
+      variants,
       localeCode: input.locale_code,
     })
 
     const cartToCreate = transform(
-      { cartInput, translatedItems } as {
+      { cartInput, translatedItems } as unknown as {
         cartInput: CreateCartDTO
         translatedItems: CreateLineItemDTO[]
       },
       (data) => {
-        return {
-          ...data.cartInput,
-          items: data.translatedItems,
-        } as unknown as CreateCartDTO
+        data.cartInput.items = data.translatedItems
+        return data.cartInput as unknown as CreateCartDTO
       }
     )
 

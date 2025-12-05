@@ -1,13 +1,13 @@
-import {
-  CreateLineItemDTO,
-  CreateLineItemForCartDTO,
-  ProductVariantDTO,
-} from "@medusajs/framework/types"
+import { ProductVariantDTO } from "@medusajs/framework/types"
 import { applyTranslations, FeatureFlag } from "@medusajs/framework/utils"
-import { createStep, StepResponse } from "@medusajs/framework/workflows-sdk"
+import {
+  createStep,
+  StepFunction,
+  StepResponse,
+} from "@medusajs/framework/workflows-sdk"
 
-export interface GetTranslatedLineItemsStepInput {
-  items: (CreateLineItemForCartDTO | CreateLineItemDTO)[] | undefined
+export interface GetTranslatedLineItemsStepInput<T> {
+  items: T[] | undefined
   variants: Partial<ProductVariantDTO>[]
   localeCode: string | undefined
 }
@@ -24,14 +24,9 @@ const variantFields = ["title"] as const
 
 export const getTranslatedLineItemsStepId = "get-translated-line-items"
 
-/**
- * This step translates cart line items based on their associated variant and product IDs.
- * It fetches translations for the product (title, description, subtitle) and variant (title),
- * then applies them to the corresponding line item fields.
- */
-export const getTranslatedLineItemsStep = createStep(
+const step = createStep(
   getTranslatedLineItemsStepId,
-  async (data: GetTranslatedLineItemsStepInput, { container }) => {
+  async (data: GetTranslatedLineItemsStepInput<any>, { container }) => {
     const isTranslationEnabled = FeatureFlag.isFeatureEnabled("translation")
 
     if (!isTranslationEnabled || !data.localeCode || !data.items?.length) {
@@ -95,3 +90,12 @@ export const getTranslatedLineItemsStep = createStep(
     return new StepResponse(translatedItems)
   }
 )
+
+/**
+ * This step translates cart line items based on their associated variant and product IDs.
+ * It fetches translations for the product (title, description, subtitle) and variant (title),
+ * then applies them to the corresponding line item fields.
+ */
+export const getTranslatedLineItemsStep = <T>(
+  data: GetTranslatedLineItemsStepInput<T>
+): ReturnType<StepFunction<any, T[]>> => step(data)
