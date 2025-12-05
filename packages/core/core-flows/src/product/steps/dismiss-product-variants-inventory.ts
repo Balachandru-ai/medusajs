@@ -1,9 +1,12 @@
 import { createStep, StepResponse } from "@medusajs/framework/workflows-sdk"
-import { UpdateProductWorkflowInput } from "../workflows"
 import { ContainerRegistrationKeys, Modules } from "@medusajs/framework/utils"
 
-export const conditionallyDismissProductVariantsInventoryStepId =
-  "conditionally-dismiss-product-variants-inventory"
+export const dismissProductVariantsInventoryStepId =
+  "dismiss-product-variants-inventory"
+
+export type DismissProductVariantsInventoryStepInput = {
+  variantIds: string[]
+}
 
 async function dismissVariantsInventory(
   variantIds: string[],
@@ -44,53 +47,19 @@ async function dismissVariantsInventory(
   return dismissedVariantInventoryItems
 }
 
-export const conditionallyDismissProductVariantsInventoryStep = createStep(
-  conditionallyDismissProductVariantsInventoryStepId,
-  async (data: UpdateProductWorkflowInput, { container }) => {
+export const dismissProductVariantsInventoryStep = createStep(
+  dismissProductVariantsInventoryStepId,
+  async (data: DismissProductVariantsInventoryStepInput, { container }) => {
     const query = container.resolve(ContainerRegistrationKeys.QUERY)
     const link = container.resolve(ContainerRegistrationKeys.LINK)
+    const variantIds = data.variantIds || []
 
-    if ("products" in data) {
-      if (!data.products.length) {
-        return new StepResponse(void 0)
-      }
-
-      const unmanagedVariantIds: string[] = []
-      for (const product of data.products) {
-        if (!product.variants?.length) {
-          continue
-        }
-
-        const unmanagedVariants = product.variants.filter(
-          (variant) => variant.manage_inventory === false && variant.id
-        )
-        unmanagedVariantIds.push(
-          ...unmanagedVariants.map((variant) => variant.id!)
-        )
-      }
-
-      if (!unmanagedVariantIds.length) {
-        return new StepResponse(void 0)
-      }
-
-      const dismissedVariantInventoryItems = await dismissVariantsInventory(
-        unmanagedVariantIds,
-        query,
-        link
-      )
-      return new StepResponse(void 0, dismissedVariantInventoryItems)
-    }
-
-    const unmanagedVariants =
-      data.update?.variants?.filter(
-        (variant) => variant.manage_inventory === false && variant.id
-      ) ?? []
-    if (!unmanagedVariants.length) {
+    if (!variantIds.length) {
       return new StepResponse(void 0)
     }
 
     const dismissedVariantInventoryItems = await dismissVariantsInventory(
-      unmanagedVariants.map((variant) => variant.id!),
+      variantIds,
       query,
       link
     )

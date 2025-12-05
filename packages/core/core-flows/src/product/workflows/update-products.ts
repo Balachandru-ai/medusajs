@@ -27,7 +27,7 @@ import {
   useRemoteQueryStep,
 } from "../../common"
 import { upsertVariantPricesWorkflow } from "./upsert-variant-prices"
-import { conditionallyDismissProductVariantsInventoryStep } from "../steps/conditionally-dismiss-product-variants-inventory"
+import { dismissProductVariantsInventoryStep } from "../steps/dismiss-product-variants-inventory"
 
 /**
  * Update products that match a specified selector, along with custom data that's passed to the workflow's hooks.
@@ -445,7 +445,34 @@ export const updateProductsWorkflow = createWorkflow(
     const toUpdateInput = transform({ input }, prepareUpdateProductInput)
     const updatedProducts = updateProductsStep(toUpdateInput)
 
-    conditionallyDismissProductVariantsInventoryStep(input)
+    const variantsToDismissInventory = transform(
+      { input, updatedProducts },
+      (data) => {
+        const variantIds: string[] = []
+
+        if ("products" in data.input) {
+          for (const product of data.input.products) {
+            if (product.variants?.length) {
+              variantIds.push(
+                ...product.variants.filter((v) => v.id).map((v) => v.id!)
+              )
+            }
+          }
+        } else if (data.input.update?.variants?.length) {
+          variantIds.push(
+            ...data.input.update.variants
+              .filter((v) => v.id && v.manage_inventory === false)
+              .map((v) => v.id!)
+          )
+        }
+
+        return variantIds
+      }
+    )
+
+    dismissProductVariantsInventoryStep({
+      variantIds: variantsToDismissInventory,
+    })
 
     const salesChannelLinks = transform(
       { input, updatedProducts },
