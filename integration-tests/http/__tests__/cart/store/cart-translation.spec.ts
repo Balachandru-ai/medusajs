@@ -5,12 +5,11 @@ import {
   generatePublishableKey,
   generateStoreHeaders,
 } from "../../../../helpers/create-admin-user"
+import { MedusaContainer } from "@medusajs/types"
 
 jest.setTimeout(100000)
 
-const env = {
-  MEDUSA_FF_TRANSLATION: true,
-}
+process.env.MEDUSA_FF_TRANSLATION = "true"
 
 const adminHeaders = { headers: { "x-medusa-access-token": "test_token" } }
 
@@ -24,18 +23,21 @@ const shippingAddressData = {
 }
 
 medusaIntegrationTestRunner({
-  env,
   testSuite: ({ dbConnection, getContainer, api }) => {
     describe("Store Cart Translation API", () => {
-      let appContainer
-      let storeHeaders
-      let region
-      let product
-      let salesChannel
-      let shippingProfile
+      let appContainer: MedusaContainer
+      let storeHeaders: { headers: { [key: string]: string } }
+      let region: { id: string }
+      let product: { id: string }
+      let salesChannel: { id: string }
+      let shippingProfile: { id: string }
 
       beforeAll(async () => {
         appContainer = getContainer()
+      })
+
+      afterAll(async () => {
+        delete process.env.MEDUSA_FF_TRANSLATION
       })
 
       beforeEach(async () => {
