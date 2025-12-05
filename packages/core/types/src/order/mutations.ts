@@ -909,6 +909,11 @@ export interface CreateOrderChangeDTO {
   internal_note?: string | null
 
   /**
+   * Whether to carry over promotions (apply promotions to outbound exchange items).
+   */
+  carry_over_promotions?: boolean | null
+
+  /**
    * The user or customer that requested the order change.
    */
   requested_by?: string
@@ -1016,6 +1021,11 @@ export interface UpdateOrderChangeDTO {
    * Holds custom data in key-value pairs.
    */
   metadata?: Record<string, unknown> | null
+
+  /**
+   * Whether to carry over promotions to outbound exchange items.
+   */
+  carry_over_promotions?: boolean | null
 }
 
 /**
