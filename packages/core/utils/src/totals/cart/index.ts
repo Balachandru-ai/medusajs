@@ -292,7 +292,7 @@ export function decorateCartTotals(
     )
 
     cart.summary.pending_difference = MathBN.lte(
-      pendingDifference,
+      MathBN.abs(pendingDifference),
       currencyEpsilon
     )
       ? MathBN.convert(0)
