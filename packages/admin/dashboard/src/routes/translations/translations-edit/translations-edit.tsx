@@ -19,11 +19,10 @@ export const TranslationsEdit = () => {
     }
   }, [reference, navigate, isTranslationsEnabled])
 
-  // TODO: change entity_type to reference once we update that across the board
   const { translations, isPending, isError, error } = useTranslations(
     {
-      entity_type: reference!,
-      ...(referenceId.length && { entity_id: referenceId }),
+      reference: reference!,
+      ...(referenceId.length && { reference_id: referenceId }),
     },
     { enabled: !!reference }
   )

@@ -89,8 +89,8 @@ export class Translation {
    * sdk.admin.translation.batch({
    *   create: [
    *     {
-   *       entity_id: "prod_123",
-   *       entity_type: "product",
+   *       reference_id: "prod_123",
+   *       reference: "product",
    *       locale_code: "en-US",
    *       translations: { title: "Shirt" }
    *     }

@@ -40,7 +40,7 @@ export type EntityTranslationsSchema = z.infer<typeof EntityTranslationsSchema>
 
 /**
  * Form schema
- * Maps each entity_id to their corresponding translations for each locale
+ * Maps each reference_id to their corresponding translations for each locale
  */
 export const TranslationsFormSchema = z.object({
   entities: z.record(EntityTranslationsSchema),
@@ -55,14 +55,14 @@ export type TranslationRow = EntityRow | LocaleRow
 
 export type EntityRow = {
   _type: "entity"
-  entity_id: string
+  reference_id: string
   displayName: string
   subRows: LocaleRow[]
 }
 
 export type LocaleRow = {
   _type: "locale"
-  entity_id: string
+  reference_id: string
   locale_code: string
   locale_name: string
   id?: string
@@ -84,7 +84,7 @@ function initTranslationsFormState(
 ): TranslationsFormSchema {
   const existingMap = new Map<string, HttpTypes.AdminTranslation>()
   for (const t of translations) {
-    existingMap.set(`${t.entity_id}:${t.locale_code}`, t)
+    existingMap.set(`${t.reference_id}:${t.locale_code}`, t)
   }
 
   const entitiesTranslationState: Record<string, EntityTranslationsSchema> = {}
@@ -122,22 +122,22 @@ function buildTranslationRows(
   availableLocales: AdminStoreLocale[],
   translations: HttpTypes.AdminTranslation[]
 ): TranslationRow[] {
-  // Index existing translations by entity_id:locale_code
+  // Index existing translations by reference_id:locale_code
   const existingMap = new Map<string, HttpTypes.AdminTranslation>()
   for (const t of translations) {
-    existingMap.set(`${t.entity_id}:${t.locale_code}`, t)
+    existingMap.set(`${t.reference_id}:${t.locale_code}`, t)
   }
 
   return entities.map((entity) => ({
     _type: "entity" as const,
-    entity_id: entity.id,
+    reference_id: entity.id,
     displayName: entity.name,
     subRows: availableLocales.map((locale) => {
       const key = `${entity.id}:${locale.locale_code}`
       const existing = existingMap.get(key)
       return {
         _type: "locale" as const,
-        entity_id: entity.id,
+        reference_id: entity.id,
         locale_code: locale.locale_code,
         locale_name: locale.locale.name,
         id: existing?.id,
@@ -170,8 +170,8 @@ function transformToBatchPayload(
 
       if (!localeTranslations.id && hasContent) {
         payload.create.push({
-          entity_id: entityId,
-          entity_type: entityType,
+          reference_id: entityId,
+          reference: entityType,
           locale_code: localeTranslations.locale_code,
           translations: localeTranslations.fields,
         })
@@ -263,7 +263,7 @@ function useTranslationsGridColumns({
               return null
             }
 
-            return `entities.${row.entity_id}.locales.${row.locale_code}.fields.${fieldName}`
+            return `entities.${row.reference_id}.locales.${row.locale_code}.fields.${fieldName}`
           },
           type: "text",
         })
@@ -293,9 +293,9 @@ export const TranslationsEditForm = ({
 
   const entities = useMemo(() => {
     return translations.map((translation) => ({
-      id: translation.entity_id,
+      id: translation.reference_id,
       // TODO: update this to have the value we actually want to display. Perhaps this could be part of the translatable entity config, like 'displayName'
-      name: translation.entity_id,
+      name: translation.reference_id,
     }))
   }, [translations])
 
