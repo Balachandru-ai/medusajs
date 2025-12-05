@@ -3800,6 +3800,7 @@ __metadata:
     "@medusajs/store": 2.12.1
     "@medusajs/tax": 2.12.1
     "@medusajs/telemetry": 2.12.1
+    "@medusajs/translation": 2.12.1
     "@medusajs/user": 2.12.1
     "@medusajs/workflow-engine-inmemory": 2.12.1
     "@medusajs/workflow-engine-redis": 2.12.1
@@ -4083,6 +4084,17 @@ __metadata:
     ts-dedent: 2.2.0
   bin:
     toolbox: ./bin/toolbox.js
+  languageName: unknown
+  linkType: soft
+
+"@medusajs/translation@2.12.1, @medusajs/translation@workspace:packages/modules/translation":
+  version: 0.0.0-use.local
+  resolution: "@medusajs/translation@workspace:packages/modules/translation"
+  dependencies:
+    "@medusajs/framework": 2.12.1
+    "@medusajs/test-utils": 2.12.1
+  peerDependencies:
+    "@medusajs/framework": 2.12.1
   languageName: unknown
   linkType: soft
 
