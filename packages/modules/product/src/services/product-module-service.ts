@@ -58,8 +58,8 @@ import {
   UpdateTypeInput,
   VariantImageInputArray,
 } from "../types"
-import { joinerConfig } from "./../joiner-config"
 import { eventBuilders } from "../utils/events"
+import { joinerConfig } from "./../joiner-config"
 
 type InjectedDependencies = {
   baseRepository: DAL.RepositoryService
@@ -1743,12 +1743,15 @@ export default class ProductModuleService
         .registerSubscriber(new subscriber(sharedContext))
     }
 
+    const productIds = data.map((d) => d.id).filter(Boolean)
+
     const originalProducts = await this.productService_.list(
       {
-        id: data.map((d) => d.id),
+        id: productIds,
       },
       {
-        relations: ["options", "options.values", "variants", "images", "tags"],
+        relations: ["options", "options.values", "tags"],
+        take: productIds.length,
       },
       sharedContext
     )
@@ -2012,10 +2015,9 @@ export default class ProductModuleService
       // Re map options to handle non serialized data as well
       dbOptions =
         originalProducts
-          ?.map((originalProduct) =>
+          ?.flatMap((originalProduct) =>
             originalProduct.options.map((option) => option)
           )
-          .flat()
           .filter(Boolean) ?? []
     }
 

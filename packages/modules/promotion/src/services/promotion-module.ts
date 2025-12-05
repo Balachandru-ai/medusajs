@@ -634,7 +634,10 @@ export default class PromotionModuleService
     options: PromotionTypes.ComputeActionOptions = {},
     @MedusaContext() sharedContext: Context = {}
   ): Promise<PromotionTypes.ComputeActions[]> {
-    const { prevent_auto_promotions: preventAutoPromotions } = options
+    const {
+      prevent_auto_promotions: preventAutoPromotions,
+      skip_usage_limit_checks: skipUsageLimitChecks,
+    } = options
     const computedActions: PromotionTypes.ComputeActions[] = []
     const { items = [], shipping_methods: shippingMethods = [] } =
       applicationContext
@@ -806,6 +809,7 @@ export default class PromotionModuleService
       } = promotion
 
       if (
+        !skipUsageLimitChecks &&
         promotion.campaign?.budget?.type === CampaignBudgetType.USE_BY_ATTRIBUTE
       ) {
         const attribute = promotion.campaign?.budget?.attribute!
@@ -847,7 +851,7 @@ export default class PromotionModuleService
       }
 
       // Check promotion usage limit
-      if (typeof promotion.limit === "number") {
+      if (!skipUsageLimitChecks && typeof promotion.limit === "number") {
         if ((promotion.used ?? 0) >= promotion.limit) {
           computedActions.push({
             action: ComputedActions.PROMOTION_LIMIT_EXCEEDED,
