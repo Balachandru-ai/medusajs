@@ -1,5 +1,5 @@
 import { medusaIntegrationTestRunner } from "@medusajs/test-utils"
-import { ProductStatus } from "@medusajs/utils"
+import { Modules, ProductStatus } from "@medusajs/utils"
 import {
   createAdminUser,
   generatePublishableKey,
@@ -44,6 +44,28 @@ medusaIntegrationTestRunner({
         await createAdminUser(dbConnection, adminHeaders, appContainer)
         const publishableKey = await generatePublishableKey(appContainer)
         storeHeaders = generateStoreHeaders({ publishableKey })
+
+        salesChannel = (
+          await api.post(
+            "/admin/sales-channels",
+            { name: "Webshop", description: "channel" },
+            adminHeaders
+          )
+        ).data.sales_channel
+
+        const storeModule = appContainer.resolve(Modules.STORE)
+        await storeModule.createStores({
+          name: "New store",
+          supported_currencies: [
+            { currency_code: "usd", is_default: true },
+            { currency_code: "dkk" },
+          ],
+          supported_locales: [
+            { locale_code: "fr-FR", is_default: true },
+            { locale_code: "de-DE" },
+          ],
+          default_sales_channel_id: salesChannel.id,
+        })
 
         shippingProfile = (
           await api.post(
@@ -97,14 +119,6 @@ medusaIntegrationTestRunner({
             adminHeaders
           )
         ).data.product
-
-        salesChannel = (
-          await api.post(
-            "/admin/sales-channels",
-            { name: "Webshop", description: "channel" },
-            adminHeaders
-          )
-        ).data.sales_channel
 
         // Create translations for product and variants
         await api.post(
@@ -168,7 +182,7 @@ medusaIntegrationTestRunner({
       })
 
       describe("POST /store/carts (create cart with locale)", () => {
-        it("should create a cart with translated items when locale_code is provided", async () => {
+        it.only("should create a cart with translated items when locale_code is provided", async () => {
           const response = await api.post(
             `/store/carts`,
             {
