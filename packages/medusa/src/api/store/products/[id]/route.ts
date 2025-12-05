@@ -1,7 +1,11 @@
 import { MedusaResponse } from "@medusajs/framework/http"
 import { HttpTypes } from "@medusajs/framework/types"
-import { isPresent, MedusaError, QueryContext } from "@medusajs/framework/utils"
-import { applyTranslations } from "../../../../utils/apply-translations"
+import {
+  applyTranslations,
+  isPresent,
+  MedusaError,
+  QueryContext,
+} from "@medusajs/framework/utils"
 import { wrapVariantsWithInventoryQuantityForSalesChannel } from "../../../utils/middlewares"
 import {
   filterOutInternalProductCategories,

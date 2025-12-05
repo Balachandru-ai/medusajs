@@ -1,11 +1,7 @@
-import { MedusaRequest } from "@medusajs/framework/http"
-import {
-  ContainerRegistrationKeys,
-  FeatureFlag,
-  isObject,
-} from "@medusajs/framework/utils"
-import { MedusaContainer } from "@medusajs/types"
-import TranslationFeatureFlag from "../feature-flags/translation"
+import { MedusaContainer, RemoteQueryFunction } from "@medusajs/types"
+import { ContainerRegistrationKeys } from "../common/container"
+import { isObject } from "../common/is-object"
+import { FeatureFlag } from "../feature-flags/flag-router"
 
 const excludedKeys = [
   "id",
@@ -65,23 +61,21 @@ function applyTranslation(
 }
 
 export async function applyTranslations({
-  req,
-  inputObjects,
+  localeCode,
+  objects,
   container,
 }: {
-  req: MedusaRequest
-  inputObjects: Record<string, any>[]
+  localeCode: string
+  objects: Record<string, any>[]
   container: MedusaContainer
 }) {
-  const isTranslationEnabled = FeatureFlag.isFeatureEnabled(
-    TranslationFeatureFlag.key
-  )
+  const isTranslationEnabled = FeatureFlag.isFeatureEnabled("translation")
 
   if (!isTranslationEnabled) {
     return
   }
 
-  const locale = req.locale
+  const locale = localeCode
 
   if (!locale) {
     return
@@ -89,11 +83,13 @@ export async function applyTranslations({
 
   const gatheredIds: Set<string> = new Set()
 
-  for (const inputObject of inputObjects) {
+  for (const inputObject of objects) {
     gatherIds(inputObject, gatheredIds)
   }
 
-  const query = container.resolve(ContainerRegistrationKeys.QUERY)
+  const query = container.resolve<RemoteQueryFunction>(
+    ContainerRegistrationKeys.QUERY
+  )
 
   const queryBatchSize = 250
   const queryBatches = Math.ceil(gatheredIds.size / queryBatchSize)
@@ -127,7 +123,7 @@ export async function applyTranslations({
     }
   }
 
-  for (const inputObject of inputObjects) {
+  for (const inputObject of objects) {
     applyTranslation(inputObject, entityIdToTranslation)
   }
 }

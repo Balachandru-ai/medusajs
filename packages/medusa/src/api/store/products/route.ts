@@ -1,6 +1,7 @@
 import { MedusaResponse } from "@medusajs/framework/http"
 import { HttpTypes, QueryContextType } from "@medusajs/framework/types"
 import {
+  applyTranslations,
   ContainerRegistrationKeys,
   FeatureFlag,
   isPresent,
@@ -9,7 +10,6 @@ import {
 import IndexEngineFeatureFlag from "../../../feature-flags/index-engine"
 import { wrapVariantsWithInventoryQuantityForSalesChannel } from "../../utils/middlewares"
 import { RequestWithContext, wrapProductsWithTaxPrices } from "./helpers"
-import { applyTranslations } from "../../../utils/apply-translations"
 
 export const GET = async (
   req: RequestWithContext<HttpTypes.StoreProductListParams>,
