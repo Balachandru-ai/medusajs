@@ -19,12 +19,12 @@ import {
   WorkflowResponse,
 } from "@medusajs/framework/workflows-sdk"
 import { emitEventStep } from "../../common/steps/emit-event"
-import { getTranslatedObjectsStep } from "../../translation"
 import {
   createCartsStep,
   findOneOrAnyRegionStep,
   findOrCreateCustomerStep,
   findSalesChannelStep,
+  getTranslatedLineItemsStep,
 } from "../steps"
 import { validateSalesChannelStep } from "../steps/validate-sales-channel"
 import { productVariantsFields } from "../utils/fields"
@@ -211,26 +211,25 @@ export const createCartWorkflow = createWorkflow(
       }
     )
 
-    let cartToCreate = transform({ lineItems, cartInput }, (data) => {
-      return {
-        ...data.cartInput,
-        items: data.lineItems.map((i) => i.data),
-      } as unknown as CreateCartDTO
+    const itemsToCreate = transform({ lineItems }, (data) => {
+      return data.lineItems.map((i) => i.data as CreateLineItemDTO)
     })
 
-    const translatedItems = getTranslatedObjectsStep({
-      objects: cartToCreate.items,
+    const translatedItems = getTranslatedLineItemsStep({
+      items: itemsToCreate,
       localeCode: input.locale_code,
     })
 
-    cartToCreate = transform(
-      { cartToCreate, translatedItems } as {
-        cartToCreate: CreateCartDTO
+    const cartToCreate = transform(
+      { cartInput, translatedItems } as {
+        cartInput: CreateCartDTO
         translatedItems: CreateLineItemDTO[]
       },
       (data) => {
-        data.cartToCreate.items = data.translatedItems
-        return data.cartToCreate
+        return {
+          ...data.cartInput,
+          items: data.translatedItems,
+        } as unknown as CreateCartDTO
       }
     )
 
