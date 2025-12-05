@@ -124,7 +124,6 @@ export class OrderChangeProcessing {
         ...OrderChangeProcessing.typeDefinition[action.action],
       }
 
-      // this was set in the `processAction_` above
       const amount = MathBN.mult(action.amount!, type.isDeduction ? -1 : 1)
 
       if (action.change_id) {
@@ -226,7 +225,7 @@ export class OrderChangeProcessing {
     return orderSummary
   }
 
-  // Returns the order summary from a calculated order including taxes
+  // Returns the order summary from a calculated order including taxes <- this is used for order preview flow
   public getSummaryFromOrder(order: OrderDTO): OrderSummaryDTO {
     const summary_ = this.summary
     const total = order.total
@@ -235,7 +234,6 @@ export class OrderChangeProcessing {
     const orderSummary = {
       transaction_total: new BigNumber(summary_.transaction_total),
       original_order_total: new BigNumber(summary_.original_order_total),
-      // we don't need actions anymore?
       current_order_total: new BigNumber(total),
       pending_difference: new BigNumber(pendingDifference),
       paid_total: new BigNumber(summary_.paid_total),
