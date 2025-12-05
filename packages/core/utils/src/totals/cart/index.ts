@@ -1,6 +1,6 @@
 import { BigNumberInput, CartLikeWithTotals } from "@medusajs/types"
 import { defaultCurrencies } from "../../defaults/currencies"
-import { BigNumber, getEpsilonFromDecimalDigits } from "../big-number"
+import { BigNumber, getEpsilonFromDecimalPrecision } from "../big-number"
 import { calculateCreditLinesTotal } from "../credit-lines"
 import { GetItemTotalInput, getLineItemsTotals } from "../line-item"
 import { MathBN } from "../math"
@@ -280,7 +280,7 @@ export function decorateCartTotals(
     )
 
     const upperCurCode = cart.currency_code?.toUpperCase() as string
-    const currencyEpsilon = getEpsilonFromDecimalDigits(
+    const currencyEpsilon = getEpsilonFromDecimalPrecision(
       defaultCurrencies[upperCurCode]?.decimal_digits
     )
 

@@ -1,7 +1,7 @@
 import type { OrderDetailDTO } from "@medusajs/framework/types"
 import {
   defaultCurrencies,
-  getEpsilonFromDecimalDigits,
+  getEpsilonFromDecimalPrecision,
   isDefined,
   MathBN,
 } from "@medusajs/framework/utils"
@@ -21,7 +21,7 @@ export const getLastPaymentStatus = (order: OrderDetailDTO) => {
   }
 
   const upperCurCode = order.currency_code?.toUpperCase() as string
-  const currencyEpsilon = getEpsilonFromDecimalDigits(
+  const currencyEpsilon = getEpsilonFromDecimalPrecision(
     defaultCurrencies[upperCurCode]?.decimal_digits
   )
 

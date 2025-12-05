@@ -1,7 +1,7 @@
 import { BigNumberInput } from "@medusajs/types"
 import { isDefined } from "../../common"
 import { defaultCurrencies } from "../../defaults/currencies"
-import { BigNumber, getEpsilonFromDecimalDigits } from "../big-number"
+import { BigNumber, getEpsilonFromDecimalPrecision } from "../big-number"
 import { MathBN } from "../math"
 
 export function calculateCreditLinesTotal({
@@ -50,7 +50,7 @@ export function calculateCreditLinesTotal({
   }
 
   const upperCurCode = currencyCode?.toUpperCase() as string
-  const currencyEpsilon = getEpsilonFromDecimalDigits(
+  const currencyEpsilon = getEpsilonFromDecimalPrecision(
     defaultCurrencies[upperCurCode]?.decimal_digits
   )
 

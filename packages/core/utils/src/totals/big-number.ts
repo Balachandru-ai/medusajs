@@ -156,7 +156,7 @@ export const MEDUSA_DEFAULT_CURRENCY_EPSILON = new BigNumber(
   process.env.MEDUSA_DEFAULT_CURRENCY_EPSILON || "0.01"
 )
 
-export const getEpsilonFromDecimalDigits = (decimalDigits?: number) => {
+export const getEpsilonFromDecimalPrecision = (decimalDigits?: number) => {
   if (!isDefined(decimalDigits)) {
     return MEDUSA_DEFAULT_CURRENCY_EPSILON
   }
