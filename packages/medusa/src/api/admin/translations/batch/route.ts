@@ -1,5 +1,5 @@
 import { AuthenticatedMedusaRequest, MedusaResponse } from "@medusajs/framework"
-import { BatchMethodRequest, HttpTypes, MedusaContainer } from "@medusajs/types"
+import { BatchMethodRequest, HttpTypes } from "@medusajs/types"
 import {
   AdminCreateTranslationType,
   AdminUpdateTranslationType,
