@@ -1,6 +1,5 @@
 import type { OrderDetailDTO } from "@medusajs/framework/types"
-import { isDefined, MathBN } from "@medusajs/framework/utils"
-import { BigNumber } from "@medusajs/utils/src"
+import { isDefined, MathBN, BigNumber } from "@medusajs/framework/utils"
 
 const MEDUSA_PAYMENTS_EPSILON = new BigNumber(
   process.env.MEDUSA_PAYMENTS_EPSILON || "0.01"
