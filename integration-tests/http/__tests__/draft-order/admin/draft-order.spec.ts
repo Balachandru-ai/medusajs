@@ -1,7 +1,10 @@
 import { medusaIntegrationTestRunner } from "@medusajs/test-utils"
 import { HttpTypes } from "@medusajs/types"
 import { ModuleRegistrationName, ProductStatus } from "@medusajs/utils"
-import { adminHeaders, createAdminUser, } from "../../../../helpers/create-admin-user"
+import {
+  adminHeaders,
+  createAdminUser,
+} from "../../../../helpers/create-admin-user"
 import { setupTaxStructure } from "../../../../modules/__tests__/fixtures"
 
 jest.setTimeout(300000)
@@ -238,11 +241,176 @@ medusaIntegrationTestRunner({
     })
 
     describe("POST /draft-orders/:id/convert-to-order", () => {
+      let product
+      let inventoryItemLarge
+      let inventoryItemMedium
+
+      beforeEach(async () => {
+        inventoryItemLarge = (
+          await api.post(
+            `/admin/inventory-items`,
+            { sku: "shirt-large" },
+            adminHeaders
+          )
+        ).data.inventory_item
+
+        inventoryItemMedium = (
+          await api.post(
+            `/admin/inventory-items`,
+            { sku: "shirt-medium" },
+            adminHeaders
+          )
+        ).data.inventory_item
+
+        await api.post(
+          `/admin/inventory-items/${inventoryItemLarge.id}/location-levels`,
+          {
+            location_id: stockLocation.id,
+            stocked_quantity: 10,
+          },
+          adminHeaders
+        )
+
+        await api.post(
+          `/admin/inventory-items/${inventoryItemMedium.id}/location-levels`,
+          {
+            location_id: stockLocation.id,
+            stocked_quantity: 10,
+          },
+          adminHeaders
+        )
+
+        product = (
+          await api.post(
+            "/admin/products",
+            {
+              title: "Shirt",
+              status: ProductStatus.PUBLISHED,
+              options: [{ title: "size", values: ["large", "medium"] }],
+              variants: [
+                {
+                  title: "L shirt",
+                  options: { size: "large" },
+                  manage_inventory: true,
+                  inventory_items: [
+                    {
+                      inventory_item_id: inventoryItemLarge.id,
+                      required_quantity: 1,
+                    },
+                  ],
+                  prices: [
+                    {
+                      currency_code: "usd",
+                      amount: 10,
+                    },
+                  ],
+                },
+                {
+                  title: "M shirt",
+                  options: { size: "medium" },
+                  manage_inventory: true,
+                  inventory_items: [
+                    {
+                      inventory_item_id: inventoryItemMedium.id,
+                      required_quantity: 1,
+                    },
+                  ],
+                  prices: [
+                    {
+                      currency_code: "usd",
+                      amount: 10,
+                    },
+                  ],
+                },
+              ],
+            },
+            adminHeaders
+          )
+        ).data.product
+      })
+
       it("should convert a draft order to an order", async () => {
         const response = await api.post(
           `/admin/draft-orders/${testDraftOrder.id}/convert-to-order`,
           {},
           adminHeaders
+        )
+
+        expect(response.status).toBe(200)
+        expect(response.data.order.status).toBe("pending")
+      })
+
+      it("should create reservations on draft order to order conversion", async () => {
+        await api.post(
+          `/admin/draft-orders/${testDraftOrder.id}/edit`,
+          {},
+          adminHeaders
+        )
+
+        await api.post(
+          `/admin/draft-orders/${testDraftOrder.id}/edit/items`,
+          {
+            items: [
+              {
+                variant_id: product.variants.find((v) => v.title === "L shirt")
+                  .id,
+                quantity: 1,
+              },
+            ],
+          },
+          adminHeaders
+        )
+
+        await api.post(
+          `/admin/draft-orders/${testDraftOrder.id}/edit/items`,
+          {
+            items: [
+              {
+                variant_id: product.variants.find((v) => v.title === "M shirt")
+                  .id,
+                quantity: 1,
+              },
+            ],
+          },
+          adminHeaders
+        )
+
+        let reservations = (await api.get(`/admin/reservations`, adminHeaders))
+          .data.reservations
+
+        expect(reservations.length).toBe(0)
+
+        await api.post(
+          `/admin/draft-orders/${testDraftOrder.id}/edit/confirm`,
+          {},
+          adminHeaders
+        )
+
+        reservations = (await api.get(`/admin/reservations`, adminHeaders)).data
+          .reservations
+
+        expect(reservations.length).toBe(0)
+
+        const response = await api.post(
+          `/admin/draft-orders/${testDraftOrder.id}/convert-to-order`,
+          {},
+          adminHeaders
+        )
+
+        reservations = (await api.get(`/admin/reservations`, adminHeaders)).data
+          .reservations
+
+        expect(reservations).toEqual(
+          expect.arrayContaining([
+            expect.objectContaining({
+              inventory_item_id: inventoryItemLarge.id,
+              quantity: 1,
+            }),
+            expect.objectContaining({
+              inventory_item_id: inventoryItemMedium.id,
+              quantity: 1,
+            }),
+          ])
         )
 
         expect(response.status).toBe(200)
@@ -375,7 +543,7 @@ medusaIntegrationTestRunner({
         ).data.product
       })
 
-      it("should manage reservations on order edit", async () => {
+      it("should not create reservations on draft order edit confirmation", async () => {
         let reservations = (await api.get(`/admin/reservations`, adminHeaders))
           .data.reservations
 
@@ -429,18 +597,7 @@ medusaIntegrationTestRunner({
         reservations = (await api.get(`/admin/reservations`, adminHeaders)).data
           .reservations
 
-        expect(reservations).toEqual(
-          expect.arrayContaining([
-            expect.objectContaining({
-              inventory_item_id: inventoryItemLarge.id,
-              quantity: 1,
-            }),
-            expect.objectContaining({
-              inventory_item_id: inventoryItemMedium.id,
-              quantity: 1,
-            }),
-          ])
-        )
+        expect(reservations.length).toBe(0)
 
         // Create second edit
         edit = (
@@ -495,19 +652,7 @@ medusaIntegrationTestRunner({
         reservations = (await api.get(`/admin/reservations`, adminHeaders)).data
           .reservations
 
-        expect(reservations.length).toBe(2)
-        expect(reservations).toEqual(
-          expect.arrayContaining([
-            expect.objectContaining({
-              inventory_item_id: inventoryItemLarge.id,
-              quantity: 2,
-            }),
-            expect.objectContaining({
-              inventory_item_id: inventoryItemSmall.id,
-              quantity: 1,
-            }),
-          ])
-        )
+        expect(reservations.length).toBe(0)
       })
     })
 

@@ -14517,6 +14517,12 @@ components:
           type: number
           title: shipping_discount_total
           description: The total discount amount applied on the draft order's shipping.
+        custom_display_id:
+          type: string
+          title: custom_display_id
+          description: The custom display ID of the draft order.
+          externalDocs:
+            url: https://docs.medusajs.com/resources/commerce-modules/order/custom-display-id
     AdminDraftOrderListResponse:
       type: object
       description: The list of draft orders with pagination fields.
@@ -15212,6 +15218,12 @@ components:
           type: number
           title: shipping_discount_total
           description: The total discount amount applied on the draft order's shipping.
+        custom_display_id:
+          type: string
+          title: custom_display_id
+          description: The custom display ID of the draft order.
+          externalDocs:
+            url: https://docs.medusajs.com/resources/commerce-modules/order/custom-display-id
     AdminDraftOrderPreviewResponse:
       type: object
       description: The details of the preview on the draft order.
@@ -17027,6 +17039,12 @@ components:
           type: number
           title: shipping_discount_total
           description: The total discount amount applied on the order's shipping.
+        custom_display_id:
+          type: string
+          title: custom_display_id
+          description: The custom display ID of the order.
+          externalDocs:
+            url: https://docs.medusajs.com/resources/commerce-modules/order/custom-display-id
     AdminOrderAddress:
       type: object
       description: An order address.
@@ -17248,6 +17266,10 @@ components:
           format: date-time
           title: updated_at
           description: The date the order change was updated.
+        carry_over_promotions:
+          type: boolean
+          title: carry_over_promotions
+          description: Whether promotions from the original order should be carried over to the order change (specifically, exchanges).
     AdminOrderChangeAction:
       type: object
       description: The order change action's details.
@@ -17354,6 +17376,15 @@ components:
           type: number
           title: ordering
           description: The action's order in the sequence of actions.
+    AdminOrderChangeResponse:
+      type: object
+      description: The details of the order change.
+      x-schemaName: AdminOrderChangeResponse
+      required:
+        - order_change
+      properties:
+        order_change:
+          $ref: '#/components/schemas/AdminOrderChange'
     AdminOrderChangesResponse:
       type: object
       description: The details of an order's changes.
@@ -18386,6 +18417,12 @@ components:
           type: number
           title: shipping_discount_total
           description: The total discount amount applied on the order's shipping.
+        custom_display_id:
+          type: string
+          title: custom_display_id
+          description: The custom display ID of the order.
+          externalDocs:
+            url: https://docs.medusajs.com/resources/commerce-modules/order/custom-display-id
     AdminOrderPreviewResponse:
       type: object
       description: The preview of an order.
@@ -20305,6 +20342,7 @@ components:
         - ean
         - upc
         - thumbnail
+        - images
         - allow_backorder
         - manage_inventory
         - hs_code
@@ -20439,7 +20477,7 @@ components:
           type: array
           description: The variant's images.
           items:
-            $ref: '#/components/schemas/AdminProductImage'
+            $ref: '#/components/schemas/BaseProductImage'
         thumbnail:
           type: string
           title: thumbnail
@@ -20733,6 +20771,14 @@ components:
           type: boolean
           title: is_tax_inclusive
           description: Whether the promotion is tax inclusive. If enabled, the promotion is applied after tax is calculated.
+        limit:
+          type: number
+          title: limit
+          description: The limit of times the promotion can be used.
+        used:
+          type: number
+          title: used
+          description: The number of times the promotion has been used.
     AdminPromotionResponse:
       type: object
       description: The promotion's details.
@@ -23466,6 +23512,15 @@ components:
           externalDocs:
             url: https://docs.medusajs.com/api/admin#manage-metadata
             description: Learn how to manage metadata
+    AdminUpdateOrderChange:
+      type: object
+      description: The data to update in the order change.
+      x-schemaName: AdminUpdateOrderChange
+      properties:
+        carry_over_promotions:
+          type: boolean
+          title: carry_over_promotions
+          description: Whether promotions from the original order should be carried over to the order change (specifically, exchanges).
     AdminUpdatePriceList:
       type: object
       description: the details to update in a price list.
@@ -26407,6 +26462,12 @@ components:
           type: number
           title: shipping_discount_total
           description: The total discount amount applied on the order's shipping.
+        custom_display_id:
+          type: string
+          title: custom_display_id
+          description: The custom display ID of the order.
+          externalDocs:
+            url: https://docs.medusajs.com/resources/commerce-modules/order/custom-display-id
     BaseOrderAddress:
       type: object
       description: An order address.
@@ -27875,7 +27936,7 @@ components:
           type: object
           description: The image's metadata, can hold custom key-value pairs.
           externalDocs:
-            url: https://docs.medusajs.com/api/store#manage-metadata
+            url: https://docs.medusajs.com/api/admin#manage-metadata
             description: Learn how to manage metadata
         rank:
           type: number
@@ -28066,6 +28127,7 @@ components:
         - ean
         - upc
         - thumbnail
+        - images
         - allow_backorder
         - manage_inventory
         - hs_code
@@ -28191,6 +28253,11 @@ components:
           type: string
           title: thumbnail
           description: The variant's thumbnail.
+        images:
+          type: array
+          description: The variant's images.
+          items:
+            $ref: '#/components/schemas/BaseProductImage'
     BasePromotionRuleValue:
       type: object
       description: The rule value's details.
@@ -29473,6 +29540,12 @@ components:
           type: number
           title: shipping_discount_total
           description: The total discount amount applied on the order's shipping.
+        custom_display_id:
+          type: string
+          title: custom_display_id
+          description: The custom display ID of the order.
+          externalDocs:
+            url: https://docs.medusajs.com/resources/commerce-modules/order/custom-display-id
     OrderAddress:
       type: object
       description: The address's details.
@@ -29691,6 +29764,10 @@ components:
           format: date-time
           title: updated_at
           description: The date the order change was updated.
+        carry_over_promotions:
+          type: boolean
+          title: carry_over_promotions
+          description: Whether promotions from the original order should be carried over to the order change (specifically, exchanges).
     OrderChangeAction:
       type: object
       description: The order change action's details.
@@ -29709,6 +29786,7 @@ components:
         - action
         - details
         - internal_note
+        - ordering
         - created_at
         - updated_at
       properties:
@@ -29792,6 +29870,10 @@ components:
           format: date-time
           title: updated_at
           description: The date the action was updated.
+        ordering:
+          type: number
+          title: ordering
+          description: The action's ordering among other actions in the same order change.
     OrderClaim:
       type: object
       description: The order change's claim.
@@ -33119,6 +33201,12 @@ components:
           type: number
           title: shipping_discount_total
           description: The total discount amount applied on the order's shipping.
+        custom_display_id:
+          type: string
+          title: custom_display_id
+          description: The custom display ID of the order.
+          externalDocs:
+            url: https://docs.medusajs.com/resources/commerce-modules/order/custom-display-id
     StoreOrderAddress:
       type: object
       description: An order address
@@ -40030,6 +40118,11 @@ components:
           type: string
           title: thumbnail
           description: The variant's thumbnail.
+        images:
+          type: array
+          description: The variant's images.
+          items:
+            $ref: '#/components/schemas/BaseProductImage'
       required:
         - options
         - length
@@ -40045,6 +40138,7 @@ components:
         - hs_code
         - mid_code
         - material
+        - images
         - deleted_at
         - manage_inventory
         - allow_backorder
