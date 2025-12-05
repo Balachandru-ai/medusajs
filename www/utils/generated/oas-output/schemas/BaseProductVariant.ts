@@ -11,6 +11,7 @@
  *   - ean
  *   - upc
  *   - thumbnail
+ *   - images
  *   - allow_backorder
  *   - manage_inventory
  *   - hs_code
@@ -136,6 +137,11 @@
  *     type: string
  *     title: thumbnail
  *     description: The variant's thumbnail.
+ *   images:
+ *     type: array
+ *     description: The variant's images.
+ *     items:
+ *       $ref: "#/components/schemas/BaseProductImage"
  * 
 */
 

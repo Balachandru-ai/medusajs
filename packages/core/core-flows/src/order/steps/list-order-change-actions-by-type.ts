@@ -5,7 +5,7 @@ import { StepResponse, createStep } from "@medusajs/framework/workflows-sdk"
 /**
  * This step lists order change actions filtered by action type.
  * 
- * @since v2.12.0
+ * @since 2.12.0
  */
 export const listOrderChangeActionsByTypeStep = createStep(
   "list-order-change-actions-by-type",

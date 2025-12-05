@@ -19,7 +19,7 @@ export const updateOrderChangeWorkflowId = "update-order-change-workflow"
  * You can use this workflow within your customizations or your own custom workflows, allowing you to wrap custom logic around
  * updating an order change and conditionally handling promotion carry-over.
  * 
- * @since v2.12.0
+ * @since 2.12.0
  *
  * @example
  * const { result } = await updateOrderChangeWorkflow(container)
