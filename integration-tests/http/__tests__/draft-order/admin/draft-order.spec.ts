@@ -240,7 +240,7 @@ medusaIntegrationTestRunner({
       })
     })
 
-    describe("POST /draft-orders/:id/convert-to-order", () => {
+    describe.only("POST /draft-orders/:id/convert-to-order", () => {
       let product
       let inventoryItemLarge
       let inventoryItemMedium
@@ -408,6 +408,102 @@ medusaIntegrationTestRunner({
             }),
             expect.objectContaining({
               inventory_item_id: inventoryItemMedium.id,
+              quantity: 1,
+            }),
+          ])
+        )
+
+        expect(response.status).toBe(200)
+        expect(response.data.order.status).toBe("pending")
+      })
+
+      it("should convert a draft order with a custom item (without variant_id) to an order", async () => {
+        await api.post(
+          `/admin/draft-orders/${testDraftOrder.id}/edit`,
+          {},
+          adminHeaders
+        )
+
+        await api.post(
+          `/admin/draft-orders/${testDraftOrder.id}/edit/items`,
+          {
+            items: [
+              {
+                title: "Custom Item",
+                quantity: 2,
+                unit_price: 1500,
+              },
+            ],
+          },
+          adminHeaders
+        )
+
+        await api.post(
+          `/admin/draft-orders/${testDraftOrder.id}/edit/confirm`,
+          {},
+          adminHeaders
+        )
+
+        const response = await api.post(
+          `/admin/draft-orders/${testDraftOrder.id}/convert-to-order`,
+          {},
+          adminHeaders
+        )
+
+        expect(response.status).toBe(200)
+        expect(response.data.order.status).toBe("pending")
+      })
+
+      it("should convert a draft order with both variant items and custom items to an order", async () => {
+        await api.post(
+          `/admin/draft-orders/${testDraftOrder.id}/edit`,
+          {},
+          adminHeaders
+        )
+
+        await api.post(
+          `/admin/draft-orders/${testDraftOrder.id}/edit/items`,
+          {
+            items: [
+              {
+                variant_id: product.variants.find((v) => v.title === "L shirt")
+                  .id,
+                quantity: 1,
+              },
+              {
+                title: "Custom Item",
+                quantity: 1,
+                unit_price: 2000,
+              },
+            ],
+          },
+          adminHeaders
+        )
+
+        await api.post(
+          `/admin/draft-orders/${testDraftOrder.id}/edit/confirm`,
+          {},
+          adminHeaders
+        )
+
+        let reservations = (await api.get(`/admin/reservations`, adminHeaders))
+          .data.reservations
+
+        expect(reservations.length).toBe(0)
+
+        const response = await api.post(
+          `/admin/draft-orders/${testDraftOrder.id}/convert-to-order`,
+          {},
+          adminHeaders
+        )
+
+        reservations = (await api.get(`/admin/reservations`, adminHeaders)).data
+          .reservations
+
+        expect(reservations).toEqual(
+          expect.arrayContaining([
+            expect.objectContaining({
+              inventory_item_id: inventoryItemLarge.id,
               quantity: 1,
             }),
           ])
