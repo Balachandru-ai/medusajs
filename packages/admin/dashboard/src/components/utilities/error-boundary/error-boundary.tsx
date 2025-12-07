@@ -52,6 +52,26 @@ export const ErrorBoundary = () => {
       break
   }
 
+  /**
+   * When admin is running in a sandbox, we need to send the error to the parent frame.
+   */
+  if (window !== window.parent) {
+    window.addEventListener("error", (event) => {
+      const errorPayload = {
+        type: "ADMIN_RUNTIME_ERROR",
+        payload: {
+          message: event.message,
+          filename: event.filename,
+          lineno: event.lineno,
+          colno: event.colno,
+          stack: event.error && event.error.stack,
+        },
+      }
+
+      window.parent.postMessage(errorPayload, "*")
+    })
+  }
+
   return (
     <div className="flex size-full min-h-[calc(100vh-57px-24px)] items-center justify-center">
       <div className="flex flex-col gap-y-6">
