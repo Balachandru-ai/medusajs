@@ -3,4 +3,4 @@
 "@medusajs/medusa": patch
 ---
 
-Upgraded posthog-node dependency to 5.14.0 due to SHA1 HULUD attack
+chore(): Upgraded posthog-node dependency to 5.14.0 due to SHA1 HULUD attack
