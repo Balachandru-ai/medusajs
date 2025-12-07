@@ -45,7 +45,7 @@ medusaIntegrationTestRunner({
       it("should return 404 (not 400) for POST route with middleware when feature flag is disabled", async () => {
         const { response } = await api
           .post("/custom", {
-            foo: "test",
+            invalid: "test",
           })
           .catch((e) => e)
 
