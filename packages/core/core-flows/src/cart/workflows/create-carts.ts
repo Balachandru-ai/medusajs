@@ -234,6 +234,7 @@ export const createCartWorkflow = createWorkflow(
       input: {
         cart_id: cart.id,
         promo_codes: input.promo_codes,
+        force_refresh_payment_collection: false,
       },
     })
 
