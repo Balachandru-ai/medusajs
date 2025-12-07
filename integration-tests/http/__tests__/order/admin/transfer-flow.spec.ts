@@ -112,6 +112,7 @@ medusaIntegrationTestRunner({
                 details: expect.objectContaining({
                   token: expect.any(String),
                   original_email: "tony@stark-industries.com",
+                  new_email: "test@email.com",
                 }),
               }),
             ]),
@@ -136,8 +137,8 @@ medusaIntegrationTestRunner({
           )
         ).data.order
 
-        expect(finalOrderResult.email).toEqual("tony@stark-industries.com")
-        // 4. Customer account is now associated with the order (email on the order is still as original, guest email)
+        // 4. Customer account is now associated with the order and email is updated to the customer's email
+        expect(finalOrderResult.email).toEqual("test@email.com")
         expect(finalOrderResult.customer_id).toEqual(customer.id)
       })
 
@@ -371,6 +372,7 @@ medusaIntegrationTestRunner({
                 details: expect.objectContaining({
                   token: expect.any(String),
                   original_email: "tony@stark-industries.com",
+                  new_email: "test@email.com",
                 }),
               }),
             ]),
@@ -386,8 +388,8 @@ medusaIntegrationTestRunner({
           )
         ).data.order
 
-        expect(finalOrder.email).toEqual("tony@stark-industries.com")
-        // 4. Customer account is now associated with the order (email on the order is still as original, guest email)
+        // 4. Customer account is now associated with the order and email is updated to the customer's email
+        expect(finalOrder.email).toEqual("test@email.com")
         expect(finalOrder.customer_id).toEqual(customer.id)
       })
 
