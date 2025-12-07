@@ -1,12 +1,17 @@
 import { batchTranslationsWorkflow } from "@medusajs/core-flows"
 import { AuthenticatedMedusaRequest, MedusaResponse } from "@medusajs/framework"
-import { ContainerRegistrationKeys } from "@medusajs/framework/utils"
+import {
+  ContainerRegistrationKeys,
+  defineFileConfig,
+  FeatureFlag,
+} from "@medusajs/framework/utils"
 import { BatchMethodRequest, HttpTypes } from "@medusajs/types"
 import { defaultAdminTranslationFields } from "../query-config"
 import {
   AdminCreateTranslationType,
   AdminUpdateTranslationType,
 } from "../validators"
+import TranslationFeatureFlag from "../../../../feature-flags/translation"
 
 export const POST = async (
   req: AuthenticatedMedusaRequest<
@@ -57,3 +62,7 @@ export const POST = async (
     },
   })
 }
+
+defineFileConfig({
+  isDisabled: () => !FeatureFlag.isFeatureEnabled(TranslationFeatureFlag.key),
+})

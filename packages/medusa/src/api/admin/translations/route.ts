@@ -1,6 +1,11 @@
 import { MedusaRequest, MedusaResponse } from "@medusajs/framework/http"
 import { HttpTypes } from "@medusajs/framework/types"
-import { ContainerRegistrationKeys } from "@medusajs/framework/utils"
+import {
+  ContainerRegistrationKeys,
+  defineFileConfig,
+  FeatureFlag,
+} from "@medusajs/framework/utils"
+import TranslationFeatureFlag from "../../../feature-flags/translation"
 
 export const GET = async (
   req: MedusaRequest<HttpTypes.AdminTranslationsListParams>,
@@ -27,3 +32,7 @@ export const GET = async (
     limit: metadata?.take ?? 0,
   })
 }
+
+defineFileConfig({
+  isDisabled: () => !FeatureFlag.isFeatureEnabled(TranslationFeatureFlag.key),
+})
