@@ -2,4 +2,4 @@
 "@medusajs/utils": patch
 ---
 
-fix(utils): avoid inflating refundable_amount for tax inclusive pricing
+fix(utils): avoid inflating refundable_total for tax inclusive pricing
