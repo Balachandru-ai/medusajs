@@ -28,7 +28,7 @@ const _OrderChange = model
     canceled_by: model.text().nullable(),
     canceled_at: model.dateTime().nullable(),
     /**
-     * @since v2.12.0
+     * @since 2.12.0
      */
     carry_over_promotions: model.boolean().nullable(),
     order: model.belongsTo<() => typeof Order>(() => Order, {

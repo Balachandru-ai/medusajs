@@ -1270,6 +1270,15 @@ const generatedgeneratedReferencesSidebarSidebar = {
                   "loaded": true,
                   "isPathHref": true,
                   "type": "link",
+                  "path": "/references/medusa-workflows/computeDraftOrderAdjustmentsWorkflow",
+                  "title": "computeDraftOrderAdjustmentsWorkflow",
+                  "description": "Refresh the promotions in a draft order.",
+                  "children": []
+                },
+                {
+                  "loaded": true,
+                  "isPathHref": true,
+                  "type": "link",
                   "path": "/references/medusa-workflows/confirmDraftOrderEditWorkflow",
                   "title": "confirmDraftOrderEditWorkflow",
                   "description": "Confirm a draft order edit.",
@@ -2508,6 +2517,15 @@ const generatedgeneratedReferencesSidebarSidebar = {
                   "loaded": true,
                   "isPathHref": true,
                   "type": "link",
+                  "path": "/references/medusa-workflows/computeAdjustmentsForPreviewWorkflow",
+                  "title": "computeAdjustmentsForPreviewWorkflow",
+                  "description": "Compute adjustments for an order edit, exchange, claim, or return.",
+                  "children": []
+                },
+                {
+                  "loaded": true,
+                  "isPathHref": true,
+                  "type": "link",
                   "path": "/references/medusa-workflows/confirmClaimRequestWorkflow",
                   "title": "confirmClaimRequestWorkflow",
                   "description": "Confirm a requested claim.",
@@ -3030,6 +3048,15 @@ const generatedgeneratedReferencesSidebarSidebar = {
                   "loaded": true,
                   "isPathHref": true,
                   "type": "link",
+                  "path": "/references/medusa-workflows/updateOrderChangeWorkflow",
+                  "title": "updateOrderChangeWorkflow",
+                  "description": "Update an order change.",
+                  "children": []
+                },
+                {
+                  "loaded": true,
+                  "isPathHref": true,
+                  "type": "link",
                   "path": "/references/medusa-workflows/updateOrderChangesWorkflow",
                   "title": "updateOrderChangesWorkflow",
                   "description": "Update one or more order changes.",
@@ -3355,6 +3382,15 @@ const generatedgeneratedReferencesSidebarSidebar = {
                   "type": "link",
                   "path": "/references/medusa-workflows/steps/deleteReturnsStep",
                   "title": "deleteReturnsStep",
+                  "description": "",
+                  "children": []
+                },
+                {
+                  "loaded": true,
+                  "isPathHref": true,
+                  "type": "link",
+                  "path": "/references/medusa-workflows/steps/listOrderChangeActionsByTypeStep",
+                  "title": "listOrderChangeActionsByTypeStep",
                   "description": "",
                   "children": []
                 },
@@ -3785,6 +3821,15 @@ const generatedgeneratedReferencesSidebarSidebar = {
                   "loaded": true,
                   "isPathHref": true,
                   "type": "link",
+                  "path": "/references/medusa-workflows/onCarryPromotionsFlagSet",
+                  "title": "onCarryPromotionsFlagSet",
+                  "description": "Toggle carrying over promotions to outbound exchange items.",
+                  "children": []
+                },
+                {
+                  "loaded": true,
+                  "isPathHref": true,
+                  "type": "link",
                   "path": "/references/medusa-workflows/orderClaimAddNewItemValidationStep",
                   "title": "orderClaimAddNewItemValidationStep",
                   "description": "",
@@ -4102,6 +4147,15 @@ const generatedgeneratedReferencesSidebarSidebar = {
                   "type": "link",
                   "path": "/references/medusa-workflows/updateReturnValidationStep",
                   "title": "updateReturnValidationStep",
+                  "description": "",
+                  "children": []
+                },
+                {
+                  "loaded": true,
+                  "isPathHref": true,
+                  "type": "link",
+                  "path": "/references/medusa-workflows/validateCarryPromotionsFlagStep",
+                  "title": "validateCarryPromotionsFlagStep",
                   "description": "",
                   "children": []
                 },

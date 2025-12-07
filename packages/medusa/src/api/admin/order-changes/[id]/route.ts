@@ -7,7 +7,7 @@ import {
 import { ContainerRegistrationKeys } from "@medusajs/framework/utils"
 
 /**
- * @since v2.12.0
+ * @since 2.12.0
  */
 export const POST = async (
   req: AuthenticatedMedusaRequest<

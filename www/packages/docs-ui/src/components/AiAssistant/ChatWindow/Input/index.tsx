@@ -1,10 +1,15 @@
 import React, { useEffect, useMemo, useRef } from "react"
 import clsx from "clsx"
 import { ArrowUpCircleSolid, LightBulb, LightBulbSolid } from "@medusajs/icons"
-import { useAiAssistant, useIsBrowser } from "../../../../providers"
+import {
+  useAiAssistant,
+  useAnalytics,
+  useIsBrowser,
+} from "../../../../providers"
 import { useChat, useDeepThinking } from "@kapaai/react-sdk"
 import { useAiAssistantChatNavigation } from "../../../../hooks"
 import { Tooltip } from "../../../Tooltip"
+import { DocsTrackingEvents } from "../../../../constants"
 
 type AiAssistantChatWindowInputProps = {
   chatWindowRef: React.RefObject<HTMLDivElement | null>
@@ -16,6 +21,7 @@ export const AiAssistantChatWindowInput = ({
   const { chatOpened, inputRef, loading, setChatOpened, isCaptchaLoaded } =
     useAiAssistant()
   const { submitQuery, conversation } = useChat()
+  const { track } = useAnalytics()
   const { active, toggle } = useDeepThinking()
   const { isBrowser } = useIsBrowser()
   const { searchQuery, searchQueryType } = useMemo(() => {
@@ -38,6 +44,13 @@ export const AiAssistantChatWindowInput = ({
   ) => {
     e?.preventDefault()
     submitQuery(overrideQuestion || question)
+    if (!conversation.length) {
+      track({
+        event: {
+          event: DocsTrackingEvents.AI_ASSISTANT_START_CHAT,
+        },
+      })
+    }
     setQuestion("")
   }
 
