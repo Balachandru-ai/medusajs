@@ -14,7 +14,6 @@ export class Locale {
     this.client = client
   }
 
-  // TODO: Ask Adrien/Shahed how do I know how to construct the api docs url when implementing new methods
   /**
    * This method retrieves a paginated list of locales. It sends a request to the
    * [List Locales](https://docs.medusajs.com/api/admin#locales_getlocales)
