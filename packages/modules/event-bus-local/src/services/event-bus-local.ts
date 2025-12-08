@@ -22,7 +22,7 @@ eventEmitter.setMaxListeners(Infinity)
 
 // eslint-disable-next-line max-len
 export default class LocalEventBusService extends AbstractEventBusModuleService {
-  protected readonly logger_?: Logger
+  protected readonly logger_: Logger
   protected readonly eventEmitter_: EventEmitter
   protected groupedEventsMap_: StagingQueueType
 
@@ -35,9 +35,26 @@ export default class LocalEventBusService extends AbstractEventBusModuleService 
     // eslint-disable-next-line prefer-rest-params
     super(...arguments)
 
-    this.logger_ = logger
+    this.logger_ = logger ?? console
     this.eventEmitter_ = eventEmitter
     this.groupedEventsMap_ = new Map()
+  }
+
+  static logProcessingEvent(
+    eventData: Message,
+    options: Record<string, unknown> = {},
+    totalSubscribers: number,
+    logger: Logger
+  ) {
+    if (
+      totalSubscribers &&
+      !options?.internal &&
+      !eventData.options?.internal
+    ) {
+      logger?.info(
+        `Processing ${eventData.name} which has ${totalSubscribers} subscribers`
+      )
+    }
   }
 
   /**
@@ -96,15 +113,12 @@ export default class LocalEventBusService extends AbstractEventBusModuleService 
 
         const totalSubscribers =
           eventListenersCount + (hasStarSubscriber ? 1 : 0)
-        if (
-          totalSubscribers &&
-          !options?.internal &&
-          !eventData.options?.internal
-        ) {
-          this.logger_?.info(
-            `Processing ${eventData.name} which has ${totalSubscribers} subscribers`
-          )
-        }
+        LocalEventBusService.logProcessingEvent(
+          eventData,
+          options,
+          totalSubscribers,
+          this.logger_
+        )
       })
     }
   }
@@ -146,6 +160,15 @@ export default class LocalEventBusService extends AbstractEventBusModuleService 
         if (hasStarSubscriber) {
           this.eventEmitter_.emit("*", eventBody)
         }
+
+        const totalSubscribers =
+          eventListenersCount + (hasStarSubscriber ? 1 : 0)
+        LocalEventBusService.logProcessingEvent(
+          event,
+          options,
+          totalSubscribers,
+          this.logger_
+        )
       })
     }
 
