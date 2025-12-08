@@ -10,36 +10,49 @@ import { LinkButton } from "../../../components/common/link-button/link-button"
 type TranslatableEntity = {
   icon: React.ReactNode
   label: string
+  reference: string
 }
 
 const TRANSLATABLE_ENTITIES: TranslatableEntity[] = [
   {
     icon: <Buildings />,
     label: "Product",
+    reference: "product",
   },
   {
     icon: <Buildings />,
     label: "Product Variants",
+    reference: "product_variant",
   },
   {
     icon: <Buildings />,
     label: "Product Categories",
+    reference: "product_category",
   },
   {
     icon: <Buildings />,
     label: "Product Collections",
-  },
-  {
-    icon: <Buildings />,
-    label: "Product Options",
+    reference: "product_collection",
   },
   {
     icon: <Buildings />,
     label: "Product Types",
+    reference: "product_type",
   },
   {
     icon: <Buildings />,
     label: "Product Tags",
+    reference: "product_tag",
+  },
+  {
+    icon: <Buildings />,
+    label: "Product Options",
+    reference: "product_option",
+  },
+  {
+    icon: <Buildings />,
+    label: "Product Option Values",
+    reference: "product_option_value",
   },
 ]
 
@@ -79,7 +92,7 @@ export const TranslationList = () => {
         <Container key={entity.label} className="p-0">
           <div className="flex items-center justify-between px-6 py-3">
             <Link
-              to={`/settings/translations/edit?reference=${entity.label.toLowerCase()}`}
+              to={`/settings/translations/edit?reference=${entity.reference}`}
               className="transition-fg hover:bg-ui-bg-base-hover active:bg-ui-bg-base-pressed focus-visible:shadow-borders-interactive-with-active -mx-2 flex flex-1 items-center gap-x-2 rounded-md px-2 py-1.5 outline-none"
             >
               <IconAvatar variant="squared">{entity.icon}</IconAvatar>

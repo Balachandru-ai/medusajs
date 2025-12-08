@@ -11,7 +11,12 @@ import {
 import { sdk } from "../../lib/client"
 import { queryKeysFactory } from "../../lib/query-key-factory"
 import { queryClient } from "../../lib/query-client"
-import { productsQueryKeys, useProducts } from "./products"
+import { productsQueryKeys, useProducts, variantsQueryKeys } from "./products"
+import { useVariants } from "./product-variants"
+import { categoriesQueryKeys, useProductCategories } from "./categories"
+import { collectionsQueryKeys, useCollections } from "./collections"
+import { productTagsQueryKeys, useProductTags } from "./tags"
+import { productTypesQueryKeys, useProductTypes } from "./product-types"
 
 const TRANSLATIONS_QUERY_KEY = "translations" as const
 export const translationsQueryKeys = queryKeysFactory(TRANSLATIONS_QUERY_KEY)
@@ -57,6 +62,136 @@ export const useReferenceTranslations = (
         }>
       },
     ],
+    [
+      "product_variant",
+      () => {
+        const translatableFields = ["title"]
+        const fields = translatableFields.concat(["translations.*"]).join(",")
+
+        const { variants, ...rest } = useVariants(
+          { id: referenceId ?? [], fields },
+          options
+        )
+        return {
+          ...rest,
+          data: {
+            translations:
+              variants?.flatMap((variant) => variant.translations ?? []) ?? [],
+            references: variants ?? [],
+            translatableFields,
+          },
+        } as unknown as UseQueryResult<{
+          translations: HttpTypes.AdminTranslation[]
+          references: { id: string; [key: string]: string }[]
+          translatableFields: string[]
+        }>
+      },
+    ],
+    [
+      "product_category",
+      () => {
+        const translatableFields = ["name", "description"]
+        const fields = translatableFields.concat(["translations.*"]).join(",")
+
+        const { product_categories, ...rest } = useProductCategories(
+          { id: referenceId ?? [], fields },
+          options
+        )
+        return {
+          ...rest,
+          data: {
+            translations:
+              product_categories?.flatMap(
+                (category) => category.translations ?? []
+              ) ?? [],
+            references: product_categories ?? [],
+            translatableFields,
+          },
+        } as unknown as UseQueryResult<{
+          translations: HttpTypes.AdminTranslation[]
+          references: { id: string; [key: string]: string }[]
+          translatableFields: string[]
+        }>
+      },
+    ],
+    [
+      "product_collection",
+      () => {
+        const translatableFields = ["title"]
+        const fields = translatableFields.concat(["translations.*"]).join(",")
+
+        const { collections, ...rest } = useCollections(
+          { id: referenceId ?? [], fields },
+          options
+        )
+        return {
+          ...rest,
+          data: {
+            translations:
+              collections?.flatMap(
+                (collection) => collection.translations ?? []
+              ) ?? [],
+            references: collections ?? [],
+            translatableFields,
+          },
+        } as unknown as UseQueryResult<{
+          translations: HttpTypes.AdminTranslation[]
+          references: { id: string; [key: string]: string }[]
+          translatableFields: string[]
+        }>
+      },
+    ],
+    [
+      "product_type",
+      () => {
+        const translatableFields = ["value"]
+        const fields = translatableFields.concat(["translations.*"]).join(",")
+
+        const { product_types, ...rest } = useProductTypes(
+          { id: referenceId ?? [], fields },
+          options
+        )
+        return {
+          ...rest,
+          data: {
+            translations:
+              product_types?.flatMap((type) => type.translations ?? []) ?? [],
+            references: product_types ?? [],
+            translatableFields,
+          },
+        } as unknown as UseQueryResult<{
+          translations: HttpTypes.AdminTranslation[]
+          references: { id: string; [key: string]: string }[]
+          translatableFields: string[]
+        }>
+      },
+    ],
+    [
+      "product_tag",
+      () => {
+        const translatableFields = ["value"]
+        const fields = translatableFields.concat(["translations.*"]).join(",")
+
+        const { product_tags, ...rest } = useProductTags(
+          { id: referenceId ?? [], fields },
+          options
+        )
+        return {
+          ...rest,
+          data: {
+            translations:
+              product_tags?.flatMap((tag) => tag.translations ?? []) ?? [],
+            references: product_tags ?? [],
+            translatableFields,
+          },
+        } as unknown as UseQueryResult<{
+          translations: HttpTypes.AdminTranslation[]
+          references: { id: string; [key: string]: string }[]
+          translatableFields: string[]
+        }>
+      },
+    ],
+    // TODO: product option and option values
   ])
   const referenceHook = referenceHookMap.get(reference)
   if (!referenceHook) {
@@ -97,6 +232,11 @@ export const useBatchTranslations = (
 ) => {
   const referenceInvalidationKeysMap = new Map<string, QueryKey>([
     ["product", productsQueryKeys.lists()],
+    ["product_variant", variantsQueryKeys.lists()],
+    ["product_category", categoriesQueryKeys.lists()],
+    ["product_collection", collectionsQueryKeys.lists()],
+    ["product_type", productTypesQueryKeys.lists()],
+    ["product_tag", productTagsQueryKeys.lists()],
   ])
 
   return useMutation({
