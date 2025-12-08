@@ -172,7 +172,10 @@ export default class LocalEventBusService extends AbstractEventBusModuleService 
   ): this {
     super.subscribe(event, subscriber, context)
 
-    this.eventEmitter_.on(event, async (data: Event) => {
+    const subscriberId =
+      context?.subscriberId ?? (subscriber as any).subscriberId
+
+    const wrappedSubscriber = async (data: Event) => {
       try {
         await subscriber(data)
       } catch (err) {
@@ -181,7 +184,13 @@ export default class LocalEventBusService extends AbstractEventBusModuleService 
         )
         this.logger_?.error(err)
       }
-    })
+    }
+
+    if (subscriberId) {
+      ;(wrappedSubscriber as any).subscriberId = subscriberId
+    }
+
+    this.eventEmitter_.on(event, wrappedSubscriber)
 
     return this
   }
@@ -193,7 +202,22 @@ export default class LocalEventBusService extends AbstractEventBusModuleService 
   ): this {
     super.unsubscribe(event, subscriber, context)
 
-    this.eventEmitter_.off(event, subscriber)
+    const subscriberId =
+      context?.subscriberId ?? (subscriber as any).subscriberId
+
+    if (subscriberId) {
+      const listeners = this.eventEmitter_.listeners(event)
+      const wrappedSubscriber = listeners.find(
+        (listener) => (listener as any).subscriberId === subscriberId
+      )
+
+      if (wrappedSubscriber) {
+        this.eventEmitter_.off(event, wrappedSubscriber as any)
+      }
+    } else {
+      this.eventEmitter_.off(event, subscriber)
+    }
+
     return this
   }
 }
