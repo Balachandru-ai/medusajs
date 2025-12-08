@@ -2,7 +2,34 @@ import { ProductVariantDTO } from "@medusajs/framework/types"
 
 const VARIANT_PREFIX = "variant_"
 const PRODUCT_PREFIX = "product_"
-const TRANSLATABLE_ITEM_PROP_PREFIXES = [VARIANT_PREFIX, PRODUCT_PREFIX]
+const PRODUCT_TYPE_PREFIX = "type_"
+const PRODUCT_COLLECTION_PREFIX = "collection_"
+
+const TRANSLATABLE_ITEM_PROP_PREFIXES = [
+  VARIANT_PREFIX,
+  PRODUCT_PREFIX,
+  PRODUCT_TYPE_PREFIX,
+  PRODUCT_COLLECTION_PREFIX,
+]
+
+const entityGetterPerPrefix = {
+  [VARIANT_PREFIX]: (variant: ProductVariantDTO) => variant,
+  [PRODUCT_PREFIX]: (variant: ProductVariantDTO) => variant.product!,
+  [PRODUCT_TYPE_PREFIX]: (variant: ProductVariantDTO) => variant.product?.type!,
+  [PRODUCT_COLLECTION_PREFIX]: (variant: ProductVariantDTO) =>
+    variant.product?.collection!,
+}
+
+function applyTranslation(
+  itemAny: Record<string, any>,
+  translatedInput: Record<string, any>,
+  key: string,
+  translationKey: string
+) {
+  if (typeof itemAny[key] === typeof translatedInput?.[translationKey]) {
+    itemAny[key] = translatedInput?.[translationKey]
+  }
+}
 
 /**
  * Applies translated variant/product fields to line items.
@@ -24,27 +51,15 @@ export function applyTranslationsToItems<
 
     const itemAny = item as Record<string, any>
 
-    // Apply variant translations
     Object.entries(items).forEach(([key, value]) => {
-      const translationKey = key
-        .replace(VARIANT_PREFIX, "")
-        .replace(PRODUCT_PREFIX, "")
-
-      if (
-        TRANSLATABLE_ITEM_PROP_PREFIXES.some((prefix) => key.startsWith(prefix))
-      ) {
-        if (key in itemAny) {
-          if (
-            key.startsWith(VARIANT_PREFIX) &&
-            typeof itemAny[key] === typeof variant[translationKey]
-          ) {
-            itemAny[key] = variant[translationKey]
-          } else if (
-            key.startsWith(PRODUCT_PREFIX) &&
-            typeof itemAny[key] === typeof variant.product?.[translationKey]
-          ) {
-            itemAny[key] = variant.product?.[translationKey]
+      for (const prefix of TRANSLATABLE_ITEM_PROP_PREFIXES) {
+        if (key.startsWith(prefix)) {
+          const translationKey = key.replace(prefix, "")
+          const entity = entityGetterPerPrefix[prefix](variant)
+          if (!entity) {
+            break
           }
+          applyTranslation(itemAny, entity, key, translationKey)
         }
       }
     })
