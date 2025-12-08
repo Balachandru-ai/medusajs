@@ -5,7 +5,7 @@ import {
   StepFunction,
   StepResponse,
 } from "@medusajs/framework/workflows-sdk"
-import { applyVariantTranslationsToItems } from "../utils/apply-variant-translations-to-items"
+import { applyTranslationsToItems } from "../utils/apply-translations-to-items"
 
 export interface GetTranslatedLineItemsStepInput<T> {
   items: T[] | undefined
@@ -30,10 +30,7 @@ const step = createStep(
       container,
     })
 
-    const translatedItems = applyVariantTranslationsToItems(
-      data.items,
-      data.variants
-    )
+    const translatedItems = applyTranslationsToItems(data.items, data.variants)
 
     return new StepResponse(translatedItems)
   }

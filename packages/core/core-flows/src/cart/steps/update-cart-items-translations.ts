@@ -1,3 +1,4 @@
+import { MedusaContainer } from "@medusajs/framework"
 import {
   ICartModuleService,
   ProductVariantDTO,
@@ -11,9 +12,8 @@ import {
   Modules,
 } from "@medusajs/framework/utils"
 import { createStep, StepResponse } from "@medusajs/framework/workflows-sdk"
-import { applyVariantTranslationsToItems } from "../utils/apply-variant-translations-to-items"
+import { applyTranslationsToItems } from "../utils/apply-translations-to-items"
 import { productVariantsFields } from "../utils/fields"
-import { MedusaContainer } from "@medusajs/framework"
 
 export interface UpdateCartItemsTranslationsStepInput {
   cart_id: string
@@ -134,7 +134,7 @@ export const updateCartItemsTranslationsStep = createStep(
           container,
         })
 
-        const translatedItems = applyVariantTranslationsToItems(
+        const translatedItems = applyTranslationsToItems(
           items as { variant_id?: string; [key: string]: any }[],
           variants as Partial<ProductVariantDTO>[]
         )
