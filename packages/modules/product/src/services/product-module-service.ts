@@ -1028,6 +1028,14 @@ export default class ProductModuleService
     if (isString(idOrSelector)) {
       await this.productOptionService_.retrieve(idOrSelector, {}, sharedContext)
       normalizedInput = [{ id: idOrSelector, ...data }]
+
+      if (data.is_exclusive) {
+        // disable changing option from exclusive to non-exclusive and vice versa for now
+        throw new MedusaError(
+          MedusaError.Types.INVALID_DATA,
+          "Cannot change product option from is_exclusive flag."
+        )
+      }
     } else {
       const options = await this.productOptionService_.list(
         idOrSelector,
@@ -1035,10 +1043,19 @@ export default class ProductModuleService
         sharedContext
       )
 
-      normalizedInput = options.map((option) => ({
-        id: option.id,
-        ...data,
-      }))
+      normalizedInput = options.map((option) => {
+        if (option.is_exclusive !== data.is_exclusive) {
+          throw new MedusaError(
+            MedusaError.Types.INVALID_DATA,
+            "Cannot change product option from is_exclusive flag."
+          )
+        }
+
+        return {
+          id: option.id,
+          ...data,
+        }
+      })
     }
 
     const options = await this.updateOptions_(normalizedInput, sharedContext)

@@ -559,10 +559,6 @@ export interface AdminUpdateProductOption {
    * The rank for each option value.
    */
   ranks?: Record<string, number>
-  /**
-   * Whether the option is exclusive or global.
-   */
-  is_exclusive?: boolean
 }
 
 /**
