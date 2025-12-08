@@ -7,6 +7,7 @@ export class Migration20251113183352 extends Migration {
     this.addSql(`
       insert into "product_product_option_value" ("id", "product_product_option_id", "product_option_value_id")
       select
+        'prodoptval_' || replace(encode(gen_random_bytes(16), 'base32'), '=', ''),
         gen_random_uuid(),
         ppo.id,
         pov.id
