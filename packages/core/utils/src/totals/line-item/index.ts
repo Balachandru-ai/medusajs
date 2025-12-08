@@ -93,14 +93,11 @@ function setRefundableTotal(
     MathBN.mult(currentQuantity, discountPerUnit)
   )
 
-  const isTaxInclusive = Boolean(item.is_tax_inclusive)
-
-  const taxTotal = isTaxInclusive
-    ? MathBN.convert(0)
-    : calculateTaxTotal({
-        taxLines: item.tax_lines || [],
-        taxableAmount: refundableSubTotal,
-      })
+  const taxTotal = calculateTaxTotal({
+    isTaxInclusive: item.is_tax_inclusive,
+    taxLines: item.tax_lines || [],
+    taxableAmount: refundableSubTotal,
+  })
   const refundableTotal = MathBN.add(refundableSubTotal, taxTotal)
 
   totals.refundable_total_per_unit = new BigNumber(
