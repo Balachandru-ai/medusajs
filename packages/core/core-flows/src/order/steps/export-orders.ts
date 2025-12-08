@@ -2,12 +2,21 @@ import {
   FilterableOrderProps,
   IFileModuleService,
 } from "@medusajs/framework/types"
-import { ContainerRegistrationKeys, Modules } from "@medusajs/framework/utils"
+import {
+  ContainerRegistrationKeys,
+  Modules,
+  deduplicate,
+} from "@medusajs/framework/utils"
 import { StepResponse, createStep } from "@medusajs/framework/workflows-sdk"
 import { json2csv } from "json-2-csv"
 import { normalizeOrdersForExport } from "../helpers/normalize-for-export"
+import {
+  getLastFulfillmentStatus,
+  getLastPaymentStatus,
+} from "../utils/aggregate-status"
 
 export type ExportOrdersStepInput = {
+  batch_size?: number | string
   select: string[]
   filter?: FilterableOrderProps
 }
@@ -106,19 +115,6 @@ const csvSortFunction = (a: string, b: string) => {
     return 1
   }
 
-  // Billing address fields
-  if (a.startsWith("Billing Address") && b.startsWith("Billing Address")) {
-    const aKey = a.replace("Billing Address ", "")
-    const bKey = b.replace("Billing Address ", "")
-    return comparator(aKey, bKey, addressColumnPositions)
-  }
-  if (a.startsWith("Billing Address") && !b.startsWith("Billing Address")) {
-    return -1
-  }
-  if (!a.startsWith("Billing Address") && b.startsWith("Billing Address")) {
-    return 1
-  }
-
   // Sales channel fields
   if (a.startsWith("Sales Channel") && !b.startsWith("Sales Channel")) {
     return -1
@@ -167,49 +163,6 @@ const csvSortFunction = (a: string, b: string) => {
     return 1
   }
 
-  // Payment collection fields
-  if (
-    a.startsWith("Payment Collection") &&
-    b.startsWith("Payment Collection")
-  ) {
-    const aMatch = a.match(/Payment Collection (\d+)/)
-    const bMatch = b.match(/Payment Collection (\d+)/)
-    if (aMatch && bMatch) {
-      const aNum = parseInt(aMatch[1], 10)
-      const bNum = parseInt(bMatch[1], 10)
-      if (aNum !== bNum) {
-        return aNum - bNum
-      }
-    }
-    return a.localeCompare(b)
-  }
-  if (
-    a.startsWith("Payment Collection") &&
-    !b.startsWith("Payment Collection")
-  ) {
-    return -1
-  }
-  if (
-    !a.startsWith("Payment Collection") &&
-    b.startsWith("Payment Collection")
-  ) {
-    return 1
-  }
-
-  // Fulfillment fields
-  if (a.startsWith("Fulfillment") && b.startsWith("Fulfillment")) {
-    const aMatch = a.match(/Fulfillment (\d+)/)
-    const bMatch = b.match(/Fulfillment (\d+)/)
-    if (aMatch && bMatch) {
-      const aNum = parseInt(aMatch[1], 10)
-      const bNum = parseInt(bMatch[1], 10)
-      if (aNum !== bNum) {
-        return aNum - bNum
-      }
-    }
-    return a.localeCompare(b)
-  }
-
   return a.localeCompare(b)
 }
 
@@ -225,23 +178,57 @@ export const exportOrdersStep = createStep(
       mimeType: "text/csv",
     })
 
-    const pageSize = 50
+    const pageSize = !isNaN(parseInt(input?.batch_size as string))
+      ? parseInt(input?.batch_size as string, 10)
+      : 50
+
     let page = 0
     let hasHeader = false
+
+    const fields = deduplicate([
+      ...input.select,
+      "id",
+      "status",
+      "items.*",
+      "payment_collections.status",
+      "payment_collections.amount",
+      "payment_collections.captured_amount",
+      "payment_collections.refunded_amount",
+      "fulfillments.packed_at",
+      "fulfillments.shipped_at",
+      "fulfillments.delivered_at",
+      "fulfillments.canceled_at",
+    ])
 
     while (true) {
       const { data: orders } = await query.graph({
         entity: "order",
-        filters: input.filter,
+        filters: {
+          ...input.filter,
+          status: {
+            $ne: "draft",
+          },
+        },
         pagination: {
           skip: page * pageSize,
           take: pageSize,
         },
-        fields: input.select,
+        fields,
       })
 
       if (orders.length === 0) {
         break
+      }
+
+      for (const order of orders) {
+        const order_ = order as any
+
+        order_.payment_status = getLastPaymentStatus(order_)
+        order_.fulfillment_status = getLastFulfillmentStatus(order_)
+
+        delete order_.version
+        delete order.payment_collections
+        delete order.fulfillments
       }
 
       const normalizedData = normalizeOrdersForExport(orders)
@@ -256,18 +243,12 @@ export const exportOrdersStep = createStep(
         emptyFieldValue: "",
       })
 
-      if (hasHeader) {
-        const ok = writeStream.write("\n" + batchCsv)
-        if (!ok) {
-          await new Promise((resolve) => writeStream.once("drain", resolve))
-        }
-      } else {
-        const ok = writeStream.write(batchCsv)
-        if (!ok) {
-          await new Promise((resolve) => writeStream.once("drain", resolve))
-        }
-        hasHeader = true
+      const ok = writeStream.write((hasHeader ? "\n" : "") + batchCsv)
+      if (!ok) {
+        await new Promise((resolve) => writeStream.once("drain", resolve))
       }
+
+      hasHeader = true
 
       if (orders.length < pageSize) {
         break
