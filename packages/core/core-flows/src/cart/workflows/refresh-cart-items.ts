@@ -230,6 +230,7 @@ export const refreshCartItemsWorkflow = createWorkflow(
         cart: refetchedCart, // Pass cart to avoid refetch in updateCartPromotionsWorkflow
         promo_codes: cartPromoCodes,
         action: PromotionActions.REPLACE,
+        force_refresh_payment_collection: false,
       },
     })
 
