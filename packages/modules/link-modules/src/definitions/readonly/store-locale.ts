@@ -1,7 +1,12 @@
 import { ModuleJoinerConfig } from "@medusajs/framework/types"
-import { Modules } from "@medusajs/framework/utils"
+import {
+  FeatureFlag,
+  MEDUSA_SKIP_FILE,
+  Modules,
+} from "@medusajs/framework/utils"
 
 export const StoreLocales: ModuleJoinerConfig = {
+  [MEDUSA_SKIP_FILE]: !FeatureFlag.isFeatureEnabled("translation"),
   isLink: true,
   isReadOnlyLink: true,
   extends: [
@@ -20,4 +25,4 @@ export const StoreLocales: ModuleJoinerConfig = {
       },
     },
   ],
-}
+} as ModuleJoinerConfig
