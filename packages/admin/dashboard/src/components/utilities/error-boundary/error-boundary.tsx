@@ -55,22 +55,39 @@ export const ErrorBoundary = () => {
   /**
    * When admin is running in a sandbox, we need to send the error to the parent frame.
    */
-  if (window !== window.parent) {
-    window.addEventListener("error", (event) => {
-      const errorPayload = {
+  window.addEventListener("error", function (event) {
+    console.log("Sending error to parent", event);
+    window.parent.postMessage(
+      {
         type: "ADMIN_RUNTIME_ERROR",
-        payload: {
+        error: {
           message: event.message,
           filename: event.filename,
           lineno: event.lineno,
           colno: event.colno,
           stack: event.error && event.error.stack,
         },
-      }
+      },
+      "*"
+    );
+  });
 
-      window.parent.postMessage(errorPayload, "*")
-    })
-  }
+  window.addEventListener("unhandledrejection", function (event) {
+    const reason = event.reason;
+    window.parent.postMessage(
+      {
+        type: "ADMIN_RUNTIME_ERROR",
+        error: {
+          message:
+            (reason && reason.message) ||
+            (typeof reason === "string" ? reason : null),
+          stack: reason && reason.stack,
+          raw: reason,
+        },
+      },
+      "*"
+    );
+  });
 
   return (
     <div className="flex size-full min-h-[calc(100vh-57px-24px)] items-center justify-center">
