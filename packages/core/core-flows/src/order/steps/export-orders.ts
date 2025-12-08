@@ -1,6 +1,7 @@
 import {
   FilterableOrderProps,
   IFileModuleService,
+  OrderDTO,
 } from "@medusajs/framework/types"
 import {
   ContainerRegistrationKeys,
@@ -9,7 +10,7 @@ import {
 } from "@medusajs/framework/utils"
 import { StepResponse, createStep } from "@medusajs/framework/workflows-sdk"
 import { json2csv } from "json-2-csv"
-import { normalizeOrdersForExport } from "../helpers/normalize-for-export"
+
 import {
   getLastFulfillmentStatus,
   getLastPaymentStatus,
@@ -28,142 +29,39 @@ export type ExportOrdersStepOutput = {
 
 export const exportOrdersStepId = "export-orders"
 
-const orderColumnPositions = new Map([
-  ["Order Id", 0],
-  ["Order Display Id", 1],
-  ["Order Status", 2],
-  ["Order Created At", 3],
-  ["Order Updated At", 4],
-  ["Order Currency Code", 5],
-  ["Order Region Id", 6],
-  ["Order Email", 7],
-  ["Order Subtotal", 8],
-  ["Order Tax Total", 9],
-  ["Order Shipping Total", 10],
-  ["Order Discount Total", 11],
-  ["Order Gift Card Total", 12],
-  ["Order Total", 13],
-])
+const normalizeOrdersForExport = (orders: OrderDTO[]): object[] => {
+  return orders.map((order) => {
+    const order_ = order as any
+    const customer = order_.customer || {}
+    const shippingAddress = order_.shipping_address || {}
 
-const customerColumnPositions = new Map([
-  ["Customer Id", 0],
-  ["Customer Email", 1],
-  ["Customer First Name", 2],
-  ["Customer Last Name", 3],
-  ["Customer Phone", 4],
-])
-
-const addressColumnPositions = new Map([
-  ["First Name", 0],
-  ["Last Name", 1],
-  ["Company", 2],
-  ["Address 1", 3],
-  ["Address 2", 4],
-  ["City", 5],
-  ["Province", 6],
-  ["Postal Code", 7],
-  ["Country Code", 8],
-  ["Phone", 9],
-])
-
-const comparator = (a: string, b: string, columnMap: Map<string, number>) => {
-  if (columnMap.has(a) && columnMap.has(b)) {
-    return columnMap.get(a)! - columnMap.get(b)!
-  }
-  if (columnMap.has(a)) {
-    return -1
-  }
-  if (columnMap.has(b)) {
-    return 1
-  }
-  return a.localeCompare(b)
-}
-
-const csvSortFunction = (a: string, b: string) => {
-  // Order fields first
-  if (a.startsWith("Order") && b.startsWith("Order")) {
-    return comparator(a, b, orderColumnPositions)
-  }
-  if (a.startsWith("Order") && !b.startsWith("Order")) {
-    return -1
-  }
-  if (!a.startsWith("Order") && b.startsWith("Order")) {
-    return 1
-  }
-
-  // Customer fields
-  if (a.startsWith("Customer") && b.startsWith("Customer")) {
-    return comparator(a, b, customerColumnPositions)
-  }
-  if (a.startsWith("Customer") && !b.startsWith("Customer")) {
-    return -1
-  }
-  if (!a.startsWith("Customer") && b.startsWith("Customer")) {
-    return 1
-  }
-
-  // Shipping address fields
-  if (a.startsWith("Shipping Address") && b.startsWith("Shipping Address")) {
-    const aKey = a.replace("Shipping Address ", "")
-    const bKey = b.replace("Shipping Address ", "")
-    return comparator(aKey, bKey, addressColumnPositions)
-  }
-  if (a.startsWith("Shipping Address") && !b.startsWith("Shipping Address")) {
-    return -1
-  }
-  if (!a.startsWith("Shipping Address") && b.startsWith("Shipping Address")) {
-    return 1
-  }
-
-  // Sales channel fields
-  if (a.startsWith("Sales Channel") && !b.startsWith("Sales Channel")) {
-    return -1
-  }
-  if (!a.startsWith("Sales Channel") && b.startsWith("Sales Channel")) {
-    return 1
-  }
-
-  // Item fields - sort by item number
-  if (a.startsWith("Item") && b.startsWith("Item")) {
-    const aMatch = a.match(/Item (\d+)/)
-    const bMatch = b.match(/Item (\d+)/)
-    if (aMatch && bMatch) {
-      const aNum = parseInt(aMatch[1], 10)
-      const bNum = parseInt(bMatch[1], 10)
-      if (aNum !== bNum) {
-        return aNum - bNum
-      }
+    return {
+      Order_ID: order.id,
+      Display_ID: order.display_id,
+      "Order status": order.status,
+      Date: order.created_at,
+      "Customer First name": customer.first_name || "",
+      "Customer Last name": customer.last_name || "",
+      "Customer Email": customer.email || "",
+      "Customer ID": customer.id || "",
+      "Shipping Address 1": shippingAddress.address_1 || "",
+      "Shipping Address 2": shippingAddress.address_2 || "",
+      "Shipping Country Code": shippingAddress.country_code || "",
+      "Shipping City": shippingAddress.city || "",
+      "Shipping Postal Code": shippingAddress.postal_code || "",
+      "Shipping Region ID": order.region_id,
+      "Fulfillment Status": order_.fulfillment_status,
+      "Payment Status": order_.payment_status,
+      Subtotal: order.subtotal,
+      "Shipping Total": order.shipping_total,
+      "Discount Total": order.discount_total,
+      "Gift Card Total": order.gift_card_total,
+      "Refunded Total": order_.refunded_total,
+      "Tax Total": order.tax_total,
+      Total: order.total,
+      "Currency Code": order.currency_code,
     }
-    return a.localeCompare(b)
-  }
-  if (a.startsWith("Item") && !b.startsWith("Item")) {
-    return -1
-  }
-  if (!a.startsWith("Item") && b.startsWith("Item")) {
-    return 1
-  }
-
-  // Shipping method fields
-  if (a.startsWith("Shipping Method") && b.startsWith("Shipping Method")) {
-    const aMatch = a.match(/Shipping Method (\d+)/)
-    const bMatch = b.match(/Shipping Method (\d+)/)
-    if (aMatch && bMatch) {
-      const aNum = parseInt(aMatch[1], 10)
-      const bNum = parseInt(bMatch[1], 10)
-      if (aNum !== bNum) {
-        return aNum - bNum
-      }
-    }
-    return a.localeCompare(b)
-  }
-  if (a.startsWith("Shipping Method") && !b.startsWith("Shipping Method")) {
-    return -1
-  }
-  if (!a.startsWith("Shipping Method") && b.startsWith("Shipping Method")) {
-    return 1
-  }
-
-  return a.localeCompare(b)
+  })
 }
 
 export const exportOrdersStep = createStep(
@@ -234,7 +132,6 @@ export const exportOrdersStep = createStep(
       const normalizedData = normalizeOrdersForExport(orders)
       const batchCsv = json2csv(normalizedData, {
         prependHeader: !hasHeader,
-        sortHeader: csvSortFunction,
         arrayIndexesAsKeys: true,
         expandNestedObjects: true,
         expandArrayObjects: true,
