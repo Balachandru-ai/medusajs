@@ -57,6 +57,10 @@ export interface AdminProductVariant extends BaseProductVariant {
    */
   product?: AdminProduct | null
   /**
+   * The product variant's translations.
+   */
+  translations?: AdminTranslation[] | null
+  /**
    * The variant's inventory items.
    */
   inventory_items?: AdminProductVariantInventoryItemLink[] | null
