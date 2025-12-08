@@ -1080,6 +1080,18 @@
     "list": {
       "noRecordsMessage": "Your orders will show up here."
     },
+    "export": {
+      "header": "Export Order List",
+      "description": "Export the order list to a CSV file.",
+      "success": {
+        "title": "Export started",
+        "description": "You will be notified when the export is ready."
+      },
+      "filters": {
+        "title": "Filters",
+        "description": "The following filters will be applied to the export."
+      }
+    },
     "status": {
       "not_paid": "Not paid",
       "pending": "Pending",

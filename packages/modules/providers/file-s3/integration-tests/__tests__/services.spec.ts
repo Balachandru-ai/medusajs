@@ -221,4 +221,42 @@ describe.skip("S3 File Plugin", () => {
       { fileKey: cat2.key },
     ])
   })
+
+  it("uploads using stream", async () => {
+    const fileContent = await fs.readFile(fixtureImagePath)
+    const fixtureAsBinary = fileContent.toString("binary")
+
+    const { writeStream, promise } = await s3Service.getUploadStream({
+      filename: "catphoto-stream.jpg",
+      mimeType: "image/jpeg",
+      access: "public",
+    })
+
+    writeStream.write(fileContent)
+    writeStream.end()
+
+    const resp = await promise
+
+    expect(resp).toEqual({
+      key: expect.stringMatching(/tests\/catphoto-stream.*\.jpg/),
+      url: expect.stringMatching(/https:\/\/.*\.jpg/),
+    })
+
+    const urlResp = await axios.get(resp.url).catch((e) => e.response)
+    expect(urlResp.status).toEqual(200)
+
+    const signedUrl = await s3Service.getPresignedDownloadUrl({
+      fileKey: resp.key,
+    })
+
+    const signedUrlFile = Buffer.from(
+      await axios
+        .get(signedUrl, { responseType: "arraybuffer" })
+        .then((r) => r.data)
+    )
+
+    expect(signedUrlFile.toString("binary")).toEqual(fixtureAsBinary)
+
+    await s3Service.delete({ fileKey: resp.key })
+  })
 })
