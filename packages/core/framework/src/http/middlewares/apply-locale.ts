@@ -42,11 +42,6 @@ export async function applyLocale(
     {
       entity: "store",
       fields: ["id", "supported_locales"],
-      filters: {
-        supported_locales: {
-          is_default: true,
-        },
-      },
       pagination: {
         take: 1,
       },
@@ -58,7 +53,7 @@ export async function applyLocale(
     }
   )
 
-  if (store.supported_locales.length) {
+  if (store?.supported_locales?.length) {
     req.locale = store.supported_locales.find(
       (locale) => locale.is_default
     )?.locale_code
