@@ -40,18 +40,17 @@ export default class LocalEventBusService extends AbstractEventBusModuleService 
     this.groupedEventsMap_ = new Map()
   }
 
-  static logProcessingEvent(
+  private logProcessingEvent(
     eventData: Message,
     options: Record<string, unknown> = {},
-    totalSubscribers: number,
-    logger: Logger
+    totalSubscribers: number
   ) {
     if (
       totalSubscribers &&
       !options?.internal &&
       !eventData.options?.internal
     ) {
-      logger?.info(
+      this.logger_.info(
         `Processing ${eventData.name} which has ${totalSubscribers} subscribers`
       )
     }
@@ -113,12 +112,7 @@ export default class LocalEventBusService extends AbstractEventBusModuleService 
 
         const totalSubscribers =
           eventListenersCount + (hasStarSubscriber ? 1 : 0)
-        LocalEventBusService.logProcessingEvent(
-          eventData,
-          options,
-          totalSubscribers,
-          this.logger_
-        )
+        this.logProcessingEvent(eventData, options, totalSubscribers)
       })
     }
   }
@@ -163,12 +157,7 @@ export default class LocalEventBusService extends AbstractEventBusModuleService 
 
         const totalSubscribers =
           eventListenersCount + (hasStarSubscriber ? 1 : 0)
-        LocalEventBusService.logProcessingEvent(
-          event,
-          options,
-          totalSubscribers,
-          this.logger_
-        )
+        this.logProcessingEvent(event, options, totalSubscribers)
       })
     }
 
@@ -204,10 +193,10 @@ export default class LocalEventBusService extends AbstractEventBusModuleService 
       try {
         await subscriber(data)
       } catch (err) {
-        this.logger_?.error(
+        this.logger_.error(
           `An error occurred while processing ${event.toString()}:`
         )
-        this.logger_?.error(err)
+        this.logger_.error(err)
       }
     }
 
