@@ -13,18 +13,18 @@ export const TranslationsEdit = () => {
   const referenceId = searchParams.getAll("reference_id")
 
   useEffect(() => {
-    if (!reference || !isTranslationsEnabled) {
+    if ((!reference && !referenceId) || !isTranslationsEnabled) {
       navigate(-1)
       return
     }
-  }, [reference, navigate, isTranslationsEnabled])
+  }, [reference, referenceId, navigate, isTranslationsEnabled])
 
   const { translations, isPending, isError, error } = useTranslations(
     {
-      reference: reference!,
-      ...(referenceId.length && { reference_id: referenceId }),
+      reference: reference ?? undefined,
+      reference_id: referenceId,
     },
-    { enabled: !!reference }
+    { enabled: !!reference || !!referenceId }
   )
 
   const {
@@ -47,7 +47,7 @@ export const TranslationsEdit = () => {
           translations={translations}
           entityType={reference!}
           availableLocales={store?.supported_locales ?? []}
-          // TODO: change this to get it form the entity translation config
+          // TODO: change this to get it from the entity translation config when we have it
           translatableFields={["title", "description"]}
         />
       )}

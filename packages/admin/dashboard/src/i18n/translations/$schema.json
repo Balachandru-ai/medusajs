@@ -9302,9 +9302,12 @@
           "properties": {
             "manageLocales": {
               "type": "string"
+            },
+            "manage": {
+                "type": "string"
             }
           },
-          "required": ["manageLocales"]
+          "required": ["manageLocales", "manage"]
         },
         "bulk": {
           "type": "object",

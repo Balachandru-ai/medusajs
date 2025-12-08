@@ -2495,6 +2495,7 @@
   "translations": {
     "domain": "Translations",
     "actions": {
+      "manage": "Manage translations",
       "manageLocales": "Manage locales"
     },
     "subtitle": "Manage translations of your data in Medusa.",
