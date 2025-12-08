@@ -6,6 +6,15 @@
   "tables": [
     {
       "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "mappedType": "text"
+        },
         "code": {
           "name": "code",
           "type": "text",
@@ -70,9 +79,18 @@
           "expression": "CREATE INDEX IF NOT EXISTS \"IDX_locale_deleted_at\" ON \"locale\" (\"deleted_at\") WHERE deleted_at IS NULL"
         },
         {
+          "keyName": "IDX_locale_code_unique",
+          "columnNames": [],
+          "composite": false,
+          "constraint": false,
+          "primary": false,
+          "unique": false,
+          "expression": "CREATE UNIQUE INDEX IF NOT EXISTS \"IDX_locale_code_unique\" ON \"locale\" (\"code\") WHERE deleted_at IS NULL"
+        },
+        {
           "keyName": "locale_pkey",
           "columnNames": [
-            "code"
+            "id"
           ],
           "composite": false,
           "constraint": true,
@@ -184,6 +202,24 @@
           "primary": false,
           "unique": false,
           "expression": "CREATE UNIQUE INDEX IF NOT EXISTS \"IDX_translation_reference_id_locale_code_unique\" ON \"translation\" (\"reference_id\", \"locale_code\") WHERE deleted_at IS NULL"
+        },
+        {
+          "keyName": "IDX_translation_reference_id_reference_locale_code",
+          "columnNames": [],
+          "composite": false,
+          "constraint": false,
+          "primary": false,
+          "unique": false,
+          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_translation_reference_id_reference_locale_code\" ON \"translation\" (\"reference_id\", \"reference\", \"locale_code\") WHERE deleted_at IS NULL"
+        },
+        {
+          "keyName": "IDX_translation_reference_locale_code",
+          "columnNames": [],
+          "composite": false,
+          "constraint": false,
+          "primary": false,
+          "unique": false,
+          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_translation_reference_locale_code\" ON \"translation\" (\"reference\", \"locale_code\") WHERE deleted_at IS NULL"
         },
         {
           "keyName": "IDX_translation_reference_id_reference",

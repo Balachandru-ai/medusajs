@@ -14,6 +14,12 @@ const Translation = model
       unique: true,
     },
     {
+      on: ["reference_id", "reference", "locale_code"],
+    },
+    {
+      on: ["reference", "locale_code"],
+    },
+    {
       on: ["reference_id", "reference"],
     },
     {

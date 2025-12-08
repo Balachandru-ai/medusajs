@@ -263,9 +263,6 @@ describe("Internal Module Service Factory", () => {
               id: "1",
             },
           ],
-          options: {
-            returning: ["id"],
-          },
         },
         defaultContext
       )
@@ -280,9 +277,6 @@ describe("Internal Module Service Factory", () => {
               id: "1",
             },
           ],
-          options: {
-            returning: ["id"],
-          },
         },
         defaultContext
       )

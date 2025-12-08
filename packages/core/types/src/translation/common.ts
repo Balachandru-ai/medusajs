@@ -5,6 +5,11 @@ import { BaseFilterable, OperatorMap } from "../dal"
  */
 export interface LocaleDTO {
   /**
+   * The ID of the locale.
+   */
+  id: string
+
+  /**
    * The BCP 47 language tag code of the locale (e.g., "en-US", "fr-FR").
    */
   code: string

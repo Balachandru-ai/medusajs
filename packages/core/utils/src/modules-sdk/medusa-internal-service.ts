@@ -533,7 +533,7 @@ export function MedusaInternalService<
       }
 
       const deletedIds = await this[propertyRepositoryName].delete(
-        { ...deleteCriteria, options: { returning: primaryKeys } },
+        deleteCriteria,
         sharedContext
       )
 
@@ -544,14 +544,9 @@ export function MedusaInternalService<
           sharedContext.manager) as EntityManager
         const eventManager = manager.getEventManager()
 
-        deletedIds.forEach((returningValue) => {
-          const entityPrimaryKeyValues = primaryKeys.reduce((acc, key) => {
-            acc[key] = returningValue[key]
-            return acc
-          }, {} as Record<string, any>)
-
+        deletedIds.forEach((id) => {
           eventManager.dispatchEvent(EventType.afterDelete, {
-            entity: entityPrimaryKeyValues,
+            entity: { id },
             meta: {
               className: model.name,
             } as Parameters<typeof eventManager.dispatchEvent>[2],

@@ -23,10 +23,10 @@ moduleIntegrationTestRunner<ITranslationModuleService>({
 
         expect(linkable).toEqual({
           locale: {
-            code: {
-              linkable: "locale_code",
+            id: {
+              linkable: "locale_id",
               entity: "Locale",
-              primaryKey: "code",
+              primaryKey: "id",
               serviceName: "translation",
               field: "locale",
             },
@@ -73,10 +73,11 @@ moduleIntegrationTestRunner<ITranslationModuleService>({
         describe("retrieving a locale", () => {
           it("should retrieve a locale by id", async () => {
             const created = await service.createLocales(createLocaleFixture)
-            const retrieved = await service.retrieveLocale(created.code)
+            const retrieved = await service.retrieveLocale(created.id)
 
             expect(retrieved).toEqual(
               expect.objectContaining({
+                id: created.id,
                 code: created.code,
                 name: "Test Locale",
               })
@@ -85,12 +86,10 @@ moduleIntegrationTestRunner<ITranslationModuleService>({
 
           it("should throw when retrieving non-existent locale", async () => {
             const error = await service
-              .retrieveLocale("non-existent-code")
+              .retrieveLocale("non-existent-id")
               .catch((e) => e)
 
-            expect(error.message).toContain(
-              "Locale with code: non-existent-code"
-            )
+            expect(error.message).toContain("Locale with id: non-existent-id")
           })
         })
 
@@ -155,6 +154,7 @@ moduleIntegrationTestRunner<ITranslationModuleService>({
           it("should update a locale successfully", async () => {
             const created = await service.createLocales(createLocaleFixture)
             const updated = await service.updateLocales({
+              id: created.id,
               code: created.code,
               name: "Updated Locale Name",
             })
@@ -170,8 +170,8 @@ moduleIntegrationTestRunner<ITranslationModuleService>({
             ])
 
             const updated = await service.updateLocales([
-              { code: created[0].code, name: "Updated 1" },
-              { code: created[1].code, name: "Updated 2" },
+              { id: created[0].id, code: created[0].code, name: "Updated 1" },
+              { id: created[1].id, code: created[1].code, name: "Updated 2" },
             ])
 
             expect(updated).toHaveLength(2)
@@ -187,13 +187,13 @@ moduleIntegrationTestRunner<ITranslationModuleService>({
         describe("deleting a locale", () => {
           it("should delete a locale successfully", async () => {
             const created = await service.createLocales(createLocaleFixture)
-            await service.deleteLocales(created.code)
+            await service.deleteLocales(created.id)
 
             const error = await service
-              .retrieveLocale(created.code)
+              .retrieveLocale(created.id)
               .catch((e) => e)
 
-            expect(error.message).toContain("Locale with code")
+            expect(error.message).toContain("Locale with id")
           })
 
           it("should delete multiple locales", async () => {
@@ -202,8 +202,7 @@ moduleIntegrationTestRunner<ITranslationModuleService>({
               { code: "del-2", name: "Delete 2" },
             ])
 
-            console.log(JSON.stringify(created, null, 2))
-            await service.deleteLocales([created[0].code, created[1].code])
+            await service.deleteLocales([created[0].id, created[1].id])
 
             const locales = await service.listLocales({
               code: ["del-1", "del-2"],
@@ -216,7 +215,7 @@ moduleIntegrationTestRunner<ITranslationModuleService>({
         describe("soft deleting a locale", () => {
           it("should soft delete a locale", async () => {
             const created = await service.createLocales(createLocaleFixture)
-            await service.softDeleteLocales(created.code)
+            await service.softDeleteLocales(created.id)
 
             const locales = await service.listLocales({ code: created.code })
             expect(locales).toHaveLength(0)
@@ -226,10 +225,10 @@ moduleIntegrationTestRunner<ITranslationModuleService>({
         describe("restoring a locale", () => {
           it("should restore a soft deleted locale", async () => {
             const created = await service.createLocales(createLocaleFixture)
-            await service.softDeleteLocales(created.code)
-            await service.restoreLocales(created.code)
+            await service.softDeleteLocales(created.id)
+            await service.restoreLocales(created.id)
 
-            const restored = await service.retrieveLocale(created.code)
+            const restored = await service.retrieveLocale(created.id)
             expect(restored.code).toEqual(created.code)
           })
         })
