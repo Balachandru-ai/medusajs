@@ -1,5 +1,7 @@
 import { createStep, StepResponse } from "@medusajs/framework/workflows-sdk"
 import { ContainerRegistrationKeys, Modules } from "@medusajs/framework/utils"
+import { Link, Query } from "@medusajs/framework/modules-sdk"
+import { LinkDefinition } from "@medusajs/types"
 
 export const dismissProductVariantsInventoryStepId =
   "dismiss-product-variants-inventory"
@@ -10,39 +12,39 @@ export type DismissProductVariantsInventoryStepInput = {
 
 async function dismissVariantsInventory(
   variantIds: string[],
-  query: any,
-  link: any
+  query: Query,
+  link: Link
 ): Promise<Record<string, string[]>> {
   const dismissedVariantInventoryItems: Record<string, string[]> = {}
 
+  const { data: variantInventoryItems } = await query.graph({
+    entity: "product_variant_inventory_item",
+    fields: ["inventory_item_id"],
+    filters: {
+      variant_id: variantIds,
+    },
+  })
+
+  const dismissLinks: LinkDefinition[] = []
   for (const variantId of variantIds) {
     if (!variantId) {
       continue
     }
 
-    const { data: variantInventoryItems } = await query.graph({
-      entity: "product_variant_inventory_item",
-      fields: ["inventory_item_id"],
-      filters: {
-        variant_id: variantIds,
-      },
-    })
-
-    dismissedVariantInventoryItems[variantId] = variantInventoryItems.map(
-      (item: { inventory_item_id: string }) => item.inventory_item_id
-    )
-
-    await Promise.all(
-      variantInventoryItems.map(async (item: { inventory_item_id: string }) => {
-        await link.dismiss({
+    dismissedVariantInventoryItems[variantId] = variantInventoryItems
+      .filter((item) => item.variant_id === variantId)
+      .map((item: { inventory_item_id: string }) => {
+        dismissLinks.push({
           [Modules.PRODUCT]: { variant_id: variantId },
           [Modules.INVENTORY]: {
             inventory_item_id: item.inventory_item_id,
           },
         })
+        return item.inventory_item_id
       })
-    )
   }
+
+  await link.dismiss(dismissLinks)
 
   return dismissedVariantInventoryItems
 }
@@ -60,7 +62,7 @@ export const dismissProductVariantsInventoryStep = createStep(
 
     const dismissedVariantInventoryItems = await dismissVariantsInventory(
       variantIds,
-      query,
+      query as Query,
       link
     )
     return new StepResponse(void 0, dismissedVariantInventoryItems)
