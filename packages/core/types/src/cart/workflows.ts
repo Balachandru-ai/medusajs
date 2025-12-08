@@ -283,7 +283,7 @@ export interface CreateCartWorkflowInputDTO {
   /**
    * The locale code of the cart.
    */
-  locale_code?: string
+  locale?: string
 }
 
 /**
@@ -344,7 +344,7 @@ export interface UpdateCartWorkflowInputDTO {
   /**
    * The locale code for the cart.
    */
-  locale_code?: string | null
+  locale?: string | null
 
   /**
    * Custom key-value pairs of data related to the cart.

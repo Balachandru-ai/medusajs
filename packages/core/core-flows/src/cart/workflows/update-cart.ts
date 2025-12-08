@@ -99,7 +99,7 @@ export const updateCartWorkflow = createWorkflow(
         "email",
         "customer_id",
         "sales_channel_id",
-        "locale_code",
+        "locale",
         "shipping_address.*",
         "region.*",
         "region.countries.*",
@@ -285,11 +285,8 @@ export const updateCartWorkflow = createWorkflow(
     const newLocaleCode = transform(
       { input, cartToUpdate },
       ({ input, cartToUpdate }) => {
-        if (
-          isDefined(input.locale_code) &&
-          input.locale_code !== cartToUpdate?.locale_code
-        ) {
-          return input.locale_code
+        if (isDefined(input.locale) && input.locale !== cartToUpdate?.locale) {
+          return input.locale
         }
         return undefined
       }
@@ -329,7 +326,7 @@ export const updateCartWorkflow = createWorkflow(
         cart_id: cartInput.id,
         promo_codes: input.promo_codes,
         force_refresh: !!newRegion,
-        locale_code: newLocaleCode,
+        locale: newLocaleCode,
         additional_data: input.additional_data,
       },
     })

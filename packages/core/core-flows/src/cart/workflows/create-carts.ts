@@ -218,7 +218,7 @@ export const createCartWorkflow = createWorkflow(
     const translatedItems = getTranslatedLineItemsStep({
       items: itemsToCreate,
       variants,
-      localeCode: input.locale_code,
+      localeCode: input.locale,
     })
 
     const cartToCreate = transform(

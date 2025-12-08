@@ -63,7 +63,7 @@ export type RefreshCartItemsWorkflowInput = {
    * The new locale code to update cart items translations.
    * When provided, all cart items will be re-translated using this locale.
    */
-  locale_code?: string
+  locale?: string
 }
 
 export const refreshCartItemsWorkflowId = "refresh-cart-items"
@@ -252,16 +252,15 @@ export const refreshCartItemsWorkflow = createWorkflow(
     //   "should-update-item-translations",
     //   { input },
     //   ({ input }) => {
-    //     return !!input.locale_code
+    //     return !!input.locale
     //   }
     // ).then(() => {
     updateCartItemsTranslationsStep({
       cart_id: input.cart_id,
-      locale_code: transform(
+      locale: transform(
         { refetchedCart, input },
-        ({ refetchedCart, input }) =>
-          input.locale_code ?? refetchedCart.locale_code!
-      ), // input.locale_code!,
+        ({ refetchedCart, input }) => input.locale ?? refetchedCart.locale!
+      ), // input.locale!,
       items: refetchedCart.items,
     })
     // })

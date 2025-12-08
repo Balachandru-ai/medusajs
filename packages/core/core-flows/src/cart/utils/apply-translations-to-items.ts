@@ -1,15 +1,8 @@
 import { ProductVariantDTO } from "@medusajs/framework/types"
 
-const productFields = [
-  "title",
-  "description",
-  "subtitle",
-  "type.value",
-  "collection.title",
-  "handle",
-] as const
-
-const variantFields = ["title"] as const
+const VARIANT_PREFIX = "variant_"
+const PRODUCT_PREFIX = "product_"
+const TRANSLATABLE_ITEM_PROP_PREFIXES = [VARIANT_PREFIX, PRODUCT_PREFIX]
 
 /**
  * Applies translated variant/product fields to line items.
@@ -32,41 +25,29 @@ export function applyTranslationsToItems<
     const itemAny = item as Record<string, any>
 
     // Apply variant translations
-    variantFields.forEach((field) => {
-      const itemKey = `variant_${field}`
+    Object.entries(items).forEach(([key, value]) => {
+      const translationKey = key
+        .replace(VARIANT_PREFIX, "")
+        .replace(PRODUCT_PREFIX, "")
+
       if (
-        itemKey in itemAny &&
-        typeof itemAny[itemKey] === typeof variant[field]
+        TRANSLATABLE_ITEM_PROP_PREFIXES.some((prefix) => key.startsWith(prefix))
       ) {
-        itemAny[itemKey] = variant[field]
+        if (key in itemAny) {
+          if (
+            key.startsWith(VARIANT_PREFIX) &&
+            typeof itemAny[key] === typeof variant[translationKey]
+          ) {
+            itemAny[key] = variant[translationKey]
+          } else if (
+            key.startsWith(PRODUCT_PREFIX) &&
+            typeof itemAny[key] === typeof variant.product?.[translationKey]
+          ) {
+            itemAny[key] = variant.product?.[translationKey]
+          }
+        }
       }
     })
-
-    // Apply product translations
-    if (variant.product) {
-      productFields.forEach((field) => {
-        switch (field) {
-          case "collection.title":
-            if (variant.product?.collection?.title) {
-              itemAny.product_collection = variant.product.collection.title
-            }
-            break
-          case "type.value":
-            if (variant.product?.type?.value) {
-              itemAny.product_type = variant.product.type.value
-            }
-            break
-          default:
-            const itemKey = `product_${field}`
-            if (
-              itemKey in itemAny &&
-              typeof itemAny[itemKey] === typeof (variant.product as any)[field]
-            ) {
-              itemAny[itemKey] = (variant.product as any)[field]
-            }
-        }
-      })
-    }
 
     return item
   })

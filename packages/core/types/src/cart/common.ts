@@ -772,7 +772,7 @@ export interface CartDTO {
   /**
    * The locale code of the cart.
    */
-  locale_code?: string
+  locale?: string
 
   /**
    * The associated shipping address.

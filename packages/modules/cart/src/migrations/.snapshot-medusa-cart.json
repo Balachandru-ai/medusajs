@@ -239,8 +239,8 @@
           "nullable": false,
           "mappedType": "text"
         },
-        "locale_code": {
-          "name": "locale_code",
+        "locale": {
+          "name": "locale",
           "type": "text",
           "unsigned": false,
           "autoincrement": false,

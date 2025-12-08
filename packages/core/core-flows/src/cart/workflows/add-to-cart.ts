@@ -43,7 +43,7 @@ import { confirmVariantInventoryWorkflow } from "./confirm-variant-inventory"
 import { getVariantsAndItemsWithPrices } from "./get-variants-and-items-with-prices"
 import { refreshCartItemsWorkflow } from "./refresh-cart-items"
 
-const cartFields = ["completed_at", "locale_code"].concat(
+const cartFields = ["completed_at", "locale"].concat(
   cartFieldsForPricingContext
 )
 
@@ -315,7 +315,7 @@ export const addToCartWorkflow = createWorkflow(
     const translatedItemsToCreate = getTranslatedLineItemsStep({
       items: itemsToCreate,
       variants: itemsToCreateVariants,
-      localeCode: cart.locale_code,
+      localeCode: cart.locale,
     })
 
     const [createdLineItems, updatedLineItems] = parallelize(

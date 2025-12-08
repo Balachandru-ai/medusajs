@@ -43,7 +43,7 @@ export interface StoreCreateCart {
   /**
    * The locale code of the cart.
    */
-  locale_code?: string
+  locale?: string
 }
 
 export interface StoreUpdateCart {
@@ -79,7 +79,7 @@ export interface StoreUpdateCart {
   /**
    * The locale code of the cart.
    */
-  locale_code?: string
+  locale?: string
 }
 
 export interface StoreUpdateCartCustomer {}

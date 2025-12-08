@@ -17,7 +17,7 @@ import { productVariantsFields } from "../utils/fields"
 
 export interface UpdateCartItemsTranslationsStepInput {
   cart_id: string
-  locale_code: string
+  locale: string
   /**
    * Pre-loaded items to avoid re-fetching.
    */
@@ -84,7 +84,7 @@ export const updateCartItemsTranslationsStep = createStep(
     try {
       const isTranslationEnabled = FeatureFlag.isFeatureEnabled("translation")
 
-      if (!isTranslationEnabled || !data.locale_code) {
+      if (!isTranslationEnabled || !data.locale) {
         return new StepResponse(void 0, [])
       }
 
@@ -129,7 +129,7 @@ export const updateCartItemsTranslationsStep = createStep(
         })
 
         await applyTranslations({
-          localeCode: data.locale_code,
+          localeCode: data.locale,
           objects: variants as Record<string, any>[],
           container,
         })
