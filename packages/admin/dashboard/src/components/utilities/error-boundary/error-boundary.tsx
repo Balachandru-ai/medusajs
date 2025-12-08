@@ -1,5 +1,6 @@
 import { ExclamationCircle } from "@medusajs/icons"
 import { Text } from "@medusajs/ui"
+import { useEffect } from "react"
 import { useTranslation } from "react-i18next"
 import { Navigate, useLocation, useRouteError } from "react-router-dom"
 
@@ -11,6 +12,41 @@ export const ErrorBoundary = () => {
   const { t } = useTranslation()
 
   let code: number | null = null
+
+  /**
+   * Send error to parent frame when running in an iframe.
+   */
+  useEffect(() => {
+    if (error) {
+      let filename: string | undefined
+      let lineno: number | undefined
+      let colno: number | undefined
+
+      if (error instanceof Error && error.stack) {
+        // Parse the first location from the stack trace
+        const match = error.stack.match(
+          /at\s+(?:\S+\s+\()?(https?:\/\/[^)]+):(\d+):(\d+)/
+        )
+        if (match) {
+          filename = match[1]
+          lineno = parseInt(match[2], 10)
+          colno = parseInt(match[3], 10)
+        }
+      }
+
+      const errorPayload = {
+        type: "ADMIN_ROUTE_ERROR",
+        payload: {
+          message: error instanceof Error ? error.message : String(error),
+          filename,
+          lineno,
+          colno,
+          stack: error instanceof Error ? error.stack : undefined,
+        },
+      }
+      window.parent.postMessage(errorPayload, "*")
+    }
+  }, [error])
 
   if (isFetchError(error)) {
     if (error.status === 401) {
@@ -51,43 +87,6 @@ export const ErrorBoundary = () => {
       message = t("errorBoundary.defaultMessage")
       break
   }
-
-  /**
-   * When admin is running in a sandbox, we need to send the error to the parent frame.
-   */
-  window.addEventListener("error", function (event) {
-    console.log("Sending error to parent", event);
-    window.parent.postMessage(
-      {
-        type: "ADMIN_RUNTIME_ERROR",
-        error: {
-          message: event.message,
-          filename: event.filename,
-          lineno: event.lineno,
-          colno: event.colno,
-          stack: event.error && event.error.stack,
-        },
-      },
-      "*"
-    );
-  });
-
-  window.addEventListener("unhandledrejection", function (event) {
-    const reason = event.reason;
-    window.parent.postMessage(
-      {
-        type: "ADMIN_RUNTIME_ERROR",
-        error: {
-          message:
-            (reason && reason.message) ||
-            (typeof reason === "string" ? reason : null),
-          stack: reason && reason.stack,
-          raw: reason,
-        },
-      },
-      "*"
-    );
-  });
 
   return (
     <div className="flex size-full min-h-[calc(100vh-57px-24px)] items-center justify-center">
