@@ -107,6 +107,7 @@ The code snippets in this section assume that your forked Medusa project and the
     "@medusajs/cli": "file:../medusa/packages/cli/medusa-cli",
     "@medusajs/modules-sdk": "file:../medusa/packages/core/modules-sdk",
     "@medusajs/workflows-sdk": "file:../medusa/packages/core/workflows-sdk",
+    "@medusajs/js-sdk": "file:../../medusa/packages/core/js-sdk",
     "@medusajs/framework": "file:../medusa/packages/core/framework",
     "@medusajs/auth-emailpass": "file:../medusa/packages/modules/providers/auth-emailpass",
     "@medusajs/locking-redis": "file:../medusa/packages/modules/providers/locking-redis",
