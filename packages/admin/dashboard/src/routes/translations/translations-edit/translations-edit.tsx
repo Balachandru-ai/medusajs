@@ -37,7 +37,13 @@ export const TranslationsEdit = () => {
     error: storeError,
   } = useStore()
 
-  const ready = !isPending && !!translations && !isStorePending && !!store
+  const ready =
+    !isPending &&
+    !!translations &&
+    !!translatableFields &&
+    !!references &&
+    !isStorePending &&
+    !!store
 
   if (isError || isStoreError) {
     throw error || storeError
@@ -48,11 +54,11 @@ export const TranslationsEdit = () => {
       {ready && (
         <TranslationsEditForm
           translations={translations}
-          references={references ?? []}
+          references={references}
           entityType={reference!}
           availableLocales={store?.supported_locales ?? []}
           // TODO: change this to get it from the entity translation config when we have it
-          translatableFields={translatableFields ?? []}
+          translatableFields={translatableFields}
         />
       )}
     </RouteFocusModal>

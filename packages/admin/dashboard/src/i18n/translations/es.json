@@ -2451,7 +2451,8 @@
     },
     "subtitle": "Gestiona las traducciones de tus datos en Medusa.",
     "bulk": {
-      "header": "Editor de Traducciones en Masa"
+      "header": "Editor de Traducciones en Masa",
+      "locale": "Idioma"
     }
   },
   "store": {

@@ -217,8 +217,8 @@ function useTranslationsGridColumns({
   const columns: ColumnDef<TranslationRow>[] = useMemo(() => {
     return [
       columnHelper.column({
-        id: "name",
-        header: t("fields.name"),
+        id: "locale",
+        header: t("translations.bulk.mainColumn"),
         cell: (context) => {
           const row = context.row.original
 

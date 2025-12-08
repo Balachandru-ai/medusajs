@@ -2500,7 +2500,8 @@
     },
     "subtitle": "Manage translations of your data in Medusa.",
     "bulk": {
-      "header": "Translations Bulk Editor"
+      "header": "Translations Bulk Editor",
+      "mainColumn": "Locale"
     }
   },
   "store": {
