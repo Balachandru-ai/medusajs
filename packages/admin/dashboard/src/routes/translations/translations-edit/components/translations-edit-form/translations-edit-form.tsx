@@ -25,7 +25,7 @@ import { useDocumentDirection } from "../../../../../hooks/use-document-directio
 const LocaleTranslationSchema = z.object({
   id: z.string().nullish(),
   locale_code: z.string(),
-  fields: z.record(z.string()),
+  fields: z.record(z.string().optional()),
 })
 export type LocaleTranslationSchema = z.infer<typeof LocaleTranslationSchema>
 
@@ -56,7 +56,6 @@ export type TranslationRow = EntityRow | LocaleRow
 export type EntityRow = {
   _type: "entity"
   reference_id: string
-  displayName: string
   subRows: LocaleRow[]
 }
 
@@ -78,7 +77,7 @@ export function isLocaleRow(row: TranslationRow): row is LocaleRow {
 
 function initTranslationsFormState(
   translations: HttpTypes.AdminTranslation[],
-  entities: Array<{ id: string; name: string }>,
+  references: { id: string; [key: string]: string }[],
   availableLocales: AdminStoreLocale[],
   translatableFields: string[]
 ): TranslationsFormSchema {
@@ -89,17 +88,21 @@ function initTranslationsFormState(
 
   const entitiesTranslationState: Record<string, EntityTranslationsSchema> = {}
 
-  for (const entity of entities) {
+  for (const reference of references) {
     const locales: Record<string, LocaleTranslationSchema> = {}
 
     for (const locale of availableLocales) {
-      const key = `${entity.id}:${locale.locale_code}`
+      const key = `${reference.id}:${locale.locale_code}`
       const existing = existingMap.get(key)
+      const isDefaultLocale = locale.is_default
 
       const fields: Record<string, string> = {}
       for (const fieldName of translatableFields) {
-        fields[fieldName] =
-          (existing?.translations?.[fieldName] as string) ?? ""
+        const fieldValue = isDefaultLocale
+          ? (existing?.translations?.[fieldName] as string) ??
+            reference[fieldName]
+          : (existing?.translations?.[fieldName] as string) ?? ""
+        fields[fieldName] = fieldValue
       }
 
       locales[locale.locale_code] = {
@@ -109,7 +112,7 @@ function initTranslationsFormState(
       }
     }
 
-    entitiesTranslationState[entity.id] = { locales }
+    entitiesTranslationState[reference.id] = { locales }
   }
 
   return {
@@ -118,7 +121,7 @@ function initTranslationsFormState(
 }
 
 function buildTranslationRows(
-  entities: Array<{ id: string; name: string }>,
+  references: { id: string; [key: string]: string }[],
   availableLocales: AdminStoreLocale[],
   translations: HttpTypes.AdminTranslation[]
 ): TranslationRow[] {
@@ -128,16 +131,15 @@ function buildTranslationRows(
     existingMap.set(`${t.reference_id}:${t.locale_code}`, t)
   }
 
-  return entities.map((entity) => ({
+  return references.map((reference) => ({
     _type: "entity" as const,
-    reference_id: entity.id,
-    displayName: entity.name,
+    reference_id: reference.id,
     subRows: availableLocales.map((locale) => {
-      const key = `${entity.id}:${locale.locale_code}`
+      const key = `${reference.id}:${locale.locale_code}`
       const existing = existingMap.get(key)
       return {
         _type: "locale" as const,
-        reference_id: entity.id,
+        reference_id: reference.id,
         locale_code: locale.locale_code,
         locale_name: locale.locale.name,
         id: existing?.id,
@@ -163,10 +165,13 @@ function transformToBatchPayload(
     )) {
       const initial = initialState.entities[entityId]?.locales[localeCode]
       const hasContent = Object.values(localeTranslations.fields).some(
-        (v) => v.trim() !== ""
+        (v) => v !== undefined && v.trim() !== ""
       )
       const hadContent =
-        initial && Object.values(initial.fields).some((v) => v.trim() !== "")
+        initial &&
+        Object.values(initial.fields).some(
+          (v) => v !== undefined && v.trim() !== ""
+        )
 
       if (!localeTranslations.id && hasContent) {
         payload.create.push({
@@ -219,13 +224,7 @@ function useTranslationsGridColumns({
 
           if (isEntityRow(row)) {
             return (
-              <DataGrid.ReadonlyCell context={context}>
-                <div className="flex h-full w-full items-center gap-x-2 overflow-hidden">
-                  <span className="truncate font-medium">
-                    {row.displayName}
-                  </span>
-                </div>
-              </DataGrid.ReadonlyCell>
+              <DataGrid.ReadonlyCell context={context}></DataGrid.ReadonlyCell>
             )
           }
 
@@ -276,6 +275,7 @@ function useTranslationsGridColumns({
 
 type TranslationsEditFormProps = {
   translations: HttpTypes.AdminTranslation[]
+  references: { id: string; [key: string]: string }[]
   entityType: string
   availableLocales: AdminStoreLocale[]
   translatableFields: string[]
@@ -283,6 +283,7 @@ type TranslationsEditFormProps = {
 
 export const TranslationsEditForm = ({
   translations,
+  references,
   entityType,
   availableLocales,
   translatableFields,
@@ -291,13 +292,7 @@ export const TranslationsEditForm = ({
   const { handleSuccess, setCloseOnEscape } = useRouteModal()
   const direction = useDocumentDirection()
 
-  const entities = useMemo(() => {
-    return translations.map((translation) => ({
-      id: translation.reference_id,
-      // TODO: update this to have the value we actually want to display. Perhaps this could be part of the translatable entity config, like 'displayName'
-      name: translation.reference_id,
-    }))
-  }, [translations])
+  const entities = useMemo(() => references, [references])
 
   const initialState = useRef(
     initTranslationsFormState(
@@ -318,7 +313,7 @@ export const TranslationsEditForm = ({
     [entities, availableLocales, translations]
   )
 
-  const { mutateAsync, isPending } = useBatchTranslations()
+  const { mutateAsync, isPending } = useBatchTranslations(entityType)
 
   const handleSubmit = form.handleSubmit(async (values) => {
     const payload = transformToBatchPayload(

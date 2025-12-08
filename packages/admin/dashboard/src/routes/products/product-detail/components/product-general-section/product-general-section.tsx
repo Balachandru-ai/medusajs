@@ -93,7 +93,7 @@ export const ProductGeneralSection = ({
                       actions: [
                         {
                           label: t("translations.actions.manage"),
-                          to: `/settings/translations/edit?reference_id=${product.id}`,
+                          to: `/settings/translations/edit?reference=product&reference_id=${product.id}`,
                           icon: <GlobeEurope />,
                         },
                       ],

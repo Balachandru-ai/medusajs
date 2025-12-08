@@ -1,5 +1,5 @@
 import { useNavigate, useSearchParams } from "react-router-dom"
-import { useStore, useTranslations } from "../../../hooks/api"
+import { useReferenceTranslations, useStore } from "../../../hooks/api"
 import { TranslationsEditForm } from "./components/translations-edit-form"
 import { useEffect } from "react"
 import { RouteFocusModal } from "../../../components/modals"
@@ -10,22 +10,25 @@ export const TranslationsEdit = () => {
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
   const reference = searchParams.get("reference")
-  const referenceId = searchParams.getAll("reference_id")
+  const referenceIdParam = searchParams.getAll("reference_id")
 
   useEffect(() => {
-    if ((!reference && !referenceId) || !isTranslationsEnabled) {
+    if (!reference || !isTranslationsEnabled) {
       navigate(-1)
       return
     }
-  }, [reference, referenceId, navigate, isTranslationsEnabled])
+  }, [reference, navigate, isTranslationsEnabled])
 
-  const { translations, isPending, isError, error } = useTranslations(
-    {
-      reference: reference ?? undefined,
-      reference_id: referenceId,
-    },
-    { enabled: !!reference || !!referenceId }
-  )
+  const {
+    translations,
+    references,
+    translatableFields,
+    isPending,
+    isError,
+    error,
+  } = useReferenceTranslations(reference!, referenceIdParam, {
+    enabled: !!reference,
+  })
 
   const {
     store,
@@ -45,10 +48,11 @@ export const TranslationsEdit = () => {
       {ready && (
         <TranslationsEditForm
           translations={translations}
+          references={references ?? []}
           entityType={reference!}
           availableLocales={store?.supported_locales ?? []}
           // TODO: change this to get it from the entity translation config when we have it
-          translatableFields={["title", "description"]}
+          translatableFields={translatableFields ?? []}
         />
       )}
     </RouteFocusModal>

@@ -111,7 +111,11 @@ export class Translation {
   async batch(body: HttpTypes.AdminBatchTranslations, headers?: ClientHeaders) {
     return await this.client.fetch<HttpTypes.AdminTranslationsBatchResponse>(
       `/admin/translations/batch`,
-      { headers, body }
+      {
+        method: "POST",
+        headers,
+        body,
+      }
     )
   }
 }
