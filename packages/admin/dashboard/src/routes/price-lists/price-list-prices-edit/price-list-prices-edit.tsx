@@ -22,7 +22,9 @@ export const PriceListPricesEdit = () => {
     id: productIds,
     limit: productIds?.length || 9999, // Temporary until we support lazy loading in the DataGrid
     price_list_id: [id!],
-    fields: "title,thumbnail,*variants",
+    // TODO: Remove exclusion once we avoid including unnecessary relations by default in the query config
+    fields:
+      "title,thumbnail,*variants,-type,-collection,-options,-tags,-images,-sales_channels",
   })
 
   const { isReady, regions, currencies, pricePreferences } =
