@@ -520,6 +520,9 @@
         },
         "manage": {
           "type": "string"
+        },
+        "goToProductOption": {
+          "type": "string"
         }
       },
       "required": [
@@ -567,7 +570,8 @@
         "export",
         "import",
         "cannotUndo",
-        "manage"
+        "manage",
+        "goToProductOption"
       ],
       "additionalProperties": false
     },

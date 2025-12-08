@@ -144,7 +144,8 @@
     "export": "Export",
     "import": "Import",
     "cannotUndo": "This action cannot be undone",
-    "manage": "Manage"
+    "manage": "Manage",
+    "goToProductOption": "Go to product option"
   },
   "operators": {
     "in": "In"
