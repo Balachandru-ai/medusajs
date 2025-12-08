@@ -1,4 +1,8 @@
-import { Modules, ProductOptionWorkflowEvents } from "@medusajs/framework/utils"
+import {
+  MedusaError,
+  Modules,
+  ProductOptionWorkflowEvents,
+} from "@medusajs/framework/utils"
 import {
   WorkflowData,
   WorkflowResponse,
@@ -7,7 +11,7 @@ import {
   parallelize,
   transform,
 } from "@medusajs/framework/workflows-sdk"
-import { emitEventStep } from "../../common/steps/emit-event"
+import { emitEventStep, useQueryGraphStep } from "../../common"
 import { removeRemoteLinkStep } from "../../common/steps/remove-remote-links"
 import { deleteProductOptionsStep } from "../steps"
 
@@ -48,6 +52,24 @@ export const deleteProductOptionsWorkflowId = "delete-product-options"
 export const deleteProductOptionsWorkflow = createWorkflow(
   deleteProductOptionsWorkflowId,
   (input: WorkflowData<DeleteProductOptionsWorkflowInput>) => {
+    const productOptionsQuery = useQueryGraphStep({
+      entity: "product_product_option",
+      fields: ["id", "product_id", "product_option_id"],
+      filters: { product_option_id: input.ids },
+    })
+
+    transform(
+      { productOptions: productOptionsQuery, input },
+      ({ productOptions }) => {
+        if (productOptions.data.length > 0) {
+          throw new MedusaError(
+            MedusaError.Types.INVALID_DATA,
+            "Cannot delete product options that are associated with products."
+          )
+        }
+      }
+    )
+
     const deletedProductOptions = deleteProductOptionsStep(input.ids)
     const productOptionsDeleted = createHook("productOptionsDeleted", {
       ids: input.ids,
