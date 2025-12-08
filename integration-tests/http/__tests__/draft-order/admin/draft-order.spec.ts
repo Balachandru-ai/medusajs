@@ -240,7 +240,7 @@ medusaIntegrationTestRunner({
       })
     })
 
-    describe.only("POST /draft-orders/:id/convert-to-order", () => {
+    describe("POST /draft-orders/:id/convert-to-order", () => {
       let product
       let inventoryItemLarge
       let inventoryItemMedium
