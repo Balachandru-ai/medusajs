@@ -10,7 +10,7 @@ export const AdminGetTranslationParams = createSelectParams()
 
 export const AdminGetTranslationParamsFields = z.object({
   q: z.string().optional(),
-  reference_id: z.string().optional(),
+  reference_id: z.union([z.string(), z.array(z.string())]).optional(),
   reference: z.string().optional(),
   locale_code: z.string().optional(),
 })
