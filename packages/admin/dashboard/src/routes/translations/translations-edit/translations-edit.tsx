@@ -44,7 +44,7 @@ export const TranslationsEdit = () => {
   }
 
   return (
-    <RouteFocusModal>
+    <RouteFocusModal prev={referenceIdParam.length ? -1 : ".."}>
       {ready && (
         <TranslationsEditForm
           translations={translations}
