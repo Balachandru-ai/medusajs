@@ -1,5 +1,6 @@
 import { MedusaRequest, MedusaResponse } from "../types"
 import { applyLocale } from "../middlewares/apply-locale"
+import { MedusaContainer } from "@medusajs/types"
 
 describe("applyLocale", () => {
   let mockRequest: Partial<MedusaRequest>
@@ -10,6 +11,13 @@ describe("applyLocale", () => {
     mockRequest = {
       query: {},
       get: jest.fn(),
+      scope: {
+        resolve: jest.fn().mockReturnValue({
+          graph: jest.fn().mockResolvedValue({
+            data: [{ supported_locales: [{ locale_code: "en-US" }] }],
+          }),
+        }),
+      } as unknown as MedusaContainer,
     }
     mockResponse = {} as MedusaResponse
     nextFunction = jest.fn()
