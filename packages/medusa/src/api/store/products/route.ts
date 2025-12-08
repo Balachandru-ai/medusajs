@@ -100,7 +100,7 @@ async function getProducts(
   res: MedusaResponse<HttpTypes.StoreProductListResponse>
 ) {
   const query = req.scope.resolve(ContainerRegistrationKeys.QUERY)
-  const context: object = {}
+  const context: object = req.context || {}
   const withInventoryQuantity = req.queryConfig.fields.some((field) =>
     field.includes("variants.inventory_quantity")
   )

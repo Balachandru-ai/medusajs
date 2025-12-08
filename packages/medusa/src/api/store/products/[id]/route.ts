@@ -13,6 +13,7 @@ export const GET = async (
   req: RequestWithContext<HttpTypes.StoreProductParams>,
   res: MedusaResponse<HttpTypes.StoreProductResponse>
 ) => {
+  const context: object = req.context || {}
   const withInventoryQuantity = req.queryConfig.fields.some((field) =>
     field.includes("variants.inventory_quantity")
   )
@@ -26,10 +27,10 @@ export const GET = async (
   const filters: object = {
     id: req.params.id,
     ...req.filterableFields,
+    context,
   }
 
   if (isPresent(req.pricingContext)) {
-    filters["context"] ??= {}
     filters["context"]["variants"] ??= {}
     filters["context"]["variants"]["calculated_price"] ??= QueryContext(
       req.pricingContext!
