@@ -2,7 +2,7 @@ export enum PriceListRelations {
   PRICES = "prices",
 }
 
-// Note: renamed to avoid referencing remoteQuery which i legacy
+// Note: renamed to avoid referencing remoteQuery which is legacy
 export const adminPriceListPriceQueryFields = [
   "id",
   "currency_code",

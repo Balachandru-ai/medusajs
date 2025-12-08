@@ -16,11 +16,13 @@ export const PriceListGeneralSection = ({
   priceList,
 }: PriceListGeneralSectionProps) => {
   const { t } = useTranslation()
-  const { count, isLoading, error } = usePriceListPrices(priceList.id, {
+  const {
+    count: overrideCount,
+    isLoading,
+    error,
+  } = usePriceListPrices(priceList.id, {
     limit: 1,
   })
-
-  const overrideCount = count
 
   const { color, text } = getPriceListStatus(t, priceList)
 

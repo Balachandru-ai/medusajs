@@ -140,11 +140,7 @@ export const usePriceListPrices = (
   >
 ) => {
   const { data, ...rest } = useQuery({
-    queryFn: () =>
-      sdk.client.fetch<HttpTypes.AdminPriceListPriceListResponse>(
-        `/admin/price-lists/${id}/prices`,
-        { query, method: "GET" }
-      ),
+    queryFn: () => sdk.admin.priceList.prices(id, query),
     queryKey: priceListPricesQueryKeys.detail(id, query),
     ...options,
   })
