@@ -11,8 +11,8 @@ import {
 import { sdk } from "../../lib/client"
 import { queryKeysFactory } from "../../lib/query-key-factory"
 import { queryClient } from "../../lib/query-client"
-import { productsQueryKeys, useProducts, variantsQueryKeys } from "./products"
-import { useVariants } from "./product-variants"
+import { productsQueryKeys, useProducts } from "./products"
+import { productVariantQueryKeys, useVariants } from "./product-variants"
 import { categoriesQueryKeys, useProductCategories } from "./categories"
 import { collectionsQueryKeys, useCollections } from "./collections"
 import { productTagsQueryKeys, useProductTags } from "./tags"
@@ -232,7 +232,7 @@ export const useBatchTranslations = (
 ) => {
   const referenceInvalidationKeysMap = new Map<string, QueryKey>([
     ["product", productsQueryKeys.lists()],
-    ["product_variant", variantsQueryKeys.lists()],
+    ["product_variant", productVariantQueryKeys.lists()],
     ["product_category", categoriesQueryKeys.lists()],
     ["product_collection", collectionsQueryKeys.lists()],
     ["product_type", productTypesQueryKeys.lists()],

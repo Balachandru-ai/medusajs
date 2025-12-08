@@ -18,6 +18,7 @@ import {
 import { KeyboundForm } from "../../../../../components/utilities/keybound-form"
 import { useBatchTranslations } from "../../../../../hooks/api/translations"
 import { useDocumentDirection } from "../../../../../hooks/use-document-direction"
+import { REFERENCE_LABEL_MAP } from "../../utils"
 
 /**
  * Schema for a single locale translation (subrow in DataGrid).
@@ -362,7 +363,7 @@ export const TranslationsEditForm = ({
             <div className="-my-2 w-full border-l">
               <ProgressTabs.List className="justify-start-start flex w-full items-center">
                 <ProgressTabs.Trigger value={entityType}>
-                  {entityType}
+                  {REFERENCE_LABEL_MAP[entityType]}
                 </ProgressTabs.Trigger>
               </ProgressTabs.List>
             </div>
