@@ -14,10 +14,10 @@ export const ErrorBoundary = () => {
   let code: number | null = null
 
   /**
-   * Send error to parent frame when running in an iframe.
+   * Send error to parent frame when running in an iframe, e.g. for Bloom sandboxes.
    */
   useEffect(() => {
-    if (error) {
+    if (window !== window.parent && error) {
       let filename: string | undefined
       let lineno: number | undefined
       let colno: number | undefined
@@ -35,8 +35,8 @@ export const ErrorBoundary = () => {
       }
 
       const errorPayload = {
-        type: "ADMIN_ROUTE_ERROR",
-        payload: {
+        type: "ADMIN_RUNTIME_ERROR",
+        error: {
           message: error instanceof Error ? error.message : String(error),
           filename,
           lineno,
