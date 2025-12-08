@@ -203,6 +203,20 @@ class MedusaModule {
     return [...MedusaModule.moduleResolutions_.values()]
   }
 
+  public static unregisterModuleResolution(moduleKey: string): void {
+    MedusaModule.moduleResolutions_.delete(moduleKey)
+    MedusaModule.joinerConfig_.delete(moduleKey)
+    const moduleAliases = MedusaModule.modules_
+      .get(moduleKey)
+      ?.map((m) => m.alias || m.hash)
+    if (moduleAliases) {
+      for (const alias of moduleAliases) {
+        MedusaModule.instances_.delete(alias)
+      }
+    }
+    MedusaModule.modules_.delete(moduleKey)
+  }
+
   public static setModuleResolution(
     moduleKey: string,
     resolution: ModuleResolution
@@ -516,25 +530,27 @@ class MedusaModule {
     }
 
     const resolvedServices = await promiseAll(
-      loadedModules.map(async ({
-        hashKey,
-        modDeclaration,
-        moduleResolutions,
-        container,
-        finishLoading,
-      }) => {
-        const service = await MedusaModule.resolveLoadedModule({
+      loadedModules.map(
+        async ({
           hashKey,
           modDeclaration,
           moduleResolutions,
           container,
-        })
+          finishLoading,
+        }) => {
+          const service = await MedusaModule.resolveLoadedModule({
+            hashKey,
+            modDeclaration,
+            moduleResolutions,
+            container,
+          })
 
-        MedusaModule.instances_.set(hashKey, service)
-        finishLoading(service)
-        MedusaModule.loading_.delete(hashKey)
-        return service
-      })
+          MedusaModule.instances_.set(hashKey, service)
+          finishLoading(service)
+          MedusaModule.loading_.delete(hashKey)
+          return service
+        }
+      )
     )
 
     services.push(...resolvedServices)
@@ -590,7 +606,10 @@ class MedusaModule {
 
         try {
           // TODO: rework that to store on a separate property
-          joinerConfig = await services[keyName].__joinerConfig?.()
+          joinerConfig =
+            typeof services[keyName].__joinerConfig === "function"
+              ? await services[keyName].__joinerConfig?.()
+              : services[keyName].__joinerConfig
         } catch {
           // noop
         }

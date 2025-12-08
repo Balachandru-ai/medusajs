@@ -3603,7 +3603,6 @@ __metadata:
     "@medusajs/cli": 2.12.1
     connect-dynamodb: ^3.0.5
     ioredis: ^5.4.1
-    vite: ^5.4.21
   peerDependenciesMeta:
     "@aws-sdk/client-dynamodb":
       optional: true
@@ -3805,7 +3804,7 @@ __metadata:
     "@medusajs/workflow-engine-redis": 2.12.1
     boxen: ^5.0.1
     chalk: ^4.1.2
-    chokidar: ^3.5.3
+    chokidar: ^4.0.3
     compression: ^1.8.0
     express: ^4.21.0
     fs-exists-cached: ^1.0.0
