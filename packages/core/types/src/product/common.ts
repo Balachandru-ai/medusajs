@@ -1270,6 +1270,10 @@ export interface UpdateProductOptionDTO {
    */
   ranks?: Record<string, number>
   /**
+   * Whether the product option is exclusive or global.
+   */
+  is_exclusive?: boolean
+  /**
    * The metadata of the product option.
    */
   metadata?: MetadataType

@@ -49,6 +49,7 @@ export const AdminUpdateProductOption = z
     title: z.string().optional(),
     values: z.array(z.string()).optional(),
     ranks: z.record(z.number()).optional(),
+    is_exclusive: z.boolean().optional(),
     metadata: z.record(z.unknown()).nullish(),
   })
   .strict()

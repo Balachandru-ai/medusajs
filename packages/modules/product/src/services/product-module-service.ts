@@ -1026,14 +1026,18 @@ export default class ProductModuleService
   ): Promise<ProductTypes.ProductOptionDTO[] | ProductTypes.ProductOptionDTO> {
     let normalizedInput: UpdateProductOptionInput[] = []
     if (isString(idOrSelector)) {
-      await this.productOptionService_.retrieve(idOrSelector, {}, sharedContext)
+      const option = await this.productOptionService_.retrieve(
+        idOrSelector,
+        {},
+        sharedContext
+      )
       normalizedInput = [{ id: idOrSelector, ...data }]
 
-      if (data.is_exclusive) {
-        // disable changing option from exclusive to non-exclusive and vice versa for now
+      if (data.is_exclusive && option.is_exclusive === false) {
+        // disable changing global option to exclusive
         throw new MedusaError(
           MedusaError.Types.INVALID_DATA,
-          "Cannot change product option from is_exclusive flag."
+          `Cannot change product option: ${option.id} from non-exclusive to exclusive.`
         )
       }
     } else {
@@ -1044,10 +1048,10 @@ export default class ProductModuleService
       )
 
       normalizedInput = options.map((option) => {
-        if (option.is_exclusive !== data.is_exclusive) {
+        if (option.is_exclusive && data.is_exclusive === false) {
           throw new MedusaError(
             MedusaError.Types.INVALID_DATA,
-            "Cannot change product option from is_exclusive flag."
+            `Cannot change product option: ${option.id} from non-exclusive to exclusive.`
           )
         }
 
