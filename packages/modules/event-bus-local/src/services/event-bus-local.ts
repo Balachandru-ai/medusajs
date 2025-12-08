@@ -55,16 +55,6 @@ export default class LocalEventBusService extends AbstractEventBusModuleService 
       : [eventsData]
 
     for (const eventData of normalizedEventsData) {
-      const eventListenersCount = this.eventEmitter_.listenerCount(
-        eventData.name
-      )
-
-      if (!options.internal && !eventData.options?.internal) {
-        this.logger_?.info(
-          `Processing ${eventData.name} which has ${eventListenersCount} subscribers`
-        )
-      }
-
       await this.groupOrEmitEvent({
         ...eventData,
         options,
@@ -102,6 +92,18 @@ export default class LocalEventBusService extends AbstractEventBusModuleService 
 
         if (hasStarSubscriber) {
           this.eventEmitter_.emit("*", eventBody)
+        }
+
+        const totalSubscribers =
+          eventListenersCount + (hasStarSubscriber ? 1 : 0)
+        if (
+          totalSubscribers &&
+          !options?.internal &&
+          !eventData.options?.internal
+        ) {
+          this.logger_?.info(
+            `Processing ${eventData.name} which has ${totalSubscribers} subscribers`
+          )
         }
       })
     }
