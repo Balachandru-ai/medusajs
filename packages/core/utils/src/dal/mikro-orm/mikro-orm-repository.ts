@@ -22,7 +22,7 @@ import {
   FindOptions as MikroOptions,
   ReferenceKind,
 } from "@medusajs/deps/mikro-orm/core"
-import { SqlEntityManager } from "@medusajs/deps/mikro-orm/postgresql"
+import { Knex, SqlEntityManager } from "@medusajs/deps/mikro-orm/postgresql"
 import {
   arrayDifference,
   isString,
@@ -425,18 +425,21 @@ export function mikroOrmBaseRepositoryFactory<const T extends object>(
     }
 
     async delete(
-      filters: FindOptions<T>["where"],
+      filters: FindOptions<T>["where"] & { options?: { returning?: string } },
       context?: Context
     ): Promise<string[]> {
+      const { options = {}, ...filters_ } = filters
       const manager = this.getActiveManager<SqlEntityManager>(context)
 
       const whereSqlInfo = manager
         .createQueryBuilder(this.entity.name, this.tableName)
-        .where(filters)
+        .where(filters_)
         .getKnexQuery()
         .toSQL()
 
-      const builder = (manager.getTransactionContext() ?? manager.getKnex())
+      const builder = (
+        (manager.getTransactionContext() ?? manager.getKnex()) as Knex
+      )
         .queryBuilder()
         .from(this.tableName)
         .delete()
@@ -450,9 +453,14 @@ export function mikroOrmBaseRepositoryFactory<const T extends object>(
         builder.where(manager.getKnex().raw(...where))
       }
 
-      return await builder.returning("id").then((rows: { id: string }[]) => {
-        return rows.map((row: { id: string }) => row.id)
-      })
+      const returning = options.returning ?? "id"
+      return await builder
+        .returning(returning)
+        .then((rows: Record<string, any>[]) => {
+          return rows.map((row: Record<string, any>) => {
+            return row[returning]
+          })
+        })
     }
 
     async find(

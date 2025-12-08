@@ -143,6 +143,11 @@ describe("applyTranslations", () => {
         filters: expect.objectContaining({
           locale_code: "fr-FR",
         }),
+      }),
+      expect.objectContaining({
+        cache: expect.objectContaining({
+          enable: true,
+        }),
       })
     )
   })
