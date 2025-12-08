@@ -29,13 +29,13 @@ export type ExportOrdersStepOutput = {
 
 export const exportOrdersStepId = "export-orders"
 
-const normalizeOrdersForExport = (orders: OrderDTO[]): object[] => {
-  return orders.map((order) => {
-    const order_ = order as any
-    const customer = order_.customer || {}
-    const shippingAddress = order_.shipping_address || {}
+const normalizeOrderForExport = (order: OrderDTO): object => {
+  const order_ = order as any
+  const customer = order_.customer || {}
+  const shippingAddress = order_.shipping_address || {}
 
-    return {
+  return JSON.parse(
+    JSON.stringify({
       Order_ID: order.id,
       Display_ID: order.display_id,
       "Order status": order.status,
@@ -60,8 +60,8 @@ const normalizeOrdersForExport = (orders: OrderDTO[]): object[] => {
       "Tax Total": order.tax_total,
       Total: order.total,
       "Currency Code": order.currency_code,
-    }
-  })
+    })
+  )
 }
 
 export const exportOrdersStep = createStep(
@@ -88,6 +88,8 @@ export const exportOrdersStep = createStep(
       "id",
       "status",
       "items.*",
+      "customer.*",
+      "shipping_address.*",
       "payment_collections.status",
       "payment_collections.amount",
       "payment_collections.captured_amount",
@@ -118,7 +120,8 @@ export const exportOrdersStep = createStep(
         break
       }
 
-      for (const order of orders) {
+      for (let i = 0; i < orders.length; i++) {
+        const order = orders[i]
         const order_ = order as any
 
         order_.payment_status = getLastPaymentStatus(order_)
@@ -127,10 +130,11 @@ export const exportOrdersStep = createStep(
         delete order_.version
         delete order.payment_collections
         delete order.fulfillments
+
+        orders[i] = normalizeOrderForExport(order)
       }
 
-      const normalizedData = normalizeOrdersForExport(orders)
-      const batchCsv = json2csv(normalizedData, {
+      const batchCsv = json2csv(orders, {
         prependHeader: !hasHeader,
         arrayIndexesAsKeys: true,
         expandNestedObjects: true,
