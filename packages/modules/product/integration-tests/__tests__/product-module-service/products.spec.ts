@@ -346,6 +346,22 @@ moduleIntegrationTestRunner<IProductModuleService>({
           expect(products[1].title).toEqual("updated title 2")
         })
 
+        it.only('should create products with assigned id, for upsert scenarios', async () => {
+          const assignedId = 'new-product-' + Date.now();
+          await service.upsertProducts([
+            { id: assignedId, title: "assigned title" },
+            { id: productTwo.id, title: "updated title 2" },
+          ])
+
+          const products = await service.listProducts(
+            { id: [assignedId, productTwo.id] },
+          )
+
+          expect(products).toHaveLength(2)
+          expect(products[0].title).toEqual("assigned title")
+          expect(products[1].title).toEqual("updated title 2")
+        });
+
         it("should update a product and upsert relations that are not created yet", async () => {
           const tags = await service.createProductTags([{ value: "tag-1" }])
           const data = buildProductAndRelationsData({
@@ -1204,6 +1220,37 @@ moduleIntegrationTestRunner<IProductModuleService>({
             })
           )
         })
+
+        it('can create a product with an assigned id', async () => {
+          const data = buildProductAndRelationsData({
+            id: 'custom-product-id',
+            images,
+            thumbnail: images[0].url,
+          })
+          
+          const productsCreated = await service.createProducts([data])
+          expect(productsCreated[0].id).toBe('custom-product-id')
+        });
+
+        it ('can create a product variant with an assigned id', async () => {
+          const data = buildProductAndRelationsData({
+            images,
+            thumbnail: images[0].url,
+            variants: [
+              {
+                id: 'custom-variant-id',
+                title: 'Custom Variant',
+                options: { size: 'M' }, 
+              },
+            ],
+            options: [
+              { title: 'size', values: ['S', 'M', 'L'] },
+            ],
+          }); 
+          
+          const productsCreated = await service.createProducts([data])
+          expect(productsCreated[0].variants[0].id).toBe('custom-variant-id')
+        });
 
         it("should throw because variant doesn't have all options set", async () => {
           const error = await service

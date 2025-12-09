@@ -72,6 +72,7 @@ export interface AdminCreateProductVariantInventoryKit {
 }
 
 export interface AdminCreateProductVariant {
+  id?: string
   /**
    * The variant's title.
    */
@@ -157,6 +158,11 @@ export interface AdminCreateProductVariant {
 }
 
 export interface AdminCreateProduct {
+  /**
+   * Optionally pass an ID when creating a product.
+   */
+  id?: string
+  
   /**
    * The product's title.
    */

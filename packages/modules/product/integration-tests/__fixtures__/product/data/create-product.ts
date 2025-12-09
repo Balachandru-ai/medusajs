@@ -39,6 +39,7 @@ export const buildProductOnlyData = ({
 }
 
 export const buildProductAndRelationsData = ({
+  id,
   title,
   description,
   subtitle,
@@ -57,6 +58,7 @@ export const buildProductAndRelationsData = ({
   const defaultOptionValue = "test-value"
 
   return {
+    id: id ?? undefined,
     title: title ?? faker.commerce.productName(),
     description: description ?? faker.commerce.productName(),
     subtitle: subtitle ?? faker.commerce.productName(),

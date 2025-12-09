@@ -47,6 +47,7 @@ export const AdminProductCategoriesParams = createFindParams({
 
 export const CreateProductCategory = z
   .object({
+    id: z.string().optional(),
     name: z.string(),
     description: z.string().optional(),
     handle: z.string().optional(),

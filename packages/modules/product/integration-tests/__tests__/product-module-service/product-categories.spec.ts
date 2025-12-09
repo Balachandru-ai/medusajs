@@ -398,6 +398,33 @@ moduleIntegrationTestRunner<IProductModuleService>({
         })
 
 
+        it("should create a category with self-selected id successfully", async () => {
+          await service.createProductCategories({
+            id: "new-category-id",
+            name: "New Category",
+            parent_category_id: productCategoryOne.id,
+          })
+
+          const [productCategory] = await service.listProductCategories(
+            {
+              name: "New Category",
+            },
+            {
+              select: ["name", "rank", "id"],
+            }
+          )
+
+          expect(productCategory).toEqual(
+            expect.objectContaining({
+              id: "new-category-id",
+              name: "New Category",
+              rank: 0,
+            })
+          )
+        })
+
+
+
         it("should append rank from an existing category depending on parent", async () => {
           await service.createProductCategories({
             name: "New Category",

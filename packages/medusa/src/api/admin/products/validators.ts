@@ -125,6 +125,7 @@ export const AdminCreateProductType = z.object({
 export type AdminCreateProductVariantType = z.infer<typeof CreateProductVariant>
 export const CreateProductVariant = z
   .object({
+    id: z.string().optional(),
     title: z.string(),
     sku: z.string().nullish(),
     ean: z.string().nullish(),
@@ -201,6 +202,7 @@ export const IdAssociation = z.object({
 export type AdminCreateProductType = z.infer<typeof CreateProduct>
 export const CreateProduct = z
   .object({
+    id: z.string().optional(),
     title: z.string(),
     subtitle: z.string().nullish(),
     description: z.string().nullish(),

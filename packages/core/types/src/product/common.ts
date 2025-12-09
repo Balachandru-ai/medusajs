@@ -357,6 +357,11 @@ export interface ProductCategoryDTO {
  */
 export interface CreateProductCategoryDTO {
   /**
+   * The ID of the product category. This is optional to set. If not provided, a unique ID will be generated. 
+   */
+  id?: string
+
+  /**
    * The product category's name.
    */
   name: string
@@ -1286,6 +1291,10 @@ export interface CreateProductVariantInventoryKit {
  * A product variant to create.
  */
 export interface CreateProductVariantDTO {
+  /**
+   * Optionally pass an ID when creating a product variant.
+   */
+  id?: string,
   /**
    * The id of the product
    */

@@ -1396,6 +1396,19 @@ export default class ProductModuleService
     let created: InferEntityType<typeof ProductCategory>[] = []
     let updated: InferEntityType<typeof ProductCategory>[] = []
 
+    // since the id is now possible to set from external sources, we need to change the logic here a bit
+    const idsInUpdate = new Set(forUpdate.map((category) => category.id));
+    const existingIdResponse = await this.productCategoryService_.list({
+      id: Array.from(idsInUpdate),
+    });
+    const existingIds = new Set(existingIdResponse.map((category) => category.id));
+    
+    // Split the forUpdate array into actual updates and creates based on existing IDs
+    const actualForUpdate = forUpdate.filter(category => existingIds.has(category.id));
+    const movedToCreate = forUpdate.filter(category => !existingIds.has(category.id));
+    forCreate.push(...(movedToCreate as ProductTypes.CreateProductCategoryDTO[]));
+
+
     if (forCreate.length) {
       forCreate = forCreate.map((productCategory) => {
         productCategory.handle ??= kebabCase(productCategory.name)
@@ -1407,9 +1420,9 @@ export default class ProductModuleService
         sharedContext
       )
     }
-    if (forUpdate.length) {
+    if (actualForUpdate.length) {
       updated = await this.productCategoryService_.update(
-        forUpdate,
+        actualForUpdate,
         sharedContext
       )
     }
@@ -1564,14 +1577,27 @@ export default class ProductModuleService
       (product): product is ProductTypes.CreateProductDTO => !product.id
     )
 
+
+    // since the id is now possible to set from external sources, we need to change the logic here a bit
+    const idsInUpdate = new Set(forUpdate.map((product) => product.id));
+    const existingIdResponse =  await this.productService_.list({
+      id: Array.from(idsInUpdate),
+    });
+    const existingIds = new Set(existingIdResponse.map((product) => product.id));
+    
+    // Split the forUpdate array into actual updates and creates based on existing IDs
+    const actualForUpdate = forUpdate.filter(product => existingIds.has(product.id));
+    const movedToCreate = forUpdate.filter(product => !existingIds.has(product.id));
+    forCreate.push(...(movedToCreate as ProductTypes.CreateProductDTO[]));
+
     let created: ProductTypes.ProductDTO[] = []
     let updated: InferEntityType<typeof Product>[] = []
 
     if (forCreate.length) {
       created = await this.createProducts(forCreate, sharedContext)
     }
-    if (forUpdate.length) {
-      updated = await this.updateProducts_(forUpdate, sharedContext)
+    if (actualForUpdate.length) {
+      updated = await this.updateProducts_(actualForUpdate, sharedContext)
     }
 
     const result = [...created, ...updated]

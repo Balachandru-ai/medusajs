@@ -1,4 +1,10 @@
 export interface AdminCreateProductCategory {
+  
+  /**
+   * Optionally pass an ID when creating a product category.
+   */
+  id?: string;
+
   /**
    * The product category's name.
    */
