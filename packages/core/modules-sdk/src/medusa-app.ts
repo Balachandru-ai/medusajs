@@ -505,7 +505,7 @@ async function MedusaApp_({
     modulesNames: string[]
     action?: "run" | "revert" | "generate"
     allOrNothing?: boolean
-  }) => {
+  }): Promise<{ name: string; path: string }[] | void> => {
     const moduleResolutions = Array.from(new Set(modulesNames)).map(
       (moduleName) => {
         return {
@@ -531,8 +531,11 @@ async function MedusaApp_({
       throw error
     }
 
-    let executedResolutions: any[] = []
-    const run = async ({ resolution: moduleResolution }) => {
+    let executedResolutions: [any, string[]][] = [] // [moduleResolution, migration names[]]
+    const run = async (
+      { resolution: moduleResolution },
+      migrationNames?: string[]
+    ) => {
       if (
         !moduleResolution.options?.database &&
         moduleResolution.moduleDeclaration?.scope === MODULE_SCOPE.INTERNAL
@@ -555,11 +558,17 @@ async function MedusaApp_({
       }
 
       if (action === "revert") {
-        await MedusaModule.migrateDown(migrationOptions)
+        await MedusaModule.migrateDown(migrationOptions, migrationNames)
       } else if (action === "run") {
-        await MedusaModule.migrateUp(migrationOptions).then(() => {
-          executedResolutions.push(moduleResolution)
-        })
+        const ranMigrationsResult = await MedusaModule.migrateUp(
+          migrationOptions
+        )
+
+        // Store for revert if anything goes wrong later
+        executedResolutions.push([
+          moduleResolution,
+          ranMigrationsResult?.map((r) => r.name) ?? [],
+        ])
       } else {
         await MedusaModule.migrateGenerate(migrationOptions)
       }
@@ -575,7 +584,11 @@ async function MedusaApp_({
       if (allOrNothing) {
         action = "revert"
         await executeWithConcurrency(
-          executedResolutions.map((resolution) => () => run(resolution)),
+          executedResolutions.map(
+            ([resolution, migrationNames]) =>
+              () =>
+                run(resolution, migrationNames)
+          ),
           concurrency
         )
       }
