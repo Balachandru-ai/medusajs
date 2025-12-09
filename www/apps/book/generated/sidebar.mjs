@@ -44,20 +44,20 @@ export const generatedSidebars = [
             "loaded": true,
             "isPathHref": true,
             "type": "link",
-            "title": "Architecture",
-            "path": "/learn/introduction/architecture",
+            "title": "AI Assistants and LLMs",
+            "path": "/learn/introduction/build-with-llms-ai",
             "children": [],
-            "chapterTitle": "1.3. Architecture",
+            "chapterTitle": "1.3. AI Assistants and LLMs",
             "number": "1.3."
           },
           {
             "loaded": true,
             "isPathHref": true,
             "type": "link",
-            "title": "AI Assistants and LLMs",
-            "path": "/learn/introduction/build-with-llms-ai",
+            "title": "Architecture",
+            "path": "/learn/introduction/architecture",
             "children": [],
-            "chapterTitle": "1.4. AI Assistants and LLMs",
+            "chapterTitle": "1.4. Architecture",
             "number": "1.4."
           },
           {
