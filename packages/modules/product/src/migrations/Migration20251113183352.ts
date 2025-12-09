@@ -2,17 +2,12 @@ import { Migration } from "@mikro-orm/migrations"
 
 export class Migration20251113183352 extends Migration {
   override async up(): Promise<void> {
-    // TODO: revisit
-    this.addSql(`
-      CREATE EXTENSION IF NOT EXISTS pgcrypto;
-      `)
-
     // Populate product_product_option_value with all existing implicit relationships
     // For each product-option link, create links to all values of that option
     this.addSql(`
       insert into "product_product_option_value" ("id", "product_product_option_id", "product_option_value_id")
       select
-        'prodoptval_' || replace(encode(gen_random_bytes(16), 'base32'), '=', ''),
+        gen_random_uuid(),
         ppo.id,
         pov.id
       from "product_product_option" ppo

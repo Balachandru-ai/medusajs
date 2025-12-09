@@ -1037,7 +1037,7 @@ export default class ProductModuleService
         // disable changing global option to exclusive
         throw new MedusaError(
           MedusaError.Types.INVALID_DATA,
-          `Cannot change product option: ${option.id} from non-exclusive to exclusive.`
+          `Cannot change product option: ${option.id} from global to exclusive.`
         )
       }
     } else {
@@ -1048,10 +1048,10 @@ export default class ProductModuleService
       )
 
       normalizedInput = options.map((option) => {
-        if (option.is_exclusive && data.is_exclusive === false) {
+        if (data.is_exclusive && option.is_exclusive === false) {
           throw new MedusaError(
             MedusaError.Types.INVALID_DATA,
-            `Cannot change product option: ${option.id} from non-exclusive to exclusive.`
+            `Cannot change product option: ${option.id} from global to exclusive.`
           )
         }
 
