@@ -346,7 +346,7 @@ moduleIntegrationTestRunner<IProductModuleService>({
           expect(products[1].title).toEqual("updated title 2")
         })
 
-        it.only('should create products with assigned id, for upsert scenarios', async () => {
+        it('should create products with assigned id, for upsert scenarios', async () => {
           const assignedId = 'new-product-' + Date.now();
           await service.upsertProducts([
             { id: assignedId, title: "assigned title" },
