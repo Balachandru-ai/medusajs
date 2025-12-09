@@ -454,7 +454,9 @@ export const updateProductsWorkflow = createWorkflow(
           for (const product of data.input.products) {
             if (product.variants?.length) {
               variantIds.push(
-                ...product.variants.filter((v) => v.id).map((v) => v.id!)
+                ...product.variants
+                  .filter((v) => v.id && v.manage_inventory === false)
+                  .map((v) => v.id!)
               )
             }
           }
