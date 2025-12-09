@@ -239,7 +239,7 @@ export default class StoreModuleService
         StoreModuleService.validateSupportedItems(
           store.supported_locales,
           (l) => l.locale_code,
-          "locale"
+          "locale_code"
         )
       }
     }

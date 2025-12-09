@@ -133,8 +133,8 @@ medusaIntegrationTestRunner({
           {
             create: [
               {
-                entity_id: product.id,
-                entity_type: "product",
+                reference_id: product.id,
+                reference: "product",
                 locale_code: "fr-FR",
                 translations: {
                   title: "T-Shirt Medusa",
@@ -142,8 +142,8 @@ medusaIntegrationTestRunner({
                 },
               },
               {
-                entity_id: product.id,
-                entity_type: "product",
+                reference_id: product.id,
+                reference: "product",
                 locale_code: "de-DE",
                 translations: {
                   title: "Medusa T-Shirt DE",
@@ -151,32 +151,32 @@ medusaIntegrationTestRunner({
                 },
               },
               {
-                entity_id: product.variants[0].id,
-                entity_type: "product_variant",
+                reference_id: product.variants[0].id,
+                reference: "product_variant",
                 locale_code: "fr-FR",
                 translations: {
                   title: "Petit",
                 },
               },
               {
-                entity_id: product.variants[0].id,
-                entity_type: "product_variant",
+                reference_id: product.variants[0].id,
+                reference: "product_variant",
                 locale_code: "de-DE",
                 translations: {
                   title: "Klein",
                 },
               },
               {
-                entity_id: product.variants[1].id,
-                entity_type: "product_variant",
+                reference_id: product.variants[1].id,
+                reference: "product_variant",
                 locale_code: "fr-FR",
                 translations: {
                   title: "Moyen",
                 },
               },
               {
-                entity_id: product.variants[1].id,
-                entity_type: "product_variant",
+                reference_id: product.variants[1].id,
+                reference: "product_variant",
                 locale_code: "de-DE",
                 translations: {
                   title: "Mittel",
@@ -189,14 +189,14 @@ medusaIntegrationTestRunner({
       })
 
       describe("POST /store/carts (create cart with locale)", () => {
-        it("should create a cart with translated items when locale_code is provided", async () => {
+        it("should create a cart with translated items when locale is provided", async () => {
           const response = await api.post(
             `/store/carts`,
             {
               currency_code: "usd",
               sales_channel_id: salesChannel.id,
               region_id: region.id,
-              locale_code: "fr-FR",
+              locale: "fr-FR",
               shipping_address: shippingAddressData,
               items: [{ variant_id: product.variants[0].id, quantity: 1 }],
             },
@@ -217,7 +217,7 @@ medusaIntegrationTestRunner({
           )
         })
 
-        it("should create a cart with original values when no locale_code is provided", async () => {
+        it("should create a cart with original values when no locale is provided", async () => {
           const response = await api.post(
             `/store/carts`,
             {
@@ -242,14 +242,14 @@ medusaIntegrationTestRunner({
       })
 
       describe("POST /store/carts/:id/line-items (add items to cart)", () => {
-        it("should translate new items using the cart's locale_code", async () => {
+        it("should translate new items using the cart's locale", async () => {
           const cartResponse = await api.post(
             `/store/carts`,
             {
               currency_code: "usd",
               sales_channel_id: salesChannel.id,
               region_id: region.id,
-              locale_code: "fr-FR",
+              locale: "fr-FR",
               shipping_address: shippingAddressData,
             },
             storeHeaders
@@ -283,7 +283,7 @@ medusaIntegrationTestRunner({
               currency_code: "usd",
               sales_channel_id: salesChannel.id,
               region_id: region.id,
-              locale_code: "fr-FR",
+              locale: "fr-FR",
               shipping_address: shippingAddressData,
             },
             storeHeaders
@@ -335,14 +335,14 @@ medusaIntegrationTestRunner({
       })
 
       describe("POST /store/carts/:id (update cart locale)", () => {
-        it("should re-translate all items when locale_code is updated", async () => {
+        it("should re-translate all items when locale is updated", async () => {
           const cartResponse = await api.post(
             `/store/carts`,
             {
               currency_code: "usd",
               sales_channel_id: salesChannel.id,
               region_id: region.id,
-              locale_code: "fr-FR",
+              locale: "fr-FR",
               shipping_address: shippingAddressData,
               items: [
                 { variant_id: product.variants[0].id, quantity: 1 },
@@ -362,7 +362,7 @@ medusaIntegrationTestRunner({
           const updateResponse = await api.post(
             `/store/carts/${cart.id}`,
             {
-              locale_code: "de-DE",
+              locale: "de-DE",
             },
             storeHeaders
           )
@@ -398,14 +398,14 @@ medusaIntegrationTestRunner({
           )
         })
 
-        it("should not re-translate items when locale_code is not changed", async () => {
+        it("should not re-translate items when locale is not changed", async () => {
           const cartResponse = await api.post(
             `/store/carts`,
             {
               currency_code: "usd",
               sales_channel_id: salesChannel.id,
               region_id: region.id,
-              locale_code: "fr-FR",
+              locale: "fr-FR",
               shipping_address: shippingAddressData,
               items: [{ variant_id: product.variants[0].id, quantity: 1 }],
             },
@@ -445,7 +445,7 @@ medusaIntegrationTestRunner({
               currency_code: "usd",
               sales_channel_id: salesChannel.id,
               region_id: region.id,
-              locale_code: "fr-FR",
+              locale: "fr-FR",
               shipping_address: shippingAddressData,
               items: [{ variant_id: product.variants[0].id, quantity: 1 }],
             },
@@ -457,7 +457,7 @@ medusaIntegrationTestRunner({
           const updateResponse = await api.post(
             `/store/carts/${cart.id}`,
             {
-              locale_code: "ja-JP",
+              locale: "ja-JP",
             },
             storeHeaders
           )
@@ -489,7 +489,7 @@ medusaIntegrationTestRunner({
               currency_code: "usd",
               sales_channel_id: salesChannel.id,
               region_id: region.id,
-              locale_code: "fr-FR",
+              locale: "fr-FR",
               shipping_address: shippingAddressData,
               items: [{ variant_id: product.variants[0].id, quantity: 1 }],
             },

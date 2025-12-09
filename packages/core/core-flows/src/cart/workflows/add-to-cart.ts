@@ -315,7 +315,7 @@ export const addToCartWorkflow = createWorkflow(
     const translatedItemsToCreate = getTranslatedLineItemsStep({
       items: itemsToCreate,
       variants: itemsToCreateVariants,
-      localeCode: cart.locale,
+      locale: cart.locale,
     })
 
     const [createdLineItems, updatedLineItems] = parallelize(

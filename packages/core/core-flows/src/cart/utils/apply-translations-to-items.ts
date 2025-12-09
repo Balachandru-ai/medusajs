@@ -51,7 +51,7 @@ export function applyTranslationsToItems<
 
     const itemAny = item as Record<string, any>
 
-    Object.entries(items).forEach(([key, value]) => {
+    Object.entries(itemAny).forEach(([key, value]) => {
       for (const prefix of TRANSLATABLE_ITEM_PROP_PREFIXES) {
         if (key.startsWith(prefix)) {
           const translationKey = key.replace(prefix, "")

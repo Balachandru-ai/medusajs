@@ -10,7 +10,7 @@ import { applyTranslationsToItems } from "../utils/apply-translations-to-items"
 export interface GetTranslatedLineItemsStepInput<T> {
   items: T[] | undefined
   variants: Partial<ProductVariantDTO>[]
-  localeCode: string | undefined
+  locale: string | undefined
 }
 
 export const getTranslatedLineItemsStepId = "get-translated-line-items"
@@ -20,12 +20,12 @@ const step = createStep(
   async (data: GetTranslatedLineItemsStepInput<any>, { container }) => {
     const isTranslationEnabled = FeatureFlag.isFeatureEnabled("translation")
 
-    if (!isTranslationEnabled || !data.localeCode || !data.items?.length) {
+    if (!isTranslationEnabled || !data.locale || !data.items?.length) {
       return new StepResponse(data.items ?? [])
     }
 
     await applyTranslations({
-      localeCode: data.localeCode,
+      localeCode: data.locale,
       objects: data.variants,
       container,
     })
