@@ -576,10 +576,20 @@ async function MedusaApp_({
 
     const concurrency = parseInt(process.env.DB_MIGRATION_CONCURRENCY ?? "1")
     try {
-      await executeWithConcurrency(
+      const results = await executeWithConcurrency(
         moduleResolutions.map((a) => () => run(a)),
         concurrency
       )
+      const rejections = results.filter(
+        (result) => result.status === "rejected"
+      )
+      if (rejections.length) {
+        throw new Error(
+          `Some migrations failed to ${action}: ${rejections
+            .map((r) => r.reason)
+            .join(", ")}`
+        )
+      }
     } catch (error) {
       if (allOrNothing) {
         action = "revert"
@@ -587,7 +597,7 @@ async function MedusaApp_({
           executedResolutions.map(
             ([resolution, migrationNames]) =>
               () =>
-                run(resolution, migrationNames)
+                run({ resolution }, migrationNames)
           ),
           concurrency
         )

@@ -50,9 +50,9 @@ export function buildRevertMigrationScript({ moduleName, pathToMigrations }) {
 
     try {
       const revertOptions = migrationNames?.length
-        ? { migrations: migrationNames }
+        ? { step: migrationNames.length }
         : undefined
-      const result = await migrations.revert(revertOptions)
+      const result = await migrations.revert(revertOptions as any)
       if (result.length) {
         logger.info("Reverted successfully")
       } else {

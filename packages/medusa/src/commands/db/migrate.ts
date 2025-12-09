@@ -130,6 +130,7 @@ const main = async function ({
   executeAllLinks,
   executeSafeLinks,
   concurrency,
+  allOrNothing,
 }) {
   process.env.MEDUSA_WORKER_MODE = "server"
   const container = await initializeContainer(directory)
@@ -143,6 +144,7 @@ const main = async function ({
       executeAllLinks,
       executeSafeLinks,
       concurrency,
+      allOrNothing,
       logger,
       container,
     })
