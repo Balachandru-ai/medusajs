@@ -3224,6 +3224,23 @@
           "required": ["header"],
           "additionalProperties": false
         },
+        "products": {
+          "type": "object",
+          "properties": {
+            "list": {
+              "type": "object",
+              "properties": {
+                "noRecords": {
+                  "type": "string"
+                }
+              },
+              "required": ["noRecords"],
+              "additionalProperties": false
+            }
+          },
+          "required": ["list"],
+          "additionalProperties": false
+        },
         "create": {
           "type": "object",
           "properties": {
@@ -3320,6 +3337,7 @@
         "domain",
         "subtitle",
         "values",
+        "products",
         "create",
         "edit",
         "delete",
@@ -9521,10 +9539,10 @@
         "removeLocaleWarning_other": {
           "type": "string"
         },
-        "localeAlreadyAdded": {
+        "currencyAlreadyAdded": {
           "type": "string"
         },
-        "currencyAlreadyAdded": {
+        "localeAlreadyAdded": {
           "type": "string"
         },
         "edit": {
@@ -9543,10 +9561,10 @@
             "update": {
               "type": "string"
             },
-            "localesUpdated": {
+            "currenciesUpdated": {
               "type": "string"
             },
-            "currenciesUpdated": {
+            "localesUpdated": {
               "type": "string"
             },
             "currenciesRemoved": {
@@ -9561,8 +9579,8 @@
           },
           "required": [
             "update",
-            "localesUpdated",
             "currenciesUpdated",
+            "localesUpdated",
             "currenciesRemoved",
             "localesRemoved",
             "updatedTaxInclusivitySuccessfully"

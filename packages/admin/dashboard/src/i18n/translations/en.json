@@ -859,6 +859,11 @@
     "values": {
       "header": "Values"
     },
+    "products": {
+      "list": {
+        "noRecords": "Product that have this option will show up here."
+      }
+    },
     "create": {
       "header": "Create Product Option",
       "hint": "Create a new product option and manage its values.",

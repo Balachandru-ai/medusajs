@@ -15,11 +15,12 @@ import {
   useWatch,
 } from "react-hook-form"
 import { useTranslation } from "react-i18next"
-import { useMemo, useState } from "react"
+import { useMemo } from "react"
 
 import { Form } from "../../../../../../../components/common/form"
 import { SortableList } from "../../../../../../../components/common/sortable-list"
 import { SwitchBox } from "../../../../../../../components/common/switch-box"
+import { ChipInput } from "../../../../../../../components/inputs/chip-input"
 import { Combobox } from "../../../../../../../components/inputs/combobox"
 import { ProductCreateSchemaType } from "../../../../types"
 import { decorateVariantsWithDefaultValues } from "../../../../utils"
@@ -95,159 +96,203 @@ export const ProductCreateVariantsSection = ({
   })
 
   const productOptionChoices = useMemo(() => {
-    return product_options.map((option) => ({
+    const existingChoices = product_options.map((option) => ({
       value: option.id,
       label: option.title,
     }))
-  }, [product_options])
 
-  const [selectedOptionIds, setSelectedOptionIds] = useState<string[]>([])
-  const [selectedOptionValues, setSelectedOptionValues] = useState<
-    Record<string, string[]>
-  >({})
-  const [customValues, setCustomValues] = useState<
-    Record<string, Array<{ id: string; value: string; rank: number }>>
-  >({})
+    const newChoices = watchedOptions
+      .filter((opt) => !opt.id && opt.title)
+      .map((opt) => ({
+        value: opt.title,
+        label: opt.title,
+      }))
 
-  const handleProductOptionSelect = (optionIds: string[]) => {
-    setSelectedOptionIds(optionIds)
+    return [...existingChoices, ...newChoices]
+  }, [product_options, watchedOptions])
 
-    // Initialize selected values for new options (select all by default)
-    const newSelectedValues: Record<string, string[]> = {}
-    const selectedProductOptions = product_options.filter((option) =>
-      optionIds.includes(option.id)
+  const selectedOptionValues = useMemo(() => {
+    return watchedOptions.map((opt) => opt.id || opt.title)
+  }, [watchedOptions])
+
+  const handleProductOptionSelect = (optionValues: string[]) => {
+    const existingOptionIds = optionValues.filter((val) =>
+      product_options.some((opt) => opt.id === val)
+    )
+    const newOptionTitles = optionValues.filter(
+      (val) => !product_options.some((opt) => opt.id === val)
     )
 
-    selectedProductOptions.forEach((option) => {
-      // If option was already selected, keep its current value selection
-      if (selectedOptionValues[option.id]) {
-        newSelectedValues[option.id] = selectedOptionValues[option.id]
-      } else {
-        // New option - select all values by default
-        newSelectedValues[option.id] = option.values?.map((v) => v.id) || []
+    const allSelectedOptions: Array<
+      AdminProductOption | { title: string; values: string[] }
+    > = []
+
+    const selectedProductOptions = product_options.filter((option) =>
+      existingOptionIds.includes(option.id)
+    )
+    allSelectedOptions.push(...selectedProductOptions)
+
+    const watchedOptions = form.getValues("options")
+    watchedOptions.forEach((opt) => {
+      if (!opt.id && opt.title && newOptionTitles.includes(opt.title)) {
+        allSelectedOptions.push({
+          title: opt.title,
+          values: opt.values || [],
+        })
       }
     })
 
-    setSelectedOptionValues(newSelectedValues)
-    updateFormWithSelectedValues(selectedProductOptions, newSelectedValues)
+    const newSelectedValues: Record<string, string[]> = {}
+
+    allSelectedOptions.forEach((option) => {
+      if ("id" in option && option.id) {
+        const currentOption = watchedOptions.find((opt) => opt.id === option.id)
+        if (currentOption?.value_ids) {
+          newSelectedValues[option.id] = currentOption.value_ids
+        } else {
+          newSelectedValues[option.id] = option.values?.map((v) => v.id) || []
+        }
+      }
+    })
+
+    updateFormWithSelectedValues(allSelectedOptions, newSelectedValues)
   }
 
   const handleValueChange = (optionId: string, valueIds: string[]) => {
-    // Ensure at least one value is selected
     if (valueIds.length === 0) {
       return
     }
 
-    // Detect new custom values that aren't in the options yet
-    const allValues = getAllValuesForOption(optionId)
-    const existingValueIds = new Set(allValues.map((v) => v.id))
+    const currentOption = watchedOptions.find((opt) => opt.id === optionId)
+    if (!currentOption) {
+      return
+    }
+
+    const productOption = product_options.find((opt) => opt.id === optionId)
+    const existingValueIds = new Set(
+      productOption?.values?.map((v) => v.id) || []
+    )
 
     const validValueIds: string[] = []
-    const newCustomValues: string[] = []
+    const newValueNames: string[] = []
+
     valueIds.forEach((id) => {
       if (existingValueIds.has(id)) {
         validValueIds.push(id)
       } else {
-        newCustomValues.push(id)
+        newValueNames.push(id)
       }
     })
 
-    let updatedCustomValues = customValues
-    const updatedValidValueIds = [...validValueIds]
-    newCustomValues.forEach((newValue) => {
-      const tempId = `custom-${Date.now()}-${Math.random()}-${newValue}`
+    const updatedOptions = watchedOptions.map((opt) => {
+      if (opt.id === optionId) {
+        const selectedExistingValues =
+          productOption?.values
+            ?.filter((v) => validValueIds.includes(v.id))
+            .map((v) => v.value) || []
 
-      const existingCustom = updatedCustomValues[optionId] || []
-      const option = product_options.find((opt) => opt.id === optionId)
-      const existingValuesCount =
-        (option?.values?.length || 0) + existingCustom.length
-
-      const newCustomValue = {
-        id: tempId,
-        value: newValue,
-        rank: existingValuesCount + newCustomValues.indexOf(newValue),
+        return {
+          ...opt,
+          value_ids: valueIds,
+          values: [...selectedExistingValues, ...newValueNames],
+        }
       }
-
-      updatedCustomValues = {
-        ...updatedCustomValues,
-        [optionId]: [...(updatedCustomValues[optionId] || []), newCustomValue],
-      }
-
-      updatedValidValueIds.push(tempId)
+      return opt
     })
 
-    if (newCustomValues.length > 0) {
-      setCustomValues(updatedCustomValues)
-    }
+    form.setValue("options", updatedOptions)
 
-    const updatedSelectedValues = {
-      ...selectedOptionValues,
-      [optionId]: updatedValidValueIds,
-    }
-
-    setSelectedOptionValues(updatedSelectedValues)
-
-    const selectedProductOptions = product_options.filter((option) =>
-      selectedOptionIds.includes(option.id)
+    const permutations = getPermutations(
+      updatedOptions.filter(({ values }) => values && values.length > 0)
     )
-    updateFormWithSelectedValues(
-      selectedProductOptions,
-      updatedSelectedValues,
-      newCustomValues.length > 0 ? updatedCustomValues : undefined
-    )
+
+    const newVariants = permutations.map((permutation, index) => ({
+      title: getVariantName(permutation),
+      options: permutation,
+      should_create: true,
+      variant_rank: index,
+      inventory: [{ inventory_item_id: "", required_quantity: "" }],
+    }))
+
+    form.setValue("variants", newVariants)
   }
 
-  const getAllValuesForOption = (
-    optionId: string,
-    customVals?: Record<
-      string,
-      Array<{ id: string; value: string; rank: number }>
-    >
+  const handleNewOptionValueChange = (
+    optionTitle: string,
+    valueNames: string[]
   ) => {
-    const option = product_options.find((opt) => opt.id === optionId)
-    const existingValues = option?.values || []
-    const customForOption = (customVals || customValues)[optionId] || []
+    const updatedOptions = watchedOptions.map((opt) => {
+      if (!opt.id && opt.title === optionTitle) {
+        return {
+          ...opt,
+          values: valueNames,
+        }
+      }
+      return opt
+    })
 
-    return [...existingValues, ...customForOption]
+    form.setValue("options", updatedOptions)
+
+    const permutations = getPermutations(
+      updatedOptions.filter(({ values }) => values && values.length > 0)
+    )
+
+    const newVariants = permutations.map((permutation, index) => ({
+      title: getVariantName(permutation),
+      options: permutation,
+      should_create: true,
+      variant_rank: index,
+      inventory: [{ inventory_item_id: "", required_quantity: "" }],
+    }))
+
+    form.setValue("variants", newVariants)
   }
 
   const updateFormWithSelectedValues = (
-    selectedProductOptions: AdminProductOption[],
-    valueSelections: Record<string, string[]>,
-    customVals?: Record<
-      string,
-      Array<{
-        id: string
-        value: string
-        rank: number
-      }>
-    >
+    selectedProductOptions: Array<
+      AdminProductOption | { title: string; values: string[] }
+    >,
+    valueSelections: Record<string, string[]>
   ) => {
-    const newOptions = selectedProductOptions.map((option) => {
-      const selectedValueIds = valueSelections[option.id] || []
-      const allValues = getAllValuesForOption(option.id, customVals)
+    const newOptions: Array<{
+      title: string
+      values: string[]
+      id?: string
+      value_ids?: string[]
+    }> = selectedProductOptions.map((option) => {
+      if ("id" in option && option.id !== undefined) {
+        const existingOption = option as AdminProductOption
+        const selectedValueIds = valueSelections[existingOption.id] || []
+        const allValues = option.values || []
 
-      const selectedValues = allValues
-        .filter((v) => selectedValueIds.includes(v.id))
-        .sort((a, b) => {
-          const rankA = a.rank ?? Number.MAX_VALUE
-          const rankB = b.rank ?? Number.MAX_VALUE
-          return rankA - rankB
-        })
-        .map((v) => v.value)
+        const selectedValues = allValues
+          .filter((v) => selectedValueIds.includes(v.id))
+          .sort((a, b) => {
+            const rankA = a.rank ?? Number.MAX_VALUE
+            const rankB = b.rank ?? Number.MAX_VALUE
+            return rankA - rankB
+          })
+          .map((v) => v.value)
 
-      return {
-        id: option.id,
-        title: option.title,
-        values: selectedValues,
-        value_ids: selectedValueIds,
+        return {
+          id: existingOption.id,
+          title: existingOption.title,
+          values: selectedValues,
+          value_ids: selectedValueIds.length > 0 ? selectedValueIds : undefined,
+        }
+      } else {
+        const newOption = option as { title: string; values: string[] }
+        return {
+          title: newOption.title,
+          values: newOption.values,
+        }
       }
     })
 
     form.setValue("options", newOptions)
 
     const permutations = getPermutations(
-      newOptions.filter(({ values }) => values.length)
+      newOptions.filter(({ values }) => values && values.length > 0)
     )
 
     const newVariants = permutations.map((permutation, index) => ({
@@ -365,9 +410,6 @@ export const ProductCreateVariantsSection = ({
             } else {
               createDefaultOptionAndVariant()
             }
-            setSelectedOptionIds([])
-            setSelectedOptionValues({})
-            setCustomValues({})
           }}
         />
       </div>
@@ -386,28 +428,79 @@ export const ProductCreateVariantsSection = ({
               </Alert>
             )}
             <Combobox
-              value={selectedOptionIds}
+              value={selectedOptionValues}
               onChange={(value) => handleProductOptionSelect(value as string[])}
               options={productOptionChoices}
+              onCreateOption={async (options) => {
+                const optionTitle = options[options.length - 1]?.trim()
+
+                if (!optionTitle) {
+                  return
+                }
+
+                const allSelectedOptions: Array<
+                  AdminProductOption | { title: string; values: string[] }
+                > = []
+
+                const valueSelections: Record<string, string[]> = {}
+
+                watchedOptions.forEach((opt) => {
+                  if (opt.id) {
+                    const productOption = product_options.find(
+                      (p) => p.id === opt.id
+                    )
+                    if (productOption) {
+                      allSelectedOptions.push(productOption)
+                      if (opt.value_ids) {
+                        valueSelections[opt.id] = opt.value_ids
+                      }
+                    }
+                  } else {
+                    allSelectedOptions.push({
+                      title: opt.title,
+                      values: opt.values || [],
+                    })
+                  }
+                })
+
+                const newOption = {
+                  title: optionTitle,
+                  is_exclusive: true,
+                  values: [],
+                }
+
+                allSelectedOptions.push(newOption)
+
+                updateFormWithSelectedValues(
+                  allSelectedOptions,
+                  valueSelections
+                )
+              }}
               placeholder={t("products.fields.options.optionTitlePlaceholder")}
               disabled={isLoading}
               displayMode="chips"
             />
           </div>
-          {selectedOptionIds.length > 0 && (
+          {watchedOptions.length > 0 && (
             <div className="flex flex-col gap-y-4">
               <div className="flex flex-col">
                 <Label weight="plus">{t("fields.values")}</Label>
                 <Hint>{t("products.create.variants.selectValuesHint")}</Hint>
               </div>
               <div className="flex flex-col gap-y-3">
-                {product_options
-                  .filter((option) => selectedOptionIds.includes(option.id))
-                  .map((option) => {
-                    // Get all values (existing + custom) for this option
-                    const allValues = getAllValuesForOption(option.id)
+                {watchedOptions.map((opt, index) => {
+                  if (opt.id) {
+                    const productOption = product_options.find(
+                      (p) => p.id === opt.id
+                    )
 
-                    const valueOptions = allValues
+                    const existingValues = productOption?.values || []
+                    const customValueNames =
+                      opt.values?.filter(
+                        (v) => !existingValues.some((ev) => ev.value === v)
+                      ) || []
+
+                    const existingValueOptions = existingValues
                       .sort((a, b) => {
                         const rankA = a.rank ?? Number.MAX_VALUE
                         const rankB = b.rank ?? Number.MAX_VALUE
@@ -418,18 +511,36 @@ export const ProductCreateVariantsSection = ({
                         label: v.value,
                       }))
 
+                    const customValueOptions = customValueNames.map((v) => ({
+                      value: v,
+                      label: v,
+                    }))
+
+                    const valueOptions = [
+                      ...existingValueOptions,
+                      ...customValueOptions,
+                    ]
+
                     return (
-                      <div key={option.id} className="flex flex-col gap-y-2">
+                      <div key={opt.id} className="flex flex-col gap-y-2">
                         <Label size="small" weight="plus">
-                          {option.title}
+                          {opt.title}
                         </Label>
                         <Combobox
-                          value={selectedOptionValues[option.id] || []}
+                          value={opt.value_ids ?? []}
                           onChange={(value) =>
-                            handleValueChange(option.id, value as string[])
+                            handleValueChange(opt.id!, value as string[])
                           }
-                          onCreateOption={(_) => {
-                            // Todo
+                          onCreateOption={async (values) => {
+                            const newValueName =
+                              values[values.length - 1]?.trim()
+                            if (newValueName && opt.id) {
+                              const currentValueIds = opt.value_ids || []
+                              handleValueChange(opt.id, [
+                                ...currentValueIds,
+                                newValueName,
+                              ])
+                            }
                           }}
                           options={valueOptions}
                           placeholder={t(
@@ -439,7 +550,25 @@ export const ProductCreateVariantsSection = ({
                         />
                       </div>
                     )
-                  })}
+                  } else {
+                    return (
+                      <div key={index} className="flex flex-col gap-y-2">
+                        <Label size="small" weight="plus">
+                          {opt.title}
+                        </Label>
+                        <ChipInput
+                          value={opt.values ?? []}
+                          onChange={(value) =>
+                            handleNewOptionValueChange(opt.title, value)
+                          }
+                          placeholder={t(
+                            "products.fields.options.variantionsPlaceholder"
+                          )}
+                        />
+                      </div>
+                    )
+                  }
+                })}
               </div>
             </div>
           )}

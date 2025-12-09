@@ -114,8 +114,9 @@ const ComboboxImpl = <T extends Value = string>(
     const exists = options
       .filter((o) => !o.disabled)
       .find((o) => {
-        if (isArrayValue) {
-          return newValues?.includes(o.value)
+        if (isArrayValue && newValues?.length) {
+          // only check if the last added value
+          return newValues[newValues.length - 1]?.includes(o.value)
         }
         return o.value === newValues
       })
@@ -240,7 +241,13 @@ const ComboboxImpl = <T extends Value = string>(
       open={open}
       setOpen={handleOpenChange}
       selectedValue={selectedValues}
-      setSelectedValue={(value) => handleValueChange(value as T)}
+      setSelectedValue={(value) => {
+        // TMP: fix issue where sometimes first element of the array is empty string
+        if (Array.isArray(value) && value[0] === "") {
+          value.shift()
+        }
+        handleValueChange(value as T)
+      }}
       value={uncontrolledSearchValue}
       setValue={(query) => {
         startTransition(() => handleSearchChange(query))
@@ -268,7 +275,7 @@ const ComboboxImpl = <T extends Value = string>(
                 <Badge
                   key={value}
                   size="2xsmall"
-                  className="gap-x-0.5 pl-1.5 pr-1 transition-fg"
+                  className="transition-fg gap-x-0.5 pl-1.5 pr-1"
                 >
                   {option.label}
                   <button
@@ -285,7 +292,7 @@ const ComboboxImpl = <T extends Value = string>(
                 </Badge>
               )
             })}
-          <div className="relative flex flex-1 items-center min-w-[120px]">
+          <div className="relative flex min-w-[120px] flex-1 items-center">
             <PrimitiveCombobox
               autoSelect
               ref={comboboxRef}
@@ -337,7 +344,9 @@ const ComboboxImpl = <T extends Value = string>(
               type="button"
               onClick={(e) => {
                 e.preventDefault()
-                handleValueChange(isArrayValue ? ([] as unknown as T) : undefined)
+                handleValueChange(
+                  isArrayValue ? ([] as unknown as T) : undefined
+                )
               }}
               className="bg-ui-bg-base hover:bg-ui-bg-base-hover txt-compact-small-plus text-ui-fg-subtle focus-within:border-ui-fg-interactive transition-fg absolute start-0.5 top-0.5 z-[1] flex h-[28px] items-center rounded-[4px] border py-[3px] pe-1 ps-1.5 outline-none"
             >

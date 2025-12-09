@@ -32,7 +32,10 @@ export const ProductOptionGeneralSection = ({
       <div className="flex items-center justify-between px-6 py-4">
         <Heading>{productOption.title}</Heading>
         <div className="flex items-center gap-x-2">
-          <Badge size="xsmall" color="blue">
+          <Badge
+            size="xsmall"
+            color={productOption.is_exclusive ? "grey" : "blue"}
+          >
             {t(
               `general.${productOption.is_exclusive ? "exclusive" : "global"}`
             )}
