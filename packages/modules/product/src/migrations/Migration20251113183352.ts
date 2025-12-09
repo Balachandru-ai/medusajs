@@ -2,6 +2,11 @@ import { Migration } from "@mikro-orm/migrations"
 
 export class Migration20251113183352 extends Migration {
   override async up(): Promise<void> {
+    // TODO: revisit
+    this.addSql(`
+      CREATE EXTENSION IF NOT EXISTS pgcrypto;
+      `)
+
     // Populate product_product_option_value with all existing implicit relationships
     // For each product-option link, create links to all values of that option
     this.addSql(`
