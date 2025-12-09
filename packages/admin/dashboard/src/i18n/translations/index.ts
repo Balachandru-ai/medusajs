@@ -28,6 +28,7 @@ import ko from "./ko.json"
 import nl from "./nl.json"
 import bs from "./bs.json"
 import id from "./id.json"
+import zhTW from "./zhTW.json"
 export default {
   bs: {
     translation: bs,
@@ -119,4 +120,7 @@ export default {
   id: {
     translation: id,
   },
+  zhTW: {
+    translation: zhTW,
+  }
 }
