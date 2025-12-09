@@ -47,7 +47,9 @@ import { MODULE_SCOPE } from "./types"
 
 const LinkModulePackage = MODULE_PACKAGE_NAMES[Modules.LINK]
 
-export type RunMigrationFn = () => Promise<void>
+export type RunMigrationFn = (options?: {
+  allOrNothing?: boolean
+}) => Promise<void>
 export type RevertMigrationFn = (moduleNames: string[]) => Promise<void>
 export type GenerateMigrations = (moduleNames: string[]) => Promise<void>
 export type GetLinkExecutionPlanner = () => ILinkMigrationsPlanner
@@ -498,9 +500,11 @@ async function MedusaApp_({
   const applyMigration = async ({
     modulesNames,
     action = "run",
+    allOrNothing = false,
   }: {
     modulesNames: string[]
     action?: "run" | "revert" | "generate"
+    allOrNothing?: boolean
   }) => {
     const moduleResolutions = Array.from(new Set(modulesNames)).map(
       (moduleName) => {
@@ -527,6 +531,7 @@ async function MedusaApp_({
       throw error
     }
 
+    let executedResolutions: any[] = []
     const run = async ({ resolution: moduleResolution }) => {
       if (
         !moduleResolution.options?.database &&
@@ -552,22 +557,40 @@ async function MedusaApp_({
       if (action === "revert") {
         await MedusaModule.migrateDown(migrationOptions)
       } else if (action === "run") {
-        await MedusaModule.migrateUp(migrationOptions)
+        await MedusaModule.migrateUp(migrationOptions).then(() => {
+          executedResolutions.push(moduleResolution)
+        })
       } else {
         await MedusaModule.migrateGenerate(migrationOptions)
       }
     }
 
     const concurrency = parseInt(process.env.DB_MIGRATION_CONCURRENCY ?? "1")
-    await executeWithConcurrency(
-      moduleResolutions.map((a) => () => run(a)),
-      concurrency
-    )
+    try {
+      await executeWithConcurrency(
+        moduleResolutions.map((a) => () => run(a)),
+        concurrency
+      )
+    } catch (error) {
+      if (allOrNothing) {
+        action = "revert"
+        await executeWithConcurrency(
+          executedResolutions.map((resolution) => () => run(resolution)),
+          concurrency
+        )
+      }
+      throw error
+    }
   }
 
-  const runMigrations: RunMigrationFn = async (): Promise<void> => {
+  const runMigrations: RunMigrationFn = async (
+    { allOrNothing = false }: { allOrNothing?: boolean } = {
+      allOrNothing: false,
+    }
+  ): Promise<void> => {
     await applyMigration({
       modulesNames: Object.keys(allModules),
+      allOrNothing,
     })
   }
 
@@ -638,7 +661,7 @@ export async function MedusaApp(
 }
 
 export async function MedusaAppMigrateUp(
-  options: MedusaAppOptions = {}
+  options: MedusaAppOptions & { allOrNothing?: boolean } = {}
 ): Promise<void> {
   const migrationOnly = true
 
@@ -647,7 +670,9 @@ export async function MedusaAppMigrateUp(
     migrationOnly,
   })
 
-  await runMigrations().finally(MedusaModule.clearInstances)
+  await runMigrations({ allOrNothing: options.allOrNothing }).finally(
+    MedusaModule.clearInstances
+  )
 }
 
 export async function MedusaAppMigrateDown(

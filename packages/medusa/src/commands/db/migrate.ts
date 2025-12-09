@@ -27,6 +27,7 @@ export async function migrate({
   skipScripts,
   executeAllLinks,
   executeSafeLinks,
+  allOrNothing,
   concurrency,
   logger,
   container,
@@ -36,6 +37,7 @@ export async function migrate({
   skipScripts: boolean
   executeAllLinks: boolean
   executeSafeLinks: boolean
+  allOrNothing?: boolean
   concurrency?: number
   logger: Logger
   container: MedusaContainer
@@ -79,6 +81,7 @@ export async function migrate({
 
   await medusaAppLoader.runModulesMigrations({
     action: "run",
+    allOrNothing,
   })
   logger.log(new Array(TERMINAL_SIZE).join("-"))
   logger.info("Migrations completed")
