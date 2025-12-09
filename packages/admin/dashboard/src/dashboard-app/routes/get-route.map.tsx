@@ -1062,6 +1062,10 @@ export function getRouteMap({
                   lazy: () => import("../../routes/store/store-add-currencies"),
                 },
                 {
+                  path: "locales",
+                  lazy: () => import("../../routes/store/store-add-locales"),
+                },
+                {
                   path: "metadata/edit",
                   lazy: () => import("../../routes/store/store-metadata"),
                 },

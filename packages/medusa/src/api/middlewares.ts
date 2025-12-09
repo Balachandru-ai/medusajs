@@ -67,6 +67,8 @@ import { storeReturnReasonRoutesMiddlewares } from "./store/return-reasons/middl
 import { storeShippingOptionRoutesMiddlewares } from "./store/shipping-options/middlewares"
 import { adminShippingOptionTypeRoutesMiddlewares } from "./admin/shipping-option-types/middlewares"
 import { adminIndexRoutesMiddlewares } from "./admin/index/middlewares"
+import { adminLocalesRoutesMiddlewares } from "./admin/locales/middlewares"
+import { adminTranslationsRoutesMiddlewares } from "./admin/translations/middlewares"
 
 export default defineMiddlewares([
   ...storeRoutesMiddlewares,
@@ -95,10 +97,12 @@ export default defineMiddlewares([
   ...adminInviteRoutesMiddlewares,
   ...adminTaxRateRoutesMiddlewares,
   ...adminTaxRegionRoutesMiddlewares,
+  ...adminTranslationsRoutesMiddlewares,
   ...adminApiKeyRoutesMiddlewares,
   ...hooksRoutesMiddlewares,
   ...adminStoreRoutesMiddlewares,
   ...adminCurrencyRoutesMiddlewares,
+  ...adminLocalesRoutesMiddlewares,
   ...storeCurrencyRoutesMiddlewares,
   ...adminProductRoutesMiddlewares,
   ...adminPaymentRoutesMiddlewares,
