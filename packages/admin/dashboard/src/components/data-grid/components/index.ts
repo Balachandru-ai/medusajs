@@ -5,3 +5,4 @@ export { DataGridReadonlyCell as DataGridReadOnlyCell } from "./data-grid-readon
 export { DataGridRoot, type DataGridRootProps } from "./data-grid-root"
 export { DataGridSkeleton } from "./data-grid-skeleton"
 export { DataGridTextCell } from "./data-grid-text-cell"
+export { DataGridExpandableTextCell } from "./data-grid-textarea-modal-cell"

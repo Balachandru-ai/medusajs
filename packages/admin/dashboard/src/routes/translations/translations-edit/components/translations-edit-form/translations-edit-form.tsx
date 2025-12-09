@@ -210,8 +210,10 @@ const columnHelper = createDataGridHelper<
 
 function useTranslationsGridColumns({
   translatableFields,
+  modalFields = [],
 }: {
   translatableFields: string[]
+  modalFields?: string[]
 }) {
   const { t } = useTranslation()
 
@@ -239,8 +241,10 @@ function useTranslationsGridColumns({
         },
         disableHiding: true,
       }),
-      ...translatableFields.map((fieldName) =>
-        columnHelper.column({
+      ...translatableFields.map((fieldName) => {
+        const useModal = modalFields.includes(fieldName)
+
+        return columnHelper.column({
           id: fieldName,
           header: t(`fields.${fieldName}`, { defaultValue: fieldName }),
           cell: (context) => {
@@ -251,6 +255,15 @@ function useTranslationsGridColumns({
                 <DataGrid.ReadonlyCell context={context}>
                   <span className="text-ui-fg-muted">—</span>
                 </DataGrid.ReadonlyCell>
+              )
+            }
+
+            if (useModal) {
+              return (
+                <DataGrid.ExpandableTextCell
+                  context={context}
+                  fieldLabel={fieldName}
+                />
               )
             }
 
@@ -267,9 +280,9 @@ function useTranslationsGridColumns({
           },
           type: "text",
         })
-      ),
+      }),
     ]
-  }, [t, translatableFields])
+  }, [t, translatableFields, modalFields])
 
   return columns
 }
@@ -280,6 +293,7 @@ type TranslationsEditFormProps = {
   entityType: string
   availableLocales: AdminStoreLocale[]
   translatableFields: string[]
+  modalFields?: string[]
 }
 
 export const TranslationsEditForm = ({
@@ -288,6 +302,7 @@ export const TranslationsEditForm = ({
   entityType,
   availableLocales,
   translatableFields,
+  modalFields = [],
 }: TranslationsEditFormProps) => {
   const { t } = useTranslation()
   const { handleSuccess, setCloseOnEscape } = useRouteModal()
@@ -349,7 +364,10 @@ export const TranslationsEditForm = ({
     })
   })
 
-  const columns = useTranslationsGridColumns({ translatableFields })
+  const columns = useTranslationsGridColumns({
+    translatableFields,
+    modalFields,
+  })
 
   return (
     <RouteFocusModal.Form form={form}>

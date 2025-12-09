@@ -59,6 +59,7 @@ export const TranslationsEdit = () => {
           availableLocales={store?.supported_locales ?? []}
           // TODO: change this to get it from the entity translation config when we have it
           translatableFields={translatableFields}
+          modalFields={translatableFields}
         />
       )}
     </RouteFocusModal>

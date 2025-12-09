@@ -8,6 +8,7 @@ import {
   DataGridRoot,
   DataGridSkeleton,
   DataGridTextCell,
+  DataGridExpandableTextCell,
   type DataGridRootProps,
 } from "./components"
 
@@ -35,6 +36,7 @@ const _DataGrid = <TData, TFieldValues extends FieldValues = FieldValues>({
 export const DataGrid = Object.assign(_DataGrid, {
   BooleanCell: DataGridBooleanCell,
   TextCell: DataGridTextCell,
+  ExpandableTextCell: DataGridExpandableTextCell,
   NumberCell: DataGridNumberCell,
   CurrencyCell: DataGridCurrencyCell,
   ReadonlyCell: DataGridReadOnlyCell,
