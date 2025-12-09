@@ -903,15 +903,12 @@ class MedusaModule {
       )
 
       if (typeof revertMigration === "function") {
-        await revertMigration(
-          {
-            options,
-            container: container!,
-            logger: logger_,
-          },
-          undefined,
-          migrationNames
-        )
+        await revertMigration({
+          options,
+          container: container!,
+          logger: logger_,
+          migrationNames,
+        })
       }
     }
   }

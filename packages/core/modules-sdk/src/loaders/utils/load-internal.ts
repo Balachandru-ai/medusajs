@@ -50,9 +50,8 @@ type MigrationFunction = (
   moduleDeclaration?: InternalModuleDeclaration
 ) => Promise<{ name: string; path: string }[]>
 type RevertMigrationFunction = (
-  options: LoaderOptions<any>,
-  moduleDeclaration?: InternalModuleDeclaration,
-  migrationNames?: string[]
+  options: LoaderOptions<any> & { migrationNames?: string[] },
+  moduleDeclaration?: InternalModuleDeclaration
 ) => Promise<void>
 type GenerateMigrationFunction = (
   options: LoaderOptions<any>,
