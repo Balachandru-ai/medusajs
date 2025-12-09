@@ -1,10 +1,16 @@
 import {
   ContainerRegistrationKeys,
-  parseCorsOrigins,
+  FeatureFlag,
   isFileDisabled,
+  parseCorsOrigins,
 } from "@medusajs/utils"
 import cors, { CorsOptions } from "cors"
-import type { ErrorRequestHandler, Express, RequestHandler } from "express"
+import type {
+  ErrorRequestHandler,
+  Express,
+  IRouter,
+  RequestHandler,
+} from "express"
 import type {
   AdditionalDataValidatorRoute,
   BodyParserConfigRoute,
@@ -19,6 +25,7 @@ import type {
 } from "./types"
 
 import { Logger, MedusaContainer } from "@medusajs/types"
+import { join } from "path"
 import { configManager } from "../config"
 import { MiddlewareFileLoader } from "./middleware-file-loader"
 import { authenticate, AuthType } from "./middlewares"
@@ -88,6 +95,7 @@ export class ApiLoader {
    */
   async #loadHttpResources() {
     const routesLoader = new RoutesLoader()
+
     const middlewareLoader = new MiddlewareFileLoader()
 
     for (const dir of this.#sourceDirs) {
@@ -156,6 +164,7 @@ export class ApiLoader {
         : route.handler
 
       this.#app[route.method.toLowerCase()](route.matcher, wrapHandler(handler))
+
       return
     }
 
@@ -399,6 +408,10 @@ export class ApiLoader {
   }
 
   async load() {
+    if (FeatureFlag.isFeatureEnabled("backend_hmr")) {
+      ;(global as any).__MEDUSA_HMR_API_LOADER__ = this
+    }
+
     const {
       errorHandler: sourceErrorHandler,
       middlewares,
@@ -506,5 +519,20 @@ export class ApiLoader {
      * Registering error handler as the final handler
      */
     this.#app.use(sourceErrorHandler ?? errorHandler())
+  }
+
+  /**
+   * Clear all API resources registered by this loader
+   * This removes all routes and middleware added after the initial stack state
+   * Used by HMR to reset the API state before reloading
+   */
+  clearAllResources() {
+    const router = this.#app._router as IRouter
+    const initialStackLength =
+      (global as any).__MEDUSA_HMR_INITIAL_STACK_LENGTH__ ?? 0
+
+    if (router && router.stack) {
+      router.stack.splice(initialStackLength)
+    }
   }
 }
