@@ -2,4 +2,4 @@
 "@medusajs/link-modules": patch
 ---
 
-fix(): store supported locales read only link and currencies
+fix(): Remove unnecessary currency/store support\_\* read only links
