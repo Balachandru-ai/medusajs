@@ -1,4 +1,4 @@
-import { PencilSquare } from "@medusajs/icons"
+import { ArrowRight, PencilSquare } from "@medusajs/icons"
 import { Badge, Container, Heading } from "@medusajs/ui"
 import { useTranslation } from "react-i18next"
 import { ActionMenu } from "../../../../../components/common/action-menu"
@@ -18,9 +18,9 @@ const OptionActions = ({
         {
           actions: [
             {
-              label: t("actions.edit"),
-              to: `/product-options/${option.id}/edit`,
-              icon: <PencilSquare />,
+              label: t("actions.goToProductOption"),
+              to: `/product-options/${option.id}`,
+              icon: <ArrowRight />,
             },
           ],
         },

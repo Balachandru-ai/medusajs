@@ -99,8 +99,7 @@
     "@aws-sdk/client-dynamodb": "^3.218.0",
     "@medusajs/cli": "2.12.1",
     "connect-dynamodb": "^3.0.5",
-    "ioredis": "^5.4.1",
-    "vite": "^5.4.21"
+    "ioredis": "^5.4.1"
   },
   "peerDependenciesMeta": {
     "@aws-sdk/client-dynamodb": {
