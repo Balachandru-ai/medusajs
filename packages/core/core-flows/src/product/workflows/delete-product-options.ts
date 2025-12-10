@@ -1,60 +1,16 @@
+import { Modules, ProductOptionWorkflowEvents } from "@medusajs/framework/utils"
 import {
-  MedusaError,
-  Modules,
-  ProductOptionWorkflowEvents,
-} from "@medusajs/framework/utils"
-import {
-  StepResponse,
   WorkflowData,
   WorkflowResponse,
   createHook,
-  createStep,
   createWorkflow,
   parallelize,
   transform,
 } from "@medusajs/framework/workflows-sdk"
-import { IProductModuleService } from "@medusajs/framework/types"
 
 import { emitEventStep } from "../../common"
 import { removeRemoteLinkStep } from "../../common/steps/remove-remote-links"
 import { deleteProductOptionsStep } from "../steps"
-
-export type ValidateProductOptionsNotAssociatedStepInput = string[]
-
-const validateProductOptionsNotAssociatedStepId =
-  "validate-product-options-not-associated"
-/**
- * This step validates that product options are not associated with any products i.e. can be removed.
- */
-const validateProductOptionsNotAssociatedStep = createStep(
-  validateProductOptionsNotAssociatedStepId,
-  async (
-    optionIds: ValidateProductOptionsNotAssociatedStepInput,
-    { container }
-  ) => {
-    const service = container.resolve<IProductModuleService>(Modules.PRODUCT)
-
-    // @ts-ignore TODO
-    const productOptionsProducts = await service.listProductProductOptionValues(
-      {
-        product_option_id: optionIds,
-      },
-      {
-        select: ["id"],
-        pagination: { take: 1 },
-      }
-    )
-
-    if (productOptionsProducts.length > 0) {
-      throw new MedusaError(
-        MedusaError.Types.INVALID_DATA,
-        "Cannot delete product options that are associated with products."
-      )
-    }
-
-    return new StepResponse(void 0)
-  }
-)
 
 /**
  * The data to delete one or more product options.
@@ -93,8 +49,6 @@ export const deleteProductOptionsWorkflowId = "delete-product-options"
 export const deleteProductOptionsWorkflow = createWorkflow(
   deleteProductOptionsWorkflowId,
   (input: WorkflowData<DeleteProductOptionsWorkflowInput>) => {
-    validateProductOptionsNotAssociatedStep(input.ids)
-
     const deletedProductOptions = deleteProductOptionsStep(input.ids)
     const productOptionsDeleted = createHook("productOptionsDeleted", {
       ids: input.ids,

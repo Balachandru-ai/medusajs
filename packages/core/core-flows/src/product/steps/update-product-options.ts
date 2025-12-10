@@ -57,41 +57,6 @@ export const updateProductOptionsStep = createStep(
       )
     }
 
-    // Check if any option values are being removed and if they're associated with products
-    if (data.update.values !== undefined) {
-      const newValues = new Set(data.update.values)
-      const removedValueIds: string[] = []
-
-      for (const option of prevData) {
-        for (const existingValue of option.values || []) {
-          if (!newValues.has(existingValue.value)) {
-            removedValueIds.push(existingValue.id)
-          }
-        }
-      }
-
-      if (removedValueIds.length > 0) {
-        const productProductOptionValues =
-          // @ts-ignore TODO
-          await service.listProductProductOptionValues(
-            {
-              product_option_value_id: removedValueIds,
-            },
-            {
-              select: ["id"],
-              pagination: { take: 1 },
-            }
-          )
-
-        if (productProductOptionValues.length > 0) {
-          throw new MedusaError(
-            MedusaError.Types.INVALID_DATA,
-            "Cannot delete product option values that are associated with products."
-          )
-        }
-      }
-    }
-
     const productOptions = await service.updateProductOptions(
       data.selector,
       data.update

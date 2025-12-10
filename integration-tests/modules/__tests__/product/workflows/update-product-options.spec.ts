@@ -61,23 +61,22 @@ medusaIntegrationTestRunner({
 
           expect(errors).toHaveLength(1)
           const error = errors[0].error
-          expect(error).toBeDefined()
-          const errorMessage =
-            error.message || error.toString() || JSON.stringify(error)
-          expect(errorMessage).toContain(
+
+          expect(error.message).toContain(
             "Cannot delete product option values that are associated with products."
           )
 
           // Verify the option still has all values
-          const updatedOption = await service.listProductOptions({
-            id: [option.id],
-          })
+          const updatedOption = await service.listProductOptions(
+            {
+              id: [option.id],
+            },
+            { relations: ["values"] }
+          )
           expect(updatedOption[0].values).toHaveLength(3)
-          expect(updatedOption[0].values.map((v) => v.value)).toEqual([
-            "S",
-            "M",
-            "L",
-          ])
+          expect(updatedOption[0].values.map((v) => v.value)).toEqual(
+            expect.arrayContaining(["S", "M", "L"])
+          )
         })
 
         it("should successfully remove option values that are not associated with products", async () => {
@@ -100,14 +99,16 @@ medusaIntegrationTestRunner({
             },
           })
 
-          const updatedOption = await service.listProductOptions({
-            id: [option.id],
-          })
+          const updatedOption = await service.listProductOptions(
+            {
+              id: [option.id],
+            },
+            { relations: ["values"] }
+          )
           expect(updatedOption[0].values).toHaveLength(2)
-          expect(updatedOption[0].values.map((v) => v.value)).toEqual([
-            "Red",
-            "Blue",
-          ])
+          expect(updatedOption[0].values.map((v) => v.value)).toEqual(
+            expect.arrayContaining(["Red", "Blue"])
+          )
         })
 
         it("should successfully update option values when adding new values and removing unassociated ones", async () => {
@@ -146,19 +147,23 @@ medusaIntegrationTestRunner({
             },
           })
 
-          const updatedOption = await service.listProductOptions({
-            id: [standaloneOption.id],
-          })
+          const updatedOption = await service.listProductOptions(
+            {
+              id: [standaloneOption.id],
+            },
+            { relations: ["values"] }
+          )
           expect(updatedOption[0].values).toHaveLength(2)
-          expect(updatedOption[0].values.map((v) => v.value)).toEqual([
-            "Striped",
-            "New",
-          ])
+          expect(updatedOption[0].values.map((v) => v.value)).toEqual(
+            expect.arrayContaining(["Striped", "New"])
+          )
 
-          // Verify the product's option is unchanged
-          const productOption = await service.listProductOptions({
-            id: [option.id],
-          })
+          const productOption = await service.listProductOptions(
+            {
+              id: [option.id],
+            },
+            { relations: ["values"] }
+          )
           expect(productOption[0].values).toHaveLength(2)
         })
       })

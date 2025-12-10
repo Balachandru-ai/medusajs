@@ -58,14 +58,14 @@ medusaIntegrationTestRunner({
 
           expect(errors).toHaveLength(1)
           const error = errors[0].error
-          expect(error).toBeDefined()
-          const errorMessage =
-            error.message || error.toString() || JSON.stringify(error)
-          expect(errorMessage).toContain("Cannot delete product option(s)")
-          expect(errorMessage).toContain("Size")
-          expect(errorMessage).toContain("associated with one or more products")
+          expect(error.message).toContain(
+            "Cannot delete product options that are associated with products."
+          )
 
-          const options = await service.listProductOptions({ id: [option.id] })
+          const options = await service.listProductOptions(
+            { id: [option.id] },
+            { relations: ["values"] }
+          )
           expect(options).toHaveLength(1)
           expect(options[0].id).toBe(option.id)
         })
@@ -133,12 +133,9 @@ medusaIntegrationTestRunner({
 
           expect(errors).toHaveLength(1)
           const error = errors[0].error
-          expect(error).toBeDefined()
-          const errorMessage =
-            error.message || error.toString() || JSON.stringify(error)
-          expect(errorMessage).toContain("Cannot delete product option(s)")
-          expect(errorMessage).toContain("Material")
-          expect(errorMessage).toContain("associated with one or more products")
+          expect(error.message).toContain(
+            "Cannot delete product options that are associated with products."
+          )
 
           const options = await service.listProductOptions({ id: [option.id] })
           expect(options).toHaveLength(1)
