@@ -1398,9 +1398,13 @@ export default class ProductModuleService
 
     // since the id is now possible to set from external sources, we need to change the logic here a bit
     const idsInUpdate = new Set(forUpdate.map((category) => category.id));
-    const existingIdResponse = await this.productCategoryService_.list({
-      id: Array.from(idsInUpdate),
-    });
+    const existingIdResponse = await this.productCategoryService_.list(
+      {
+        id: Array.from(idsInUpdate),
+      },
+      {},
+      sharedContext
+    );
     const existingIds = new Set(existingIdResponse.map((category) => category.id));
     
     // Split the forUpdate array into actual updates and creates based on existing IDs
@@ -1580,9 +1584,13 @@ export default class ProductModuleService
 
     // since the id is now possible to set from external sources, we need to change the logic here a bit
     const idsInUpdate = new Set(forUpdate.map((product) => product.id));
-    const existingIdResponse =  await this.productService_.list({
-      id: Array.from(idsInUpdate),
-    });
+    const existingIdResponse =  await this.productService_.list(
+      {
+        id: Array.from(idsInUpdate),
+      },
+      {},
+      sharedContext
+    );
     const existingIds = new Set(existingIdResponse.map((product) => product.id));
     
     // Split the forUpdate array into actual updates and creates based on existing IDs
