@@ -1,4 +1,4 @@
-import { CodeTabs, CodeTab, Table } from "docs-ui"
+import { CodeTabs, CodeTab, Table, Prerequisites } from "docs-ui"
 
 export const metadata = {
   title: `Medusa JS SDK`,
@@ -646,6 +646,35 @@ In the example above, you pass the `x-no-compression` header in the request to d
 <Note title="Tip">
 
 The JS SDK appends request-specific headers to authentication headers and headers configured in the `globalHeaders` configuration. So, in the example above, the `x-no-compression` header is passed in the request along with the authentication headers and any headers configured in the `globalHeaders` configuration.
+
+</Note>
+
+---
+
+## Set Locale
+
+<Prerequisites
+  items={[
+    {
+      text: "Translation Module Configured",
+      link: "/commerce-modules/translation#configure-translation-module",
+    }
+  ]}
+/>
+
+If you support [localization](../../localization/page.mdx) in your storefront, you can set the locale to retrieve product information and other resources based on the customer's preferred language.
+
+Set the locale using the JS SDK's `setLocale` method. It accepts the locale string in the [IETF BCP 47 standard](https://gist.github.com/typpo/b2b828a35e683b9bf8db91b5404f1bd1).
+
+```ts
+sdk.setLocale("fr-FR")
+```
+
+All subsequent requests sent using the JS SDK will include the specified locale as a query parameter.
+
+<Note>
+
+Learn more about localization and translations in the [Translation Module](../commerce-modules/translation/page.mdx) guide.
 
 </Note>
 
