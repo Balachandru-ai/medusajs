@@ -10,6 +10,7 @@ import {
   createStep,
   createWorkflow,
   transform,
+  when,
 } from "@medusajs/framework/workflows-sdk"
 import {
   OrderPreviewDTO,
@@ -21,6 +22,7 @@ import { emitEventStep, useQueryGraphStep } from "../../common"
 import {
   previewOrderChangeStep,
   registerOrderChangesStep,
+  updateOrderItemsTranslationsStep,
   updateOrdersStep,
 } from "../steps"
 import { throwIfOrderIsCancelled } from "../utils/order-validation"
@@ -128,6 +130,7 @@ export const updateOrderWorkflow = createWorkflow(
         "id",
         "status",
         "email",
+        "locale",
         "shipping_address.*",
         "billing_address.*",
         "metadata",
@@ -235,11 +238,35 @@ export const updateOrderWorkflow = createWorkflow(
           })
         }
 
+        if (input.locale !== undefined && input.locale !== order.locale) {
+          changes.push({
+            change_type: "update_order" as const,
+            order_id: input.id,
+            created_by: input.user_id,
+            confirmed_by: input.user_id,
+            details: {
+              type: "locale",
+              old: order.locale,
+              new: input.locale,
+            },
+          })
+        }
+
         return changes
       }
     )
 
     registerOrderChangesStep(orderChangeInput)
+
+    // Re-translate all order items when locale changes
+    when("locale-changed", { input, order }, ({ input, order }) => {
+      return input.locale !== undefined && input.locale !== order.locale
+    }).then(() => {
+      updateOrderItemsTranslationsStep({
+        order_id: input.id,
+        locale: input.locale!,
+      })
+    })
 
     emitEventStep({
       eventName: OrderWorkflowEvents.UPDATED,

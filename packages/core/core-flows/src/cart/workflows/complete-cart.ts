@@ -472,6 +472,7 @@ export const completeCartWorkflow = createWorkflow(
           status: OrderStatus.PENDING,
           email: cart.email,
           currency_code: cart.currency_code,
+          locale: cart.locale,
           shipping_address: shippingAddress,
           billing_address: billingAddress,
           no_notification: false,
