@@ -1,16 +1,14 @@
-import { XMark } from "@medusajs/icons"
-import { Button, clx, Heading, IconButton, Textarea } from "@medusajs/ui"
+import { clx, Textarea } from "@medusajs/ui"
 import { Popover as RadixPopover } from "radix-ui"
 import { useCallback, useEffect, useRef, useState } from "react"
 import { Controller, ControllerRenderProps } from "react-hook-form"
-import { useTranslation } from "react-i18next"
 
 import { useCombinedRefs } from "../../../hooks/use-combined-refs"
 import { useDataGridCell, useDataGridCellError } from "../hooks"
 import { DataGridCellProps, InputProps } from "../types"
 import { DataGridCellContainer } from "./data-grid-cell-container"
 
-type DataGridTextAreaModalCellProps<TData, TValue = any> = DataGridCellProps<
+type DataGridExpandableTextCellProps<TData, TValue = any> = DataGridCellProps<
   TData,
   TValue
 > & {
@@ -20,7 +18,7 @@ type DataGridTextAreaModalCellProps<TData, TValue = any> = DataGridCellProps<
 export const DataGridExpandableTextCell = <TData, TValue = any>({
   context,
   fieldLabel,
-}: DataGridTextAreaModalCellProps<TData, TValue>) => {
+}: DataGridExpandableTextCellProps<TData, TValue>) => {
   const { field, control, renderProps } = useDataGridCell({
     context,
   })
@@ -50,7 +48,7 @@ export const DataGridExpandableTextCell = <TData, TValue = any>({
 const Inner = ({
   field,
   inputProps,
-  fieldLabel,
+  fieldLabel: _fieldLabel,
   container,
   errorProps,
 }: {
@@ -60,7 +58,6 @@ const Inner = ({
   container: any
   errorProps: any
 }) => {
-  const { t } = useTranslation()
   const { onChange: _, onBlur, ref, value, ...rest } = field
   const { ref: inputRef, onBlur: onInputBlur, onChange, ...input } = inputProps
 
@@ -68,6 +65,7 @@ const Inner = ({
   const [isPopoverOpen, setIsPopoverOpen] = useState(false)
   const [popoverValue, setPopoverValue] = useState(value || "")
   const popoverContentRef = useRef<HTMLDivElement>(null)
+  const anchorRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     setLocalValue(value || "")
@@ -149,11 +147,6 @@ const Inner = ({
     onInputBlur()
   }
 
-  const handlePopoverCancel = () => {
-    setPopoverValue(value || "")
-    setIsPopoverOpen(false)
-  }
-
   const handlePopoverKeyDown = useCallback((e: React.KeyboardEvent) => {
     if (e.key !== "Escape") {
       e.stopPropagation()
@@ -171,7 +164,7 @@ const Inner = ({
       open={isPopoverOpen}
       onOpenChange={(open) => {
         if (!open) {
-          handlePopoverCancel()
+          handlePopoverSave()
         } else {
           setIsPopoverOpen(true)
         }
@@ -180,6 +173,7 @@ const Inner = ({
       <DataGridCellContainer {...customContainer} {...errorProps}>
         <RadixPopover.Anchor asChild>
           <div
+            ref={anchorRef}
             className={clx(
               "txt-compact-small text-ui-fg-subtle flex size-full cursor-pointer items-center justify-center bg-transparent outline-none",
               "focus:cursor-text"
@@ -209,52 +203,26 @@ const Inner = ({
       <RadixPopover.Portal>
         <RadixPopover.Content
           className={clx(
-            "bg-ui-bg-subtle shadow-elevation-flyout flex max-h-[80vh] w-[600px] flex-col overflow-hidden rounded-lg outline-none"
+            "bg-ui-bg-base shadow-elevation-flyout flex max-h-[80vh] w-[600px] overflow-hidden p-0 outline-none"
           )}
           align="start"
           side="bottom"
-          sideOffset={8}
+          sideOffset={-29}
+          alignOffset={-16}
           collisionPadding={24}
-          onEscapeKeyDown={handlePopoverCancel}
+          onEscapeKeyDown={handlePopoverSave}
           onKeyDown={handlePopoverKeyDown}
         >
-          <div ref={popoverContentRef} className="flex h-full flex-col">
-            <div className="flex items-center justify-between border-b px-6 py-4">
-              <Heading>
-                {fieldLabel
-                  ? t(`fields.${fieldLabel}`, { defaultValue: fieldLabel })
-                  : t("translations.edit.field", {
-                      defaultValue: "Edit Field",
-                    })}
-              </Heading>
-              <IconButton
-                variant="transparent"
-                size="small"
-                onClick={handlePopoverCancel}
-              >
-                <XMark />
-              </IconButton>
-            </div>
-            <div className="flex-1 overflow-y-auto p-6">
-              <Textarea
-                value={popoverValue}
-                onChange={(e) => setPopoverValue(e.target.value)}
-                onKeyDown={(e) => {
-                  e.stopPropagation()
-                }}
-                className="min-h-[300px] w-full"
-                autoFocus
-              />
-            </div>
-            <div className="flex items-center justify-end gap-x-2 border-t px-6 py-4">
-              <Button
-                variant="primary"
-                size="small"
-                onClick={handlePopoverSave}
-              >
-                {t("actions.save")}
-              </Button>
-            </div>
+          <div ref={popoverContentRef} className="h-full w-full">
+            <Textarea
+              value={popoverValue}
+              onChange={(e) => setPopoverValue(e.target.value)}
+              onKeyDown={(e) => {
+                e.stopPropagation()
+              }}
+              className="!bg-ui-bg-base h-full min-h-[300px] w-full resize-none border-0 p-4 !shadow-none focus-visible:!shadow-none"
+              autoFocus
+            />
           </div>
         </RadixPopover.Content>
       </RadixPopover.Portal>
