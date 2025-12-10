@@ -13,8 +13,7 @@ export const StoreCurrencies: ModuleJoinerConfig = {
         entity: "Currency",
         primaryKey: "code",
         foreignKey: "supported_currencies.currency_code",
-        alias: "supported_currencies",
-        isList: true,
+        alias: "currency",
         args: {
           methodSuffix: "Currencies",
         },
