@@ -5,12 +5,12 @@ import {
   StepFunction,
   StepResponse,
 } from "@medusajs/framework/workflows-sdk"
-import { applyTranslationsToItems } from "../../common/utils/apply-translations-to-items"
+import { applyTranslationsToItems } from "../utils/apply-translations-to-items"
 
 export interface GetTranslatedLineItemsStepInput<T> {
   items: T[] | undefined
   variants: Partial<ProductVariantDTO>[]
-  locale: string | undefined
+  locale: string | null | undefined
 }
 
 export const getTranslatedLineItemsStepId = "get-translated-line-items"
