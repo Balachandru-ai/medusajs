@@ -18,7 +18,8 @@ export const StoreLocales: ModuleJoinerConfig = {
         entity: "Locale",
         primaryKey: "code",
         foreignKey: "supported_locales.locale_code",
-        alias: "locale",
+        alias: "supported_locales",
+        isList: true,
         args: {
           methodSuffix: "Locales",
         },
