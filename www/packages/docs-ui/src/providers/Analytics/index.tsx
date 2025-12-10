@@ -10,6 +10,7 @@ import React, {
 import { useSegmentAnalytics } from "./providers/segment"
 import { usePostHogAnalytics } from "./providers/posthog"
 import { useReoDevAnalytics } from "./providers/reo-dev"
+import { usePathname } from "next/navigation"
 
 export type ExtraData = {
   section?: string
@@ -43,6 +44,8 @@ export type AnalyticsProviderProps = {
   children?: React.ReactNode
 }
 
+const DEFAULT_TRACKER: Trackers = "posthog"
+
 export const AnalyticsProvider = ({
   segmentWriteKey,
   reoDevKey,
@@ -55,12 +58,23 @@ export const AnalyticsProvider = ({
   })
   const { track: trackWithPostHog } = usePostHogAnalytics()
   useReoDevAnalytics({ reoDevKey })
+  const pathname = usePathname()
 
   const processEvent = useCallback(
     async (event: TrackedEvent) => {
-      const trackers = Array.isArray(event.tracker)
-        ? event.tracker
-        : [event.tracker]
+      const trackers = !event.tracker
+        ? [DEFAULT_TRACKER]
+        : Array.isArray(event.tracker)
+          ? event.tracker
+          : [event.tracker]
+
+      event.options = {
+        url: pathname,
+        label: document.title,
+        os: window.navigator.userAgent,
+        ...event.options,
+      }
+
       await Promise.all(
         trackers.map(async (tracker) => {
           switch (tracker) {
@@ -73,7 +87,7 @@ export const AnalyticsProvider = ({
         })
       )
     },
-    [trackWithSegment, trackWithPostHog]
+    [trackWithSegment, trackWithPostHog, pathname]
   )
 
   const track = ({ event }: { event: TrackedEvent }) => {

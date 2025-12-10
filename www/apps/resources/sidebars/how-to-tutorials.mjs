@@ -34,6 +34,8 @@ export const howToTutorialsSidebar = [
         autogenerate_tags: "howTo+admin",
         autogenerate_as_ref: true,
         sort_sidebar: "alphabetize",
+        description:
+          "These how-to guides help you customize the Medusa Admin dashboard with practical examples.",
         children: [
           {
             type: "sidebar",
@@ -59,6 +61,11 @@ export const howToTutorialsSidebar = [
                 autogenerate_path: "/admin-components/components",
               },
             ],
+          },
+          {
+            type: "link",
+            title: "Custom Admin Authentication",
+            path: "/how-to-tutorials/how-to/admin/auth",
           },
         ],
       },
