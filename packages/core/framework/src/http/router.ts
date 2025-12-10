@@ -37,7 +37,6 @@ import { RoutesLoader } from "./routes-loader"
 import { RoutesSorter } from "./routes-sorter"
 import { RestrictedFields } from "./utils/restricted-fields"
 import { wrapHandler } from "./utils/wrap-handler"
-import { join } from "path"
 
 export class ApiLoader {
   /**
