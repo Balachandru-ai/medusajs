@@ -21,6 +21,63 @@ const customFulfillmentProviderCalculated = {
   id: "test-provider-calculated",
 }
 
+const translationModuleResolutions =
+  process.env.MEDUSA_FF_TRANSLATION === "true"
+    ? {
+        [Modules.TRANSLATION]: {
+          resolve: "@medusajs/translation",
+        },
+      }
+    : {}
+
+const modules = {
+  ...translationModuleResolutions,
+  [Modules.FULFILLMENT]: {
+    /** @type {import('@medusajs/fulfillment').FulfillmentModuleOptions} */
+    options: {
+      providers: [
+        customFulfillmentProvider,
+        customFulfillmentProviderCalculated,
+      ],
+    },
+  },
+  [Modules.NOTIFICATION]: {
+    resolve: "@medusajs/notification",
+    options: {
+      providers: [
+        {
+          resolve: "@medusajs/notification-local",
+          id: "local",
+          options: {
+            name: "Local Notification Provider",
+            channels: ["feed"],
+          },
+        },
+      ],
+    },
+  },
+  [Modules.FILE]: {
+    resolve: "@medusajs/file",
+    options: {
+      providers: [
+        {
+          resolve: "@medusajs/file-local",
+          id: "local",
+          options: {
+            // This is the directory where we can reliably write in CI environments
+            upload_dir: path.join(os.tmpdir(), "uploads"),
+            private_upload_dir: path.join(os.tmpdir(), "static"),
+          },
+        },
+      ],
+    },
+  },
+  [Modules.INDEX]: {
+    resolve: "@medusajs/index",
+    disable: process.env.ENABLE_INDEX_MODULE !== "true",
+  },
+}
+
 module.exports = defineConfig({
   admin: {
     disable: true,
@@ -33,50 +90,5 @@ module.exports = defineConfig({
   featureFlags: {
     index_engine: process.env.ENABLE_INDEX_MODULE === "true",
   },
-  modules: {
-    [Modules.FULFILLMENT]: {
-      /** @type {import('@medusajs/fulfillment').FulfillmentModuleOptions} */
-      options: {
-        providers: [
-          customFulfillmentProvider,
-          customFulfillmentProviderCalculated,
-        ],
-      },
-    },
-    [Modules.NOTIFICATION]: {
-      resolve: "@medusajs/notification",
-      options: {
-        providers: [
-          {
-            resolve: "@medusajs/notification-local",
-            id: "local",
-            options: {
-              name: "Local Notification Provider",
-              channels: ["feed"],
-            },
-          },
-        ],
-      },
-    },
-    [Modules.FILE]: {
-      resolve: "@medusajs/file",
-      options: {
-        providers: [
-          {
-            resolve: "@medusajs/file-local",
-            id: "local",
-            options: {
-              // This is the directory where we can reliably write in CI environments
-              upload_dir: path.join(os.tmpdir(), "uploads"),
-              private_upload_dir: path.join(os.tmpdir(), "static"),
-            },
-          },
-        ],
-      },
-    },
-    [Modules.INDEX]: {
-      resolve: "@medusajs/index",
-      disable: process.env.ENABLE_INDEX_MODULE !== "true",
-    },
-  },
+  modules,
 })
