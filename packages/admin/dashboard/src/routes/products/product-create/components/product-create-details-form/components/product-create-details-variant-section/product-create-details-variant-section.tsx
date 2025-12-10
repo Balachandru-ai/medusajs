@@ -31,6 +31,13 @@ type ProductCreateVariantsSectionProps = {
   form: UseFormReturn<ProductCreateSchemaType>
 }
 
+type ProductOptionFormValue = {
+  title: string
+  values: string[]
+  id?: string
+  value_ids?: string[]
+}
+
 const getPermutations = (
   data: { title: string; values: string[] }[]
 ): { [key: string]: string }[] => {
@@ -158,6 +165,22 @@ export const ProductCreateVariantsSection = ({
     updateFormWithSelectedValues(allSelectedOptions, newSelectedValues)
   }
 
+  const generateAndSetVariants = (options: ProductOptionFormValue[]) => {
+    const permutations = getPermutations(
+      options.filter(({ values }) => values && values.length > 0)
+    )
+
+    const newVariants = permutations.map((permutation, index) => ({
+      title: getVariantName(permutation),
+      options: permutation,
+      should_create: true,
+      variant_rank: index,
+      inventory: [{ inventory_item_id: "", required_quantity: "" }],
+    }))
+
+    form.setValue("variants", newVariants)
+  }
+
   const handleValueChange = (optionId: string, valueIds: string[]) => {
     if (valueIds.length === 0) {
       return
@@ -201,20 +224,7 @@ export const ProductCreateVariantsSection = ({
     })
 
     form.setValue("options", updatedOptions)
-
-    const permutations = getPermutations(
-      updatedOptions.filter(({ values }) => values && values.length > 0)
-    )
-
-    const newVariants = permutations.map((permutation, index) => ({
-      title: getVariantName(permutation),
-      options: permutation,
-      should_create: true,
-      variant_rank: index,
-      inventory: [{ inventory_item_id: "", required_quantity: "" }],
-    }))
-
-    form.setValue("variants", newVariants)
+    generateAndSetVariants(updatedOptions)
   }
 
   const handleNewOptionValueChange = (
@@ -232,20 +242,7 @@ export const ProductCreateVariantsSection = ({
     })
 
     form.setValue("options", updatedOptions)
-
-    const permutations = getPermutations(
-      updatedOptions.filter(({ values }) => values && values.length > 0)
-    )
-
-    const newVariants = permutations.map((permutation, index) => ({
-      title: getVariantName(permutation),
-      options: permutation,
-      should_create: true,
-      variant_rank: index,
-      inventory: [{ inventory_item_id: "", required_quantity: "" }],
-    }))
-
-    form.setValue("variants", newVariants)
+    generateAndSetVariants(updatedOptions)
   }
 
   const updateFormWithSelectedValues = (
@@ -254,56 +251,41 @@ export const ProductCreateVariantsSection = ({
     >,
     valueSelections: Record<string, string[]>
   ) => {
-    const newOptions: Array<{
-      title: string
-      values: string[]
-      id?: string
-      value_ids?: string[]
-    }> = selectedProductOptions.map((option) => {
-      if ("id" in option && option.id !== undefined) {
-        const existingOption = option as AdminProductOption
-        const selectedValueIds = valueSelections[existingOption.id] || []
-        const allValues = option.values || []
+    const newOptions: ProductOptionFormValue[] = selectedProductOptions.map(
+      (option) => {
+        if ("id" in option && option.id !== undefined) {
+          const existingOption = option as AdminProductOption
+          const selectedValueIds = valueSelections[existingOption.id] || []
+          const allValues = option.values || []
 
-        const selectedValues = allValues
-          .filter((v) => selectedValueIds.includes(v.id))
-          .sort((a, b) => {
-            const rankA = a.rank ?? Number.MAX_VALUE
-            const rankB = b.rank ?? Number.MAX_VALUE
-            return rankA - rankB
-          })
-          .map((v) => v.value)
+          const selectedValues = allValues
+            .filter((v) => selectedValueIds.includes(v.id))
+            .sort((a, b) => {
+              const rankA = a.rank ?? Number.MAX_VALUE
+              const rankB = b.rank ?? Number.MAX_VALUE
+              return rankA - rankB
+            })
+            .map((v) => v.value)
 
-        return {
-          id: existingOption.id,
-          title: existingOption.title,
-          values: selectedValues,
-          value_ids: selectedValueIds.length > 0 ? selectedValueIds : undefined,
-        }
-      } else {
-        const newOption = option as { title: string; values: string[] }
-        return {
-          title: newOption.title,
-          values: newOption.values,
+          return {
+            id: existingOption.id,
+            title: existingOption.title,
+            values: selectedValues,
+            value_ids:
+              selectedValueIds.length > 0 ? selectedValueIds : undefined,
+          }
+        } else {
+          const newOption = option as { title: string; values: string[] }
+          return {
+            title: newOption.title,
+            values: newOption.values,
+          }
         }
       }
-    })
-
-    form.setValue("options", newOptions)
-
-    const permutations = getPermutations(
-      newOptions.filter(({ values }) => values && values.length > 0)
     )
 
-    const newVariants = permutations.map((permutation, index) => ({
-      title: getVariantName(permutation),
-      options: permutation,
-      should_create: true,
-      variant_rank: index,
-      inventory: [{ inventory_item_id: "", required_quantity: "" }],
-    }))
-
-    form.setValue("variants", newVariants)
+    form.setValue("options", newOptions)
+    generateAndSetVariants(newOptions)
   }
 
   const handleRankChange = (
