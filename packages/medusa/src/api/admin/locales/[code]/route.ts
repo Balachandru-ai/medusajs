@@ -1,4 +1,7 @@
-import { ContainerRegistrationKeys } from "@medusajs/framework/utils"
+import {
+  ContainerRegistrationKeys,
+  MedusaError,
+} from "@medusajs/framework/utils"
 import { MedusaRequest, MedusaResponse } from "@medusajs/framework/http"
 import { HttpTypes } from "@medusajs/framework/types"
 
@@ -20,9 +23,15 @@ export const GET = async (
     },
     {
       cache: { enable: true },
-      throwIfKeyNotFound: true,
     }
   )
+
+  if (!locale) {
+    throw new MedusaError(
+      MedusaError.Types.NOT_FOUND,
+      `Locale with code: ${req.params.code} was not found`
+    )
+  }
 
   res.status(200).json({ locale })
 }

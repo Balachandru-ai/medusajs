@@ -288,6 +288,7 @@ class MedusaTestRunner {
         cwd: this.cwd,
       })
       await medusaAppLoader.runModulesLoader()
+
       await createDefaultsWorkflow(copiedContainer).run()
     } catch (error) {
       await copiedContainer.dispose?.()

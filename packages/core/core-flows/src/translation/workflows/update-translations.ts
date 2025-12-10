@@ -24,7 +24,7 @@ export const updateTranslationsWorkflowId = "update-translations"
  *   input: {
  *     selector: {
  *       reference_id: "prod_123",
- *       locale_code: "fr-FR"
+ *       locale: "fr-FR"
  *     },
  *     update: {
  *       translations: { title: "Nouveau titre" }
