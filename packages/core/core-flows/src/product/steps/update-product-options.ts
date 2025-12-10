@@ -73,7 +73,7 @@ export const updateProductOptionsStep = createStep(
       if (removedValueIds.length > 0) {
         const productProductOptionValues =
           // @ts-ignore TODO
-          await service.listProductPorductOptionValues(
+          await service.listProductProductOptionValues(
             {
               product_option_value_id: removedValueIds,
             },

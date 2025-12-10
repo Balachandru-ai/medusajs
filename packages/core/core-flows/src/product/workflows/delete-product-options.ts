@@ -35,7 +35,7 @@ const validateProductOptionsNotAssociatedStep = createStep(
     const service = container.resolve<IProductModuleService>(Modules.PRODUCT)
 
     // @ts-ignore TODO
-    const productOptionsProducts = await service.listProductPorductOptionValues(
+    const productOptionsProducts = await service.listProductProductOptionValues(
       {
         product_option_id: optionIds,
       },
