@@ -5,7 +5,7 @@ import {
   StepFunction,
   StepResponse,
 } from "@medusajs/framework/workflows-sdk"
-import { applyTranslationsToItems } from "../utils/apply-translations-to-items"
+import { applyTranslationsToItems } from "../../common/utils/apply-translations-to-items"
 
 export interface GetTranslatedLineItemsStepInput<T> {
   items: T[] | undefined

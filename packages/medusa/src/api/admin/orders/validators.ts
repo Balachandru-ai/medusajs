@@ -9,15 +9,12 @@ import {
 
 export const AdminGetOrdersOrderParams = createSelectParams().merge(
   z.object({
-    version: z.preprocess(
-        (val) => {
-            if (val && typeof val === "string") {
-                return parseInt(val)
-            }
-            return val
-        },
-        z.number().optional()
-    )
+    version: z.preprocess((val) => {
+      if (val && typeof val === "string") {
+        return parseInt(val)
+      }
+      return val
+    }, z.number().optional()),
   })
 )
 

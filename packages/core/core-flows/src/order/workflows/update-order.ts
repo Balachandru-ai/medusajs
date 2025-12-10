@@ -1,5 +1,10 @@
 import type { OrderDTO, OrderWorkflow } from "@medusajs/framework/types"
 import {
+  OrderPreviewDTO,
+  RegisterOrderChangeDTO,
+  UpdateOrderDTO,
+} from "@medusajs/framework/types"
+import {
   MedusaError,
   OrderWorkflowEvents,
   validateEmail,
@@ -12,11 +17,6 @@ import {
   transform,
   when,
 } from "@medusajs/framework/workflows-sdk"
-import {
-  OrderPreviewDTO,
-  RegisterOrderChangeDTO,
-  UpdateOrderDTO,
-} from "@medusajs/framework/types"
 
 import { emitEventStep, useQueryGraphStep } from "../../common"
 import {
@@ -238,7 +238,7 @@ export const updateOrderWorkflow = createWorkflow(
           })
         }
 
-        if (input.locale !== undefined && input.locale !== order.locale) {
+        if (!!input.locale && input.locale !== order.locale) {
           changes.push({
             change_type: "update_order" as const,
             order_id: input.id,
@@ -258,9 +258,8 @@ export const updateOrderWorkflow = createWorkflow(
 
     registerOrderChangesStep(orderChangeInput)
 
-    // Re-translate all order items when locale changes
     when("locale-changed", { input, order }, ({ input, order }) => {
-      return input.locale !== undefined && input.locale !== order.locale
+      return !!input.locale && input.locale !== order.locale
     }).then(() => {
       updateOrderItemsTranslationsStep({
         order_id: input.id,

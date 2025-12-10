@@ -12,7 +12,7 @@ import {
   Modules,
 } from "@medusajs/framework/utils"
 import { createStep, StepResponse } from "@medusajs/framework/workflows-sdk"
-import { applyTranslationsToItems } from "../../cart/utils/apply-translations-to-items"
+import { applyTranslationsToItems } from "../../common/utils/apply-translations-to-items"
 import { productVariantsFields } from "../utils/fields"
 
 export interface UpdateOrderItemsTranslationsStepInput {
@@ -181,29 +181,21 @@ export const updateOrderItemsTranslationsStep = createStep(
         return new StepResponse(void 0, originalItems)
       }
 
-      let offset = 0
-      let hasMore = true
+      const { data: orders } = await query.graph({
+        entity: "orders",
+        filters: { id: data.order_id },
+        fields: lineItemFields.map((f) => `items.${f}`),
+      })
 
-      while (hasMore) {
-        const { data: items } = await query.graph({
-          entity: "order_line_item",
-          filters: { order_id: data.order_id },
-          fields: lineItemFields,
-          pagination: {
-            take: BATCH_SIZE,
-            skip: offset,
-          },
-        })
+      const orderData = orders[0] as {
+        items?: { id: string; variant_id?: string }[]
+      }
+      const items = orderData?.items ?? []
 
-        if (items.length === 0) {
-          hasMore = false
-          break
-        }
-
-        await processBatch(items as { id: string; variant_id?: string }[])
-
-        offset += items.length
-        hasMore = items.length === BATCH_SIZE
+      // Process items in batches
+      for (let i = 0; i < items.length; i += BATCH_SIZE) {
+        const batch = items.slice(i, i + BATCH_SIZE)
+        await processBatch(batch)
       }
 
       return new StepResponse(void 0, originalItems)
