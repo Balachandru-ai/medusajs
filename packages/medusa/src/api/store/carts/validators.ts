@@ -23,7 +23,7 @@ export const CreateCart = z
     sales_channel_id: z.string().nullish(),
     promo_codes: z.array(z.string()).optional(),
     metadata: z.record(z.unknown()).nullish(),
-    locale: z.string().nullish().optional(),
+    locale: z.string().optional(),
   })
   .strict()
 export const StoreCreateCart = WithAdditionalData(CreateCart)
@@ -54,7 +54,7 @@ export const UpdateCart = z
     sales_channel_id: z.string().nullish(),
     metadata: z.record(z.unknown()).nullish(),
     promo_codes: z.array(z.string()).optional(),
-    locale: z.string().nullish().optional(),
+    locale: z.string().optional(),
   })
   .strict()
 export const StoreUpdateCart = WithAdditionalData(UpdateCart)
