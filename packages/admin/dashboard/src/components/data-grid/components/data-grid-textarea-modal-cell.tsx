@@ -5,7 +5,8 @@ import { Controller, ControllerRenderProps } from "react-hook-form"
 
 import { useCombinedRefs } from "../../../hooks/use-combined-refs"
 import { useDataGridCell, useDataGridCellError } from "../hooks"
-import { DataGridCellProps, InputProps } from "../types"
+import { useDataGridContext } from "../context"
+import { DataGridCellProps, InputProps, DataGridCellContext } from "../types"
 import { DataGridCellContainer } from "./data-grid-cell-container"
 
 type DataGridExpandableTextCellProps<TData, TValue = any> = DataGridCellProps<
@@ -60,12 +61,13 @@ const Inner = ({
 }) => {
   const { onChange: _, onBlur, ref, value, ...rest } = field
   const { ref: inputRef, onBlur: onInputBlur, onChange, ...input } = inputProps
+  const { setSingleRange, anchor } = useDataGridContext()
+  const { row, col } = anchor || { row: 0, col: 0 }
 
   const [localValue, setLocalValue] = useState(value || "")
   const [isPopoverOpen, setIsPopoverOpen] = useState(false)
   const [popoverValue, setPopoverValue] = useState(value || "")
   const popoverContentRef = useRef<HTMLDivElement>(null)
-  const anchorRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     setLocalValue(value || "")
@@ -123,12 +125,14 @@ const Inner = ({
       if (e.detail === 2) {
         e.preventDefault()
         e.stopPropagation()
+        setSingleRange({ row, col })
         setIsPopoverOpen(true)
         return
       }
+      // For single clicks, use the normal handler which sets anchor and focuses container
       container.overlayProps.onMouseDown?.(e)
     },
-    [container.overlayProps]
+    [container.overlayProps, setSingleRange, row, col]
   )
 
   const customContainer = {
@@ -173,7 +177,6 @@ const Inner = ({
       <DataGridCellContainer {...customContainer} {...errorProps}>
         <RadixPopover.Anchor asChild>
           <div
-            ref={anchorRef}
             className={clx(
               "txt-compact-small text-ui-fg-subtle flex size-full cursor-pointer items-center justify-center bg-transparent outline-none",
               "focus:cursor-text"
@@ -221,7 +224,6 @@ const Inner = ({
                 e.stopPropagation()
               }}
               className="!bg-ui-bg-base h-full min-h-[300px] w-full resize-none border-0 p-4 !shadow-none focus-visible:!shadow-none"
-              autoFocus
             />
           </div>
         </RadixPopover.Content>
