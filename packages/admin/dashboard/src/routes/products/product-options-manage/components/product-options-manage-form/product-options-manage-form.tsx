@@ -1,5 +1,5 @@
 import { HttpTypes } from "@medusajs/types"
-import { Button, Hint, Label, toast } from "@medusajs/ui"
+import { Button, Hint, Label, toast, Tooltip } from "@medusajs/ui"
 import { useMemo, useState } from "react"
 import { useTranslation } from "react-i18next"
 import * as zod from "zod"
@@ -14,6 +14,7 @@ import {
   useProductOptions,
 } from "../../../../../hooks/api"
 import { useExtension } from "../../../../../providers/extension-provider"
+import { InformationCircle, InformationCircleSolid } from "@medusajs/icons"
 
 type ProductOptionsManageFormProps = {
   product: HttpTypes.AdminProduct
@@ -32,9 +33,7 @@ export const ProductOptionsManageForm = ({
   const { getFormConfigs } = useExtension()
   const configs = getFormConfigs("product", "edit")
 
-  const { product_options = [], isLoading } = useProductOptions({
-    is_exclusive: false,
-  })
+  const { product_options = [], isLoading } = useProductOptions()
 
   const productOptionChoices = useMemo(() => {
     return product_options.map((option) => ({
@@ -244,8 +243,21 @@ export const ProductOptionsManageForm = ({
 
                       return (
                         <div key={option.id} className="flex flex-col gap-y-2">
-                          <Label size="small" weight="plus">
+                          <Label
+                            className="flex items-center gap-x-1"
+                            size="small"
+                            weight="plus"
+                          >
                             {option.title}
+                            {option.is_exclusive && (
+                              <Tooltip
+                                content={t(
+                                  "productOptions.manage.exclusiveOption"
+                                )}
+                              >
+                                <InformationCircle className="text-ui-fg-subtle pt-[1px]" />
+                              </Tooltip>
+                            )}
                           </Label>
                           <Combobox
                             value={selectedOptionValues[option.id] || []}

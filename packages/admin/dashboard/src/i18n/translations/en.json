@@ -873,6 +873,9 @@
         "organize": "Organize"
       }
     },
+    "manage": {
+      "exclusiveOption": "Product exclusive option"
+    },
     "edit": {
       "header": "Edit Product Option",
       "description": "Edit the product option to update its details and associated values.",

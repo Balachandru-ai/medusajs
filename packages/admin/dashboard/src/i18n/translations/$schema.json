@@ -3270,6 +3270,16 @@
           "required": ["header", "hint", "successToast", "tabs"],
           "additionalProperties": false
         },
+        "manage": {
+          "type": "object",
+          "properties": {
+            "exclusiveOption": {
+              "type": "string"
+            }
+          },
+          "required": ["exclusiveOption"],
+          "additionalProperties": false
+        },
         "edit": {
           "type": "object",
           "properties": {
@@ -3339,6 +3349,7 @@
         "values",
         "products",
         "create",
+        "manage",
         "edit",
         "delete",
         "fields"
