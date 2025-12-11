@@ -25,13 +25,7 @@ allows you to create custom data models linked to the fulfillment.
 
 You can also use this workflow within your customizations or your own custom workflows, allowing you to wrap custom logic around creating a fulfillment.
 
-:::note
-
-If you use this workflow in another, you must acquire a lock before running it and release the lock after. Learn more in the [Locking Operations in Workflows](https://docs.medusajs.com/learn/fundamentals/workflows/locks#locks-in-nested-workflows) guide.
-
-:::
-
-<SourceCodeLink link="https://github.com/medusajs/medusa/blob/da5d0e3a1430979ab9cda7f239ea7066ded1f7ab/packages/core/core-flows/src/order/workflows/create-fulfillment.ts#L394" />
+<SourceCodeLink link="https://github.com/medusajs/medusa/blob/75eac9ebec217fd299c6e5d8f161a597b46e4e19/packages/core/core-flows/src/order/workflows/create-fulfillment.ts#L394" />
 
 ## Examples
 
@@ -146,7 +140,6 @@ import { createOrderFulfillmentWorkflow } from "@medusajs/medusa/core-flows"
 const myWorkflow = createWorkflow(
   "my-workflow",
   () => {
-    // Acquire lock from nested workflow here
     const result = createOrderFulfillmentWorkflow
       .runAsStep({
         input: {
@@ -160,7 +153,6 @@ const myWorkflow = createWorkflow(
           }
         }
       })
-    // Release lock here
   }
 )
 ```

@@ -29,7 +29,7 @@ If you use this workflow in another, you must acquire a lock before running it a
 
 :::
 
-<SourceCodeLink link="https://github.com/medusajs/medusa/blob/da5d0e3a1430979ab9cda7f239ea7066ded1f7ab/packages/core/core-flows/src/draft-order/workflows/update-draft-order-shipping-method.ts#L80" />
+<SourceCodeLink link="https://github.com/medusajs/medusa/blob/75eac9ebec217fd299c6e5d8f161a597b46e4e19/packages/core/core-flows/src/draft-order/workflows/update-draft-order-shipping-method.ts#L80" />
 
 ## Examples
 
@@ -136,6 +136,7 @@ const myWorkflow = createWorkflow(
   "my-workflow",
   () => {
     // Acquire lock from nested workflow here
+    // acquireLockStep({  key: input.order_id,  timeout: 2,  ttl: 10,  })
     const result = updateDraftOrderShippingMethodWorkflow
       .runAsStep({
         input: {
@@ -147,6 +148,7 @@ const myWorkflow = createWorkflow(
         }
       })
     // Release lock here
+    // releaseLockStep({ key: input.order_id })
   }
 )
 ```

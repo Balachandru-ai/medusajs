@@ -16295,6 +16295,15 @@ const generatedgeneratedCommerceModulesSidebarSidebar = {
                       "title": "StoreCurrency",
                       "description": "",
                       "children": []
+                    },
+                    {
+                      "loaded": true,
+                      "isPathHref": true,
+                      "type": "link",
+                      "path": "/references/store/models/StoreLocale",
+                      "title": "StoreLocale",
+                      "description": "",
+                      "children": []
                     }
                   ]
                 }
