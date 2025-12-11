@@ -14,7 +14,6 @@ export type ValidateTranslationsStepInput =
   | UpdateTranslationDTO[]
   | UpdateTranslationDTO
   | UpdateTranslationDataDTO
-  | UpdateTranslationDataDTO[]
 
 // TODO: Do we want to validate anything else here?
 export const validateTranslationsStep = createStep(
