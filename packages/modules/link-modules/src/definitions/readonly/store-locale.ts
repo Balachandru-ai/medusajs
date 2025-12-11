@@ -20,7 +20,7 @@ export const StoreLocales: ModuleJoinerConfig = {
         foreignKey: "locale_code",
         alias: "locale",
         args: {
-          methodSuffix: "StoreLocales",
+          methodSuffix: "Locales",
         },
       },
     },
