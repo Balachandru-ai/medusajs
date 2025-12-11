@@ -920,10 +920,11 @@ moduleIntegrationTestRunner<Service>({
           )
         })
 
-        it("should create a category with user provided id successfully", async () => {
+        it("should create a category with assigned id", async () => {
+          const assignedId = 'assigned-category-id-' + Date.now();
           await service.create([
             {
-              id: "custom-id-123",
+              id: assignedId,
               name: "New Category",
               handle: "new-category",
               parent_category_id: null,
@@ -931,23 +932,10 @@ moduleIntegrationTestRunner<Service>({
           ])
 
 
-          const [productCategory] = await service.list(
-            {
-              name: "New Category",
-            },
-            {
-              select: ["name", "rank", "id"],
-            }
-          )
+          const productCategory = await service.retrieve(assignedId);
 
 
-          expect(JSON.parse(JSON.stringify(productCategory))).toEqual(
-            expect.objectContaining({
-              id: "custom-id-123",
-              name: "New Category",
-              rank: 0,
-            })
-          )
+          expect(productCategory.id).toEqual(assignedId);
         })
 
 

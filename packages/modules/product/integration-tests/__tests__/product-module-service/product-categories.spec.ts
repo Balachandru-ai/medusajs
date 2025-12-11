@@ -398,9 +398,10 @@ moduleIntegrationTestRunner<IProductModuleService>({
         })
 
 
-        it("should create a category with self-selected id successfully", async () => {
+        it("should create a category with assigned id", async () => {
+          const assignedId = 'assigned-category-id-' + Date.now();
           await service.createProductCategories({
-            id: "new-category-id",
+            id: assignedId,
             name: "New Category",
             parent_category_id: productCategoryOne.id,
           })
@@ -416,7 +417,7 @@ moduleIntegrationTestRunner<IProductModuleService>({
 
           expect(productCategory).toEqual(
             expect.objectContaining({
-              id: "new-category-id",
+              id: assignedId,
               name: "New Category",
               rank: 0,
             })

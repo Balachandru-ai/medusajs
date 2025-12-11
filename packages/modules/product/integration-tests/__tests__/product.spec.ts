@@ -246,7 +246,22 @@ moduleIntegrationTestRunner<Service>({
             })
           )
         })
+        it('create with assigned id', async  ()  => {
+          const id = 'assigned-product-id-' + Date.now();
+          const data = buildProductOnlyData()
+          const products = await service.create([
+            {
+              id,
+              ...data
+            }
+          ])
+
+          const product = await service.retrieve(id);
+          expect(product.id).toEqual(id);
+        })
+
       })
+
 
       describe("update", function () {
         beforeEach(async () => {

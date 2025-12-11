@@ -1222,23 +1222,25 @@ moduleIntegrationTestRunner<IProductModuleService>({
         })
 
         it('can create a product with an assigned id', async () => {
+          const assignedId = 'custom-product-id-' + Date.now(); 
           const data = buildProductAndRelationsData({
-            id: 'custom-product-id',
+            id: assignedId,
             images,
             thumbnail: images[0].url,
           })
           
           const productsCreated = await service.createProducts([data])
-          expect(productsCreated[0].id).toBe('custom-product-id')
+          expect(productsCreated[0].id).toBe(assignedId)
         });
 
         it ('can create a product variant with an assigned id', async () => {
+          const assignedVariantId = 'custom-variant-id-' + Date.now();
           const data = buildProductAndRelationsData({
             images,
             thumbnail: images[0].url,
             variants: [
               {
-                id: 'custom-variant-id',
+                id: assignedVariantId,
                 title: 'Custom Variant',
                 options: { size: 'M' }, 
               },
@@ -1249,7 +1251,7 @@ moduleIntegrationTestRunner<IProductModuleService>({
           }); 
           
           const productsCreated = await service.createProducts([data])
-          expect(productsCreated[0].variants[0].id).toBe('custom-variant-id')
+          expect(productsCreated[0].variants[0].id).toBe(assignedVariantId)
         });
 
         it("should throw because variant doesn't have all options set", async () => {

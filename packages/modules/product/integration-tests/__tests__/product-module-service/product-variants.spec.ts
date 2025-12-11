@@ -444,6 +444,19 @@ moduleIntegrationTestRunner<IProductModuleService>({
           expect(productVariant.title).toEqual("new test")
         })
 
+        it('should allow upserting a variant with an assigned-id', async () => {
+          const assignedId =  'assigned-variant-id-' + Date.now();
+          const upsertedVariant = (await service.upsertProductVariants([
+             {
+              id: assignedId,
+              product_id: productOne.id,
+              title: "new test",
+            },
+          ])) as ProductVariantDTO[];
+
+          expect(upsertedVariant[0].id).toEqual(assignedId);
+        });
+ 
         it("should do a partial update on the options of a variant successfully", async () => {
           await service.updateProductVariants(variantOne.id, {
             options: { size: "small", color: "red" },
@@ -510,6 +523,24 @@ moduleIntegrationTestRunner<IProductModuleService>({
             })
           )
         })
+
+        it("should create a variant with assigned id", async () => {
+          jest.clearAllMocks();
+
+          const assignedId = 'assigned-variant-id-' + Date.now();
+
+          const data: CreateProductVariantDTO = {
+            id: assignedId,
+            title: "variant 3",
+            product_id: productOne.id,
+            options: { size: "small", color: "blue" },
+          }
+
+          const variant = await service.createProductVariants(data)
+
+          expect(variant.id).toEqual(assignedId);
+        })
+
 
         it("should correctly associate variants with own product options", async () => {
           jest.clearAllMocks()
