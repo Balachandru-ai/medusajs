@@ -10,7 +10,7 @@ import { applyTranslationsToItems } from "../utils/apply-translations-to-items"
 export interface GetTranslatedLineItemsStepInput<T> {
   items: T[] | undefined
   variants: Partial<ProductVariantDTO>[]
-  locale: string | undefined
+  locale: string | null | undefined
 }
 
 export const getTranslatedLineItemsStepId = "get-translated-line-items"

@@ -1,6 +1,6 @@
 import { MedusaContainer } from "@medusajs/framework"
 import {
-  ICartModuleService,
+  IOrderModuleService,
   ProductVariantDTO,
   RemoteQueryFunction,
 } from "@medusajs/framework/types"
@@ -15,8 +15,8 @@ import { createStep, StepResponse } from "@medusajs/framework/workflows-sdk"
 import { applyTranslationsToItems } from "../../common/utils/apply-translations-to-items"
 import { productVariantsFields } from "../utils/fields"
 
-export interface UpdateCartItemsTranslationsStepInput {
-  cart_id: string
+export interface UpdateOrderItemsTranslationsStepInput {
+  order_id: string
   locale: string
   /**
    * Pre-loaded items to avoid re-fetching.
@@ -41,8 +41,8 @@ const lineItemFields = [
   "variant_title",
 ]
 
-export const updateCartItemsTranslationsStepId =
-  "update-cart-items-translations"
+export const updateOrderItemsTranslationsStepId =
+  "update-order-items-translations"
 
 type ItemTranslationSnapshot = {
   id: string
@@ -58,28 +58,43 @@ type ItemTranslationSnapshot = {
 }
 
 async function compensation(
-  originalItems,
+  originalItems: ItemTranslationSnapshot[] | undefined,
   { container }: { container: MedusaContainer }
 ) {
   if (!originalItems?.length) {
     return
   }
 
-  const cartModule = container.resolve<ICartModuleService>(Modules.CART)
+  const orderModule = container.resolve<IOrderModuleService>(Modules.ORDER)
 
   for (let i = 0; i < originalItems.length; i += BATCH_SIZE) {
     const batch = originalItems.slice(i, i + BATCH_SIZE)
-    await cartModule.updateLineItems(batch)
+    await orderModule.updateOrderLineItems(
+      batch.map((item) => ({
+        selector: { id: item.id },
+        data: {
+          title: item.title,
+          subtitle: item.subtitle,
+          product_title: item.product_title,
+          product_description: item.product_description,
+          product_subtitle: item.product_subtitle,
+          product_type: item.product_type,
+          product_collection: item.product_collection,
+          product_handle: item.product_handle,
+          variant_title: item.variant_title,
+        },
+      }))
+    )
   }
 }
 
 /**
- * This step re-translates all cart line items when the cart's locale changes.
- * It fetches items and their variants in batches to handle large carts gracefully.
+ * This step re-translates all order line items when the order's locale changes.
+ * It fetches items and their variants in batches to handle large orders gracefully.
  */
-export const updateCartItemsTranslationsStep = createStep(
-  updateCartItemsTranslationsStepId,
-  async (data: UpdateCartItemsTranslationsStepInput, { container }) => {
+export const updateOrderItemsTranslationsStep = createStep(
+  updateOrderItemsTranslationsStepId,
+  async (data: UpdateOrderItemsTranslationsStepInput, { container }) => {
     const originalItems: ItemTranslationSnapshot[] = []
     try {
       const isTranslationEnabled = FeatureFlag.isFeatureEnabled("translation")
@@ -88,7 +103,7 @@ export const updateCartItemsTranslationsStep = createStep(
         return new StepResponse(void 0, [])
       }
 
-      const cartModule = container.resolve<ICartModuleService>(Modules.CART)
+      const orderModule = container.resolve<IOrderModuleService>(Modules.ORDER)
       const query = container.resolve<RemoteQueryFunction>(
         ContainerRegistrationKeys.QUERY
       )
@@ -142,20 +157,22 @@ export const updateCartItemsTranslationsStep = createStep(
         const itemsToUpdate = translatedItems
           .filter((item) => item.id)
           .map((item) => ({
-            id: item.id,
-            title: item.title,
-            subtitle: item.subtitle,
-            product_title: item.product_title,
-            product_description: item.product_description,
-            product_subtitle: item.product_subtitle,
-            product_type: item.product_type,
-            product_collection: item.product_collection,
-            product_handle: item.product_handle,
-            variant_title: item.variant_title,
+            selector: { id: item.id },
+            data: {
+              title: item.title,
+              subtitle: item.subtitle,
+              product_title: item.product_title,
+              product_description: item.product_description,
+              product_subtitle: item.product_subtitle,
+              product_type: item.product_type,
+              product_collection: item.product_collection,
+              product_handle: item.product_handle,
+              variant_title: item.variant_title,
+            },
           }))
 
         if (itemsToUpdate.length > 0) {
-          await cartModule.updateLineItems(itemsToUpdate)
+          await orderModule.updateOrderLineItems(itemsToUpdate)
         }
       }
 
@@ -164,29 +181,21 @@ export const updateCartItemsTranslationsStep = createStep(
         return new StepResponse(void 0, originalItems)
       }
 
-      let offset = 0
-      let hasMore = true
+      const { data: orders } = await query.graph({
+        entity: "orders",
+        filters: { id: data.order_id },
+        fields: lineItemFields.map((f) => `items.${f}`),
+      })
 
-      while (hasMore) {
-        const { data: items } = await query.graph({
-          entity: "line_items",
-          filters: { cart_id: data.cart_id },
-          fields: lineItemFields,
-          pagination: {
-            take: BATCH_SIZE,
-            skip: offset,
-          },
-        })
+      const orderData = orders[0] as {
+        items?: { id: string; variant_id?: string }[]
+      }
+      const items = orderData?.items ?? []
 
-        if (items.length === 0) {
-          hasMore = false
-          break
-        }
-
-        await processBatch(items as { id: string; variant_id?: string }[])
-
-        offset += items.length
-        hasMore = items.length === BATCH_SIZE
+      // Process items in batches
+      for (let i = 0; i < items.length; i += BATCH_SIZE) {
+        const batch = items.slice(i, i + BATCH_SIZE)
+        await processBatch(batch)
       }
 
       return new StepResponse(void 0, originalItems)
