@@ -135,6 +135,8 @@ class OasKindGenerator extends FunctionKindGenerator {
     },
   ]
   readonly RESPONSE_TYPE_NAMES = ["MedusaResponse"]
+  // TODO: remove once we support localization in all routes
+  readonly LOCALIZED_ROUTES = ["store/products", "store/products/[id]"]
 
   /**
    * This map collects tags of all the generated OAS, then, once the generation process finishes,
@@ -1330,7 +1332,7 @@ class OasKindGenerator extends FunctionKindGenerator {
       return []
     }
 
-    return [
+    const headerParameters: OpenAPIV3.ParameterObject[] = [
       this.getParameterObject({
         type: "header",
         name: "x-publishable-api-key",
@@ -1344,6 +1346,34 @@ class OasKindGenerator extends FunctionKindGenerator {
         },
       }),
     ]
+
+    // TODO: check if we should support more granular conditions like auth
+    const supportsLocalization = this.LOCALIZED_ROUTES.some(
+      (route) => oasPath === route
+    )
+
+    if (supportsLocalization) {
+      headerParameters.push(
+        this.getParameterObject({
+          type: "header",
+          name: "Content-Language",
+          description:
+            "The locale in BCP 47 format to retrieve localized content.",
+          required: false,
+          schema: {
+            type: "string",
+            example: "en-US",
+            externalDocs: {
+              url: "https://docs.medusajs.com/resources/commerce-modules/translation/storefront",
+              description:
+                "Learn more in the Serve Translations in Storefront guide.",
+            },
+          },
+        })
+      )
+    }
+
+    return headerParameters
   }
 
   /**

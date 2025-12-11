@@ -6,13 +6,10 @@
  *   Retrieve a list of products. The products can be filtered by fields such as `id`. The products can also be sorted or paginated.
  * 
  * 
- *   You can retrieve the content of the products translated to a specific locale either by passing the `locale` query parameter
- *   or by setting the `Content-Language` header to the desired locale code in BCP 47 format. If you don't pass a locale, and
- *   your store has a default locale, the default locale will be used.
+ *   You can retrieve the content of the products translated to a specific locale either by passing the `locale` query parameter or by setting the `Content-Language` header to the desired locale code in BCP 47 format. If you don't pass a locale, and your store has a default locale, the default locale will be used.
  * 
  * 
- *   With localization, the products' content like title and description will be in the specified locale if a translation is available, 
- *   and fallback to the original content otherwise. Learn more in the [Localization](#localization) section.
+ *   With localization, the products' content like title and description will be in the specified locale if a translation is available,  and fallback to the original content otherwise. Learn more in the [Localization](#localization) section.
  * x-authenticated: false
  * externalDocs:
  *   url: https://docs.medusajs.com/resources/storefront-development/products/price
@@ -26,6 +23,16 @@
  *       type: string
  *       externalDocs:
  *         url: https://docs.medusajs.com/api/store#publishable-api-key
+ *   - name: Content-Language
+ *     in: header
+ *     description: The locale in BCP 47 format to retrieve localized content.
+ *     required: false
+ *     schema:
+ *       type: string
+ *       example: en-US
+ *       externalDocs:
+ *         url: https://docs.medusajs.com/resources/commerce-modules/translation/storefront
+ *         description: Learn more in the Serve Translations in Storefront guide.
  *   - name: fields
  *     in: query
  *     description: Comma-separated fields that should be included in the returned data. if a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default
