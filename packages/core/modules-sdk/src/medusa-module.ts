@@ -828,7 +828,7 @@ class MedusaModule {
     moduleKey,
     modulePath,
     cwd,
-  }: MigrationOptions): Promise<void> {
+  }: MigrationOptions): Promise<{ name: string; path: string }[]> {
     const moduleResolutions = registerMedusaModule({
       moduleKey,
       moduleDeclaration: {
@@ -846,6 +846,7 @@ class MedusaModule {
 
     container ??= createMedusaContainer()
 
+    let result: { name: string; path: string }[] = []
     for (const mod in moduleResolutions) {
       const { runMigrations } = await loadModuleMigrations(
         container,
@@ -854,23 +855,29 @@ class MedusaModule {
       )
 
       if (typeof runMigrations === "function") {
-        await runMigrations({
+        const res = await runMigrations({
           options,
           container: container!,
           logger: logger_,
         })
+        result.push(...res)
       }
     }
+
+    return result
   }
 
-  public static async migrateDown({
-    options,
-    container,
-    moduleExports,
-    moduleKey,
-    modulePath,
-    cwd,
-  }: MigrationOptions): Promise<void> {
+  public static async migrateDown(
+    {
+      options,
+      container,
+      moduleExports,
+      moduleKey,
+      modulePath,
+      cwd,
+    }: MigrationOptions,
+    migrationNames?: string[]
+  ): Promise<void> {
     const moduleResolutions = registerMedusaModule({
       moduleKey,
       moduleDeclaration: {
@@ -900,6 +907,7 @@ class MedusaModule {
           options,
           container: container!,
           logger: logger_,
+          migrationNames,
         })
       }
     }
