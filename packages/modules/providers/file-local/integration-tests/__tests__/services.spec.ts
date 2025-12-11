@@ -1,3 +1,4 @@
+import { FileSystem } from "@medusajs/utils"
 import fs from "fs/promises"
 import path from "path"
 import { LocalFileService } from "../../src/services/local-file"
@@ -6,17 +7,18 @@ jest.setTimeout(10000)
 
 describe("Local File Plugin", () => {
   let localService: LocalFileService
-  let fixtureImagePath: string
-  let uploadDir: string
+
+  const fixtureImagePath =
+    process.cwd() + "/integration-tests/__fixtures__/catphoto.jpg"
+
+  const uploadDir = path.join(
+    process.cwd(),
+    "integration-tests/__tests__/uploads"
+  )
+
+  const fileSystem = new FileSystem(uploadDir)
 
   beforeAll(async () => {
-    fixtureImagePath =
-      process.cwd() + "/integration-tests/__fixtures__/catphoto.jpg"
-
-    uploadDir = path.join(process.cwd(), "integration-tests/__tests__/uploads")
-
-    await fs.mkdir(uploadDir, { recursive: true })
-
     localService = new LocalFileService(
       {
         logger: console as any,
@@ -29,10 +31,10 @@ describe("Local File Plugin", () => {
   })
 
   afterAll(async () => {
-    await fs.rm(uploadDir, { recursive: true, force: true })
+    await fileSystem.cleanup()
   })
 
-  it(`uploads, reads, and then deletes a public file successfully`, async () => {
+  it(`should upload, read, and then delete a public file successfully`, async () => {
     const fileContent = await fs.readFile(fixtureImagePath)
     const fixtureAsBase64 = fileContent.toString("base64")
 
