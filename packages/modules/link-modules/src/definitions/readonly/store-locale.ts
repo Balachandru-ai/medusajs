@@ -12,15 +12,15 @@ export const StoreLocales: ModuleJoinerConfig = {
   extends: [
     {
       serviceName: Modules.STORE,
-      entity: "Store",
+      entity: "StoreLocale",
       relationship: {
         serviceName: Modules.TRANSLATION,
         entity: "Locale",
         primaryKey: "code",
-        foreignKey: "supported_locales.locale_code",
+        foreignKey: "locale_code",
         alias: "locale",
         args: {
-          methodSuffix: "Locales",
+          methodSuffix: "StoreLocales",
         },
       },
     },
