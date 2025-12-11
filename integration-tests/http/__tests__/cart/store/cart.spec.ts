@@ -5299,6 +5299,73 @@ medusaIntegrationTestRunner({
         })
       })
 
+      describe("POST /store/carts/:id/promotions", () => {
+        it("should add promotions and refresh payment collection", async () => {
+          cart = (
+            await api.post(
+              `/store/carts`,
+              {
+                currency_code: "usd",
+                sales_channel_id: salesChannel.id,
+                region_id: region.id,
+                shipping_address: shippingAddressData,
+                items: [{ variant_id: product.variants[0].id, quantity: 1 }],
+              },
+              storeHeaders
+            )
+          ).data.cart
+
+          const paymentCollection = (
+            await api.post(
+              `/store/payment-collections`,
+              { cart_id: cart.id },
+              storeHeaders
+            )
+          ).data.payment_collection
+
+          await api.post(
+            `/store/payment-collections/${paymentCollection.id}/payment-sessions`,
+            { provider_id: "pp_system_default" },
+            storeHeaders
+          )
+
+          cart = (await api.get(`/store/carts/${cart.id}`, storeHeaders)).data
+            .cart
+          expect(cart.total).toEqual(1500)
+          expect(cart.payment_collection.amount).toEqual(1500)
+
+          const cartAfterPromotion = (
+            await api.post(
+              `/store/carts/${cart.id}/promotions`,
+              { promo_codes: [promotion.code] },
+              storeHeaders
+            )
+          ).data.cart
+
+          expect(cartAfterPromotion).toEqual(
+            expect.objectContaining({
+              id: cart.id,
+              total: 1395,
+              discount_total: 105,
+              payment_collection: expect.objectContaining({
+                amount: 1395,
+              }),
+              items: expect.arrayContaining([
+                expect.objectContaining({
+                  adjustments: expect.arrayContaining([
+                    expect.objectContaining({
+                      code: "PROMOTION_APPLIED",
+                      promotion_id: promotion.id,
+                      amount: 100,
+                    }),
+                  ]),
+                }),
+              ]),
+            })
+          )
+        })
+      })
+
       describe("DELETE /store/carts/:id/promotions", () => {
         it("should remove promotions and recalculate payment_collection amount", async () => {
           cart = (
@@ -5316,9 +5383,17 @@ medusaIntegrationTestRunner({
             )
           ).data.cart
 
+          const paymentCollection = await api
+            .post(
+              `/store/payment-collections`,
+              { cart_id: cart.id },
+              storeHeaders
+            )
+            .then((response) => response.data.payment_collection)
+
           await api.post(
-            `/store/payment-collections`,
-            { cart_id: cart.id },
+            `/store/payment-collections/${paymentCollection.id}/payment-sessions`,
+            { provider_id: "pp_system_default" },
             storeHeaders
           )
 
@@ -5328,6 +5403,11 @@ medusaIntegrationTestRunner({
           expect(cart).toEqual(
             expect.objectContaining({
               id: cart.id,
+              total: 1395,
+              discount_total: 105,
+              payment_collection: expect.objectContaining({
+                amount: 1395,
+              }),
               items: expect.arrayContaining([
                 expect.objectContaining({
                   adjustments: expect.arrayContaining([
@@ -5352,6 +5432,11 @@ medusaIntegrationTestRunner({
           expect(cartAfterDeletion).toEqual(
             expect.objectContaining({
               id: cart.id,
+              total: 1500,
+              discount_total: 0,
+              payment_collection: expect.objectContaining({
+                amount: 1500,
+              }),
               items: expect.arrayContaining([
                 expect.objectContaining({
                   adjustments: [],
@@ -5359,9 +5444,6 @@ medusaIntegrationTestRunner({
               ]),
             })
           )
-
-          expect(cartAfterDeletion.total).toEqual(1500)
-          expect(cartAfterDeletion.discount_total).toEqual(0)
         })
       })
 
