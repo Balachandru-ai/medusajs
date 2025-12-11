@@ -8,6 +8,7 @@ import {
 import { emitEventStep } from "../../common/steps/emit-event"
 import { updateTranslationsStep, UpdateTranslationsStepInput } from "../steps"
 import { validateTranslationsStep } from "../steps"
+import { TranslationWorkflowEvents } from "@medusajs/framework/utils"
 
 /**
  * The translations to update.
@@ -77,7 +78,7 @@ export const updateTranslationsWorkflow = createWorkflow(
     )
 
     emitEventStep({
-      eventName: "translation.updated",
+      eventName: TranslationWorkflowEvents.UPDATED,
       data: translationIdEvents,
     })
 
