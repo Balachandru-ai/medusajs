@@ -1,6 +1,10 @@
 import { medusaIntegrationTestRunner } from "@medusajs/test-utils"
 import { HttpTypes } from "@medusajs/types"
-import { ApiKeyType, ModuleRegistrationName, ProductStatus } from "@medusajs/utils"
+import {
+  ApiKeyType,
+  ModuleRegistrationName,
+  ProductStatus,
+} from "@medusajs/utils"
 import {
   adminHeaders,
   createAdminUser,
@@ -17,14 +21,18 @@ medusaIntegrationTestRunner({
     let testDraftOrder: HttpTypes.AdminDraftOrder
     let shippingOption: HttpTypes.AdminShippingOption
     let shippingOptionHeavy: HttpTypes.AdminShippingOption
-    let apiKey: HttpTypes.AdminApiKeyResponse['api_key']
+    let apiKey: HttpTypes.AdminApiKeyResponse["api_key"]
     let userId: string
 
     beforeEach(async () => {
       const container = getContainer()
 
       await setupTaxStructure(container.resolve(ModuleRegistrationName.TAX))
-      userId = await createAdminUser(dbConnection, adminHeaders, container).then(user => user.id)
+      userId = await createAdminUser(
+        dbConnection,
+        adminHeaders,
+        container
+      ).then((res) => res.user.id)
 
       region = (
         await api.post(
@@ -224,32 +232,45 @@ medusaIntegrationTestRunner({
       })
 
       it("should use the secret key linked user to set created_by", async () => {
-        apiKey = (await api.post('/admin/api-keys', {
-            title: 'secret-key',
-            type: ApiKeyType.SECRET
-        }, adminHeaders)).data.api_key
+        apiKey = (
+          await api.post(
+            "/admin/api-keys",
+            {
+              title: "secret-key",
+              type: ApiKeyType.SECRET,
+            },
+            adminHeaders
+          )
+        ).data.api_key
 
         const draftOrderResponse = await api.post(
-            `/admin/draft-orders/${testDraftOrder.id}`,
-            {
-              email: "test_new@test.com",
+          `/admin/draft-orders/${testDraftOrder.id}`,
+          {
+            email: "test_new@test.com",
+          },
+          {
+            headers: {
+              Authorization: `Basic ${apiKey.token}`,
             },
-            {
-                auth: {
-                  username: apiKey.token,
-                },
-              }
+          }
         )
 
         expect(draftOrderResponse.status).toBe(200)
-        expect(draftOrderResponse.data.draft_order.email).toBe("test_new@test.com")
+        expect(draftOrderResponse.data.draft_order.email).toBe(
+          "test_new@test.com"
+        )
 
-        const orderChange = (await api.get(`/admin/orders/${testDraftOrder.id}/changes`, adminHeaders)).data.order_changes[0]
+        const orderChange = (
+          await api.get(
+            `/admin/orders/${testDraftOrder.id}/changes`,
+            adminHeaders
+          )
+        ).data.order_changes[0]
 
         expect(orderChange).toEqual(
-            expect.objectContaining({
-                created_by: userId
-            })
+          expect.objectContaining({
+            created_by: userId,
+          })
         )
       })
     })
