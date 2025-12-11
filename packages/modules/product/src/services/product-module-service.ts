@@ -1347,7 +1347,9 @@ export default class ProductModuleService
   > {
     const input = (Array.isArray(data) ? data : [data]).map(
       (productCategory) => {
-        productCategory.handle ??= kebabCase(productCategory.name)
+        if (!productCategory.handle && productCategory.name) {
+          productCategory.handle = kebabCase(productCategory.name)
+        }
         return productCategory
       }
     )
@@ -1436,7 +1438,9 @@ export default class ProductModuleService
 
     if (forCreate.length) {
       forCreate = forCreate.map((productCategory) => {
-        productCategory.handle ??= kebabCase(productCategory.name)
+        if (!productCategory.handle && productCategory.name) {
+          productCategory.handle = kebabCase(productCategory.name)
+        } 
         return productCategory
       })
 
