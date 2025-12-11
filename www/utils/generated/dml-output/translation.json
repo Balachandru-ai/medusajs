@@ -1,0 +1,26 @@
+{
+	"Locale": {
+		"filePath": "packages/modules/translation/src/models/locale.ts",
+		"properties": {
+			"id": "The ID of the locale.",
+			"code": "The code of the locale",
+			"name": "The name of the locale"
+		},
+		"deprecated": {
+			"is_deprecated": false
+		}
+	},
+	"Translation": {
+		"filePath": "packages/modules/translation/src/models/translation.ts",
+		"properties": {
+			"id": "The ID of the translation.",
+			"reference_id": "The reference id of the translation",
+			"reference": "The reference of the translation",
+			"locale_code": "The locale code of the translation",
+			"translations": "The translations of the translation"
+		},
+		"deprecated": {
+			"is_deprecated": false
+		}
+	}
+}
