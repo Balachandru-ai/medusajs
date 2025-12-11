@@ -959,6 +959,12 @@
   "DELETE /admin/shipping-option-types/{id}": {
     "js-sdk": "sdk.admin.shippingOptionType.delete(\"sotype_123\")\n.then(({ deleted }) => {\n  console.log(deleted)\n})"
   },
+  "GET /admin/locales": {
+    "js-sdk": "sdk.admin.locale.list()\n.then(({ locales, count, limit, offset }) => {\n  console.log(locales)\n})"
+  },
+  "GET /admin/locales/{code}": {
+    "js-sdk": "sdk.admin.locale.retrieve(\"en-US\")\n.then(({ locale }) => {\n  console.log(locale)\n})"
+  },
   "POST /auth/{actor}/{method}/register": {
     "js-sdk": "await sdk.auth.register(\n  \"customer\",\n  \"emailpass\",\n  {\n    email: \"customer@gmail.com\",\n    password: \"supersecret\"\n  }\n)\n\n// all subsequent requests will use the token in the header\nconst { customer } = await sdk.store.customer.create({\n  email: \"customer@gmail.com\",\n  password: \"supersecret\"\n})"
   },
