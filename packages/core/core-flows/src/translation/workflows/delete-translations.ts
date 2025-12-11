@@ -6,14 +6,26 @@ import {
 import { emitEventStep } from "../../common/steps/emit-event"
 import { deleteTranslationsStep } from "../steps"
 
-export type DeleteTranslationsWorkflowInput = { ids: string[] }
+/**
+ * The IDs of the translations to delete.
+ */
+export type DeleteTranslationsWorkflowInput = {
+  /**
+   * The IDs of the translations to delete.
+   */
+  ids: string[]
+}
 
 export const deleteTranslationsWorkflowId = "delete-translations"
 /**
- * This workflow deletes one or more translations.
+ * This workflow deletes one or more translations. It's used by other
+ * workflows like the {@link batchTranslationsWorkflow} workflow.
  *
  * You can use this workflow within your own customizations or custom workflows, allowing you
  * to delete translations in your custom flows.
+ * 
+ * @since 2.13.0
+ * @featureFlag translation
  *
  * @example
  * const { result } = await deleteTranslationsWorkflow(container)

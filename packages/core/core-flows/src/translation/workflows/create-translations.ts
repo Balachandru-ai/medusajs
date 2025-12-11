@@ -9,16 +9,26 @@ import { emitEventStep } from "../../common/steps/emit-event"
 import { createTranslationsStep } from "../steps"
 import { validateTranslationsStep } from "../steps"
 
+/**
+ * The translations to create.
+ */
 export type CreateTranslationsWorkflowInput = {
+  /**
+   * The translations to create.
+   */
   translations: CreateTranslationDTO[]
 }
 
 export const createTranslationsWorkflowId = "create-translations"
 /**
- * This workflow creates one or more translations.
+ * This workflow creates one or more translations. It's used by other workflows
+ * like the {@link batchTranslationsWorkflow} workflow.
  *
  * You can use this workflow within your own customizations or custom workflows, allowing you
  * to create translations in your custom flows.
+ * 
+ * @since 2.13.0
+ * @featureFlag translation
  *
  * @example
  * const { result } = await createTranslationsWorkflow(container)

@@ -28,8 +28,17 @@ export interface AdminTranslationsBatchResponse {
    * The deleted translations.
    */
   deleted: {
+    /**
+     * The IDs of the deleted translations.
+     */
     ids: string[]
+    /**
+     * The name of the deleted object.
+     */
     object: "translation"
+    /**
+     * Whether the translations were deleted successfully.
+     */
     deleted: boolean
   }
 }

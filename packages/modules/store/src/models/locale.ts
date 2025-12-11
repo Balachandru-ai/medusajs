@@ -1,9 +1,21 @@
 import { model } from "@medusajs/framework/utils"
 import Store from "./store"
 
+/**
+ * @since 2.13.0
+ */
 const StoreLocale = model.define("StoreLocale", {
   id: model.id({ prefix: "stloc" }).primaryKey(),
+  /**
+   * The BCP 47 language tag code of the locale.
+   * 
+   * @example
+   * "en-US"
+   */
   locale_code: model.text().searchable(),
+  /**
+   * Whether the locale is the default one for the store.
+   */
   is_default: model.boolean().default(false),
   store: model
     .belongsTo(() => Store, {

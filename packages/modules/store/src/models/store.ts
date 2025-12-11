@@ -13,6 +13,11 @@ const Store = model
     supported_currencies: model.hasMany(() => StoreCurrency, {
       mappedBy: "store",
     }),
+    /**
+     * The supported locales of the store.
+     * 
+     * @since 2.13.0
+     */
     supported_locales: model.hasMany(() => StoreLocale, {
       mappedBy: "store",
     }),

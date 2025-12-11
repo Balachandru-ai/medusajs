@@ -10,14 +10,23 @@ export interface AdminTranslationsListParams
   q?: string
   /**
    * Filter by entity ID.
+   * 
+   * @example
+   * "prod_123"
    */
   reference_id?: string | string[]
   /**
-   * Filter by entity type.
+   * Filter by the table of the resource being translated.
+   * 
+   * @example
+   * "product"
    */
   reference?: string
   /**
-   * Filter by locale code.
+   * Filter by locale code in BCP 47 format.
+   * 
+   * @example
+   * "en-US"
    */
   locale_code?: string | string[]
 }
