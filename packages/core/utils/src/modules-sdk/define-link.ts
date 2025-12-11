@@ -517,24 +517,45 @@ ${serviceBObj.module}: {
 }`)
     }
 
+    const extendsConfig: ModuleJoinerConfig["extends"] = [
+      {
+        serviceName: serviceAObj.module,
+        entity: serviceAObj.entity,
+        fieldAlias: buildFieldAlias(readOnlyLinkOptions?.shortcut),
+        relationship: {
+          serviceName: serviceBObj.module,
+          entity: serviceBObj.entity,
+          primaryKey: serviceBObj.primaryKey,
+          foreignKey: serviceAObj.field,
+          alias: serviceBObj.alias,
+          isList: readOnlyLinkOptions?.isList ?? serviceAObj.isList,
+        },
+      },
+    ]
+
+    if (readOnlyLinkOptions?.isList || serviceAObj.isList) {
+      extendsConfig.push({
+        serviceName: serviceAObj.module,
+        entity: serviceAObj.entity,
+        fieldAlias: buildFieldAlias(readOnlyLinkOptions?.shortcut),
+        relationship: {
+          serviceName: serviceBObj.module,
+          entity: serviceBObj.entity,
+          primaryKey: serviceBObj.primaryKey,
+          foreignKey: serviceAObj.field,
+          alias:
+            readOnlyLinkOptions?.isList ?? serviceAObj.isList
+              ? pluralize(serviceBObj.alias)
+              : serviceBObj.alias,
+          isList: readOnlyLinkOptions?.isList ?? serviceAObj.isList,
+        },
+      })
+    }
+
     return {
       isLink: true,
       isReadOnlyLink: true,
-      extends: [
-        {
-          serviceName: serviceAObj.module,
-          entity: serviceAObj.entity,
-          fieldAlias: buildFieldAlias(readOnlyLinkOptions?.shortcut),
-          relationship: {
-            serviceName: serviceBObj.module,
-            entity: serviceBObj.entity,
-            primaryKey: serviceBObj.primaryKey,
-            foreignKey: serviceAObj.field,
-            alias: serviceBObj.alias,
-            isList: readOnlyLinkOptions?.isList ?? serviceAObj.isList,
-          },
-        },
-      ],
+      extends: extendsConfig,
     }
   }
 

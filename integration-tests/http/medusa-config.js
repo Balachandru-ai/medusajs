@@ -21,17 +21,7 @@ const customFulfillmentProviderCalculated = {
   id: "test-provider-calculated",
 }
 
-const translationModuleResolutions =
-  process.env.MEDUSA_FF_TRANSLATION === "true"
-    ? {
-        [Modules.TRANSLATION]: {
-          resolve: "@medusajs/translation",
-        },
-      }
-    : {}
-
 const modules = {
-  ...translationModuleResolutions,
   [Modules.FULFILLMENT]: {
     /** @type {import('@medusajs/fulfillment').FulfillmentModuleOptions} */
     options: {
