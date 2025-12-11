@@ -436,18 +436,39 @@ export default class ProductModuleService
       (variant): variant is UpdateProductVariantInput => !!variant.id
     )
     const forCreate = input.filter(
-      (variant): variant is ProductTypes.CreateProductVariantDTO => !variant.id
+      (variant): variant is ProductTypes.CreateProductVariantDTO => !variant.id 
     )
 
     let created: ProductTypes.ProductVariantDTO[] = []
     let updated: InferEntityType<typeof ProductVariant>[] = []
 
+
+   // since the id is now possible to set from external sources, we need to change the logic here a bit
+    const idsInUpdate = new Set(forUpdate.map((variant) => variant.id));
+    const existingIdResponse = await this.productVariantService_.list(
+      {
+        id: Array.from(idsInUpdate),
+      },
+      {},
+      sharedContext
+    );
+    const existingIds = new Set(existingIdResponse.map((variant) => variant.id));
+    
+    // Split the forUpdate array into actual updates and creates based on existing IDs
+    const actualForUpdate = forUpdate.filter(variant => existingIds.has(variant.id));
+    const movedToCreate = forUpdate.filter(variant => !existingIds.has(variant.id));
+    forCreate.push(...(movedToCreate as ProductTypes.CreateProductVariantDTO[]));
+
+
     if (forCreate.length) {
       created = await this.createProductVariants(forCreate, sharedContext)
     }
-    if (forUpdate.length) {
-      updated = await this.updateVariants_(forUpdate, sharedContext)
+    if (actualForUpdate.length) {
+      updated = await this.updateVariants_(actualForUpdate, sharedContext)
     }
+
+    
+
 
     const result = [...created, ...updated]
     const allVariants = await this.baseRepository_.serialize<
