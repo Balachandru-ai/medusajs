@@ -19,7 +19,7 @@ async function dismissVariantsInventory(
 
   const { data: variantInventoryItems } = await query.graph({
     entity: "product_variant_inventory_item",
-    fields: ["inventory_item_id"],
+    fields: ["inventory_item_id", "variant_id"],
     filters: {
       variant_id: variantIds,
     },
