@@ -15,7 +15,7 @@ export const StoreCurrencies: ModuleJoinerConfig = {
         foreignKey: "currency_code",
         alias: "currency",
         args: {
-          methodSuffix: "StoreCurrencies",
+          methodSuffix: "Currencies",
         },
       },
     },
