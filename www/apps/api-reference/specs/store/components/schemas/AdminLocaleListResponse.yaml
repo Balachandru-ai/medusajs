@@ -1,0 +1,31 @@
+type: object
+description: SUMMARY
+x-schemaName: AdminLocaleListResponse
+required:
+  - limit
+  - offset
+  - count
+  - locales
+properties:
+  limit:
+    type: number
+    title: limit
+    description: The locale's limit.
+  offset:
+    type: number
+    title: offset
+    description: The locale's offset.
+  count:
+    type: number
+    title: count
+    description: The locale's count.
+  estimate_count:
+    type: number
+    title: estimate_count
+    description: The locale's estimate count.
+    x-featureFlag: index_engine
+  locales:
+    type: array
+    description: The locale's locales.
+    items:
+      $ref: ./AdminLocale.yaml

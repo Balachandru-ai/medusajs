@@ -1,0 +1,51 @@
+/**
+ * @schema AdminStoreLocale
+ * type: object
+ * description: The supported locale's supported locales.
+ * x-schemaName: AdminStoreLocale
+ * required:
+ *   - id
+ *   - locale_code
+ *   - store_id
+ *   - is_default
+ *   - locale
+ *   - created_at
+ *   - updated_at
+ *   - deleted_at
+ * properties:
+ *   id:
+ *     type: string
+ *     title: id
+ *     description: The supported locale's ID.
+ *   locale_code:
+ *     type: string
+ *     title: locale_code
+ *     description: The supported locale's locale code.
+ *   store_id:
+ *     type: string
+ *     title: store_id
+ *     description: The supported locale's store id.
+ *   is_default:
+ *     type: boolean
+ *     title: is_default
+ *     description: The supported locale's is default.
+ *   locale:
+ *     $ref: "#/components/schemas/AdminLocale"
+ *   created_at:
+ *     type: string
+ *     format: date-time
+ *     title: created_at
+ *     description: The supported locale's created at.
+ *   updated_at:
+ *     type: string
+ *     format: date-time
+ *     title: updated_at
+ *     description: The supported locale's updated at.
+ *   deleted_at:
+ *     type: string
+ *     format: date-time
+ *     title: deleted_at
+ *     description: The supported locale's deleted at.
+ * 
+*/
+

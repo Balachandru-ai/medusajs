@@ -1,0 +1,8 @@
+type: object
+description: SUMMARY
+x-schemaName: AdminLocaleResponse
+required:
+  - locale
+properties:
+  locale:
+    $ref: ./AdminLocale.yaml

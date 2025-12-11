@@ -173,6 +173,9 @@ tags:
       url: https://docs.medusajs.com/resources/commerce-modules/user
     x-associatedSchema:
       $ref: '#/components/schemas/AdminInvite'
+  - name: Locales
+    x-associatedSchema:
+      $ref: '#/components/schemas/AdminLocale'
   - name: Notifications
     description: |
       A notification informs an admin user of store changes or status changes of background tasks.
@@ -518,6 +521,9 @@ tags:
       </Note>
     x-associatedSchema:
       $ref: '#/components/schemas/AdminTransactionGroup'
+  - name: Translations
+    x-associatedSchema:
+      $ref: '#/components/schemas/AdminTranslation'
   - name: Uploads
     description: |
       Use these API routes to upload files to your Medusa application using the installed file module provider.
@@ -25979,6 +25985,222 @@ paths:
             refreshed. You can listen to this event to send an email to the invited users,
             for example.
           deprecated: false
+  /admin/locales:
+    get:
+      operationId: GetLocales
+      summary: List Locales
+      description: Retrieve a list of locales. The locales can be filtered by fields such as `id`. The locales can also be sorted or paginated.
+      x-authenticated: true
+      parameters:
+        - name: q
+          in: query
+          description: The locale's q.
+          required: false
+          schema:
+            type: string
+            title: q
+            description: The locale's q.
+        - name: code
+          in: query
+          required: false
+          schema:
+            oneOf:
+              - type: string
+                title: code
+                description: The locale's code.
+              - type: array
+                description: The locale's code.
+                items:
+                  type: string
+                  title: code
+                  description: The code's details.
+        - name: limit
+          in: query
+          description: Limit the number of items returned in the list.
+          required: false
+          schema:
+            type: number
+            title: limit
+            description: Limit the number of items returned in the list.
+            externalDocs:
+              url: '#pagination'
+        - name: offset
+          in: query
+          description: The number of items to skip when retrieving a list.
+          required: false
+          schema:
+            type: number
+            title: offset
+            description: The number of items to skip when retrieving a list.
+            externalDocs:
+              url: '#pagination'
+        - name: order
+          in: query
+          description: The field to sort the data by. By default, the sort order is ascending. To change the order to descending, prefix the field name with `-`.
+          required: false
+          schema:
+            type: string
+            title: order
+            description: The field to sort the data by. By default, the sort order is ascending. To change the order to descending, prefix the field name with `-`.
+            externalDocs:
+              url: '#pagination'
+        - name: with_deleted
+          in: query
+          description: The locale's with deleted.
+          required: false
+          schema:
+            type: boolean
+            title: with_deleted
+            description: The locale's with deleted.
+        - name: fields
+          in: query
+          description: Comma-separated fields that should be included in the returned data. If a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. Without prefix it will replace the entire default fields.
+          required: false
+          schema:
+            type: string
+            title: fields
+            description: Comma-separated fields that should be included in the returned data. If a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. Without prefix it will replace the entire default fields.
+            externalDocs:
+              url: '#select-fields-and-relations'
+        - name: $and
+          in: query
+          description: Join query parameters with an AND condition. Each object's content is the same type as the expected query parameters.
+          required: false
+          schema:
+            type: array
+            description: Join query parameters with an AND condition. Each object's content is the same type as the expected query parameters.
+            items:
+              type: object
+            title: $and
+        - name: $or
+          in: query
+          description: Join query parameters with an OR condition. Each object's content is the same type as the expected query parameters.
+          required: false
+          schema:
+            type: array
+            description: Join query parameters with an OR condition. Each object's content is the same type as the expected query parameters.
+            items:
+              type: object
+            title: $or
+      security:
+        - api_token: []
+        - cookie_auth: []
+        - jwt_token: []
+      x-codeSamples:
+        - lang: JavaScript
+          label: JS SDK
+          source: |-
+            import Medusa from "@medusajs/js-sdk"
+
+            export const sdk = new Medusa({
+              baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+              debug: import.meta.env.DEV,
+              auth: {
+                type: "session",
+              },
+            })
+
+            sdk.admin.locales.list()
+            .then(({ locales, count, limit, offset }) => {
+              console.log(locales)
+            })
+        - lang: Shell
+          label: cURL
+          source: |-
+            curl '{backend_url}/admin/locales' \
+            -H 'Authorization: Bearer {access_token}'
+      tags:
+        - Locales
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminLocaleListResponse'
+        '400':
+          $ref: '#/components/responses/400_error'
+        '401':
+          $ref: '#/components/responses/unauthorized'
+        '404':
+          $ref: '#/components/responses/not_found_error'
+        '409':
+          $ref: '#/components/responses/invalid_state_error'
+        '422':
+          $ref: '#/components/responses/invalid_request_error'
+        '500':
+          $ref: '#/components/responses/500_error'
+  /admin/locales/{code}:
+    get:
+      operationId: GetLocalesCode
+      summary: Get a Locale
+      description: Retrieve a locale by its ID. You can expand the locale's relations or select the fields that should be returned.
+      x-authenticated: true
+      parameters:
+        - name: code
+          in: path
+          description: The locale's code.
+          required: true
+          schema:
+            type: string
+        - name: fields
+          in: query
+          description: Comma-separated fields that should be included in the returned data. If a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. Without prefix it will replace the entire default fields.
+          required: false
+          schema:
+            type: string
+            title: fields
+            description: Comma-separated fields that should be included in the returned data. If a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. Without prefix it will replace the entire default fields.
+            externalDocs:
+              url: '#select-fields-and-relations'
+      security:
+        - api_token: []
+        - cookie_auth: []
+        - jwt_token: []
+      x-codeSamples:
+        - lang: JavaScript
+          label: JS SDK
+          source: |-
+            import Medusa from "@medusajs/js-sdk"
+
+            export const sdk = new Medusa({
+              baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+              debug: import.meta.env.DEV,
+              auth: {
+                type: "session",
+              },
+            })
+
+            sdk.admin.locale.retrieve("en-US")
+            .then(({ locale }) => {
+              console.log(locale)
+            })
+        - lang: Shell
+          label: cURL
+          source: |-
+            curl '{backend_url}/admin/locales/{code}' \
+            -H 'Authorization: Bearer {access_token}'
+      tags:
+        - Locales
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminLocaleResponse'
+        '400':
+          $ref: '#/components/responses/400_error'
+        '401':
+          $ref: '#/components/responses/unauthorized'
+        '404':
+          $ref: '#/components/responses/not_found_error'
+        '409':
+          $ref: '#/components/responses/invalid_state_error'
+        '422':
+          $ref: '#/components/responses/invalid_request_error'
+        '500':
+          $ref: '#/components/responses/500_error'
   /admin/notifications:
     get:
       operationId: GetNotifications
@@ -33291,6 +33513,77 @@ paths:
           $ref: '#/components/responses/500_error'
       x-workflow: deletePriceListsWorkflow
       x-events: []
+  /admin/price-lists/{id}/prices:
+    get:
+      operationId: GetPriceListsIdPrices
+      summary: List Prices
+      description: Retrieve a list of prices in a price list. The prices can be filtered by fields like FILTER FIELDS. The prices can also be paginated.
+      x-authenticated: true
+      parameters:
+        - name: id
+          in: path
+          description: The price list's ID.
+          required: true
+          schema:
+            type: string
+        - name: fields
+          in: query
+          description: Comma-separated fields that should be included in the returned data. If a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. Without prefix it will replace the entire default fields.
+          required: false
+          schema:
+            type: string
+            title: fields
+            description: Comma-separated fields that should be included in the returned data. If a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. Without prefix it will replace the entire default fields.
+            externalDocs:
+              url: '#select-fields-and-relations'
+      security:
+        - api_token: []
+        - cookie_auth: []
+        - jwt_token: []
+      x-codeSamples:
+        - lang: JavaScript
+          label: JS SDK
+          source: |-
+            import Medusa from "@medusajs/js-sdk"
+
+            export const sdk = new Medusa({
+              baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+              debug: import.meta.env.DEV,
+              auth: {
+                type: "session",
+              },
+            })
+
+            sdk.admin.priceList.prices("plist_123")
+            .then(({ prices }) => {
+              console.log(prices)
+            })
+        - lang: Shell
+          label: cURL
+          source: |-
+            curl '{backend_url}/admin/price-lists/{id}/prices' \
+            -H 'Authorization: Bearer {access_token}'
+      tags:
+        - Price Lists
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminPriceListPriceListResponse'
+        '400':
+          $ref: '#/components/responses/400_error'
+        '401':
+          $ref: '#/components/responses/unauthorized'
+        '404':
+          $ref: '#/components/responses/not_found_error'
+        '409':
+          $ref: '#/components/responses/invalid_state_error'
+        '422':
+          $ref: '#/components/responses/invalid_request_error'
+        '500':
+          $ref: '#/components/responses/500_error'
   /admin/price-lists/{id}/prices/batch:
     post:
       operationId: PostPriceListsIdPricesBatch
@@ -63025,6 +63318,329 @@ paths:
         - text: Cloud
           description: |
             This API route is only available in [Medusa Cloud](https://docs.medusajs.com/cloud/loyalty-plugin).
+  /admin/translations:
+    get:
+      operationId: GetTranslations
+      summary: List Translations
+      description: Retrieve a list of translations. The translations can be filtered by fields such as `id`. The translations can also be sorted or paginated.
+      x-authenticated: true
+      parameters:
+        - name: q
+          in: query
+          description: The translation's q.
+          required: false
+          schema:
+            type: string
+            title: q
+            description: The translation's q.
+        - name: reference_id
+          in: query
+          required: false
+          schema:
+            oneOf:
+              - type: string
+                title: reference_id
+                description: The translation's reference id.
+              - type: array
+                description: The translation's reference id.
+                items:
+                  type: string
+                  title: reference_id
+                  description: The reference id's details.
+        - name: reference
+          in: query
+          description: The translation's reference.
+          required: false
+          schema:
+            type: string
+            title: reference
+            description: The translation's reference.
+        - name: locale_code
+          in: query
+          required: false
+          schema:
+            oneOf:
+              - type: string
+                title: locale_code
+                description: The translation's locale code.
+              - type: array
+                description: The translation's locale code.
+                items:
+                  type: string
+                  title: locale_code
+                  description: The locale code's details.
+        - name: limit
+          in: query
+          description: Limit the number of items returned in the list.
+          required: false
+          schema:
+            type: number
+            title: limit
+            description: Limit the number of items returned in the list.
+            externalDocs:
+              url: '#pagination'
+        - name: offset
+          in: query
+          description: The number of items to skip when retrieving a list.
+          required: false
+          schema:
+            type: number
+            title: offset
+            description: The number of items to skip when retrieving a list.
+            externalDocs:
+              url: '#pagination'
+        - name: order
+          in: query
+          description: The field to sort the data by. By default, the sort order is ascending. To change the order to descending, prefix the field name with `-`.
+          required: false
+          schema:
+            type: string
+            title: order
+            description: The field to sort the data by. By default, the sort order is ascending. To change the order to descending, prefix the field name with `-`.
+            externalDocs:
+              url: '#pagination'
+        - name: with_deleted
+          in: query
+          description: The translation's with deleted.
+          required: false
+          schema:
+            type: boolean
+            title: with_deleted
+            description: The translation's with deleted.
+        - name: fields
+          in: query
+          description: Comma-separated fields that should be included in the returned data. If a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. Without prefix it will replace the entire default fields.
+          required: false
+          schema:
+            type: string
+            title: fields
+            description: Comma-separated fields that should be included in the returned data. If a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. Without prefix it will replace the entire default fields.
+            externalDocs:
+              url: '#select-fields-and-relations'
+        - name: $and
+          in: query
+          description: Join query parameters with an AND condition. Each object's content is the same type as the expected query parameters.
+          required: false
+          schema:
+            type: array
+            description: Join query parameters with an AND condition. Each object's content is the same type as the expected query parameters.
+            items:
+              type: object
+            title: $and
+        - name: $or
+          in: query
+          description: Join query parameters with an OR condition. Each object's content is the same type as the expected query parameters.
+          required: false
+          schema:
+            type: array
+            description: Join query parameters with an OR condition. Each object's content is the same type as the expected query parameters.
+            items:
+              type: object
+            title: $or
+      security:
+        - api_token: []
+        - cookie_auth: []
+        - jwt_token: []
+      x-codeSamples:
+        - lang: Shell
+          label: cURL
+          source: |-
+            curl '{backend_url}/admin/translations' \
+            -H 'Authorization: Bearer {access_token}'
+      tags:
+        - Translations
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - type: object
+                    description: SUMMARY
+                    required:
+                      - limit
+                      - offset
+                      - count
+                    properties:
+                      limit:
+                        type: number
+                        title: limit
+                        description: The translation's limit.
+                      offset:
+                        type: number
+                        title: offset
+                        description: The translation's offset.
+                      count:
+                        type: number
+                        title: count
+                        description: The translation's count.
+                      estimate_count:
+                        type: number
+                        title: estimate_count
+                        description: The translation's estimate count.
+                        x-featureFlag: index_engine
+                  - type: object
+                    description: SUMMARY
+                    required:
+                      - translations
+                    properties:
+                      translations:
+                        type: array
+                        description: The translation's translations.
+                        items:
+                          $ref: '#/components/schemas/AdminTranslation'
+        '400':
+          $ref: '#/components/responses/400_error'
+        '401':
+          $ref: '#/components/responses/unauthorized'
+        '404':
+          $ref: '#/components/responses/not_found_error'
+        '409':
+          $ref: '#/components/responses/invalid_state_error'
+        '422':
+          $ref: '#/components/responses/invalid_request_error'
+        '500':
+          $ref: '#/components/responses/500_error'
+  /admin/translations/batch:
+    post:
+      operationId: PostTranslationsBatch
+      summary: Create Translation
+      description: Create a translation.
+      x-authenticated: true
+      parameters: []
+      security:
+        - api_token: []
+        - cookie_auth: []
+        - jwt_token: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              description: SUMMARY
+              properties:
+                create:
+                  type: array
+                  description: The translation's create.
+                  items:
+                    type: object
+                    description: The create's details.
+                    required:
+                      - reference
+                      - reference_id
+                      - locale_code
+                      - translations
+                    properties:
+                      reference:
+                        type: string
+                        title: reference
+                        description: The create's reference.
+                      reference_id:
+                        type: string
+                        title: reference_id
+                        description: The create's reference id.
+                      locale_code:
+                        type: string
+                        title: locale_code
+                        description: The create's locale code.
+                      translations:
+                        type: object
+                        description: The create's translations.
+                update:
+                  type: array
+                  description: The translation's update.
+                  items:
+                    type: object
+                    description: The update's details.
+                    required:
+                      - id
+                    properties:
+                      id:
+                        type: string
+                        title: id
+                        description: The update's ID.
+                      reference:
+                        type: string
+                        title: reference
+                        description: The update's reference.
+                      reference_id:
+                        type: string
+                        title: reference_id
+                        description: The update's reference id.
+                      locale_code:
+                        type: string
+                        title: locale_code
+                        description: The update's locale code.
+                      translations:
+                        type: object
+                        description: The update's translations.
+                delete:
+                  type: array
+                  description: The translation's delete.
+                  items:
+                    type: string
+                    title: delete
+                    description: The delete's details.
+      x-codeSamples:
+        - lang: Shell
+          label: cURL
+          source: |-
+            curl -X POST '{backend_url}/admin/translations/batch' \
+            -H 'Authorization: Bearer {access_token}'
+      tags:
+        - Translations
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminTranslationsBatchResponse'
+        '400':
+          $ref: '#/components/responses/400_error'
+        '401':
+          $ref: '#/components/responses/unauthorized'
+        '404':
+          $ref: '#/components/responses/not_found_error'
+        '409':
+          $ref: '#/components/responses/invalid_state_error'
+        '422':
+          $ref: '#/components/responses/invalid_request_error'
+        '500':
+          $ref: '#/components/responses/500_error'
+      x-workflow: batchTranslationsWorkflow
+      x-events:
+        - name: translation.created
+          payload: |-
+            ```ts
+            {
+              id, // The ID of the translation
+            }
+            ```
+          description: Emitted when translations are created.
+          deprecated: false
+          since: 2.13.0
+        - name: translation.updated
+          payload: |-
+            ```ts
+            {
+              id, // The ID of the translation
+            }
+            ```
+          description: Emitted when translations are updated.
+          deprecated: false
+          since: 2.13.0
+        - name: translation.deleted
+          payload: |-
+            ```ts
+            {
+              id, // The ID of the translation
+            }
+            ```
+          description: Emitted when translations are deleted.
+          deprecated: false
+          since: 2.13.0
   /admin/uploads:
     post:
       operationId: PostUploads
@@ -73296,6 +73912,81 @@ components:
             title: remove
             description: The ID of a product.
       x-schemaName: AdminLinkPriceListProducts
+    AdminLocale:
+      type: object
+      description: The locale's locales.
+      x-schemaName: AdminLocale
+      required:
+        - code
+        - name
+        - created_at
+        - updated_at
+        - deleted_at
+      properties:
+        code:
+          type: string
+          title: code
+          description: The locale's code.
+        name:
+          type: string
+          title: name
+          description: The locale's name.
+        created_at:
+          type: string
+          format: date-time
+          title: created_at
+          description: The locale's created at.
+        updated_at:
+          type: string
+          format: date-time
+          title: updated_at
+          description: The locale's updated at.
+        deleted_at:
+          type: string
+          format: date-time
+          title: deleted_at
+          description: The locale's deleted at.
+    AdminLocaleListResponse:
+      type: object
+      description: SUMMARY
+      x-schemaName: AdminLocaleListResponse
+      required:
+        - limit
+        - offset
+        - count
+        - locales
+      properties:
+        limit:
+          type: number
+          title: limit
+          description: The locale's limit.
+        offset:
+          type: number
+          title: offset
+          description: The locale's offset.
+        count:
+          type: number
+          title: count
+          description: The locale's count.
+        estimate_count:
+          type: number
+          title: estimate_count
+          description: The locale's estimate count.
+          x-featureFlag: index_engine
+        locales:
+          type: array
+          description: The locale's locales.
+          items:
+            $ref: '#/components/schemas/AdminLocale'
+    AdminLocaleResponse:
+      type: object
+      description: SUMMARY
+      x-schemaName: AdminLocaleResponse
+      required:
+        - locale
+      properties:
+        locale:
+          $ref: '#/components/schemas/AdminLocale'
     AdminMarkPaymentCollectionAsPaid:
       type: object
       description: The payment details.
@@ -76125,6 +76816,38 @@ components:
           format: date-time
           title: deleted_at
           description: The date the price was deleted.
+    AdminPriceListPriceListResponse:
+      type: object
+      description: SUMMARY
+      x-schemaName: AdminPriceListPriceListResponse
+      required:
+        - limit
+        - offset
+        - count
+        - prices
+      properties:
+        limit:
+          type: number
+          title: limit
+          description: The price list's limit.
+        offset:
+          type: number
+          title: offset
+          description: The price list's offset.
+        count:
+          type: number
+          title: count
+          description: The price list's count.
+        estimate_count:
+          type: number
+          title: estimate_count
+          description: The price list's estimate count.
+          x-featureFlag: index_engine
+        prices:
+          type: array
+          description: The price list's prices.
+          items:
+            $ref: '#/components/schemas/AdminPrice'
     AdminPriceListResponse:
       type: object
       description: The price list's details.
@@ -79022,6 +79745,7 @@ components:
         - id
         - name
         - supported_currencies
+        - supported_locales
         - default_sales_channel_id
         - default_region_id
         - default_location_id
@@ -79070,6 +79794,11 @@ components:
           format: date-time
           title: updated_at
           description: The date the store was updated.
+        supported_locales:
+          type: array
+          description: The store's supported locales.
+          items:
+            $ref: '#/components/schemas/AdminStoreLocale'
     AdminStoreCreditAccount:
       type: object
       description: The store credit account's details.
@@ -79256,6 +79985,53 @@ components:
           title: estimate_count
           description: The estimated count retrieved from the PostgreSQL query planner, which may be inaccurate.
           x-featureFlag: index_engine
+    AdminStoreLocale:
+      type: object
+      description: The supported locale's supported locales.
+      x-schemaName: AdminStoreLocale
+      required:
+        - id
+        - locale_code
+        - store_id
+        - is_default
+        - locale
+        - created_at
+        - updated_at
+        - deleted_at
+      properties:
+        id:
+          type: string
+          title: id
+          description: The supported locale's ID.
+        locale_code:
+          type: string
+          title: locale_code
+          description: The supported locale's locale code.
+        store_id:
+          type: string
+          title: store_id
+          description: The supported locale's store id.
+        is_default:
+          type: boolean
+          title: is_default
+          description: The supported locale's is default.
+        locale:
+          $ref: '#/components/schemas/AdminLocale'
+        created_at:
+          type: string
+          format: date-time
+          title: created_at
+          description: The supported locale's created at.
+        updated_at:
+          type: string
+          format: date-time
+          title: updated_at
+          description: The supported locale's updated at.
+        deleted_at:
+          type: string
+          format: date-time
+          title: deleted_at
+          description: The supported locale's deleted at.
     AdminStoreResponse:
       type: object
       description: The store's details.
@@ -79693,6 +80469,96 @@ components:
           title: estimate_count
           description: The store credit account's estimate count.
           x-featureFlag: index_engine
+    AdminTranslation:
+      type: object
+      description: The translation's translations.
+      x-schemaName: AdminTranslation
+      required:
+        - id
+        - reference_id
+        - reference
+        - locale_code
+        - translations
+        - created_at
+        - updated_at
+        - deleted_at
+      properties:
+        id:
+          type: string
+          title: id
+          description: The translation's ID.
+        reference_id:
+          type: string
+          title: reference_id
+          description: The translation's reference id.
+        reference:
+          type: string
+          title: reference
+          description: The translation's reference.
+        locale_code:
+          type: string
+          title: locale_code
+          description: The translation's locale code.
+        translations:
+          type: object
+          description: The translation's translations.
+        created_at:
+          type: string
+          format: date-time
+          title: created_at
+          description: The translation's created at.
+        updated_at:
+          type: string
+          format: date-time
+          title: updated_at
+          description: The translation's updated at.
+        deleted_at:
+          type: string
+          format: date-time
+          title: deleted_at
+          description: The translation's deleted at.
+    AdminTranslationsBatchResponse:
+      type: object
+      description: SUMMARY
+      x-schemaName: AdminTranslationsBatchResponse
+      required:
+        - created
+        - updated
+        - deleted
+      properties:
+        created:
+          type: array
+          description: The translation's created.
+          items:
+            $ref: '#/components/schemas/AdminTranslation'
+        updated:
+          type: array
+          description: The translation's updated.
+          items:
+            $ref: '#/components/schemas/AdminTranslation'
+        deleted:
+          type: object
+          description: SUMMARY
+          required:
+            - ids
+            - object
+            - deleted
+          properties:
+            ids:
+              type: array
+              description: The deleted's ids.
+              items:
+                type: string
+                title: ids
+                description: The id's ids.
+            object:
+              type: string
+              title: object
+              description: SUMMARY
+            deleted:
+              type: boolean
+              title: deleted
+              description: SUMMARY
     AdminUpdateApiKey:
       type: object
       description: The details to update in an API key.
@@ -81131,6 +81997,11 @@ components:
           externalDocs:
             url: https://docs.medusajs.com/api/admin#manage-metadata
             description: Learn how to manage metadata
+        supported_locales:
+          type: array
+          description: The store's supported locales.
+          items:
+            $ref: '#/components/schemas/AdminUpdateStoreSupportedLocale'
     AdminUpdateStoreSupportedCurrency:
       type: object
       description: The details to update in a supported currency of the store.
@@ -81151,6 +82022,21 @@ components:
           title: is_tax_inclusive
           description: Whether prices using this currency are tax inclusive.
       x-schemaName: AdminUpdateStoreSupportedCurrency
+    AdminUpdateStoreSupportedLocale:
+      type: object
+      description: The supported locale's supported locales.
+      x-schemaName: AdminUpdateStoreSupportedLocale
+      required:
+        - locale_code
+      properties:
+        locale_code:
+          type: string
+          title: locale_code
+          description: The supported locale's locale code.
+        is_default:
+          type: boolean
+          title: is_default
+          description: The supported locale's is default.
     AdminUpdateTaxRate:
       type: object
       description: The properties to update in the tax rate.

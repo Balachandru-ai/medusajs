@@ -1,0 +1,33 @@
+type: object
+description: The locale's locales.
+x-schemaName: AdminLocale
+required:
+  - code
+  - name
+  - created_at
+  - updated_at
+  - deleted_at
+properties:
+  code:
+    type: string
+    title: code
+    description: The locale's code.
+  name:
+    type: string
+    title: name
+    description: The locale's name.
+  created_at:
+    type: string
+    format: date-time
+    title: created_at
+    description: The locale's created at.
+  updated_at:
+    type: string
+    format: date-time
+    title: updated_at
+    description: The locale's updated at.
+  deleted_at:
+    type: string
+    format: date-time
+    title: deleted_at
+    description: The locale's deleted at.

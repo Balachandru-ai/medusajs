@@ -16652,6 +16652,81 @@ components:
             title: remove
             description: The ID of a product.
       x-schemaName: AdminLinkPriceListProducts
+    AdminLocale:
+      type: object
+      description: The locale's locales.
+      x-schemaName: AdminLocale
+      required:
+        - code
+        - name
+        - created_at
+        - updated_at
+        - deleted_at
+      properties:
+        code:
+          type: string
+          title: code
+          description: The locale's code.
+        name:
+          type: string
+          title: name
+          description: The locale's name.
+        created_at:
+          type: string
+          format: date-time
+          title: created_at
+          description: The locale's created at.
+        updated_at:
+          type: string
+          format: date-time
+          title: updated_at
+          description: The locale's updated at.
+        deleted_at:
+          type: string
+          format: date-time
+          title: deleted_at
+          description: The locale's deleted at.
+    AdminLocaleListResponse:
+      type: object
+      description: SUMMARY
+      x-schemaName: AdminLocaleListResponse
+      required:
+        - limit
+        - offset
+        - count
+        - locales
+      properties:
+        limit:
+          type: number
+          title: limit
+          description: The locale's limit.
+        offset:
+          type: number
+          title: offset
+          description: The locale's offset.
+        count:
+          type: number
+          title: count
+          description: The locale's count.
+        estimate_count:
+          type: number
+          title: estimate_count
+          description: The locale's estimate count.
+          x-featureFlag: index_engine
+        locales:
+          type: array
+          description: The locale's locales.
+          items:
+            $ref: '#/components/schemas/AdminLocale'
+    AdminLocaleResponse:
+      type: object
+      description: SUMMARY
+      x-schemaName: AdminLocaleResponse
+      required:
+        - locale
+      properties:
+        locale:
+          $ref: '#/components/schemas/AdminLocale'
     AdminMarkPaymentCollectionAsPaid:
       type: object
       description: The payment details.
@@ -19481,6 +19556,38 @@ components:
           format: date-time
           title: deleted_at
           description: The date the price was deleted.
+    AdminPriceListPriceListResponse:
+      type: object
+      description: SUMMARY
+      x-schemaName: AdminPriceListPriceListResponse
+      required:
+        - limit
+        - offset
+        - count
+        - prices
+      properties:
+        limit:
+          type: number
+          title: limit
+          description: The price list's limit.
+        offset:
+          type: number
+          title: offset
+          description: The price list's offset.
+        count:
+          type: number
+          title: count
+          description: The price list's count.
+        estimate_count:
+          type: number
+          title: estimate_count
+          description: The price list's estimate count.
+          x-featureFlag: index_engine
+        prices:
+          type: array
+          description: The price list's prices.
+          items:
+            $ref: '#/components/schemas/AdminPrice'
     AdminPriceListResponse:
       type: object
       description: The price list's details.
@@ -22378,6 +22485,7 @@ components:
         - id
         - name
         - supported_currencies
+        - supported_locales
         - default_sales_channel_id
         - default_region_id
         - default_location_id
@@ -22426,6 +22534,11 @@ components:
           format: date-time
           title: updated_at
           description: The date the store was updated.
+        supported_locales:
+          type: array
+          description: The store's supported locales.
+          items:
+            $ref: '#/components/schemas/AdminStoreLocale'
     AdminStoreCreditAccount:
       type: object
       description: The store credit account's details.
@@ -22612,6 +22725,53 @@ components:
           title: estimate_count
           description: The estimated count retrieved from the PostgreSQL query planner, which may be inaccurate.
           x-featureFlag: index_engine
+    AdminStoreLocale:
+      type: object
+      description: The supported locale's supported locales.
+      x-schemaName: AdminStoreLocale
+      required:
+        - id
+        - locale_code
+        - store_id
+        - is_default
+        - locale
+        - created_at
+        - updated_at
+        - deleted_at
+      properties:
+        id:
+          type: string
+          title: id
+          description: The supported locale's ID.
+        locale_code:
+          type: string
+          title: locale_code
+          description: The supported locale's locale code.
+        store_id:
+          type: string
+          title: store_id
+          description: The supported locale's store id.
+        is_default:
+          type: boolean
+          title: is_default
+          description: The supported locale's is default.
+        locale:
+          $ref: '#/components/schemas/AdminLocale'
+        created_at:
+          type: string
+          format: date-time
+          title: created_at
+          description: The supported locale's created at.
+        updated_at:
+          type: string
+          format: date-time
+          title: updated_at
+          description: The supported locale's updated at.
+        deleted_at:
+          type: string
+          format: date-time
+          title: deleted_at
+          description: The supported locale's deleted at.
     AdminStoreResponse:
       type: object
       description: The store's details.
@@ -23049,6 +23209,96 @@ components:
           title: estimate_count
           description: The store credit account's estimate count.
           x-featureFlag: index_engine
+    AdminTranslation:
+      type: object
+      description: The translation's translations.
+      x-schemaName: AdminTranslation
+      required:
+        - id
+        - reference_id
+        - reference
+        - locale_code
+        - translations
+        - created_at
+        - updated_at
+        - deleted_at
+      properties:
+        id:
+          type: string
+          title: id
+          description: The translation's ID.
+        reference_id:
+          type: string
+          title: reference_id
+          description: The translation's reference id.
+        reference:
+          type: string
+          title: reference
+          description: The translation's reference.
+        locale_code:
+          type: string
+          title: locale_code
+          description: The translation's locale code.
+        translations:
+          type: object
+          description: The translation's translations.
+        created_at:
+          type: string
+          format: date-time
+          title: created_at
+          description: The translation's created at.
+        updated_at:
+          type: string
+          format: date-time
+          title: updated_at
+          description: The translation's updated at.
+        deleted_at:
+          type: string
+          format: date-time
+          title: deleted_at
+          description: The translation's deleted at.
+    AdminTranslationsBatchResponse:
+      type: object
+      description: SUMMARY
+      x-schemaName: AdminTranslationsBatchResponse
+      required:
+        - created
+        - updated
+        - deleted
+      properties:
+        created:
+          type: array
+          description: The translation's created.
+          items:
+            $ref: '#/components/schemas/AdminTranslation'
+        updated:
+          type: array
+          description: The translation's updated.
+          items:
+            $ref: '#/components/schemas/AdminTranslation'
+        deleted:
+          type: object
+          description: SUMMARY
+          required:
+            - ids
+            - object
+            - deleted
+          properties:
+            ids:
+              type: array
+              description: The deleted's ids.
+              items:
+                type: string
+                title: ids
+                description: The id's ids.
+            object:
+              type: string
+              title: object
+              description: SUMMARY
+            deleted:
+              type: boolean
+              title: deleted
+              description: SUMMARY
     AdminUpdateApiKey:
       type: object
       description: The details to update in an API key.
@@ -24487,6 +24737,11 @@ components:
           externalDocs:
             url: https://docs.medusajs.com/api/admin#manage-metadata
             description: Learn how to manage metadata
+        supported_locales:
+          type: array
+          description: The store's supported locales.
+          items:
+            $ref: '#/components/schemas/AdminUpdateStoreSupportedLocale'
     AdminUpdateStoreSupportedCurrency:
       type: object
       description: The details to update in a supported currency of the store.
@@ -24507,6 +24762,21 @@ components:
           title: is_tax_inclusive
           description: Whether prices using this currency are tax inclusive.
       x-schemaName: AdminUpdateStoreSupportedCurrency
+    AdminUpdateStoreSupportedLocale:
+      type: object
+      description: The supported locale's supported locales.
+      x-schemaName: AdminUpdateStoreSupportedLocale
+      required:
+        - locale_code
+      properties:
+        locale_code:
+          type: string
+          title: locale_code
+          description: The supported locale's locale code.
+        is_default:
+          type: boolean
+          title: is_default
+          description: The supported locale's is default.
     AdminUpdateTaxRate:
       type: object
       description: The properties to update in the tax rate.

@@ -1,0 +1,41 @@
+type: object
+description: SUMMARY
+x-schemaName: AdminTranslationsBatchResponse
+required:
+  - created
+  - updated
+  - deleted
+properties:
+  created:
+    type: array
+    description: The translation's created.
+    items:
+      $ref: ./AdminTranslation.yaml
+  updated:
+    type: array
+    description: The translation's updated.
+    items:
+      $ref: ./AdminTranslation.yaml
+  deleted:
+    type: object
+    description: SUMMARY
+    required:
+      - ids
+      - object
+      - deleted
+    properties:
+      ids:
+        type: array
+        description: The deleted's ids.
+        items:
+          type: string
+          title: ids
+          description: The id's ids.
+      object:
+        type: string
+        title: object
+        description: SUMMARY
+      deleted:
+        type: boolean
+        title: deleted
+        description: SUMMARY

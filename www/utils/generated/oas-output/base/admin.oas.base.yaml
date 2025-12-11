@@ -209,6 +209,9 @@ tags:
       url: https://docs.medusajs.com/resources/commerce-modules/user
     x-associatedSchema:
       $ref: "#/components/schemas/AdminInvite"
+  - name: Locales
+    x-associatedSchema:
+      $ref: "#/components/schemas/AdminLocale"
   - name: Notifications
     description: >
       A notification informs an admin user of store changes or status changes of
@@ -221,8 +224,8 @@ tags:
   - name: Order Changes
     description: >
       An order change is a proposed change to an order, such as adding or
-      removing items, changing shipping methods, and more. They can be associated
-      with order edits, claims, or exchanges.
+      removing items, changing shipping methods, and more. They can be
+      associated with order edits, claims, or exchanges.
 
       These API routes allow admin users to manage order changes.
     externalDocs:
@@ -642,6 +645,9 @@ tags:
       </Note>
     x-associatedSchema:
       $ref: "#/components/schemas/AdminTransactionGroup"
+  - name: Translations
+    x-associatedSchema:
+      $ref: "#/components/schemas/AdminTranslation"
   - name: Uploads
     description: >
       Use these API routes to upload files to your Medusa application using the
