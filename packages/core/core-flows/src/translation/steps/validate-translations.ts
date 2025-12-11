@@ -24,7 +24,7 @@ export const validateTranslationsStep = createStep(
     } = await query.graph(
       {
         entity: "store",
-        fields: ["supported_locales.*"],
+        fields: ["id", "supported_locales.*"],
         pagination: {
           take: 1,
         },
