@@ -9,7 +9,6 @@ import { Modules } from "@medusajs/utils"
 jest.setTimeout(50000)
 
 medusaIntegrationTestRunner({
-  env: {},
   testSuite: ({ getContainer }) => {
     describe("Workflows: Update product options", () => {
       let appContainer

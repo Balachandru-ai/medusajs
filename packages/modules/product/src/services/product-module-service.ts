@@ -1102,47 +1102,52 @@ export default class ProductModuleService
     }
 
     // Check if any option values are being removed and if they're associated with products
+    const removedValueIds = new Set<string>()
     for (const opt of data) {
-      if (opt.values !== undefined) {
-        const dbOption = dbOptions.find(({ id }) => id === opt.id)
-        if (dbOption) {
-          const newValues = new Set<string>(
-            opt.values.map((v) => {
-              if (isString(v)) {
-                return v
-              }
-              return (v as any).value
-            })
-          )
-          const removedValueIds: string[] = []
+      if (!isDefined(opt.values)) {
+        continue
+      }
 
-          for (const existingValue of dbOption.values || []) {
-            if (!newValues.has(existingValue.value)) {
-              removedValueIds.push(existingValue.id)
-            }
+      const dbOption = dbOptions.find(({ id }) => id === opt.id)
+
+      if (!dbOption) {
+        continue
+      }
+
+      const newValues = new Set<string>(
+        opt.values.map((v) => {
+          if (isString(v)) {
+            return v
           }
+          return (v as any).value
+        })
+      )
 
-          if (removedValueIds.length > 0) {
-            const productProductOptionValues =
-              await this.productProductOptionValueService_.list(
-                {
-                  product_option_value_id: removedValueIds,
-                },
-                {
-                  select: ["id"],
-                  take: 1,
-                },
-                sharedContext
-              )
-
-            if (productProductOptionValues.length > 0) {
-              throw new MedusaError(
-                MedusaError.Types.INVALID_DATA,
-                "Cannot delete product option values that are associated with products."
-              )
-            }
-          }
+      for (const existingValue of dbOption.values || []) {
+        if (!newValues.has(existingValue.value)) {
+          removedValueIds.add(existingValue.id)
         }
+      }
+    }
+
+    if (removedValueIds.size > 0) {
+      const productProductOptionValues =
+        await this.productProductOptionValueService_.list(
+          {
+            product_option_value_id: [...removedValueIds],
+          },
+          {
+            select: ["id"],
+            take: 1,
+          },
+          sharedContext
+        )
+
+      if (productProductOptionValues.length > 0) {
+        throw new MedusaError(
+          MedusaError.Types.INVALID_DATA,
+          "Cannot delete product option values that are associated with products."
+        )
       }
     }
 
@@ -1231,9 +1236,9 @@ export default class ProductModuleService
     @MedusaContext() sharedContext: Context = {}
   ): Promise<Record<string, string[]> | void> {
     const optionIds = Array.isArray(primaryKeyValues)
-      ? primaryKeyValues.map((v) => (typeof v === "string" ? v : (v as any).id))
+      ? primaryKeyValues.map((v) => (isString(v) ? v : (v as any).id))
       : [
-          typeof primaryKeyValues === "string"
+          isString(primaryKeyValues)
             ? primaryKeyValues
             : (primaryKeyValues as any).id,
         ]
