@@ -432,7 +432,7 @@ export default class ProductModuleService
     ProductTypes.ProductVariantDTO[] | ProductTypes.ProductVariantDTO
   > {
     const input = Array.isArray(data) ? data : [data]
-    const forUpdate = input.filter(
+    let forUpdate = input.filter(
       (variant): variant is UpdateProductVariantInput => !!variant.id
     )
     const forCreate = input.filter(
@@ -442,29 +442,32 @@ export default class ProductModuleService
     let created: ProductTypes.ProductVariantDTO[] = []
     let updated: InferEntityType<typeof ProductVariant>[] = []
 
+    if (forUpdate.length > 0) {
+    // since the id is now possible to set from external sources, we need to change the logic here a bit
+      const idsInUpdate = new Set(forUpdate.map((variant) => variant.id));
+      const existingIdResponse = await this.productVariantService_.list(
+        {
+          id: Array.from(idsInUpdate),
+        },
+        {},
+        sharedContext
+      );
+      const existingIds = new Set(existingIdResponse.map((variant) => variant.id));
+      
+      // Split the forUpdate array into actual updates and creates based on existing IDs
+      const actualForUpdate = forUpdate.filter(variant => existingIds.has(variant.id));
+      const movedToCreate = forUpdate.filter(variant => !existingIds.has(variant.id));
 
-   // since the id is now possible to set from external sources, we need to change the logic here a bit
-    const idsInUpdate = new Set(forUpdate.map((variant) => variant.id));
-    const existingIdResponse = await this.productVariantService_.list(
-      {
-        id: Array.from(idsInUpdate),
-      },
-      {},
-      sharedContext
-    );
-    const existingIds = new Set(existingIdResponse.map((variant) => variant.id));
-    
-    // Split the forUpdate array into actual updates and creates based on existing IDs
-    const actualForUpdate = forUpdate.filter(variant => existingIds.has(variant.id));
-    const movedToCreate = forUpdate.filter(variant => !existingIds.has(variant.id));
-    forCreate.push(...(movedToCreate as ProductTypes.CreateProductVariantDTO[]));
+      forUpdate = actualForUpdate;
+      forCreate.push(...(movedToCreate as ProductTypes.CreateProductVariantDTO[]));
+    }
 
 
     if (forCreate.length) {
       created = await this.createProductVariants(forCreate, sharedContext)
     }
-    if (actualForUpdate.length) {
-      updated = await this.updateVariants_(actualForUpdate, sharedContext)
+    if (forUpdate.length) {
+      updated = await this.updateVariants_(forUpdate, sharedContext)
     }
 
     
@@ -1408,7 +1411,7 @@ export default class ProductModuleService
     @MedusaContext() sharedContext: Context = {}
   ): Promise<InferEntityType<typeof ProductCategory>[]> {
     const input = Array.isArray(data) ? data : [data]
-    const forUpdate = input.filter(
+    let forUpdate = input.filter(
       (category): category is UpdateCategoryInput => !!category.id
     )
     let forCreate = input.filter(
@@ -1419,21 +1422,25 @@ export default class ProductModuleService
     let created: InferEntityType<typeof ProductCategory>[] = []
     let updated: InferEntityType<typeof ProductCategory>[] = []
 
-    // since the id is now possible to set from external sources, we need to change the logic here a bit
-    const idsInUpdate = new Set(forUpdate.map((category) => category.id));
-    const existingIdResponse = await this.productCategoryService_.list(
-      {
-        id: Array.from(idsInUpdate),
-      },
-      {},
-      sharedContext
-    );
-    const existingIds = new Set(existingIdResponse.map((category) => category.id));
-    
-    // Split the forUpdate array into actual updates and creates based on existing IDs
-    const actualForUpdate = forUpdate.filter(category => existingIds.has(category.id));
-    const movedToCreate = forUpdate.filter(category => !existingIds.has(category.id));
-    forCreate.push(...(movedToCreate as ProductTypes.CreateProductCategoryDTO[]));
+    if (forUpdate.length > 0) {
+      // since the id is now possible to set from external sources, we need to change the logic here a bit
+      const idsInUpdate = new Set(forUpdate.map((category) => category.id));
+      const existingIdResponse = await this.productCategoryService_.list(
+        {
+          id: Array.from(idsInUpdate),
+        },
+        {},
+        sharedContext
+      );
+      const existingIds = new Set(existingIdResponse.map((category) => category.id));
+      
+      // Split the forUpdate array into actual updates and creates based on existing IDs
+      const actualForUpdate = forUpdate.filter(category => existingIds.has(category.id));
+      const movedToCreate = forUpdate.filter(category => !existingIds.has(category.id));
+
+      forUpdate = actualForUpdate;
+      forCreate.push(...(movedToCreate as ProductTypes.CreateProductCategoryDTO[]));
+    }
 
 
     if (forCreate.length) {
@@ -1449,9 +1456,9 @@ export default class ProductModuleService
         sharedContext
       )
     }
-    if (actualForUpdate.length) {
+    if (forUpdate.length) {
       updated = await this.productCategoryService_.update(
-        actualForUpdate,
+        forUpdate,
         sharedContext
       )
     }
@@ -1599,29 +1606,32 @@ export default class ProductModuleService
     @MedusaContext() sharedContext: Context = {}
   ): Promise<ProductTypes.ProductDTO[] | ProductTypes.ProductDTO> {
     const input = Array.isArray(data) ? data : [data]
-    const forUpdate = input.filter(
+    let forUpdate = input.filter(
       (product): product is UpdateProductInput => !!product.id
     )
     const forCreate = input.filter(
       (product): product is ProductTypes.CreateProductDTO => !product.id
     )
 
-
-    // since the id is now possible to set from external sources, we need to change the logic here a bit
-    const idsInUpdate = new Set(forUpdate.map((product) => product.id));
-    const existingIdResponse =  await this.productService_.list(
-      {
-        id: Array.from(idsInUpdate),
-      },
-      {},
-      sharedContext
-    );
-    const existingIds = new Set(existingIdResponse.map((product) => product.id));
-    
-    // Split the forUpdate array into actual updates and creates based on existing IDs
-    const actualForUpdate = forUpdate.filter(product => existingIds.has(product.id));
-    const movedToCreate = forUpdate.filter(product => !existingIds.has(product.id));
-    forCreate.push(...(movedToCreate as ProductTypes.CreateProductDTO[]));
+    if (forUpdate.length > 0) {
+      // since the id is now possible to set from external sources, we need to change the logic here a bit
+      const idsInUpdate = new Set(forUpdate.map((product) => product.id));
+      const existingIdResponse =  await this.productService_.list(
+        {
+          id: Array.from(idsInUpdate),
+        },
+        {},
+        sharedContext
+      );
+      const existingIds = new Set(existingIdResponse.map((product) => product.id));
+      
+      // Split the forUpdate array into actual updates and creates based on existing IDs
+      const actualForUpdate = forUpdate.filter(product => existingIds.has(product.id));
+      const movedToCreate = forUpdate.filter(product => !existingIds.has(product.id));
+      
+      forUpdate = actualForUpdate;
+      forCreate.push(...(movedToCreate as ProductTypes.CreateProductDTO[]));
+    }
 
     let created: ProductTypes.ProductDTO[] = []
     let updated: InferEntityType<typeof Product>[] = []
@@ -1629,8 +1639,8 @@ export default class ProductModuleService
     if (forCreate.length) {
       created = await this.createProducts(forCreate, sharedContext)
     }
-    if (actualForUpdate.length) {
-      updated = await this.updateProducts_(actualForUpdate, sharedContext)
+    if (forUpdate.length) {
+      updated = await this.updateProducts_(forUpdate, sharedContext)
     }
 
     const result = [...created, ...updated]
