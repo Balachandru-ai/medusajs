@@ -81,8 +81,8 @@ export class ProductRepository extends DALUtils.mikroOrmBaseRepositoryFactory(
       variants: any[],
       options: InferEntityType<typeof ProductOption>[]
     ) => void,
-    context: Context = {},
-    expectedOptionIdsMap: Map<string, Set<string>> = new Map()
+    expectedOptionIdsMap: Map<string, Set<string>> = new Map(),
+    context: Context = {}
   ): Promise<InferEntityType<typeof Product>[]> {
     const productsToUpdate_ = deepCopy(productsToUpdate)
     const productIdsToUpdate: string[] = []
