@@ -4,7 +4,7 @@ import {
   MedusaErrorTypes,
 } from "@medusajs/framework/utils"
 import { createStep, StepResponse } from "@medusajs/framework/workflows-sdk"
-import { CreateTranslationDTO, UpdateTranslationDTO } from "@medusajs/types"
+import { CreateTranslationDTO, UpdateTranslationDataDTO, UpdateTranslationDTO } from "@medusajs/types"
 
 export const validateTranslationsStepId = "validate-translations"
 
@@ -13,6 +13,7 @@ export type ValidateTranslationsStepInput =
   | CreateTranslationDTO
   | UpdateTranslationDTO[]
   | UpdateTranslationDTO
+  | UpdateTranslationDataDTO
 
 // TODO: Do we want to validate anything else here?
 export const validateTranslationsStep = createStep(
@@ -24,7 +25,7 @@ export const validateTranslationsStep = createStep(
     } = await query.graph(
       {
         entity: "store",
-        fields: ["supported_locales.*"],
+        fields: ["id", "supported_locales.*"],
         pagination: {
           take: 1,
         },

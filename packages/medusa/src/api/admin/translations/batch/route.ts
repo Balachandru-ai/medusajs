@@ -6,12 +6,12 @@ import {
   FeatureFlag,
 } from "@medusajs/framework/utils"
 import { BatchMethodRequest, HttpTypes } from "@medusajs/types"
+import TranslationFeatureFlag from "../../../../feature-flags/translation"
 import { defaultAdminTranslationFields } from "../query-config"
 import {
   AdminCreateTranslationType,
   AdminUpdateTranslationType,
 } from "../validators"
-import TranslationFeatureFlag from "../../../../feature-flags/translation"
 
 export const POST = async (
   req: AuthenticatedMedusaRequest<
