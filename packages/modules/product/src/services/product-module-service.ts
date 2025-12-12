@@ -1101,6 +1101,10 @@ export default class ProductModuleService
       )
     }
 
+    const dbOptionsMap = new Map<string, InferEntityType<typeof ProductOption>>(
+      dbOptions.map((option) => [option.id, option])
+    )
+
     // Check if any option values are being removed and if they're associated with products
     const removedValueIds = new Set<string>()
     for (const opt of data) {
@@ -1108,7 +1112,7 @@ export default class ProductModuleService
         continue
       }
 
-      const dbOption = dbOptions.find(({ id }) => id === opt.id)
+      const dbOption = dbOptionsMap.get(opt.id)
 
       if (!dbOption) {
         continue
