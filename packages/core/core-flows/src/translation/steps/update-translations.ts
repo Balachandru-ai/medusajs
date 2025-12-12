@@ -1,6 +1,7 @@
 import {
   FilterableTranslationProps,
   ITranslationModuleService,
+  UpdateTranslationDataDTO,
   UpdateTranslationDTO,
 } from "@medusajs/framework/types"
 import {
@@ -22,7 +23,7 @@ export type UpdateTranslationsStepInput =
       /**
        * The data to update in the translations.
        */
-      update: UpdateTranslationDTO
+      update: UpdateTranslationDataDTO
     }
   | {
       translations: UpdateTranslationDTO[]
@@ -36,7 +37,7 @@ export const updateTranslationsStepId = "update-translations"
  * const data = updateTranslationsStep({
  *   selector: {
  *     reference_id: "prod_123",
- *     locale_code: "fr-FR"
+ *     locale: "fr-FR"
  *   },
  *   update: {
  *     translations: { title: "Nouveau titre" }

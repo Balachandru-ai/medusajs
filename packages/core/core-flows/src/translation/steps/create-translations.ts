@@ -14,7 +14,7 @@ export const createTranslationsStepId = "create-translations"
  *   {
  *     reference_id: "prod_123",
  *     reference: "product",
- *     locale_code: "fr-FR",
+ *     locale: "fr-FR",
  *     translations: { title: "Produit", description: "Description du produit" }
  *   }
  * ])

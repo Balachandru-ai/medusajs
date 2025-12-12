@@ -8,6 +8,7 @@ import {
 import { emitEventStep } from "../../common/steps/emit-event"
 import { createTranslationsStep } from "../steps"
 import { validateTranslationsStep } from "../steps"
+import { TranslationWorkflowEvents } from "@medusajs/framework/utils"
 
 export type CreateTranslationsWorkflowInput = {
   translations: CreateTranslationDTO[]
@@ -28,7 +29,7 @@ export const createTranslationsWorkflowId = "create-translations"
  *       {
  *         reference_id: "prod_123",
  *         reference: "product",
- *         locale_code: "fr-FR",
+ *         locale: "fr-FR",
  *         translations: { title: "Produit", description: "Description du produit" }
  *       }
  *     ]
@@ -57,7 +58,7 @@ export const createTranslationsWorkflow = createWorkflow(
     )
 
     emitEventStep({
-      eventName: "translation.created",
+      eventName: TranslationWorkflowEvents.CREATED,
       data: translationIdEvents,
     })
 

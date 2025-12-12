@@ -157,17 +157,15 @@ export class MedusaAppLoader {
    * @param action
    */
   async runModulesMigrations(
-    {
-      moduleNames,
-      action = "run",
-    }:
+    options:
       | {
-          moduleNames?: never
           action: "run"
+          allOrNothing?: boolean
         }
       | {
-          moduleNames: string[]
           action: "revert" | "generate"
+          moduleNames: string[]
+          allOrNothing?: never
         } = {
       action: "run",
     }
@@ -185,14 +183,15 @@ export class MedusaAppLoader {
       injectedDependencies,
       medusaConfigPath: this.#medusaConfigPath,
       cwd: this.#cwd,
+      allOrNothing: options.allOrNothing,
     }
 
-    if (action === "revert") {
-      await MedusaAppMigrateDown(moduleNames!, migrationOptions)
-    } else if (action === "run") {
+    if (options.action === "revert") {
+      await MedusaAppMigrateDown(options.moduleNames!, migrationOptions)
+    } else if (options.action === "run") {
       await MedusaAppMigrateUp(migrationOptions)
-    } else {
-      await MedusaAppMigrateGenerate(moduleNames!, migrationOptions)
+    } else if (options.action === "generate") {
+      await MedusaAppMigrateGenerate(options.moduleNames!, migrationOptions)
     }
   }
 
