@@ -1,6 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod"
 import { AdminStoreLocale, HttpTypes } from "@medusajs/types"
-import { Button, ProgressTabs, toast } from "@medusajs/ui"
+import { Badge, Button, ProgressTabs, Text, toast } from "@medusajs/ui"
 import { ColumnDef } from "@tanstack/react-table"
 import { useMemo, useRef } from "react"
 import { useForm } from "react-hook-form"
@@ -21,7 +21,7 @@ import { useDocumentDirection } from "../../../../../hooks/use-document-directio
 import { REFERENCE_LABEL_MAP } from "../../utils"
 
 /**
- * Schema for a single locale translation (subrow in DataGrid).
+ * Schema for a single locale translation.
  */
 const LocaleTranslationSchema = z.object({
   id: z.string().nullish(),
@@ -50,30 +50,28 @@ export type TranslationsFormSchema = z.infer<typeof TranslationsFormSchema>
 
 /**
  * Row types for the DataGrid.
- * Parent rows are entities, subrows are locale translations.
+ * Parent rows are entities, subrows are translatable fields.
  */
-export type TranslationRow = EntityRow | LocaleRow
+export type TranslationRow = EntityRow | FieldRow
 
 export type EntityRow = {
   _type: "entity"
   reference_id: string
-  subRows: LocaleRow[]
+  subRows: FieldRow[]
 }
 
-export type LocaleRow = {
-  _type: "locale"
+export type FieldRow = {
+  _type: "field"
   reference_id: string
-  locale_code: string
-  locale_name: string
-  id?: string
+  field_name: string
 }
 
 export function isEntityRow(row: TranslationRow): row is EntityRow {
   return row._type === "entity"
 }
 
-export function isLocaleRow(row: TranslationRow): row is LocaleRow {
-  return row._type === "locale"
+export function isFieldRow(row: TranslationRow): row is FieldRow {
+  return row._type === "field"
 }
 
 function initTranslationsFormState(
@@ -123,29 +121,16 @@ function initTranslationsFormState(
 
 function buildTranslationRows(
   references: { id: string; [key: string]: string }[],
-  availableLocales: AdminStoreLocale[],
-  translations: HttpTypes.AdminTranslation[]
+  translatableFields: string[]
 ): TranslationRow[] {
-  // Index existing translations by reference_id:locale_code
-  const existingMap = new Map<string, HttpTypes.AdminTranslation>()
-  for (const t of translations) {
-    existingMap.set(`${t.reference_id}:${t.locale_code}`, t)
-  }
-
   return references.map((reference) => ({
     _type: "entity" as const,
     reference_id: reference.id,
-    subRows: availableLocales.map((locale) => {
-      const key = `${reference.id}:${locale.locale_code}`
-      const existing = existingMap.get(key)
-      return {
-        _type: "locale" as const,
-        reference_id: reference.id,
-        locale_code: locale.locale_code,
-        locale_name: locale.locale.name,
-        id: existing?.id,
-      }
-    }),
+    subRows: translatableFields.map((fieldName) => ({
+      _type: "field" as const,
+      reference_id: reference.id,
+      field_name: fieldName,
+    })),
   }))
 }
 
@@ -210,9 +195,11 @@ const columnHelper = createDataGridHelper<
 
 function useTranslationsGridColumns({
   translatableFields,
+  availableLocales,
   modalFields = [],
 }: {
   translatableFields: string[]
+  availableLocales: AdminStoreLocale[]
   modalFields?: string[]
 }) {
   const { t } = useTranslation()
@@ -220,8 +207,8 @@ function useTranslationsGridColumns({
   const columns: ColumnDef<TranslationRow>[] = useMemo(() => {
     return [
       columnHelper.column({
-        id: "locale",
-        header: t("translations.bulk.mainColumn"),
+        id: "field",
+        header: undefined,
         cell: (context) => {
           const row = context.row.original
 
@@ -234,35 +221,52 @@ function useTranslationsGridColumns({
           return (
             <DataGrid.ReadonlyCell context={context} color="normal">
               <div className="flex h-full w-full items-center gap-x-2 overflow-hidden">
-                <span className="truncate">{row.locale_name}</span>
+                <span className="truncate">
+                  {t(`fields.${row.field_name}`, {
+                    defaultValue: row.field_name,
+                  })}
+                </span>
               </div>
             </DataGrid.ReadonlyCell>
           )
         },
         disableHiding: true,
       }),
-      ...translatableFields.map((fieldName) => {
-        const useModal = modalFields.includes(fieldName)
-
+      ...availableLocales.map((locale) => {
         return columnHelper.column({
-          id: fieldName,
-          header: t(`fields.${fieldName}`, { defaultValue: fieldName }),
+          id: locale.locale_code,
+          header: () => {
+            const isDefault = locale.is_default
+            return (
+              <div className="flex items-center gap-x-2">
+                <Text>{locale.locale.name}</Text>
+                {isDefault && (
+                  <Badge color="blue" size="2xsmall">
+                    {isDefault ? "Default" : ""}
+                  </Badge>
+                )}
+              </div>
+            )
+          },
+          size: 250,
           cell: (context) => {
             const row = context.row.original
 
             if (isEntityRow(row)) {
               return (
-                <DataGrid.ReadonlyCell context={context}>
-                  <span className="text-ui-fg-muted">—</span>
-                </DataGrid.ReadonlyCell>
+                <DataGrid.ReadonlyCell
+                  context={context}
+                ></DataGrid.ReadonlyCell>
               )
             }
+
+            const useModal = modalFields.includes(row.field_name)
 
             if (useModal) {
               return (
                 <DataGrid.ExpandableTextCell
                   context={context}
-                  fieldLabel={fieldName}
+                  fieldLabel={row.field_name}
                 />
               )
             }
@@ -276,13 +280,13 @@ function useTranslationsGridColumns({
               return null
             }
 
-            return `entities.${row.reference_id}.locales.${row.locale_code}.fields.${fieldName}`
+            return `entities.${row.reference_id}.locales.${locale.locale_code}.fields.${row.field_name}`
           },
           type: "text",
         })
       }),
     ]
-  }, [t, translatableFields, modalFields])
+  }, [t, translatableFields, availableLocales, modalFields])
 
   return columns
 }
@@ -325,8 +329,8 @@ export const TranslationsEditForm = ({
   })
 
   const rows = useMemo(
-    () => buildTranslationRows(entities, availableLocales, translations),
-    [entities, availableLocales, translations]
+    () => buildTranslationRows(entities, translatableFields),
+    [entities, translatableFields]
   )
 
   const { mutateAsync, isPending } = useBatchTranslations(entityType)
@@ -366,6 +370,7 @@ export const TranslationsEditForm = ({
 
   const columns = useTranslationsGridColumns({
     translatableFields,
+    availableLocales,
     modalFields,
   })
 
