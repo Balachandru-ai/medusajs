@@ -18,7 +18,7 @@ export const generatedEditDates = {
   "app/products/categories/page.mdx": "2025-05-30T13:28:59.821Z",
   "app/inventory/reservations/page.mdx": "2025-05-30T13:27:25.559Z",
   "app/discounts/manage/page.mdx": "2024-05-03T17:36:38+03:00",
-  "app/products/page.mdx": "2025-05-30T13:29:49.292Z",
+  "app/products/page.mdx": "2025-12-12T08:57:46.224Z",
   "app/inventory/inventory/page.mdx": "2025-05-30T13:27:17.017Z",
   "app/customers/groups/page.mdx": "2025-05-30T13:26:56.820Z",
   "app/orders/manage/page.mdx": "2025-09-09T06:46:05.439Z",
@@ -34,8 +34,8 @@ export const generatedEditDates = {
   "app/orders/payments/page.mdx": "2025-10-09T07:31:59.781Z",
   "app/discounts/page.mdx": "2024-05-03T17:36:38+03:00",
   "app/orders/exchanges/page.mdx": "2025-12-01T09:27:18.971Z",
-  "app/products/create/page.mdx": "2025-05-30T13:29:24.876Z",
-  "app/products/edit/page.mdx": "2025-10-30T11:24:51.589Z",
+  "app/products/create/page.mdx": "2025-12-12T08:48:19.199Z",
+  "app/products/edit/page.mdx": "2025-12-12T08:54:38.796Z",
   "app/products/variants/page.mdx": "2025-10-30T11:26:37.612Z",
   "app/products/create/bundle/page.mdx": "2025-05-30T13:29:15.958Z",
   "app/products/create/multi-part/page.mdx": "2025-11-27T08:28:54.245Z",
@@ -60,5 +60,6 @@ export const generatedEditDates = {
   "app/orders/draft-orders/manage/page.mdx": "2025-08-26T09:47:17.568Z",
   "app/orders/draft-orders/page.mdx": "2025-08-26T09:31:53.784Z",
   "app/settings/locations-and-shipping/shipping-option-types/page.mdx": "2025-08-28T14:03:13.999Z",
-  "app/settings/refund-reasons/page.mdx": "2025-10-09T07:29:52.837Z"
+  "app/settings/refund-reasons/page.mdx": "2025-10-09T07:29:52.837Z",
+  "app/products/options/page.mdx": "2025-12-12T08:48:27.020Z"
 }
