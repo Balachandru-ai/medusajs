@@ -12,7 +12,9 @@ import {
   CreateLocaleDTO,
   CreateTranslationDTO,
   UpdateLocaleDTO,
+  UpdateLocaleDataDTO,
   UpdateTranslationDTO,
+  UpdateTranslationDataDTO,
 } from "./mutations"
 
 /**
@@ -110,7 +112,7 @@ export interface ITranslationModuleService extends IModuleService {
       | UpdateLocaleDTO[]
       | {
           selector: Record<string, any>
-          data: UpdateLocaleDTO | UpdateLocaleDTO[]
+          data: UpdateLocaleDataDTO | UpdateLocaleDataDTO[]
         },
     sharedContext?: Context
   ): Promise<LocaleDTO[]>
@@ -245,7 +247,7 @@ export interface ITranslationModuleService extends IModuleService {
       | UpdateTranslationDTO[]
       | {
           selector: Record<string, any>
-          data: UpdateTranslationDTO | UpdateTranslationDTO[]
+          data: UpdateTranslationDataDTO | UpdateTranslationDataDTO[]
         },
     sharedContext?: Context
   ): Promise<TranslationDTO[]>
