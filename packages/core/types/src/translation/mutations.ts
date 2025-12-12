@@ -19,14 +19,9 @@ export interface CreateLocaleDTO {
 }
 
 /**
- * The attributes to update in the locale.
+ * The data to update in the locale.
  */
-export interface UpdateLocaleDTO {
-  /**
-   * The ID of the locale to update.
-   */
-  id: string
-
+export interface UpdateLocaleDataDTO {
   /**
    * The BCP 47 language tag code of the locale.
    */
@@ -36,6 +31,16 @@ export interface UpdateLocaleDTO {
    * The human-readable name of the locale.
    */
   name?: string
+}
+
+/**
+ * The attributes to update in the locale.
+ */
+export interface UpdateLocaleDTO extends UpdateLocaleDataDTO {
+  /**
+   * The ID of the locale to update.
+   */
+  id: string
 }
 
 /**
@@ -84,14 +89,9 @@ export interface CreateTranslationDTO {
 }
 
 /**
- * The attributes to update in the translation.
+ * The attributes to update in translations matching a selector.
  */
-export interface UpdateTranslationDTO {
-  /**
-   * The ID of the translation to update.
-   */
-  id: string
-
+export interface UpdateTranslationDataDTO {
   /**
    * The ID of the entity being translated.
    */
@@ -111,6 +111,16 @@ export interface UpdateTranslationDTO {
    * The translated fields as key-value pairs.
    */
   translations?: Record<string, unknown>
+}
+
+/**
+ * The attributes to update in the translation.
+ */
+export interface UpdateTranslationDTO extends UpdateTranslationDataDTO {
+  /**
+   * The ID of the translation to update.
+   */
+  id: string
 }
 
 /**

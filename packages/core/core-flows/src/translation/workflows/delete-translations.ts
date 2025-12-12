@@ -5,6 +5,7 @@ import {
 } from "@medusajs/framework/workflows-sdk"
 import { emitEventStep } from "../../common/steps/emit-event"
 import { deleteTranslationsStep } from "../steps"
+import { TranslationWorkflowEvents } from "@medusajs/framework/utils"
 
 export type DeleteTranslationsWorkflowInput = { ids: string[] }
 
@@ -41,7 +42,7 @@ export const deleteTranslationsWorkflow = createWorkflow(
     })
 
     emitEventStep({
-      eventName: "translation.deleted",
+      eventName: TranslationWorkflowEvents.DELETED,
       data: translationIdEvents,
     })
   }
