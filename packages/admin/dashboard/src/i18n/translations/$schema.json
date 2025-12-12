@@ -38,6 +38,9 @@
         "search": {
           "type": "string"
         },
+        "original": {
+            "type": "string"
+        },
         "of": {
           "type": "string"
         },
@@ -194,6 +197,7 @@
         "apply",
         "range",
         "search",
+        "original",
         "of",
         "results",
         "pages",

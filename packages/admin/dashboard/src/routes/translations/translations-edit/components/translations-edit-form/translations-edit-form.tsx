@@ -194,10 +194,12 @@ const columnHelper = createDataGridHelper<
 >()
 
 function useTranslationsGridColumns({
+  entities,
   translatableFields,
   availableLocales,
   modalFields = [],
 }: {
+  entities: { id: string; [key: string]: string }[]
   translatableFields: string[]
   availableLocales: AdminStoreLocale[]
   modalFields?: string[]
@@ -231,6 +233,33 @@ function useTranslationsGridColumns({
           )
         },
         disableHiding: true,
+      }),
+      columnHelper.column({
+        id: "original",
+        header: t("general.original"),
+        cell: (context) => {
+          const row = context.row.original
+
+          if (isEntityRow(row)) {
+            return (
+              <DataGrid.ReadonlyCell context={context}></DataGrid.ReadonlyCell>
+            )
+          }
+
+          const entity = entities.find(
+            (entity) => entity.id === row.reference_id
+          )
+          if (!entity) {
+            return null
+          }
+
+          return (
+            <DataGrid.ReadonlyCell context={context}>
+              {entity[row.field_name]}
+            </DataGrid.ReadonlyCell>
+          )
+        },
+        size: 250,
       }),
       ...availableLocales.map((locale) => {
         return columnHelper.column({
@@ -369,6 +398,7 @@ export const TranslationsEditForm = ({
   })
 
   const columns = useTranslationsGridColumns({
+    entities,
     translatableFields,
     availableLocales,
     modalFields,
