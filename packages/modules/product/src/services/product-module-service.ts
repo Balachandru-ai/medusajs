@@ -2284,8 +2284,8 @@ export default class ProductModuleService
     const updatedProducts = await this.productRepository_.deepUpdate(
       normalizedProducts,
       ProductModuleService.validateVariantOptions,
-      sharedContext,
-      expectedOptionIdsMap
+      expectedOptionIdsMap,
+      sharedContext
     )
 
     if (unlinkPairs.length) {
