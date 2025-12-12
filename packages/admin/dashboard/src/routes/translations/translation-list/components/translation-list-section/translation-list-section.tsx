@@ -1,0 +1,46 @@
+import { Button, Container, Text } from "@medusajs/ui"
+import { Link } from "react-router-dom"
+
+type TranslatableEntity = {
+  icon: React.ReactNode
+  label: string
+  reference: string
+  translatedCount?: number
+  totalCount?: number
+}
+
+type TranslationListSectionProps = {
+  entities: TranslatableEntity[]
+  hasLocales: boolean
+}
+
+export const TranslationListSection = ({
+  entities,
+  hasLocales = false,
+}: TranslationListSectionProps) => {
+  return (
+    <Container className="divide-y p-0">
+      {entities.map((entity) => (
+        <div
+          key={entity.reference}
+          className="grid grid-cols-[250px_1fr_auto] items-center gap-x-4 px-6 py-4"
+        >
+          <Text size="small" weight="plus">
+            {entity.label}
+          </Text>
+          <Text size="small" className="text-ui-fg-subtle">
+            {(entity.translatedCount ?? 0).toLocaleString()} of{" "}
+            {(entity.totalCount ?? 0).toLocaleString()} fields translated
+          </Text>
+          <Link
+            to={`/settings/translations/edit?reference=${entity.reference}`}
+          >
+            <Button variant="secondary" size="small" disabled={!hasLocales}>
+              Edit
+            </Button>
+          </Link>
+        </div>
+      ))}
+    </Container>
+  )
+}

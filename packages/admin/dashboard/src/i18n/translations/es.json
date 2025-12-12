@@ -33,6 +33,7 @@
     "modified": "Modificado",
     "added": "Agregado",
     "removed": "Eliminado",
+    "remaining": "Restantes",
     "admin": "Administrador",
     "store": "Tienda",
     "details": "Detalles",
@@ -2449,10 +2450,19 @@
       "manage": "Gestionar traducciones",
       "manageLocales": "Gestionar idiomas"
     },
-    "subtitle": "Gestiona las traducciones de tus datos en Medusa.",
+    "title": "Traducción de dominios",
+    "subtitle": "Gestiona las traducciones de tus datos en Medusa",
     "bulk": {
       "header": "Editor de Traducciones en Masa",
       "locale": "Idioma"
+    },
+    "activeLocales": {
+      "heading": "Idiomas",
+      "subtitle": "Traducciones activas",
+      "noLocalesTip": "Configura al menos un idioma para empezar a traducir tu información"
+    },
+    "completion": {
+      "heading": "Textos traducidos"
     }
   },
   "store": {

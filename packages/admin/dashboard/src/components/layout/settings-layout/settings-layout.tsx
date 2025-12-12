@@ -25,14 +25,6 @@ const useSettingRoutes = (): INavItem[] => {
 
   return useMemo(
     () => [
-      ...(isTranslationsEnabled
-        ? [
-            {
-              label: t("translations.domain"),
-              to: "/settings/translations",
-            },
-          ]
-        : []),
       {
         label: t("store.domain"),
         to: "/settings/store",
@@ -73,6 +65,14 @@ const useSettingRoutes = (): INavItem[] => {
         label: t("stockLocations.domain"),
         to: "/settings/locations",
       },
+      ...(isTranslationsEnabled
+        ? [
+            {
+              label: t("translations.domain"),
+              to: "/settings/translations",
+            },
+          ]
+        : []),
     ],
     [t, isTranslationsEnabled]
   )

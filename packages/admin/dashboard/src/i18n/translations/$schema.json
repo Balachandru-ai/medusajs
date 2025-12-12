@@ -104,6 +104,9 @@
         "removed": {
           "type": "string"
         },
+        "remaining": {
+            "type": "string"
+        },
         "admin": {
           "type": "string"
         },
@@ -213,6 +216,7 @@
         "modified",
         "added",
         "removed",
+        "remaining",
         "admin",
         "store",
         "details",
@@ -9304,7 +9308,7 @@
               "type": "string"
             },
             "manage": {
-                "type": "string"
+              "type": "string"
             }
           },
           "required": ["manageLocales", "manage"]
@@ -9320,9 +9324,33 @@
             }
           },
           "required": ["header"]
-        }
+        },
+        "activeLocales": {
+          "type": "object",
+          "properties": {
+            "heading": {
+              "type": "string"
+            },
+            "subtitle": {
+              "type": "string"
+            },
+            "noLocalesTip": {
+              "type": "string"
+            }
+          },
+          "required": ["heading", "subtitle", "noLocalesTip"]
+        },
+        "completion": {
+          "type": "object",
+          "properties": {
+            "heading": {
+              "type": "string"
+            }
+          },
+          "required": ["heading"]
+        },
       },
-      "required": ["domain", "actions", "subtitle", "bulk"]
+      "required": ["domain", "actions", "subtitle", "bulk", "completion"]
     },
     "store": {
       "type": "object",

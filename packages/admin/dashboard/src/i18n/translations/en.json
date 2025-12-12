@@ -33,6 +33,7 @@
     "modified": "Modified",
     "added": "Added",
     "removed": "Removed",
+    "remaining": "Left",
     "admin": "Admin",
     "store": "Store",
     "details": "Details",
@@ -2498,10 +2499,19 @@
       "manage": "Manage translations",
       "manageLocales": "Manage locales"
     },
-    "subtitle": "Manage translations of your data in Medusa.",
+    "title": "Translation domains",
+    "subtitle": "Manage translations of your data in Medusa",
     "bulk": {
       "header": "Translations Bulk Editor",
       "mainColumn": "Locale"
+    },
+    "activeLocales": {
+      "heading": "Languages",
+      "subtitle": "Activated translations",
+      "noLocalesTip": "Configure at least one locale to start translating your data"
+    },
+    "completion": {
+      "heading": "Translated strings"
     }
   },
   "store": {
