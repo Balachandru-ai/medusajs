@@ -53,11 +53,5 @@ export async function applyLocale(
     }
   )
 
-  if (store?.supported_locales?.length) {
-    // Use the first locale as the default
-    req.locale = store.supported_locales[0]?.locale_code
-    return next()
-  }
-
   return next()
 }

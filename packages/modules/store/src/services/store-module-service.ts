@@ -227,57 +227,49 @@ export default class StoreModuleService
   ) {
     for (const store of stores) {
       if (store.supported_currencies?.length) {
-        StoreModuleService.validateSupportedItems(
-          store.supported_currencies,
-          (c) => c.currency_code,
+        StoreModuleService.validateUnique(
+          store.supported_currencies.map((currency) => currency.currency_code),
           "currency"
         )
+
+        let seenDefault = false
+        store.supported_currencies.forEach((currency) => {
+          if (currency.is_default) {
+            if (seenDefault) {
+              throw new MedusaError(
+                MedusaError.Types.INVALID_DATA,
+                `Only one default currency is allowed`
+              )
+            }
+            seenDefault = true
+          }
+        })
+
+        if (!seenDefault) {
+          throw new MedusaError(
+            MedusaError.Types.INVALID_DATA,
+            `There should be a default currency set for the store`
+          )
+        }
       }
 
-      // TODO: If we are protecting this module behind a feature flag, we should check if the feature flag is enabled before validating the locales.
       if (store.supported_locales?.length) {
-        StoreModuleService.validateSupportedItems(
-          store.supported_locales,
-          (l) => l.locale_code,
+        StoreModuleService.validateUnique(
+          store.supported_locales.map((locale) => locale.locale_code),
           "locale"
         )
       }
     }
   }
 
-  private static validateSupportedItems<
-    T extends { is_default?: boolean; [key: string]: any }
-  >(items: T[], getCode: (item: T) => string, typeName: string) {
-    const duplicates = getDuplicates(items.map(getCode))
+  private static validateUnique = (items: string[], fieldName: string) => {
+    const duplicates = getDuplicates(items)
 
     if (duplicates.length) {
       throw new MedusaError(
         MedusaError.Types.INVALID_DATA,
-        `Duplicate ${typeName} codes: ${duplicates.join(", ")}`
+        `Duplicate ${fieldName} codes: ${duplicates.join(", ")}`
       )
-    }
-
-    const hasDefaultProperty = items.some((item) => "is_default" in item)
-    if (hasDefaultProperty) {
-      let seenDefault = false
-      items.forEach((item) => {
-        if (item.is_default) {
-          if (seenDefault) {
-            throw new MedusaError(
-              MedusaError.Types.INVALID_DATA,
-              `Only one default ${typeName} is allowed`
-            )
-          }
-          seenDefault = true
-        }
-      })
-
-      if (!seenDefault) {
-        throw new MedusaError(
-          MedusaError.Types.INVALID_DATA,
-          `There should be a default ${typeName} set for the store`
-        )
-      }
     }
   }
 
