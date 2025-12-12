@@ -245,11 +245,9 @@ export default class StoreModuleService
     }
   }
 
-  private static validateSupportedItems<T extends { is_default?: boolean }>(
-    items: T[],
-    getCode: (item: T) => string,
-    typeName: string
-  ) {
+  private static validateSupportedItems<
+    T extends { is_default?: boolean; [key: string]: any }
+  >(items: T[], getCode: (item: T) => string, typeName: string) {
     const duplicates = getDuplicates(items.map(getCode))
 
     if (duplicates.length) {
