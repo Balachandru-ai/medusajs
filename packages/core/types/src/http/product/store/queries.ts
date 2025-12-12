@@ -37,4 +37,8 @@ export interface StoreProductListParams
    * Filter by the product's variants.
    */
   variants?: Pick<StoreProductVariantParams, "options">
+  /**
+   * Filter by the product's option values. Variants must include one of the provided values per option.
+   */
+  option_value_id?: string | string[]
 }
