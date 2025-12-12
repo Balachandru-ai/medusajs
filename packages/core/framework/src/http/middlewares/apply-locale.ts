@@ -1,4 +1,4 @@
-import { ContainerRegistrationKeys, normalizeLocale } from "@medusajs/utils"
+import { normalizeLocale } from "@medusajs/utils"
 import type {
   MedusaNextFunction,
   MedusaRequest,
@@ -34,24 +34,6 @@ export async function applyLocale(
     req.locale = normalizeLocale(headerLocale)
     return next()
   }
-
-  const query = req.scope.resolve(ContainerRegistrationKeys.QUERY)
-  const {
-    data: [store],
-  } = await query.graph(
-    {
-      entity: "store",
-      fields: ["id", "supported_locales"],
-      pagination: {
-        take: 1,
-      },
-    },
-    {
-      cache: {
-        enable: true,
-      },
-    }
-  )
 
   return next()
 }
