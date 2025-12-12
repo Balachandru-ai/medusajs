@@ -20,6 +20,7 @@ import { createAuthenticatedCustomer } from "../../../../modules/helpers/create-
 jest.setTimeout(30000)
 
 medusaIntegrationTestRunner({
+  debug: true,
   testSuite: ({ dbConnection, api, getContainer }) => {
     let store
     let appContainer
@@ -971,7 +972,7 @@ medusaIntegrationTestRunner({
         ])
       })
 
-      it("matches variants that satisfy option value groups across options", async () => {
+      it.only("matches variants that satisfy option value groups across options", async () => {
         const sizeLargeId = getOptionValueId(product, "size", "large")
         const sizeSmallId = getOptionValueId(product, "size", "small")
         const colorGreenId = getOptionValueId(product, "color", "green")
@@ -984,8 +985,11 @@ medusaIntegrationTestRunner({
           { arrayFormat: "repeat" }
         )
 
-        console.log("query", query)
-        console.log("product id", product.id)
+        console.log("product", JSON.stringify(product, null, 2), {
+          sizeLargeId,
+          sizeSmallId,
+          colorGreenId,
+        })
         const response = await api.get(`/store/products?${query}`, storeHeaders)
 
         expect(response.status).toEqual(200)

@@ -319,6 +319,8 @@ export default class ProductModuleService
     const { filters: normalizedFilters, shouldReturnEmpty } =
       await this.applyOptionValueFilter_(filters, sharedContext)
 
+    console.log("normalizedFilters", JSON.stringify(normalizedFilters, null, 2))
+
     if (shouldReturnEmpty) {
       return [[], 0]
     }
@@ -387,40 +389,6 @@ export default class ProductModuleService
     return [serializedProducts, count]
   }
 
-  protected normalizeOptionValueIds_(
-    optionValueId?: ProductTypes.FilterableProductProps["option_value_id"]
-  ): string[] {
-    if (!optionValueId) {
-      return []
-    }
-
-    if (Array.isArray(optionValueId)) {
-      return Array.from(new Set(optionValueId.filter(isDefined)))
-    }
-
-    if (isString(optionValueId)) {
-      return [optionValueId]
-    }
-
-    const normalized: string[] = []
-
-    if (optionValueId?.$in) {
-      normalized.push(
-        ...(Array.isArray(optionValueId.$in)
-          ? (optionValueId.$in as string[])
-          : [optionValueId.$in as string])
-      )
-    } else if (optionValueId?.$eq) {
-      normalized.push(
-        ...(Array.isArray(optionValueId.$eq)
-          ? (optionValueId.$eq as string[])
-          : [optionValueId.$eq as string])
-      )
-    }
-
-    return Array.from(new Set(normalized.filter(isDefined)))
-  }
-
   protected async applyOptionValueFilter_(
     filters?: ProductTypes.FilterableProductProps,
     sharedContext?: Context
@@ -428,21 +396,34 @@ export default class ProductModuleService
     filters?: ProductTypes.FilterableProductProps
     shouldReturnEmpty: boolean
   }> {
-    if (!filters?.option_value_id) {
-      return { filters, shouldReturnEmpty: false }
+    const optionValueFilter = filters?.option_value_id
+
+    if (!optionValueFilter) {
+      return {
+        filters,
+        shouldReturnEmpty: false,
+      }
     }
 
-    const optionValueIds = this.normalizeOptionValueIds_(
-      filters.option_value_id
-    )
-    const updatedFilters: ProductTypes.FilterableProductProps = {
-      ...(filters ?? {}),
-    }
+    const normalizedFilters = {
+      ...(filters || {}),
+    } as ProductTypes.FilterableProductProps
 
-    delete (updatedFilters as any).option_value_id
+    const optionValueIds = Array.isArray(optionValueFilter)
+      ? Array.from(
+          new Set(optionValueFilter.filter((id): id is string => !!id?.length))
+        )
+      : optionValueFilter
+      ? [optionValueFilter]
+      : []
+
+    delete (normalizedFilters as any).option_value_id
 
     if (!optionValueIds.length) {
-      return { filters: updatedFilters, shouldReturnEmpty: true }
+      return {
+        filters: normalizedFilters,
+        shouldReturnEmpty: true,
+      }
     }
 
     const optionValues = await this.productOptionValueService_.list(
@@ -452,11 +433,10 @@ export default class ProductModuleService
     )
 
     if (optionValues.length !== optionValueIds.length) {
-      return { filters: updatedFilters, shouldReturnEmpty: true }
-    }
-
-    if (optionValues.some((ov) => !ov.option_id)) {
-      return { filters: updatedFilters, shouldReturnEmpty: true }
+      return {
+        filters: normalizedFilters,
+        shouldReturnEmpty: true,
+      }
     }
 
     const groupedValues = optionValues.reduce((acc, optionValue) => {
@@ -464,142 +444,34 @@ export default class ProductModuleService
         return acc
       }
 
-      const entry = acc.get(optionValue.option_id) ?? {
-        ids: new Set<string>(),
-        values: new Set<string>(),
-      }
-
-      entry.ids.add(optionValue.id)
-      entry.values.add(optionValue.value)
-
-      acc.set(optionValue.option_id, entry)
+      const values = acc.get(optionValue.option_id) ?? new Set<string>()
+      values.add(optionValue.id)
+      acc.set(optionValue.option_id, values)
 
       return acc
-    }, new Map<string, { ids: Set<string>; values: Set<string> }>())
+    }, new Map<string, Set<string>>())
 
     if (!groupedValues.size) {
-      return { filters: updatedFilters, shouldReturnEmpty: true }
+      return {
+        filters: normalizedFilters,
+        shouldReturnEmpty: true,
+      }
     }
 
-    // When we have multiple option groups (different option_ids), we need to find
-    // variants that have options matching ALL groups. MikroORM's handling of $and
-    // on many-to-many relationships through a parent entity may not work correctly,
-    // so we use a workaround: find variant IDs that match all conditions first,
-    // then get their product IDs and filter products by those IDs.
-    if (groupedValues.size > 1) {
-      // Find variants that have options matching each option group
-      const variantIdsByOption: string[][] = []
-
-      for (const [optionId, { values }] of groupedValues) {
-        const valueArray = Array.from(values)
-        const variants = await this.productVariantService_.list(
-          {
-            options: {
-              option_id: optionId,
-              value:
-                valueArray.length > 1 ? { $in: valueArray } : valueArray[0],
-            },
-          },
-          { select: ["id", "product_id"] },
-          sharedContext
-        )
-        variantIdsByOption.push(variants.map((v) => v.id))
+    const optionFilters = Array.from(groupedValues.entries()).map(
+      ([optionId, values]) => {
+        return { id: Array.from(values) }
       }
+    )
 
-      // Find variants that appear in all groups (intersection)
-      if (variantIdsByOption.length === 0) {
-        return { filters: updatedFilters, shouldReturnEmpty: true }
-      }
+    normalizedFilters.variants = {
+      options: { $and: optionFilters },
+    } as ProductTypes.FilterableProductVariantProps
 
-      const matchingVariantIds = variantIdsByOption.reduce((acc, ids) => {
-        return acc.filter((id) => ids.includes(id))
-      }, variantIdsByOption[0])
-
-      if (matchingVariantIds.length === 0) {
-        return { filters: updatedFilters, shouldReturnEmpty: true }
-      }
-
-      // Get product IDs from matching variants
-      const matchingVariants = await this.productVariantService_.list(
-        { id: { $in: matchingVariantIds } },
-        { select: ["product_id"] },
-        sharedContext
-      )
-      const productIds = Array.from(
-        new Set(
-          matchingVariants
-            .map((v) => v.product_id)
-            .filter((id): id is string => typeof id === "string" && id !== null)
-        )
-      )
-
-      if (productIds.length === 0) {
-        return { filters: updatedFilters, shouldReturnEmpty: true }
-      }
-
-      //TODO: see if we can do query withhout loading ids inmemory first
-
-      // Filter products by the product IDs from matching variants
-      const existingProductIds: string[] = updatedFilters.id
-        ? Array.isArray(updatedFilters.id)
-          ? updatedFilters.id.filter(
-              (id): id is string => typeof id === "string"
-            )
-          : typeof updatedFilters.id === "string"
-          ? [updatedFilters.id]
-          : []
-        : []
-
-      const filteredProductIds =
-        existingProductIds.length > 0
-          ? existingProductIds.filter((id) => productIds.includes(id))
-          : productIds
-
-      if (filteredProductIds.length === 0) {
-        return { filters: updatedFilters, shouldReturnEmpty: true }
-      }
-
-      updatedFilters.id =
-        filteredProductIds.length === 1
-          ? filteredProductIds[0]
-          : filteredProductIds
-
-      // Clear variants filter since we've already applied it via product IDs
-      delete updatedFilters.variants
-
-      return { filters: updatedFilters, shouldReturnEmpty: false }
+    return {
+      filters: normalizedFilters,
+      shouldReturnEmpty: false,
     }
-
-    // For a single option group, use the standard filter structure
-    const existingVariants = updatedFilters.variants ?? {}
-    const existingOptionsFilter = (existingVariants as any).options
-    const optionAndFilters: any[] = []
-
-    if (existingOptionsFilter?.$and) {
-      optionAndFilters.push(...existingOptionsFilter.$and)
-    } else if (existingOptionsFilter) {
-      optionAndFilters.push(existingOptionsFilter)
-    }
-
-    groupedValues.forEach(({ values }, optionId) => {
-      const valueArray = Array.from(values)
-      optionAndFilters.push({
-        option_id: optionId,
-        value: valueArray.length > 1 ? { $in: valueArray } : valueArray[0],
-      })
-    })
-
-    const normalizedVariants = {
-      ...existingVariants,
-      options:
-        optionAndFilters.length > 1
-          ? { $and: optionAndFilters }
-          : optionAndFilters[0],
-    }
-
-    updatedFilters.variants = normalizedVariants
-
-    return { filters: updatedFilters, shouldReturnEmpty: false }
   }
 
   protected getProductFindConfig_(
