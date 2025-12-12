@@ -1235,6 +1235,21 @@ export default class ProductModuleService
     config?: SoftDeleteReturn<TReturnableLinkableKeys>,
     @MedusaContext() sharedContext: Context = {}
   ): Promise<Record<string, string[]> | void> {
+    return await this.softDeleteProductOptions_(
+      primaryKeyValues,
+      config,
+      sharedContext
+    )
+  }
+
+  @InjectTransactionManager()
+  protected async softDeleteProductOptions_<
+    TReturnableLinkableKeys extends string = string
+  >(
+    primaryKeyValues: string | object | string[] | object[],
+    config?: SoftDeleteReturn<TReturnableLinkableKeys>,
+    @MedusaContext() sharedContext: Context = {}
+  ): Promise<Record<string, string[]> | void> {
     const optionIds = Array.isArray(primaryKeyValues)
       ? primaryKeyValues.map((v) => (isString(v) ? v : (v as any).id))
       : [
