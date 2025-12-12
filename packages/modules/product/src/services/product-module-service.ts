@@ -1285,7 +1285,6 @@ export default class ProductModuleService
       const existingPPO = existingPPOMap.get(key)
       const allValues = optionValuesMap.get(pair.product_option_id) || []
 
-      // Determine which values to link
       const valueIds = pair.product_option_value_ids
         ? pair.product_option_value_ids
         : allValues.map((v) => v.id)
@@ -1300,11 +1299,6 @@ export default class ProductModuleService
     })
 
     // Step 6: Use upsertWithReplace to handle all PPO/PPOV operations
-    // This single call handles:
-    // - Creating new PPOs (when no id provided)
-    // - Updating existing PPOs
-    // - Creating new pivot entries (for new value links)
-    // - Deleting old pivot entries (for removed value links)
     const { entities: upsertedPPOs } =
       await this.productProductOptionService_.upsertWithReplace(
         pposToUpsert,
