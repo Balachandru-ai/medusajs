@@ -6,7 +6,6 @@ import { MedusaError, Modules } from "@medusajs/utils"
 jest.setTimeout(50000)
 
 medusaIntegrationTestRunner({
-  env: {},
   testSuite: ({ getContainer }) => {
     describe("Product Options Removal Validation", () => {
       let appContainer
@@ -110,27 +109,18 @@ medusaIntegrationTestRunner({
               product_option_id: option.id,
               product_option_value_ids: remainingValueIds,
             })
-          ).rejects.toThrow(MedusaError)
-
-          await expect(
-            productModule.addProductOptionToProduct({
-              product_id: product.id,
-              product_option_id: option.id,
-              product_option_value_ids: remainingValueIds,
-            })
           ).rejects.toThrow(
             "Cannot unassign option values from product because the following variant(s) are using it"
           )
 
-          try {
-            await productModule.addProductOptionToProduct({
+          const error = await productModule
+            .addProductOptionToProduct({
               product_id: product.id,
               product_option_id: option.id,
               product_option_value_ids: remainingValueIds,
             })
-          } catch (error) {
-            expect((error as MedusaError).message).toContain("Variant S")
-          }
+            .catch((error) => error)
+          expect((error as MedusaError).message).toContain("Variant S")
         })
 
         it("should successfully remove ProductOptionValue when no variants use it", async () => {
@@ -345,19 +335,18 @@ medusaIntegrationTestRunner({
             options: { Size: "M" },
           })
 
-          try {
-            await productModule.removeProductOptionFromProduct({
+          const error = await productModule
+            .removeProductOptionFromProduct({
               product_id: product.id,
               product_option_id: product.options[0].id,
             })
-          } catch (error) {
-            expect(error).toBeInstanceOf(MedusaError)
-            const errorMessage = (error as MedusaError).message
-            // For option removal, we don't include variant names in the error message
-            expect(errorMessage).toBe(
-              "Cannot unassign product option from product which has variants for that option"
-            )
-          }
+            .catch((error) => error)
+          expect(error).toBeInstanceOf(MedusaError)
+          const errorMessage = (error as MedusaError).message
+          // For option removal, we don't include variant names in the error message
+          expect(errorMessage).toBe(
+            "Cannot unassign product option from product which has variants for that option"
+          )
         })
       })
     })
