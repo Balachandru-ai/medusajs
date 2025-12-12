@@ -27,13 +27,13 @@ export const sidebars = [
           },
           {
             type: "link",
-            title: "Architecture",
-            path: "/learn/introduction/architecture",
+            title: "AI Assistants and LLMs",
+            path: "/learn/introduction/build-with-llms-ai",
           },
           {
             type: "link",
-            title: "AI Assistants and LLMs",
-            path: "/learn/introduction/build-with-llms-ai",
+            title: "Architecture",
+            path: "/learn/introduction/architecture",
           },
           {
             type: "link",

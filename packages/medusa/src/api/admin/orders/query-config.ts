@@ -7,6 +7,7 @@ export const defaultAdminOrderFields = [
   "summary",
   "total",
   "metadata",
+  "locale",
   "created_at",
   "updated_at",
 ]
