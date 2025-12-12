@@ -215,19 +215,6 @@ moduleIntegrationTestRunner<IStoreModuleService>({
           expect(updateErr).toEqual("Only one default currency is allowed")
         })
 
-        it("should fail updating locales where there is more than 1 default locale", async function () {
-          const createdStore = await service.createStores(createStoreFixture)
-          const updateErr = await service
-            .updateStores(createdStore.id, {
-              supported_locales: [
-                { locale_code: "en-US", is_default: true },
-                { locale_code: "fr-FR", is_default: true },
-              ],
-            })
-            .catch((err) => err.message)
-
-          expect(updateErr).toEqual("Only one default locale is allowed")
-        })
       })
 
       describe("deleting a store", () => {

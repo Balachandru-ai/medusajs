@@ -54,9 +54,8 @@ export async function applyLocale(
   )
 
   if (store?.supported_locales?.length) {
-    req.locale = store.supported_locales.find(
-      (locale) => locale.is_default
-    )?.locale_code
+    // Use the first locale as the default
+    req.locale = store.supported_locales[0]?.locale_code
     return next()
   }
 

@@ -259,24 +259,27 @@ export default class StoreModuleService
       )
     }
 
-    let seenDefault = false
-    items.forEach((item) => {
-      if (item.is_default) {
-        if (seenDefault) {
-          throw new MedusaError(
-            MedusaError.Types.INVALID_DATA,
-            `Only one default ${typeName} is allowed`
-          )
+    const hasDefaultProperty = items.some((item) => "is_default" in item)
+    if (hasDefaultProperty) {
+      let seenDefault = false
+      items.forEach((item) => {
+        if (item.is_default) {
+          if (seenDefault) {
+            throw new MedusaError(
+              MedusaError.Types.INVALID_DATA,
+              `Only one default ${typeName} is allowed`
+            )
+          }
+          seenDefault = true
         }
-        seenDefault = true
-      }
-    })
+      })
 
-    if (!seenDefault) {
-      throw new MedusaError(
-        MedusaError.Types.INVALID_DATA,
-        `There should be a default ${typeName} set for the store`
-      )
+      if (!seenDefault) {
+        throw new MedusaError(
+          MedusaError.Types.INVALID_DATA,
+          `There should be a default ${typeName} set for the store`
+        )
+      }
     }
   }
 
