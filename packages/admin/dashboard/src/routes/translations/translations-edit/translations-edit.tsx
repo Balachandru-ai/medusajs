@@ -23,12 +23,13 @@ export const TranslationsEdit = () => {
     translations,
     references,
     translatableFields,
+    // fetchNextPage,
+    // isFetchingNextPage,
+    // hasNextPage,
     isPending,
     isError,
     error,
-  } = useReferenceTranslations(reference!, referenceIdParam, {
-    enabled: !!reference,
-  })
+  } = useReferenceTranslations(reference!, referenceIdParam)
 
   const {
     store,
@@ -60,6 +61,9 @@ export const TranslationsEdit = () => {
           // TODO: change this to get it from the entity translation config when we have it
           translatableFields={translatableFields}
           modalFields={translatableFields}
+          //   fetchNextPage={fetchNextPage}
+          //   hasNextPage={hasNextPage}
+          //   isFetchingNextPage={isFetchingNextPage}
         />
       )}
     </RouteFocusModal>

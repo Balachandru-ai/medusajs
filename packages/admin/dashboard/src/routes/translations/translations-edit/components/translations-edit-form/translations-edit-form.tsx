@@ -93,14 +93,10 @@ function initTranslationsFormState(
     for (const locale of availableLocales) {
       const key = `${reference.id}:${locale.locale_code}`
       const existing = existingMap.get(key)
-      const isDefaultLocale = locale.is_default
 
       const fields: Record<string, string> = {}
       for (const fieldName of translatableFields) {
-        const fieldValue = isDefaultLocale
-          ? (existing?.translations?.[fieldName] as string) ??
-            reference[fieldName]
-          : (existing?.translations?.[fieldName] as string) ?? ""
+        const fieldValue = (existing?.translations?.[fieldName] as string) ?? ""
         fields[fieldName] = fieldValue
       }
 
@@ -210,6 +206,7 @@ function useTranslationsGridColumns({
     return [
       columnHelper.column({
         id: "field",
+        name: "field",
         header: undefined,
         cell: (context) => {
           const row = context.row.original
@@ -236,6 +233,7 @@ function useTranslationsGridColumns({
       }),
       columnHelper.column({
         id: "original",
+        name: "original",
         header: t("general.original"),
         cell: (context) => {
           const row = context.row.original
@@ -259,25 +257,12 @@ function useTranslationsGridColumns({
             </DataGrid.ReadonlyCell>
           )
         },
-        size: 250,
       }),
       ...availableLocales.map((locale) => {
         return columnHelper.column({
           id: locale.locale_code,
-          header: () => {
-            const isDefault = locale.is_default
-            return (
-              <div className="flex items-center gap-x-2">
-                <Text>{locale.locale.name}</Text>
-                {isDefault && (
-                  <Badge color="blue" size="2xsmall">
-                    {isDefault ? "Default" : ""}
-                  </Badge>
-                )}
-              </div>
-            )
-          },
-          size: 250,
+          name: locale.locale.name,
+          header: () => locale.locale.name,
           cell: (context) => {
             const row = context.row.original
 
@@ -327,6 +312,9 @@ type TranslationsEditFormProps = {
   availableLocales: AdminStoreLocale[]
   translatableFields: string[]
   modalFields?: string[]
+  //   fetchNextPage: () => void
+  //   hasNextPage: boolean
+  //   isFetchingNextPage: boolean
 }
 
 export const TranslationsEditForm = ({
@@ -336,12 +324,16 @@ export const TranslationsEditForm = ({
   availableLocales,
   translatableFields,
   modalFields = [],
-}: TranslationsEditFormProps) => {
+}: //   fetchNextPage,
+//   hasNextPage,
+//   isFetchingNextPage,
+TranslationsEditFormProps) => {
   const { t } = useTranslation()
   const { handleSuccess, setCloseOnEscape } = useRouteModal()
   const direction = useDocumentDirection()
 
   const entities = useMemo(() => references, [references])
+  //   const totalCount = useMemo(() => references.length, [references])
 
   const initialState = useRef(
     initTranslationsFormState(
@@ -436,6 +428,10 @@ export const TranslationsEditForm = ({
                 }}
                 state={form}
                 onEditingChange={(editing) => setCloseOnEscape(!editing)}
+                // totalRowCount={totalCount}
+                // onFetchMore={fetchNextPage}
+                // isFetchingMore={isFetchingNextPage}
+                // hasNextPage={hasNextPage}
               />
             </ProgressTabs.Content>
           </RouteFocusModal.Body>
