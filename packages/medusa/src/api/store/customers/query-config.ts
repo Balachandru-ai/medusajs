@@ -18,6 +18,7 @@ export const retrieveTransformQueryConfig = {
   allowed: [
     ...defaultStoreCustomersFields.map((f) => f.replace("*", "")),
     "orders",
+    "groups",
   ],
   isList: false,
 }
