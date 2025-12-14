@@ -312,9 +312,10 @@ type TranslationsEditFormProps = {
   availableLocales: AdminStoreLocale[]
   translatableFields: string[]
   modalFields?: string[]
-  //   fetchNextPage: () => void
-  //   hasNextPage: boolean
-  //   isFetchingNextPage: boolean
+  fetchNextPage: () => void
+  hasNextPage: boolean
+  isFetchingNextPage: boolean
+  referenceCount: number
 }
 
 export const TranslationsEditForm = ({
@@ -324,16 +325,20 @@ export const TranslationsEditForm = ({
   availableLocales,
   translatableFields,
   modalFields = [],
-}: //   fetchNextPage,
-//   hasNextPage,
-//   isFetchingNextPage,
-TranslationsEditFormProps) => {
+  fetchNextPage,
+  hasNextPage,
+  isFetchingNextPage,
+  referenceCount,
+}: TranslationsEditFormProps) => {
   const { t } = useTranslation()
   const { handleSuccess, setCloseOnEscape } = useRouteModal()
   const direction = useDocumentDirection()
 
   const entities = useMemo(() => references, [references])
-  //   const totalCount = useMemo(() => references.length, [references])
+  const totalCount = useMemo(
+    () => referenceCount * (translatableFields.length + 1),
+    [referenceCount, translatableFields]
+  )
 
   const initialState = useRef(
     initTranslationsFormState(
@@ -428,10 +433,10 @@ TranslationsEditFormProps) => {
                 }}
                 state={form}
                 onEditingChange={(editing) => setCloseOnEscape(!editing)}
-                // totalRowCount={totalCount}
-                // onFetchMore={fetchNextPage}
-                // isFetchingMore={isFetchingNextPage}
-                // hasNextPage={hasNextPage}
+                totalRowCount={totalCount}
+                onFetchMore={fetchNextPage}
+                isFetchingMore={isFetchingNextPage}
+                hasNextPage={hasNextPage}
               />
             </ProgressTabs.Content>
           </RouteFocusModal.Body>
