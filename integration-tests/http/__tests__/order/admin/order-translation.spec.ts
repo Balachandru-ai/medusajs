@@ -33,8 +33,6 @@ medusaIntegrationTestRunner({
       let shippingProfile: { id: string }
       let stockLocation: { id: string }
       let shippingOption: { id: string }
-      let returnShippingOption: { id: string }
-      let outboundShippingOption: { id: string }
       let inventoryItem: { id: string }
 
       beforeAll(async () => {
@@ -62,7 +60,7 @@ medusaIntegrationTestRunner({
         )
         await storeModule.updateStores(defaultStore.id, {
           supported_locales: [
-            { locale_code: "en-US", is_default: true },
+            { locale_code: "en-US" },
             { locale_code: "fr-FR" },
             { locale_code: "de-DE" },
           ],
