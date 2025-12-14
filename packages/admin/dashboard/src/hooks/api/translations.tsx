@@ -28,7 +28,7 @@ export const useReferenceTranslations = (
   referenceId?: string | string[],
   options?: Omit<
     UseInfiniteQueryOptions<any, FetchError, any, any, QueryKey, number>,
-    "queryFn" | "queryKey"
+    "queryFn" | "queryKey" | "initialPageParam" | "getNextPageParam"
   >
 ) => {
   const referenceHookMap = new Map<

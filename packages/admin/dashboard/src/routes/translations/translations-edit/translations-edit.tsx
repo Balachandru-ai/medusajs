@@ -4,6 +4,7 @@ import { TranslationsEditForm } from "./components/translations-edit-form"
 import { useEffect } from "react"
 import { RouteFocusModal } from "../../../components/modals"
 import { useFeatureFlag } from "../../../providers/feature-flag-provider"
+import { keepPreviousData } from "@tanstack/react-query"
 
 export const TranslationsEdit = () => {
   const isTranslationsEnabled = useFeatureFlag("translation")
@@ -30,7 +31,9 @@ export const TranslationsEdit = () => {
     isPending,
     isError,
     error,
-  } = useReferenceTranslations(reference!, referenceIdParam)
+  } = useReferenceTranslations(reference!, referenceIdParam, {
+    placeholderData: keepPreviousData,
+  })
 
   const {
     store,
