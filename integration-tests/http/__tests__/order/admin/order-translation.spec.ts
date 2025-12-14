@@ -33,6 +33,8 @@ medusaIntegrationTestRunner({
       let shippingProfile: { id: string }
       let stockLocation: { id: string }
       let shippingOption: { id: string }
+      let returnShippingOption: { id: string }
+      let outboundShippingOption: { id: string }
       let inventoryItem: { id: string }
 
       beforeAll(async () => {
