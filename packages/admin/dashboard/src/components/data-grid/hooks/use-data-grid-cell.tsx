@@ -202,7 +202,7 @@ export const useDataGridCell = <TData, TValue>({
 
   useEffect(() => {
     if (isAnchor && !containerRef.current?.contains(document.activeElement)) {
-      containerRef.current?.focus()
+      containerRef.current?.focus({ preventScroll: true })
     }
   }, [isAnchor])
 
