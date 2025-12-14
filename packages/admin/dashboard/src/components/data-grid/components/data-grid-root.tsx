@@ -232,105 +232,53 @@ export const DataGridRoot = <
     }
   }, [onFetchMore, hasNextPage, isFetchingMore, visibleRows.length])
 
-  // Find the actual scrolling ancestor element
-  const getScrollParent = useCallback(
-    (element: HTMLElement | null): HTMLElement | null => {
-      if (!element) return null
-
-      let parent = element.parentElement
-      while (parent) {
-        const { overflow, overflowY } = getComputedStyle(parent)
-        console.log("[DataGridRoot] Checking scroll parent", {
-          parent: parent.tagName,
-        })
-        if (
-          overflow === "auto" ||
-          overflow === "scroll" ||
-          overflowY === "auto" ||
-          overflowY === "scroll"
-        ) {
-          // Check if it actually has a scrollbar
-          if (parent.scrollHeight > parent.clientHeight) {
-            console.log("[DataGridRoot] Found scroll parent", {
-              parent,
-            })
-            return parent
-          }
-        }
-        parent = parent.parentElement
-      }
-      return null
-    },
-    []
-  )
-
-  // Track if we have data loaded (to re-run scroll setup)
   const hasData = visibleRows.length > 0
 
-  // Attach scroll listener
+  const handleScroll = useCallback(() => {
+    const { onFetchMore, hasNextPage, isFetchingMore, loadedRowCount } =
+      lazyLoadingRefs.current
+
+    if (!onFetchMore || !hasNextPage || isFetchingMore) {
+      return
+    }
+
+    const scrollElement = containerRef.current
+
+    const { scrollTop, clientHeight } = scrollElement!
+    const loadedHeight = loadedRowCount * ROW_HEIGHT
+    const viewportBottom = scrollTop + clientHeight
+    const fetchThreshold = loadedHeight - ROW_HEIGHT * 10
+
+    if (viewportBottom >= fetchThreshold) {
+      onFetchMore()
+    }
+  }, [lazyLoadingRefs, containerRef])
+
   useEffect(() => {
     if (!isLazyMode || !hasData) {
       return
     }
-    console.log("[DataGridRoot] Setting up scroll listener")
+
     const container = containerRef.current
     if (!container) {
       return
     }
 
-    // Give the DOM a moment to update after data loads
     const timeoutId = setTimeout(() => {
-      // Try the container first, then find scrolling parent
-      let scrollElement: HTMLElement | null = container
-      if (container.scrollHeight <= container.clientHeight) {
-        scrollElement = getScrollParent(container)
-      }
-      console.log("[DataGridRoot] Scroll element", {
-        scrollElement: scrollElement?.tagName,
-      })
+      const scrollElement: HTMLElement | null = containerRef.current
       if (!scrollElement) {
         return
       }
 
-      const handleScroll = () => {
-        const { onFetchMore, hasNextPage, isFetchingMore, loadedRowCount } =
-          lazyLoadingRefs.current
-
-        if (!onFetchMore || !hasNextPage || isFetchingMore) {
-          return
-        }
-
-        const { scrollTop, clientHeight } = scrollElement!
-        const loadedHeight = loadedRowCount * ROW_HEIGHT
-        const viewportBottom = scrollTop + clientHeight
-        const fetchThreshold = loadedHeight - ROW_HEIGHT * 10
-
-        if (viewportBottom >= fetchThreshold) {
-          console.log("[DataGridRoot] ✅ Fetching more data")
-          onFetchMore()
-        }
-      }
-
       scrollElement.addEventListener("scroll", handleScroll)
-
-      // Store cleanup function
-      const cleanup = () => {
-        scrollElement?.removeEventListener("scroll", handleScroll)
-      }
-
-      ;(container as any).__scrollCleanup = cleanup
     }, 100)
 
     return () => {
-      console.log("[DataGridRoot] Cleaning up scroll listener")
       clearTimeout(timeoutId)
-      const cleanup = (container as any).__scrollCleanup
-      if (cleanup) {
-        cleanup()
-        delete (container as any).__scrollCleanup
-      }
+      const scrollElement = containerRef.current
+      scrollElement?.removeEventListener("scroll", handleScroll)
     }
-  }, [isLazyMode, hasData, getScrollParent])
+  }, [isLazyMode, hasData])
 
   const columnVirtualizer = useVirtualizer({
     count: visibleColumns.length,
@@ -1018,10 +966,10 @@ const DataGridCell = <TData,>({
 type DataGridRowProps<TData> = {
   row: Row<TData>
   rowIndex: number
-  virtualRow: VirtualItem<Element>
+  virtualRow: VirtualItem
   virtualPaddingLeft?: number
   virtualPaddingRight?: number
-  virtualColumns: VirtualItem<Element>[]
+  virtualColumns: VirtualItem[]
   flatColumns: Column<TData, unknown>[]
   anchor: DataGridCoordinates | null
   onDragToFillStart: (e: React.MouseEvent<HTMLElement>) => void
@@ -1106,10 +1054,10 @@ const DataGridRow = <TData,>({
  * Displays placeholder cells while data is being fetched.
  */
 type DataGridRowSkeletonProps = {
-  virtualRow: VirtualItem<Element>
+  virtualRow: VirtualItem
   virtualPaddingLeft?: number
   virtualPaddingRight?: number
-  virtualColumns: VirtualItem<Element>[]
+  virtualColumns: VirtualItem[]
 }
 
 const DataGridRowSkeleton = ({
