@@ -51,7 +51,7 @@ import { isCellMatch, isSpecialFocusKey } from "../utils"
 import { DataGridKeyboardShortcutModal } from "./data-grid-keyboard-shortcut-modal"
 export interface DataGridRootProps<
   TData,
-  TFieldValues extends FieldValues = FieldValues,
+  TFieldValues extends FieldValues = FieldValues
 > {
   data?: TData[]
   columns: ColumnDef<TData>[]
@@ -60,6 +60,19 @@ export interface DataGridRootProps<
   onEditingChange?: (isEditing: boolean) => void
   disableInteractions?: boolean
   multiColumnSelection?: boolean
+  /**
+   * Lazy loading props - when totalRowCount is provided, the grid enters lazy loading mode.
+   * In this mode, the virtualizer will size based on totalRowCount and trigger onFetchMore
+   * when the user scrolls near the end of loaded data.
+   */
+  /** Total count of rows for scroll sizing (enables lazy loading mode when provided) */
+  totalRowCount?: number
+  /** Called when more data should be fetched */
+  onFetchMore?: () => void
+  /** Whether more data is currently being fetched */
+  isFetchingMore?: boolean
+  /** Whether there is more data to fetch */
+  hasNextPage?: boolean
 }
 
 const ROW_HEIGHT = 40
@@ -97,7 +110,7 @@ const getCommonPinningStyles = <TData,>(
 
 export const DataGridRoot = <
   TData,
-  TFieldValues extends FieldValues = FieldValues,
+  TFieldValues extends FieldValues = FieldValues
 >({
   data = [],
   columns,
@@ -106,7 +119,13 @@ export const DataGridRoot = <
   onEditingChange,
   disableInteractions,
   multiColumnSelection = false,
+  totalRowCount,
+  onFetchMore,
+  isFetchingMore,
+  hasNextPage,
 }: DataGridRootProps<TData, TFieldValues>) => {
+  // TODO: remove once everything is lazy loaded
+  const isLazyMode = totalRowCount !== undefined
   const containerRef = useRef<HTMLDivElement>(null)
 
   const { redo, undo, execute } = useCommandHistory()
@@ -163,8 +182,10 @@ export const DataGridRoot = <
   )
   const visibleColumns = grid.getVisibleLeafColumns()
 
+  const effectiveRowCount = isLazyMode ? totalRowCount! : visibleRows.length
+
   const rowVirtualizer = useVirtualizer({
-    count: visibleRows.length,
+    count: effectiveRowCount,
     estimateSize: () => ROW_HEIGHT,
     getScrollElement: () => containerRef.current,
     overscan: 5,
@@ -188,6 +209,128 @@ export const DataGridRoot = <
     },
   })
   const virtualRows = rowVirtualizer.getVirtualItems()
+
+  /**
+   * Lazy loading scroll detection.
+   * When the user scrolls near the end of loaded data, trigger onFetchMore.
+   * We use refs to get latest values in the scroll handler without re-attaching.
+   */
+  const lazyLoadingRefs = useRef({
+    onFetchMore,
+    hasNextPage,
+    isFetchingMore,
+    loadedRowCount: visibleRows.length,
+  })
+
+  // Keep refs updated
+  useEffect(() => {
+    lazyLoadingRefs.current = {
+      onFetchMore,
+      hasNextPage,
+      isFetchingMore,
+      loadedRowCount: visibleRows.length,
+    }
+  }, [onFetchMore, hasNextPage, isFetchingMore, visibleRows.length])
+
+  // Find the actual scrolling ancestor element
+  const getScrollParent = useCallback(
+    (element: HTMLElement | null): HTMLElement | null => {
+      if (!element) return null
+
+      let parent = element.parentElement
+      while (parent) {
+        const { overflow, overflowY } = getComputedStyle(parent)
+        console.log("[DataGridRoot] Checking scroll parent", {
+          parent: parent.tagName,
+        })
+        if (
+          overflow === "auto" ||
+          overflow === "scroll" ||
+          overflowY === "auto" ||
+          overflowY === "scroll"
+        ) {
+          // Check if it actually has a scrollbar
+          if (parent.scrollHeight > parent.clientHeight) {
+            console.log("[DataGridRoot] Found scroll parent", {
+              parent,
+            })
+            return parent
+          }
+        }
+        parent = parent.parentElement
+      }
+      return null
+    },
+    []
+  )
+
+  // Track if we have data loaded (to re-run scroll setup)
+  const hasData = visibleRows.length > 0
+
+  // Attach scroll listener
+  useEffect(() => {
+    if (!isLazyMode || !hasData) {
+      return
+    }
+    console.log("[DataGridRoot] Setting up scroll listener")
+    const container = containerRef.current
+    if (!container) {
+      return
+    }
+
+    // Give the DOM a moment to update after data loads
+    const timeoutId = setTimeout(() => {
+      // Try the container first, then find scrolling parent
+      let scrollElement: HTMLElement | null = container
+      if (container.scrollHeight <= container.clientHeight) {
+        scrollElement = getScrollParent(container)
+      }
+      console.log("[DataGridRoot] Scroll element", {
+        scrollElement: scrollElement?.tagName,
+      })
+      if (!scrollElement) {
+        return
+      }
+
+      const handleScroll = () => {
+        const { onFetchMore, hasNextPage, isFetchingMore, loadedRowCount } =
+          lazyLoadingRefs.current
+
+        if (!onFetchMore || !hasNextPage || isFetchingMore) {
+          return
+        }
+
+        const { scrollTop, clientHeight } = scrollElement!
+        const loadedHeight = loadedRowCount * ROW_HEIGHT
+        const viewportBottom = scrollTop + clientHeight
+        const fetchThreshold = loadedHeight - ROW_HEIGHT * 10
+
+        if (viewportBottom >= fetchThreshold) {
+          console.log("[DataGridRoot] ✅ Fetching more data")
+          onFetchMore()
+        }
+      }
+
+      scrollElement.addEventListener("scroll", handleScroll)
+
+      // Store cleanup function
+      const cleanup = () => {
+        scrollElement?.removeEventListener("scroll", handleScroll)
+      }
+
+      ;(container as any).__scrollCleanup = cleanup
+    }, 100)
+
+    return () => {
+      console.log("[DataGridRoot] Cleaning up scroll listener")
+      clearTimeout(timeoutId)
+      const cleanup = (container as any).__scrollCleanup
+      if (cleanup) {
+        cleanup()
+        delete (container as any).__scrollCleanup
+      }
+    }
+  }, [isLazyMode, hasData, getScrollParent])
 
   const columnVirtualizer = useVirtualizer({
     count: visibleColumns.length,
@@ -650,6 +793,20 @@ export const DataGridRoot = <
               >
                 {virtualRows.map((virtualRow) => {
                   const row = visibleRows[virtualRow.index] as Row<TData>
+
+                  // In lazy mode, rows beyond loaded data show as skeleton
+                  if (!row) {
+                    return (
+                      <DataGridRowSkeleton
+                        key={`skeleton-${virtualRow.index}`}
+                        virtualRow={virtualRow}
+                        virtualColumns={virtualColumns}
+                        virtualPaddingLeft={virtualPaddingLeft}
+                        virtualPaddingRight={virtualPaddingRight}
+                      />
+                    )
+                  }
+
                   const rowIndex = flatRows.findIndex((r) => r.id === row.id)
 
                   return (
@@ -934,6 +1091,80 @@ const DataGridRow = <TData,>({
 
         return acc
       }, [] as ReactNode[])}
+      {virtualPaddingRight ? (
+        <div
+          role="presentation"
+          style={{ display: "flex", width: virtualPaddingRight }}
+        />
+      ) : null}
+    </div>
+  )
+}
+
+/**
+ * Skeleton row component for lazy loading.
+ * Displays placeholder cells while data is being fetched.
+ */
+type DataGridRowSkeletonProps = {
+  virtualRow: VirtualItem<Element>
+  virtualPaddingLeft?: number
+  virtualPaddingRight?: number
+  virtualColumns: VirtualItem<Element>[]
+}
+
+const DataGridRowSkeleton = ({
+  virtualRow,
+  virtualPaddingLeft,
+  virtualPaddingRight,
+  virtualColumns,
+}: DataGridRowSkeletonProps) => {
+  return (
+    <div
+      role="row"
+      aria-rowindex={virtualRow.index}
+      style={{
+        transform: `translateY(${virtualRow.start}px)`,
+      }}
+      className="bg-ui-bg-subtle txt-compact-small absolute flex h-10 w-full"
+    >
+      {virtualPaddingLeft ? (
+        <div
+          role="presentation"
+          style={{ display: "flex", width: virtualPaddingLeft }}
+        />
+      ) : null}
+      {virtualColumns.map((vc, index, array) => {
+        const previousVC = array[index - 1]
+        const elements: ReactNode[] = []
+
+        if (previousVC && vc.index !== previousVC.index + 1) {
+          elements.push(
+            <div
+              key={`padding-${previousVC.index}-${vc.index}`}
+              role="presentation"
+              style={{
+                display: "flex",
+                width: `${vc.start - previousVC.end}px`,
+              }}
+            />
+          )
+        }
+
+        elements.push(
+          <div
+            key={`skeleton-cell-${vc.index}`}
+            role="gridcell"
+            style={{ width: vc.size }}
+            className="relative flex items-center border-b border-r p-0 outline-none"
+          >
+            <div className="flex h-full w-full items-center px-4">
+              <div className="bg-ui-bg-component h-4 w-3/4 animate-pulse rounded" />
+            </div>
+          </div>
+        )
+
+        return elements
+      })}
       {virtualPaddingRight ? (
         <div
           role="presentation"

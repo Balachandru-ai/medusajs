@@ -19,9 +19,17 @@ interface DataGridProps<TData, TFieldValues extends FieldValues = FieldValues>
 
 const _DataGrid = <TData, TFieldValues extends FieldValues = FieldValues>({
   isLoading,
+  // Lazy loading props - passed through to DataGridRoot
+  totalRowCount,
+  onFetchMore,
+  isFetchingMore,
+  hasNextPage,
   ...props
 }: DataGridProps<TData, TFieldValues>) => {
-  return isLoading ? (
+  // TODO: remove once everything is lazy loaded
+  const isLazyMode = totalRowCount !== undefined
+
+  return isLoading && !isLazyMode ? (
     <DataGridSkeleton
       columns={props.columns}
       rows={
@@ -29,7 +37,13 @@ const _DataGrid = <TData, TFieldValues extends FieldValues = FieldValues>({
       }
     />
   ) : (
-    <DataGridRoot {...props} />
+    <DataGridRoot
+      {...props}
+      totalRowCount={totalRowCount}
+      onFetchMore={onFetchMore}
+      isFetchingMore={isFetchingMore}
+      hasNextPage={hasNextPage}
+    />
   )
 }
 
