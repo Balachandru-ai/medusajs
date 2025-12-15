@@ -76,6 +76,9 @@ const formatError = (err: ZodError) => {
       case "invalid_value": {
         // In Zod v4, invalid_literal and invalid_enum_value are now invalid_value
         const invalidValueIssue = issue as ZodIssueInvalidValue
+        if (invalidValueIssue.input === undefined) {
+          return `Field '${formatPath(issue)}' is required`
+        }
         if (invalidValueIssue.values) {
           return `Expected: '${invalidValueIssue.values.join(
             ", "
