@@ -352,6 +352,12 @@ export function getRouteMap({
                 {
                   path: "",
                   lazy: () => import("../../routes/orders/order-list"),
+                  children: [
+                    {
+                      path: "export",
+                      lazy: () => import("../../routes/orders/order-export"),
+                    },
+                  ],
                 },
                 {
                   path: ":id",
