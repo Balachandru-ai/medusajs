@@ -1,10 +1,10 @@
 import { medusaIntegrationTestRunner } from "@medusajs/test-utils"
+import { MedusaContainer } from "@medusajs/types"
+import { Modules } from "@medusajs/utils"
 import {
   adminHeaders,
   createAdminUser,
 } from "../../../../helpers/create-admin-user"
-import { MedusaContainer } from "@medusajs/types"
-import { Modules } from "@medusajs/utils"
 
 jest.setTimeout(100000)
 
@@ -32,7 +32,7 @@ medusaIntegrationTestRunner({
         )
         await storeModule.updateStores(defaultStore.id, {
           supported_locales: [
-            { locale_code: "en-US", is_default: true },
+            { locale_code: "en-US" },
             { locale_code: "fr-FR" },
             { locale_code: "de-DE" },
           ],
