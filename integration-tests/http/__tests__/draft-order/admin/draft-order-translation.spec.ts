@@ -45,7 +45,7 @@ medusaIntegrationTestRunner({
         )
         await storeModule.updateStores(defaultStore.id, {
           supported_locales: [
-            { locale_code: "en-US", is_default: true },
+            { locale_code: "en-US" },
             { locale_code: "fr-FR" },
             { locale_code: "de-DE" },
           ],
