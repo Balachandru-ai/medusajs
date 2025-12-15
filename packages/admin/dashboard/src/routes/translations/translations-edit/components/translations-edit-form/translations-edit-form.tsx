@@ -18,7 +18,6 @@ import {
 import { KeyboundForm } from "../../../../../components/utilities/keybound-form"
 import { useBatchTranslations } from "../../../../../hooks/api/translations"
 import { useDocumentDirection } from "../../../../../hooks/use-document-direction"
-import { REFERENCE_LABEL_MAP } from "../../utils"
 
 /**
  * Schema for a single locale translation.
@@ -441,7 +440,10 @@ export const TranslationsEditForm = ({
             <div className="-my-2 w-full border-l">
               <ProgressTabs.List className="justify-start-start flex w-full items-center">
                 <ProgressTabs.Trigger value={entityType}>
-                  {REFERENCE_LABEL_MAP[entityType]}
+                  {entityType
+                    .split("_")
+                    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+                    .join(" ")}
                 </ProgressTabs.Trigger>
               </ProgressTabs.List>
             </div>
