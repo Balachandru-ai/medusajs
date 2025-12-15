@@ -14,7 +14,15 @@ export const GET = async (req: MedusaRequest, res: MedusaResponse) => {
     },
   })
 
+  const locales = store?.supported_locales.reduce((acc, locale) => {
+    acc.push({
+      code: locale.locale_code,
+      name: locale.locale.name,
+    })
+    return acc
+  }, [])
+
   res.json({
-    locales: store?.supported_locales ?? [],
+    locales,
   })
 }

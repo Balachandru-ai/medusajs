@@ -53,27 +53,18 @@ medusaIntegrationTestRunner({
           expect(response.data.locales).toHaveLength(3)
           expect(response.data.locales).toEqual(
             expect.arrayContaining([
-              expect.objectContaining({
-                locale_code: "en-US",
-                locale: expect.objectContaining({
-                  code: "en-US",
-                  name: expect.any(String),
-                }),
-              }),
-              expect.objectContaining({
-                locale_code: "fr-FR",
-                locale: expect.objectContaining({
-                  code: "fr-FR",
-                  name: expect.any(String),
-                }),
-              }),
-              expect.objectContaining({
-                locale_code: "de-DE",
-                locale: expect.objectContaining({
-                  code: "de-DE",
-                  name: expect.any(String),
-                }),
-              }),
+              {
+                code: "en-US",
+                name: expect.any(String),
+              },
+              {
+                code: "fr-FR",
+                name: expect.any(String),
+              },
+              {
+                code: "de-DE",
+                name: expect.any(String),
+              },
             ])
           )
         })
