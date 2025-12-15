@@ -13,9 +13,13 @@ const formatPath = (issue: ZodIssue) => {
 const formatInvalidType = (issues: ZodIssue[]) => {
   const expected = issues
     .map((i) => {
-      // Unforutnately the zod library doesn't distinguish between a wrong type and a required field, which we want to handle differently
-      if (i.code === "invalid_type" && i.message !== "Required") {
-        return (i as ZodIssueInvalidType).expected
+      // In Zod v4, we detect required fields by checking if input is undefined
+      // A wrong type error has a non-undefined input value
+      if (i.code === "invalid_type") {
+        const invalidTypeIssue = i as ZodIssueInvalidType
+        if (invalidTypeIssue.input !== undefined) {
+          return invalidTypeIssue.expected
+        }
       }
       return
     })
@@ -35,8 +39,12 @@ const formatInvalidType = (issues: ZodIssue[]) => {
 const formatRequiredField = (issues: ZodIssue[]) => {
   const expected = issues
     .map((i) => {
-      if (i.code === "invalid_type" && i.message === "Required") {
-        return (i as ZodIssueInvalidType).expected
+      // In Zod v4, required fields have input === undefined
+      if (i.code === "invalid_type") {
+        const invalidTypeIssue = i as ZodIssueInvalidType
+        if (invalidTypeIssue.input === undefined) {
+          return invalidTypeIssue.expected
+        }
       }
       return
     })
