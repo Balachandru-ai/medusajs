@@ -63,6 +63,7 @@ import {
 } from "../types"
 import { joinerConfig } from "./../joiner-config"
 import { eventBuilders } from "../utils/events"
+import { buildOptionValueFilterQuery } from "../utils/build-option-value-filter-query"
 
 type InjectedDependencies = {
   baseRepository: DAL.RepositoryService
@@ -319,8 +320,6 @@ export default class ProductModuleService
     const { filters: normalizedFilters, shouldReturnEmpty } =
       await this.applyOptionValueFilter_(filters, sharedContext)
 
-    console.log("normalizedFilters", JSON.stringify(normalizedFilters, null, 2))
-
     if (shouldReturnEmpty) {
       return [[], 0]
     }
@@ -396,81 +395,56 @@ export default class ProductModuleService
     filters?: ProductTypes.FilterableProductProps
     shouldReturnEmpty: boolean
   }> {
-    const optionValueFilter = filters?.option_value_id
-
-    if (!optionValueFilter) {
+    if (!filters?.option_value_id) {
       return {
-        filters,
+        filters: filters,
         shouldReturnEmpty: false,
       }
     }
 
-    const normalizedFilters = {
-      ...(filters || {}),
-    } as ProductTypes.FilterableProductProps
-
-    const optionValueIds = Array.isArray(optionValueFilter)
-      ? Array.from(
-          new Set(optionValueFilter.filter((id): id is string => !!id?.length))
-        )
-      : optionValueFilter
-      ? [optionValueFilter]
-      : []
-
-    delete (normalizedFilters as any).option_value_id
+    const optionValueIds = Array.isArray(filters.option_value_id)
+      ? filters.option_value_id
+      : [filters.option_value_id]
 
     if (!optionValueIds.length) {
       return {
-        filters: normalizedFilters,
-        shouldReturnEmpty: true,
+        filters: filters,
+        shouldReturnEmpty: false,
       }
     }
 
-    const optionValues = await this.productOptionValueService_.list(
-      { id: optionValueIds },
-      { select: ["id", "option_id", "value"] },
+    const matchingProductIds = await buildOptionValueFilterQuery(
+      optionValueIds,
       sharedContext
     )
 
-    if (optionValues.length !== optionValueIds.length) {
+    if (!matchingProductIds.length) {
       return {
-        filters: normalizedFilters,
+        filters: filters,
         shouldReturnEmpty: true,
       }
     }
 
-    const groupedValues = optionValues.reduce((acc, optionValue) => {
-      if (!optionValue.option_id) {
-        return acc
-      }
+    const { option_value_id, ...restFilters } = filters
 
-      const values = acc.get(optionValue.option_id) ?? new Set<string>()
-      values.add(optionValue.id)
-      acc.set(optionValue.option_id, values)
+    // merge with existing id filter if present
+    const existingIds = restFilters.id
+      ? Array.isArray(restFilters.id)
+        ? restFilters.id
+        : [restFilters.id]
+      : []
 
-      return acc
-    }, new Map<string, Set<string>>())
-
-    if (!groupedValues.size) {
-      return {
-        filters: normalizedFilters,
-        shouldReturnEmpty: true,
-      }
-    }
-
-    const optionFilters = Array.from(groupedValues.entries()).map(
-      ([optionId, values]) => {
-        return { id: Array.from(values) }
-      }
-    )
-
-    normalizedFilters.variants = {
-      options: { $and: optionFilters },
-    } as ProductTypes.FilterableProductVariantProps
+    const finalProductIds =
+      existingIds.length > 0
+        ? matchingProductIds.filter((id) => existingIds.includes(id))
+        : matchingProductIds
 
     return {
-      filters: normalizedFilters,
-      shouldReturnEmpty: false,
+      filters: {
+        ...restFilters,
+        id: finalProductIds.length > 0 ? finalProductIds : undefined,
+      },
+      shouldReturnEmpty: finalProductIds.length === 0,
     }
   }
 
