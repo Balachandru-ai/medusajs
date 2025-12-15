@@ -65,7 +65,7 @@ export const GET = async (
     entities,
   })
 
-  return res.status(200).json({
+  return res.json({
     statistics,
   })
 }

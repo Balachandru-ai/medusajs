@@ -328,4 +328,22 @@ export interface ITranslationModuleService extends IModuleService {
     input: TranslationStatisticsInput,
     sharedContext?: Context
   ): Promise<TranslationStatisticsOutput>
+
+  /**
+   * This method retrieves the translatable fields configuration.
+   * Returns a mapping of entity types to their translatable field names.
+   *
+   * @param {string} entityType - Optional entity type to filter by. If not provided, returns all.
+   * @returns {Record<string, string[]>} A mapping of entity types to their translatable fields.
+   *
+   * @example
+   * // Get all translatable fields
+   * const allFields = translationService.getTranslatableFields()
+   * // Returns: { product: ["title", "description", ...], product_variant: ["title", ...] }
+   *
+   * // Get fields for a specific entity type
+   * const productFields = translationService.getTranslatableFields("product")
+   * // Returns: { product: ["title", "description", "subtitle", "status"] }
+   */
+  getTranslatableFields(entityType?: string): Record<string, string[]>
 }

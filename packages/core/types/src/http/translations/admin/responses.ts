@@ -72,3 +72,19 @@ export interface AdminTranslationStatisticsResponse {
    */
   statistics: Record<string, AdminTranslationEntityStatistics>
 }
+
+/**
+ * Response for translatable fields endpoint.
+ */
+export interface AdminTranslatableFieldsResponse {
+  /**
+   * A mapping of entity types to their translatable field names.
+   *
+   * @example
+   * {
+   *   "product": ["title", "description", "subtitle", "status"],
+   *   "product_variant": ["title", "material"]
+   * }
+   */
+  translatableFields: Record<string, string[]>
+}

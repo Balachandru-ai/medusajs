@@ -35,4 +35,9 @@ export const adminTranslationsRoutesMiddlewares: MiddlewareRoute[] = [
     matcher: "/admin/translations/statistics",
     middlewares: [validateAndTransformQuery(AdminTranslationStatistics, {})],
   },
+  {
+    method: ["GET"],
+    matcher: "/admin/translations/translatable-fields",
+    middlewares: [],
+  },
 ]
