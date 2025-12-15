@@ -14,7 +14,6 @@ import { TwoColumnPageSkeleton } from "../../../components/common/skeleton"
 import { useMemo } from "react"
 
 export type TranslatableEntity = {
-  icon: React.ReactNode
   label: string
   reference: string
   translatableFields: string[]
@@ -65,8 +64,10 @@ export const TranslationList = () => {
       const entityStatistics = statistics[entity]
 
       return {
-        icon: <Buildings />,
-        label: entity,
+        label: entity
+          .split("_")
+          .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+          .join(" "),
         reference: entity,
         translatableFields: fields,
         translatedCount: entityStatistics.translated,
