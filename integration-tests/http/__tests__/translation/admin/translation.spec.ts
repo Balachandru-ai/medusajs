@@ -870,7 +870,7 @@ medusaIntegrationTestRunner({
           expect(response.data.statistics.product.byLocale["de-DE"]).toEqual({
             expected: 5,
             translated: 1,
-            missing: 3,
+            missing: 4,
           })
         })
 
