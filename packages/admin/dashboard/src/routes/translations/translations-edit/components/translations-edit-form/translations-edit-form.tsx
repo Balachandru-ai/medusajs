@@ -1,6 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod"
 import { AdminStoreLocale, HttpTypes } from "@medusajs/types"
-import { Badge, Button, ProgressTabs, Text, toast } from "@medusajs/ui"
+import { Button, ProgressTabs, toast } from "@medusajs/ui"
 import { ColumnDef } from "@tanstack/react-table"
 import { useMemo, useRef } from "react"
 import { useForm } from "react-hook-form"

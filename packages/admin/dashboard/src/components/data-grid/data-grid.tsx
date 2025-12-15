@@ -26,10 +26,7 @@ const _DataGrid = <TData, TFieldValues extends FieldValues = FieldValues>({
   hasNextPage,
   ...props
 }: DataGridProps<TData, TFieldValues>) => {
-  // TODO: remove once everything is lazy loaded
-  const isLazyMode = totalRowCount !== undefined
-
-  return isLoading && !isLazyMode ? (
+  return isLoading ? (
     <DataGridSkeleton
       columns={props.columns}
       rows={
