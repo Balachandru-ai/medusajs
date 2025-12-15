@@ -14,11 +14,31 @@ import { sdk } from "../../lib/client"
 import { queryKeysFactory } from "../../lib/query-key-factory"
 import { queryClient } from "../../lib/query-client"
 import { productsQueryKeys, useInfiniteProducts, useProducts } from "./products"
-import { productVariantQueryKeys, useVariants } from "./product-variants"
-import { categoriesQueryKeys, useProductCategories } from "./categories"
-import { collectionsQueryKeys, useCollections } from "./collections"
-import { productTagsQueryKeys, useProductTags } from "./tags"
-import { productTypesQueryKeys, useProductTypes } from "./product-types"
+import {
+  productVariantQueryKeys,
+  useInfiniteVariants,
+  useVariants,
+} from "./product-variants"
+import {
+  categoriesQueryKeys,
+  useInfiniteCategories,
+  useProductCategories,
+} from "./categories"
+import {
+  collectionsQueryKeys,
+  useCollections,
+  useInfiniteCollections,
+} from "./collections"
+import {
+  productTagsQueryKeys,
+  useInfiniteProductTags,
+  useProductTags,
+} from "./tags"
+import {
+  productTypesQueryKeys,
+  useInfiniteProductTypes,
+  useProductTypes,
+} from "./product-types"
 
 const TRANSLATIONS_QUERY_KEY = "translations" as const
 export const translationsQueryKeys = queryKeysFactory(TRANSLATIONS_QUERY_KEY)
@@ -66,135 +86,133 @@ export const useReferenceTranslations = (
         }
       },
     ],
-    // [
-    //   "product_variant",
-    //   () => {
-    //     const translatableFields = ["title"]
-    //     const fields = translatableFields.concat(["translations.*"]).join(",")
+    [
+      "product_variant",
+      () => {
+        const translatableFields = ["title"]
+        const fields = translatableFields.concat(["translations.*"]).join(",")
 
-    //     const { variants, ...rest } = useVariants(
-    //       { id: referenceId ?? [], fields },
-    //       options
-    //     )
-    //     return {
-    //       ...rest,
-    //       data: {
-    //         translations:
-    //           variants?.flatMap((variant) => variant.translations ?? []) ?? [],
-    //         references: variants ?? [],
-    //         translatableFields,
-    //       },
-    //     } as unknown as UseQueryResult<{
-    //       translations: HttpTypes.AdminTranslation[]
-    //       references: { id: string; [key: string]: string }[]
-    //       translatableFields: string[]
-    //     }>
-    //   },
-    // ],
-    // [
-    //   "product_category",
-    //   () => {
-    //     const translatableFields = ["name", "description"]
-    //     const fields = translatableFields.concat(["translations.*"]).join(",")
+        const { data, ...rest } = useInfiniteVariants(
+          { id: referenceId ?? [], fields },
+          options
+        )
+        const variants = data?.pages.flatMap((page) => page.variants) ?? []
 
-    //     const { product_categories, ...rest } = useProductCategories(
-    //       { id: referenceId ?? [], fields },
-    //       options
-    //     )
-    //     return {
-    //       ...rest,
-    //       data: {
-    //         translations:
-    //           product_categories?.flatMap(
-    //             (category) => category.translations ?? []
-    //           ) ?? [],
-    //         references: product_categories ?? [],
-    //         translatableFields,
-    //       },
-    //     } as unknown as UseQueryResult<{
-    //       translations: HttpTypes.AdminTranslation[]
-    //       references: { id: string; [key: string]: string }[]
-    //       translatableFields: string[]
-    //     }>
-    //   },
-    // ],
-    // [
-    //   "product_collection",
-    //   () => {
-    //     const translatableFields = ["title"]
-    //     const fields = translatableFields.concat(["translations.*"]).join(",")
+        return {
+          ...rest,
+          data: {
+            translations:
+              variants?.flatMap((variant) => variant.translations ?? []) ?? [],
+            references: variants ?? [],
+            translatableFields,
+            count: data?.pages[0]?.count ?? 0,
+          },
+        }
+      },
+    ],
+    [
+      "product_category",
+      () => {
+        const translatableFields = ["name", "description"]
+        const fields = translatableFields.concat(["translations.*"]).join(",")
 
-    //     const { collections, ...rest } = useCollections(
-    //       { id: referenceId ?? [], fields },
-    //       options
-    //     )
-    //     return {
-    //       ...rest,
-    //       data: {
-    //         translations:
-    //           collections?.flatMap(
-    //             (collection) => collection.translations ?? []
-    //           ) ?? [],
-    //         references: collections ?? [],
-    //         translatableFields,
-    //       },
-    //     } as unknown as UseQueryResult<{
-    //       translations: HttpTypes.AdminTranslation[]
-    //       references: { id: string; [key: string]: string }[]
-    //       translatableFields: string[]
-    //     }>
-    //   },
-    // ],
-    // [
-    //   "product_type",
-    //   () => {
-    //     const translatableFields = ["value"]
-    //     const fields = translatableFields.concat(["translations.*"]).join(",")
+        const { data, ...rest } = useInfiniteCategories(
+          { id: referenceId ?? [], fields },
+          options
+        )
+        const categories =
+          data?.pages.flatMap((page) => page.product_categories) ?? []
 
-    //     const { product_types, ...rest } = useProductTypes(
-    //       { id: referenceId ?? [], fields },
-    //       options
-    //     )
-    //     return {
-    //       ...rest,
-    //       data: {
-    //         translations:
-    //           product_types?.flatMap((type) => type.translations ?? []) ?? [],
-    //         references: product_types ?? [],
-    //         translatableFields,
-    //       },
-    //     } as unknown as UseQueryResult<{
-    //       translations: HttpTypes.AdminTranslation[]
-    //       references: { id: string; [key: string]: string }[]
-    //       translatableFields: string[]
-    //     }>
-    //   },
-    // ],
-    // [
-    //   "product_tag",
-    //   () => {
-    //     const translatableFields = ["value"]
-    //     const fields = translatableFields.concat(["translations.*"]).join(",")
+        return {
+          ...rest,
+          data: {
+            translations:
+              categories?.flatMap((category) => category.translations ?? []) ??
+              [],
+            references: categories ?? [],
+            translatableFields,
+            count: data?.pages[0]?.count ?? 0,
+          },
+        }
+      },
+    ],
+    [
+      "product_collection",
+      () => {
+        const translatableFields = ["title"]
+        const fields = translatableFields.concat(["translations.*"]).join(",")
 
-    //     const { product_tags, ...rest } = useProductTags(
-    //       { id: referenceId ?? [], fields },
-    //       options
-    //     )
-    //     return {
-    //       ...rest,
-    //       data: {
-    //         translations:
-    //           product_tags?.flatMap((tag) => tag.translations ?? []) ?? [],
-    //         references: product_tags ?? [],
-    //         translatableFields,
-    //       },
-    //     } as unknown as UseQueryResult<{
-    //       translations: HttpTypes.AdminTranslation[]
-    //       references: { id: string; [key: string]: string }[]
-    //       translatableFields: string[]
-    //     }>
-    //   },
-    // ],
+        const { data, ...rest } = useInfiniteCollections(
+          { id: referenceId ?? [], fields },
+          options
+        )
+        const collections =
+          data?.pages.flatMap((page) => page.collections) ?? []
+
+        return {
+          ...rest,
+          data: {
+            translations:
+              collections?.flatMap(
+                (collection) => collection.translations ?? []
+              ) ?? [],
+            references: collections ?? [],
+            translatableFields,
+            count: data?.pages[0]?.count ?? 0,
+          },
+        }
+      },
+    ],
+    [
+      "product_type",
+      () => {
+        const translatableFields = ["value"]
+        const fields = translatableFields.concat(["translations.*"]).join(",")
+
+        const { data, ...rest } = useInfiniteProductTypes(
+          { id: referenceId ?? [], fields },
+          options
+        )
+        const product_types =
+          data?.pages.flatMap((page) => page.product_types) ?? []
+
+        return {
+          ...rest,
+          data: {
+            translations:
+              product_types?.flatMap((type) => type.translations ?? []) ?? [],
+            references: product_types ?? [],
+            count: data?.pages[0]?.count ?? 0,
+            translatableFields,
+          },
+        }
+      },
+    ],
+    [
+      "product_tag",
+      () => {
+        const translatableFields = ["value"]
+        const fields = translatableFields.concat(["translations.*"]).join(",")
+
+        const { data, ...rest } = useInfiniteProductTags(
+          { id: referenceId ?? [], fields },
+          options
+        )
+        const product_tags =
+          data?.pages.flatMap((page) => page.product_tags) ?? []
+
+        return {
+          ...rest,
+          data: {
+            translations:
+              product_tags?.flatMap((tag) => tag.translations ?? []) ?? [],
+            references: product_tags ?? [],
+            translatableFields,
+            count: data?.pages[0]?.count ?? 0,
+          },
+        }
+      },
+    ],
     // TODO: product option and option values
   ])
   const referenceHook = referenceHookMap.get(reference)
