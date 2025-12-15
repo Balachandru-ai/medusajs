@@ -160,14 +160,14 @@ export const updateProductVariantsWorkflow = createWorkflow(
         const variantIds: string[] = []
 
         if ("product_variants" in data.input) {
-          variantIds.push(
-            ...data.input.product_variants
-              .filter((v) => v.id && v.manage_inventory === false)
-              .map((v) => v.id!)
-          )
+          for (const variant of data.input.product_variants) {
+            if (variant.id && variant.manage_inventory === false) {
+              variantIds.push(variant.id)
+            }
+          }
         } else if (
           data.input.update &&
-          data.input.update.manage_inventory === false
+          data.input.update?.manage_inventory === false
         ) {
           variantIds.push(...data.updatedVariants.map((v) => v.id))
         }

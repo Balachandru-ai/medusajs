@@ -650,7 +650,7 @@ medusaIntegrationTestRunner({
     })
 
     describe("POST /admin/products/:id/variants/:variant_id", () => {
-      it("updates variant to manage_inventory false and unlinks inventory items", async () => {
+      it("should update variant to manage_inventory false and unlink inventory items", async () => {
         const inventoryItem1 = (
           await api.post(
             `/admin/inventory-items`,

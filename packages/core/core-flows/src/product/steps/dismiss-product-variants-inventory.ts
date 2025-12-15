@@ -16,6 +16,9 @@ async function dismissVariantsInventory(
   link: Link
 ): Promise<Record<string, string[]>> {
   const dismissedVariantInventoryItems: Record<string, string[]> = {}
+  if (!variantIds.length) {
+    return dismissedVariantInventoryItems
+  }
 
   const { data: variantInventoryItems } = await query.graph({
     entity: "product_variant_inventory_item",
@@ -72,18 +75,19 @@ export const dismissProductVariantsInventoryStep = createStep(
       return
     }
 
+    const linksToCreate: LinkDefinition[] = []
+    for (const [variantId, inventoryItemIds] of Object.entries(
+      dismissedVariantInventoryItems
+    )) {
+      for (const inventoryItemId of inventoryItemIds) {
+        linksToCreate.push({
+          [Modules.PRODUCT]: { variant_id: variantId },
+          [Modules.INVENTORY]: { inventory_item_id: inventoryItemId },
+        })
+      }
+    }
+
     const link = container.resolve(ContainerRegistrationKeys.LINK)
-    await Promise.all(
-      Object.entries(dismissedVariantInventoryItems).map(
-        async ([variantId, inventoryItemIds]) => {
-          await link.create(
-            inventoryItemIds.map((inventoryItemId) => ({
-              [Modules.PRODUCT]: { variant_id: variantId },
-              [Modules.INVENTORY]: { inventory_item_id: inventoryItemId },
-            }))
-          )
-        }
-      )
-    )
+    await link.create(linksToCreate)
   }
 )

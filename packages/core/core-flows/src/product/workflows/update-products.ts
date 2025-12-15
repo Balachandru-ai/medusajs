@@ -452,20 +452,18 @@ export const updateProductsWorkflow = createWorkflow(
 
         if ("products" in data.input) {
           for (const product of data.input.products) {
-            if (product.variants?.length) {
-              variantIds.push(
-                ...product.variants
-                  .filter((v) => v.id && v.manage_inventory === false)
-                  .map((v) => v.id!)
-              )
+            for (const variant of product.variants ?? []) {
+              if (variant.id && variant.manage_inventory === false) {
+                variantIds.push(variant.id)
+              }
             }
           }
         } else if (data.input.update?.variants?.length) {
-          variantIds.push(
-            ...data.input.update.variants
-              .filter((v) => v.id && v.manage_inventory === false)
-              .map((v) => v.id!)
-          )
+          for (const variant of data.input.update.variants) {
+            if (variant.id && variant.manage_inventory === false) {
+              variantIds.push(variant.id)
+            }
+          }
         }
 
         return variantIds
