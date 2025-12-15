@@ -1,4 +1,5 @@
 import {
+  applyTranslations,
   ContainerRegistrationKeys,
   remoteQueryObjectFromString,
 } from "@medusajs/framework/utils"
@@ -21,6 +22,12 @@ export const GET = async (
   })
 
   const [return_reason] = await remoteQuery(queryObject)
+
+  await applyTranslations({
+    localeCode: req.locale,
+    objects: [return_reason],
+    container: req.scope,
+  })
 
   res.json({ return_reason })
 }
