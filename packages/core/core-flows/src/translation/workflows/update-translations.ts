@@ -8,6 +8,7 @@ import {
 import { emitEventStep } from "../../common/steps/emit-event"
 import { updateTranslationsStep, UpdateTranslationsStepInput } from "../steps"
 import { validateTranslationsStep } from "../steps"
+import { TranslationWorkflowEvents } from "@medusajs/framework/utils"
 
 export type UpdateTranslationsWorkflowInput = UpdateTranslationsStepInput
 
@@ -24,7 +25,7 @@ export const updateTranslationsWorkflowId = "update-translations"
  *   input: {
  *     selector: {
  *       reference_id: "prod_123",
- *       locale_code: "fr-FR"
+ *       locale: "fr-FR"
  *     },
  *     update: {
  *       translations: { title: "Nouveau titre" }
@@ -58,7 +59,7 @@ export const updateTranslationsWorkflow = createWorkflow(
     )
 
     emitEventStep({
-      eventName: "translation.updated",
+      eventName: TranslationWorkflowEvents.UPDATED,
       data: translationIdEvents,
     })
 
