@@ -1,16 +1,22 @@
+import { AdminTranslationEntityStatistics } from "@medusajs/types"
 import { Container, Heading, Text } from "@medusajs/ui"
 import { useTranslation } from "react-i18next"
 
 type TranslationsCompletionSectionProps = {
-  translatedCount?: number
-  totalCount?: number
+  statistics: Record<string, AdminTranslationEntityStatistics>
 }
 
 export const TranslationsCompletionSection = ({
-  translatedCount = 0,
-  totalCount = 0,
+  statistics,
 }: TranslationsCompletionSectionProps) => {
   const { t } = useTranslation()
+  const { translatedCount, totalCount } = Object.values(statistics).reduce(
+    (acc, curr) => ({
+      translatedCount: acc.translatedCount + curr.translated,
+      totalCount: acc.totalCount + curr.expected,
+    }),
+    { totalCount: 0, translatedCount: 0 }
+  )
 
   const percentage = totalCount > 0 ? (translatedCount / totalCount) * 100 : 0
   const remaining = Math.max(0, totalCount - translatedCount)

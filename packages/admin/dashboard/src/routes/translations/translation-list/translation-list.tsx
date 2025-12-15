@@ -116,7 +116,9 @@ export const TranslationList = () => {
             ) ?? []
           }
         ></ActiveLocalesSection>
-        <TranslationsCompletionSection />
+        {statistics && (
+          <TranslationsCompletionSection statistics={statistics} />
+        )}
       </TwoColumnPage.Sidebar>
     </TwoColumnPage>
   )
