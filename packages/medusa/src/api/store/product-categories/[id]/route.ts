@@ -24,5 +24,12 @@ export const GET = async (
       `Product category with id: ${req.params.id} was not found`
     )
   }
+
+  await applyTranslations({
+    localeCode: req.locale,
+    objects: [category],
+    container: req.scope,
+  })
+
   res.json({ product_category: category })
 }
