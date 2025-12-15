@@ -4049,6 +4049,45 @@
           "required": ["noRecordsMessage"],
           "additionalProperties": false
         },
+        "export": {
+          "type": "object",
+          "properties": {
+            "header": {
+              "type": "string"
+            },
+            "description": {
+              "type": "string"
+            },
+            "success": {
+              "type": "object",
+              "properties": {
+                "title": {
+                  "type": "string"
+                },
+                "description": {
+                  "type": "string"
+                }
+              },
+              "required": ["title", "description"],
+              "additionalProperties": false
+            },
+            "filters": {
+              "type": "object",
+              "properties": {
+                "title": {
+                  "type": "string"
+                },
+                "description": {
+                  "type": "string"
+                }
+              },
+              "required": ["title", "description"],
+              "additionalProperties": false
+            }
+          },
+          "required": ["header", "description", "success", "filters"],
+          "additionalProperties": false
+        },
         "status": {
           "type": "object",
           "properties": {
@@ -5740,6 +5779,7 @@
         "orderCanceled",
         "onDateFromSalesChannel",
         "list",
+        "export",
         "status",
         "summary",
         "transfer",
@@ -9303,6 +9343,9 @@
         "defaultCurrency": {
           "type": "string"
         },
+        "defaultLocale": {
+          "type": "string"
+        },
         "defaultRegion": {
           "type": "string"
         },
@@ -9321,6 +9364,9 @@
         "inviteLinkTemplate": {
           "type": "string"
         },
+        "locales": {
+          "type": "string"
+        },
         "currencies": {
           "type": "string"
         },
@@ -9337,6 +9383,15 @@
           "type": "string"
         },
         "removeCurrencyWarning_other": {
+          "type": "string"
+        },
+        "removeLocaleWarning_one": {
+          "type": "string"
+        },
+        "removeLocaleWarning_other": {
+          "type": "string"
+        },
+        "localeAlreadyAdded": {
           "type": "string"
         },
         "currencyAlreadyAdded": {
@@ -9358,10 +9413,16 @@
             "update": {
               "type": "string"
             },
+            "localesUpdated": {
+              "type": "string"
+            },
             "currenciesUpdated": {
               "type": "string"
             },
             "currenciesRemoved": {
+              "type": "string"
+            },
+            "localesRemoved": {
               "type": "string"
             },
             "updatedTaxInclusivitySuccessfully": {
@@ -9370,8 +9431,10 @@
           },
           "required": [
             "update",
+            "localesUpdated",
             "currenciesUpdated",
             "currenciesRemoved",
+            "localesRemoved",
             "updatedTaxInclusivitySuccessfully"
           ],
           "additionalProperties": false
@@ -9382,19 +9445,24 @@
         "manageYourStoresDetails",
         "editStore",
         "defaultCurrency",
+        "defaultLocale",
         "defaultRegion",
         "defaultSalesChannel",
         "defaultLocation",
         "swapLinkTemplate",
         "paymentLinkTemplate",
         "inviteLinkTemplate",
+        "locales",
         "currencies",
         "addCurrencies",
         "enableTaxInclusivePricing",
         "disableTaxInclusivePricing",
         "removeCurrencyWarning_one",
         "removeCurrencyWarning_other",
+        "removeLocaleWarning_one",
+        "removeLocaleWarning_other",
         "currencyAlreadyAdded",
+        "localeAlreadyAdded",
         "edit",
         "toast"
       ],

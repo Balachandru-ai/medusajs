@@ -300,6 +300,12 @@ export function getRouteMap({
                 {
                   path: "",
                   lazy: () => import("../../routes/orders/order-list"),
+                  children: [
+                    {
+                      path: "export",
+                      lazy: () => import("../../routes/orders/order-export"),
+                    },
+                  ],
                 },
                 {
                   path: ":id",
@@ -1008,6 +1014,10 @@ export function getRouteMap({
                 {
                   path: "currencies",
                   lazy: () => import("../../routes/store/store-add-currencies"),
+                },
+                {
+                  path: "locales",
+                  lazy: () => import("../../routes/store/store-add-locales"),
                 },
                 {
                   path: "metadata/edit",
