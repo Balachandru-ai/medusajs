@@ -2,95 +2,90 @@ import { Container, Heading, Text } from "@medusajs/ui"
 import { TwoColumnPage } from "../../../components/layout/pages"
 import { useTranslation } from "react-i18next"
 import { Buildings } from "@medusajs/icons"
-import { useStore } from "../../../hooks/api"
+import {
+  useStore,
+  useTranslationSettings,
+  useTranslationStatistics,
+} from "../../../hooks/api"
 import { ActiveLocalesSection } from "./components/active-locales-section/active-locales-section"
 import { TranslationListSection } from "./components/translation-list-section/translation-list-section"
 import { TranslationsCompletionSection } from "./components/translations-completion-section/translations-completion-section"
 import { TwoColumnPageSkeleton } from "../../../components/common/skeleton"
+import { useMemo } from "react"
 
 export type TranslatableEntity = {
   icon: React.ReactNode
   label: string
   reference: string
+  translatableFields: string[]
   translatedCount?: number
   totalCount?: number
 }
-
-const TRANSLATABLE_ENTITIES: TranslatableEntity[] = [
-  {
-    icon: <Buildings />,
-    label: "Product",
-    reference: "product",
-    translatedCount: 4,
-    totalCount: 96,
-  },
-  {
-    icon: <Buildings />,
-    label: "Product Variants",
-    reference: "product_variant",
-    translatedCount: 4,
-    totalCount: 200000,
-  },
-  {
-    icon: <Buildings />,
-    label: "Product Categories",
-    reference: "product_category",
-    translatedCount: 96,
-    totalCount: 96,
-  },
-  {
-    icon: <Buildings />,
-    label: "Product Collections",
-    reference: "product_collection",
-    translatedCount: 4,
-    totalCount: 96,
-  },
-  {
-    icon: <Buildings />,
-    label: "Product Types",
-    reference: "product_type",
-    translatedCount: 4,
-    totalCount: 96,
-  },
-  {
-    icon: <Buildings />,
-    label: "Product Tags",
-    reference: "product_tag",
-    translatedCount: 96,
-    totalCount: 96,
-  },
-  {
-    icon: <Buildings />,
-    label: "Product Options",
-    reference: "product_option",
-    translatedCount: 96,
-    totalCount: 96,
-  },
-  {
-    icon: <Buildings />,
-    label: "Product Option Values",
-    reference: "product_option_value",
-    translatedCount: 96,
-    totalCount: 96,
-  },
-]
 
 export const TranslationList = () => {
   const { t } = useTranslation()
 
   const { store, isPending, isError, error } = useStore()
+  const {
+    translatable_fields,
+    isPending: isTranslationSettingsPending,
+    isError: isTranslationSettingsError,
+    error: translationSettingsError,
+  } = useTranslationSettings()
+  const {
+    statistics,
+    isPending: isTranslationStatisticsPending,
+    isError: isTranslationStatisticsError,
+    error: translationStatisticsError,
+  } = useTranslationStatistics(
+    {
+      locales:
+        store?.supported_locales?.map(
+          (suportedLocale) => suportedLocale.locale_code
+        ) ?? [],
+      entity_types: Object.keys(translatable_fields ?? {}),
+    },
+    {
+      enabled: !!translatable_fields && !!store,
+    }
+  )
 
-  if (isError) {
-    throw error
+  if (isError || isTranslationSettingsError || isTranslationStatisticsError) {
+    throw error || translationSettingsError || translationStatisticsError
   }
 
-  const isReady = !!store && !isPending
+  const hasLocales = (store?.supported_locales ?? []).length > 0
+
+  const translatableEntities: TranslatableEntity[] = useMemo(() => {
+    if (!translatable_fields || !statistics) {
+      return []
+    }
+
+    return Object.entries(translatable_fields).map(([entity, fields]) => {
+      const entityStatistics = statistics[entity]
+
+      return {
+        icon: <Buildings />,
+        label: entity,
+        reference: entity,
+        translatableFields: fields,
+        translatedCount: entityStatistics.translated,
+        totalCount: entityStatistics.expected,
+      }
+    })
+  }, [translatable_fields, statistics])
+
+  const isReady =
+    !!store &&
+    !isPending &&
+    !isTranslationSettingsPending &&
+    !isTranslationStatisticsPending &&
+    !!translatable_fields &&
+    !!statistics
 
   if (!isReady) {
     return <TwoColumnPageSkeleton sidebarSections={2} />
   }
-
-  const hasLocales = (store?.supported_locales ?? []).length > 0
 
   return (
     <TwoColumnPage
@@ -109,7 +104,7 @@ export const TranslationList = () => {
           </Text>
         </Container>
         <TranslationListSection
-          entities={TRANSLATABLE_ENTITIES}
+          entities={translatableEntities}
           hasLocales={hasLocales}
         />
       </TwoColumnPage.Main>

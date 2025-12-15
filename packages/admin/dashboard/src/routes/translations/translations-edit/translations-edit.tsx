@@ -1,5 +1,9 @@
 import { useNavigate, useSearchParams } from "react-router-dom"
-import { useReferenceTranslations, useStore } from "../../../hooks/api"
+import {
+  useReferenceTranslations,
+  useStore,
+  useTranslationSettings,
+} from "../../../hooks/api"
 import { TranslationsEditForm } from "./components/translations-edit-form"
 import { useEffect } from "react"
 import { RouteFocusModal } from "../../../components/modals"
@@ -21,9 +25,15 @@ export const TranslationsEdit = () => {
   }, [reference, navigate, isTranslationsEnabled])
 
   const {
+    translatable_fields,
+    isPending: isTranslationSettingsPending,
+    isError: isTranslationSettingsError,
+    error: translationSettingsError,
+  } = useTranslationSettings({ entity_type: reference! })
+
+  const {
     translations,
     references,
-    translatableFields,
     fetchNextPage,
     count,
     isFetchingNextPage,
@@ -31,10 +41,15 @@ export const TranslationsEdit = () => {
     isPending,
     isError,
     error,
-  } = useReferenceTranslations(reference!, referenceIdParam, {
-    placeholderData: keepPreviousData,
-  })
-
+  } = useReferenceTranslations(
+    reference!,
+    translatable_fields?.[reference!] ?? [],
+    referenceIdParam,
+    {
+      enabled: !!translatable_fields && !!reference,
+      placeholderData: keepPreviousData,
+    }
+  )
   const {
     store,
     isPending: isStorePending,
@@ -45,13 +60,14 @@ export const TranslationsEdit = () => {
   const ready =
     !isPending &&
     !!translations &&
-    !!translatableFields &&
+    !!translatable_fields &&
+    !isTranslationSettingsPending &&
     !!references &&
     !isStorePending &&
     !!store
 
-  if (isError || isStoreError) {
-    throw error || storeError
+  if (isError || isStoreError || isTranslationSettingsError) {
+    throw error || storeError || translationSettingsError
   }
 
   return (
@@ -62,9 +78,8 @@ export const TranslationsEdit = () => {
           references={references}
           entityType={reference!}
           availableLocales={store?.supported_locales ?? []}
-          // TODO: change this to get it from the entity translation config when we have it
-          translatableFields={translatableFields}
-          modalFields={translatableFields}
+          translatableFields={translatable_fields[reference!]}
+          modalFields={translatable_fields[reference!]}
           fetchNextPage={fetchNextPage}
           hasNextPage={hasNextPage}
           isFetchingNextPage={isFetchingNextPage}

@@ -1,13 +1,6 @@
 import { Button, Container, Text } from "@medusajs/ui"
 import { Link } from "react-router-dom"
-
-type TranslatableEntity = {
-  icon: React.ReactNode
-  label: string
-  reference: string
-  translatedCount?: number
-  totalCount?: number
-}
+import { TranslatableEntity } from "../../translation-list"
 
 type TranslationListSectionProps = {
   entities: TranslatableEntity[]

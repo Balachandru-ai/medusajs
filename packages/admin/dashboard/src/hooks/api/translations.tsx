@@ -8,43 +8,36 @@ import {
   UseMutationOptions,
   useQuery,
   UseQueryOptions,
-  UseQueryResult,
 } from "@tanstack/react-query"
 import { sdk } from "../../lib/client"
 import { queryKeysFactory } from "../../lib/query-key-factory"
 import { queryClient } from "../../lib/query-client"
-import { productsQueryKeys, useInfiniteProducts, useProducts } from "./products"
+import { productsQueryKeys, useInfiniteProducts } from "./products"
 import {
   productVariantQueryKeys,
   useInfiniteVariants,
-  useVariants,
 } from "./product-variants"
-import {
-  categoriesQueryKeys,
-  useInfiniteCategories,
-  useProductCategories,
-} from "./categories"
-import {
-  collectionsQueryKeys,
-  useCollections,
-  useInfiniteCollections,
-} from "./collections"
-import {
-  productTagsQueryKeys,
-  useInfiniteProductTags,
-  useProductTags,
-} from "./tags"
-import {
-  productTypesQueryKeys,
-  useInfiniteProductTypes,
-  useProductTypes,
-} from "./product-types"
+import { categoriesQueryKeys, useInfiniteCategories } from "./categories"
+import { collectionsQueryKeys, useInfiniteCollections } from "./collections"
+import { productTagsQueryKeys, useInfiniteProductTags } from "./tags"
+import { productTypesQueryKeys, useInfiniteProductTypes } from "./product-types"
 
 const TRANSLATIONS_QUERY_KEY = "translations" as const
 export const translationsQueryKeys = queryKeysFactory(TRANSLATIONS_QUERY_KEY)
 
+const TRANSLATION_SETTINGS_QUERY_KEY = "translation_settings" as const
+export const translationSettingsQueryKeys = queryKeysFactory(
+  TRANSLATION_SETTINGS_QUERY_KEY
+)
+
+const TRANSLATION_STATISTICS_QUERY_KEY = "translation_statistics" as const
+export const translationStatisticsQueryKeys = queryKeysFactory(
+  TRANSLATION_STATISTICS_QUERY_KEY
+)
+
 export const useReferenceTranslations = (
   reference: string,
+  translatableFields: string[],
   referenceId?: string | string[],
   options?: Omit<
     UseInfiniteQueryOptions<any, FetchError, any, any, QueryKey, number>,
@@ -57,7 +50,6 @@ export const useReferenceTranslations = (
       data: {
         translations: HttpTypes.AdminTranslation[]
         references: (Record<string, any> & { id: string })[]
-        translatableFields: string[]
         count: number
       }
     }
@@ -65,7 +57,6 @@ export const useReferenceTranslations = (
     [
       "product",
       () => {
-        const translatableFields = ["title", "description"]
         const fields = translatableFields.concat(["translations.*"]).join(",")
 
         const { data, ...rest } = useInfiniteProducts(
@@ -80,7 +71,6 @@ export const useReferenceTranslations = (
             translations:
               products?.flatMap((product) => product.translations ?? []) ?? [],
             references: products ?? [],
-            translatableFields,
             count: data?.pages[0]?.count ?? 0,
           },
         }
@@ -89,7 +79,6 @@ export const useReferenceTranslations = (
     [
       "product_variant",
       () => {
-        const translatableFields = ["title"]
         const fields = translatableFields.concat(["translations.*"]).join(",")
 
         const { data, ...rest } = useInfiniteVariants(
@@ -113,7 +102,6 @@ export const useReferenceTranslations = (
     [
       "product_category",
       () => {
-        const translatableFields = ["name", "description"]
         const fields = translatableFields.concat(["translations.*"]).join(",")
 
         const { data, ...rest } = useInfiniteCategories(
@@ -139,7 +127,6 @@ export const useReferenceTranslations = (
     [
       "product_collection",
       () => {
-        const translatableFields = ["title"]
         const fields = translatableFields.concat(["translations.*"]).join(",")
 
         const { data, ...rest } = useInfiniteCollections(
@@ -166,7 +153,6 @@ export const useReferenceTranslations = (
     [
       "product_type",
       () => {
-        const translatableFields = ["value"]
         const fields = translatableFields.concat(["translations.*"]).join(",")
 
         const { data, ...rest } = useInfiniteProductTypes(
@@ -191,7 +177,6 @@ export const useReferenceTranslations = (
     [
       "product_tag",
       () => {
-        const translatableFields = ["value"]
         const fields = translatableFields.concat(["translations.*"]).join(",")
 
         const { data, ...rest } = useInfiniteProductTags(
@@ -268,9 +253,54 @@ export const useBatchTranslations = (
       queryClient.invalidateQueries({
         queryKey: referenceInvalidationKeysMap.get(reference),
       })
+      queryClient.invalidateQueries({
+        queryKey: translationStatisticsQueryKeys.lists(),
+      })
 
       options?.onSuccess?.(data, variables, context)
     },
     ...options,
   })
+}
+
+export const useTranslationSettings = (
+  query?: HttpTypes.AdminTranslationSettingsParams,
+  options?: Omit<
+    UseQueryOptions<
+      HttpTypes.AdminTranslationSettingsResponse,
+      FetchError,
+      HttpTypes.AdminTranslationSettingsResponse,
+      QueryKey
+    >,
+    "queryFn" | "queryKey"
+  >
+) => {
+  const { data, ...rest } = useQuery({
+    queryKey: translationSettingsQueryKeys.list(query),
+    queryFn: () => sdk.admin.translation.settings(query),
+    ...options,
+  })
+
+  return { ...data, ...rest }
+}
+
+export const useTranslationStatistics = (
+  query?: HttpTypes.AdminTranslationStatisticsParams,
+  options?: Omit<
+    UseQueryOptions<
+      HttpTypes.AdminTranslationStatisticsResponse,
+      FetchError,
+      HttpTypes.AdminTranslationStatisticsResponse,
+      QueryKey
+    >,
+    "queryFn" | "queryKey"
+  >
+) => {
+  const { data, ...rest } = useQuery({
+    queryKey: translationStatisticsQueryKeys.list(query),
+    queryFn: () => sdk.admin.translation.statistics(query),
+    ...options,
+  })
+
+  return { ...data, ...rest }
 }
