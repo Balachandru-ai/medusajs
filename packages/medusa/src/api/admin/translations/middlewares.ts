@@ -6,6 +6,7 @@ import {
 import {
   AdminBatchTranslations,
   AdminGetTranslationsParams,
+  AdminTranslationStatistics,
 } from "./validators"
 import * as QueryConfig from "./query-config"
 import { DEFAULT_BATCH_ENDPOINTS_SIZE_LIMIT } from "../../../utils"
@@ -28,5 +29,15 @@ export const adminTranslationsRoutesMiddlewares: MiddlewareRoute[] = [
       sizeLimit: DEFAULT_BATCH_ENDPOINTS_SIZE_LIMIT,
     },
     middlewares: [validateAndTransformBody(AdminBatchTranslations)],
+  },
+  {
+    method: ["GET"],
+    matcher: "/admin/translations/statistics",
+    middlewares: [validateAndTransformQuery(AdminTranslationStatistics, {})],
+  },
+  {
+    method: ["GET"],
+    matcher: "/admin/translations/settings",
+    middlewares: [],
   },
 ]

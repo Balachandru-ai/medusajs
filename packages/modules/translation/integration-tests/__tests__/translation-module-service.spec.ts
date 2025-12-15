@@ -646,6 +646,330 @@ moduleIntegrationTestRunner<ITranslationModuleService>({
           })
         })
       })
+
+      describe("Statistics", () => {
+        describe("getStatistics", () => {
+          it("should return statistics for a single entity type and locale", async () => {
+            // Create translations for 2 products with some fields filled
+            // Product has 4 translatable fields: title, description, subtitle, status
+            await service.createTranslations([
+              {
+                reference_id: "prod_stat_1",
+                reference: "product",
+                locale_code: "en-US",
+                translations: {
+                  title: "Product 1",
+                  description: "Description 1",
+                  // subtitle and status are missing
+                },
+              },
+              {
+                reference_id: "prod_stat_2",
+                reference: "product",
+                locale_code: "en-US",
+                translations: {
+                  title: "Product 2",
+                  description: "Description 2",
+                  subtitle: "Subtitle 2",
+                  status: "Active",
+                },
+              },
+            ])
+
+            const stats = await service.getStatistics({
+              locales: ["en-US"],
+              entities: {
+                product: { count: 2 },
+              },
+            })
+
+            // Expected: 2 products × 5 fields × 1 locale = 10
+            // Translated: prod_1 has 2, prod_2 has 4 = 6
+            expect(stats.product).toEqual({
+              expected: 10,
+              translated: 6,
+              missing: 4,
+              by_locale: {
+                "en-US": {
+                  expected: 10,
+                  translated: 6,
+                  missing: 4,
+                },
+              },
+            })
+          })
+
+          it("should return statistics for multiple locales", async () => {
+            await service.createTranslations([
+              {
+                reference_id: "prod_multi_1",
+                reference: "product",
+                locale_code: "en-US",
+                translations: {
+                  title: "Product 1 EN",
+                  description: "Description EN",
+                },
+              },
+              {
+                reference_id: "prod_multi_1",
+                reference: "product",
+                locale_code: "fr-FR",
+                translations: {
+                  title: "Produit 1 FR",
+                  // only title translated for French
+                },
+              },
+            ])
+
+            const stats = await service.getStatistics({
+              locales: ["en-US", "fr-FR"],
+              entities: {
+                product: { count: 1 },
+              },
+            })
+
+            // Expected per locale: 1 product × 5 fields = 5
+            // Total expected: 5 × 2 locales = 10
+            expect(stats.product.expected).toEqual(10)
+            expect(stats.product.translated).toEqual(3) // 2 EN + 1 FR
+            expect(stats.product.missing).toEqual(7)
+
+            expect(stats.product.by_locale["en-US"]).toEqual({
+              expected: 5,
+              translated: 2,
+              missing: 3,
+            })
+
+            expect(stats.product.by_locale["fr-FR"]).toEqual({
+              expected: 5,
+              translated: 1,
+              missing: 4,
+            })
+          })
+
+          it("should return statistics for multiple entity types", async () => {
+            await service.createTranslations([
+              {
+                reference_id: "prod_type_1",
+                reference: "product",
+                locale_code: "en-US",
+                translations: {
+                  title: "Product Title",
+                  description: "Product Description",
+                  subtitle: "Product Subtitle",
+                  status: "Active",
+                  material: "Product Material",
+                },
+              },
+              {
+                reference_id: "var_type_1",
+                reference: "product_variant",
+                locale_code: "en-US",
+                translations: {
+                  title: "Variant Title",
+                  // material missing
+                },
+              },
+            ])
+
+            const stats = await service.getStatistics({
+              locales: ["en-US"],
+              entities: {
+                product: { count: 1 },
+                product_variant: { count: 1 },
+              },
+            })
+
+            // Product: 1 × 5 fields = 5 expected, 5 translated
+            expect(stats.product).toEqual({
+              expected: 5,
+              translated: 5,
+              missing: 0,
+              by_locale: {
+                "en-US": { expected: 5, translated: 5, missing: 0 },
+              },
+            })
+
+            // Variant: 1 × 2 fields = 2 expected, 1 translated
+            expect(stats.product_variant).toEqual({
+              expected: 2,
+              translated: 1,
+              missing: 1,
+              by_locale: {
+                "en-US": { expected: 2, translated: 1, missing: 1 },
+              },
+            })
+          })
+
+          it("should return zeros for entity types not in config", async () => {
+            const stats = await service.getStatistics({
+              locales: ["en-US"],
+              entities: {
+                unknown_entity: { count: 10 },
+              },
+            })
+
+            expect(stats.unknown_entity).toEqual({
+              expected: 0,
+              translated: 0,
+              missing: 0,
+              by_locale: {
+                "en-US": { expected: 0, translated: 0, missing: 0 },
+              },
+            })
+          })
+
+          it("should return all missing when no translations exist", async () => {
+            const stats = await service.getStatistics({
+              locales: ["en-US", "fr-FR"],
+              entities: {
+                product: { count: 5 },
+              },
+            })
+
+            // 5 products × 5 fields × 2 locales = 50 expected, 0 translated
+            expect(stats.product).toEqual({
+              expected: 50,
+              translated: 0,
+              missing: 50,
+              by_locale: {
+                "en-US": { expected: 25, translated: 0, missing: 25 },
+                "fr-FR": { expected: 25, translated: 0, missing: 25 },
+              },
+            })
+          })
+
+          it("should ignore empty string and null values in translations", async () => {
+            await service.createTranslations([
+              {
+                reference_id: "prod_empty_1",
+                reference: "product",
+                locale_code: "en-US",
+                translations: {
+                  title: "Valid Title",
+                  description: "", // empty string should not count
+                  subtitle: "Valid Subtitle",
+                },
+              },
+            ])
+
+            const stats = await service.getStatistics({
+              locales: ["en-US"],
+              entities: {
+                product: { count: 1 },
+              },
+            })
+
+            // Only title, subtitle and material should count (3), not empty description
+            expect(stats.product.translated).toEqual(2)
+            expect(stats.product.missing).toEqual(3)
+          })
+
+          it("should normalize locale codes", async () => {
+            await service.createTranslations([
+              {
+                reference_id: "prod_norm_1",
+                reference: "product",
+                locale_code: "en-us",
+                translations: {
+                  title: "Product Title",
+                },
+              },
+            ])
+
+            const stats = await service.getStatistics({
+              locales: ["EN-US"],
+              entities: {
+                product: { count: 1 },
+              },
+            })
+
+            expect(stats.product.translated).toEqual(1)
+          })
+
+          it("should throw error when no locales provided", async () => {
+            const error = await service
+              .getStatistics({
+                locales: [],
+                entities: { product: { count: 1 } },
+              })
+              .catch((e) => e)
+
+            expect(error.message).toContain(
+              "At least one locale must be provided"
+            )
+          })
+
+          it("should throw error when no entities provided", async () => {
+            const error = await service
+              .getStatistics({
+                locales: ["en-US"],
+                entities: {},
+              })
+              .catch((e) => e)
+
+            expect(error.message).toContain(
+              "At least one entity type must be provided"
+            )
+          })
+
+          it("should handle large entity counts correctly", async () => {
+            // This tests that the expected calculation works with large numbers
+            // without actually creating that many translations
+            const stats = await service.getStatistics({
+              locales: ["en-US", "fr-FR", "de-DE"],
+              entities: {
+                product: { count: 10000 },
+                product_variant: { count: 50000 },
+              },
+            })
+
+            // Product: 10000 × 5 fields × 3 locales = 150000
+            expect(stats.product.expected).toEqual(150000)
+            expect(stats.product.translated).toEqual(0)
+            expect(stats.product.missing).toEqual(150000)
+
+            // Variant: 50000 × 2 fields × 3 locales = 300000
+            expect(stats.product_variant.expected).toEqual(300000)
+            expect(stats.product_variant.translated).toEqual(0)
+            expect(stats.product_variant.missing).toEqual(300000)
+          })
+
+          it("should update statistics after translation is updated", async () => {
+            const created = await service.createTranslations({
+              reference_id: "prod_update_stat_1",
+              reference: "product",
+              locale_code: "en-US",
+              translations: {
+                title: "Product Title",
+                // only 1 of 5 fields
+              },
+            })
+
+            let stats = await service.getStatistics({
+              locales: ["en-US"],
+              entities: { product: { count: 1 } },
+            })
+            expect(stats.product.translated).toEqual(1)
+
+            await service.updateTranslations({
+              id: created.id,
+              translations: {
+                title: "Product Title",
+                description: "Product Description",
+                subtitle: "Product Subtitle",
+              },
+            })
+
+            stats = await service.getStatistics({
+              locales: ["en-US"],
+              entities: { product: { count: 1 } },
+            })
+            expect(stats.product.translated).toEqual(3)
+            expect(stats.product.missing).toEqual(2)
+          })
+        })
+      })
     })
   },
 })

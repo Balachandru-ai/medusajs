@@ -674,6 +674,249 @@ medusaIntegrationTestRunner({
           })
         })
       })
+
+      describe("GET /admin/translations/statistics", () => {
+        it("should return statistics for entity types with no translations", async () => {
+          const productModule = appContainer.resolve(Modules.PRODUCT)
+          await productModule.createProducts([
+            { title: "Product 1" },
+            { title: "Product 2" },
+          ])
+
+          const response = await api.get(
+            "/admin/translations/statistics?locales=en-US&locales=fr-FR&entity_types=product",
+            adminHeaders
+          )
+
+          expect(response.status).toEqual(200)
+          expect(response.data.statistics).toBeDefined()
+          expect(response.data.statistics.product).toEqual({
+            // 2 products × 5 translatable fields × 2 locales = 20 expected
+            expected: 20,
+            translated: 0,
+            missing: 20,
+            by_locale: {
+              "en-US": { expected: 10, translated: 0, missing: 10 },
+              "fr-FR": { expected: 10, translated: 0, missing: 10 },
+            },
+          })
+        })
+
+        it("should return statistics with partial translations", async () => {
+          const productModule = appContainer.resolve(Modules.PRODUCT)
+          const [product1, product2] = await productModule.createProducts([
+            { title: "Product 1" },
+            { title: "Product 2" },
+          ])
+
+          // Create translations for product1 with partial fields
+          await api.post(
+            "/admin/translations/batch",
+            {
+              create: [
+                {
+                  reference_id: product1.id,
+                  reference: "product",
+                  locale_code: "fr-FR",
+                  translations: {
+                    title: "Produit 1",
+                    description: "Description du produit 1",
+                  },
+                },
+                {
+                  reference_id: product2.id,
+                  reference: "product",
+                  locale_code: "fr-FR",
+                  translations: {
+                    title: "Produit 2",
+                  },
+                },
+              ],
+            },
+            adminHeaders
+          )
+
+          const response = await api.get(
+            "/admin/translations/statistics?locales=fr-FR&entity_types=product",
+            adminHeaders
+          )
+
+          expect(response.status).toEqual(200)
+          // 2 products × 5 fields × 1 locale = 10 expected
+          // product1 has 2 fields, product2 has 1 field = 3 translated
+          expect(response.data.statistics.product).toEqual({
+            expected: 10,
+            translated: 3,
+            missing: 7,
+            by_locale: {
+              "fr-FR": { expected: 10, translated: 3, missing: 7 },
+            },
+          })
+        })
+
+        it("should return statistics for multiple entity types", async () => {
+          const productModule = appContainer.resolve(Modules.PRODUCT)
+          const [product] = await productModule.createProducts([
+            {
+              title: "Product with variant",
+              variants: [{ title: "Variant 1" }, { title: "Variant 2" }],
+            },
+          ])
+
+          await api.post(
+            "/admin/translations/batch",
+            {
+              create: [
+                {
+                  reference_id: product.id,
+                  reference: "product",
+                  locale_code: "fr-FR",
+                  translations: {
+                    title: "Produit",
+                    description: "Description",
+                    subtitle: "Sous-titre",
+                    status: "Actif",
+                    material: "Matériau",
+                  },
+                },
+                {
+                  reference_id: product.variants[0].id,
+                  reference: "product_variant",
+                  locale_code: "fr-FR",
+                  translations: {
+                    title: "Variante 1",
+                  },
+                },
+              ],
+            },
+            adminHeaders
+          )
+
+          const response = await api.get(
+            "/admin/translations/statistics?locales=fr-FR&entity_types=product&entity_types=product_variant",
+            adminHeaders
+          )
+
+          expect(response.status).toEqual(200)
+
+          // Product: 1 × 5 fields × 1 locale = 5, all translated
+          expect(response.data.statistics.product).toEqual({
+            expected: 5,
+            translated: 5,
+            missing: 0,
+            by_locale: {
+              "fr-FR": { expected: 5, translated: 5, missing: 0 },
+            },
+          })
+
+          // Variant: 2 × 2 fields × 1 locale = 4, 1 translated
+          expect(response.data.statistics.product_variant).toEqual({
+            expected: 4,
+            translated: 1,
+            missing: 3,
+            by_locale: {
+              "fr-FR": { expected: 4, translated: 1, missing: 3 },
+            },
+          })
+        })
+
+        it("should return statistics for multiple locales", async () => {
+          const productModule = appContainer.resolve(Modules.PRODUCT)
+          const [product] = await productModule.createProducts([
+            { title: "Product" },
+          ])
+
+          await api.post(
+            "/admin/translations/batch",
+            {
+              create: [
+                {
+                  reference_id: product.id,
+                  reference: "product",
+                  locale_code: "fr-FR",
+                  translations: {
+                    title: "Produit",
+                    description: "Description",
+                  },
+                },
+                {
+                  reference_id: product.id,
+                  reference: "product",
+                  locale_code: "de-DE",
+                  translations: { title: "Produkt" },
+                },
+              ],
+            },
+            adminHeaders
+          )
+
+          const response = await api.get(
+            "/admin/translations/statistics?locales=fr-FR&locales=de-DE&entity_types=product",
+            adminHeaders
+          )
+
+          expect(response.status).toEqual(200)
+          // 1 product × 5 fields × 2 locales = 10 expected
+          // fr-FR: 2 translated, de-DE: 1 translated = 3 total
+          expect(response.data.statistics.product.expected).toEqual(10)
+          expect(response.data.statistics.product.translated).toEqual(3)
+          expect(response.data.statistics.product.missing).toEqual(7)
+
+          expect(response.data.statistics.product.by_locale["fr-FR"]).toEqual({
+            expected: 5,
+            translated: 2,
+            missing: 3,
+          })
+          expect(response.data.statistics.product.by_locale["de-DE"]).toEqual({
+            expected: 5,
+            translated: 1,
+            missing: 4,
+          })
+        })
+
+        it("should return zeros for unknown entity types", async () => {
+          const response = await api.get(
+            "/admin/translations/statistics?locales=fr-FR&entity_types=unknown_entity",
+            adminHeaders
+          )
+
+          expect(response.status).toEqual(200)
+          expect(response.data.statistics.unknown_entity).toEqual({
+            expected: 0,
+            translated: 0,
+            missing: 0,
+            by_locale: {
+              "fr-FR": { expected: 0, translated: 0, missing: 0 },
+            },
+          })
+        })
+
+        it("should validate required fields", async () => {
+          // Missing locales
+          const response1 = await api
+            .get(
+              "/admin/translations/statistics?entity_types=product",
+              adminHeaders
+            )
+            .catch((e) => e.response)
+
+          expect(response1.status).toEqual(400)
+
+          // Missing entity_types
+          const response2 = await api
+            .get("/admin/translations/statistics?locales=fr-FR", adminHeaders)
+            .catch((e) => e.response)
+
+          expect(response2.status).toEqual(400)
+
+          // Both missing
+          const response3 = await api
+            .get("/admin/translations/statistics", adminHeaders)
+            .catch((e) => e.response)
+
+          expect(response3.status).toEqual(400)
+        })
+      })
     })
   },
 })

@@ -6,7 +6,8 @@ const Translation = model
     reference_id: model.text().searchable(),
     reference: model.text().searchable(), // e.g., "product", "product_variant", "product_category"
     locale_code: model.text().searchable(), // BCP 47 language tag, e.g., "en-US", "da-DK"
-    translations: model.json(), // JSON object containing translated fields, e.g., { "title": "...", "description": "..." }
+    translations: model.json(),
+    translated_field_count: model.number().default(0), // Precomputed count of translated fields for performance
   })
   .indexes([
     {
