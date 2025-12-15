@@ -25,24 +25,24 @@ export const TranslationsCompletionSection = ({
     <Container className="flex flex-col gap-y-3 px-6 py-4">
       <div className="flex items-center justify-between">
         <Heading>{t("translations.completion.heading")}</Heading>
-        <Text size="small" className="text-ui-fg-subtle">
+        <Text size="small" weight="plus" className="text-ui-fg-subtle">
           {translatedCount.toLocaleString()} {t("general.of")}{" "}
           {totalCount.toLocaleString()}
         </Text>
       </div>
 
-      <div className="flex h-2 w-full overflow-hidden rounded-full">
+      <div className="flex h-3 w-full overflow-hidden">
         {percentage > 0 ? (
           <>
             <div
-              className="mr-0.5 h-full rounded-l-full transition-all"
+              className="mr-0.5 h-full rounded-sm transition-all"
               style={{
                 width: `${percentage}%`,
                 backgroundColor: "var(--bg-interactive)",
               }}
             />
             <div
-              className="h-full flex-1 rounded-r-full"
+              className="h-full flex-1 rounded-sm"
               style={{
                 backgroundColor: "var(--bg-interactive)",
                 opacity: 0.3,
@@ -61,10 +61,10 @@ export const TranslationsCompletionSection = ({
       </div>
 
       <div className="flex items-center justify-between">
-        <Text size="small" className="text-ui-fg-subtle">
+        <Text size="small" weight="plus" className="text-ui-fg-subtle">
           {percentage.toFixed(1)}%
         </Text>
-        <Text size="small" className="text-ui-fg-subtle">
+        <Text size="small" weight="plus" className="text-ui-fg-subtle">
           {remaining.toLocaleString()} {t("general.remaining").toLowerCase()}
         </Text>
       </div>
