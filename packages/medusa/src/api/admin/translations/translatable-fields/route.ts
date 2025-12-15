@@ -3,7 +3,12 @@ import {
   MedusaResponse,
 } from "@medusajs/framework/http"
 import { HttpTypes, ITranslationModuleService } from "@medusajs/framework/types"
-import { Modules } from "@medusajs/framework/utils"
+import {
+  defineFileConfig,
+  FeatureFlag,
+  Modules,
+} from "@medusajs/framework/utils"
+import TranslationFeatureFlag from "../../../../feature-flags/translation"
 
 export const GET = async (
   req: AuthenticatedMedusaRequest,
@@ -14,7 +19,11 @@ export const GET = async (
   )
   const translatableFields = translationService.getTranslatableFields()
 
-  res.status(200).json({
+  res.json({
     translatableFields,
   })
 }
+
+defineFileConfig({
+  isDisabled: () => !FeatureFlag.isFeatureEnabled(TranslationFeatureFlag.key),
+})
