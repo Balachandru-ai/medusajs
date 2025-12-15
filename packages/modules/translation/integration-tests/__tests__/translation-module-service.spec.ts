@@ -7,7 +7,6 @@ import { createLocaleFixture, createTranslationFixture } from "../__fixtures__"
 jest.setTimeout(100000)
 
 moduleIntegrationTestRunner<ITranslationModuleService>({
-  debug: true,
   moduleName: Modules.TRANSLATION,
   testSuite: ({ service }) => {
     describe("Translation Module Service", () => {
@@ -799,8 +798,6 @@ moduleIntegrationTestRunner<ITranslationModuleService>({
                 "en-US": { expected: 2, translated: 1, missing: 1 },
               },
             })
-
-            console.log(JSON.stringify(stats, null, 2))
           })
 
           it("should return zeros for entity types not in config", async () => {
@@ -935,6 +932,40 @@ moduleIntegrationTestRunner<ITranslationModuleService>({
             expect(stats.product_variant.expected).toEqual(300000)
             expect(stats.product_variant.translated).toEqual(0)
             expect(stats.product_variant.missing).toEqual(300000)
+          })
+
+          it("should update statistics after translation is updated", async () => {
+            const created = await service.createTranslations({
+              reference_id: "prod_update_stat_1",
+              reference: "product",
+              locale_code: "en-US",
+              translations: {
+                title: "Product Title",
+                // only 1 of 4 fields
+              },
+            })
+
+            let stats = await service.getStatistics({
+              locales: ["en-US"],
+              entities: { product: { count: 1 } },
+            })
+            expect(stats.product.translated).toEqual(1)
+
+            await service.updateTranslations({
+              id: created.id,
+              translations: {
+                title: "Product Title",
+                description: "Product Description",
+                subtitle: "Product Subtitle",
+              },
+            })
+
+            stats = await service.getStatistics({
+              locales: ["en-US"],
+              entities: { product: { count: 1 } },
+            })
+            expect(stats.product.translated).toEqual(3)
+            expect(stats.product.missing).toEqual(1)
           })
         })
       })

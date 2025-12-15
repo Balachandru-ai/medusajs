@@ -21,6 +21,7 @@ import {
 } from "@medusajs/framework/utils"
 import Locale from "@models/locale"
 import Translation from "@models/translation"
+import { computeTranslatedFieldCount } from "@utils/compute-translated-field-count"
 import { TRANSLATABLE_FIELDS_CONFIG_KEY } from "@utils/constants"
 
 type InjectedDependencies = {
@@ -185,6 +186,10 @@ export default class TranslationModuleService
     const normalizedData = dataArray.map((translation) => ({
       ...translation,
       locale_code: normalizeLocale(translation.locale_code),
+      translated_field_count: computeTranslatedFieldCount(
+        translation.translations as Record<string, unknown>,
+        this.translatableFieldsConfig_[translation.reference]
+      ),
     }))
 
     const createdTranslations = await this.translationService_.create(
@@ -195,6 +200,77 @@ export default class TranslationModuleService
     const serialized = await this.baseRepository_.serialize<
       TranslationTypes.TranslationDTO[]
     >(createdTranslations)
+
+    return Array.isArray(data) ? serialized : serialized[0]
+  }
+
+  // @ts-expect-error
+  updateTranslations(
+    data: TranslationTypes.UpdateTranslationDTO,
+    sharedContext?: Context
+  ): Promise<TranslationTypes.TranslationDTO>
+  // @ts-expect-error
+  updateTranslations(
+    data: TranslationTypes.UpdateTranslationDTO[],
+    sharedContext?: Context
+  ): Promise<TranslationTypes.TranslationDTO[]>
+
+  @InjectManager()
+  @EmitEvents()
+  // @ts-expect-error
+  async updateTranslations(
+    data:
+      | TranslationTypes.UpdateTranslationDTO
+      | TranslationTypes.UpdateTranslationDTO[],
+    @MedusaContext() sharedContext: Context = {}
+  ): Promise<
+    TranslationTypes.TranslationDTO | TranslationTypes.TranslationDTO[]
+  > {
+    const dataArray = Array.isArray(data) ? data : [data]
+
+    const updatesWithTranslations = dataArray.filter((d) => d.translations)
+
+    if (updatesWithTranslations.length) {
+      const idsNeedingReference = updatesWithTranslations
+        .filter((d) => !d.reference)
+        .map((d) => d.id)
+
+      let referenceMap: Record<string, string> = {}
+
+      if (idsNeedingReference.length) {
+        const existingTranslations = await this.translationService_.list(
+          { id: idsNeedingReference },
+          { select: ["id", "reference"] },
+          sharedContext
+        )
+        referenceMap = Object.fromEntries(
+          existingTranslations.map((t) => [t.id, t.reference])
+        )
+      }
+
+      for (const update of dataArray) {
+        if (update.translations) {
+          const reference = update.reference || referenceMap[update.id]
+          ;(
+            update as TranslationTypes.UpdateTranslationDTO & {
+              translated_field_count: number
+            }
+          ).translated_field_count = computeTranslatedFieldCount(
+            update.translations as Record<string, unknown>,
+            this.translatableFieldsConfig_[reference] || []
+          )
+        }
+      }
+    }
+
+    const updatedTranslations = await this.translationService_.update(
+      dataArray,
+      sharedContext
+    )
+
+    const serialized = await this.baseRepository_.serialize<
+      TranslationTypes.TranslationDTO[]
+    >(updatedTranslations)
 
     return Array.isArray(data) ? serialized : serialized[0]
   }
@@ -234,9 +310,7 @@ export default class TranslationModuleService
     const knex = manager.getKnex()
 
     const result: TranslationTypes.TranslationStatisticsOutput = {}
-
     const entityTypes: string[] = []
-    const fieldConfigValues: string[] = []
 
     for (const entityType of Object.keys(entities)) {
       const translatableFields = this.translatableFieldsConfig_[entityType]
@@ -255,9 +329,6 @@ export default class TranslationModuleService
         }
       } else {
         entityTypes.push(entityType)
-        // Format: ('entity_type', ARRAY['field1', 'field2'])
-        const fieldsArray = translatableFields.map((f) => `'${f}'`).join(", ")
-        fieldConfigValues.push(`('${entityType}', ARRAY[${fieldsArray}])`)
       }
     }
 
@@ -267,30 +338,15 @@ export default class TranslationModuleService
 
     const { rows } = await knex.raw(
       `
-      WITH field_config AS (
-        SELECT * FROM (VALUES ${fieldConfigValues.join(
-          ", "
-        )}) AS t(entity_type, fields)
-      )
       SELECT
-        t.reference,
-        t.locale_code,
-        COALESCE(SUM(
-          (
-            SELECT COUNT(*)
-            FROM jsonb_each_text(t.translations) AS kv
-            WHERE kv.key = ANY(fc.fields)
-              AND kv.value IS NOT NULL
-              AND kv.value != ''
-              AND kv.value != 'null'
-          )
-        ), 0)::int AS translated_field_count
-      FROM translation t
-      JOIN field_config fc ON fc.entity_type = t.reference
-      WHERE t.reference = ANY(?)
-        AND t.locale_code = ANY(?)
-        AND t.deleted_at IS NULL
-      GROUP BY t.reference, t.locale_code
+        reference,
+        locale_code,
+        COALESCE(SUM(translated_field_count), 0)::int AS translated_field_count
+      FROM translation
+      WHERE reference = ANY(?)
+        AND locale_code = ANY(?)
+        AND deleted_at IS NULL
+      GROUP BY reference, locale_code
       `,
       [entityTypes, normalizedLocales]
     )
