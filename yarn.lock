@@ -3645,7 +3645,7 @@ __metadata:
     path-to-regexp: ^8.2.0
     tsconfig-paths: ^4.2.0
     zod: 4.2.0
-    zod-validation-error: 3.5.1
+    zod-validation-error: 4.0.0
   peerDependencies:
     "@aws-sdk/client-dynamodb": ^3.218.0
     "@medusajs/cli": 2.12.2
@@ -28437,12 +28437,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"zod-validation-error@npm:3.5.1":
-  version: 3.5.1
-  resolution: "zod-validation-error@npm:3.5.1"
+"zod-validation-error@npm:4.0.0":
+  version: 4.0.0
+  resolution: "zod-validation-error@npm:4.0.0"
   peerDependencies:
-    zod: ^3.25.0
-  checksum: 37e83266755f798cf7f0437441ad72657882afae36e451177e9ae6ba555d211aa80b4f5d9dfbb08839ddb5538b94325499f0445aae923e09c0f7d9f472868c85
+    zod: ^3.25.0 || ^4.0.0
+  checksum: dd209e2b2b2d4b6300f6e1a54b704777d49b9c8e50c0d9683a0d4ae55011b938c54256deeb3ffa34646a33aa42371d9f0ff3e663151e1cdd91899bcaf9ed1b68
   languageName: node
   linkType: hard
 
