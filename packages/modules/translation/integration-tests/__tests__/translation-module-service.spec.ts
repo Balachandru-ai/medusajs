@@ -689,7 +689,7 @@ moduleIntegrationTestRunner<ITranslationModuleService>({
               expected: 10,
               translated: 6,
               missing: 4,
-              byLocale: {
+              by_locale: {
                 "en-US": {
                   expected: 10,
                   translated: 6,
@@ -734,13 +734,13 @@ moduleIntegrationTestRunner<ITranslationModuleService>({
             expect(stats.product.translated).toEqual(3) // 2 EN + 1 FR
             expect(stats.product.missing).toEqual(7)
 
-            expect(stats.product.byLocale["en-US"]).toEqual({
+            expect(stats.product.by_locale["en-US"]).toEqual({
               expected: 5,
               translated: 2,
               missing: 3,
             })
 
-            expect(stats.product.byLocale["fr-FR"]).toEqual({
+            expect(stats.product.by_locale["fr-FR"]).toEqual({
               expected: 5,
               translated: 1,
               missing: 4,
@@ -785,7 +785,7 @@ moduleIntegrationTestRunner<ITranslationModuleService>({
               expected: 5,
               translated: 5,
               missing: 0,
-              byLocale: {
+              by_locale: {
                 "en-US": { expected: 5, translated: 5, missing: 0 },
               },
             })
@@ -795,7 +795,7 @@ moduleIntegrationTestRunner<ITranslationModuleService>({
               expected: 2,
               translated: 1,
               missing: 1,
-              byLocale: {
+              by_locale: {
                 "en-US": { expected: 2, translated: 1, missing: 1 },
               },
             })
@@ -813,7 +813,7 @@ moduleIntegrationTestRunner<ITranslationModuleService>({
               expected: 0,
               translated: 0,
               missing: 0,
-              byLocale: {
+              by_locale: {
                 "en-US": { expected: 0, translated: 0, missing: 0 },
               },
             })
@@ -832,7 +832,7 @@ moduleIntegrationTestRunner<ITranslationModuleService>({
               expected: 50,
               translated: 0,
               missing: 50,
-              byLocale: {
+              by_locale: {
                 "en-US": { expected: 25, translated: 0, missing: 25 },
                 "fr-FR": { expected: 25, translated: 0, missing: 25 },
               },

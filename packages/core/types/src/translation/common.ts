@@ -176,7 +176,7 @@ export interface EntityTypeStatistics extends LocaleStatistics {
   /**
    * Breakdown of statistics by locale.
    */
-  byLocale: Record<string, LocaleStatistics>
+  by_locale: Record<string, LocaleStatistics>
 }
 
 /**

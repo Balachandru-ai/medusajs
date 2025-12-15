@@ -695,7 +695,7 @@ medusaIntegrationTestRunner({
             expected: 20,
             translated: 0,
             missing: 20,
-            byLocale: {
+            by_locale: {
               "en-US": { expected: 10, translated: 0, missing: 10 },
               "fr-FR": { expected: 10, translated: 0, missing: 10 },
             },
@@ -748,7 +748,7 @@ medusaIntegrationTestRunner({
             expected: 10,
             translated: 3,
             missing: 7,
-            byLocale: {
+            by_locale: {
               "fr-FR": { expected: 10, translated: 3, missing: 7 },
             },
           })
@@ -804,7 +804,7 @@ medusaIntegrationTestRunner({
             expected: 5,
             translated: 5,
             missing: 0,
-            byLocale: {
+            by_locale: {
               "fr-FR": { expected: 5, translated: 5, missing: 0 },
             },
           })
@@ -814,7 +814,7 @@ medusaIntegrationTestRunner({
             expected: 4,
             translated: 1,
             missing: 3,
-            byLocale: {
+            by_locale: {
               "fr-FR": { expected: 4, translated: 1, missing: 3 },
             },
           })
@@ -862,12 +862,12 @@ medusaIntegrationTestRunner({
           expect(response.data.statistics.product.translated).toEqual(3)
           expect(response.data.statistics.product.missing).toEqual(7)
 
-          expect(response.data.statistics.product.byLocale["fr-FR"]).toEqual({
+          expect(response.data.statistics.product.by_locale["fr-FR"]).toEqual({
             expected: 5,
             translated: 2,
             missing: 3,
           })
-          expect(response.data.statistics.product.byLocale["de-DE"]).toEqual({
+          expect(response.data.statistics.product.by_locale["de-DE"]).toEqual({
             expected: 5,
             translated: 1,
             missing: 4,
@@ -885,7 +885,7 @@ medusaIntegrationTestRunner({
             expected: 0,
             translated: 0,
             missing: 0,
-            byLocale: {
+            by_locale: {
               "fr-FR": { expected: 0, translated: 0, missing: 0 },
             },
           })

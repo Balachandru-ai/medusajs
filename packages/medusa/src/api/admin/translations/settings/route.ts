@@ -12,15 +12,15 @@ import TranslationFeatureFlag from "../../../../feature-flags/translation"
 
 export const GET = async (
   req: AuthenticatedMedusaRequest,
-  res: MedusaResponse<HttpTypes.AdminTranslatableFieldsResponse>
+  res: MedusaResponse<HttpTypes.AdminTranslationSettingsResponse>
 ) => {
   const translationService = req.scope.resolve<ITranslationModuleService>(
     Modules.TRANSLATION
   )
-  const translatableFields = translationService.getTranslatableFields()
+  const translatable_fields = translationService.getTranslatableFields()
 
   res.json({
-    translatableFields,
+    translatable_fields,
   })
 }
 

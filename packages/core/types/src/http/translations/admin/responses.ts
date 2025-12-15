@@ -60,7 +60,7 @@ export interface AdminTranslationEntityStatistics
   /**
    * Breakdown of statistics by locale.
    */
-  byLocale: Record<string, AdminTranslationLocaleStatistics>
+  by_locale: Record<string, AdminTranslationLocaleStatistics>
 }
 
 /**
@@ -74,9 +74,9 @@ export interface AdminTranslationStatisticsResponse {
 }
 
 /**
- * Response for translatable fields endpoint.
+ * Response for translation settings endpoint.
  */
-export interface AdminTranslatableFieldsResponse {
+export interface AdminTranslationSettingsResponse {
   /**
    * A mapping of entity types to their translatable field names.
    *
@@ -86,5 +86,5 @@ export interface AdminTranslatableFieldsResponse {
    *   "product_variant": ["title", "material"]
    * }
    */
-  translatableFields: Record<string, string[]>
+  translatable_fields: Record<string, string[]>
 }

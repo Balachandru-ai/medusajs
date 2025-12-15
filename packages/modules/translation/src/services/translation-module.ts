@@ -320,7 +320,7 @@ export default class TranslationModuleService
           expected: 0,
           translated: 0,
           missing: 0,
-          byLocale: Object.fromEntries(
+          by_locale: Object.fromEntries(
             normalizedLocales.map((locale) => [
               locale,
               { expected: 0, translated: 0, missing: 0 },
@@ -361,7 +361,7 @@ export default class TranslationModuleService
         expected: expectedPerLocale * normalizedLocales.length,
         translated: 0,
         missing: expectedPerLocale * normalizedLocales.length,
-        byLocale: Object.fromEntries(
+        by_locale: Object.fromEntries(
           normalizedLocales.map((locale) => [
             locale,
             {
@@ -379,9 +379,9 @@ export default class TranslationModuleService
       const localeCode = row.locale_code
       const translatedCount = parseInt(row.translated_field_count, 10) || 0
 
-      result[entityType].byLocale[localeCode].translated = translatedCount
-      result[entityType].byLocale[localeCode].missing =
-        result[entityType].byLocale[localeCode].expected - translatedCount
+      result[entityType].by_locale[localeCode].translated = translatedCount
+      result[entityType].by_locale[localeCode].missing =
+        result[entityType].by_locale[localeCode].expected - translatedCount
       result[entityType].translated += translatedCount
     }
 

@@ -317,7 +317,7 @@ export interface ITranslationModuleService extends IModuleService {
    * //     expected: 20, // 2 products × 5 fields × 2 locales
    * //     translated: 15,
    * //     missing: 5,
-   * //     byLocale: {
+   * //     by_locale: {
    * //       "en-US": { expected: 10, translated: 8, missing: 2 },
    * //       "fr-FR": { expected: 10, translated: 7, missing: 3 }
    * //     }

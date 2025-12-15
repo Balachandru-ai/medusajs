@@ -37,7 +37,7 @@ export const adminTranslationsRoutesMiddlewares: MiddlewareRoute[] = [
   },
   {
     method: ["GET"],
-    matcher: "/admin/translations/translatable-fields",
+    matcher: "/admin/translations/settings",
     middlewares: [],
   },
 ]
