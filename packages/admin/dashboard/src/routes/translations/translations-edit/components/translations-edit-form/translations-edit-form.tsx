@@ -233,6 +233,7 @@ function useTranslationsGridColumns({
       columnHelper.column({
         id: "original",
         name: "original",
+        size: 300,
         header: t("general.original"),
         cell: (context) => {
           const row = context.row.original
@@ -261,6 +262,7 @@ function useTranslationsGridColumns({
         return columnHelper.column({
           id: locale.locale_code,
           name: locale.locale.name,
+          size: 300,
           header: () => locale.locale.name,
           cell: (context) => {
             const row = context.row.original
