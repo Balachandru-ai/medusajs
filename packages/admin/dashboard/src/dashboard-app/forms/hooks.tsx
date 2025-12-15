@@ -25,10 +25,19 @@ function createExtendedSchema<TSchema extends ZodObject<any>>(
   baseSchema: TSchema,
   additionalDataSchema: Record<string, z.ZodTypeAny>
 ) {
-  return z.object({
+  const extendedObjectSchema = z.object({
     ...baseSchema.shape,
     additional_data: z.object(additionalDataSchema).optional(),
   })
+
+  return baseSchema
+    .superRefine((data, ctx) => {
+      const result = extendedObjectSchema.safeParse(data)
+      if (!result.success) {
+        result.error.issues.forEach((issue) => ctx.addIssue(issue as any))
+      }
+    })
+    .and(extendedObjectSchema)
 }
 
 function createExtendedDefaultValues<TData>(
