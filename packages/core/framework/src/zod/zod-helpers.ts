@@ -1,11 +1,10 @@
 import { MedusaError } from "../utils"
-import {
-  z,
-  ZodError,
-  ZodInvalidTypeIssue,
-  ZodInvalidUnionIssue,
-  ZodIssue,
-} from "zod"
+import { z, ZodError } from "zod"
+
+type ZodIssue = z.core.$ZodIssue
+type ZodIssueInvalidType = z.core.$ZodIssueInvalidType
+type ZodIssueInvalidUnion = z.core.$ZodIssueInvalidUnion
+type ZodIssueInvalidValue = z.core.$ZodIssueInvalidValue
 
 const formatPath = (issue: ZodIssue) => {
   return issue.path.join(", ")
@@ -16,7 +15,7 @@ const formatInvalidType = (issues: ZodIssue[]) => {
     .map((i) => {
       // Unforutnately the zod library doesn't distinguish between a wrong type and a required field, which we want to handle differently
       if (i.code === "invalid_type" && i.message !== "Required") {
-        return i.expected
+        return (i as ZodIssueInvalidType).expected
       }
       return
     })
@@ -26,7 +25,7 @@ const formatInvalidType = (issues: ZodIssue[]) => {
     return
   }
 
-  const received = (issues?.[0] as ZodInvalidTypeIssue)?.received
+  const received = (issues?.[0] as ZodIssueInvalidType)?.input
 
   return `Expected type: '${expected.join(", ")}' for field '${formatPath(
     issues[0]
@@ -37,7 +36,7 @@ const formatRequiredField = (issues: ZodIssue[]) => {
   const expected = issues
     .map((i) => {
       if (i.code === "invalid_type" && i.message === "Required") {
-        return i.expected
+        return (i as ZodIssueInvalidType).expected
       }
       return
     })
@@ -50,8 +49,8 @@ const formatRequiredField = (issues: ZodIssue[]) => {
   return `Field '${formatPath(issues[0])}' is required`
 }
 
-const formatUnionError = (issue: ZodInvalidUnionIssue) => {
-  const issues = issue.unionErrors.flatMap((e) => e.issues)
+const formatUnionError = (issue: ZodIssueInvalidUnion) => {
+  const issues = issue.errors.flatMap((e) => e.issues)
   return (
     formatInvalidType(issues) || formatRequiredField(issues) || issue.message
   )
@@ -66,20 +65,22 @@ const formatError = (err: ZodError) => {
           formatRequiredField([issue]) ||
           issue.message
         )
-      case "invalid_literal":
-        return `Expected literal: '${issue.expected}' for field '${formatPath(
-          issue
-        )}', but got: '${issue.received}'`
+      case "invalid_value": {
+        // In Zod v4, invalid_literal and invalid_enum_value are now invalid_value
+        const invalidValueIssue = issue as ZodIssueInvalidValue
+        if (invalidValueIssue.values) {
+          return `Expected: '${invalidValueIssue.values.join(
+            ", "
+          )}' for field '${formatPath(issue)}', but got: '${
+            invalidValueIssue.input
+          }'`
+        }
+        return issue.message
+      }
       case "invalid_union":
-        return formatUnionError(issue)
-      case "invalid_enum_value":
-        return `Expected: '${issue.options.join(", ")}' for field '${formatPath(
-          issue
-        )}', but got: '${issue.received}'`
+        return formatUnionError(issue as ZodIssueInvalidUnion)
       case "unrecognized_keys":
         return `Unrecognized fields: '${issue.keys.join(", ")}'`
-      case "invalid_arguments":
-        return `Invalid arguments for '${issue.path.join(", ")}'`
       case "too_small":
         return `Value for field '${formatPath(
           issue
@@ -90,17 +91,12 @@ const formatError = (err: ZodError) => {
         )}' too big, expected at most: '${issue.maximum}'`
       case "not_multiple_of":
         return `Value for field '${formatPath(issue)}' not multiple of: '${
-          issue.multipleOf
+          issue.divisor
         }'`
-      case "not_finite":
-        return `Value for field '${formatPath(issue)}' not finite: '${
-          issue.message
-        }'`
-      case "invalid_union_discriminator":
-      case "invalid_return_type":
-      case "invalid_date":
-      case "invalid_string":
-      case "invalid_intersection_types":
+      case "invalid_format":
+      case "invalid_key":
+      case "invalid_element":
+      case "custom":
       default:
         return issue.message
     }
@@ -110,9 +106,9 @@ const formatError = (err: ZodError) => {
 }
 
 export async function zodValidator<T>(
-  zodSchema: z.ZodObject<any, any> | z.ZodEffects<any, any>,
+  zodSchema: z.ZodObject<any, any> | z.ZodType<any, any, any>,
   body: T
-): Promise<z.ZodRawShape> {
+): Promise<z.output<z.ZodObject<any, any> | z.ZodType<any, any, any>>> {
   let strictSchema = zodSchema
   // ZodEffects doesn't support setting as strict, for all other schemas we want to enforce strictness.
   if ("strict" in zodSchema) {

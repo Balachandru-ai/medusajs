@@ -1,5 +1,8 @@
 import { OrchestrationUtils } from "@medusajs/utils"
-import { type ZodSchema } from "zod"
+
+type ZodLike<T = any> = {
+  parse(data: unknown): T
+}
 import {
   CompensateFn,
   createStep,
@@ -73,7 +76,7 @@ export function createHook<Name extends string, TInvokeInput, TInvokeOutput>(
   name: Name,
   hookInput: TInvokeInput,
   options: {
-    resultValidator?: ZodSchema<TInvokeOutput>
+    resultValidator?: ZodLike<TInvokeOutput>
   } = {}
 ): Hook<Name, TInvokeInput, TInvokeOutput> {
   const context = global[
