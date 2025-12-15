@@ -15,7 +15,6 @@ export class Translation {
     this.client = client
   }
 
-  // TODO: Ask Adrien/Shahed how do I know how to construct the api docs url when implementing new methods
   /**
    * This method retrieves a paginated list of translations. It sends a request to the
    * [List Translations](https://docs.medusajs.com/api/admin#translations_gettranslations)
@@ -77,7 +76,7 @@ export class Translation {
   }
 
   /**
-   * This method manages allows bulk operations on translations. It sends a request to the
+   * This method allows bulk operations on translations. It sends a request to the
    * [Manage Translations](https://docs.medusajs.com/api/admin#translations_posttranslationsbatch)
    * API route.
    *
@@ -115,6 +114,92 @@ export class Translation {
         method: "POST",
         headers,
         body,
+      }
+    )
+  }
+
+  /**
+   * This method retrieves the settings for the translations for a given entity type or all entity types if no entity type is provided.
+   * It sends a request to the
+   * [Get Translation Settings](https://docs.medusajs.com/api/admin#translations_gettranslationssettings) API route.
+   *
+   * @param query - The query parameters which can optionally include the entity type to get the settings for.
+   * @param headers - Headers to pass in the request.
+   * @returns The translation settings.
+   *
+   * @example
+   * To retrieve the settings for the translations for a given entity type:
+   *
+   * ```ts
+   * sdk.admin.translation.settings({
+   *   entity_type: "product"
+   * })
+   * .then(({ translatable_fields }) => {
+   *   console.log(translatable_fields)
+   * })
+   * ```
+   *
+   * To retrieve the settings for all entity types:
+   *
+   * ```ts
+   * sdk.admin.translation.settings()
+   * .then(({ translatable_fields }) => {
+   *   console.log(translatable_fields)
+   * })
+   * ```
+   */
+  async settings(
+    query?: HttpTypes.AdminTranslationSettingsParams,
+    headers?: ClientHeaders
+  ) {
+    return await this.client.fetch<HttpTypes.AdminTranslationSettingsResponse>(
+      `/admin/translations/settings`,
+      {
+        headers,
+        query,
+      }
+    )
+  }
+
+  /**
+   * This method retrieves the statistics for the translations for a given entity type or all entity types if no entity type is provided.
+   * It sends a request to the
+   * [Get Translation Statistics](https://docs.medusajs.com/api/admin#translations_gettranslationsstatistics) API route.
+   *
+   * @param query - The query parameters which can optionally include the entity type to get the statistics for.
+   * @param headers - Headers to pass in the request.
+   * @returns The translation statistics.
+   *
+   * @example
+   * To retrieve the statistics for the translations for a given entity type:
+   *
+   * ```ts
+   * sdk.admin.translation.statistics({
+   *   entity_type: "product"
+   * })
+   * .then(({ statistics }) => {
+   *   console.log(statistics)
+   * })
+   * ```
+   *
+   * To retrieve the statistics for all entity types:
+   *
+   * ```ts
+   * sdk.admin.translation.statistics()
+   * .then(({ statistics }) => {
+   *   console.log(statistics)
+   * })
+   * ```
+   */
+  async statistics(
+    query?: HttpTypes.AdminTranslationStatisticsParams,
+    headers?: ClientHeaders
+  ) {
+    return await this.client.fetch<HttpTypes.AdminTranslationStatisticsResponse>(
+      `/admin/translations/statistics`,
+      {
+        headers,
+        query,
       }
     )
   }
