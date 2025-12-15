@@ -1,4 +1,4 @@
-import { Context } from "@medusajs/framework/types"
+import { Context, FindConfig } from "@medusajs/framework/types"
 import {
   InjectManager,
   MedusaContext,
@@ -41,5 +41,65 @@ export default class RbacModuleService extends MedusaService<{
     @MedusaContext() sharedContext: Context = {}
   ): Promise<any[]> {
     return await this.rbacRepository_.listPoliciesForRole(roleId, sharedContext)
+  }
+
+  @InjectManager()
+  // @ts-expect-error
+  async listRbacRoles(
+    filters: any = {},
+    config: FindConfig<any> = {},
+    @MedusaContext() sharedContext: Context = {}
+  ): Promise<any[]> {
+    const roles = await super.listRbacRoles(filters, config, sharedContext)
+
+    const shouldIncludePolicies =
+      config.relations?.includes("policies") ||
+      config.select?.includes("policies")
+
+    if (shouldIncludePolicies && roles.length > 0) {
+      const roleIds = roles.map((role) => role.id)
+      const policiesByRole = await this.rbacRepository_.listPoliciesForRoles(
+        roleIds,
+        sharedContext
+      )
+
+      for (const role of roles) {
+        role.policies = policiesByRole.get(role.id) || []
+      }
+    }
+
+    return roles
+  }
+
+  @InjectManager()
+  // @ts-expect-error
+  async listAndCountRbacRoles(
+    filters: any = {},
+    config: FindConfig<any> = {},
+    @MedusaContext() sharedContext: Context = {}
+  ): Promise<[any[], number]> {
+    const [roles, count] = await super.listAndCountRbacRoles(
+      filters,
+      config,
+      sharedContext
+    )
+
+    const shouldIncludePolicies =
+      config.relations?.includes("policies") ||
+      config.select?.includes("policies")
+
+    if (shouldIncludePolicies && roles.length > 0) {
+      const roleIds = roles.map((role) => role.id)
+      const policiesByRole = await this.rbacRepository_.listPoliciesForRoles(
+        roleIds,
+        sharedContext
+      )
+
+      for (const role of roles) {
+        role.policies = policiesByRole.get(role.id) || []
+      }
+    }
+
+    return [roles, count]
   }
 }

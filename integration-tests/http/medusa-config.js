@@ -66,6 +66,9 @@ const modules = {
     resolve: "@medusajs/index",
     disable: process.env.ENABLE_INDEX_MODULE !== "true",
   },
+  [Modules.RBAC]: {
+    resolve: "@medusajs/rbac",
+  },
 }
 
 if (process.env.MEDUSA_FF_TRANSLATION === "true") {
