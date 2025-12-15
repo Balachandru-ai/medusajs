@@ -33,3 +33,42 @@ export interface AdminTranslationsBatchResponse {
     deleted: boolean
   }
 }
+
+/**
+ * Statistics for a specific locale.
+ */
+export interface AdminTranslationLocaleStatistics {
+  /**
+   * Expected number of translated fields.
+   */
+  expected: number
+  /**
+   * Actual number of translated fields.
+   */
+  translated: number
+  /**
+   * Number of missing translations.
+   */
+  missing: number
+}
+
+/**
+ * Statistics for an entity type.
+ */
+export interface AdminTranslationEntityStatistics
+  extends AdminTranslationLocaleStatistics {
+  /**
+   * Breakdown of statistics by locale.
+   */
+  byLocale: Record<string, AdminTranslationLocaleStatistics>
+}
+
+/**
+ * Response for translation statistics endpoint.
+ */
+export interface AdminTranslationStatisticsResponse {
+  /**
+   * Statistics by entity type.
+   */
+  statistics: Record<string, AdminTranslationEntityStatistics>
+}

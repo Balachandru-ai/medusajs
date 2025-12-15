@@ -48,3 +48,13 @@ export const AdminBatchTranslations = createBatchBody(
   AdminCreateTranslation,
   AdminUpdateTranslation
 )
+
+export type AdminTranslationStatisticsType = z.infer<
+  typeof AdminTranslationStatistics
+>
+export const AdminTranslationStatistics = z.object({
+  locales: z.array(z.string()).min(1, "At least one locale must be provided"),
+  entity_types: z
+    .array(z.string())
+    .min(1, "At least one entity type must be provided"),
+})
