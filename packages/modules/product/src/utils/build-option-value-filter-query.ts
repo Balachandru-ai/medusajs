@@ -13,7 +13,7 @@ export async function buildOptionValueFilterQuery(
   optionValueIds: string[],
   sharedContext?: Context
 ): Promise<DAL.FilterQuery<any> | null> {
-  if (!optionValueIds || optionValueIds.length === 0) {
+  if (!optionValueIds?.length) {
     return null
   }
 
