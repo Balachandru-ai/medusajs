@@ -81,6 +81,7 @@ export class ProductRepository extends DALUtils.mikroOrmBaseRepositoryFactory(
       variants: any[],
       options: InferEntityType<typeof ProductOption>[]
     ) => void,
+    expectedOptionIdsMap: Map<string, Set<string>> = new Map(),
     context: Context = {}
   ): Promise<InferEntityType<typeof Product>[]> {
     const productsToUpdate_ = deepCopy(productsToUpdate)
@@ -116,14 +117,18 @@ export class ProductRepository extends DALUtils.mikroOrmBaseRepositoryFactory(
       const product = productsMap.get(productToUpdate.id)!
       const wrappedProduct = wrap(product)
 
-      // Assign the options first, so they'll be available for the variants loop below
       if (productToUpdate.options) {
         wrappedProduct.assign({ options: productToUpdate.options })
-        delete productToUpdate.options // already assigned above, so no longer necessary
+        delete productToUpdate.options
       }
 
       if (productToUpdate.variants) {
-        validateVariantOptions(productToUpdate.variants, product.options)
+        const expectedOptionIds = expectedOptionIdsMap.get(product.id)
+        const optionsForValidation = expectedOptionIds
+          ? product.options.filter((o) => expectedOptionIds.has(o.id))
+          : product.options
+
+        validateVariantOptions(productToUpdate.variants, optionsForValidation)
 
         productToUpdate.variants.forEach((variant: any) => {
           if (variant.options) {
