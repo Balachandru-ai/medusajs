@@ -402,12 +402,12 @@ export default class ProductModuleService
       }
     }
 
-    const matchingProductIds = await buildOptionValueFilterQuery(
+    const optionValueFilter = await buildOptionValueFilterQuery(
       optionValueIds,
       sharedContext
     )
 
-    if (!matchingProductIds.length) {
+    if (!optionValueFilter) {
       return {
         filters: filters,
         shouldReturnEmpty: true,
@@ -416,24 +416,12 @@ export default class ProductModuleService
 
     const { option_value_id, ...restFilters } = filters
 
-    // merge with existing id filter if present
-    const existingIds = restFilters.id
-      ? Array.isArray(restFilters.id)
-        ? restFilters.id
-        : [restFilters.id]
-      : []
-
-    const finalProductIds =
-      existingIds.length > 0
-        ? matchingProductIds.filter((id) => existingIds.includes(id))
-        : matchingProductIds
-
     return {
       filters: {
         ...restFilters,
-        id: finalProductIds.length > 0 ? finalProductIds : undefined,
+        ...optionValueFilter,
       },
-      shouldReturnEmpty: finalProductIds.length === 0,
+      shouldReturnEmpty: false,
     }
   }
 

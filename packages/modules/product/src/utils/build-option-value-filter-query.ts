@@ -1,20 +1,20 @@
-import { Context } from "@medusajs/framework/types"
-import { SqlEntityManager } from "@medusajs/framework/mikro-orm/postgresql"
+import { Context, DAL } from "@medusajs/framework/types"
+import { raw, SqlEntityManager } from "@medusajs/framework/mikro-orm/postgresql"
 
 /**
- * Builds a query to find product IDs that have variants matching
+ * Builds a query filter to find products that have variants matching
  * at least one option value from each option group.
  *
  * @param optionValueIds - Array of option value IDs to filter by
  * @param sharedContext - Shared Medusa context
- * @returns Array of product IDs that match the criteria
+ * @returns Filter query object with raw subquery, or null if no valid option groups
  */
 export async function buildOptionValueFilterQuery(
   optionValueIds: string[],
   sharedContext?: Context
-): Promise<string[]> {
+): Promise<DAL.FilterQuery<any> | null> {
   if (!optionValueIds || optionValueIds.length === 0) {
-    return []
+    return null
   }
 
   const manager = (sharedContext?.transactionManager ??
@@ -31,8 +31,8 @@ export async function buildOptionValueFilterQuery(
     .whereNull("deleted_at")
     .groupBy("option_id")
 
-  if (optionGroups.length === 0) {
-    return []
+  if (!optionGroups.length) {
+    return null
   }
 
   const optionIds = optionGroups.map(
@@ -42,23 +42,28 @@ export async function buildOptionValueFilterQuery(
     .map((row: { option_value_ids: string[] }) => row.option_value_ids)
     .flat()
 
-  const matchingVariants = await knex
-    .select("pv.id as variant_id", "pv.product_id")
-    .from("product_variant as pv")
-    .innerJoin("product_variant_option as pvo", "pv.id", "pvo.variant_id")
-    .innerJoin("product_option_value as pov", "pvo.option_value_id", "pov.id")
-    .whereIn("pvo.option_value_id", allValueIds)
-    .whereIn("pov.option_id", optionIds)
-    .whereNull("pv.deleted_at")
-    .whereNull("pov.deleted_at")
-    .groupBy("pv.id", "pv.product_id")
-    .havingRaw(`COUNT(DISTINCT pov.option_id) = ?`, [optionIds.length])
+  const escapeValue = (value: string) => `'${value.replace(/'/g, "''")}'`
+  const valueIdsSql = allValueIds.map(escapeValue).join(",")
+  const optionIdsSql = optionIds.map(escapeValue).join(",")
 
-  const productIds = [
-    ...new Set(
-      matchingVariants.map((row: { product_id: string }) => row.product_id)
-    ),
-  ]
+  const subquery = (alias: string) =>
+    `
+    EXISTS (
+      SELECT 1
+      FROM product_variant pv
+      INNER JOIN product_variant_option pvo ON pv.id = pvo.variant_id
+      INNER JOIN product_option_value pov ON pvo.option_value_id = pov.id
+      WHERE pv.product_id = ${alias}.id
+        AND pv.deleted_at IS NULL
+        AND pov.deleted_at IS NULL
+        AND pvo.option_value_id IN (${valueIdsSql})
+        AND pov.option_id IN (${optionIdsSql})
+      GROUP BY pv.id
+      HAVING COUNT(DISTINCT pov.option_id) = ${optionIds.length}
+    )
+  `.trim()
 
-  return productIds
+  return {
+    [raw((alias) => subquery(alias))]: true,
+  }
 }
