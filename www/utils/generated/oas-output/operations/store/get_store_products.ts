@@ -749,6 +749,16 @@
  *       type: string
  *       title: cart_id
  *       description: The product's cart id.
+ *   - name: locale
+ *     in: query
+ *     description: The locale in BCP 47 format to retrieve localized content.
+ *     required: false
+ *     schema:
+ *       type: string
+ *       example: en-US
+ *       externalDocs:
+ *         url: https://docs.medusajs.com/resources/commerce-modules/translation/storefront
+ *         description: Learn more in the Serve Translations in Storefront guide.
  * x-codeSamples:
  *   - lang: JavaScript
  *     label: JS SDK
