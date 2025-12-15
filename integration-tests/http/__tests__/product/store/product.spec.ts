@@ -955,7 +955,7 @@ medusaIntegrationTestRunner({
         ])
       })
 
-      it("returns a list of products filtered by option value ids", async () => {
+      it("should return a list of products filtered by option value ids", async () => {
         const sizeLargeId = getOptionValueId(product, "size", "large")
         expect(sizeLargeId).toBeDefined()
 
