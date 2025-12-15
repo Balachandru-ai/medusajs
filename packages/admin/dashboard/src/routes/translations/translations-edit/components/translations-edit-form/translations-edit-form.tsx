@@ -379,19 +379,47 @@ export const TranslationsEditForm = ({
       return
     }
 
-    await mutateAsync(payload, {
-      onSuccess: () => {
-        toast.success(
-          t("translations.edit.successToast", {
-            defaultValue: "Translations updated successfully",
-          })
-        )
-        handleSuccess()
-      },
-      onError: (error) => {
-        toast.error(error.message)
-      },
-    })
+    const BATCH_SIZE = 150
+    const totalItems =
+      payload.create.length + payload.update.length + payload.delete.length
+    const batchCount = Math.ceil(totalItems / BATCH_SIZE)
+
+    for (let i = 0; i < batchCount; i++) {
+      let currentBatchAvailable = BATCH_SIZE
+      const currentBatch: HttpTypes.AdminBatchTranslations = {
+        create: [],
+        update: [],
+        delete: [],
+      }
+      if (payload.create.length > 0) {
+        currentBatch.create = payload.create.splice(0, currentBatchAvailable)
+        currentBatchAvailable -= currentBatch.create.length
+      }
+      if (payload.update.length > 0) {
+        currentBatch.update = payload.update.splice(0, currentBatchAvailable)
+        currentBatchAvailable -= currentBatch.update.length
+      }
+      if (payload.delete.length > 0) {
+        currentBatch.delete = payload.delete.splice(0, currentBatchAvailable)
+        currentBatchAvailable -= currentBatch.delete.length
+      }
+
+      await mutateAsync(currentBatch, {
+        onSuccess: () => {
+          if (i === batchCount - 1) {
+            toast.success(
+              t("translations.edit.successToast", {
+                defaultValue: "Translations updated successfully",
+              })
+            )
+            handleSuccess()
+          }
+        },
+        onError: (error) => {
+          toast.error(error.message)
+        },
+      })
+    }
   })
 
   const columns = useTranslationsGridColumns({
