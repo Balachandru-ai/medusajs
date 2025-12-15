@@ -25,6 +25,7 @@ export async function applyLocale(
   const queryLocale = req.query.locale as string | undefined
   if (queryLocale) {
     req.locale = normalizeLocale(queryLocale)
+    delete req.query.locale
     return next()
   }
 
