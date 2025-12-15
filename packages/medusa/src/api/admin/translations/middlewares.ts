@@ -31,8 +31,8 @@ export const adminTranslationsRoutesMiddlewares: MiddlewareRoute[] = [
     middlewares: [validateAndTransformBody(AdminBatchTranslations)],
   },
   {
-    method: ["POST"],
+    method: ["GET"],
     matcher: "/admin/translations/statistics",
-    middlewares: [validateAndTransformBody(AdminTranslationStatistics)],
+    middlewares: [validateAndTransformQuery(AdminTranslationStatistics, {})],
   },
 ]

@@ -52,9 +52,15 @@ export const AdminBatchTranslations = createBatchBody(
 export type AdminTranslationStatisticsType = z.infer<
   typeof AdminTranslationStatistics
 >
-export const AdminTranslationStatistics = z.object({
-  locales: z.array(z.string()).min(1, "At least one locale must be provided"),
-  entity_types: z
-    .array(z.string())
-    .min(1, "At least one entity type must be provided"),
-})
+export const AdminTranslationStatistics = z
+  .object({
+    locales: z.union([z.string(), z.array(z.string())]),
+    entity_types: z.union([z.string(), z.array(z.string())]),
+  })
+  .transform((data) => ({
+    // Normalize to arrays for consistent handling
+    locales: Array.isArray(data.locales) ? data.locales : [data.locales],
+    entity_types: Array.isArray(data.entity_types)
+      ? data.entity_types
+      : [data.entity_types],
+  }))
