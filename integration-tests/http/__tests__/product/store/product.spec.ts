@@ -971,7 +971,7 @@ medusaIntegrationTestRunner({
         ])
       })
 
-      it("returns products that have at least one variant with the given option value combinations", async () => {
+      it("should return products that have at least one variant with the given option value combinations", async () => {
         const sizeLargeId = getOptionValueId(product, "size", "large")
         const sizeSmallId = getOptionValueId(product, "size", "small")
         const colorGreenId = getOptionValueId(product, "color", "green")
@@ -993,7 +993,7 @@ medusaIntegrationTestRunner({
         ])
       })
 
-      it("excludes products that don't have variant with the given option value combinations", async () => {
+      it("should exclude products that don't have variant with the given option value combinations", async () => {
         const sizeLargeId = getOptionValueId(product, "size", "large")
         const materialCottonId = getOptionValueId(
           product2,
