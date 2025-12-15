@@ -3,14 +3,17 @@ import {
   WorkflowResponse,
   createWorkflow,
   transform,
+  when,
 } from "@medusajs/framework/workflows-sdk"
 import {
   createRbacRoleInheritancesStep,
   createRbacRolePoliciesStep,
   createRbacRolesStep,
 } from "../steps"
+import { validateUserPermissionsStep } from "../steps/validate-user-permissions"
 
 export type CreateRbacRolesWorkflowInput = {
+  user_id?: string
   roles: {
     name: string
     description?: string | null
@@ -25,6 +28,23 @@ export const createRbacRolesWorkflowId = "create-rbac-roles"
 export const createRbacRolesWorkflow = createWorkflow(
   createRbacRolesWorkflowId,
   (input: WorkflowData<CreateRbacRolesWorkflowInput>) => {
+    const validationData = transform({ input }, ({ input }) => {
+      const allPolicyIds = new Set<string>()
+      input.roles.forEach((role) => {
+        role.policy_ids?.forEach((policyId) => allPolicyIds.add(policyId))
+      })
+      return {
+        user_id: input.user_id!,
+        policy_ids: Array.from(allPolicyIds),
+      }
+    })
+
+    when({ validationData }, ({ validationData }) => {
+      return !!validationData?.user_id && !!validationData?.policy_ids?.length
+    }).then(() => {
+      validateUserPermissionsStep(validationData)
+    })
+
     const roleData = transform({ input }, ({ input }) => ({
       roles: input.roles.map((r) => ({
         name: r.name,

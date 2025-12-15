@@ -4,12 +4,15 @@ import {
   WorkflowResponse,
   createWorkflow,
   transform,
+  when,
 } from "@medusajs/framework/workflows-sdk"
 import { UpdateRbacRoleDTO } from "@medusajs/types"
 import { createRbacRolePoliciesStep, setRoleInheritanceStep } from "../steps"
 import { updateRbacRolesStep } from "../steps/update-rbac-roles"
+import { validateUserPermissionsStep } from "../steps/validate-user-permissions"
 
 export type UpdateRbacRolesWorkflowInput = {
+  user_id?: string
   selector: Record<string, any>
   update: Omit<UpdateRbacRoleDTO, "id"> & {
     inherited_role_ids?: string[]
@@ -22,6 +25,20 @@ export const updateRbacRolesWorkflowId = "update-rbac-roles"
 export const updateRbacRolesWorkflow = createWorkflow(
   updateRbacRolesWorkflowId,
   (input: WorkflowData<UpdateRbacRolesWorkflowInput>) => {
+    const validationData = transform({ input }, ({ input }) => {
+      const policyIds = input.update.policy_ids || []
+      return {
+        user_id: input.user_id!,
+        policy_ids: policyIds,
+      }
+    })
+
+    when({ validationData }, ({ validationData }) => {
+      return !!validationData?.user_id && !!validationData?.policy_ids?.length
+    }).then(() => {
+      validateUserPermissionsStep(validationData)
+    })
+
     const roleUpdateData = transform({ input }, ({ input }) => ({
       selector: input.selector,
       update: {
