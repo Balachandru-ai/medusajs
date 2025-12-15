@@ -24916,7 +24916,8 @@ __metadata:
     vite-plugin-turbosnap: ^1.0.2
     vitest: ^3.0.5
     yalc: ^1.0.0-pre.53
-    zod: 3.25.76
+    zod: 4.2.0
+    zod-validation-error: 5.0.0
   languageName: unknown
   linkType: soft
 
@@ -28414,13 +28415,6 @@ __metadata:
   peerDependencies:
     zod: ^3.25.0 || ^4.0.0
   checksum: 1f137003dad6da34e954e31f270ea8bf2cc6e29dbb9b03858951f6498a7f728b935ca66782514b2fca6485750844cef4633ce1acbd17ad3dde359a2ad6b22973
-  languageName: node
-  linkType: hard
-
-"zod@npm:3.25.76":
-  version: 3.25.76
-  resolution: "zod@npm:3.25.76"
-  checksum: 5718ec35e3c40b600316c5b4c5e4976f7fee68151bc8f8d90ec18a469be9571f072e1bbaace10f1e85cf8892ea12d90821b200e980ab46916a6166a4260a983c
   languageName: node
   linkType: hard
 
