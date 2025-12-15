@@ -1,6 +1,7 @@
 export const PRODUCT_TRANSLATABLE_FIELDS = [
   "title",
   "description",
+  "material",
   "subtitle",
   "status",
 ]
