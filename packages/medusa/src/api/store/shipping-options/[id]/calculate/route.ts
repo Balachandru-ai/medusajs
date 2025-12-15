@@ -1,10 +1,7 @@
-import { HttpTypes } from "@medusajs/framework/types"
-import { MedusaRequest, MedusaResponse } from "@medusajs/framework/http"
 import { calculateShippingOptionsPricesWorkflow } from "@medusajs/core-flows"
-import {
-  applyTranslations,
-  ContainerRegistrationKeys,
-} from "@medusajs/framework/utils"
+import { MedusaRequest, MedusaResponse } from "@medusajs/framework/http"
+import { HttpTypes } from "@medusajs/framework/types"
+import { ContainerRegistrationKeys } from "@medusajs/framework/utils"
 
 export const POST = async (
   req: MedusaRequest<
@@ -32,12 +29,6 @@ export const POST = async (
 
   const shippingOption = data[0]
   const priceData = result[0]
-
-  await applyTranslations({
-    localeCode: req.locale,
-    objects: [shippingOption],
-    container: req.scope,
-  })
 
   shippingOption.calculated_price = priceData
 

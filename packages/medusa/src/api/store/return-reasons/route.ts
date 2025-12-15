@@ -1,10 +1,9 @@
+import { MedusaRequest, MedusaResponse } from "@medusajs/framework/http"
+import { HttpTypes } from "@medusajs/framework/types"
 import {
-  applyTranslations,
   ContainerRegistrationKeys,
   remoteQueryObjectFromString,
 } from "@medusajs/framework/utils"
-import { MedusaRequest, MedusaResponse } from "@medusajs/framework/http"
-import { HttpTypes } from "@medusajs/framework/types"
 
 export const GET = async (
   req: MedusaRequest<HttpTypes.FindParams>,
@@ -24,12 +23,6 @@ export const GET = async (
   })
 
   const { rows: return_reasons, metadata } = await remoteQuery(queryObject)
-
-  await applyTranslations({
-    localeCode: req.locale,
-    objects: return_reasons,
-    container: req.scope,
-  })
 
   res.json({
     return_reasons,
