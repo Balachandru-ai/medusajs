@@ -328,7 +328,6 @@ export default class ProductModuleService
       config?.relations?.includes("variants.images")
     const shouldFilterOptionValues =
       config?.relations?.includes("options.values")
-    const hasVariantFilters = !!normalizedFilters?.variants
 
     // Ensure we load necessary relations
     const relations = [...(config?.relations || [])]
@@ -347,16 +346,6 @@ export default class ProductModuleService
       }
       if (!relations.includes("product_options.values")) {
         relations.push("product_options.values")
-      }
-    }
-
-    // When filtering by variants, ensure variants and variants.options relations are loaded
-    if (hasVariantFilters) {
-      if (!relations.includes("variants")) {
-        relations.push("variants")
-      }
-      if (!relations.includes("variants.options")) {
-        relations.push("variants.options")
       }
     }
 
