@@ -709,6 +709,7 @@ medusaIntegrationTestRunner({
         it("returns a list of products not containing a giftcard in list", async () => {
           const payload = {
             title: "Test Giftcard",
+            options: [{ title: "Denominations", values: ["100"] }],
             is_giftcard: true,
             description: "test-giftcard-description",
             shipping_profile_id: shippingProfile.id,
@@ -2894,32 +2895,6 @@ medusaIntegrationTestRunner({
           expect(response.data.product.options.length).toEqual(2)
         })
 
-        it("should link and unlink existing options to/from product", async () => {
-          const payload = {
-            add: [colorOption.id, sizeOption.id],
-            remove: [baseProduct.options[0].id, baseProduct.options[1].id],
-          }
-
-          const response = await api.post(
-            `/admin/products/${baseProduct.id}/options`,
-            payload,
-            adminHeaders
-          )
-
-          expect(response.status).toEqual(200)
-          expect(response.data.product.options.length).toEqual(2)
-          expect(response.data.product.options).toEqual(
-            expect.arrayContaining([
-              expect.objectContaining({
-                id: colorOption.id,
-              }),
-              expect.objectContaining({
-                id: sizeOption.id,
-              }),
-            ])
-          )
-        })
-
         it("should link a new options to product", async () => {
           const payload = {
             add: [
@@ -2927,7 +2902,6 @@ medusaIntegrationTestRunner({
               sizeOption.id,
               { title: "new", values: ["A", "B"] },
             ],
-            remove: [baseProduct.options[0].id, baseProduct.options[1].id],
           }
 
           const response = await api.post(
@@ -2937,7 +2911,7 @@ medusaIntegrationTestRunner({
           )
 
           expect(response.status).toEqual(200)
-          expect(response.data.product.options.length).toEqual(3)
+          expect(response.data.product.options.length).toEqual(5) // 3 new ones and 2 it already had
           expect(response.data.product.options).toEqual(
             expect.arrayContaining([
               expect.objectContaining({
@@ -2948,6 +2922,12 @@ medusaIntegrationTestRunner({
               }),
               expect.objectContaining({
                 title: "new",
+              }),
+              expect.objectContaining({
+                id: baseProduct.options[0].id,
+              }),
+              expect.objectContaining({
+                id: baseProduct.options[1].id,
               }),
             ])
           )

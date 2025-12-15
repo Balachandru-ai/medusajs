@@ -1264,7 +1264,7 @@ export default class ProductModuleService
     }
 
     // Step 3: Validate all removals BEFORE any mutations
-    if (validationPairs.length > 0) {
+    if (validationPairs.length) {
       await this.validateOptionRemoval_(validationPairs, sharedContext)
     }
 
@@ -1348,7 +1348,7 @@ export default class ProductModuleService
       {
         $or: pairs,
       },
-      { relations: [] },
+      {},
       sharedContext
     )
 

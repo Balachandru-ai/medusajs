@@ -235,7 +235,7 @@ export class ProductRepository extends DALUtils.mikroOrmBaseRepositoryFactory(
    * @returns Map keyed by `${productId}_${valueId}` with arrays of variant info (id and title) that use those values
    */
   async checkVariantsUsingOptionValues(
-    pairs: Array<{ productId: string; optionValueIds: string[] }>,
+    pairs: Array<{ productId: string; optionValueIds: string[] }> = [],
     context: Context = {}
   ): Promise<
     Map<
@@ -247,7 +247,6 @@ export class ProductRepository extends DALUtils.mikroOrmBaseRepositoryFactory(
       return new Map()
     }
 
-    // Filter out pairs with empty value arrays
     const validPairs = pairs.filter((p) => p.optionValueIds.length > 0)
     if (validPairs.length === 0) {
       return new Map()
@@ -257,7 +256,6 @@ export class ProductRepository extends DALUtils.mikroOrmBaseRepositoryFactory(
     const connection = manager.getConnection()
     const knex = connection.getKnex()
 
-    // Collect all unique product IDs and value IDs
     const allProductIds = [...new Set(validPairs.map((p) => p.productId))]
     const allValueIds = [
       ...new Set(validPairs.flatMap((p) => p.optionValueIds)),
@@ -277,7 +275,6 @@ export class ProductRepository extends DALUtils.mikroOrmBaseRepositoryFactory(
       .whereNull("pv.deleted_at")
       .whereIn("pvo.option_value_id", allValueIds)
 
-    // Group results by product_id and option_value_id
     const resultMap = new Map<
       string,
       Array<{ variant_id: string; title: string | null; product_id: string }>
