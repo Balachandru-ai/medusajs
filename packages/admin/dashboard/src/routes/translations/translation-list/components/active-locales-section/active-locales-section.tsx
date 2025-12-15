@@ -1,4 +1,4 @@
-import { PencilSquare, Text as TextIcon } from "@medusajs/icons"
+import { PencilSquare, Language } from "@medusajs/icons"
 import { Container, Heading, IconButton, InlineTip, Text } from "@medusajs/ui"
 import { useTranslation } from "react-i18next"
 import { IconAvatar } from "../../../../../components/common/icon-avatar"
@@ -46,7 +46,7 @@ export const ActiveLocalesSection = ({
         {hasLocales ? (
           <Container className="bg-ui-bg-component flex items-center gap-x-4 px-6 py-2">
             <IconAvatar>
-              <TextIcon />
+              <Language />
             </IconAvatar>
             <div className="flex flex-col">
               <Text size="small" weight="plus">
