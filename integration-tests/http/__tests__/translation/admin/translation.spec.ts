@@ -865,7 +865,7 @@ medusaIntegrationTestRunner({
           expect(response.data.statistics.product.byLocale["fr-FR"]).toEqual({
             expected: 5,
             translated: 2,
-            missing: 2,
+            missing: 3,
           })
           expect(response.data.statistics.product.byLocale["de-DE"]).toEqual({
             expected: 5,
