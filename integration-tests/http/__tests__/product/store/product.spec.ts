@@ -971,7 +971,7 @@ medusaIntegrationTestRunner({
         ])
       })
 
-      it("matches variants that satisfy option value groups across options", async () => {
+      it("returns products that have at least one variant with the given option value combinations", async () => {
         const sizeLargeId = getOptionValueId(product, "size", "large")
         const sizeSmallId = getOptionValueId(product, "size", "small")
         const colorGreenId = getOptionValueId(product, "color", "green")
@@ -993,7 +993,7 @@ medusaIntegrationTestRunner({
         ])
       })
 
-      it("excludes products when option value groups cannot be combined on a variant", async () => {
+      it("excludes products that don't have variant with the given option value combinations", async () => {
         const sizeLargeId = getOptionValueId(product, "size", "large")
         const materialCottonId = getOptionValueId(
           product2,
