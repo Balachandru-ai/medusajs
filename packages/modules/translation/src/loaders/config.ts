@@ -1,6 +1,8 @@
 import { LoaderOptions } from "@medusajs/framework/types"
 import {
+  PRODUCT_COLLECTION_TRANSLATABLE_FIELDS,
   PRODUCT_TRANSLATABLE_FIELDS,
+  PRODUCT_TYPE_TRANSLATABLE_FIELDS,
   PRODUCT_VARIANT_TRANSLATABLE_FIELDS,
 } from "../utils/translatable-fields"
 import { asValue } from "awilix"
@@ -14,12 +16,14 @@ export default async ({
 }>): Promise<void> => {
   const { expandedTranslatableFields } = options ?? {}
 
-  const { product, productVariant, ...others } =
+  const { product, productVariant, productType, productCollection, ...others } =
     expandedTranslatableFields ?? {}
 
   const translatableFieldsConfig: Record<string, string[]> = {
     product: PRODUCT_TRANSLATABLE_FIELDS,
     product_variant: PRODUCT_VARIANT_TRANSLATABLE_FIELDS,
+    product_type: PRODUCT_TYPE_TRANSLATABLE_FIELDS,
+    product_collection: PRODUCT_COLLECTION_TRANSLATABLE_FIELDS,
   }
 
   if (product) {
@@ -36,6 +40,22 @@ export default async ({
       ...productVariant,
     ])
     translatableFieldsConfig.product_variant = Array.from(translatableFields)
+  }
+
+  if (productType) {
+    const translatableFields = new Set([
+      ...PRODUCT_TYPE_TRANSLATABLE_FIELDS,
+      ...productType,
+    ])
+    translatableFieldsConfig.product_type = Array.from(translatableFields)
+  }
+
+  if (productCollection) {
+    const translatableFields = new Set([
+      ...PRODUCT_COLLECTION_TRANSLATABLE_FIELDS,
+      ...productCollection,
+    ])
+    translatableFieldsConfig.product_collection = Array.from(translatableFields)
   }
 
   if (others) {
