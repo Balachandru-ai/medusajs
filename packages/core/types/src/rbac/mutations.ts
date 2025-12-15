@@ -1,6 +1,5 @@
 export type CreateRbacRoleDTO = {
   name: string
-  parent_id?: string | null
   description?: string | null
   metadata?: Record<string, unknown> | null
 }
@@ -31,3 +30,14 @@ export type CreateRbacRolePolicyDTO = {
 export type UpdateRbacRolePolicyDTO = Partial<CreateRbacRolePolicyDTO> & {
   id: string
 }
+
+export type CreateRbacRoleInheritanceDTO = {
+  role_id: string
+  inherited_role_id: string
+  metadata?: Record<string, unknown> | null
+}
+
+export type UpdateRbacRoleInheritanceDTO =
+  Partial<CreateRbacRoleInheritanceDTO> & {
+    id: string
+  }

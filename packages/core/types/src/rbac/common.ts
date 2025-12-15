@@ -1,7 +1,6 @@
 export type RbacRoleDTO = {
   id: string
   name: string
-  parent_id?: string | null
   description?: string | null
   metadata?: Record<string, unknown> | null
 }
@@ -9,7 +8,6 @@ export type RbacRoleDTO = {
 export type FilterableRbacRoleProps = {
   id?: string | string[]
   name?: string
-  parent_id?: string | null
   q?: string
 }
 
@@ -42,4 +40,17 @@ export type FilterableRbacRolePolicyProps = {
   id?: string | string[]
   role_id?: string | string[]
   scope_id?: string | string[]
+}
+
+export type RbacRoleInheritanceDTO = {
+  id: string
+  role_id: string
+  inherited_role_id: string
+  metadata?: Record<string, unknown> | null
+}
+
+export type FilterableRbacRoleInheritanceProps = {
+  id?: string | string[]
+  role_id?: string | string[]
+  inherited_role_id?: string | string[]
 }

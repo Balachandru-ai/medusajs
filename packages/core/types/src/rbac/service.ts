@@ -3,18 +3,22 @@ import { IModuleService } from "../modules-sdk"
 import { Context } from "../shared-context"
 import {
   FilterableRbacPolicyProps,
+  FilterableRbacRoleInheritanceProps,
   FilterableRbacRolePolicyProps,
   FilterableRbacRoleProps,
   RbacPolicyDTO,
   RbacRoleDTO,
+  RbacRoleInheritanceDTO,
   RbacRolePolicyDTO,
 } from "./common"
 import {
   CreateRbacPolicyDTO,
   CreateRbacRoleDTO,
+  CreateRbacRoleInheritanceDTO,
   CreateRbacRolePolicyDTO,
   UpdateRbacPolicyDTO,
   UpdateRbacRoleDTO,
+  UpdateRbacRoleInheritanceDTO,
   UpdateRbacRolePolicyDTO,
 } from "./mutations"
 
@@ -141,4 +145,50 @@ export interface IRbacModuleService extends IModuleService {
     config?: FindConfig<RbacRolePolicyDTO>,
     sharedContext?: Context
   ): Promise<[RbacRolePolicyDTO[], number]>
+
+  createRbacRoleInheritances(
+    data: CreateRbacRoleInheritanceDTO,
+    sharedContext?: Context
+  ): Promise<RbacRoleInheritanceDTO>
+  createRbacRoleInheritances(
+    data: CreateRbacRoleInheritanceDTO[],
+    sharedContext?: Context
+  ): Promise<RbacRoleInheritanceDTO[]>
+
+  updateRbacRoleInheritances(
+    data: UpdateRbacRoleInheritanceDTO,
+    sharedContext?: Context
+  ): Promise<RbacRoleInheritanceDTO>
+  updateRbacRoleInheritances(
+    data: UpdateRbacRoleInheritanceDTO[],
+    sharedContext?: Context
+  ): Promise<RbacRoleInheritanceDTO[]>
+
+  deleteRbacRoleInheritances(
+    ids: string | string[],
+    sharedContext?: Context
+  ): Promise<void>
+
+  retrieveRbacRoleInheritance(
+    id: string,
+    config?: FindConfig<RbacRoleInheritanceDTO>,
+    sharedContext?: Context
+  ): Promise<RbacRoleInheritanceDTO>
+
+  listRbacRoleInheritances(
+    filters?: FilterableRbacRoleInheritanceProps,
+    config?: FindConfig<RbacRoleInheritanceDTO>,
+    sharedContext?: Context
+  ): Promise<RbacRoleInheritanceDTO[]>
+
+  listAndCountRbacRoleInheritances(
+    filters?: FilterableRbacRoleInheritanceProps,
+    config?: FindConfig<RbacRoleInheritanceDTO>,
+    sharedContext?: Context
+  ): Promise<[RbacRoleInheritanceDTO[], number]>
+
+  listPoliciesForRole(
+    roleId: string,
+    sharedContext?: Context
+  ): Promise<RbacPolicyDTO[]>
 }
