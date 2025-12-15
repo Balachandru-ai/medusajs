@@ -1,6 +1,8 @@
 import { LoaderOptions } from "@medusajs/framework/types"
 import {
+  PRODUCT_COLLECTION_TRANSLATABLE_FIELDS,
   PRODUCT_TRANSLATABLE_FIELDS,
+  PRODUCT_TYPE_TRANSLATABLE_FIELDS,
   PRODUCT_VARIANT_TRANSLATABLE_FIELDS,
 } from "../utils/translatable-fields"
 import { asValue } from "awilix"
@@ -20,6 +22,8 @@ export default async ({
   const translatableFieldsConfig: Record<string, string[]> = {
     product: PRODUCT_TRANSLATABLE_FIELDS,
     product_variant: PRODUCT_VARIANT_TRANSLATABLE_FIELDS,
+    product_type: PRODUCT_TYPE_TRANSLATABLE_FIELDS,
+    product_collection: PRODUCT_COLLECTION_TRANSLATABLE_FIELDS,
   }
 
   if (product) {
