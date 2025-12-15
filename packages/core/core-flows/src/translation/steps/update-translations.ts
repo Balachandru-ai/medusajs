@@ -1,6 +1,7 @@
 import {
   FilterableTranslationProps,
   ITranslationModuleService,
+  UpdateTranslationDataDTO,
   UpdateTranslationDTO,
 } from "@medusajs/framework/types"
 import {
@@ -22,7 +23,7 @@ export type UpdateTranslationsStepInput =
       /**
        * The data to update in the translations.
        */
-      update: UpdateTranslationDTO
+      update: UpdateTranslationDataDTO
     }
   | {
       translations: UpdateTranslationDTO[]

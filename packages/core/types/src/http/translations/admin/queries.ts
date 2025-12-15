@@ -21,3 +21,18 @@ export interface AdminTranslationsListParams
    */
   locale_code?: string | string[]
 }
+
+/**
+ * Request body for translation statistics endpoint.
+ */
+export interface AdminTranslationStatisticsParams {
+  /**
+   * The locales to check translations for (e.g., ["en-US", "fr-FR"]).
+   */
+  locales: string[]
+
+  /**
+   * The entity types to get statistics for (e.g., ["product", "product_variant"]).
+   */
+  entity_types: string[]
+}

@@ -7,12 +7,16 @@ import {
   FilterableTranslationProps,
   LocaleDTO,
   TranslationDTO,
+  TranslationStatisticsInput,
+  TranslationStatisticsOutput,
 } from "./common"
 import {
   CreateLocaleDTO,
   CreateTranslationDTO,
   UpdateLocaleDTO,
+  UpdateLocaleDataDTO,
   UpdateTranslationDTO,
+  UpdateTranslationDataDTO,
 } from "./mutations"
 
 /**
@@ -110,7 +114,7 @@ export interface ITranslationModuleService extends IModuleService {
       | UpdateLocaleDTO[]
       | {
           selector: Record<string, any>
-          data: UpdateLocaleDTO | UpdateLocaleDTO[]
+          data: UpdateLocaleDataDTO | UpdateLocaleDataDTO[]
         },
     sharedContext?: Context
   ): Promise<LocaleDTO[]>
@@ -245,7 +249,7 @@ export interface ITranslationModuleService extends IModuleService {
       | UpdateTranslationDTO[]
       | {
           selector: Record<string, any>
-          data: UpdateTranslationDTO | UpdateTranslationDTO[]
+          data: UpdateTranslationDataDTO | UpdateTranslationDataDTO[]
         },
     sharedContext?: Context
   ): Promise<TranslationDTO[]>
@@ -289,4 +293,57 @@ export interface ITranslationModuleService extends IModuleService {
     config?: RestoreReturn<TReturnableLinkableKeys>,
     sharedContext?: Context
   ): Promise<Record<string, string[]> | void>
+
+  /**
+   * This method retrieves translation statistics for the given entities and locales.
+   * It counts translated fields at a granular level, providing both aggregated
+   * and per-locale breakdowns.
+   *
+   * @param {TranslationStatisticsInput} input - The entities and locales to check.
+   * @param {Context} sharedContext
+   * @returns {Promise<TranslationStatisticsOutput>} Statistics by entity type.
+   *
+   * @example
+   * const stats = await translationService.getStatistics({
+   *   locales: ["en-US", "fr-FR"],
+   *   entities: {
+   *     product: { count: 2 },
+   *     product_variant: { count: 5 }
+   *   }
+   * })
+   * // Returns:
+   * // {
+   * //   product: {
+   * //     expected: 20, // 2 products × 5 fields × 2 locales
+   * //     translated: 15,
+   * //     missing: 5,
+   * //     by_locale: {
+   * //       "en-US": { expected: 10, translated: 8, missing: 2 },
+   * //       "fr-FR": { expected: 10, translated: 7, missing: 3 }
+   * //     }
+   * //   }
+   * // }
+   */
+  getStatistics(
+    input: TranslationStatisticsInput,
+    sharedContext?: Context
+  ): Promise<TranslationStatisticsOutput>
+
+  /**
+   * This method retrieves the translatable fields configuration.
+   * Returns a mapping of entity types to their translatable field names.
+   *
+   * @param {string} entityType - Optional entity type to filter by. If not provided, returns all.
+   * @returns {Record<string, string[]>} A mapping of entity types to their translatable fields.
+   *
+   * @example
+   * // Get all translatable fields
+   * const allFields = translationService.getTranslatableFields()
+   * // Returns: { product: ["title", "description", ...], product_variant: ["title", ...] }
+   *
+   * // Get fields for a specific entity type
+   * const productFields = translationService.getTranslatableFields("product")
+   * // Returns: { product: ["title", "description", "subtitle", "status"] }
+   */
+  getTranslatableFields(entityType?: string): Record<string, string[]>
 }
