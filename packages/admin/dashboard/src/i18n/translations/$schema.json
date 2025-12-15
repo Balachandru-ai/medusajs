@@ -39,7 +39,7 @@
           "type": "string"
         },
         "original": {
-            "type": "string"
+          "type": "string"
         },
         "of": {
           "type": "string"
@@ -108,7 +108,7 @@
           "type": "string"
         },
         "remaining": {
-            "type": "string"
+          "type": "string"
         },
         "admin": {
           "type": "string"
@@ -9345,6 +9345,15 @@
         "subtitle": {
           "type": "string"
         },
+        "list": {
+          "type": "object",
+          "properties": {
+            "metrics": {
+              "type": "string"
+            }
+          },
+          "required": ["metrics"]
+        },
         "actions": {
           "type": "object",
           "properties": {
@@ -9392,7 +9401,7 @@
             }
           },
           "required": ["heading"]
-        },
+        }
       },
       "required": ["domain", "actions", "subtitle", "bulk", "completion"]
     },

@@ -2447,6 +2447,9 @@
   },
   "translations": {
     "domain": "Traducciones",
+    "list": {
+      "metrics": "{{translated}} de {{total}} textos traducidos"
+    },
     "actions": {
       "manage": "Gestionar traducciones",
       "manageLocales": "Gestionar idiomas"
