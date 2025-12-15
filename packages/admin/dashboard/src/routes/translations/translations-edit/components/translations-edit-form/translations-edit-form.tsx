@@ -235,6 +235,7 @@ function useTranslationsGridColumns({
         name: "original",
         size: 300,
         header: t("general.original"),
+        disableHiding: true,
         cell: (context) => {
           const row = context.row.original
 
