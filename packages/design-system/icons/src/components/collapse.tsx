@@ -1,6 +1,6 @@
 import * as React from "react"
 import type { IconProps } from "../types"
-const CircleMinus = React.forwardRef<SVGSVGElement, IconProps>(
+const Collapse = React.forwardRef<SVGSVGElement, IconProps>(
   ({ color = "currentColor", ...props }, ref) => {
     return (
       <svg
@@ -12,12 +12,15 @@ const CircleMinus = React.forwardRef<SVGSVGElement, IconProps>(
         {...props}
       >
         <path
-          fill={color}
-          d="M7.5.389C3.58.389.389 3.579.389 7.5s3.19 7.111 7.111 7.111 7.111-3.19 7.111-7.111S11.421.389 7.5.389m2.889 7.778H4.61a.667.667 0 0 1 0-1.334h5.778a.667.667 0 0 1 0 1.334"
+          stroke={color}
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth={1.5}
+          d="m10 12 2-2 2 2M14 3l-2 2-2-2M1 12h6M1 3h6M1 7.5h6"
         />
       </svg>
     )
   }
 )
-CircleMinus.displayName = "CircleMinus"
-export default CircleMinus
+Collapse.displayName = "Collapse"
+export default Collapse

@@ -26,10 +26,6 @@ export interface AdminUpdateStoreSupportedLocale {
    * The locale's BCP 47 language tag.
    */
   locale_code: string
-  /**
-   * Whether this locale is the default locale in the store.
-   */
-  is_default?: boolean
 }
 
 /**
