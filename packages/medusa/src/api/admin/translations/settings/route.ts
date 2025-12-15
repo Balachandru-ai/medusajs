@@ -9,15 +9,21 @@ import {
   Modules,
 } from "@medusajs/framework/utils"
 import TranslationFeatureFlag from "../../../../feature-flags/translation"
+import { AdminTranslationSettingsParamsType } from "../validators"
 
 export const GET = async (
-  req: AuthenticatedMedusaRequest,
+  req: AuthenticatedMedusaRequest<
+    undefined,
+    AdminTranslationSettingsParamsType
+  >,
   res: MedusaResponse<HttpTypes.AdminTranslationSettingsResponse>
 ) => {
   const translationService = req.scope.resolve<ITranslationModuleService>(
     Modules.TRANSLATION
   )
-  const translatable_fields = translationService.getTranslatableFields()
+  const translatable_fields = translationService.getTranslatableFields(
+    req.validatedQuery.entity_type
+  )
 
   res.json({
     translatable_fields,
