@@ -42,10 +42,6 @@ export async function buildOptionValueFilterQuery(
     .map((row: { option_value_ids: string[] }) => row.option_value_ids)
     .flat()
 
-  const escapeValue = (value: string) => `'${value.replace(/'/g, "''")}'`
-  const valueIdsSql = allValueIds.map(escapeValue).join(",")
-  const optionIdsSql = optionIds.map(escapeValue).join(",")
-
   const subquery = (alias: string) =>
     `
     EXISTS (
@@ -56,8 +52,8 @@ export async function buildOptionValueFilterQuery(
       WHERE pv.product_id = ${alias}.id
         AND pv.deleted_at IS NULL
         AND pov.deleted_at IS NULL
-        AND pvo.option_value_id IN (${valueIdsSql})
-        AND pov.option_id IN (${optionIdsSql})
+        AND pvo.option_value_id IN (${allValueIds})
+        AND pov.option_id IN (${optionIds})
       GROUP BY pv.id
       HAVING COUNT(DISTINCT pov.option_id) = ${optionIds.length}
     )
