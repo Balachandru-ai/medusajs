@@ -32,9 +32,7 @@ export const setRoleInheritanceStep = createStep(
       inherited_role_id: string
     }> = []
 
-    // Process each role's inheritance updates
     for (const roleData of data) {
-      // Get existing inheritance relationships for this role
       const existingInheritance = await service.listRbacRoleInheritances({
         role_id: roleData.role_id,
       })
@@ -43,13 +41,11 @@ export const setRoleInheritanceStep = createStep(
         (ri) => ri.inherited_role_id
       )
 
-      // Store for compensation
       allCompensationData.push({
         role_id: roleData.role_id,
         previousInheritedRoleIds: existingInheritedRoleIds,
       })
 
-      // Determine what to add and what to remove
       const toAdd = roleData.inherited_role_ids.filter(
         (id) => !existingInheritedRoleIds.includes(id)
       )
@@ -57,7 +53,6 @@ export const setRoleInheritanceStep = createStep(
         (id) => !roleData.inherited_role_ids.includes(id)
       )
 
-      // Collect IDs to remove
       if (toRemove.length > 0) {
         const toRemoveRecords = existingInheritance.filter((ri) =>
           toRemove.includes(ri.inherited_role_id)
@@ -65,7 +60,6 @@ export const setRoleInheritanceStep = createStep(
         allToRemoveIds.push(...toRemoveRecords.map((ri) => ri.id))
       }
 
-      // Collect inheritance relationships to create
       if (toAdd.length > 0) {
         allToCreate.push(
           ...toAdd.map((inherited_role_id) => ({
@@ -76,7 +70,6 @@ export const setRoleInheritanceStep = createStep(
       }
     }
 
-    // Execute bulk operations
     if (allToRemoveIds.length > 0) {
       await service.deleteRbacRoleInheritances(allToRemoveIds)
     }
@@ -103,21 +96,17 @@ export const setRoleInheritanceStep = createStep(
 
     const service = container.resolve<IRbacModuleService>(Modules.RBAC)
 
-    // Process each role's compensation
     for (const roleCompensation of compensationData) {
-      // Get current inheritance relationships
       const currentInheritance = await service.listRbacRoleInheritances({
         role_id: roleCompensation.role_id,
       })
 
-      // Delete all current relationships
       if (currentInheritance.length > 0) {
         await service.deleteRbacRoleInheritances(
           currentInheritance.map((ri) => ri.id)
         )
       }
 
-      // Restore previous relationships
       if (roleCompensation.previousInheritedRoleIds.length > 0) {
         await service.createRbacRoleInheritances(
           roleCompensation.previousInheritedRoleIds.map(
