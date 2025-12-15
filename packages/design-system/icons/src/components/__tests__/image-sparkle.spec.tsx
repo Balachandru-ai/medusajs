@@ -1,11 +1,11 @@
   import * as React from "react"
   import { cleanup, render, screen } from "@testing-library/react"
 
-  import CircleMinus from "../circle-minus"
+  import ImageSparkle from "../image-sparkle"
 
-  describe("CircleMinus", () => {
+  describe("ImageSparkle", () => {
     it("should render the icon without errors", async () => {
-      render(<CircleMinus data-testid="icon" />)
+      render(<ImageSparkle data-testid="icon" />)
 
 
       const svgElement = screen.getByTestId("icon")
