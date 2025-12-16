@@ -861,7 +861,7 @@
     },
     "products": {
       "list": {
-        "noRecords": "Product that have this option will show up here."
+        "noRecords": "There are no products with this option."
       }
     },
     "create": {
