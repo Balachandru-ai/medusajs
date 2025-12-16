@@ -426,7 +426,7 @@ export const TranslationsEditForm = ({
     const calculateColumnWidth = () => {
       if (containerRef.current) {
         const containerWidth = containerRef.current.offsetWidth
-        const availableWidth = containerWidth - FIELD_COLUMN_WIDTH - 12
+        const availableWidth = containerWidth - FIELD_COLUMN_WIDTH - 16
         const columnWidth = Math.max(300, Math.floor(availableWidth / 2))
         setDynamicColumnWidth(columnWidth)
       }
