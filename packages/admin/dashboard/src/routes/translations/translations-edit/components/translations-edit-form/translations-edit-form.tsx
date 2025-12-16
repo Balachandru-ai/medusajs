@@ -1,8 +1,8 @@
 import { zodResolver } from "@hookform/resolvers/zod"
 import { AdminStoreLocale, HttpTypes } from "@medusajs/types"
-import { Button, Select, toast } from "@medusajs/ui"
+import { Button, Prompt, Select, toast } from "@medusajs/ui"
 import { ColumnDef } from "@tanstack/react-table"
-import { useMemo, useRef, useState } from "react"
+import { useCallback, useMemo, useRef, useState } from "react"
 import { useForm } from "react-hook-form"
 import { useTranslation } from "react-i18next"
 import { z } from "zod"
@@ -176,6 +176,87 @@ function transformToBatchPayload(
       } else if (localeTranslations.id && !hasContent && hadContent) {
         payload.delete.push(localeTranslations.id)
       }
+    }
+  }
+
+  return payload
+}
+
+function hasLocaleChanges(
+  currentState: TranslationsFormSchema,
+  initialState: TranslationsFormSchema,
+  localeCode: string
+): boolean {
+  for (const [entityId, entityData] of Object.entries(currentState.entities)) {
+    const currentLocale = entityData.locales[localeCode]
+    const initialLocale = initialState.entities[entityId]?.locales[localeCode]
+
+    if (!currentLocale || !initialLocale) {
+      continue
+    }
+
+    for (const [fieldName, fieldValue] of Object.entries(
+      currentLocale.fields
+    )) {
+      const initialValue = initialLocale.fields[fieldName] ?? ""
+      const currentValue = fieldValue ?? ""
+
+      if (currentValue !== initialValue) {
+        return true
+      }
+    }
+  }
+
+  return false
+}
+
+function transformSingleLocaleToBatchPayload(
+  currentState: TranslationsFormSchema,
+  initialState: TranslationsFormSchema,
+  entityType: string,
+  localeCode: string
+): Required<HttpTypes.AdminBatchTranslations> {
+  const payload: Required<HttpTypes.AdminBatchTranslations> = {
+    create: [],
+    update: [],
+    delete: [],
+  }
+
+  for (const [entityId, entityData] of Object.entries(currentState.entities)) {
+    const localeTranslations = entityData.locales[localeCode]
+    if (!localeTranslations) continue
+
+    const initial = initialState.entities[entityId]?.locales[localeCode]
+    const hasContent = Object.values(localeTranslations.fields).some(
+      (v) => v !== undefined && v.trim() !== ""
+    )
+    const hadContent =
+      initial &&
+      Object.values(initial.fields).some(
+        (v) => v !== undefined && v.trim() !== ""
+      )
+
+    if (!localeTranslations.id && hasContent) {
+      payload.create.push({
+        reference_id: entityId,
+        reference: entityType,
+        locale_code: localeTranslations.locale_code,
+        translations: localeTranslations.fields,
+      })
+    } else if (localeTranslations.id && hasContent) {
+      const hasChanged =
+        !initial ||
+        JSON.stringify(localeTranslations.fields) !==
+          JSON.stringify(initial.fields)
+
+      if (hasChanged) {
+        payload.update.push({
+          id: localeTranslations.id,
+          translations: localeTranslations.fields,
+        })
+      }
+    } else if (localeTranslations.id && !hasContent && hadContent) {
+      payload.delete.push(localeTranslations.id)
     }
   }
 
@@ -356,6 +437,9 @@ export const TranslationsEditForm = ({
     availableLocales[0]?.locale_code ?? ""
   )
 
+  const [showUnsavedPrompt, setShowUnsavedPrompt] = useState(false)
+  const [pendingLocale, setPendingLocale] = useState<string | null>(null)
+
   const entities = useMemo(() => references, [references])
   const totalCount = useMemo(
     () => referenceCount * (translatableFields.length + 1),
@@ -382,6 +466,85 @@ export const TranslationsEditForm = ({
   )
 
   const { mutateAsync, isPending } = useBatchTranslations(entityType)
+
+  const handleLocaleChange = useCallback(
+    (newLocale: string) => {
+      if (newLocale === selectedLocale) {
+        return
+      }
+
+      const currentValues = form.getValues()
+      const hasChanges = hasLocaleChanges(
+        currentValues,
+        initialState.current,
+        selectedLocale
+      )
+
+      if (hasChanges) {
+        setPendingLocale(newLocale)
+        setShowUnsavedPrompt(true)
+      } else {
+        setSelectedLocale(newLocale)
+      }
+    },
+    [selectedLocale, form]
+  )
+
+  const saveCurrentLocale = useCallback(async () => {
+    const currentValues = form.getValues()
+    const payload = transformSingleLocaleToBatchPayload(
+      currentValues,
+      initialState.current,
+      entityType,
+      selectedLocale
+    )
+
+    if (
+      payload.create.length === 0 &&
+      payload.update.length === 0 &&
+      payload.delete.length === 0
+    ) {
+      return true
+    }
+
+    try {
+      await mutateAsync(payload)
+      const updatedInitialState = { ...initialState.current }
+      for (const entityId of Object.keys(currentValues.entities)) {
+        if (updatedInitialState.entities[entityId]?.locales[selectedLocale]) {
+          updatedInitialState.entities[entityId].locales[selectedLocale] = {
+            ...currentValues.entities[entityId].locales[selectedLocale],
+          }
+        }
+      }
+      initialState.current = updatedInitialState
+      return true
+    } catch (error) {
+      toast.error(
+        error instanceof Error ? error.message : "Failed to save translations"
+      )
+      return false
+    }
+  }, [form, entityType, selectedLocale, mutateAsync])
+
+  const handleSaveAndSwitch = useCallback(async () => {
+    const success = await saveCurrentLocale()
+    if (success && pendingLocale) {
+      toast.success(
+        t("translations.edit.localeChangesSaved", {
+          defaultValue: "Changes saved successfully",
+        })
+      )
+      setSelectedLocale(pendingLocale)
+    }
+    setShowUnsavedPrompt(false)
+    setPendingLocale(null)
+  }, [saveCurrentLocale, pendingLocale, t])
+
+  const handleCancelSwitch = useCallback(() => {
+    setShowUnsavedPrompt(false)
+    setPendingLocale(null)
+  }, [])
 
   const handleSubmit = form.handleSubmit(async (values) => {
     const payload = transformToBatchPayload(
@@ -466,7 +629,7 @@ export const TranslationsEditForm = ({
           <div className="-my-2 flex w-full items-center justify-between border-l px-4">
             <Select
               value={selectedLocale}
-              onValueChange={setSelectedLocale}
+              onValueChange={handleLocaleChange}
               size="small"
             >
               <Select.Trigger className="bg-ui-bg-base w-[200px]">
@@ -515,6 +678,42 @@ export const TranslationsEditForm = ({
           </div>
         </RouteFocusModal.Footer>
       </KeyboundForm>
+
+      <Prompt open={showUnsavedPrompt} variant="confirmation">
+        <Prompt.Content>
+          <Prompt.Header>
+            <Prompt.Title>
+              {t("translations.unsavedChanges.title", {
+                defaultValue: "Unsaved changes",
+              })}
+            </Prompt.Title>
+            <Prompt.Description>
+              {t("translations.unsavedChanges.description", {
+                defaultValue:
+                  "You have unsaved changes for this locale. Save them before switching?",
+              })}
+            </Prompt.Description>
+          </Prompt.Header>
+          <Prompt.Footer>
+            <Button
+              size="small"
+              variant="secondary"
+              onClick={handleCancelSwitch}
+              type="button"
+            >
+              {t("actions.close")}
+            </Button>
+            <Button
+              size="small"
+              onClick={handleSaveAndSwitch}
+              type="button"
+              isLoading={isPending}
+            >
+              {t("actions.saveChanges", { defaultValue: "Save changes" })}
+            </Button>
+          </Prompt.Footer>
+        </Prompt.Content>
+      </Prompt>
     </RouteFocusModal.Form>
   )
 }
