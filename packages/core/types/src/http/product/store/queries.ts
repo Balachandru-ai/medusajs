@@ -1,10 +1,13 @@
 import { SelectParams } from "../../common"
 import {
   BaseProductListParams,
+  BaseProductOptionListParams,
   BaseProductOptionParams,
   BaseProductVariantParams,
 } from "../common"
 
+export interface StoreProductOptionListParams
+  extends BaseProductOptionListParams {}
 export interface StoreProductOptionParams extends BaseProductOptionParams {}
 export interface StoreProductVariantParams extends BaseProductVariantParams {}
 export interface StoreProductPricingContext {
