@@ -34,7 +34,10 @@ export const POST = async (
   const input = [req.validatedBody]
 
   const { result } = await createRbacRolesWorkflow(req.scope).run({
-    input: { roles: input },
+    input: {
+      user_id: req.auth_context.actor_id,
+      roles: input,
+    },
   })
 
   const query = req.scope.resolve(ContainerRegistrationKeys.QUERY)

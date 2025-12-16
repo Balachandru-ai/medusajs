@@ -1,9 +1,16 @@
-import { MedusaError } from "@medusajs/framework/utils"
-import { createStep, StepResponse } from "@medusajs/framework/workflows-sdk"
+import {
+  ContainerRegistrationKeys,
+  MedusaError,
+} from "@medusajs/framework/utils"
+import { createStep } from "@medusajs/framework/workflows-sdk"
 
 export type ValidateUserPermissionsStepInput = {
   user_id: string
-  policy_ids: string[]
+  policy_ids?: string[]
+  actions?: {
+    resource: string
+    operation: string
+  }[]
 }
 
 export const validateUserPermissionsStepId = "validate-user-permissions"
@@ -15,13 +22,13 @@ export const validateUserPermissionsStepId = "validate-user-permissions"
 export const validateUserPermissionsStep = createStep(
   validateUserPermissionsStepId,
   async (data: ValidateUserPermissionsStepInput, { container }) => {
-    const { user_id, policy_ids } = data
+    const { user_id, policy_ids, actions } = data
 
-    if (!policy_ids?.length) {
-      return new StepResponse({ validated: true })
+    if (!policy_ids?.length && !actions?.length) {
+      return
     }
 
-    const query = container.resolve("query")
+    const query = container.resolve(ContainerRegistrationKeys.QUERY)
     const { data: users } = await query.graph({
       entity: "user",
       fields: ["rbac_roles.id", "rbac_roles.policies.*"],
@@ -35,14 +42,32 @@ export const validateUserPermissionsStep = createStep(
       )
     }
 
+    const operationMap = new Map()
+    users[0].rbac_roles.forEach((role) => {
+      role.policies.forEach((policy) => {
+        operationMap.set(`${policy.resource}:${policy.operation}`, policy.id)
+      })
+    })
+
     const allUserPolicies = users[0].rbac_roles.flatMap(
       (role) => role.policies || []
     )
     const userPolicyIds = new Set(allUserPolicies.map((p) => p.id))
 
-    const unauthorizedPolicies = policy_ids.filter(
-      (policyId) => !userPolicyIds.has(policyId)
-    )
+    let unauthorizedPolicies: string[] = []
+
+    if (policy_ids?.length) {
+      unauthorizedPolicies = policy_ids.filter(
+        (policyId) => !userPolicyIds.has(policyId)
+      )
+    } else if (actions?.length) {
+      unauthorizedPolicies = actions
+        .filter(
+          (action) =>
+            !operationMap.has(`${action.resource}:${action.operation}`)
+        )
+        .map((action) => `${action.resource}:${action.operation}`)
+    }
 
     if (unauthorizedPolicies.length) {
       const policyMap = new Map(
@@ -58,10 +83,5 @@ export const validateUserPermissionsStep = createStep(
         `User does not have access to the following policies and cannot assign them: ${unauthorizedNames}`
       )
     }
-
-    return new StepResponse({
-      validated: true,
-      user_policy_count: userPolicyIds.size,
-    })
   }
 )
