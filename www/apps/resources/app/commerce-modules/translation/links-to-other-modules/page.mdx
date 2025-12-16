@@ -12,11 +12,9 @@ export const metadata = {
 
 # {metadata.title}
 
-{/* TODO check if we need to add more links */}
-
 This document showcases the module links that Medusa defines between the Translation Module and other Commerce Modules.
 
-{/* ## Summary
+## Summary
 
 Medusa defines the following links between the Translation Module and other Commerce Modules:
 
@@ -150,10 +148,24 @@ Medusa defines the following links between the Translation Module and other Comm
         [Learn more](#product-module)
       </Table.Cell>
     </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        [StoreLocale](/references/store/models/StoreLocale) in [Store Module](../../store/page.mdx)
+      </Table.Cell>
+      <Table.Cell>
+        [Locale](/references/locale/models/Locale)
+      </Table.Cell>
+      <Table.Cell>
+        Read-only - has many
+      </Table.Cell>
+      <Table.Cell>
+        [Learn more](#store-module)
+      </Table.Cell>
+    </Table.Row>
   </Table.Body>
 </Table>
 
---- */}
+---
 
 ## Product Module
 
@@ -305,6 +317,53 @@ const { data: products } = useQueryGraphStep({
 })
 
 // products[0].translations
+```
+
+  </CodeTab>
+</CodeTabs>
+
+---
+
+## Store Module
+
+The [Store Module](../../store/page.mdx) has a `StoreLocale` data model that stores the supported locales of a store. However, these locales don't hold all the details of a locale, such as its name.
+
+Instead, Medusa defines a read-only link from the Store Module's `StoreLocale` data model to the Translation Module's `Locale` data model. This means you can retrieve the details of a store's supported locales, but you don't manage the links in a pivot table in the database.
+
+### Retrieve with Query
+
+To retrieve the details of a store's locales with [Query](!docs!/learn/fundamentals/module-links/query), pass `supported_locales.locale.*` in `fields`:
+
+<CodeTabs group="relation-query">
+  <CodeTab label="query.graph" value="method">
+
+```ts
+const { data: stores } = await query.graph({
+  entity: "store",
+  fields: [
+    "supported_locales.locale.*",
+  ],
+})
+
+// stores[0].supported_locales[0].locale
+```
+
+  </CodeTab>
+  <CodeTab label="useQueryGraphStep" value="step">
+
+```ts
+import { useQueryGraphStep } from "@medusajs/medusa/core-flows"
+
+// ...
+
+const { data: stores } = useQueryGraphStep({
+  entity: "store",
+  fields: [
+    "supported_locales.locale.*",
+  ],
+})
+
+// stores[0].supported_locales[0].locale
 ```
 
   </CodeTab>

@@ -651,7 +651,7 @@ The JS SDK appends request-specific headers to authentication headers and header
 
 ---
 
-## Set Locale
+## Localization with JS SDK
 
 <Prerequisites
   items={[
@@ -662,15 +662,28 @@ The JS SDK appends request-specific headers to authentication headers and header
   ]}
 />
 
-If you support [localization](../storefront-development/localization/page.mdx) in your storefront, you can set the locale to retrieve product information and other resources based on the customer's preferred language.
+If you support [localization](../storefront-development/localization/page.mdx) in your storefront, you can use the `setLocale` method of the JS SDK. 
 
-Set the locale using the JS SDK's `setLocale` method. It accepts the locale string in the [IETF BCP 47 standard](https://gist.github.com/typpo/b2b828a35e683b9bf8db91b5404f1bd1).
+The `setLocale` method stores the locale in the JS SDK to pass the it as a `Content-Language` header in all subsequent requests. Also, if your application supports `localStorage`, the method sets the locale in the `medusa_locale` key of the `localStorage`.
+
+For example, to set the locale to French (France):
 
 ```ts
 sdk.setLocale("fr-FR")
+// products content is fetched in French
+const { products } = await sdk.store.product.list()
 ```
 
-All subsequent requests sent using the JS SDK will include the specified locale as a query parameter.
+The `setLocale` method accepts the locale string in the [IETF BCP 47 standard](https://gist.github.com/typpo/b2b828a35e683b9bf8db91b5404f1bd1). All subsequent requests sent using the JS SDK will include the specified locale in the `Content-Language` header.
+
+In the above example, the product content, such as title and description, is fetched in French and falls back to the store's default locale if a translation isn't available.
+
+You can also retrieve the currently set locale using the `getLocale` method:
+
+```ts
+const currentLocale = sdk.getLocale()
+console.log(currentLocale) // "fr-FR"
+```
 
 <Note>
 

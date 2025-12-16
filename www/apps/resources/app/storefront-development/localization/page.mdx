@@ -41,7 +41,7 @@ Refer to the [Translation Module documentation](../../commerce-modules/translati
 
 {/* TODO: check info */}
 
-You can retrieve the list of locales supported by your store using the [List Locales Store API route](!api!/store/locales#list-locales). You can display this list to customers, allowing them to select their preferred language.
+You can retrieve the list of locales supported by your store using the [List Locales Store API route](!api!/store#locales_getlocales). You can display this list to customers, allowing them to select their preferred language.
 
 For example:
 
@@ -90,7 +90,7 @@ export const highlights = [
         {!loading && locales.length > 0 && (
           <ul>
             {locales.map((locale) => (
-              <li key={locale.id}>{locale.locale_code}</li>
+              <li key={locale.code}>{locale.name}</li>
             ))}
           </ul>
         )}
@@ -115,7 +115,7 @@ export const highlights = [
 
 The response has a `locales` field, which is an array of [locales](!api!/store#locales_locale_schema).
 
-Each locale has a `locale_code` property that follows the [IETF BCP 47 standard](https://gist.github.com/typpo/b2b828a35e683b9bf8db91b5404f1bd1). For example, `en-US` represents American English, while `fr-FR` represents French (France).
+Each locale has a `code` property that follows the [IETF BCP 47 standard](https://gist.github.com/typpo/b2b828a35e683b9bf8db91b5404f1bd1). For example, `en-US` represents American English, while `fr-FR` represents French (France).
 
 ---
 
@@ -129,12 +129,27 @@ By default, Medusa serves content in the store's default locale. You can overrid
 
 ### Set Locale in JS SDK
 
-The JS SDK has a `setLocale` method that you can use to set the locale for subsequent requests. The JS SDK will automatically include the `Content-Language` header in API requests.
+The JS SDK has a `setLocale` method that you can use to set the locale for subsequent requests.
+
+The JS SDK will automatically include the `Content-Language` header in API requests. Also, if your application supports `localStorage`, the method sets the locale in the `medusa_locale` key of the `localStorage`.
 
 For example, when a customer selects a locale in your storefront, you can set the locale in the JS SDK:
 
 ```ts
 sdk.setLocale("fr-FR")
+// products content is fetched in French
+const { products } = await sdk.store.product.list()
+```
+
+In the above example, you set the locale to French using the `setLocale` method. It accepts the locale string in the [IETF BCP 47 standard](https://gist.github.com/typpo/b2b828a35e683b9bf8db91b5404f1bd1).
+
+When you fetch the products, their content, such as title and description, is in French and falls back to the store's default locale if a translation isn't available.
+
+You can also retrieve the currently set locale using the `getLocale` method:
+
+```ts
+const currentLocale = sdk.getLocale()
+console.log(currentLocale) // "fr-FR"
 ```
 
 ### Set Locale without JS SDK
