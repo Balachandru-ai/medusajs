@@ -545,6 +545,8 @@ export const TranslationsEditForm = ({
         }
       }
       initialState.current = updatedInitialState
+      form.reset(currentValues)
+
       return true
     } catch (error) {
       toast.error(
