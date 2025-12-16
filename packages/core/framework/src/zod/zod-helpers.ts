@@ -90,23 +90,22 @@ const formatError = (err: ZodError) => {
       case "invalid_value": {
         // In Zod v4, invalid_literal and invalid_enum_value are now invalid_value
         const invalidValueIssue = issue as ZodIssueInvalidValue
-        // For enum values, check if we have the expected values first
+        // Try to get the received value from various possible properties
+        const receivedValue =
+          "input" in issue
+            ? (issue as any).input
+            : "received" in issue
+              ? (issue as any).received
+              : undefined
+        // If received is undefined, it's a required field error
+        if (receivedValue === undefined) {
+          return `Field '${formatPath(issue)}' is required`
+        }
+        // For enum values, show the expected values
         if (invalidValueIssue.values) {
-          // Try to get the received value from various possible properties
-          const receivedValue =
-            (issue as any).input ?? (issue as any).received ?? "unknown"
-          // If received is undefined, it's a required field error
-          if (receivedValue === undefined) {
-            return `Field '${formatPath(issue)}' is required`
-          }
           return `Expected: '${invalidValueIssue.values.join(
             ", "
           )}' for field '${formatPath(issue)}', but got: '${receivedValue}'`
-        }
-        // If no values, check if input is undefined (required field)
-        const inputValue = (issue as any).input ?? (issue as any).received
-        if (inputValue === undefined) {
-          return `Field '${formatPath(issue)}' is required`
         }
         return issue.message
       }
