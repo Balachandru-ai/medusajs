@@ -128,6 +128,7 @@ export const useDataGridCell = <TData, TValue>({
         case "number":
           return numberCharacterRegex.test(key)
         case "text":
+        case "multiline-text":
           return textCharacterRegex.test(key)
         default:
           // KeyboardEvents should not be forwareded to other types of cells
