@@ -6,6 +6,19 @@ type ZodIssueInvalidType = z.core.$ZodIssueInvalidType
 type ZodIssueInvalidUnion = z.core.$ZodIssueInvalidUnion
 type ZodIssueInvalidValue = z.core.$ZodIssueInvalidValue
 
+function getReceivedValue(issue: ZodIssueInvalidValue, body: any) {
+  if ("input" in issue) {
+    return issue.input
+  } else if ("received" in issue) {
+    return issue.received
+  } else {
+    return issue.path.reduce(
+      (acc: any, curr: string | number | symbol) => acc[curr as string],
+      body
+    )
+  }
+}
+
 const formatPath = (issue: ZodIssue) => {
   return issue.path.join(", ")
 }
@@ -85,25 +98,9 @@ const formatError = (err: ZodError, body: any) => {
         )
       case "invalid_value": {
         const invalidValueIssue = issue as ZodIssueInvalidValue
-        const issueAny = issue as any
-        let receivedValue: unknown
-        let foundProperty = false
+        const receivedValue = getReceivedValue(issue, body)
 
-        if ("input" in issueAny) {
-          receivedValue = issueAny.input
-          foundProperty = true
-        } else if ("received" in issueAny) {
-          receivedValue = issueAny.received
-          foundProperty = true
-        } else if ("path" in issueAny) {
-          receivedValue = issueAny.path.reduce(
-            (acc: any, curr: string) => acc[curr],
-            body
-          )
-          foundProperty = true
-        }
-
-        const hasReceivedValue = foundProperty && receivedValue !== undefined
+        const hasReceivedValue = receivedValue !== undefined
 
         if (invalidValueIssue.values) {
           if (!hasReceivedValue) {
