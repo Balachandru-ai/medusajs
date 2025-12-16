@@ -413,6 +413,9 @@
   "POST /admin/order-changes/{id}": {
     "js-sdk": "sdk.admin.order.updateOrderChange(\n  \"ordch_123\",\n  {\n    carry_over_promotions: true\n  }\n)\n.then(({ order_change }) => {\n  console.log(order_change)\n})"
   },
+  "POST /admin/orders/export": {
+    "js-sdk": "sdk.admin.order.export({})\n.then(({ transaction_id }) => {\n  console.log(transaction_id)\n})"
+  },
   "POST /admin/order-edits": {
     "js-sdk": "sdk.admin.orderEdit.initiateRequest({\n  order_id: \"order_123\"\n})\n.then(({ order_change }) => {\n  console.log(order_change)\n})"
   },
@@ -481,6 +484,9 @@
   },
   "POST /admin/price-lists/{id}/prices/batch": {
     "js-sdk": "sdk.admin.priceList.batchPrices(\"plist_123\", {\n  create: [{\n    variant_id: \"variant_123\",\n    currency_code: \"usd\",\n    amount: 10,\n    rules: {\n      region_id: \"reg_123\"\n    }\n  }],\n  update: [{\n    id: \"price_123\",\n    variant_id: \"variant_123\",\n    amount: 20,\n  }],\n  delete: [\"price_123\"]\n})\n.then(({ created, updated, deleted }) => {\n  console.log(created, updated, deleted)\n})"
+  },
+  "GET /admin/price-lists/{id}/prices": {
+    "js-sdk": "sdk.admin.priceList.prices(\"plist_123\")\n.then(({ prices }) => {\n  console.log(prices)\n})"
   },
   "POST /admin/price-lists/{id}/products": {
     "js-sdk": "sdk.admin.priceList.linkProducts(\"plist_123\", {\n  remove: [\"prod_123\"]\n})\n.then(({ price_list }) => {\n  console.log(price_list)\n})"
@@ -1090,5 +1096,8 @@
   },
   "DELETE /store/customers/me/addresses/{addressid}": {
     "js-sdk": "// TODO must be authenticated as the customer to delete their address\nsdk.store.customer.deleteAddress(\"caddr_123\")\n.then(({ deleted, parent: customer }) => {\n  console.log(customer)\n})"
+  },
+  "GET /store/locales": {
+    "js-sdk": "sdk.store.locale.list()\n.then(({ locales }) => {\n  console.log(locales)\n})"
   }
 }

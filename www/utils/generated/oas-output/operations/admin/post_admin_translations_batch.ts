@@ -2,10 +2,9 @@
  * @oas [post] /admin/translations/batch
  * operationId: PostTranslationsBatch
  * summary: Manage Translations
- * description: Manage translations in bulk by creating, updating, or deleting multiple translations in a single request. You can 
- *   manage translations for various resources such as products, product variants, categories, and more.
+ * description: Manage translations in bulk by creating, updating, or deleting multiple translations in a single request. You can manage translations for various resources such as products, product
+ *   variants, categories, and more.
  * x-authenticated: true
- * parameters: []
  * security:
  *   - api_token: []
  *   - cookie_auth: []
@@ -47,7 +46,9 @@
  *                 translations:
  *                   type: object
  *                   description: The translation key-value pairs. Each key is a field in the resource, and the value is the translated text.
- *                   example: { "title": "Chaussures", "description": "Des chaussures élégantes." }
+ *                   example:
+ *                     title: Chaussures
+ *                     description: Des chaussures élégantes.
  *           update:
  *             type: array
  *             description: The translations to update.
@@ -79,7 +80,9 @@
  *                 translations:
  *                   type: object
  *                   description: The translation key-value pairs. Each key is a field in the resource, and the value is the translated text.
- *                   example: { "title": "Chaussures Modifiées", "description": "Des chaussures élégantes et modifiées." }
+ *                   example:
+ *                     title: Chaussures Modifiées
+ *                     description: Des chaussures élégantes et modifiées.
  *           delete:
  *             type: array
  *             description: The translations to delete.
@@ -139,7 +142,7 @@
  *       ```
  *     description: Emitted when translations are created.
  *     deprecated: false
- *     since: 2.13.0
+ *     since: 2.12.3
  *   - name: translation.updated
  *     payload: |-
  *       ```ts
@@ -149,7 +152,7 @@
  *       ```
  *     description: Emitted when translations are updated.
  *     deprecated: false
- *     since: 2.13.0
+ *     since: 2.12.3
  *   - name: translation.deleted
  *     payload: |-
  *       ```ts
@@ -159,8 +162,8 @@
  *       ```
  *     description: Emitted when translations are deleted.
  *     deprecated: false
- *     since: 2.13.0
- * x-since: 2.13.0
+ *     since: 2.12.3
+ * x-since: 2.12.3
  * x-featureFlag: translation
  * 
 */

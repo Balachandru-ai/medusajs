@@ -35,7 +35,9 @@
  *   translations:
  *     type: object
  *     description: The translation key-value pairs. Each key is a field in the resource, and the value is the translated text.
- *     example: { "title": "Chaussures", "description": "Des chaussures élégantes." }
+ *     example:
+ *       title: Chaussures
+ *       description: Des chaussures élégantes.
  *   created_at:
  *     type: string
  *     format: date-time

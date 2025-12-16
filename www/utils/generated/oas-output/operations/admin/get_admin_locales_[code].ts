@@ -8,7 +8,7 @@
  * parameters:
  *   - name: code
  *     in: path
- *     description: The locale's code in BCP 47 format.
+ *     description: The locale's code in [BCP 47 format](https://gist.github.com/typpo/b2b828a35e683b9bf8db91b5404f1bd1).
  *     example: fr-FR
  *     required: true
  *     schema:
@@ -43,7 +43,7 @@
  *         },
  *       })
  * 
- *       sdk.admin.locale.retrieve("fr-FR")
+ *       sdk.admin.locale.retrieve("en-US")
  *       .then(({ locale }) => {
  *         console.log(locale)
  *       })
@@ -73,7 +73,7 @@
  *     $ref: "#/components/responses/invalid_request_error"
  *   "500":
  *     $ref: "#/components/responses/500_error"
- * x-since: 2.13.0
+ * x-since: 2.12.3
  * x-featureFlag: translation
  * 
 */

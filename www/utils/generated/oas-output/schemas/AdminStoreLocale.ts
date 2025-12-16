@@ -7,7 +7,6 @@
  *   - id
  *   - locale_code
  *   - store_id
- *   - is_default
  *   - locale
  *   - created_at
  *   - updated_at
@@ -25,10 +24,6 @@
  *     type: string
  *     title: store_id
  *     description: The ID of the store to which the locale belongs.
- *   is_default:
- *     type: boolean
- *     title: is_default
- *     description: Whether the locale is the default for the store.
  *   locale:
  *     $ref: "#/components/schemas/AdminLocale"
  *   created_at:

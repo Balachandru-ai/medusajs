@@ -746,7 +746,7 @@
       "createTranslationsWorkflow",
       "batchTranslationsWorkflow"
     ],
-    "since": "2.13.0",
+    "since": "2.12.3",
     "deprecated": false
   },
   {
@@ -759,7 +759,7 @@
       "updateTranslationsWorkflow",
       "batchTranslationsWorkflow"
     ],
-    "since": "2.13.0",
+    "since": "2.12.3",
     "deprecated": false
   },
   {
@@ -772,7 +772,7 @@
       "deleteTranslationsWorkflow",
       "batchTranslationsWorkflow"
     ],
-    "since": "2.13.0",
+    "since": "2.12.3",
     "deprecated": false
   }
 ]
