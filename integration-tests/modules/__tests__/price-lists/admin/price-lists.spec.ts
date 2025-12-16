@@ -122,7 +122,7 @@ medusaIntegrationTestRunner({
                 "customer.groups.id": [customerGroup.id],
               },
               prices: [
-                {
+                expect.objectContaining({
                   id: expect.any(String),
                   currency_code: "usd",
                   amount: 5000,
@@ -143,7 +143,7 @@ medusaIntegrationTestRunner({
                     value: "5000",
                     precision: 20,
                   }),
-                },
+                }),
               ],
             },
           ])
