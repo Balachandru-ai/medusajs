@@ -149,7 +149,7 @@ export class Client {
   setLocale(locale: string) {
     if (!window) {
       this.logger.warn(
-        "setLocale is not available in the server environment. Please set the locale directly through the 'content-language' header."
+        "setLocale is not available in the server environment. Please set the locale directly through the 'x-medusa-locale' header."
       )
       return
     }
@@ -259,7 +259,7 @@ export class Client {
       const headers = new Headers(defaultHeaders)
 
       if (this.locale) {
-        headers.set("content-language", this.locale)
+        headers.set("x-medusa-locale", this.locale)
       }
 
       const customHeaders = {
