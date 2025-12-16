@@ -1,5 +1,5 @@
-import { MedusaError } from "../utils"
 import { z, ZodError } from "zod"
+import { MedusaError } from "../utils"
 
 type ZodIssue = z.core.$ZodIssue
 type ZodIssueInvalidType = z.core.$ZodIssueInvalidType
@@ -38,9 +38,10 @@ const formatInvalidType = (issues: ZodIssue[]) => {
 
 const formatRequiredField = (issues: ZodIssue[]) => {
   const expected = issues
+    .filter((i) => i != null)
     .map((i) => {
       // In Zod v4, required fields have input === undefined
-      if (i.code === "invalid_type") {
+      if (i?.code === "invalid_type") {
         const invalidTypeIssue = i as ZodIssueInvalidType
         if (invalidTypeIssue.input === undefined) {
           return invalidTypeIssue.expected
@@ -54,11 +55,24 @@ const formatRequiredField = (issues: ZodIssue[]) => {
     return
   }
 
-  return `Field '${formatPath(issues[0])}' is required`
+  const firstIssue = issues.find((i) => i != null)
+  if (!firstIssue) {
+    return
+  }
+
+  return `Field '${formatPath(firstIssue)}' is required`
 }
 
 const formatUnionError = (issue: ZodIssueInvalidUnion) => {
-  const issues = issue.errors.flatMap((e) => e.issues)
+  // In Zod v4, union errors structure may differ
+  const issues = (issue.errors ?? [])
+    .flatMap((e: { issues?: ZodIssue[] }) => e?.issues ?? [])
+    .filter((i): i is ZodIssue => i != null)
+
+  if (!issues.length) {
+    return issue.message
+  }
+
   return (
     formatInvalidType(issues) || formatRequiredField(issues) || issue.message
   )
