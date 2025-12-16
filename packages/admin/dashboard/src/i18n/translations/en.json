@@ -859,6 +859,11 @@
     "values": {
       "header": "Values"
     },
+    "products": {
+      "list": {
+        "noRecords": "There are no products with this option."
+      }
+    },
     "create": {
       "header": "Create Product Option",
       "hint": "Create a new product option and manage its values.",
@@ -867,6 +872,9 @@
         "details": "Details",
         "organize": "Organize"
       }
+    },
+    "manage": {
+      "exclusiveOption": "Product exclusive option"
     },
     "edit": {
       "header": "Edit Product Option",

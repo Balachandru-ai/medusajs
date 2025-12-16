@@ -737,6 +737,16 @@ export interface FilterableProductProps
      */
     id?: string[]
   }
+
+  /**
+   * Filters on a product's options.
+   */
+  options?: {
+    /**
+     * Filter a product by the IDs of their associated options.
+     */
+    id?: string[]
+  }
   /**
    * Filters on a product's variant properties.
    */
@@ -752,6 +762,14 @@ export interface FilterableProductProps
    * Filter a product by the ID of the associated type
    */
   type_id?: string | string[] | OperatorMap<string | string[]>
+  /**
+   * Filter a product by the ID of the associated option
+   */
+  option_id?: string | string[] | OperatorMap<string | string[]>
+  /**
+   * Filter a product by the IDs of the associated option values.
+   */
+  option_value_id?: string | string[]
   /**
    * Filter a product by the IDs of their associated categories.
    */

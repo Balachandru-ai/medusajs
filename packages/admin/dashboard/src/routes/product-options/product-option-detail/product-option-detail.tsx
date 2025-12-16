@@ -19,7 +19,7 @@ export const ProductOptionDetail = () => {
 
   const { product_option, isLoading, isError, error } = useProductOption(
     id!,
-    undefined,
+    { fields: "-products" },
     {
       initialData,
     }
@@ -44,7 +44,7 @@ export const ProductOptionDetail = () => {
       data={product_option}
     >
       <ProductOptionGeneralSection productOption={product_option} />
-      <ProductOptionProductSection productOption={product_option} />
+      <ProductOptionProductSection productOptionId={product_option.id} />
     </SingleColumnPage>
   )
 }

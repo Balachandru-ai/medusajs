@@ -406,6 +406,14 @@ export interface BaseProductListParams
    */
   type_id?: string | string[]
   /**
+   * Filter by the product's option(s).
+   */
+  option_id?: string | string[]
+  /**
+   * Filter by the product's option value(s).
+   */
+  option_value_id?: string | string[]
+  /**
    * Filter by the product's category(s).
    */
   category_id?: string | string[]
