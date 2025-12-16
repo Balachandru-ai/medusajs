@@ -9,6 +9,7 @@ import { usePathname } from "next/navigation"
 export const TechArticleJsonLd = () => {
   const {
     config: { baseUrl, basePath, description: configDescription, titleSuffix },
+    frontmatter,
   } = useSiteConfig()
   const pathname = usePathname()
   const { isBrowser } = useIsBrowser()
@@ -36,7 +37,8 @@ export const TechArticleJsonLd = () => {
         proficiencyLevel: "Expert",
         author: "Medusa",
         genre: "Documentation",
-        keywords: "medusa, ecommerce, open-source",
+        keywords:
+          frontmatter.keywords?.join(", ") || "medusa, ecommerce, open-source",
         url: `${baseLink}${pathname}`,
       })
 

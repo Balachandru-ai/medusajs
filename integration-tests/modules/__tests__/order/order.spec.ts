@@ -286,6 +286,7 @@ medusaIntegrationTestRunner({
           payment_status: "not_paid",
           region_id: "test_region_id",
           fulfillments: [],
+          locale: null,
           metadata: {
             foo: "bar",
           },
@@ -372,6 +373,7 @@ medusaIntegrationTestRunner({
                     value: "5e-18",
                     precision: 20,
                   },
+                  version: 1,
                   provider_id: expect.any(String),
                   created_at: expect.any(String),
                   updated_at: expect.any(String),

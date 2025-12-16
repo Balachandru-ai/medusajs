@@ -40,6 +40,11 @@ export const integrationsSidebar = [
         path: "/commerce-modules/auth/auth-providers/github",
         title: "GitHub",
       },
+      {
+        type: "link",
+        path: "/integrations/guides/okta",
+        title: "Okta",
+      },
     ],
   },
   {
@@ -61,6 +66,11 @@ export const integrationsSidebar = [
         type: "link",
         path: "/integrations/guides/sanity",
         title: "Sanity",
+      },
+      {
+        type: "link",
+        path: "/integrations/guides/strapi",
+        title: "Strapi",
       },
     ],
   },

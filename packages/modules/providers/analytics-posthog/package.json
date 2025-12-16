@@ -1,6 +1,6 @@
 {
   "name": "@medusajs/analytics-posthog",
-  "version": "2.11.3",
+  "version": "2.12.2",
   "description": "Posthog analytics provider for Medusa",
   "main": "dist/index.js",
   "repository": {

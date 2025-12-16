@@ -4,6 +4,7 @@ import {
   transform,
   when,
   WorkflowData,
+  WorkflowResponse,
 } from "@medusajs/framework/workflows-sdk"
 import { useQueryGraphStep } from "../../common"
 import { getItemTaxLinesStep } from "../../tax/steps/get-item-tax-lines"
@@ -179,9 +180,7 @@ export const updateOrderTaxLinesWorkflowId = "update-order-tax-lines"
  */
 export const updateOrderTaxLinesWorkflow = createWorkflow(
   updateOrderTaxLinesWorkflowId,
-  (
-    input: WorkflowData<UpdateOrderTaxLinesWorkflowInput>
-  ): WorkflowData<void> => {
+  (input: WorkflowData<UpdateOrderTaxLinesWorkflowInput>) => {
     const isFullOrder = transform(input, (data) => {
       return !data.item_ids && !data.shipping_method_ids
     })
@@ -209,9 +208,13 @@ export const updateOrderTaxLinesWorkflow = createWorkflow(
       return orderLineItems
     })
 
-    const shippingMethods = when("get-order-shipping-methods", { input }, ({ input }) => {
-      return input.shipping_method_ids!?.length > 0
-    }).then(() => {
+    const shippingMethods = when(
+      "get-order-shipping-methods",
+      { input },
+      ({ input }) => {
+        return input.shipping_method_ids!?.length > 0
+      }
+    ).then(() => {
       const { data: orderShippingMethods } = useQueryGraphStep({
         entity: "order_shipping_method",
         filters: { id: input.shipping_method_ids },
@@ -249,6 +252,11 @@ export const updateOrderTaxLinesWorkflow = createWorkflow(
       order,
       item_tax_lines: taxLineItems.lineItemTaxLines,
       shipping_tax_lines: taxLineItems.shippingMethodsTaxLines,
+    })
+
+    return new WorkflowResponse({
+      itemTaxLines: taxLineItems.lineItemTaxLines,
+      shippingTaxLines: taxLineItems.shippingMethodsTaxLines,
     })
   }
 )
