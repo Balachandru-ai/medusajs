@@ -1,8 +1,8 @@
 import { zodResolver } from "@hookform/resolvers/zod"
 import { AdminStoreLocale, HttpTypes } from "@medusajs/types"
-import { Button, ProgressTabs, toast } from "@medusajs/ui"
+import { Button, Select, toast } from "@medusajs/ui"
 import { ColumnDef } from "@tanstack/react-table"
-import { useMemo, useRef } from "react"
+import { useMemo, useRef, useState } from "react"
 import { useForm } from "react-hook-form"
 import { useTranslation } from "react-i18next"
 import { z } from "zod"
@@ -17,7 +17,6 @@ import {
 } from "../../../../../components/modals"
 import { KeyboundForm } from "../../../../../components/utilities/keybound-form"
 import { useBatchTranslations } from "../../../../../hooks/api/translations"
-import { useDocumentDirection } from "../../../../../hooks/use-document-direction"
 
 /**
  * Schema for a single locale translation.
@@ -192,17 +191,23 @@ function useTranslationsGridColumns({
   entities,
   translatableFields,
   availableLocales,
+  selectedLocale,
   modalFields = [],
 }: {
   entities: { id: string; [key: string]: string }[]
   translatableFields: string[]
   availableLocales: AdminStoreLocale[]
+  selectedLocale: string
   modalFields?: string[]
 }) {
   const { t } = useTranslation()
 
   const columns: ColumnDef<TranslationRow>[] = useMemo(() => {
-    return [
+    const selectedLocaleData = availableLocales.find(
+      (l) => l.locale_code === selectedLocale
+    )
+
+    const baseColumns = [
       columnHelper.column({
         id: "field",
         name: "field",
@@ -233,7 +238,7 @@ function useTranslationsGridColumns({
       columnHelper.column({
         id: "original",
         name: "original",
-        size: 300,
+        size: 400,
         header: t("general.original"),
         disableHiding: true,
         cell: (context) => {
@@ -259,12 +264,15 @@ function useTranslationsGridColumns({
           )
         },
       }),
-      ...availableLocales.map((locale) => {
-        return columnHelper.column({
-          id: locale.locale_code,
-          name: locale.locale.name,
-          size: 300,
-          header: () => locale.locale.name,
+    ]
+
+    if (selectedLocaleData) {
+      baseColumns.push(
+        columnHelper.column({
+          id: selectedLocaleData.locale_code,
+          name: selectedLocaleData.locale.name,
+          size: 400,
+          header: () => selectedLocaleData.locale.name,
           cell: (context) => {
             const row = context.row.original
 
@@ -296,13 +304,22 @@ function useTranslationsGridColumns({
               return null
             }
 
-            return `entities.${row.reference_id}.locales.${locale.locale_code}.fields.${row.field_name}`
+            return `entities.${row.reference_id}.locales.${selectedLocaleData.locale_code}.fields.${row.field_name}`
           },
           type: "text",
         })
-      }),
-    ]
-  }, [t, translatableFields, availableLocales, modalFields])
+      )
+    }
+
+    return baseColumns
+  }, [
+    t,
+    translatableFields,
+    availableLocales,
+    selectedLocale,
+    modalFields,
+    entities,
+  ])
 
   return columns
 }
@@ -334,7 +351,10 @@ export const TranslationsEditForm = ({
 }: TranslationsEditFormProps) => {
   const { t } = useTranslation()
   const { handleSuccess, setCloseOnEscape } = useRouteModal()
-  const direction = useDocumentDirection()
+
+  const [selectedLocale, setSelectedLocale] = useState<string>(
+    availableLocales[0]?.locale_code ?? ""
+  )
 
   const entities = useMemo(() => references, [references])
   const totalCount = useMemo(
@@ -428,64 +448,72 @@ export const TranslationsEditForm = ({
     entities,
     translatableFields,
     availableLocales,
+    selectedLocale,
     modalFields,
   })
 
+  const selectedLocaleDisplay = availableLocales.find(
+    (l) => l.locale_code === selectedLocale
+  )?.locale.name
+
   return (
     <RouteFocusModal.Form form={form}>
-      <KeyboundForm onSubmit={handleSubmit} className="flex h-full flex-col">
-        <ProgressTabs
-          dir={direction}
-          defaultValue={entityType}
-          className="flex h-full flex-col overflow-hidden"
-        >
-          <RouteFocusModal.Header>
-            <div className="-my-2 w-full border-l">
-              <ProgressTabs.List className="justify-start-start flex w-full items-center">
-                <ProgressTabs.Trigger value={entityType}>
-                  {entityType
-                    .split("_")
-                    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-                    .join(" ")}
-                </ProgressTabs.Trigger>
-              </ProgressTabs.List>
-            </div>
-          </RouteFocusModal.Header>
-          <RouteFocusModal.Body className="size-full overflow-hidden">
-            <ProgressTabs.Content
-              value={entityType}
-              className="size-full overflow-y-auto"
+      <KeyboundForm
+        onSubmit={handleSubmit}
+        className="flex h-full flex-col overflow-hidden"
+      >
+        <RouteFocusModal.Header>
+          <div className="-my-2 flex w-full items-center justify-between border-l px-4">
+            <Select
+              value={selectedLocale}
+              onValueChange={setSelectedLocale}
+              size="small"
             >
-              <DataGrid
-                columns={columns}
-                data={rows}
-                getSubRows={(row) => {
-                  if (isEntityRow(row)) {
-                    return row.subRows
-                  }
-                }}
-                state={form}
-                onEditingChange={(editing) => setCloseOnEscape(!editing)}
-                totalRowCount={totalCount}
-                onFetchMore={fetchNextPage}
-                isFetchingMore={isFetchingNextPage}
-                hasNextPage={hasNextPage}
-              />
-            </ProgressTabs.Content>
-          </RouteFocusModal.Body>
-          <RouteFocusModal.Footer>
-            <div className="flex items-center justify-end gap-x-2">
-              <RouteFocusModal.Close asChild>
-                <Button size="small" variant="secondary">
-                  {t("actions.cancel")}
-                </Button>
-              </RouteFocusModal.Close>
-              <Button size="small" type="submit" isLoading={isPending}>
-                {t("actions.save")}
+              <Select.Trigger className="bg-ui-bg-base w-[200px]">
+                <Select.Value>{selectedLocaleDisplay}</Select.Value>
+              </Select.Trigger>
+              <Select.Content>
+                {availableLocales.map((locale) => (
+                  <Select.Item
+                    key={locale.locale_code}
+                    value={locale.locale_code}
+                  >
+                    {locale.locale.name}
+                  </Select.Item>
+                ))}
+              </Select.Content>
+            </Select>
+          </div>
+        </RouteFocusModal.Header>
+        <RouteFocusModal.Body className="size-full overflow-hidden">
+          <DataGrid
+            columns={columns}
+            data={rows}
+            getSubRows={(row) => {
+              if (isEntityRow(row)) {
+                return row.subRows
+              }
+            }}
+            state={form}
+            onEditingChange={(editing) => setCloseOnEscape(!editing)}
+            totalRowCount={totalCount}
+            onFetchMore={fetchNextPage}
+            isFetchingMore={isFetchingNextPage}
+            hasNextPage={hasNextPage}
+          />
+        </RouteFocusModal.Body>
+        <RouteFocusModal.Footer>
+          <div className="flex items-center justify-end gap-x-2">
+            <RouteFocusModal.Close asChild>
+              <Button size="small" variant="secondary">
+                {t("actions.cancel")}
               </Button>
-            </div>
-          </RouteFocusModal.Footer>
-        </ProgressTabs>
+            </RouteFocusModal.Close>
+            <Button size="small" type="submit" isLoading={isPending}>
+              {t("actions.save")}
+            </Button>
+          </div>
+        </RouteFocusModal.Footer>
       </KeyboundForm>
     </RouteFocusModal.Form>
   )
