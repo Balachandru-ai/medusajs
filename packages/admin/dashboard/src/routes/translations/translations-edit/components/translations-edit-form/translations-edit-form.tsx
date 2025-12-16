@@ -225,9 +225,7 @@ function useTranslationsGridColumns({
 
           if (isEntityRow(row)) {
             return (
-              <DataGrid.ReadonlyCell context={context}>
-                {row.reference_id}
-              </DataGrid.ReadonlyCell>
+              <DataGrid.ReadonlyCell context={context}></DataGrid.ReadonlyCell>
             )
           }
 
@@ -492,11 +490,23 @@ export const TranslationsEditForm = ({
           currentBatchAvailable -= currentBatch.delete.length
         }
 
-        await mutateAsync(currentBatch, {
+        const response = await mutateAsync(currentBatch, {
           onError: (error) => {
             toast.error(error.message)
           },
         })
+
+        if (response.created) {
+          for (const created of response.created) {
+            form.setValue(`entities.${created.reference_id}.id`, created.id, {
+              shouldDirty: false,
+            })
+            if (initialState.current.entities[created.reference_id]) {
+              initialState.current.entities[created.reference_id].id =
+                created.id
+            }
+          }
+        }
       }
 
       const updatedInitialState = { ...initialState.current }
