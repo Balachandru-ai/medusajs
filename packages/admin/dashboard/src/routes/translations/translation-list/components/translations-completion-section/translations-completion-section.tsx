@@ -146,11 +146,15 @@ export const TranslationsCompletionSection = ({
                             className="h-2 w-2 rounded-full"
                             style={{ backgroundColor: "var(--bg-interactive)" }}
                           />
-                          <Text size="xsmall" className="text-ui-fg-subtle">
+                          <Text
+                            size="small"
+                            weight="plus"
+                            className="text-ui-fg-subtle"
+                          >
                             {t("translations.completion.translated")}
                           </Text>
                         </div>
-                        <Text size="xsmall" weight="plus">
+                        <Text size="small" weight="plus">
                           {locale.translated}
                         </Text>
                       </div>
@@ -162,10 +166,14 @@ export const TranslationsCompletionSection = ({
                             opacity: 0.3,
                           }}
                         />
-                        <Text size="xsmall" className="text-ui-fg-subtle">
+                        <Text
+                          size="small"
+                          weight="plus"
+                          className="text-ui-fg-subtle"
+                        >
                           {t("translations.completion.toTranslate")}
                         </Text>
-                        <Text size="xsmall" weight="plus">
+                        <Text size="small" weight="plus">
                           {locale.toTranslate}
                         </Text>
                       </div>
@@ -202,7 +210,11 @@ export const TranslationsCompletionSection = ({
               )
             })}
           </div>
-          <Text size="xsmall" className="text-ui-fg-muted text-center">
+          <Text
+            size="small"
+            weight="plus"
+            className="text-ui-fg-muted text-center"
+          >
             {t("translations.completion.footer")}
           </Text>
         </div>
