@@ -188,6 +188,7 @@ export class Admin {
   public currency: Currency
   /**
    * @tags locale
+   * @since 2.12.3
    */
   public locale: Locale
   /**
