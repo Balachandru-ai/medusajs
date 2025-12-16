@@ -10,17 +10,53 @@ import { deepCopy } from "@medusajs/utils"
 export const processProductOptionsForImportStepId =
   "process-product-options-for-import"
 
+/**
+ * The data to process products with options during import.
+ */
 export type ProcessProductOptionsForImportInput = {
+  /**
+   * The products to process. Each product can optionally have an `options` field
+   * containing the product options to create.
+   */
   products: (Omit<UpdateProductWorkflowInputDTO, "option_ids"> & {
+    /**
+     * The product options to create for the product.
+     */
     options?: ProductTypes.CreateProductOptionDTO[]
   })[]
 }
 
 /**
- * This step processes products with options during import:
- * 1. Creates product options
- * 2. Transforms product.options to product.option_ids
- * 3. Transforms variant options from {title: value} to {optionId: value}
+ * This step processes products with options during import. It performs the following actions:
+ * 
+ * 1. Creates product options.
+ * 2. Transforms `product.options` in the input to `product.option_ids`.
+ * 3. Transforms variant options from `{title: value}` to `{optionId: value}`.
+ * 
+ * @since 2.13.0
+ * 
+ * @example
+ * const data = processProductOptionsForImportStep({
+ *   products: [
+ *     {
+ *       title: "T-Shirt",
+ *       options: [
+ *         {
+ *           title: "Size",
+ *           values: ["S", "M", "L"]
+ *         }
+ *       ],
+ *       variants: [
+ *         {
+ *           title: "T-Shirt - Small",
+ *           options: {
+ *             Size: "S"
+ *           }
+ *         }
+ *       ]
+ *     }
+ *   ]
+ * })
  */
 export const processProductOptionsForImportStep = createStep(
   processProductOptionsForImportStepId,

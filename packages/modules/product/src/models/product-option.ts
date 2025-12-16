@@ -6,8 +6,14 @@ const ProductOption = model
   .define("ProductOption", {
     id: model.id({ prefix: "opt" }).primaryKey(),
     title: model.text().searchable(),
+    /**
+     * @since 2.13.0
+     */
     is_exclusive: model.boolean().default(false),
     metadata: model.json().nullable(),
+    /**
+     * @since 2.13.0
+     */
     products: model.manyToMany(() => Product),
     values: model.hasMany(() => ProductOptionValue, {
       mappedBy: "option",

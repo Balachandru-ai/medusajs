@@ -67,6 +67,7 @@ export class Admin {
   public productCategory: ProductCategory
   /**
    * @tags product
+   * @since 2.13.0
    */
   public productOption: ProductOption
   /**

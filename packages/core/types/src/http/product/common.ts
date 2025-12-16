@@ -335,15 +335,17 @@ export interface BaseProductOptionValue {
    */
   value: string
   /**
-   * The option's rank.
+   * The value's rank among other option values.
+   * 
+   * @since 2.13.0
    */
   rank?: number
   /**
-   * The option's details.
+   * The details of the option that the value belongs to.
    */
   option?: BaseProductOption | null
   /**
-   * The ID of the option.
+   * The ID of the option that the value belongs to.
    */
   option_id?: string | null
   /**
@@ -461,9 +463,23 @@ export interface BaseProductOptionListParams
 export interface BaseProductOptionParams
   extends FindParams,
     BaseFilterable<BaseProductOptionParams> {
+  /**
+   * A query or keywords to search the searchable fields by.
+   */
   q?: string
+  /**
+   * Filter by the option's id(s).
+   */
   id?: string | string[]
+  /**
+   * Filter by the option's title(s).
+   */
   title?: string | string[]
+  /**
+   * Filter by whether the option is exclusive to a product or global.
+   * 
+   * @since 2.13.0
+   */
   is_exclusive?: boolean
 }
 
