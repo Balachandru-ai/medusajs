@@ -180,6 +180,17 @@ export const useDataGridCell = <TData, TValue>({
         )?.set
         nativeInputValueSetter?.call(inputRef.current, e.key)
 
+        const event = new Event("input", { bubbles: true })
+        inputRef.current.dispatchEvent(event)
+      } else if (inputRef.current instanceof HTMLTextAreaElement) {
+        inputRef.current.value = ""
+
+        const nativeTextAreaValueSetter = Object.getOwnPropertyDescriptor(
+          window.HTMLTextAreaElement.prototype,
+          "value"
+        )?.set
+        nativeTextAreaValueSetter?.call(inputRef.current, e.key)
+
         // Trigger input event to notify react-hook-form
         const event = new Event("input", { bubbles: true })
         inputRef.current.dispatchEvent(event)
