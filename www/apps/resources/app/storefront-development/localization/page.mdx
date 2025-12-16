@@ -31,7 +31,7 @@ Medusa provides localization features through the [Translation Module](../../com
 
 {/* TODO: add links */}
 
-Admin users can [specify supported and default locales](#), and [add translations for different resources](#) from the Medusa Admin. Then, you can allow customers to choose their locale and show them translated content in your storefront.
+Admin users can [specify supported locales](#), and [add translations for different resources](#) from the Medusa Admin. Then, you can allow customers to choose their locale and show them translated content in your storefront.
 
 Refer to the [Translation Module documentation](../../commerce-modules/translation/page.mdx) to learn more about translation concepts and features. This guide focuses on how to serve localized content in your storefront.
 
@@ -125,7 +125,7 @@ Each locale has a `code` property that follows the [IETF BCP 47 standard](https:
 
 Currently, you can retrieve translations using the [Store API routes](!api!/store) for product-related resources, such as products, product variants, and categories. Future releases will expand translation support to additional resources.
 
-By default, Medusa serves content in the store's default locale. You can override the locale for a request.
+By default, Medusa serves the original content of a resource. You can override the locale for a request to get the translated content if available.
 
 ### Set Locale in JS SDK
 
@@ -143,7 +143,7 @@ const { products } = await sdk.store.product.list()
 
 In the above example, you set the locale to French using the `setLocale` method. It accepts the locale string in the [IETF BCP 47 standard](https://gist.github.com/typpo/b2b828a35e683b9bf8db91b5404f1bd1).
 
-When you fetch the products, their content, such as title and description, is in French and falls back to the store's default locale if a translation isn't available.
+When you fetch the products, their content, such as title and description, is in French and falls back to the original content if translations aren't available.
 
 You can also retrieve the currently set locale using the `getLocale` method:
 

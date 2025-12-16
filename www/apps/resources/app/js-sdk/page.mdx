@@ -676,7 +676,7 @@ const { products } = await sdk.store.product.list()
 
 The `setLocale` method accepts the locale string in the [IETF BCP 47 standard](https://gist.github.com/typpo/b2b828a35e683b9bf8db91b5404f1bd1). All subsequent requests sent using the JS SDK will include the specified locale in the `Content-Language` header.
 
-In the above example, the product content, such as title and description, is fetched in French and falls back to the store's default locale if a translation isn't available.
+In the above example, the product content, such as title and description, is fetched in French and falls back to the original content if translations aren't available.
 
 You can also retrieve the currently set locale using the `getLocale` method:
 

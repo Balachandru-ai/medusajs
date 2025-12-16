@@ -239,7 +239,7 @@ The result will be products sorted by title in descending order.
   ]}
 />
 
-By default, the product content like title and description are returned in the store's default locale, falling back to the product's original content if no translation is available.
+By default, Medusa returns the product's original content (such as title and description).
 
 If you support [localization](../../localization/page.mdx) in your storefront, you can set the locale to retrieve product information with based on the customer's preferred language.
 
@@ -297,4 +297,4 @@ The returned products will have the same structure as described in the [products
 }
 ```
 
-If translations aren't available for the selected locale, or no locale is selected, the default content of the product is returned.
+If translations aren't available for the selected locale, or no locale is selected, the product's original content is returned.

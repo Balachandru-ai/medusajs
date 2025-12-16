@@ -57,9 +57,8 @@ Medusa determines the locale for the request in the following order of priority:
 
 - The `locale` query parameter in the API request.
 - The `Content-Language` header in the API request.
-- The default locale of the store defined in the Store Module.
 
-If translations aren't available for the selected locale, or no locale is selected, the default content of the resource is returned.
+If translations aren't available for the selected locale, or no locale is selected, the original content stored in the resource's data model is returned.
 
 For example:
 
@@ -108,7 +107,7 @@ curl -X POST "http://localhost:9000/store/carts" \
 
 This creates a cart with the French (France) locale. When you add items to the cart, their titles and descriptions are displayed in French if translations are available.
 
-If you don't specify a locale when creating the cart, the default product content is used for the items in the cart.
+If you don't specify a locale when creating the cart, the original product content is used for the items in the cart.
 
 {/* TODO: add links */}
 

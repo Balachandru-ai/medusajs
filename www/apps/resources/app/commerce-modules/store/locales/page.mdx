@@ -32,12 +32,3 @@ The Store Module has a [StoreLocale](/references/store/models/StoreLocale) data 
 For example, if your store supports English (United States) and French (France), you'll have two `StoreLocale` records with the locale codes `en-US` and `fr-FR`.
 
 ![Diagram illustrating the relationship between the Store and StoreLocale data models](https://res.cloudinary.com/dza7lstvk/image/upload/v1765371144/Medusa%20Resources/store-locale_ckanv4.jpg)
-
----
-
-## Default Locale
-
-The `StoreLocale` data model has an `is_default` property that indicates whether a locale is the default locale for your store. There can only be one default locale at a time.
-
-When retrieving translated data for the storefront as explained in the [Serve Translations in the Storefront](../../translation/storefront/page.mdx) guide, the default locale is used if no specific locale is requested.
-
