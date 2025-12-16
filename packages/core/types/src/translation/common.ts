@@ -138,15 +138,25 @@ export interface FilterableTranslationProps
  */
 export interface TranslationStatisticsInput {
   /**
-   * Locales to check translations for (e.g., ["en-US", "fr-FR"]).
+   * Locales to check translations for.
+   * 
+   * @example
+   * ["en-US", "fr-FR"]
    */
   locales: string[]
 
   /**
-   * Entity types with their total counts.
-   * Key is the entity type (e.g., "product"), value contains the count of entities.
+   * Key-value pairs of entity types and their configurations.
    */
-  entities: Record<string, { count: number }>
+  entities: Record<string, {
+    /**
+     * Total number of records for the entity type.
+     * For example, total number of products.
+     * 
+     * This is necessary to compute expected translation counts.
+     */ 
+    count: number
+  }>
 }
 
 /**
@@ -154,17 +164,19 @@ export interface TranslationStatisticsInput {
  */
 export interface LocaleStatistics {
   /**
-   * Expected number of translated fields.
+   * Expected total number of translated fields.
    */
   expected: number
 
   /**
-   * Actual number of translated fields (non-null, non-empty).
+   * Actual number of translated fields. This doesn't count
+   * translations that are null or empty.
    */
   translated: number
 
   /**
-   * Number of missing translations (expected - translated).
+   * Number of missing translations for expected translatable
+   * fields.
    */
   missing: number
 }
