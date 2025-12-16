@@ -14,7 +14,7 @@ import {
 } from "../validators"
 
 /**
- * @since 2.13.0
+ * @since 2.12.3
  * @featureFlag translation
  */
 export const POST = async (

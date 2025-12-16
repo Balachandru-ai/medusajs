@@ -283,7 +283,7 @@ export interface CreateCartWorkflowInputDTO {
   /**
    * The locale code of the cart in BCP 47 format.
    * 
-   * @since 2.13.0
+   * @since 2.12.3
    * 
    * @example
    * "en-US"
@@ -349,7 +349,7 @@ export interface UpdateCartWorkflowInputDTO {
   /**
    * The locale code for the cart in BCP 47 format.
    * 
-   * @since 2.13.0
+   * @since 2.12.3
    * 
    * @example
    * "en-US"

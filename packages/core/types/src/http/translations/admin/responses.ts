@@ -52,11 +52,13 @@ export interface AdminTranslationLocaleStatistics {
    */
   expected: number
   /**
-   * Actual number of translated fields.
+   * Actual number of translated fields. This doesn't count
+   * translations that are null or empty.
    */
   translated: number
   /**
-   * Number of missing translations.
+   * Number of missing translations for expected translatable
+   * fields.
    */
   missing: number
 }

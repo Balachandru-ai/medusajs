@@ -28,7 +28,7 @@ export const createTranslationsWorkflowId = "create-translations"
  * You can use this workflow within your own customizations or custom workflows, allowing you
  * to create translations in your custom flows.
  * 
- * @since 2.13.0
+ * @since 2.12.3
  * @featureFlag translation
  *
  * @example

@@ -665,20 +665,24 @@ export interface ITranslationModuleService extends IModuleService {
   ): Promise<Record<string, string[]> | void>
 
   /**
-   * This method retrieves translation statistics for the given entities and locales.
-   * It counts translated fields at a granular level, providing both aggregated
-   * and per-locale breakdowns.
+   * This method retrieves translation statistics for the specified entities and locales.
+   * It's useful to understand the translation coverage of different entities across various locales.
+   * 
+   * You can use this method to get insights into how many fields are translated, missing translations,
+   * and the expected number of translations based on the entities and locales provided.
    *
    * @param {TranslationStatisticsInput} input - The entities and locales to check.
    * @param {Context} sharedContext
-   * @returns {Promise<TranslationStatisticsOutput>} Statistics by entity type.
+   * @returns {Promise<TranslationStatisticsOutput>} Statistics by entity.
    *
    * @example
-   * const stats = await translationService.getStatistics({
+   * const [,count] = await productModuleService.listAndCountProducts()
+   * const [,variantCount] = await productVariantModuleService.listAndCountProductVariants()
+   * const stats = await translationModuleService.getStatistics({
    *   locales: ["en-US", "fr-FR"],
    *   entities: {
-   *     product: { count: 2 },
-   *     product_variant: { count: 5 }
+   *     product: { count }, // for example, 2 products
+   *     product_variant: { count: variantCount },
    *   }
    * })
    * // Returns:
@@ -700,20 +704,27 @@ export interface ITranslationModuleService extends IModuleService {
   ): Promise<TranslationStatisticsOutput>
 
   /**
-   * This method retrieves the translatable fields configuration.
-   * Returns a mapping of entity types to their translatable field names.
+   * This method retrieves the translatable fields of a resource. For example,
+   * product entities have translatable fields such as `title` and `description`.
    *
-   * @param {string} entityType - Optional entity type to filter by. If not provided, returns all.
-   * @returns {Record<string, string[]>} A mapping of entity types to their translatable fields.
+   * @param {string} entityType - Name of the resource's table to get translatable fields for.
+   * If not provided, returns all translatable fields for all entity types. For example, `product` or `product_variant`.
+   * @returns {Record<string, string[]>} A mapping of resource names to their translatable fields.
    *
    * @example
-   * // Get all translatable fields
-   * const allFields = translationService.getTranslatableFields()
+   * To get translatable fields for all resources:
+   * 
+   * ```ts
+   * const allFields = translationModuleService.getTranslatableFields()
    * // Returns: { product: ["title", "description", ...], product_variant: ["title", ...] }
+   * ```
+   * 
+   * To get translatable fields for a specific resource:
    *
-   * // Get fields for a specific entity type
-   * const productFields = translationService.getTranslatableFields("product")
+   * ```ts
+   * const productFields = translationModuleService.getTranslatableFields("product")
    * // Returns: { product: ["title", "description", "subtitle", "status"] }
+   * ```
    */
   getTranslatableFields(entityType?: string): Record<string, string[]>
 }

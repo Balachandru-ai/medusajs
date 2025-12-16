@@ -2,7 +2,7 @@ import { model } from "@medusajs/framework/utils"
 import Store from "./store"
 
 /**
- * @since 2.13.0
+ * @since 2.12.3
  */
 const StoreLocale = model.define("StoreLocale", {
   id: model.id({ prefix: "stloc" }).primaryKey(),

@@ -15,7 +15,7 @@ const Cart = model
     /**
      * The BCP 47 language tag code of the locale
      * 
-     * @since 2.13.0
+     * @since 2.12.3
      * 
      * @example
      * "en-US"

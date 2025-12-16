@@ -18,7 +18,7 @@ export type ValidateTranslationsStepInput =
 /**
  * This step validates that the translations are supported by the store.
  * 
- * @since 2.13.0
+ * @since 2.12.3
  * @featureFlag translation
  * 
  * @example

@@ -16,7 +16,7 @@ const Store = model
     /**
      * The supported locales of the store.
      * 
-     * @since 2.13.0
+     * @since 2.12.3
      */
     supported_locales: model.hasMany(() => StoreLocale, {
       mappedBy: "store",

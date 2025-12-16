@@ -8,7 +8,7 @@ import {
 import TranslationFeatureFlag from "../../../feature-flags/translation"
 
 /**
- * @since 2.13.0
+ * @since 2.12.3
  * @featureFlag translation
  */
 export const GET = async (
