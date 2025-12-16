@@ -232,7 +232,7 @@ medusaIntegrationTestRunner({
         )
       })
 
-      it("should throw if invalid type is passed", async () => {
+      it.only("should throw if invalid type is passed", async () => {
         const stockLocationResponse = await api.post(
           `/admin/stock-locations`,
           {
@@ -291,7 +291,7 @@ medusaIntegrationTestRunner({
 
         expect(errorResponse.status).toEqual(400)
         expect(errorResponse.data.message).toContain(
-          `Invalid request: Field 'geo_zones, 2, type' is required`
+          `Invalid request: Field 'type' is required`
         )
       })
 

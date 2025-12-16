@@ -48,34 +48,36 @@ const formatInvalidType = (issues: ZodIssue[]) => {
 }
 
 const formatRequiredField = (issues: ZodIssue[]) => {
-  const expected = issues
+  // Find the first issue that indicates a required field (input is undefined)
+  const requiredIssue = issues
     .filter((i) => i != null)
-    .map((i) => {
+    .find((i) => {
       if (i?.code === "invalid_type") {
         const invalidTypeIssue = i as ZodIssueInvalidType
-        if (invalidTypeIssue.input === undefined) {
-          return invalidTypeIssue.expected
-        }
+        return invalidTypeIssue.input === undefined
       }
-      return
+      // Also check invalid_value issues - if there's no input property or it's undefined
+      if (i?.code === "invalid_value") {
+        const issueAny = i as any
+        const hasInput = "input" in issueAny || "received" in issueAny
+        if (!hasInput) {
+          return true
+        }
+        return issueAny.input === undefined && issueAny.received === undefined
+      }
+      return false
     })
-    .filter(Boolean)
 
-  if (!expected.length) {
+  if (!requiredIssue) {
     return
   }
 
-  const firstIssue = issues.find((i) => i != null)
-  if (!firstIssue) {
-    return
-  }
-
-  return `Field '${formatPath(firstIssue)}' is required`
+  return `Field '${formatPath(requiredIssue)}' is required`
 }
 
 const formatUnionError = (issue: ZodIssueInvalidUnion) => {
   const issues = (issue.errors ?? [])
-    .flatMap((e: { issues?: ZodIssue[] }) => e?.issues ?? [])
+    .flatMap((e: { issues?: ZodIssue[] }) => e?.issues ?? (e as ZodIssue[]))
     .filter((i): i is ZodIssue => i != null)
 
   if (!issues.length) {
