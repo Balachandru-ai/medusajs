@@ -563,6 +563,10 @@ export interface AdminUpdateProductOption {
    * Whether the option is exclusive or global.
    */
   is_exclusive?: boolean
+  /**
+   * Key-value pairs of custom data.
+   */
+  metadata?: Record<string, unknown> | null
 }
 
 /**
