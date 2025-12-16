@@ -68,7 +68,6 @@ import {
   eventBuilders,
 } from "../utils"
 import { joinerConfig } from "./../joiner-config"
-import { eventBuilders } from "../utils/events"
 import { buildOptionValueFilterQuery } from "../utils/build-option-value-filter-query"
 
 type InjectedDependencies = {
