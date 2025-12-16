@@ -66,6 +66,11 @@ export interface DataGridRootProps<
   multiColumnSelection?: boolean
   showColumnsDropdown?: boolean
   /**
+   * Custom content to render in the header, positioned between the column visibility
+   * controls and the error/shortcuts section.
+   */
+  headerContent?: ReactNode
+  /**
    * Lazy loading props - when totalRowCount is provided, the grid enters lazy loading mode.
    * In this mode, the virtualizer will size based on totalRowCount and trigger onFetchMore
    * when the user scrolls near the end of loaded data.
@@ -129,6 +134,7 @@ export const DataGridRoot = <
   onFetchMore,
   isFetchingMore,
   hasNextPage,
+  headerContent,
 }: DataGridRootProps<TData, TFieldValues>) => {
   // TODO: remove once everything is lazy loaded
   const isLazyMode = totalRowCount !== undefined
@@ -664,6 +670,7 @@ export const DataGridRoot = <
           onResetColumns={handleResetColumns}
           isHighlighted={isHighlighted}
           onHeaderInteractionChange={handleHeaderInteractionChange}
+          headerContent={headerContent}
         />
         <div className="size-full overflow-hidden">
           <div
@@ -806,6 +813,7 @@ type DataGridHeaderProps = {
   errorCount: number
   onToggleErrorHighlighting: () => void
   onHeaderInteractionChange: (isActive: boolean) => void
+  headerContent?: ReactNode
 }
 
 const DataGridHeader = ({
@@ -818,6 +826,7 @@ const DataGridHeader = ({
   onToggleErrorHighlighting,
   onHeaderInteractionChange,
   showColumnsDropdown,
+  headerContent,
 }: DataGridHeaderProps) => {
   const [shortcutsOpen, setShortcutsOpen] = useState(false)
   const [columnsOpen, setColumnsOpen] = useState(false)
@@ -891,6 +900,7 @@ const DataGridHeader = ({
           )}
         </div>
       )}
+      {headerContent}
       <div className="ml-auto flex items-center gap-x-2">
         {errorCount > 0 && (
           <Button

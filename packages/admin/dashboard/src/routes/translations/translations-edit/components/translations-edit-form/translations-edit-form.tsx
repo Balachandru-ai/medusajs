@@ -673,29 +673,7 @@ export const TranslationsEditForm = ({
         onSubmit={handleSubmit}
         className="flex h-full flex-col overflow-hidden"
       >
-        <RouteFocusModal.Header>
-          <div className="-my-2 flex w-full items-center justify-between border-l px-4">
-            <Select
-              value={selectedLocale}
-              onValueChange={handleLocaleChange}
-              size="small"
-            >
-              <Select.Trigger className="bg-ui-bg-base w-[200px]">
-                <Select.Value>{selectedLocaleDisplay}</Select.Value>
-              </Select.Trigger>
-              <Select.Content>
-                {availableLocales.map((locale) => (
-                  <Select.Item
-                    key={locale.locale_code}
-                    value={locale.locale_code}
-                  >
-                    {locale.locale.name}
-                  </Select.Item>
-                ))}
-              </Select.Content>
-            </Select>
-          </div>
-        </RouteFocusModal.Header>
+        <RouteFocusModal.Header></RouteFocusModal.Header>
         <RouteFocusModal.Body className="size-full overflow-hidden">
           <div ref={containerRef} className="size-full">
             <DataGrid
@@ -713,6 +691,27 @@ export const TranslationsEditForm = ({
               onFetchMore={fetchNextPage}
               isFetchingMore={isFetchingNextPage}
               hasNextPage={hasNextPage}
+              headerContent={
+                <Select
+                  value={selectedLocale}
+                  onValueChange={handleLocaleChange}
+                  size="small"
+                >
+                  <Select.Trigger className="bg-ui-bg-base w-[200px]">
+                    <Select.Value>{selectedLocaleDisplay}</Select.Value>
+                  </Select.Trigger>
+                  <Select.Content>
+                    {availableLocales.map((locale) => (
+                      <Select.Item
+                        key={locale.locale_code}
+                        value={locale.locale_code}
+                      >
+                        {locale.locale.name}
+                      </Select.Item>
+                    ))}
+                  </Select.Content>
+                </Select>
+              }
             />
           </div>
         </RouteFocusModal.Body>
