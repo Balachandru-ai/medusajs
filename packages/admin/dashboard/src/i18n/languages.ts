@@ -216,7 +216,7 @@ export const languages: Language[] = [
   },
   {
     code: "zhTW",
-    display_name: "繁體中文",
+    display_name: "繁體中文(臺灣)",
     ltr: true,
     date_locale: zhTW,
   },
