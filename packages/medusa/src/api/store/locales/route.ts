@@ -2,6 +2,10 @@ import { MedusaRequest, MedusaResponse } from "@medusajs/framework/http"
 import { ContainerRegistrationKeys } from "@medusajs/framework/utils"
 import { HttpTypes } from "@medusajs/framework/types"
 
+/**
+ * @since 2.12.3
+ * @featureFlag translation
+ */
 export const GET = async (
   req: MedusaRequest, 
   res: MedusaResponse<HttpTypes.StoreLocaleListResponse>
