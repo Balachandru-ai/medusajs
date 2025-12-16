@@ -691,13 +691,13 @@ medusaIntegrationTestRunner({
           expect(response.status).toEqual(200)
           expect(response.data.statistics).toBeDefined()
           expect(response.data.statistics.product).toEqual({
-            // 2 products × 5 translatable fields × 2 locales = 20 expected
-            expected: 20,
+            // 2 products × 4 translatable fields × 2 locales = 16 expected
+            expected: 16,
             translated: 0,
-            missing: 20,
+            missing: 16,
             by_locale: {
-              "en-US": { expected: 10, translated: 0, missing: 10 },
-              "fr-FR": { expected: 10, translated: 0, missing: 10 },
+              "en-US": { expected: 8, translated: 0, missing: 8 },
+              "fr-FR": { expected: 8, translated: 0, missing: 8 },
             },
           })
         })
@@ -742,14 +742,14 @@ medusaIntegrationTestRunner({
           )
 
           expect(response.status).toEqual(200)
-          // 2 products × 5 fields × 1 locale = 10 expected
+          // 2 products × 4 fields × 1 locale = 8 expected
           // product1 has 2 fields, product2 has 1 field = 3 translated
           expect(response.data.statistics.product).toEqual({
-            expected: 10,
+            expected: 8,
             translated: 3,
-            missing: 7,
+            missing: 5,
             by_locale: {
-              "fr-FR": { expected: 10, translated: 3, missing: 7 },
+              "fr-FR": { expected: 8, translated: 3, missing: 5 },
             },
           })
         })
@@ -775,7 +775,6 @@ medusaIntegrationTestRunner({
                     title: "Produit",
                     description: "Description",
                     subtitle: "Sous-titre",
-                    status: "Actif",
                     material: "Matériau",
                   },
                 },
@@ -799,13 +798,13 @@ medusaIntegrationTestRunner({
 
           expect(response.status).toEqual(200)
 
-          // Product: 1 × 5 fields × 1 locale = 5, all translated
+          // Product: 1 × 4 fields × 1 locale = 4, all translated
           expect(response.data.statistics.product).toEqual({
-            expected: 5,
-            translated: 5,
+            expected: 4,
+            translated: 4,
             missing: 0,
             by_locale: {
-              "fr-FR": { expected: 5, translated: 5, missing: 0 },
+              "fr-FR": { expected: 4, translated: 4, missing: 0 },
             },
           })
 
@@ -856,21 +855,21 @@ medusaIntegrationTestRunner({
           )
 
           expect(response.status).toEqual(200)
-          // 1 product × 5 fields × 2 locales = 10 expected
+          // 1 product × 4 fields × 2 locales = 8 expected
           // fr-FR: 2 translated, de-DE: 1 translated = 3 total
-          expect(response.data.statistics.product.expected).toEqual(10)
+          expect(response.data.statistics.product.expected).toEqual(8)
           expect(response.data.statistics.product.translated).toEqual(3)
-          expect(response.data.statistics.product.missing).toEqual(7)
+          expect(response.data.statistics.product.missing).toEqual(5)
 
           expect(response.data.statistics.product.by_locale["fr-FR"]).toEqual({
-            expected: 5,
+            expected: 4,
             translated: 2,
-            missing: 3,
+            missing: 2,
           })
           expect(response.data.statistics.product.by_locale["de-DE"]).toEqual({
-            expected: 5,
+            expected: 4,
             translated: 1,
-            missing: 4,
+            missing: 3,
           })
         })
 
