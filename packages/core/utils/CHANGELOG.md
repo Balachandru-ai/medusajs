@@ -1,5 +1,46 @@
 # @medusajs/utils
 
+## 2.12.2
+
+### Patch Changes
+
+- [#14237](https://github.com/medusajs/medusa/pull/14237) [`4dbf46f2cb64240092843ebfdef766ec5b2a7116`](https://github.com/medusajs/medusa/commit/4dbf46f2cb64240092843ebfdef766ec5b2a7116) Thanks [@NicolasGorga](https://github.com/NicolasGorga)! - fix(utils): avoid inflating refundable_total for tax inclusive pricing
+
+- [#14277](https://github.com/medusajs/medusa/pull/14277) [`a78f68fa46dceb8e201fe60e770bd9ea654390d8`](https://github.com/medusajs/medusa/commit/a78f68fa46dceb8e201fe60e770bd9ea654390d8) Thanks [@shahednasser](https://github.com/shahednasser)! - fix(utils,core-flows): add events constant for translations and use it in workflows
+
+- [#14074](https://github.com/medusajs/medusa/pull/14074) [`fe49b567d6d55ae224095c06c710d31d40887653`](https://github.com/medusajs/medusa/commit/fe49b567d6d55ae224095c06c710d31d40887653) Thanks [@adrien2p](https://github.com/adrien2p)! - chore: Backend HMR (expriemental)
+
+- [#14218](https://github.com/medusajs/medusa/pull/14218) [`b517137466726c15d5e31ab0c9f42aa57af90c4e`](https://github.com/medusajs/medusa/commit/b517137466726c15d5e31ab0c9f42aa57af90c4e) Thanks [@shahednasser](https://github.com/shahednasser)! - fix(utils): fix error when generating migrations for a module with existing snapshot
+
+- [#14190](https://github.com/medusajs/medusa/pull/14190) [`fd3965974dc0b750d377ff621387d34611760957`](https://github.com/medusajs/medusa/commit/fd3965974dc0b750d377ff621387d34611760957) Thanks [@adrien2p](https://github.com/adrien2p)! - feat(): Pluralized props for list readonly link
+
+- Updated dependencies []:
+  - @medusajs/deps@2.12.2
+
+## 2.12.1
+
+### Patch Changes
+
+- [#14196](https://github.com/medusajs/medusa/pull/14196) [`391d8dc6cd50c79b678059fdeb7774a72e243143`](https://github.com/medusajs/medusa/commit/391d8dc6cd50c79b678059fdeb7774a72e243143) Thanks [@adrien2p](https://github.com/adrien2p)! - fix(): event emitting
+
+- Updated dependencies []:
+  - @medusajs/deps@2.12.1
+
+## 2.12.0
+
+### Patch Changes
+
+- [#13306](https://github.com/medusajs/medusa/pull/13306) [`78842af1c30de9c7561f10b4129aba4e1f30db27`](https://github.com/medusajs/medusa/commit/78842af1c30de9c7561f10b4129aba4e1f30db27) Thanks [@olivermrbl](https://github.com/olivermrbl)! - fix: Compute "virtual" adjustments for order previews
+
+- [#13760](https://github.com/medusajs/medusa/pull/13760) [`536a3f802c92960b1eab48c37db25a8c542fd231`](https://github.com/medusajs/medusa/commit/536a3f802c92960b1eab48c37db25a8c542fd231) Thanks [@fPolic](https://github.com/fPolic)! - feat: promotion usage limit
+
+- [#14036](https://github.com/medusajs/medusa/pull/14036) [`e59cdae3365981339d55ec01224f09995250e67d`](https://github.com/medusajs/medusa/commit/e59cdae3365981339d55ec01224f09995250e67d) Thanks [@adrien2p](https://github.com/adrien2p)! - fix(): Proper schema usage when running migrations
+
+- [`9d9d0397a88c398683f75ac3d6f539c1a686d278`](undefined) - fix(): Index integration tests flackyness
+
+- Updated dependencies []:
+  - @medusajs/deps@2.12.0
+
 ## 2.11.3
 
 ### Patch Changes

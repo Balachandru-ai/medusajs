@@ -30,6 +30,7 @@ export type ChangeActionType =
   | "CREDIT_LINE_ADD"
   | "PROMOTION_ADD"
   | "PROMOTION_REMOVE"
+  | "ITEM_ADJUSTMENTS_REPLACE"
 
 export type OrderChangeStatus =
   | "confirmed"
@@ -1037,6 +1038,11 @@ export interface OrderDTO {
   display_id: number
 
   /**
+   * The order's custom display ID.
+   */
+  custom_display_id?: string
+
+  /**
    * The active order change, if any.
    *
    * @expandable
@@ -1126,6 +1132,11 @@ export interface OrderDTO {
    * Whether the order is a draft order.
    */
   is_draft_order?: boolean
+
+  /**
+   * The locale of the order.
+   */
+  locale?: string | null
 
   /**
    * Holds custom data in key-value pairs.
@@ -2112,6 +2123,11 @@ export interface OrderChangeDTO {
   change_type?: "return" | "exchange" | "claim" | "edit" | "transfer"
 
   /**
+   * Whether to carry over promotions (apply promotions to outbound exchange items).
+   */
+  carry_over_promotions?: boolean | null
+
+  /**
    * The ID of the associated order
    */
   order_id: string
@@ -2304,6 +2320,11 @@ export interface OrderChangeActionDTO {
    * The internal note of the order change action
    */
   internal_note: string | null
+
+  /**
+   * The ordering of the order change action
+   */
+  ordering: number
 
   /**
    * When the order change action was created

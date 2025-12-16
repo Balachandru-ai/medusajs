@@ -60,6 +60,14 @@ const generatedgeneratedIntegrationsSidebarSidebar = {
           "path": "/commerce-modules/auth/auth-providers/github",
           "title": "GitHub",
           "children": []
+        },
+        {
+          "loaded": true,
+          "isPathHref": true,
+          "type": "link",
+          "path": "/integrations/guides/okta",
+          "title": "Okta",
+          "children": []
         }
       ]
     },
@@ -92,6 +100,14 @@ const generatedgeneratedIntegrationsSidebarSidebar = {
           "type": "link",
           "path": "/integrations/guides/sanity",
           "title": "Sanity",
+          "children": []
+        },
+        {
+          "loaded": true,
+          "isPathHref": true,
+          "type": "link",
+          "path": "/integrations/guides/strapi",
+          "title": "Strapi",
           "children": []
         }
       ]

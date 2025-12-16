@@ -240,6 +240,18 @@ tags:
       These API routes allow admin users to view and manage notifications.
     x-associatedSchema:
       $ref: ./components/schemas/AdminNotification.yaml
+  - name: Order Changes
+    description: >
+      An order change is a proposed change to an order, such as adding or
+      removing items, changing shipping methods, and more. They can be
+      associated with order edits, claims, or exchanges.
+
+      These API routes allow admin users to manage order changes.
+    externalDocs:
+      description: Learn more about order changes.
+      url: https://docs.medusajs.com/resources/commerce-modules/order/order-change
+    x-associatedSchema:
+      $ref: ./components/schemas/AdminOrderChange.yaml
   - name: Order Edits
     description: >
       An order edit is a change to an order's details, such as items, shipping
@@ -910,6 +922,8 @@ paths:
     $ref: paths/admin_notifications.yaml
   /admin/notifications/{id}:
     $ref: paths/admin_notifications_{id}.yaml
+  /admin/order-changes/{id}:
+    $ref: paths/admin_order-changes_{id}.yaml
   /admin/order-edits:
     $ref: paths/admin_order-edits.yaml
   /admin/order-edits/{id}:

@@ -14,6 +14,7 @@ import { adminFulfillmentsRoutesMiddlewares } from "./admin/fulfillments/middlew
 import { adminInventoryRoutesMiddlewares } from "./admin/inventory-items/middlewares"
 import { adminInviteRoutesMiddlewares } from "./admin/invites/middlewares"
 import { adminNotificationRoutesMiddlewares } from "./admin/notifications/middlewares"
+import { adminOrderChangesRoutesMiddlewares } from "./admin/order-changes/middlewares"
 import { adminOrderEditRoutesMiddlewares } from "./admin/order-edits/middlewares"
 import { adminOrderRoutesMiddlewares } from "./admin/orders/middlewares"
 import { adminPaymentCollectionsMiddlewares } from "./admin/payment-collections/middlewares"
@@ -65,6 +66,8 @@ import { storeReturnReasonRoutesMiddlewares } from "./store/return-reasons/middl
 import { storeShippingOptionRoutesMiddlewares } from "./store/shipping-options/middlewares"
 import { adminShippingOptionTypeRoutesMiddlewares } from "./admin/shipping-option-types/middlewares"
 import { adminIndexRoutesMiddlewares } from "./admin/index/middlewares"
+import { adminLocalesRoutesMiddlewares } from "./admin/locales/middlewares"
+import { adminTranslationsRoutesMiddlewares } from "./admin/translations/middlewares"
 
 export default defineMiddlewares([
   ...storeRoutesMiddlewares,
@@ -93,10 +96,12 @@ export default defineMiddlewares([
   ...adminInviteRoutesMiddlewares,
   ...adminTaxRateRoutesMiddlewares,
   ...adminTaxRegionRoutesMiddlewares,
+  ...adminTranslationsRoutesMiddlewares,
   ...adminApiKeyRoutesMiddlewares,
   ...hooksRoutesMiddlewares,
   ...adminStoreRoutesMiddlewares,
   ...adminCurrencyRoutesMiddlewares,
+  ...adminLocalesRoutesMiddlewares,
   ...storeCurrencyRoutesMiddlewares,
   ...adminProductRoutesMiddlewares,
   ...adminPaymentRoutesMiddlewares,
@@ -129,6 +134,7 @@ export default defineMiddlewares([
   ...adminExchangeRoutesMiddlewares,
   ...adminProductVariantRoutesMiddlewares,
   ...adminTaxProviderRoutesMiddlewares,
+  ...adminOrderChangesRoutesMiddlewares,
   ...adminOrderEditRoutesMiddlewares,
   ...adminPaymentCollectionsMiddlewares,
   ...viewConfigurationRoutesMiddlewares,

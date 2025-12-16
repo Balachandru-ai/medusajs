@@ -1,5 +1,73 @@
 # @medusajs/core-flows
 
+## 2.12.2
+
+### Patch Changes
+
+- [#14226](https://github.com/medusajs/medusa/pull/14226) [`e4877616c38777f583fe0b58bb10d1c7cf41c0b3`](https://github.com/medusajs/medusa/commit/e4877616c38777f583fe0b58bb10d1c7cf41c0b3) Thanks [@adrien2p](https://github.com/adrien2p)! - feat(): sync cart translation synced
+
+- [#14277](https://github.com/medusajs/medusa/pull/14277) [`a78f68fa46dceb8e201fe60e770bd9ea654390d8`](https://github.com/medusajs/medusa/commit/a78f68fa46dceb8e201fe60e770bd9ea654390d8) Thanks [@shahednasser](https://github.com/shahednasser)! - fix(utils,core-flows): add events constant for translations and use it in workflows
+
+- [#13963](https://github.com/medusajs/medusa/pull/13963) [`842c0f500721e08d448b6c5c80a725072106ccff`](https://github.com/medusajs/medusa/commit/842c0f500721e08d448b6c5c80a725072106ccff) Thanks [@NicolasGorga](https://github.com/NicolasGorga)! - fix(core-flows): refresh payment collection inside updateCartPromotionsWorkflow
+
+- [#14270](https://github.com/medusajs/medusa/pull/14270) [`bca145bdbe674a73731f1672047ca44d426a37c1`](https://github.com/medusajs/medusa/commit/bca145bdbe674a73731f1672047ca44d426a37c1) Thanks [@olivermrbl](https://github.com/olivermrbl)! - chore: Add locks to order edit flows
+
+- [#13841](https://github.com/medusajs/medusa/pull/13841) [`fdc2b722d91f446499123d71386e64d9da9265eb`](https://github.com/medusajs/medusa/commit/fdc2b722d91f446499123d71386e64d9da9265eb) Thanks [@NicolasGorga](https://github.com/NicolasGorga)! - fix(medusa): Allow 'id' in shipping_address and billing_address in validator of store udpate cart route
+  fix(core-flows): Update addresses nested fields when 'id' is provided in payload for update-carts step
+
+- [#14233](https://github.com/medusajs/medusa/pull/14233) [`fea3d4ec49c3a7f7eb7d66bd58499e55ae9ec648`](https://github.com/medusajs/medusa/commit/fea3d4ec49c3a7f7eb7d66bd58499e55ae9ec648) Thanks [@NicolasGorga](https://github.com/NicolasGorga)! - fix(core-flows): Access orderItem.variant safely inside convertDraftOrderWorkflow when containing custom items
+
+- Updated dependencies [[`9f7846ae0babbad39947a1f33d236bff8b5098d0`](https://github.com/medusajs/medusa/commit/9f7846ae0babbad39947a1f33d236bff8b5098d0), [`fe49b567d6d55ae224095c06c710d31d40887653`](https://github.com/medusajs/medusa/commit/fe49b567d6d55ae224095c06c710d31d40887653), [`6dc0b8bed84a330c1c24f4f1331f1ed078430a47`](https://github.com/medusajs/medusa/commit/6dc0b8bed84a330c1c24f4f1331f1ed078430a47), [`356283c359e5c30e0d31e6c6fd0fb8e16c025b78`](https://github.com/medusajs/medusa/commit/356283c359e5c30e0d31e6c6fd0fb8e16c025b78)]:
+  - @medusajs/framework@2.12.2
+
+## 2.12.1
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @medusajs/framework@2.12.1
+
+## 2.12.0
+
+### Patch Changes
+
+- [#14028](https://github.com/medusajs/medusa/pull/14028) [`83dd1b616a9e78810001645bb815347cacc5b4d1`](https://github.com/medusajs/medusa/commit/83dd1b616a9e78810001645bb815347cacc5b4d1) Thanks [@pepijn-vanvlaanderen](https://github.com/pepijn-vanvlaanderen)! - fix(core-flows): add order metadata for createFulfillment
+
+- [#13977](https://github.com/medusajs/medusa/pull/13977) [`9fdc00350a4aa006e4bfc3eddcc499737f18bdf3`](https://github.com/medusajs/medusa/commit/9fdc00350a4aa006e4bfc3eddcc499737f18bdf3) Thanks [@adrien2p](https://github.com/adrien2p)! - fix(): Lock process payment to prevent ingesting payment processing t…
+
+- [#13876](https://github.com/medusajs/medusa/pull/13876) [`5499cd27494a68836a242cd34eb70fe9c141a713`](https://github.com/medusajs/medusa/commit/5499cd27494a68836a242cd34eb70fe9c141a713) Thanks [@SGFGOV](https://github.com/SGFGOV)! - fix(core-flows): payment error handling
+
+- [#14056](https://github.com/medusajs/medusa/pull/14056) [`929607f6925581da67a9e955eedded2aab2bdc16`](https://github.com/medusajs/medusa/commit/929607f6925581da67a9e955eedded2aab2bdc16) Thanks [@vethan](https://github.com/vethan)! - fix(fulfillment) Variants changed from managed inventory to unmanaged are now fulfillable
+
+- [#14010](https://github.com/medusajs/medusa/pull/14010) [`3e2991e44719c2a829696215862ae5fbd368fe37`](https://github.com/medusajs/medusa/commit/3e2991e44719c2a829696215862ae5fbd368fe37) Thanks [@NicolasGorga](https://github.com/NicolasGorga)! - fix(core-flows): create reservations on draft order conversion to regular order
+
+- [#13979](https://github.com/medusajs/medusa/pull/13979) [`a5c6f6b1fb944a730b605a120f84b4f38f608f9f`](https://github.com/medusajs/medusa/commit/a5c6f6b1fb944a730b605a120f84b4f38f608f9f) Thanks [@leobenzol](https://github.com/leobenzol)! - fix(core-flows): update SendNotificationsStepInput
+
+- [#13306](https://github.com/medusajs/medusa/pull/13306) [`78842af1c30de9c7561f10b4129aba4e1f30db27`](https://github.com/medusajs/medusa/commit/78842af1c30de9c7561f10b4129aba4e1f30db27) Thanks [@olivermrbl](https://github.com/olivermrbl)! - fix: Compute "virtual" adjustments for order previews
+
+- [#14111](https://github.com/medusajs/medusa/pull/14111) [`0e73d8d5e3d04d62d444d17138f9cf61b7a236a2`](https://github.com/medusajs/medusa/commit/0e73d8d5e3d04d62d444d17138f9cf61b7a236a2) Thanks [@NicolasGorga](https://github.com/NicolasGorga)! - fix(core-flows): lock mark as delivered fulfillment/order flows
+
+- [#14176](https://github.com/medusajs/medusa/pull/14176) [`8ddf8b4d764ae359d279498f08d85146d55077f0`](https://github.com/medusajs/medusa/commit/8ddf8b4d764ae359d279498f08d85146d55077f0) Thanks [@fPolic](https://github.com/fPolic)! - fix: skip promotion usage limit checks on edit flows
+
+- [#14108](https://github.com/medusajs/medusa/pull/14108) [`79582bc94eb420f02ad49a81bcbcc02521e5c414`](https://github.com/medusajs/medusa/commit/79582bc94eb420f02ad49a81bcbcc02521e5c414) Thanks [@NicolasGorga](https://github.com/NicolasGorga)! - fix(core-flows): prevent completing cart from webhook when order already exists
+
+- [#14128](https://github.com/medusajs/medusa/pull/14128) [`5da51064d7936c6d7a459cfa8b34eada65163e03`](https://github.com/medusajs/medusa/commit/5da51064d7936c6d7a459cfa8b34eada65163e03) Thanks [@fPolic](https://github.com/fPolic)! - feat: carry over promotions toggle on exchanges
+
+- [#14105](https://github.com/medusajs/medusa/pull/14105) [`0cb12021efd2b8ad1cd6dc6801c5f29a87b28ad1`](https://github.com/medusajs/medusa/commit/0cb12021efd2b8ad1cd6dc6801c5f29a87b28ad1) Thanks [@NicolasGorga](https://github.com/NicolasGorga)! - fix(core-flows): Add discountable properties in queried fields to avoid overriding discountable properties when set
+
+- [#13809](https://github.com/medusajs/medusa/pull/13809) [`a9d33bc8d11637230052f1729e85af5e174b2423`](https://github.com/medusajs/medusa/commit/a9d33bc8d11637230052f1729e85af5e174b2423) Thanks [@willbouch](https://github.com/willbouch)! - fix(core-flows,types): change doc for upload file functions
+
+- [#14022](https://github.com/medusajs/medusa/pull/14022) [`0a0c2f41d8ef2c70f6e3b73251eb34499e83ea32`](https://github.com/medusajs/medusa/commit/0a0c2f41d8ef2c70f6e3b73251eb34499e83ea32) Thanks [@NicolasGorga](https://github.com/NicolasGorga)! - fix(core-flows): avoid overriding customer and region from setPricingContext hook result
+
+- [#14104](https://github.com/medusajs/medusa/pull/14104) [`b81f958d4126ab99f09b9fef3b1f790b4bca1515`](https://github.com/medusajs/medusa/commit/b81f958d4126ab99f09b9fef3b1f790b4bca1515) Thanks [@peterlgh7](https://github.com/peterlgh7)! - add provider_data to notification model
+
+- [#14024](https://github.com/medusajs/medusa/pull/14024) [`6746fecd727823b233a90edb1819d08555124464`](https://github.com/medusajs/medusa/commit/6746fecd727823b233a90edb1819d08555124464) Thanks [@adrien2p](https://github.com/adrien2p)! - Chore/order custom display
+
+- [#14102](https://github.com/medusajs/medusa/pull/14102) [`f67bfb9f92b9ea4c06910ea203c685e18fafe1d7`](https://github.com/medusajs/medusa/commit/f67bfb9f92b9ea4c06910ea203c685e18fafe1d7) Thanks [@peterlgh7](https://github.com/peterlgh7)! - add from to notification model
+
+- Updated dependencies [[`c2c3ad5ba53f1959422fb2d37297a8de8d714782`](https://github.com/medusajs/medusa/commit/c2c3ad5ba53f1959422fb2d37297a8de8d714782), [`7e3eb6e41316d7b04d32bc7186ed0c78de1aa539`](https://github.com/medusajs/medusa/commit/7e3eb6e41316d7b04d32bc7186ed0c78de1aa539), [`beb91d88a2f224075e4fcf35a0ee9483b3124504`](https://github.com/medusajs/medusa/commit/beb91d88a2f224075e4fcf35a0ee9483b3124504)]:
+  - @medusajs/framework@2.12.0
+
 ## 2.11.3
 
 ### Patch Changes

@@ -1,5 +1,38 @@
 # @medusajs/order
 
+## 2.12.2
+
+### Patch Changes
+
+- [#14221](https://github.com/medusajs/medusa/pull/14221) [`6176f93ac5ad403dd5fb733d6d22632747ccfca3`](https://github.com/medusajs/medusa/commit/6176f93ac5ad403dd5fb733d6d22632747ccfca3) Thanks [@fPolic](https://github.com/fPolic)! - fix(dashboard, order): summary pending diff calculation on preview
+
+- [#14268](https://github.com/medusajs/medusa/pull/14268) [`8bd1d22765edef3b3d2ff31c8f8935049d8b280a`](https://github.com/medusajs/medusa/commit/8bd1d22765edef3b3d2ff31c8f8935049d8b280a) Thanks [@NicolasGorga](https://github.com/NicolasGorga)! - chore(order): Remove unique index on item_id:version for order_item
+
+- Updated dependencies [[`9f7846ae0babbad39947a1f33d236bff8b5098d0`](https://github.com/medusajs/medusa/commit/9f7846ae0babbad39947a1f33d236bff8b5098d0), [`fe49b567d6d55ae224095c06c710d31d40887653`](https://github.com/medusajs/medusa/commit/fe49b567d6d55ae224095c06c710d31d40887653), [`6dc0b8bed84a330c1c24f4f1331f1ed078430a47`](https://github.com/medusajs/medusa/commit/6dc0b8bed84a330c1c24f4f1331f1ed078430a47), [`356283c359e5c30e0d31e6c6fd0fb8e16c025b78`](https://github.com/medusajs/medusa/commit/356283c359e5c30e0d31e6c6fd0fb8e16c025b78)]:
+  - @medusajs/framework@2.12.2
+
+## 2.12.1
+
+### Patch Changes
+
+- [#14164](https://github.com/medusajs/medusa/pull/14164) [`ef162f8b5ff32c9ce779119eb8eabffea62655be`](https://github.com/medusajs/medusa/commit/ef162f8b5ff32c9ce779119eb8eabffea62655be) Thanks [@NicolasGorga](https://github.com/NicolasGorga)! - fix(order): Add composite unique index on order_item version:item_id
+
+- Updated dependencies []:
+  - @medusajs/framework@2.12.1
+
+## 2.12.0
+
+### Patch Changes
+
+- [#13306](https://github.com/medusajs/medusa/pull/13306) [`78842af1c30de9c7561f10b4129aba4e1f30db27`](https://github.com/medusajs/medusa/commit/78842af1c30de9c7561f10b4129aba4e1f30db27) Thanks [@olivermrbl](https://github.com/olivermrbl)! - fix: Compute "virtual" adjustments for order previews
+
+- [#14128](https://github.com/medusajs/medusa/pull/14128) [`5da51064d7936c6d7a459cfa8b34eada65163e03`](https://github.com/medusajs/medusa/commit/5da51064d7936c6d7a459cfa8b34eada65163e03) Thanks [@fPolic](https://github.com/fPolic)! - feat: carry over promotions toggle on exchanges
+
+- [#14024](https://github.com/medusajs/medusa/pull/14024) [`6746fecd727823b233a90edb1819d08555124464`](https://github.com/medusajs/medusa/commit/6746fecd727823b233a90edb1819d08555124464) Thanks [@adrien2p](https://github.com/adrien2p)! - Chore/order custom display
+
+- Updated dependencies [[`c2c3ad5ba53f1959422fb2d37297a8de8d714782`](https://github.com/medusajs/medusa/commit/c2c3ad5ba53f1959422fb2d37297a8de8d714782), [`7e3eb6e41316d7b04d32bc7186ed0c78de1aa539`](https://github.com/medusajs/medusa/commit/7e3eb6e41316d7b04d32bc7186ed0c78de1aa539), [`beb91d88a2f224075e4fcf35a0ee9483b3124504`](https://github.com/medusajs/medusa/commit/beb91d88a2f224075e4fcf35a0ee9483b3124504)]:
+  - @medusajs/framework@2.12.0
+
 ## 2.11.3
 
 ### Patch Changes

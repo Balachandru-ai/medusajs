@@ -11,6 +11,7 @@ required:
   - ean
   - upc
   - thumbnail
+  - images
   - allow_backorder
   - manage_inventory
   - hs_code
@@ -149,7 +150,7 @@ properties:
     type: array
     description: The variant's images.
     items:
-      $ref: ./AdminProductImage.yaml
+      $ref: ./BaseProductImage.yaml
   thumbnail:
     type: string
     title: thumbnail
