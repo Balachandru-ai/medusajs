@@ -588,11 +588,7 @@ export const TranslationsEditForm = ({
     async (closeOnSuccess: boolean = false) => {
       const success = await saveCurrentLocale()
       if (success) {
-        toast.success(
-          t("translations.edit.successToast", {
-            defaultValue: "Translations updated successfully",
-          })
-        )
+        toast.success(t("translations.edit.successToast"))
         if (closeOnSuccess) {
           handleSuccess()
         }
@@ -613,9 +609,6 @@ export const TranslationsEditForm = ({
       payload.update.length === 0 &&
       payload.delete.length === 0
     ) {
-      toast.info(
-        t("translations.noChanges", { defaultValue: "No changes to save" })
-      )
       return
     }
 
@@ -736,7 +729,7 @@ export const TranslationsEditForm = ({
               onClick={() => handleSave(false)}
               isLoading={isPending}
             >
-              {t("actions.saveChanges", { defaultValue: "Save changes" })}
+              {t("actions.saveChanges")}
             </Button>
             <Button
               size="small"
@@ -744,7 +737,7 @@ export const TranslationsEditForm = ({
               onClick={() => handleSave(true)}
               isLoading={isPending}
             >
-              {t("actions.saveAndClose", { defaultValue: "Save and close" })}
+              {t("actions.saveAndClose")}
             </Button>
           </div>
         </RouteFocusModal.Footer>
@@ -754,15 +747,10 @@ export const TranslationsEditForm = ({
         <Prompt.Content>
           <Prompt.Header>
             <Prompt.Title>
-              {t("translations.unsavedChanges.title", {
-                defaultValue: "Unsaved changes",
-              })}
+              {t("translations.edit.unsavedChanges.title")}
             </Prompt.Title>
             <Prompt.Description>
-              {t("translations.unsavedChanges.description", {
-                defaultValue:
-                  "You have unsaved changes for this locale. Save them before switching?",
-              })}
+              {t("translations.edit.unsavedChanges.description")}
             </Prompt.Description>
           </Prompt.Header>
           <Prompt.Footer>
@@ -780,7 +768,7 @@ export const TranslationsEditForm = ({
               type="button"
               isLoading={isPending}
             >
-              {t("actions.saveChanges", { defaultValue: "Save changes" })}
+              {t("actions.saveChanges")}
             </Button>
           </Prompt.Footer>
         </Prompt.Content>

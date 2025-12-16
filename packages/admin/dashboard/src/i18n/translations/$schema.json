@@ -389,6 +389,12 @@
         "save": {
           "type": "string"
         },
+        "saveChanges": {
+          "type": "string"
+        },
+        "saveAndClose": {
+          "type": "string"
+        },
         "saveAsDraft": {
           "type": "string"
         },
@@ -521,7 +527,9 @@
       },
       "required": [
         "save",
+        "saveChanges",
         "saveAsDraft",
+        "saveAndClose",
         "copy",
         "copied",
         "duplicate",
@@ -9366,6 +9374,27 @@
           },
           "required": ["manageLocales", "manage"]
         },
+        "edit": {
+          "type": "object",
+          "properties": {
+            "successToast": {
+              "type": "string"
+            },
+            "unsavedChanges": {
+              "type": "object",
+              "properties": {
+                "title": {
+                  "type": "string"
+                },
+                "description": {
+                  "type": "string"
+                }
+              },
+              "required": ["title", "description"]
+            }
+          },
+          "required": ["successToast", "unsavedChanges"]
+        },
         "bulk": {
           "type": "object",
           "properties": {
@@ -9403,7 +9432,14 @@
           "required": ["heading"]
         }
       },
-      "required": ["domain", "actions", "subtitle", "bulk", "completion"]
+      "required": [
+        "domain",
+        "actions",
+        "subtitle",
+        "bulk",
+        "completion",
+        "edit"
+      ]
     },
     "store": {
       "type": "object",

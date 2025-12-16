@@ -101,7 +101,9 @@
   },
   "actions": {
     "save": "Save",
+    "saveChanges": "Save changes",
     "saveAsDraft": "Save as draft",
+    "saveAndClose": "Save and close",
     "copy": "Copy",
     "copied": "Copied",
     "duplicate": "Duplicate",
@@ -2516,6 +2518,13 @@
     "subtitle": "Manage translations of your data in Medusa",
     "list": {
       "metrics": "{{translated}} of {{total}} fields translated"
+    },
+    "edit": {
+      "successToast": "Translations updated successfully",
+      "unsavedChanges": {
+        "title": "Unsaved translations",
+        "description": "Don't lose your work. You have changes that haven't been saved yet"
+      }
     },
     "bulk": {
       "header": "Translations Bulk Editor",
