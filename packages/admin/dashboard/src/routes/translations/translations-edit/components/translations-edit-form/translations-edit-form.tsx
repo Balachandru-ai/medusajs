@@ -699,6 +699,7 @@ export const TranslationsEditForm = ({
         <RouteFocusModal.Body className="size-full overflow-hidden">
           <div ref={containerRef} className="size-full">
             <DataGrid
+              showColumnsDropdown={false}
               columns={columns}
               data={rows}
               getSubRows={(row) => {

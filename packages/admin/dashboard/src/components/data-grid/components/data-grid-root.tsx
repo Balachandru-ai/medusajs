@@ -64,6 +64,7 @@ export interface DataGridRootProps<
   onEditingChange?: (isEditing: boolean) => void
   disableInteractions?: boolean
   multiColumnSelection?: boolean
+  showColumnsDropdown?: boolean
   /**
    * Lazy loading props - when totalRowCount is provided, the grid enters lazy loading mode.
    * In this mode, the virtualizer will size based on totalRowCount and trigger onFetchMore
@@ -123,6 +124,7 @@ export const DataGridRoot = <
   onEditingChange,
   disableInteractions,
   multiColumnSelection = false,
+  showColumnsDropdown = true,
   totalRowCount,
   onFetchMore,
   isFetchingMore,
@@ -653,6 +655,7 @@ export const DataGridRoot = <
     <DataGridContext.Provider value={values}>
       <div className="bg-ui-bg-subtle flex size-full flex-col">
         <DataGridHeader
+          showColumnsDropdown={showColumnsDropdown}
           columnOptions={columnOptions}
           isDisabled={isColumsDisabled}
           onToggleColumn={handleToggleColumnVisibility}
@@ -796,6 +799,7 @@ export const DataGridRoot = <
 type DataGridHeaderProps = {
   columnOptions: GridColumnOption[]
   isDisabled: boolean
+  showColumnsDropdown: boolean
   onToggleColumn: (index: number) => (value: boolean) => void
   onResetColumns: () => void
   isHighlighted: boolean
@@ -813,6 +817,7 @@ const DataGridHeader = ({
   errorCount,
   onToggleErrorHighlighting,
   onHeaderInteractionChange,
+  showColumnsDropdown,
 }: DataGridHeaderProps) => {
   const [shortcutsOpen, setShortcutsOpen] = useState(false)
   const [columnsOpen, setColumnsOpen] = useState(false)
@@ -833,58 +838,60 @@ const DataGridHeader = ({
   }
   return (
     <div className="bg-ui-bg-base flex items-center justify-between border-b p-4">
-      <div className="flex items-center gap-x-2">
-        <DropdownMenu
-          dir={direction}
-          open={columnsOpen}
-          onOpenChange={handleColumnsOpenChange}
-        >
-          <ConditionalTooltip
-            showTooltip={isDisabled}
-            content={t("dataGrid.columns.disabled")}
+      {showColumnsDropdown && (
+        <div className="flex items-center gap-x-2">
+          <DropdownMenu
+            dir={direction}
+            open={columnsOpen}
+            onOpenChange={handleColumnsOpenChange}
           >
-            <DropdownMenu.Trigger asChild disabled={isDisabled}>
-              <Button size="small" variant="secondary">
-                {hasChanged ? <AdjustmentsDone /> : <Adjustments />}
-                {t("dataGrid.columns.view")}
-              </Button>
-            </DropdownMenu.Trigger>
-          </ConditionalTooltip>
-          <DropdownMenu.Content>
-            {columnOptions.map((column, index) => {
-              const { checked, disabled, id, name } = column
+            <ConditionalTooltip
+              showTooltip={isDisabled}
+              content={t("dataGrid.columns.disabled")}
+            >
+              <DropdownMenu.Trigger asChild disabled={isDisabled}>
+                <Button size="small" variant="secondary">
+                  {hasChanged ? <AdjustmentsDone /> : <Adjustments />}
+                  {t("dataGrid.columns.view")}
+                </Button>
+              </DropdownMenu.Trigger>
+            </ConditionalTooltip>
+            <DropdownMenu.Content>
+              {columnOptions.map((column, index) => {
+                const { checked, disabled, id, name } = column
 
-              if (disabled) {
-                return null
-              }
+                if (disabled) {
+                  return null
+                }
 
-              return (
-                <DropdownMenu.CheckboxItem
-                  key={id}
-                  checked={checked}
-                  onCheckedChange={onToggleColumn(index)}
-                  onSelect={(e) => e.preventDefault()}
-                >
-                  {name}
-                </DropdownMenu.CheckboxItem>
-              )
-            })}
-          </DropdownMenu.Content>
-        </DropdownMenu>
-        {hasChanged && (
-          <Button
-            size="small"
-            variant="transparent"
-            type="button"
-            onClick={onResetColumns}
-            className="text-ui-fg-muted hover:text-ui-fg-subtle"
-            data-id="reset-columns"
-          >
-            {t("dataGrid.columns.resetToDefault")}
-          </Button>
-        )}
-      </div>
-      <div className="flex items-center gap-x-2">
+                return (
+                  <DropdownMenu.CheckboxItem
+                    key={id}
+                    checked={checked}
+                    onCheckedChange={onToggleColumn(index)}
+                    onSelect={(e) => e.preventDefault()}
+                  >
+                    {name}
+                  </DropdownMenu.CheckboxItem>
+                )
+              })}
+            </DropdownMenu.Content>
+          </DropdownMenu>
+          {hasChanged && (
+            <Button
+              size="small"
+              variant="transparent"
+              type="button"
+              onClick={onResetColumns}
+              className="text-ui-fg-muted hover:text-ui-fg-subtle"
+              data-id="reset-columns"
+            >
+              {t("dataGrid.columns.resetToDefault")}
+            </Button>
+          )}
+        </div>
+      )}
+      <div className="ml-auto flex items-center gap-x-2">
         {errorCount > 0 && (
           <Button
             size="small"
