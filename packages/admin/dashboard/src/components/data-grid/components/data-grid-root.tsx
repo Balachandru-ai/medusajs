@@ -15,7 +15,11 @@ import {
   getCoreRowModel,
   useReactTable,
 } from "@tanstack/react-table"
-import { VirtualItem, useVirtualizer } from "@tanstack/react-virtual"
+import {
+  VirtualItem,
+  Virtualizer,
+  useVirtualizer,
+} from "@tanstack/react-virtual"
 import React, {
   CSSProperties,
   ReactNode,
@@ -188,6 +192,12 @@ export const DataGridRoot = <
     count: effectiveRowCount,
     estimateSize: () => ROW_HEIGHT,
     getScrollElement: () => containerRef.current,
+    // Measure actual row heights for dynamic sizing (disabled in Firefox due to measurement issues). Taken from Tanstack
+    measureElement:
+      typeof window !== "undefined" &&
+      navigator.userAgent.indexOf("Firefox") === -1
+        ? (element) => element?.getBoundingClientRect().height
+        : undefined,
     overscan: 5,
     rangeExtractor: (range) => {
       const toRender = new Set(
@@ -763,6 +773,7 @@ export const DataGridRoot = <
                       row={row}
                       rowIndex={rowIndex}
                       virtualRow={virtualRow}
+                      rowVirtualizer={rowVirtualizer}
                       flatColumns={flatColumns}
                       virtualColumns={virtualColumns}
                       anchor={anchor}
@@ -937,11 +948,11 @@ const DataGridCell = <TData,>({
       data-row-index={rowIndex}
       data-column-index={columnIndex}
       className={clx(
-        "relative flex items-center border-b border-r p-0 outline-none"
+        "relative flex items-stretch border-b border-r p-0 outline-none"
       )}
       tabIndex={-1}
     >
-      <div className="relative h-full w-full">
+      <div className="relative w-full">
         {flexRender(cell.column.columnDef.cell, {
           ...cell.getContext(),
           columnIndex,
@@ -967,6 +978,7 @@ type DataGridRowProps<TData> = {
   row: Row<TData>
   rowIndex: number
   virtualRow: VirtualItem
+  rowVirtualizer: Virtualizer<HTMLDivElement, Element>
   virtualPaddingLeft?: number
   virtualPaddingRight?: number
   virtualColumns: VirtualItem[]
@@ -980,6 +992,7 @@ const DataGridRow = <TData,>({
   row,
   rowIndex,
   virtualRow,
+  rowVirtualizer,
   virtualPaddingLeft,
   virtualPaddingRight,
   virtualColumns,
@@ -994,10 +1007,12 @@ const DataGridRow = <TData,>({
     <div
       role="row"
       aria-rowindex={virtualRow.index}
+      data-index={virtualRow.index}
+      ref={(node) => rowVirtualizer.measureElement(node)}
       style={{
         transform: `translateY(${virtualRow.start}px)`,
       }}
-      className="bg-ui-bg-subtle txt-compact-small absolute flex h-10 w-full"
+      className="bg-ui-bg-subtle txt-compact-small absolute flex min-h-10 w-full"
     >
       {virtualPaddingLeft ? (
         <div

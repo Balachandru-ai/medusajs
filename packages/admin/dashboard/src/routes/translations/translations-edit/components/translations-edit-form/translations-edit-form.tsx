@@ -273,13 +273,11 @@ function useTranslationsGridColumns({
   translatableFields,
   availableLocales,
   selectedLocale,
-  modalFields = [],
 }: {
   entities: { id: string; [key: string]: string }[]
   translatableFields: string[]
   availableLocales: AdminStoreLocale[]
   selectedLocale: string
-  modalFields?: string[]
 }) {
   const { t } = useTranslation()
 
@@ -339,7 +337,7 @@ function useTranslationsGridColumns({
           }
 
           return (
-            <DataGrid.ReadonlyCell context={context}>
+            <DataGrid.ReadonlyCell context={context} isMultiLine>
               {entity[row.field_name]}
             </DataGrid.ReadonlyCell>
           )
@@ -358,25 +356,10 @@ function useTranslationsGridColumns({
             const row = context.row.original
 
             if (isEntityRow(row)) {
-              return (
-                <DataGrid.ReadonlyCell
-                  context={context}
-                ></DataGrid.ReadonlyCell>
-              )
+              return <DataGrid.ReadonlyCell context={context} isMultiLine />
             }
 
-            const useModal = modalFields.includes(row.field_name)
-
-            if (useModal) {
-              return (
-                <DataGrid.ExpandableTextCell
-                  context={context}
-                  fieldLabel={row.field_name}
-                />
-              )
-            }
-
-            return <DataGrid.TextCell context={context} />
+            return <DataGrid.TextCell context={context} isMultiLine />
           },
           field: (context) => {
             const row = context.row.original
@@ -393,14 +376,7 @@ function useTranslationsGridColumns({
     }
 
     return baseColumns
-  }, [
-    t,
-    translatableFields,
-    availableLocales,
-    selectedLocale,
-    modalFields,
-    entities,
-  ])
+  }, [t, translatableFields, availableLocales, selectedLocale, entities])
 
   return columns
 }
@@ -411,7 +387,6 @@ type TranslationsEditFormProps = {
   entityType: string
   availableLocales: AdminStoreLocale[]
   translatableFields: string[]
-  modalFields?: string[]
   fetchNextPage: () => void
   hasNextPage: boolean
   isFetchingNextPage: boolean
@@ -424,7 +399,6 @@ export const TranslationsEditForm = ({
   entityType,
   availableLocales,
   translatableFields,
-  modalFields = [],
   fetchNextPage,
   hasNextPage,
   isFetchingNextPage,
@@ -658,7 +632,6 @@ export const TranslationsEditForm = ({
     translatableFields,
     availableLocales,
     selectedLocale,
-    modalFields,
   })
 
   const selectedLocaleDisplay = availableLocales.find(
