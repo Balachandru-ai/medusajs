@@ -1081,6 +1081,18 @@
     "list": {
       "noRecordsMessage": "您的訂單將顯示在此處。"
     },
+    "export": {
+      "header": "匯出訂單",
+      "description": "將訂單列表匯出為 CSV 檔案。",
+      "success": {
+        "title": "匯出已開始",
+        "description": "當匯出準備好時，您將收到通知。"
+      },
+      "filters": {
+        "title": "篩選條件",
+        "description": "以下篩選條件將套用於匯出。"
+      }
+    },
     "status": {
       "not_paid": "未付款",
       "pending": "處理中",
@@ -1306,6 +1318,9 @@
       "outboundShipping": "出庫運送",
       "outboundShippingHint": "選擇您要使用的方式。",
       "refundAmount": "預估差額",
+      "carryOverPromotion": "延續促銷",
+      "carryOverPromotionHint": "將原訂單的促銷套用至換貨商品",
+      "carryOverPromotionTooltip": "僅有採「每個」的定額促銷，以及採「每個」或「跨越」的百分比促銷，可延續套用到換貨商品上。",
       "activeChangeError": "此訂單有活躍的訂單變更。請完成或放棄之前的變更。",
       "actions": {
         "cancelExchange": {
@@ -2049,6 +2064,8 @@
       "addCondition": "新增條件",
       "clearAll": "清除全部",
       "taxInclusive": "含稅",
+      "usageLimit": "使用次數上限",
+      "usage": "已使用次數",
       "amount": {
         "tooltip": "選擇貨幣代碼以啟用設定金額"
       },
@@ -2210,6 +2227,10 @@
           "title": "百分比",
           "description": "要折扣的百分比。例如 8%"
         }
+      },
+      "limit": {
+        "title": "使用次數限制",
+        "description": "此促銷可在所有訂單中使用的最大次數。留空表示無限制。"
       }
     },
     "deleteWarning": "您即將刪除促銷 {{code}}。此操作無法復原。",
@@ -2489,26 +2510,33 @@
     "manageYourStoresDetails": "管理您商店的詳細資訊",
     "editStore": "編輯商店",
     "defaultCurrency": "預設貨幣",
+    "defaultLocale": "預設語系",
     "defaultRegion": "預設區域",
     "defaultSalesChannel": "預設銷售管道",
     "defaultLocation": "預設地點",
     "swapLinkTemplate": "換貨連結範本",
     "paymentLinkTemplate": "付款連結範本",
     "inviteLinkTemplate": "邀請連結範本",
+    "locales": "語系",
     "currencies": "貨幣",
     "addCurrencies": "新增貨幣",
     "enableTaxInclusivePricing": "啟用含稅價格",
     "disableTaxInclusivePricing": "停用含稅價格",
     "removeCurrencyWarning_one": "您即將從商店中移除 {{count}} 個貨幣。請確保在繼續之前已移除所有使用該貨幣的價格。",
     "removeCurrencyWarning_other": "您即將從商店中移除 {{count}} 個貨幣。請確保在繼續之前已移除所有使用這些貨幣的價格。",
+    "removeLocaleWarning_one": "您即將從商店中移除 {{count}} 個語系。使用該語系的所有翻譯將被移除。",
+    "removeLocaleWarning_other": "您即將從商店中移除 {{count}} 個語系。使用這些語系的所有翻譯將被移除。",
     "currencyAlreadyAdded": "此貨幣已加入您的商店。",
+    "localeAlreadyAdded": "此語系已加入您的商店。",
     "edit": {
       "header": "編輯商店"
     },
     "toast": {
       "update": "商店已成功更新",
       "currenciesUpdated": "貨幣已成功更新",
+      "localesUpdated": "語系已成功更新",
       "currenciesRemoved": "已成功從商店移除貨幣",
+      "localesRemoved": "已成功從商店移除語系",
       "updatedTaxInclusivitySuccessfully": "含稅價格已成功更新"
     }
   },
