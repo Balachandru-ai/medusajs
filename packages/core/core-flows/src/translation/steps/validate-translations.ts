@@ -15,7 +15,25 @@ export type ValidateTranslationsStepInput =
   | UpdateTranslationDTO
   | UpdateTranslationDataDTO
 
-// TODO: Do we want to validate anything else here?
+/**
+ * This step validates that the translations are supported by the store.
+ * 
+ * @since 2.12.3
+ * @featureFlag translation
+ * 
+ * @example
+ * const data = validateTranslationsStep([
+ *   {
+ *     reference_id: "prod_123",
+ *     reference: "product",
+ *     locale: "fr-FR",
+ *     translations: { title: "Produit", description: "Description du produit" }
+ *   }
+ * ])
+ * 
+ * @privateRemarks
+ * TODO: Do we want to validate anything else here?
+ */
 export const validateTranslationsStep = createStep(
   validateTranslationsStepId,
   async (data: ValidateTranslationsStepInput, { container }) => {

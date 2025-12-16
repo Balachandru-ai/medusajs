@@ -28,8 +28,17 @@ export interface AdminTranslationsBatchResponse {
    * The deleted translations.
    */
   deleted: {
+    /**
+     * The IDs of the deleted translations.
+     */
     ids: string[]
+    /**
+     * The name of the deleted object.
+     */
     object: "translation"
+    /**
+     * Whether the translations were deleted successfully.
+     */
     deleted: boolean
   }
 }
@@ -43,11 +52,13 @@ export interface AdminTranslationLocaleStatistics {
    */
   expected: number
   /**
-   * Actual number of translated fields.
+   * Actual number of translated fields. This doesn't count
+   * translations that are null or empty.
    */
   translated: number
   /**
-   * Number of missing translations.
+   * Number of missing translations for expected translatable
+   * fields.
    */
   missing: number
 }
