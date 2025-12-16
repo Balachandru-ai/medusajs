@@ -765,6 +765,10 @@ export interface FilterableProductProps
    */
   option_id?: string | string[] | OperatorMap<string | string[]>
   /**
+   * Filter a product by the IDs of the associated option values.
+   */
+  option_value_id?: string | string[]
+  /**
    * Filter a product by the IDs of their associated categories.
    */
   categories?: { id: string | string[] | OperatorMap<string | string[]> }

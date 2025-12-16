@@ -68,6 +68,7 @@ import {
   eventBuilders,
 } from "../utils"
 import { joinerConfig } from "./../joiner-config"
+import { buildOptionValueFilterQuery } from "../utils/build-option-value-filter-query"
 
 type InjectedDependencies = {
   baseRepository: DAL.RepositoryService
@@ -266,6 +267,13 @@ export default class ProductModuleService
     config?: FindConfig<ProductTypes.ProductDTO>,
     sharedContext?: Context
   ): Promise<ProductTypes.ProductDTO[]> {
+    const { filters: normalizedFilters, shouldReturnEmpty } =
+      await this.applyOptionValueFilter_(filters, sharedContext)
+
+    if (shouldReturnEmpty) {
+      return []
+    }
+
     const relationsSet = new Set(config?.relations ?? [])
     const shouldLoadVariantImages = relationsSet.has("variants.images")
     if (shouldLoadVariantImages) {
@@ -280,7 +288,7 @@ export default class ProductModuleService
     }
 
     const products = await this.productService_.list(
-      filters,
+      normalizedFilters,
       this.getProductFindConfig_({
         ...config,
         relations: Array.from(relationsSet),
@@ -314,6 +322,13 @@ export default class ProductModuleService
     config?: FindConfig<ProductTypes.ProductDTO>,
     sharedContext?: Context
   ): Promise<[ProductTypes.ProductDTO[], number]> {
+    const { filters: normalizedFilters, shouldReturnEmpty } =
+      await this.applyOptionValueFilter_(filters, sharedContext)
+
+    if (shouldReturnEmpty) {
+      return [[], 0]
+    }
+
     const shouldLoadVariantImages =
       config?.relations?.includes("variants.images")
     const shouldFilterOptionValues =
@@ -340,7 +355,7 @@ export default class ProductModuleService
     }
 
     const [products, count] = await this.productService_.listAndCount(
-      filters,
+      normalizedFilters,
       this.getProductFindConfig_({ ...config, relations }),
       sharedContext
     )
@@ -365,6 +380,54 @@ export default class ProductModuleService
       ProductTypes.ProductDTO[]
     >(products)
     return [serializedProducts, count]
+  }
+
+  protected async applyOptionValueFilter_(
+    filters?: ProductTypes.FilterableProductProps,
+    sharedContext?: Context
+  ): Promise<{
+    filters?: ProductTypes.FilterableProductProps
+    shouldReturnEmpty: boolean
+  }> {
+    if (!filters?.option_value_id) {
+      return {
+        filters: filters,
+        shouldReturnEmpty: false,
+      }
+    }
+
+    const optionValueIds = Array.isArray(filters.option_value_id)
+      ? filters.option_value_id
+      : [filters.option_value_id]
+
+    if (!optionValueIds.length) {
+      return {
+        filters: filters,
+        shouldReturnEmpty: false,
+      }
+    }
+
+    const optionValueFilter = await buildOptionValueFilterQuery(
+      optionValueIds,
+      sharedContext
+    )
+
+    if (!optionValueFilter) {
+      return {
+        filters: filters,
+        shouldReturnEmpty: true,
+      }
+    }
+
+    const { option_value_id, ...restFilters } = filters
+
+    return {
+      filters: {
+        ...restFilters,
+        ...optionValueFilter,
+      },
+      shouldReturnEmpty: false,
+    }
   }
 
   protected getProductFindConfig_(

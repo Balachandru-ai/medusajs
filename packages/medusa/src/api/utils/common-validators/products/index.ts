@@ -14,6 +14,7 @@ export const StoreGetProductParamsDirectFields = z.object({
   is_giftcard: booleanString().optional(),
   category_id: z.union([z.string(), z.array(z.string())]).optional(),
   option_id: z.union([z.string(), z.array(z.string())]).optional(),
+  option_value_id: z.union([z.string(), z.array(z.string())]).optional(),
   external_id: z.union([z.string(), z.array(z.string())]).optional(),
   collection_id: z.union([z.string(), z.array(z.string())]).optional(),
   tag_id: z.union([z.string(), z.array(z.string())]).optional(),
@@ -33,6 +34,7 @@ type HttpProductFilters = FilterableProductProps & {
   tag_id?: string | string[]
   category_id?: string | string[]
   option_id?: string | string[]
+  option_value_id?: string | string[]
 }
 
 export const transformProductParams = (
@@ -55,6 +57,10 @@ export const transformProductParams = (
   if (isPresent(data.option_id)) {
     res.options = { id: data.option_id as string[] }
     delete res.option_id
+  }
+
+  if (isPresent(data.option_value_id)) {
+    res.option_value_id = data.option_value_id as string[]
   }
 
   return res as FilterableProductProps
