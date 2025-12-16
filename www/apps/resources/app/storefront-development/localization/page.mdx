@@ -194,7 +194,7 @@ Then, create a utility that returns the locale from the cookie as a `x-medusa-lo
 ```ts
 import { cookies } from "next/headers"
 
-export const getLocaleHeader = async () {
+export const getLocaleHeader = async () => {
   try {
     const cookies_ = await cookies()
     const locale = cookies_.get("_medusa_locale")?.value

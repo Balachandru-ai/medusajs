@@ -119,7 +119,7 @@ const createTranslationStep = createStep(
     const translationModuleService = container.resolve(Modules.TRANSLATION)
 
     await translationModuleService.deleteTranslations([translationId])
-  },
+  }
 )
 
 export const createTranslationWorkflow = createWorkflow(
@@ -130,7 +130,7 @@ export const createTranslationWorkflow = createWorkflow(
     return new WorkflowResponse({
       translation,
     })
-  },
+  }
 )
 ```
 
