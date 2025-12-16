@@ -13,8 +13,6 @@ const formatPath = (issue: ZodIssue) => {
 const formatInvalidType = (issues: ZodIssue[]) => {
   const expected = issues
     .map((i) => {
-      // In Zod v4, we detect required fields by checking if input is undefined
-      // A wrong type error has a non-undefined input value
       if (i?.code === "invalid_type") {
         const invalidTypeIssue = i as ZodIssueInvalidType
         if (invalidTypeIssue.input !== undefined) {
@@ -40,7 +38,6 @@ const formatRequiredField = (issues: ZodIssue[]) => {
   const expected = issues
     .filter((i) => i != null)
     .map((i) => {
-      // In Zod v4, required fields have input === undefined
       if (i?.code === "invalid_type") {
         const invalidTypeIssue = i as ZodIssueInvalidType
         if (invalidTypeIssue.input === undefined) {
@@ -64,7 +61,6 @@ const formatRequiredField = (issues: ZodIssue[]) => {
 }
 
 const formatUnionError = (issue: ZodIssueInvalidUnion) => {
-  // In Zod v4, union errors structure may differ
   const issues = (issue.errors ?? [])
     .flatMap((e: { issues?: ZodIssue[] }) => e?.issues ?? [])
     .filter((i): i is ZodIssue => i != null)
@@ -78,7 +74,7 @@ const formatUnionError = (issue: ZodIssueInvalidUnion) => {
   )
 }
 
-const formatError = (err: ZodError) => {
+const formatError = (err: ZodError, body: any) => {
   const issueMessages = err.issues.slice(0, 3).map((issue) => {
     switch (issue.code) {
       case "invalid_type":
@@ -88,24 +84,39 @@ const formatError = (err: ZodError) => {
           issue.message
         )
       case "invalid_value": {
-        // In Zod v4, invalid_literal and invalid_enum_value are now invalid_value
         const invalidValueIssue = issue as ZodIssueInvalidValue
-        // Try to get the received value from various possible properties
-        const receivedValue =
-          "input" in issue
-            ? (issue as any).input
-            : "received" in issue
-              ? (issue as any).received
-              : undefined
-        // If received is undefined, it's a required field error
-        if (receivedValue === undefined) {
-          return `Field '${formatPath(issue)}' is required`
+        const issueAny = issue as any
+        let receivedValue: unknown
+        let foundProperty = false
+
+        if ("input" in issueAny) {
+          receivedValue = issueAny.input
+          foundProperty = true
+        } else if ("received" in issueAny) {
+          receivedValue = issueAny.received
+          foundProperty = true
+        } else if ("path" in issueAny) {
+          receivedValue = issueAny.path.reduce(
+            (acc: any, curr: string) => acc[curr],
+            body
+          )
+          foundProperty = true
         }
-        // For enum values, show the expected values
+
+        const hasReceivedValue = foundProperty && receivedValue !== undefined
+
         if (invalidValueIssue.values) {
+          if (!hasReceivedValue) {
+            return `Field '${formatPath(issue)}' is required`
+          }
+
           return `Expected: '${invalidValueIssue.values.join(
             ", "
           )}' for field '${formatPath(issue)}', but got: '${receivedValue}'`
+        }
+
+        if (!hasReceivedValue) {
+          return `Field '${formatPath(issue)}' is required`
         }
         return issue.message
       }
@@ -142,7 +153,6 @@ export async function zodValidator<T>(
   body: T
 ): Promise<z.output<z.ZodObject<any, any> | z.ZodType<any, any, any>>> {
   let strictSchema = zodSchema
-  // ZodEffects doesn't support setting as strict, for all other schemas we want to enforce strictness.
   if ("strict" in zodSchema) {
     strictSchema = zodSchema.strict()
   }
@@ -150,10 +160,10 @@ export async function zodValidator<T>(
   try {
     return await strictSchema.parseAsync(body)
   } catch (err) {
-    if (err instanceof ZodError) {
+    if (err instanceof ZodError || err.name === "ZodError") {
       throw new MedusaError(
         MedusaError.Types.INVALID_DATA,
-        `Invalid request: ${formatError(err)}`
+        `Invalid request: ${formatError(err, body)}`
       )
     }
 
