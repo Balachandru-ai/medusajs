@@ -41,7 +41,12 @@ export class CustomTsMigrationGenerator extends TSMigrationGenerator {
       diff.up.unshift(sql)
     }
 
-    return super.generateMigrationFile(className, diff)
+    let migrationFileContent = super.generateMigrationFile(className, diff)
+    migrationFileContent = migrationFileContent.replace(
+      "import { Migration } from '@mikro-orm/migrations';",
+      "import { Migration } from '@medusajs/framework/mikro-orm/migrations';"
+    )
+    return migrationFileContent
   }
 
   createStatement(sql: string, padLeft: number): string {
