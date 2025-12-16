@@ -8,6 +8,9 @@ const ProductOptionValue = model
   .define("ProductOptionValue", {
     id: model.id({ prefix: "optval" }).primaryKey(),
     value: model.text(),
+    /**
+     * @since 2.13.0
+     */
     rank: model.number().nullable(),
     metadata: model.json().nullable(),
     option: model
@@ -18,6 +21,9 @@ const ProductOptionValue = model
     variants: model.manyToMany(() => ProductVariant, {
       mappedBy: "options",
     }),
+    /**
+     * @since 2.13.0
+     */
     product_options: model.manyToMany(() => ProductProductOption, {
       pivotEntity: () => ProductProductOptionValue,
       mappedBy: "values",

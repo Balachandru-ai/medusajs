@@ -47,6 +47,9 @@ const Product = model
     options: model.manyToMany(() => ProductOption, {
       pivotEntity: () => ProductProductOption,
     }),
+    /**
+     * @since 2.13.0
+     */
     product_options: model.hasMany(() => ProductProductOption, {
       mappedBy: "product",
     }),

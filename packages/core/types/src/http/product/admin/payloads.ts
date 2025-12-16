@@ -470,6 +470,8 @@ export interface AdminUpdateProduct {
   }[]
   /**
    * The IDs of the associated product options.
+   * 
+   * @since 2.13.0
    */
   option_ids?: string[]
   /**
@@ -537,11 +539,24 @@ export interface AdminCreateProductOption {
    */
   values: string[]
   /**
-   * The rank for each option value.
+   * The rank for each option value. The keys are the option values,
+   * and the values are their respective ranks.
+   * 
+   * @since 2.13.0
+   * 
+   * @example
+   * {
+   *   "Small": 1,
+   *   "Medium": 2,
+   *   "Large": 3
+   * }
    */
   ranks?: Record<string, number>
   /**
-   * Whether the option is exclusive or global.
+   * Whether the option is exclusive to a specific product,
+   * or can be shared across multiple products.
+   * 
+   * @since 2.13.0
    */
   is_exclusive?: boolean
 }
@@ -556,11 +571,24 @@ export interface AdminUpdateProductOption {
    */
   values?: string[]
   /**
-   * The rank for each option value.
+   * The rank for each option value. The keys are the option values,
+   * and the values are their respective ranks.
+   * 
+   * @since 2.13.0
+   * 
+   * @example
+   * {
+   *   "Small": 1,
+   *   "Medium": 2,
+   *   "Large": 3
+   * }
    */
   ranks?: Record<string, number>
   /**
-   * Whether the option is exclusive or global.
+   * Whether the option is exclusive to a specific product,
+   * or can be shared across multiple products.
+   * 
+   * @since 2.13.0
    */
   is_exclusive?: boolean
 }
@@ -671,22 +699,28 @@ export interface AdminImportProductsRequest {
 
 export interface AdminLinkProductOptionWithValues {
   /**
-   * The ID of the product option to link.
+   * The ID of the product option to add.
    */
   id: string
   /**
-   * The IDs of specific option values to link.
+   * The IDs of specific option values to add to the product.
+   * This is useful when you want to associate only specific values of an option to the product.
    */
   value_ids: string[]
 }
 
 export interface AdminLinkProductOptions {
   /**
-   * The list of options to link to the product.
+   * The list of options to add to the product. You can pass either:
+   * 
+   * 1. The ID of an existing product option as a string.
+   * 2. An object with `id` and `value_ids` to add an existing product option with specific values. This
+   * is useful when you want to associate only specific option values of an option to the product.
+   * 3. An object to create a new product option.
    */
   add?: (string | AdminCreateProductOption | AdminLinkProductOptionWithValues)[]
   /**
-   * The list of options to unlink to the product.
+   * The list of options to remove from the product.
    */
   remove?: string[]
 }

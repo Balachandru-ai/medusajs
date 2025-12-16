@@ -1155,8 +1155,10 @@ export class Product {
   /**
    * This method links product options to a product. It allows adding new options
    * or removing existing ones. It sends a request to the
-   * [Link Product Options](TODO)
+   * [Link Product Options](https://docs.medusajs.com/api/admin#products_postproductsidoptions)
    * API route.
+   * 
+   * @since 2.13.0
    *
    * @param productId - The product's ID.
    * @param body - The options to add or remove.
@@ -1166,8 +1168,15 @@ export class Product {
    *
    * @example
    * sdk.admin.product.linkOptions("prod_123", {
-   *   add: ["prodopt_123", "prodopt_456"],
-   *   remove: ["prodopt_789"]
+   *   add: [
+ *       "opt_123",
+ *       {
+ *         product_option_id: "opt_789",
+ *         product_id: "prod_123",
+ *         product_option_value_ids: ["optval_1", "optval_2"]
+ *       }
+ *     ],
+ *     remove: ["opt_456"]
    * })
    * .then(({ product }) => {
    *   console.log(product)

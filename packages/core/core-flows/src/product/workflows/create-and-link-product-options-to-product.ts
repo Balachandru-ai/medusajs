@@ -13,19 +13,34 @@ import {
 import { isString } from "@medusajs/framework/utils"
 
 /**
- * The data to add/remove one or more product options to/from a product.
+ * The data to manage product options of a product.
  */
 export type LinkProductOptionsToProductWorkflowInput = {
   /**
-   * The product ID to add/remove the options to/from.
+   * The ID of the product to manage its options.
    */
   product_id: string
   /**
-   * The product options to add to the product.
+   * The product options to add to the product. You can pass one of the
+   * following:
+   * 
+   * 1. The ID of an existing product option as a string.
+   * 2. An object with `id` and `value_ids` to add an existing product option with specific values. This
+   * is useful when you want to associate only specific option values of an option to the product.
+   * 3. An object to create a new product option.
    */
   add?: (
     | string
-    | { id: string; value_ids: string[] }
+    | { 
+      /**
+       * The ID of the product option to add.
+       */
+      id: string;
+      /**
+       * The IDs of the product option values to associate with the product option.
+       */ 
+      value_ids: string[]
+    }
     | ProductTypes.CreateProductOptionDTO
   )[]
   /**
@@ -37,10 +52,14 @@ export type LinkProductOptionsToProductWorkflowInput = {
 export const createAndLinkProductOptionsToProductWorkflowId =
   "create-and-link-product-options-to-product"
 /**
- * This workflow adds/removes one or more product options to/from a product. It's used by the [TODO](TODO).
+ * This workflow manages one or more product options of a product. It's used by the
+ * [Manage Product Options](https://docs.medusajs.com/api/admin#products_postproductsidoptions).
  * This workflow also creates non-existing product options before adding them to the product.
  *
- * You can also use this workflow within your customizations or your own custom workflows, allowing you to wrap custom logic around product-option and product association.
+ * You can also use this workflow within your customizations or your own custom workflows, allowing you 
+ * to wrap custom logic around product-option and product association.
+ * 
+ * @since 2.13.0
  *
  * @example
  * const { result } = await createAndLinkProductOptionsToProductWorkflow(container)
@@ -48,11 +67,18 @@ export const createAndLinkProductOptionsToProductWorkflowId =
  *   input: {
  *     product_id: "prod_123"
  *     add: [
+ *       // Add existing option by ID
+ *       "opt_456",
+ *       // Create new option
  *       {
  *         title: "Size",
  *         values: ["S", "M", "L", "XL"]
  *       },
- *       { id: "opt_123" }
+ *       // Add existing option with specific values
+ *       {
+ *         id: "opt_123"
+ *         value_ids: ["optval_1", "optval_2"]
+ *       }
  *     ],
  *     remove: ["opt_321"]
  *   }
@@ -60,7 +86,7 @@ export const createAndLinkProductOptionsToProductWorkflowId =
  *
  * @summary
  *
- * Add/remove one or more product options to/from a product.
+ * Manage options of a product.
  */
 export const createAndLinkProductOptionsToProductWorkflow = createWorkflow(
   createAndLinkProductOptionsToProductWorkflowId,

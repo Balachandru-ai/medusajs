@@ -4,6 +4,9 @@ import ProductOption from "./product-option"
 import ProductOptionValue from "./product-option-value"
 import ProductProductOptionValue from "./product-product-option-value"
 
+/**
+ * @since 2.13.0
+ */
 const ProductProductOption = model.define("ProductProductOption", {
   id: model.id({ prefix: "prodopt" }).primaryKey(),
   product: model.belongsTo(() => Product, {

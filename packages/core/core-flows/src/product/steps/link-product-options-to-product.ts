@@ -23,12 +23,23 @@ export type LinkProductOptionsToProductStepInput = {
 export const linkProductOptionsToProductStepId =
   "link-product-options-to-product"
 /**
- * This step adds/removes one or more product options to/from a product.
+ * This step manages options of a product. You can add or remove
+ * options from a product.
+ * 
+ * @since 2.13.0
  *
  * @example
  * const data = linkProductOptionsToProductStep({
  *   product_id: "prod_123",
- *   add: ["opt_123", "opt_321"]
+ *   add: [
+ *     "opt_123",
+ *     {
+ *       product_option_id: "opt_789",
+ *       product_id: "prod_123",
+ *       product_option_value_ids: ["optval_1", "optval_2"]
+ *     }
+ *   ],
+ *   remove: ["opt_456"]
  * })
  */
 export const linkProductOptionsToProductStep = createStep(

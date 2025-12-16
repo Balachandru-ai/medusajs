@@ -7,6 +7,9 @@ import { createProductOptionsWorkflow } from "@medusajs/core-flows"
 import { HttpTypes } from "@medusajs/framework/types"
 import { ContainerRegistrationKeys } from "@medusajs/framework/utils"
 
+/**
+ * @since 2.13.0
+ */
 export const GET = async (
   req: AuthenticatedMedusaRequest<HttpTypes.AdminProductOptionListParams>,
   res: MedusaResponse<HttpTypes.AdminProductOptionListResponse>
@@ -27,6 +30,9 @@ export const GET = async (
   })
 }
 
+/**
+ * @since 2.13.0
+ */
 export const POST = async (
   req: AuthenticatedMedusaRequest<HttpTypes.AdminCreateProductOption>,
   res: MedusaResponse<HttpTypes.AdminProductOptionResponse>
