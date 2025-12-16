@@ -147,9 +147,17 @@ export class Client {
   }
 
   setLocale(locale: string) {
+    if (!window) {
+      this.logger.warn(
+        "setLocale is not available in the server environment. Please set the locale directly through the 'x-medusa-locale' header."
+      )
+      return
+    }
+
     if (hasStorage("localStorage")) {
       window.localStorage.setItem(LOCALE_STORAGE_KEY, locale)
     }
+
     this.locale_ = locale
   }
 
@@ -249,6 +257,11 @@ export class Client {
     return async (input: FetchInput, init?: FetchArgs) => {
       // We always want to fetch the up-to-date JWT token before firing off a request.
       const headers = new Headers(defaultHeaders)
+
+      if (this.locale) {
+        headers.set("x-medusa-locale", this.locale)
+      }
+
       const customHeaders = {
         "x-medusa-locale": this.locale,
         ...this.config.globalHeaders,
