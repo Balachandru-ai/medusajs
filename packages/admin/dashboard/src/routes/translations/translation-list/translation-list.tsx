@@ -1,7 +1,6 @@
 import { Container, Heading, Text } from "@medusajs/ui"
 import { TwoColumnPage } from "../../../components/layout/pages"
 import { useTranslation } from "react-i18next"
-import { Buildings } from "@medusajs/icons"
 import {
   useStore,
   useTranslationSettings,
@@ -125,7 +124,14 @@ export const TranslationList = () => {
             ) ?? []
           }
         ></ActiveLocalesSection>
-        <TranslationsCompletionSection statistics={statistics ?? {}} />
+        <TranslationsCompletionSection
+          statistics={statistics ?? {}}
+          locales={
+            store?.supported_locales?.map(
+              (supportedLocale) => supportedLocale.locale
+            ) ?? []
+          }
+        />
       </TwoColumnPage.Sidebar>
     </TwoColumnPage>
   )

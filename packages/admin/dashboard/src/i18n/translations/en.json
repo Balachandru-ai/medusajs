@@ -2527,7 +2527,10 @@
       "noLocalesTip": "Configure at least one locale to start translating your data"
     },
     "completion": {
-      "heading": "Translated strings"
+      "heading": "Translated fields",
+      "translated": "Translated",
+      "toTranslate": "To be translated",
+      "languages": "Languages"
     }
   },
   "store": {
