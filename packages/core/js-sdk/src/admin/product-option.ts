@@ -16,7 +16,7 @@ export class ProductOption {
 
   /**
    * This method creates a product option. It sends a request to the
-   * [Create Option](https://docs.medusajs.com/api/admin#product-options_postproduct-options)
+   * [Create Option](https://docs.medusajs.com/api/admin#product-options_postproductoptions)
    * API route.
    *
    * @param body - The details of the option to create.
@@ -51,7 +51,7 @@ export class ProductOption {
 
   /**
    * This method updates a product option. It sends a request to the
-   * [Update Option](https://docs.medusajs.com/api/admin#product-options_postproduct-optionsoption_id)
+   * [Update Option](https://docs.medusajs.com/api/admin#product-options_postproductoptionsid)
    * API route.
    *
    * @param id - The product option's ID.
@@ -87,7 +87,7 @@ export class ProductOption {
 
   /**
    * This method retrieves a paginated list of product options. It sends a request to the
-   * [List Product Options API route](https://docs.medusajs.com/api/admin#product-options_getproduct-options).
+   * [List Product Options API route](https://docs.medusajs.com/api/admin#product-options_getproductoptions).
    *
    * @param queryParams - Filters and pagination configurations.
    * @param headers - Headers to pass in the request.
@@ -146,7 +146,7 @@ export class ProductOption {
 
   /**
    * This method retrieves a product option by its ID. It sends a request to the
-   * [Get Product Option API route](https://docs.medusajs.com/api/admin#product-options_getproduct-optionsid).
+   * [Get Product Option API route](https://docs.medusajs.com/api/admin#product-options_getproductoptionsid).
    *
    * @param id - The product option's ID.
    * @param query - Configure the fields to retrieve in the product option.
@@ -188,7 +188,7 @@ export class ProductOption {
 
   /**
    * This method deletes a product option. It sends a request to the
-   * [Delete Product Option API route](https://docs.medusajs.com/api/admin#product-options_deleteproduct-optionsid).
+   * [Delete Product Option API route](https://docs.medusajs.com/api/admin#product-options_deleteproductoptionsid).
    *
    * @param id - The product option's ID.
    * @param headers - Headers to pass in the request
