@@ -1,6 +1,3 @@
-import { FeatureFlag } from "@medusajs/framework/utils"
-import TranslationFeatureFlag from "../../../feature-flags/translation"
-
 export const defaultAdminOrderFields = [
   "id",
   "display_id",
@@ -10,9 +7,7 @@ export const defaultAdminOrderFields = [
   "summary",
   "total",
   "metadata",
-  ...(FeatureFlag.isFeatureEnabled(TranslationFeatureFlag.key)
-    ? ["locale"]
-    : []),
+  "locale",
   "created_at",
   "updated_at",
 ]
