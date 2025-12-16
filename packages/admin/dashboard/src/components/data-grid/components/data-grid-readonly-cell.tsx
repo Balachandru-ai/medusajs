@@ -26,10 +26,7 @@ export const DataGridReadonlyCell = <TData, TValue = any>({
         "txt-compact-small text-ui-fg-subtle flex w-full cursor-not-allowed justify-between overflow-hidden px-4 py-2.5 outline-none",
         color === "muted" && "bg-ui-bg-subtle",
         color === "normal" && "bg-ui-bg-base",
-        {
-          "h-full items-center": !isMultiLine,
-          "items-start": isMultiLine,
-        }
+        "h-full items-center"
       )}
     >
       <div
