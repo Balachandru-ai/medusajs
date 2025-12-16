@@ -1,9 +1,14 @@
 import { MedusaRequest, MedusaResponse } from "@medusajs/framework/http"
-import { ContainerRegistrationKeys } from "@medusajs/framework/utils"
+import {
+  ContainerRegistrationKeys,
+  defineFileConfig,
+  FeatureFlag,
+} from "@medusajs/framework/utils"
 import { HttpTypes } from "@medusajs/framework/types"
+import TranslationFeatureFlag from "../../../feature-flags/translation"
 
 export const GET = async (
-  req: MedusaRequest, 
+  req: MedusaRequest,
   res: MedusaResponse<HttpTypes.StoreLocaleListResponse>
 ) => {
   const query = req.scope.resolve(ContainerRegistrationKeys.QUERY)
@@ -30,3 +35,7 @@ export const GET = async (
     locales,
   })
 }
+
+defineFileConfig({
+  isDisabled: () => !FeatureFlag.isFeatureEnabled(TranslationFeatureFlag.key),
+})
