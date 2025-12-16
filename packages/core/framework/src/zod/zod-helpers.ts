@@ -15,7 +15,7 @@ const formatInvalidType = (issues: ZodIssue[]) => {
     .map((i) => {
       // In Zod v4, we detect required fields by checking if input is undefined
       // A wrong type error has a non-undefined input value
-      if (i.code === "invalid_type") {
+      if (i?.code === "invalid_type") {
         const invalidTypeIssue = i as ZodIssueInvalidType
         if (invalidTypeIssue.input !== undefined) {
           return invalidTypeIssue.expected
