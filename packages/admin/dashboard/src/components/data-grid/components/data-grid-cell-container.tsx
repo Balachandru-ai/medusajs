@@ -21,21 +21,18 @@ export const DataGridCellContainer = ({
   rowErrors,
   outerComponent,
   isMultiLine,
-}: DataGridCellContainerProps & DataGridErrorRenderProps<any> & { isMultiLine?: boolean }) => {
+}: DataGridCellContainerProps &
+  DataGridErrorRenderProps<any> & { isMultiLine?: boolean }) => {
   const error = get(errors, field)
   const hasError = !!error
 
   return (
-    <div
-      className={clx("group/container relative w-full", {
-        "h-full": !isMultiLine,
-      })}
-    >
+    <div className={clx("group/container relative h-full w-full")}>
       <div
         className={clx(
-          "bg-ui-bg-base group/cell relative flex w-full gap-x-2 px-4 py-2.5 outline-none",
+          "bg-ui-bg-base group/cell relative flex h-full w-full gap-x-2 px-4 py-2.5 outline-none",
           {
-            "h-full items-center": !isMultiLine,
+            "items-center": !isMultiLine,
             "items-start": isMultiLine,
             "bg-ui-tag-red-bg text-ui-tag-red-text":
               hasError && !isAnchor && !isSelected && !isDragSelected,
@@ -62,8 +59,8 @@ export const DataGridCellContainer = ({
           }}
         />
         <div
-          className={clx("relative z-[1] flex w-full", {
-            "h-full items-center justify-center": !isMultiLine,
+          className={clx("relative z-[1] flex h-full w-full", {
+            "items-center justify-center": !isMultiLine,
             "items-start": isMultiLine,
           })}
         >
