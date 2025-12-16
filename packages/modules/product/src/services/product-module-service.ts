@@ -9,6 +9,7 @@ import {
   ModuleJoinerConfig,
   ModulesSdkTypes,
   ProductTypes,
+  SoftDeleteReturn,
 } from "@medusajs/framework/types"
 import { CreateProductOptionDTO } from "@medusajs/types"
 import { EntityManager } from "@mikro-orm/core"
@@ -1105,6 +1106,60 @@ export default class ProductModuleService
       )
     }
 
+    const dbOptionsMap = new Map<string, InferEntityType<typeof ProductOption>>(
+      dbOptions.map((option) => [option.id, option])
+    )
+
+    // Check if any option values are being removed and if they're associated with products
+    const removedValueIds = new Set<string>()
+    for (const opt of data) {
+      if (!isDefined(opt.values)) {
+        continue
+      }
+
+      const dbOption = dbOptionsMap.get(opt.id)
+
+      if (!dbOption) {
+        continue
+      }
+
+      const newValues = new Set<string>(
+        opt.values.map((v) => {
+          if (isString(v)) {
+            return v
+          }
+          return (v as any).value
+        })
+      )
+
+      for (const existingValue of dbOption.values || []) {
+        if (!newValues.has(existingValue.value)) {
+          removedValueIds.add(existingValue.id)
+        }
+      }
+    }
+
+    if (removedValueIds.size > 0) {
+      const productProductOptionValues =
+        await this.productProductOptionValueService_.list(
+          {
+            product_option_value_id: [...removedValueIds],
+          },
+          {
+            select: ["id"],
+            take: 1,
+          },
+          sharedContext
+        )
+
+      if (productProductOptionValues.length > 0) {
+        throw new MedusaError(
+          MedusaError.Types.INVALID_DATA,
+          "Cannot delete product option values that are associated with products."
+        )
+      }
+    }
+
     // Data normalization
     const normalizedInput = data.map((opt) => {
       const dbOption = dbOptions.find(({ id }) => id === opt.id)
@@ -1178,6 +1233,63 @@ export default class ProductModuleService
       )
 
     return productOptions
+  }
+
+  @InjectManager()
+  // @ts-expect-error
+  async softDeleteProductOptions<
+    TReturnableLinkableKeys extends string = string
+  >(
+    primaryKeyValues: string | object | string[] | object[],
+    config?: SoftDeleteReturn<TReturnableLinkableKeys>,
+    @MedusaContext() sharedContext: Context = {}
+  ): Promise<Record<string, string[]> | void> {
+    return await this.softDeleteProductOptions_(
+      primaryKeyValues,
+      config,
+      sharedContext
+    )
+  }
+
+  @InjectTransactionManager()
+  protected async softDeleteProductOptions_<
+    TReturnableLinkableKeys extends string = string
+  >(
+    primaryKeyValues: string | object | string[] | object[],
+    config?: SoftDeleteReturn<TReturnableLinkableKeys>,
+    @MedusaContext() sharedContext: Context = {}
+  ): Promise<Record<string, string[]> | void> {
+    const optionIds = Array.isArray(primaryKeyValues)
+      ? primaryKeyValues.map((v) => (isString(v) ? v : (v as any).id))
+      : [
+          isString(primaryKeyValues)
+            ? primaryKeyValues
+            : (primaryKeyValues as any).id,
+        ]
+
+    const productOptionsProducts = await this.productProductOptionService_.list(
+      {
+        product_option_id: optionIds,
+      },
+      {
+        select: ["id"],
+        take: 1,
+      },
+      sharedContext
+    )
+
+    if (productOptionsProducts.length > 0) {
+      throw new MedusaError(
+        MedusaError.Types.INVALID_DATA,
+        "Cannot delete product options that are associated with products."
+      )
+    }
+
+    return await super.softDeleteProductOptions(
+      primaryKeyValues,
+      config,
+      sharedContext
+    )
   }
 
   async addProductOptionToProduct(
