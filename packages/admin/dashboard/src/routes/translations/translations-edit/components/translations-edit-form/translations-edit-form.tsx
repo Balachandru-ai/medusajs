@@ -19,21 +19,12 @@ import { KeyboundForm } from "../../../../../components/utilities/keybound-form"
 import { useBatchTranslations } from "../../../../../hooks/api/translations"
 
 /**
- * Schema for a single locale translation.
- */
-const LocaleTranslationSchema = z.object({
-  id: z.string().nullish(),
-  locale_code: z.string(),
-  fields: z.record(z.string().optional()),
-})
-export type LocaleTranslationSchema = z.infer<typeof LocaleTranslationSchema>
-
-/**
  * Schema for an entity's translations (parent row in DataGrid).
  * Contains all locale translations for that entity.
  */
 const EntityTranslationsSchema = z.object({
-  locales: z.record(LocaleTranslationSchema),
+  id: z.string().nullish(),
+  fields: z.record(z.string().optional()),
 })
 export type EntityTranslationsSchema = z.infer<typeof EntityTranslationsSchema>
 
@@ -75,37 +66,35 @@ export function isFieldRow(row: TranslationRow): row is FieldRow {
 function initTranslationsFormState(
   translations: HttpTypes.AdminTranslation[],
   references: { id: string; [key: string]: string }[],
-  availableLocales: AdminStoreLocale[],
+  locale: AdminStoreLocale,
   translatableFields: string[]
 ): TranslationsFormSchema {
   const existingMap = new Map<string, HttpTypes.AdminTranslation>()
-  for (const t of translations) {
-    existingMap.set(`${t.reference_id}:${t.locale_code}`, t)
+  const localeTranslations = translations.filter(
+    (t) => t.locale_code === locale.locale_code
+  )
+
+  for (const t of localeTranslations) {
+    existingMap.set(t.reference_id, t)
   }
 
   const entitiesTranslationState: Record<string, EntityTranslationsSchema> = {}
 
   for (const reference of references) {
-    const locales: Record<string, LocaleTranslationSchema> = {}
+    const existingReferenceTranslation = existingMap.get(reference.id)
 
-    for (const locale of availableLocales) {
-      const key = `${reference.id}:${locale.locale_code}`
-      const existing = existingMap.get(key)
-
-      const fields: Record<string, string> = {}
-      for (const fieldName of translatableFields) {
-        const fieldValue = (existing?.translations?.[fieldName] as string) ?? ""
-        fields[fieldName] = fieldValue
-      }
-
-      locales[locale.locale_code] = {
-        id: existing?.id ?? null,
-        locale_code: locale.locale_code,
-        fields,
-      }
+    const fields: Record<string, string> = {}
+    for (const fieldName of translatableFields) {
+      const fieldValue =
+        (existingReferenceTranslation?.translations?.[fieldName] as string) ??
+        ""
+      fields[fieldName] = fieldValue
     }
 
-    entitiesTranslationState[reference.id] = { locales }
+    entitiesTranslationState[reference.id] = {
+      id: existingReferenceTranslation?.id ?? null,
+      fields,
+    }
   }
 
   return {
@@ -131,7 +120,8 @@ function buildTranslationRows(
 function transformToBatchPayload(
   currentState: TranslationsFormSchema,
   initialState: TranslationsFormSchema,
-  entityType: string
+  entityType: string,
+  locale: AdminStoreLocale
 ): Required<HttpTypes.AdminBatchTranslations> {
   const payload: Required<HttpTypes.AdminBatchTranslations> = {
     create: [],
@@ -140,42 +130,37 @@ function transformToBatchPayload(
   }
 
   for (const [entityId, entityData] of Object.entries(currentState.entities)) {
-    for (const [localeCode, localeTranslations] of Object.entries(
-      entityData.locales
-    )) {
-      const initial = initialState.entities[entityId]?.locales[localeCode]
-      const hasContent = Object.values(localeTranslations.fields).some(
+    const initial = initialState.entities[entityId]
+    const hasContent = Object.values(entityData.fields).some(
+      (v) => v !== undefined && v.trim() !== ""
+    )
+
+    const hadContent =
+      initial &&
+      Object.values(initial.fields).some(
         (v) => v !== undefined && v.trim() !== ""
       )
-      const hadContent =
-        initial &&
-        Object.values(initial.fields).some(
-          (v) => v !== undefined && v.trim() !== ""
-        )
 
-      if (!localeTranslations.id && hasContent) {
-        payload.create.push({
-          reference_id: entityId,
-          reference: entityType,
-          locale_code: localeTranslations.locale_code,
-          translations: localeTranslations.fields,
+    if (!entityData.id && hasContent) {
+      payload.create.push({
+        reference_id: entityId,
+        reference: entityType,
+        locale_code: locale.locale_code,
+        translations: entityData.fields,
+      })
+    } else if (entityData.id && hasContent) {
+      const hasChanged =
+        !initial ||
+        JSON.stringify(entityData.fields) !== JSON.stringify(initial.fields)
+
+      if (hasChanged) {
+        payload.update.push({
+          id: entityData.id,
+          translations: entityData.fields,
         })
-      } else if (localeTranslations.id && hasContent) {
-        // UPDATE: Has ID and has content - check if changed
-        const hasChanged =
-          !initial ||
-          JSON.stringify(localeTranslations.fields) !==
-            JSON.stringify(initial.fields)
-
-        if (hasChanged) {
-          payload.update.push({
-            id: localeTranslations.id,
-            translations: localeTranslations.fields,
-          })
-        }
-      } else if (localeTranslations.id && !hasContent && hadContent) {
-        payload.delete.push(localeTranslations.id)
       }
+    } else if (entityData.id && !hasContent && hadContent) {
+      payload.delete.push(entityData.id)
     }
   }
 
@@ -184,21 +169,13 @@ function transformToBatchPayload(
 
 function hasLocaleChanges(
   currentState: TranslationsFormSchema,
-  initialState: TranslationsFormSchema,
-  localeCode: string
+  initialState: TranslationsFormSchema
 ): boolean {
   for (const [entityId, entityData] of Object.entries(currentState.entities)) {
-    const currentLocale = entityData.locales[localeCode]
-    const initialLocale = initialState.entities[entityId]?.locales[localeCode]
+    const initial = initialState.entities[entityId]
 
-    if (!currentLocale || !initialLocale) {
-      continue
-    }
-
-    for (const [fieldName, fieldValue] of Object.entries(
-      currentLocale.fields
-    )) {
-      const initialValue = initialLocale.fields[fieldName] ?? ""
+    for (const [fieldName, fieldValue] of Object.entries(entityData.fields)) {
+      const initialValue = initial?.fields[fieldName] ?? ""
       const currentValue = fieldValue ?? ""
 
       if (currentValue !== initialValue) {
@@ -210,65 +187,12 @@ function hasLocaleChanges(
   return false
 }
 
-function transformSingleLocaleToBatchPayload(
-  currentState: TranslationsFormSchema,
-  initialState: TranslationsFormSchema,
-  entityType: string,
-  localeCode: string
-): Required<HttpTypes.AdminBatchTranslations> {
-  const payload: Required<HttpTypes.AdminBatchTranslations> = {
-    create: [],
-    update: [],
-    delete: [],
-  }
-
-  for (const [entityId, entityData] of Object.entries(currentState.entities)) {
-    const localeTranslations = entityData.locales[localeCode]
-    if (!localeTranslations) continue
-
-    const initial = initialState.entities[entityId]?.locales[localeCode]
-    const hasContent = Object.values(localeTranslations.fields).some(
-      (v) => v !== undefined && v.trim() !== ""
-    )
-    const hadContent =
-      initial &&
-      Object.values(initial.fields).some(
-        (v) => v !== undefined && v.trim() !== ""
-      )
-
-    if (!localeTranslations.id && hasContent) {
-      payload.create.push({
-        reference_id: entityId,
-        reference: entityType,
-        locale_code: localeTranslations.locale_code,
-        translations: localeTranslations.fields,
-      })
-    } else if (localeTranslations.id && hasContent) {
-      const hasChanged =
-        !initial ||
-        JSON.stringify(localeTranslations.fields) !==
-          JSON.stringify(initial.fields)
-
-      if (hasChanged) {
-        payload.update.push({
-          id: localeTranslations.id,
-          translations: localeTranslations.fields,
-        })
-      }
-    } else if (localeTranslations.id && !hasContent && hadContent) {
-      payload.delete.push(localeTranslations.id)
-    }
-  }
-
-  return payload
-}
-
 const columnHelper = createDataGridHelper<
   TranslationRow,
   TranslationsFormSchema
 >()
 
-const FIELD_COLUMN_WIDTH = 150
+const FIELD_COLUMN_WIDTH = 350
 
 function useTranslationsGridColumns({
   entities,
@@ -301,7 +225,9 @@ function useTranslationsGridColumns({
 
           if (isEntityRow(row)) {
             return (
-              <DataGrid.ReadonlyCell context={context}></DataGrid.ReadonlyCell>
+              <DataGrid.ReadonlyCell context={context}>
+                {row.reference_id}
+              </DataGrid.ReadonlyCell>
             )
           }
 
@@ -387,7 +313,7 @@ function useTranslationsGridColumns({
               return null
             }
 
-            return `entities.${row.reference_id}.locales.${selectedLocaleData.locale_code}.fields.${row.field_name}`
+            return `entities.${row.reference_id}.fields.${row.field_name}`
           },
           type: "multiline-text",
         })
@@ -473,10 +399,23 @@ export const TranslationsEditForm = ({
     initTranslationsFormState(
       translations,
       entities,
-      availableLocales,
+      availableLocales.find((l) => l.locale_code === selectedLocale) ??
+        availableLocales[0]!,
       translatableFields
     )
   )
+
+  useEffect(() => {
+    const newState = initTranslationsFormState(
+      translations,
+      entities,
+      availableLocales.find((l) => l.locale_code === selectedLocale) ??
+        availableLocales[0]!,
+      translatableFields
+    )
+    initialState.current = newState
+    form.reset(newState)
+  }, [selectedLocale])
 
   const form = useForm<TranslationsFormSchema>({
     resolver: zodResolver(TranslationsFormSchema),
@@ -497,11 +436,7 @@ export const TranslationsEditForm = ({
       }
 
       const currentValues = form.getValues()
-      const hasChanges = hasLocaleChanges(
-        currentValues,
-        initialState.current,
-        selectedLocale
-      )
+      const hasChanges = hasLocaleChanges(currentValues, initialState.current)
 
       if (hasChanges) {
         setPendingLocale(newLocale)
@@ -515,11 +450,12 @@ export const TranslationsEditForm = ({
 
   const saveCurrentLocale = useCallback(async () => {
     const currentValues = form.getValues()
-    const payload = transformSingleLocaleToBatchPayload(
+    const payload = transformToBatchPayload(
       currentValues,
       initialState.current,
       entityType,
-      selectedLocale
+      availableLocales.find((l) => l.locale_code === selectedLocale) ??
+        availableLocales[0]!
     )
 
     if (
@@ -556,14 +492,18 @@ export const TranslationsEditForm = ({
           currentBatchAvailable -= currentBatch.delete.length
         }
 
-        await mutateAsync(currentBatch)
+        await mutateAsync(currentBatch, {
+          onError: (error) => {
+            toast.error(error.message)
+          },
+        })
       }
 
       const updatedInitialState = { ...initialState.current }
       for (const entityId of Object.keys(currentValues.entities)) {
-        if (updatedInitialState.entities[entityId]?.locales[selectedLocale]) {
-          updatedInitialState.entities[entityId].locales[selectedLocale] = {
-            ...currentValues.entities[entityId].locales[selectedLocale],
+        if (updatedInitialState.entities[entityId]) {
+          updatedInitialState.entities[entityId] = {
+            ...currentValues.entities[entityId],
           }
         }
       }
@@ -582,11 +522,7 @@ export const TranslationsEditForm = ({
   const handleSaveAndSwitch = useCallback(async () => {
     const success = await saveCurrentLocale()
     if (success && pendingLocale) {
-      toast.success(
-        t("translations.edit.localeChangesSaved", {
-          defaultValue: "Changes saved successfully",
-        })
-      )
+      toast.success(t("translations.edit.successToast"))
       setSelectedLocale(pendingLocale)
     }
     setShowUnsavedPrompt(false)
@@ -611,64 +547,6 @@ export const TranslationsEditForm = ({
     [saveCurrentLocale, t, handleSuccess]
   )
 
-  const handleSubmit = form.handleSubmit(async (values) => {
-    const payload = transformToBatchPayload(
-      values,
-      initialState.current,
-      entityType
-    )
-
-    if (
-      payload.create.length === 0 &&
-      payload.update.length === 0 &&
-      payload.delete.length === 0
-    ) {
-      return
-    }
-
-    const BATCH_SIZE = 150
-    const totalItems =
-      payload.create.length + payload.update.length + payload.delete.length
-    const batchCount = Math.ceil(totalItems / BATCH_SIZE)
-
-    for (let i = 0; i < batchCount; i++) {
-      let currentBatchAvailable = BATCH_SIZE
-      const currentBatch: HttpTypes.AdminBatchTranslations = {
-        create: [],
-        update: [],
-        delete: [],
-      }
-      if (payload.create.length > 0) {
-        currentBatch.create = payload.create.splice(0, currentBatchAvailable)
-        currentBatchAvailable -= currentBatch.create.length
-      }
-      if (payload.update.length > 0) {
-        currentBatch.update = payload.update.splice(0, currentBatchAvailable)
-        currentBatchAvailable -= currentBatch.update.length
-      }
-      if (payload.delete.length > 0) {
-        currentBatch.delete = payload.delete.splice(0, currentBatchAvailable)
-        currentBatchAvailable -= currentBatch.delete.length
-      }
-
-      await mutateAsync(currentBatch, {
-        onSuccess: () => {
-          if (i === batchCount - 1) {
-            toast.success(
-              t("translations.edit.successToast", {
-                defaultValue: "Translations updated successfully",
-              })
-            )
-            handleSuccess()
-          }
-        },
-        onError: (error) => {
-          toast.error(error.message)
-        },
-      })
-    }
-  })
-
   const columns = useTranslationsGridColumns({
     entities,
     translatableFields,
@@ -684,7 +562,7 @@ export const TranslationsEditForm = ({
   return (
     <RouteFocusModal.Form form={form}>
       <KeyboundForm
-        onSubmit={handleSubmit}
+        onSubmit={() => handleSave(true)}
         className="flex h-full flex-col overflow-hidden"
       >
         <RouteFocusModal.Header></RouteFocusModal.Header>
@@ -732,7 +610,7 @@ export const TranslationsEditForm = ({
         <RouteFocusModal.Footer>
           <div className="flex items-center justify-end gap-x-2">
             <RouteFocusModal.Close asChild>
-              <Button size="small" variant="secondary">
+              <Button type="button" size="small" variant="secondary">
                 {t("actions.cancel")}
               </Button>
             </RouteFocusModal.Close>
@@ -745,12 +623,7 @@ export const TranslationsEditForm = ({
             >
               {t("actions.saveChanges")}
             </Button>
-            <Button
-              size="small"
-              type="button"
-              onClick={() => handleSave(true)}
-              isLoading={isPending}
-            >
+            <Button size="small" type="submit" isLoading={isPending}>
               {t("actions.saveAndClose")}
             </Button>
           </div>
