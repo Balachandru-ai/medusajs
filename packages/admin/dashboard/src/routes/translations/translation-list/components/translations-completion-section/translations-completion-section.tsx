@@ -203,7 +203,7 @@ export const TranslationsCompletionSection = ({
             })}
           </div>
           <Text size="xsmall" className="text-ui-fg-muted text-center">
-            {t("translations.completion.languages")}
+            {t("translations.completion.footer")}
           </Text>
         </div>
       )}

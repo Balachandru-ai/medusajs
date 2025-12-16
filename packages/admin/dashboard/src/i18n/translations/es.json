@@ -2475,7 +2475,10 @@
       "noLocalesTip": "Configura al menos un idioma para empezar a traducir tu información"
     },
     "completion": {
-      "heading": "Textos traducidos"
+      "heading": "Textos traducidos",
+      "translated": "Traducidos",
+      "toTranslate": "Por traducir",
+      "footer": "Idiomas"
     }
   },
   "store": {

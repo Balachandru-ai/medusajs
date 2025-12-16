@@ -9427,9 +9427,18 @@
           "properties": {
             "heading": {
               "type": "string"
+            },
+            "translated": {
+              "type": "string"
+            },
+            "toTranslate": {
+              "type": "string"
+            },
+            "footer": {
+              "type": "string"
             }
           },
-          "required": ["heading"]
+          "required": ["heading", "translated", "toTranslate", "footer"]
         }
       },
       "required": [
