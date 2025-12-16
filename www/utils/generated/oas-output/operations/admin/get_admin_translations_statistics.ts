@@ -4,7 +4,7 @@
  * summary: Retrieve Translation Statistics
  * x-sidebar-summary: Get Statistics
  * description: Get statistics on translations for specified locales and entity types. This includes overall
- * translation progress for each entity type, and statistics for each locale within those entity types.
+ *   translation progress for each entity type, and statistics for each locale within those entity types.
  * x-authenticated: true
  * parameters:
  *   - name: locales
