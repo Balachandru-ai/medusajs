@@ -8,7 +8,7 @@ import {
 export const StoreLocales: ModuleJoinerConfig = {
   [MEDUSA_SKIP_FILE]: !(
     FeatureFlag.isFeatureEnabled("translation") ||
-    process.env.MEDUSA_FF_TRANSLATION !== "true"
+    process.env.MEDUSA_FF_TRANSLATION === "true"
   ),
   isLink: true,
   isReadOnlyLink: true,
