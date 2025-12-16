@@ -150,6 +150,7 @@ You can set the cart's locale by passing the `locale` request body parameter to 
 ```ts
 sdk.store.cart.create({
   region_id: region.id,
+  // you can also retrieve the locale from sdk.getLocale()
   locale: "fr-FR",
 })
 .then(({ cart }) => {

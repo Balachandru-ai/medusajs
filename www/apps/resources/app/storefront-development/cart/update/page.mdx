@@ -106,6 +106,7 @@ You can set the cart's locale by passing the `locale` request body parameter to 
 
 ```ts
 sdk.store.cart.update(cartId, {
+  // you can also retrieve the locale from sdk.getLocale()
   locale: "fr-FR",
 })
 .then(({ cart }) => {

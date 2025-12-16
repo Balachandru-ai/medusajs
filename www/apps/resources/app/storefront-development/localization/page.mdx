@@ -178,6 +178,54 @@ curl "http://localhost:9000/store/products" \
 
 {/* TODO: add link to section */}
 
+### Set Locale in Server Environments
+
+If you're making Store API requests from a server environment (such as server components or server actions in Next.js), you can use cookies to persist the selected locale across requests.
+
+When a customer selects a locale in your storefront, set a cookie (for example, `_medusa_locale`) with the selected locale value:
+
+```ts
+import { cookies } from "next/headers"
+
+export const setLocale = async (locale: string) => {
+  const cookies_ = await cookies()
+  cookies_.set("_medusa_locale", locale, {
+    maxAge: 60 * 60 * 24 * 7,
+  })
+}
+```
+
+Then, create a utility that returns the locale from the cookie as a `x-medusa-locale` header:
+
+```ts
+import { cookies } from "next/headers"
+
+export const getLocaleHeader = async () {
+  try {
+    const cookies_ = await cookies()
+    const locale = cookies_.get("_medusa_locale")?.value
+
+    return { "x-medusa-locale": locale }
+  } catch {
+    return {}
+  }
+}
+```
+
+Finally, use the utility to set the `x-medusa-locale` header in your Store API requests:
+
+```ts
+import { getLocaleHeader } from "@/lib/locale"
+
+export async function listProducts() {
+  const headers = {
+    ...(await getLocaleHeader()),
+  }
+
+  return sdk.store.product.list({}, { headers })
+}
+```
+
 ### Retrieve Translated Products
 
 When you pass the locale while fetching products, their content will be in the specified locale if translations are available. Learn more in the [List Products](../products/list/page.mdx) guide.
