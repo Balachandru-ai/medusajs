@@ -508,7 +508,34 @@ export const TranslationsEditForm = ({
     }
 
     try {
-      await mutateAsync(payload)
+      const BATCH_SIZE = 150
+      const totalItems =
+        payload.create.length + payload.update.length + payload.delete.length
+      const batchCount = Math.ceil(totalItems / BATCH_SIZE)
+
+      for (let i = 0; i < batchCount; i++) {
+        let currentBatchAvailable = BATCH_SIZE
+        const currentBatch: HttpTypes.AdminBatchTranslations = {
+          create: [],
+          update: [],
+          delete: [],
+        }
+        if (payload.create.length > 0) {
+          currentBatch.create = payload.create.splice(0, currentBatchAvailable)
+          currentBatchAvailable -= currentBatch.create.length
+        }
+        if (payload.update.length > 0) {
+          currentBatch.update = payload.update.splice(0, currentBatchAvailable)
+          currentBatchAvailable -= currentBatch.update.length
+        }
+        if (payload.delete.length > 0) {
+          currentBatch.delete = payload.delete.splice(0, currentBatchAvailable)
+          currentBatchAvailable -= currentBatch.delete.length
+        }
+
+        await mutateAsync(currentBatch)
+      }
+
       const updatedInitialState = { ...initialState.current }
       for (const entityId of Object.keys(currentValues.entities)) {
         if (updatedInitialState.entities[entityId]?.locales[selectedLocale]) {
@@ -545,6 +572,23 @@ export const TranslationsEditForm = ({
     setShowUnsavedPrompt(false)
     setPendingLocale(null)
   }, [])
+
+  const handleSave = useCallback(
+    async (closeOnSuccess: boolean = false) => {
+      const success = await saveCurrentLocale()
+      if (success) {
+        toast.success(
+          t("translations.edit.successToast", {
+            defaultValue: "Translations updated successfully",
+          })
+        )
+        if (closeOnSuccess) {
+          handleSuccess()
+        }
+      }
+    },
+    [saveCurrentLocale, t, handleSuccess]
+  )
 
   const handleSubmit = form.handleSubmit(async (values) => {
     const payload = transformToBatchPayload(
@@ -672,8 +716,22 @@ export const TranslationsEditForm = ({
                 {t("actions.cancel")}
               </Button>
             </RouteFocusModal.Close>
-            <Button size="small" type="submit" isLoading={isPending}>
-              {t("actions.save")}
+            <Button
+              size="small"
+              type="button"
+              variant="secondary"
+              onClick={() => handleSave(false)}
+              isLoading={isPending}
+            >
+              {t("actions.saveChanges", { defaultValue: "Save changes" })}
+            </Button>
+            <Button
+              size="small"
+              type="button"
+              onClick={() => handleSave(true)}
+              isLoading={isPending}
+            >
+              {t("actions.saveAndClose", { defaultValue: "Save and close" })}
             </Button>
           </div>
         </RouteFocusModal.Footer>
