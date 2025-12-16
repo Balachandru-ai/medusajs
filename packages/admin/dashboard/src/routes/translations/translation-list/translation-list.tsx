@@ -45,7 +45,8 @@ export const TranslationList = () => {
       entity_types: Object.keys(translatable_fields ?? {}),
     },
     {
-      enabled: !!translatable_fields && !!store,
+      enabled:
+        !!translatable_fields && !!store && store.supported_locales?.length > 0,
     }
   )
 
@@ -56,7 +57,7 @@ export const TranslationList = () => {
   const hasLocales = (store?.supported_locales ?? []).length > 0
 
   const translatableEntities: TranslatableEntity[] = useMemo(() => {
-    if (!translatable_fields || !statistics) {
+    if (!translatable_fields) {
       return []
     }
 
@@ -66,7 +67,10 @@ export const TranslationList = () => {
           !["product_option", "product_option_value"].includes(entity)
       )
       .map(([entity, fields]) => {
-        const entityStatistics = statistics[entity]
+        const entityStatistics = statistics?.[entity] ?? {
+          translated: 0,
+          expected: 0,
+        }
 
         return {
           label: entity
@@ -85,9 +89,8 @@ export const TranslationList = () => {
     !!store &&
     !isPending &&
     !isTranslationSettingsPending &&
-    !isTranslationStatisticsPending &&
     !!translatable_fields &&
-    !!statistics
+    ((!!statistics && !isTranslationStatisticsPending) || !hasLocales)
 
   if (!isReady) {
     return <TwoColumnPageSkeleton sidebarSections={2} />
@@ -122,9 +125,7 @@ export const TranslationList = () => {
             ) ?? []
           }
         ></ActiveLocalesSection>
-        {statistics && (
-          <TranslationsCompletionSection statistics={statistics} />
-        )}
+        <TranslationsCompletionSection statistics={statistics ?? {}} />
       </TwoColumnPage.Sidebar>
     </TwoColumnPage>
   )
