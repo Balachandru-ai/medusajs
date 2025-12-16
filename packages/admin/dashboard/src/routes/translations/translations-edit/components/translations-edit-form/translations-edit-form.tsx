@@ -2,7 +2,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { AdminStoreLocale, HttpTypes } from "@medusajs/types"
 import { Button, Prompt, Select, toast } from "@medusajs/ui"
 import { ColumnDef } from "@tanstack/react-table"
-import { useCallback, useMemo, useRef, useState } from "react"
+import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { useForm } from "react-hook-form"
 import { useTranslation } from "react-i18next"
 import { z } from "zod"
@@ -268,16 +268,20 @@ const columnHelper = createDataGridHelper<
   TranslationsFormSchema
 >()
 
+const FIELD_COLUMN_WIDTH = 150
+
 function useTranslationsGridColumns({
   entities,
   translatableFields,
   availableLocales,
   selectedLocale,
+  dynamicColumnWidth,
 }: {
   entities: { id: string; [key: string]: string }[]
   translatableFields: string[]
   availableLocales: AdminStoreLocale[]
   selectedLocale: string
+  dynamicColumnWidth: number
 }) {
   const { t } = useTranslation()
 
@@ -290,6 +294,7 @@ function useTranslationsGridColumns({
       columnHelper.column({
         id: "field",
         name: "field",
+        size: FIELD_COLUMN_WIDTH,
         header: undefined,
         cell: (context) => {
           const row = context.row.original
@@ -317,7 +322,7 @@ function useTranslationsGridColumns({
       columnHelper.column({
         id: "original",
         name: "original",
-        size: 400,
+        size: dynamicColumnWidth,
         header: t("general.original"),
         disableHiding: true,
         cell: (context) => {
@@ -350,7 +355,7 @@ function useTranslationsGridColumns({
         columnHelper.column({
           id: selectedLocaleData.locale_code,
           name: selectedLocaleData.locale.name,
-          size: 400,
+          size: dynamicColumnWidth,
           header: () => selectedLocaleData.locale.name,
           cell: (context) => {
             const row = context.row.original
@@ -376,7 +381,14 @@ function useTranslationsGridColumns({
     }
 
     return baseColumns
-  }, [t, translatableFields, availableLocales, selectedLocale, entities])
+  }, [
+    t,
+    translatableFields,
+    availableLocales,
+    selectedLocale,
+    entities,
+    dynamicColumnWidth,
+  ])
 
   return columns
 }
@@ -406,6 +418,29 @@ export const TranslationsEditForm = ({
 }: TranslationsEditFormProps) => {
   const { t } = useTranslation()
   const { handleSuccess, setCloseOnEscape } = useRouteModal()
+
+  const containerRef = useRef<HTMLDivElement>(null)
+  const [dynamicColumnWidth, setDynamicColumnWidth] = useState(400)
+
+  useEffect(() => {
+    const calculateColumnWidth = () => {
+      if (containerRef.current) {
+        const containerWidth = containerRef.current.offsetWidth
+        const availableWidth = containerWidth - FIELD_COLUMN_WIDTH - 12
+        const columnWidth = Math.max(300, Math.floor(availableWidth / 2))
+        setDynamicColumnWidth(columnWidth)
+      }
+    }
+
+    calculateColumnWidth()
+
+    const resizeObserver = new ResizeObserver(calculateColumnWidth)
+    if (containerRef.current) {
+      resizeObserver.observe(containerRef.current)
+    }
+
+    return () => resizeObserver.disconnect()
+  }, [])
 
   const [selectedLocale, setSelectedLocale] = useState<string>(
     availableLocales[0]?.locale_code ?? ""
@@ -632,6 +667,7 @@ export const TranslationsEditForm = ({
     translatableFields,
     availableLocales,
     selectedLocale,
+    dynamicColumnWidth,
   })
 
   const selectedLocaleDisplay = availableLocales.find(
@@ -668,21 +704,23 @@ export const TranslationsEditForm = ({
           </div>
         </RouteFocusModal.Header>
         <RouteFocusModal.Body className="size-full overflow-hidden">
-          <DataGrid
-            columns={columns}
-            data={rows}
-            getSubRows={(row) => {
-              if (isEntityRow(row)) {
-                return row.subRows
-              }
-            }}
-            state={form}
-            onEditingChange={(editing) => setCloseOnEscape(!editing)}
-            totalRowCount={totalCount}
-            onFetchMore={fetchNextPage}
-            isFetchingMore={isFetchingNextPage}
-            hasNextPage={hasNextPage}
-          />
+          <div ref={containerRef} className="size-full">
+            <DataGrid
+              columns={columns}
+              data={rows}
+              getSubRows={(row) => {
+                if (isEntityRow(row)) {
+                  return row.subRows
+                }
+              }}
+              state={form}
+              onEditingChange={(editing) => setCloseOnEscape(!editing)}
+              totalRowCount={totalCount}
+              onFetchMore={fetchNextPage}
+              isFetchingMore={isFetchingNextPage}
+              hasNextPage={hasNextPage}
+            />
+          </div>
         </RouteFocusModal.Body>
         <RouteFocusModal.Footer>
           <div className="flex items-center justify-end gap-x-2">
