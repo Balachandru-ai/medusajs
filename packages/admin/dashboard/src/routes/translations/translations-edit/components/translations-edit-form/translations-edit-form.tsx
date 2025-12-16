@@ -1,6 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod"
 import { AdminStoreLocale, HttpTypes } from "@medusajs/types"
-import { Button, Prompt, Select, toast } from "@medusajs/ui"
+import { Button, Prompt, Select, toast, Text } from "@medusajs/ui"
 import { ColumnDef } from "@tanstack/react-table"
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { useForm } from "react-hook-form"
@@ -308,11 +308,15 @@ function useTranslationsGridColumns({
           return (
             <DataGrid.ReadonlyCell context={context} color="normal">
               <div className="flex h-full w-full items-center gap-x-2 overflow-hidden">
-                <span className="truncate">
+                <Text
+                  className="text-ui-fg-subtle truncate"
+                  weight="plus"
+                  size="small"
+                >
                   {t(`fields.${row.field_name}`, {
                     defaultValue: row.field_name,
                   })}
-                </span>
+                </Text>
               </div>
             </DataGrid.ReadonlyCell>
           )
@@ -323,7 +327,11 @@ function useTranslationsGridColumns({
         id: "original",
         name: "original",
         size: dynamicColumnWidth,
-        header: t("general.original"),
+        header: () => (
+          <Text className="text-ui-fg-base" weight="plus" size="small">
+            {t("general.original")}
+          </Text>
+        ),
         disableHiding: true,
         cell: (context) => {
           const row = context.row.original
@@ -342,8 +350,10 @@ function useTranslationsGridColumns({
           }
 
           return (
-            <DataGrid.ReadonlyCell context={context} isMultiLine>
-              {entity[row.field_name]}
+            <DataGrid.ReadonlyCell color="normal" context={context} isMultiLine>
+              <Text className="text-ui-fg-subtle" weight="plus" size="small">
+                {entity[row.field_name]}
+              </Text>
             </DataGrid.ReadonlyCell>
           )
         },
@@ -356,7 +366,11 @@ function useTranslationsGridColumns({
           id: selectedLocaleData.locale_code,
           name: selectedLocaleData.locale.name,
           size: dynamicColumnWidth,
-          header: () => selectedLocaleData.locale.name,
+          header: () => (
+            <Text className="text-ui-fg-base" weight="plus" size="small">
+              {selectedLocaleData.locale.name}
+            </Text>
+          ),
           cell: (context) => {
             const row = context.row.original
 
