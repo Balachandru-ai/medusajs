@@ -13,10 +13,6 @@ const StoreLocale = model.define("StoreLocale", {
    * "en-US"
    */
   locale_code: model.text().searchable(),
-  /**
-   * Whether the locale is the default one for the store.
-   */
-  is_default: model.boolean().default(false),
   store: model
     .belongsTo(() => Store, {
       mappedBy: "supported_locales",

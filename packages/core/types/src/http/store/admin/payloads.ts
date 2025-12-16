@@ -29,10 +29,6 @@ export interface AdminUpdateStoreSupportedLocale {
    * "en-US"
    */
   locale_code: string
-  /**
-   * Whether this locale is the default locale in the store.
-   */
-  is_default?: boolean
 }
 
 /**

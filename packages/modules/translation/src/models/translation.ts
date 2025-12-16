@@ -29,6 +29,11 @@ const Translation = model
      * }
      */
     translations: model.json(),
+    /**
+     * Precomputed count of translated fields of a resource.
+     * Useful for optimization purposes.
+     */
+    translated_field_count: model.number().default(0),
   })
   .indexes([
     {
