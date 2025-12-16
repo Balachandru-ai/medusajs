@@ -37,7 +37,7 @@ export const ActiveLocalesSection = ({
   return (
     <Container className="flex flex-col p-0">
       <div className="flex items-center justify-between px-6 py-4">
-        <Heading>{t("translations.activeLocales.heading")}</Heading>
+        <Heading level="h2">{t("translations.activeLocales.heading")}</Heading>
         <IconButton variant="transparent" onClick={handleManageLocales}>
           <PencilSquare></PencilSquare>
         </IconButton>

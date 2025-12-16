@@ -75,56 +75,60 @@ export const TranslationsCompletionSection = ({
     [localeStats]
   )
 
-  return (
-    <Container className="flex flex-col gap-y-3 px-6 py-4">
-      <div className="flex items-center justify-between">
-        <Heading>{t("translations.completion.heading")}</Heading>
-        <Text size="small" weight="plus" className="text-ui-fg-subtle">
-          {translatedCount.toLocaleString()} {t("general.of")}{" "}
-          {totalCount.toLocaleString()}
-        </Text>
-      </div>
+  const localeStatsCount = useMemo(() => localeStats.length, [localeStats])
 
-      <div className="flex h-3 w-full overflow-hidden">
-        {percentage > 0 ? (
-          <>
+  return (
+    <Container className="p-0">
+      <div className="flex flex-col gap-y-4 px-6 py-4">
+        <div className="flex items-center justify-between">
+          <Heading level="h2">{t("translations.completion.heading")}</Heading>
+          <Text size="small" weight="plus" className="text-ui-fg-subtle">
+            {translatedCount.toLocaleString()} {t("general.of")}{" "}
+            {totalCount.toLocaleString()}
+          </Text>
+        </div>
+
+        <div className="flex h-3 w-full overflow-hidden">
+          {percentage > 0 ? (
+            <>
+              <div
+                className="mr-0.5 h-full rounded-sm transition-all"
+                style={{
+                  width: `${percentage}%`,
+                  backgroundColor: "var(--bg-interactive)",
+                }}
+              />
+              <div
+                className="h-full flex-1 rounded-sm"
+                style={{
+                  backgroundColor: "var(--bg-interactive)",
+                  opacity: 0.3,
+                }}
+              />
+            </>
+          ) : (
             <div
-              className="mr-0.5 h-full rounded-sm transition-all"
-              style={{
-                width: `${percentage}%`,
-                backgroundColor: "var(--bg-interactive)",
-              }}
-            />
-            <div
-              className="h-full flex-1 rounded-sm"
+              className="h-full w-full rounded-full"
               style={{
                 backgroundColor: "var(--bg-interactive)",
                 opacity: 0.3,
               }}
             />
-          </>
-        ) : (
-          <div
-            className="h-full w-full rounded-full"
-            style={{
-              backgroundColor: "var(--bg-interactive)",
-              opacity: 0.3,
-            }}
-          />
-        )}
-      </div>
+          )}
+        </div>
 
-      <div className="flex items-center justify-between">
-        <Text size="small" weight="plus" className="text-ui-fg-subtle">
-          {percentage.toFixed(1)}%
-        </Text>
-        <Text size="small" weight="plus" className="text-ui-fg-subtle">
-          {remaining.toLocaleString()} {t("general.remaining").toLowerCase()}
-        </Text>
+        <div className="flex items-center justify-between">
+          <Text size="small" weight="plus" className="text-ui-fg-subtle">
+            {percentage.toFixed(1)}%
+          </Text>
+          <Text size="small" weight="plus" className="text-ui-fg-subtle">
+            {remaining.toLocaleString()} {t("general.remaining").toLowerCase()}
+          </Text>
+        </div>
       </div>
 
       {localeStats.length > 0 && (
-        <div className="mt-4 flex flex-col gap-y-2">
+        <div className="border-ui-border-strong flex flex-col gap-y-3 border-t border-dashed px-6 pb-6 pt-4">
           <div className="flex h-32 w-full items-end gap-1">
             {localeStats.map((locale) => {
               const heightPercent = (locale.total / maxTotal) * 100
@@ -181,7 +185,7 @@ export const TranslationsCompletionSection = ({
                   }
                 >
                   <div
-                    className="flex min-w-2 flex-1 cursor-pointer flex-col justify-end overflow-hidden rounded-t-sm transition-opacity"
+                    className="flex min-w-2 flex-1 flex-col justify-end overflow-hidden rounded-t-sm transition-opacity"
                     style={{ height: `${heightPercent}%` }}
                     onMouseEnter={() => setHoveredLocale(locale.code)}
                     onMouseLeave={() => setHoveredLocale(null)}
@@ -210,13 +214,29 @@ export const TranslationsCompletionSection = ({
               )
             })}
           </div>
-          <Text
-            size="small"
-            weight="plus"
-            className="text-ui-fg-muted text-center"
-          >
-            {t("translations.completion.footer")}
-          </Text>
+          {localeStatsCount < 9 && (
+            <div className="flex w-full gap-1">
+              {localeStats.map((locale) => (
+                <Text
+                  key={locale.code}
+                  size="xsmall"
+                  weight="plus"
+                  className="text-ui-fg-subtle min-w-2 flex-1 whitespace-normal break-words text-center leading-tight"
+                >
+                  {localeStatsCount < 6 ? locale.name : locale.code}
+                </Text>
+              ))}
+            </div>
+          )}
+          {localeStatsCount > 9 && (
+            <Text
+              weight="plus"
+              size="xsmall"
+              className="text-ui-fg-subtle text-center"
+            >
+              {t("translations.completion.footer")}
+            </Text>
+          )}
         </div>
       )}
     </Container>
