@@ -161,6 +161,7 @@ export const AdminUpdateOrder = z.object({
   email: z.string().optional(),
   shipping_address: AddressPayload.optional(),
   billing_address: AddressPayload.optional(),
+  locale: z.string().nullish(),
   metadata: z.record(z.unknown()).nullish(),
 })
 
