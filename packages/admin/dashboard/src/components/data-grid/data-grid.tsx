@@ -3,6 +3,7 @@ import { FieldValues } from "react-hook-form"
 import {
   DataGridBooleanCell,
   DataGridCurrencyCell,
+  DataGridMultilineCell,
   DataGridNumberCell,
   DataGridReadOnlyCell,
   DataGridRoot,
@@ -47,6 +48,7 @@ const _DataGrid = <TData, TFieldValues extends FieldValues = FieldValues>({
 export const DataGrid = Object.assign(_DataGrid, {
   BooleanCell: DataGridBooleanCell,
   TextCell: DataGridTextCell,
+  MultilineCell: DataGridMultilineCell,
   ExpandableTextCell: DataGridExpandableTextCell,
   NumberCell: DataGridNumberCell,
   CurrencyCell: DataGridCurrencyCell,

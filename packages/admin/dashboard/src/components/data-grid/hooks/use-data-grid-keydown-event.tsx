@@ -305,6 +305,7 @@ export const useDataGridKeydownEvent = <
           break
         case "number":
         case "text":
+        case "multiline-text":
           handleSpaceKeyTextOrNumber(anchor)
           break
       }
@@ -385,6 +386,30 @@ export const useDataGridKeydownEvent = <
   )
 
   /**
+   * Handles the enter key for multiline-text cells.
+   *
+   * The behavior is as follows:
+   * - If Shift+Enter is pressed while editing, allow the newline (don't prevent default).
+   * - If Enter is pressed while editing (without Shift), move to the next cell.
+   * - If the cell is currently not being edited, start editing the cell.
+   */
+  const handleEnterKeyMultilineText = useCallback(
+    (e: KeyboardEvent, anchor: DataGridCoordinates) => {
+      if (isEditing) {
+        if (e.shiftKey) {
+          return
+        }
+
+        handleMoveOnEnter(e, anchor)
+        return
+      }
+
+      handleEditOnEnter(anchor)
+    },
+    [handleMoveOnEnter, handleEditOnEnter, isEditing]
+  )
+
+  /**
    * Handles the enter key for boolean cells.
    *
    * The behavior is as follows:
@@ -432,11 +457,18 @@ export const useDataGridKeydownEvent = <
         return
       }
 
-      e.preventDefault()
-
       const type = matrix.getCellType(anchor)
 
+      if (type === "multiline-text" && isEditing && e.shiftKey) {
+        return
+      }
+
+      e.preventDefault()
+
       switch (type) {
+        case "multiline-text":
+          handleEnterKeyMultilineText(e, anchor)
+          break
         case "togglable-number":
         case "text":
         case "number":
@@ -448,7 +480,14 @@ export const useDataGridKeydownEvent = <
         }
       }
     },
-    [anchor, matrix, handleEnterKeyTextOrNumber, handleEnterKeyBoolean]
+    [
+      anchor,
+      matrix,
+      isEditing,
+      handleEnterKeyTextOrNumber,
+      handleEnterKeyBoolean,
+      handleEnterKeyMultilineText,
+    ]
   )
 
   const handleDeleteKeyTogglableNumber = useCallback(
@@ -526,6 +565,7 @@ export const useDataGridKeydownEvent = <
 
       switch (type) {
         case "text":
+        case "multiline-text":
         case "number":
           handleDeleteKeyTextOrNumber(anchor, rangeEnd)
           break

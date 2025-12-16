@@ -1,5 +1,5 @@
 import { clx } from "@medusajs/ui"
-import { useEffect, useRef, useState } from "react"
+import { useCallback, useEffect, useRef, useState } from "react"
 import { Controller, ControllerRenderProps } from "react-hook-form"
 
 import { useCombinedRefs } from "../../../hooks/use-combined-refs"
@@ -7,7 +7,7 @@ import { useDataGridCell, useDataGridCellError } from "../hooks"
 import { DataGridCellProps, InputProps } from "../types"
 import { DataGridCellContainer } from "./data-grid-cell-container"
 
-export const DataGridTextCell = <TData, TValue = any>({
+export const DataGridMultilineCell = <TData, TValue = any>({
   context,
 }: DataGridCellProps<TData, TValue>) => {
   const { field, control, renderProps } = useDataGridCell({
@@ -23,7 +23,7 @@ export const DataGridTextCell = <TData, TValue = any>({
       name={field}
       render={({ field }) => {
         return (
-          <DataGridCellContainer {...container} {...errorProps}>
+          <DataGridCellContainer {...container} {...errorProps} isMultiLine>
             <Inner field={field} inputProps={input} />
           </DataGridCellContainer>
         )
@@ -43,25 +43,52 @@ const Inner = ({
   const { ref: inputRef, onBlur: onInputBlur, onChange, ...input } = inputProps
 
   const [localValue, setLocalValue] = useState(value)
-  const inputElRef = useRef<HTMLInputElement>(null)
+  const textareaRef = useRef<HTMLTextAreaElement>(null)
 
   useEffect(() => {
     setLocalValue(value)
   }, [value])
 
-  const combinedRefs = useCombinedRefs(inputRef, ref, inputElRef)
+  const combinedRefs = useCombinedRefs(inputRef, ref, textareaRef)
+
+  const adjustTextareaHeight = useCallback(() => {
+    const textarea = textareaRef.current
+    if (textarea) {
+      // Reset height to 0 to get accurate scrollHeight
+      textarea.style.height = "0px"
+      // Set the height to match content (minimum 24px for min visible height)
+      const newHeight = Math.max(textarea.scrollHeight, 24)
+      textarea.style.height = `${newHeight}px`
+    }
+  }, [])
+
+  // Adjust height when value changes
+  useEffect(() => {
+    adjustTextareaHeight()
+  }, [localValue, adjustTextareaHeight])
+
+  useEffect(() => {
+    // Immediate adjustment
+    adjustTextareaHeight()
+    // Delayed adjustment to handle any layout shifts
+    const timeoutId = setTimeout(adjustTextareaHeight, 50)
+    return () => clearTimeout(timeoutId)
+  }, [adjustTextareaHeight])
 
   return (
-    <input
+    <textarea
       className={clx(
-        "txt-compact-small text-ui-fg-subtle flex size-full cursor-pointer bg-transparent outline-none",
+        "txt-compact-small text-ui-fg-subtle flex w-full cursor-pointer bg-transparent outline-none",
         "focus:cursor-text",
-        "items-center justify-center"
+        "resize-none overflow-hidden py-2"
       )}
       autoComplete="off"
       tabIndex={-1}
       value={localValue ?? ""}
-      onChange={(e) => setLocalValue(e.target.value)}
+      onChange={(e) => {
+        setLocalValue(e.target.value)
+        adjustTextareaHeight()
+      }}
       ref={combinedRefs}
       onBlur={() => {
         onBlur()
@@ -73,3 +100,4 @@ const Inner = ({
     />
   )
 }
+

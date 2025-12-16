@@ -378,7 +378,7 @@ function useTranslationsGridColumns({
               return <DataGrid.ReadonlyCell context={context} isMultiLine />
             }
 
-            return <DataGrid.TextCell context={context} isMultiLine />
+            return <DataGrid.MultilineCell context={context} />
           },
           field: (context) => {
             const row = context.row.original
@@ -389,7 +389,7 @@ function useTranslationsGridColumns({
 
             return `entities.${row.reference_id}.locales.${selectedLocaleData.locale_code}.fields.${row.field_name}`
           },
-          type: "text",
+          type: "multiline-text",
         })
       )
     }
