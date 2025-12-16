@@ -595,6 +595,7 @@ export const TranslationsEditForm = ({
               hasNextPage={hasNextPage}
               headerContent={
                 <Select
+                  disabled={isPending}
                   value={selectedLocale}
                   onValueChange={handleLocaleChange}
                   size="small"
@@ -620,7 +621,12 @@ export const TranslationsEditForm = ({
         <RouteFocusModal.Footer>
           <div className="flex items-center justify-end gap-x-2">
             <RouteFocusModal.Close asChild>
-              <Button type="button" size="small" variant="secondary">
+              <Button
+                type="button"
+                size="small"
+                variant="secondary"
+                isLoading={isPending}
+              >
                 {t("actions.cancel")}
               </Button>
             </RouteFocusModal.Close>
