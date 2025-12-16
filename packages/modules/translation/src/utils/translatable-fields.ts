@@ -3,7 +3,6 @@ export const PRODUCT_TRANSLATABLE_FIELDS = [
   "description",
   "material",
   "subtitle",
-  "status",
 ]
 export const PRODUCT_VARIANT_TRANSLATABLE_FIELDS = ["title", "material"]
 export const PRODUCT_TYPE_TRANSLATABLE_FIELDS = ["value"]

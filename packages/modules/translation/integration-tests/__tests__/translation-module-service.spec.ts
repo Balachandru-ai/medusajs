@@ -651,7 +651,7 @@ moduleIntegrationTestRunner<ITranslationModuleService>({
         describe("getStatistics", () => {
           it("should return statistics for a single entity type and locale", async () => {
             // Create translations for 2 products with some fields filled
-            // Product has 4 translatable fields: title, description, subtitle, status
+            // Product has 4 translatable fields: title, description, material, subtitle
             await service.createTranslations([
               {
                 reference_id: "prod_stat_1",
@@ -660,7 +660,7 @@ moduleIntegrationTestRunner<ITranslationModuleService>({
                 translations: {
                   title: "Product 1",
                   description: "Description 1",
-                  // subtitle and status are missing
+                  // material and subtitle are missing
                 },
               },
               {
@@ -671,7 +671,6 @@ moduleIntegrationTestRunner<ITranslationModuleService>({
                   title: "Product 2",
                   description: "Description 2",
                   subtitle: "Subtitle 2",
-                  status: "Active",
                 },
               },
             ])
@@ -683,17 +682,17 @@ moduleIntegrationTestRunner<ITranslationModuleService>({
               },
             })
 
-            // Expected: 2 products × 5 fields × 1 locale = 10
-            // Translated: prod_1 has 2, prod_2 has 4 = 6
+            // Expected: 2 products × 4 fields × 1 locale = 8
+            // Translated: prod_1 has 2, prod_2 has 3 = 5
             expect(stats.product).toEqual({
-              expected: 10,
-              translated: 6,
-              missing: 4,
+              expected: 8,
+              translated: 5,
+              missing: 3,
               by_locale: {
                 "en-US": {
-                  expected: 10,
-                  translated: 6,
-                  missing: 4,
+                  expected: 8,
+                  translated: 5,
+                  missing: 3,
                 },
               },
             })
@@ -728,22 +727,22 @@ moduleIntegrationTestRunner<ITranslationModuleService>({
               },
             })
 
-            // Expected per locale: 1 product × 5 fields = 5
-            // Total expected: 5 × 2 locales = 10
-            expect(stats.product.expected).toEqual(10)
+            // Expected per locale: 1 product × 4 fields = 4
+            // Total expected: 4 × 2 locales = 8
+            expect(stats.product.expected).toEqual(8)
             expect(stats.product.translated).toEqual(3) // 2 EN + 1 FR
-            expect(stats.product.missing).toEqual(7)
+            expect(stats.product.missing).toEqual(5)
 
             expect(stats.product.by_locale["en-US"]).toEqual({
-              expected: 5,
+              expected: 4,
               translated: 2,
-              missing: 3,
+              missing: 2,
             })
 
             expect(stats.product.by_locale["fr-FR"]).toEqual({
-              expected: 5,
+              expected: 4,
               translated: 1,
-              missing: 4,
+              missing: 3,
             })
           })
 
@@ -757,7 +756,6 @@ moduleIntegrationTestRunner<ITranslationModuleService>({
                   title: "Product Title",
                   description: "Product Description",
                   subtitle: "Product Subtitle",
-                  status: "Active",
                   material: "Product Material",
                 },
               },
@@ -780,13 +778,13 @@ moduleIntegrationTestRunner<ITranslationModuleService>({
               },
             })
 
-            // Product: 1 × 5 fields = 5 expected, 5 translated
+            // Product: 1 × 4 fields = 4 expected, 4 translated
             expect(stats.product).toEqual({
-              expected: 5,
-              translated: 5,
+              expected: 4,
+              translated: 4,
               missing: 0,
               by_locale: {
-                "en-US": { expected: 5, translated: 5, missing: 0 },
+                "en-US": { expected: 4, translated: 4, missing: 0 },
               },
             })
 
@@ -827,14 +825,14 @@ moduleIntegrationTestRunner<ITranslationModuleService>({
               },
             })
 
-            // 5 products × 5 fields × 2 locales = 50 expected, 0 translated
+            // 5 products × 4 fields × 2 locales = 40 expected, 0 translated
             expect(stats.product).toEqual({
-              expected: 50,
+              expected: 40,
               translated: 0,
-              missing: 50,
+              missing: 40,
               by_locale: {
-                "en-US": { expected: 25, translated: 0, missing: 25 },
-                "fr-FR": { expected: 25, translated: 0, missing: 25 },
+                "en-US": { expected: 20, translated: 0, missing: 20 },
+                "fr-FR": { expected: 20, translated: 0, missing: 20 },
               },
             })
           })
@@ -860,9 +858,9 @@ moduleIntegrationTestRunner<ITranslationModuleService>({
               },
             })
 
-            // Only title, subtitle and material should count (3), not empty description
+            // Only title and subtitle count (2), not empty description
             expect(stats.product.translated).toEqual(2)
-            expect(stats.product.missing).toEqual(3)
+            expect(stats.product.missing).toEqual(2)
           })
 
           it("should normalize locale codes", async () => {
@@ -924,10 +922,10 @@ moduleIntegrationTestRunner<ITranslationModuleService>({
               },
             })
 
-            // Product: 10000 × 5 fields × 3 locales = 150000
-            expect(stats.product.expected).toEqual(150000)
+            // Product: 10000 × 4 fields × 3 locales = 120000
+            expect(stats.product.expected).toEqual(120000)
             expect(stats.product.translated).toEqual(0)
-            expect(stats.product.missing).toEqual(150000)
+            expect(stats.product.missing).toEqual(120000)
 
             // Variant: 50000 × 2 fields × 3 locales = 300000
             expect(stats.product_variant.expected).toEqual(300000)
@@ -942,7 +940,7 @@ moduleIntegrationTestRunner<ITranslationModuleService>({
               locale_code: "en-US",
               translations: {
                 title: "Product Title",
-                // only 1 of 5 fields
+                // only 1 of 4 fields
               },
             })
 
@@ -966,7 +964,7 @@ moduleIntegrationTestRunner<ITranslationModuleService>({
               entities: { product: { count: 1 } },
             })
             expect(stats.product.translated).toEqual(3)
-            expect(stats.product.missing).toEqual(2)
+            expect(stats.product.missing).toEqual(1)
           })
         })
       })
