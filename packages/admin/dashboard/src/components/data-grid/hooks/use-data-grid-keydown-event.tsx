@@ -211,7 +211,22 @@ export const useDataGridKeydownEvent = <
     [rangeEnd, matrix, getSelectionValues, setSelectionValues, execute]
   )
 
-  const handleSpaceKeyTextOrNumber = useCallback(
+  const handleSpaceKeyText = useCallback(
+    (anchor: DataGridCoordinates) => {
+      const field = matrix.getCellField(anchor)
+      const input = queryTool?.getInput(anchor)
+
+      if (!field || !input) {
+        return
+      }
+
+      createSnapshot(anchor)
+      input.focus()
+    },
+    [matrix, queryTool, createSnapshot]
+  )
+
+  const handleSpaceKeyNumber = useCallback(
     (anchor: DataGridCoordinates) => {
       const field = matrix.getCellField(anchor)
       const input = queryTool?.getInput(anchor)
@@ -303,10 +318,12 @@ export const useDataGridKeydownEvent = <
         case "togglable-number":
           handleSpaceKeyTogglableNumber(anchor)
           break
-        case "number":
         case "text":
         case "multiline-text":
-          handleSpaceKeyTextOrNumber(anchor)
+          handleSpaceKeyText(anchor)
+          break
+        case "number":
+          handleSpaceKeyNumber(anchor)
           break
       }
     },
@@ -315,7 +332,8 @@ export const useDataGridKeydownEvent = <
       isEditing,
       matrix,
       handleSpaceKeyBoolean,
-      handleSpaceKeyTextOrNumber,
+      handleSpaceKeyText,
+      handleSpaceKeyNumber,
       handleSpaceKeyTogglableNumber,
     ]
   )
