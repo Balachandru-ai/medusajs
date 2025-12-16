@@ -250,7 +250,7 @@ export class Client {
       // We always want to fetch the up-to-date JWT token before firing off a request.
       const headers = new Headers(defaultHeaders)
       const customHeaders = {
-        "content-language": this.locale,
+        "x-medusa-locale": this.locale,
         ...this.config.globalHeaders,
         ...(await this.getJwtHeader_()),
         ...init?.headers,
