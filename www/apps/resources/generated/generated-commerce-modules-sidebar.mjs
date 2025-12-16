@@ -6423,6 +6423,14 @@ const generatedgeneratedCommerceModulesSidebarSidebar = {
               "loaded": true,
               "isPathHref": true,
               "type": "ref",
+              "title": "Export Orders",
+              "path": "https://docs.medusajs.com/user-guide/orders/export",
+              "children": []
+            },
+            {
+              "loaded": true,
+              "isPathHref": true,
+              "type": "ref",
               "title": "Manage Draft Order",
               "path": "https://docs.medusajs.com/user-guide/orders/draft-orders/manage",
               "children": []
@@ -17241,6 +17249,34 @@ const generatedgeneratedCommerceModulesSidebarSidebar = {
               "type": "ref",
               "title": "Storefront Localization",
               "path": "https://docs.medusajs.com/resources/storefront-development/localization",
+              "children": []
+            }
+          ]
+        },
+        {
+          "loaded": true,
+          "isPathHref": true,
+          "type": "category",
+          "title": "Admin User Guides",
+          "autogenerate_tags": "userGuide+translation",
+          "autogenerate_as_ref": true,
+          "sort_sidebar": "alphabetize",
+          "description": "Learn how to utilize and manage Translation features in the Medusa Admin dashboard.",
+          "children": [
+            {
+              "loaded": true,
+              "isPathHref": true,
+              "type": "ref",
+              "title": "Manage Store",
+              "path": "https://docs.medusajs.com/user-guide/settings/store",
+              "children": []
+            },
+            {
+              "loaded": true,
+              "isPathHref": true,
+              "type": "ref",
+              "title": "Manage Translations",
+              "path": "https://docs.medusajs.com/user-guide/settings/translations",
               "children": []
             }
           ]

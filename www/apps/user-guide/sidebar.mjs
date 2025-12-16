@@ -83,6 +83,11 @@ export const sidebar = [
               },
             ],
           },
+          {
+            type: "link",
+            title: "Export Orders",
+            path: "/orders/export",
+          },
         ],
       },
       {
