@@ -263,6 +263,7 @@ export class Client {
       }
 
       const customHeaders = {
+        "x-medusa-locale": this.locale,
         ...this.config.globalHeaders,
         ...(await this.getJwtHeader_()),
         ...init?.headers,
