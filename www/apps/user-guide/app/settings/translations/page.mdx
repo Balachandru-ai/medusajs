@@ -37,9 +37,11 @@ You can set supported locales for your store in the [Store](../store/page.mdx#ma
 
 Then, in the storefront, customers can view content in their preferred language based on the available locales.
 
-You can view and manage translations in the Medusa Admin dashboard by going to Settings → Translations. This page allows you to manage translations of resources in bulk. Alternatively, you can manage translations for individual resources directly from their respective pages (for example, from a product's detail page).
+You can view and manage translations in the Medusa Admin dashboard by going to Settings → Translations. This page allows you to manage translations of resources in bulk.
 
-{/* TODO add screenshot */}
+Alternatively, you can manage translations for individual resources directly from their respective pages (for example, from a product's detail page).
+
+![Translations settings page](https://res.cloudinary.com/dza7lstvk/image/upload/v1765888654/User%20Guide/CleanShot_2025-12-16_at_14.36.56_2x_tqvst2.png)
 
 ---
 
@@ -56,10 +58,19 @@ Currently, Medusa supports translations for product-related resources only. Futu
 For example, to manage product translations in bulk:
 
 1. Go to Settings → Translations.
-2. Click on the Products card.
-3. This will open a [bulk editor](../../tips/bulk-editor/page.mdx) where you can view and edit translations for product titles, descriptions, and subtitles in different locales.
+2. Click on the Edit button in the "Products" row.
+3. This will open a [bulk editor](../../tips/bulk-editor/page.mdx) where you can view and edit translations for product titles, descriptions, subtitles, and more in each [locale supported in your store](../store/page.mdx#manage-store-locales).
+    - To edit text with multi-line support, double click the respective cell to open a larger text area.
 4. Once you're done editing, click the Save button to apply the changes.
 
 Customers will then see the translated content in the storefront based on their selected locale.
 
-{/* TODO add screenshot */}
+---
+
+## View Translation Statistics
+
+Each resource row in the Translations settings page displays how many fields have been translated out of the total translatable fields for that resource.
+
+The "Translated strings" section also shows a general progress bar of how many strings have been translated across all resources and locales in your store. You can use this summary to track your overall translation progress.
+
+![Translation statistics in Translated strings section](https://res.cloudinary.com/dza7lstvk/image/upload/v1765889444/User%20Guide/CleanShot_2025-12-16_at_14.50.26_2x_u7daok.png)
