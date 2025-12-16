@@ -1,5 +1,3 @@
-import { EntityManager } from "@mikro-orm/core"
-import { CreateProductOptionDTO } from "@medusajs/types"
 import {
   Context,
   DAL,
@@ -12,6 +10,8 @@ import {
   ModulesSdkTypes,
   ProductTypes,
 } from "@medusajs/framework/types"
+import { CreateProductOptionDTO } from "@medusajs/types"
+import { EntityManager } from "@mikro-orm/core"
 import {
   Product,
   ProductCategory,
@@ -47,6 +47,7 @@ import {
   Modules,
   partitionArray,
   ProductStatus,
+  promiseAll,
   removeUndefined,
   toHandle,
 } from "@medusajs/framework/utils"
@@ -61,6 +62,11 @@ import {
   UpdateTypeInput,
   VariantImageInputArray,
 } from "../types"
+import {
+  computeOptionLinkChanges,
+  computeSetDifference,
+  eventBuilders,
+} from "../utils"
 import { joinerConfig } from "./../joiner-config"
 import { eventBuilders } from "../utils/events"
 import { buildOptionValueFilterQuery } from "../utils/build-option-value-filter-query"
@@ -1273,67 +1279,103 @@ export default class ProductModuleService
   ): Promise<{ id: string } | { id: string }[]> {
     const pairs = Array.isArray(data) ? data : [data]
 
-    const productProductOptions =
-      await this.productProductOptionService_.create(data, sharedContext)
+    // Step 1: Fetch existing PPOs and build lookup map for O(1) access
+    const existingProductOptions = await this.productProductOptionService_.list(
+      {
+        $or: pairs.map((pair) => ({
+          product_id: pair.product_id,
+          product_option_id: pair.product_option_id,
+        })),
+      },
+      { relations: ["values"] },
+      sharedContext
+    )
 
-    const createdPPOs = (
-      Array.isArray(productProductOptions)
-        ? productProductOptions
-        : [productProductOptions]
-    ) as InferEntityType<typeof ProductProductOption>[]
+    const existingPPOMap = new Map<
+      string,
+      InferEntityType<typeof ProductProductOption>
+    >()
+    for (const ppo of existingProductOptions) {
+      const key = `${ppo.product_id}_${ppo.product_option_id}`
+      existingPPOMap.set(key, ppo)
+    }
 
+    // Step 2: Calculate value changes and collect validation pairs
+    const validationPairs: Array<{
+      productId: string
+      optionId: string
+      valueIdsToCheck: string[]
+    }> = []
+
+    for (const pair of pairs) {
+      if (!pair.product_option_value_ids) continue
+
+      const key = `${pair.product_id}_${pair.product_option_id}`
+      const existingPPO = existingPPOMap.get(key)
+      if (!existingPPO) continue
+
+      const diff = computeSetDifference(
+        existingPPO.values,
+        pair.product_option_value_ids
+      )
+      if (diff.toRemove.length) {
+        validationPairs.push({
+          productId: pair.product_id,
+          optionId: pair.product_option_id,
+          valueIdsToCheck: diff.toRemove,
+        })
+      }
+    }
+
+    // Step 3: Validate all removals BEFORE any mutations
+    if (validationPairs.length) {
+      await this.validateOptionRemoval_(validationPairs, sharedContext)
+    }
+
+    // Step 4: Fetch option values for determining which values to link
     const uniqueOptionIds = [...new Set(pairs.map((p) => p.product_option_id))]
     const options = await this.productOptionService_.list(
       { id: uniqueOptionIds },
       { relations: ["values"] },
       sharedContext
     )
-
     const optionValuesMap = new Map(
       options.map((opt) => [opt.id, opt.values || []])
     )
 
-    const valuePairsToCreate: {
-      product_product_option_id: string
-      product_option_value_id: string
-    }[] = []
+    // Step 5: Prepare PPO data for upsertWithReplace
+    const pposToUpsert = pairs.map((pair) => {
+      const key = `${pair.product_id}_${pair.product_option_id}`
+      const existingPPO = existingPPOMap.get(key)
+      const allValues = optionValuesMap.get(pair.product_option_id) || []
 
-    for (const ppo of createdPPOs) {
-      const originalPair = pairs.find(
-        (p) => p.product_option_id === (ppo as any).product_option_id
-      )
-      if (originalPair) {
-        const allValues =
-          optionValuesMap.get(originalPair.product_option_id) || []
+      const valueIds = pair.product_option_value_ids
+        ? pair.product_option_value_ids
+        : allValues.map((v) => v.id)
 
-        // If specific value IDs were provided, use only those; otherwise use all values
-        const valuesToLink = originalPair.product_option_value_ids
-          ? allValues.filter((v) =>
-              originalPair.product_option_value_ids!.includes(v.id)
-            )
-          : allValues
-
-        for (const value of valuesToLink) {
-          valuePairsToCreate.push({
-            product_product_option_id: ppo.id,
-            product_option_value_id: value.id,
-          })
-        }
+      return {
+        id: generateEntityId(existingPPO?.id, "prodopt"),
+        product_id: pair.product_id,
+        product_option_id: pair.product_option_id,
+        // Pass ProductOptionValue IDs - upsertWithReplace will generate pivot entry IDs
+        values: valueIds.map((valueId) => ({ id: valueId })),
       }
-    }
+    })
 
-    if (valuePairsToCreate.length > 0) {
-      await this.productProductOptionValueService_.create(
-        valuePairsToCreate,
+    // Step 6: Use upsertWithReplace to handle all PPO/PPOV operations
+    const { entities: upsertedPPOs } =
+      await this.productProductOptionService_.upsertWithReplace(
+        pposToUpsert,
+        { relations: ["values"] },
         sharedContext
       )
-    }
 
+    // Step 7: Return results in same order as input
     if (Array.isArray(data)) {
-      return createdPPOs.map((ppo) => ({ id: ppo.id }))
+      return upsertedPPOs.map((ppo) => ({ id: ppo.id }))
     }
 
-    return { id: createdPPOs[0].id }
+    return { id: upsertedPPOs[0]?.id }
   }
 
   async removeProductOptionFromProduct(
@@ -1362,14 +1404,36 @@ export default class ProductModuleService
     data:
       | ProductTypes.ProductOptionProductPair
       | ProductTypes.ProductOptionProductPair[],
-    @MedusaContext() sharedContext: Context = {}
+    @MedusaContext() sharedContext: Context = {},
+    alreadyValidatedProductIds: Set<string> = new Set()
   ): Promise<void> {
     const pairs = Array.isArray(data) ? data : [data]
     const productOptionsProducts = await this.productProductOptionService_.list(
       {
         $or: pairs,
-      }
+      },
+      {},
+      sharedContext
     )
+
+    const validationPairs = productOptionsProducts
+      .map((productOptionProduct) => {
+        const productId = productOptionProduct.product_id
+        const optionId = productOptionProduct.product_option_id
+        if (
+          productId &&
+          optionId &&
+          !alreadyValidatedProductIds.has(productId)
+        ) {
+          return { productId, optionId }
+        }
+        return null
+      })
+      .filter((p): p is { productId: string; optionId: string } => p !== null)
+
+    if (validationPairs.length > 0) {
+      await this.validateOptionRemoval_(validationPairs, sharedContext)
+    }
 
     const productOptionsProductIds = productOptionsProducts.map(({ id }) => id)
 
@@ -2230,7 +2294,7 @@ export default class ProductModuleService
       .flatMap((p) => p.option_ids ?? [])
       .filter((id) => !!id)
 
-    const [originalProducts, existingOptions] = await Promise.all([
+    const [originalProducts, existingOptions] = await promiseAll([
       this.productService_.list(
         { id: data.map((d) => d.id) },
         {
@@ -2260,48 +2324,16 @@ export default class ProductModuleService
       }
     }
 
-    const linkPairs: ProductTypes.ProductOptionProductPair[] = []
-    const unlinkPairs: ProductTypes.ProductOptionProductPair[] = []
+    const { linkPairs, unlinkPairs, expectedOptionIdsMap } =
+      computeOptionLinkChanges(data, originalProducts)
+
     for (const product of data) {
-      if (!product.option_ids) {
-        continue
-      }
-
-      const newOptionIds = new Set(product.option_ids)
-
-      const existingOptionIds = new Set(
-        originalProducts
-          .find((p) => p.id === product.id)
-          ?.options?.map((o) => o.id) ?? []
-      )
-
-      for (const optionId of newOptionIds) {
-        if (!existingOptionIds.has(optionId)) {
-          linkPairs.push({
-            product_id: product.id,
-            product_option_id: optionId,
-          })
-        }
-      }
-
-      for (const optionId of existingOptionIds) {
-        if (!newOptionIds.has(optionId)) {
-          unlinkPairs.push({
-            product_id: product.id,
-            product_option_id: optionId,
-          })
-        }
-      }
-
       delete product.option_ids
     }
 
-    await Promise.all([
-      linkPairs.length &&
-        this.addProductOptionToProduct_(linkPairs, sharedContext),
-      unlinkPairs.length &&
-        this.removeProductOptionFromProduct_(unlinkPairs, sharedContext),
-    ])
+    if (linkPairs.length) {
+      await this.addProductOptionToProduct_(linkPairs, sharedContext)
+    }
 
     await (sharedContext.transactionManager as any).flush()
 
@@ -2316,10 +2348,19 @@ export default class ProductModuleService
     const updatedProducts = await this.productRepository_.deepUpdate(
       normalizedProducts,
       ProductModuleService.validateVariantOptions,
+      expectedOptionIdsMap,
       sharedContext
     )
 
-    // Filter option values to only include those associated with each product
+    if (unlinkPairs.length) {
+      const alreadyValidatedProductIds = new Set(expectedOptionIdsMap.keys())
+      await this.removeProductOptionFromProduct_(
+        unlinkPairs,
+        sharedContext,
+        alreadyValidatedProductIds
+      )
+    }
+
     this.filterOptionValuesByProducts(updatedProducts)
 
     return updatedProducts
@@ -3057,6 +3098,172 @@ export default class ProductModuleService
     }
 
     return result
+  }
+
+  /**
+   * Validates that no variants are using the specified option or option values
+   * before they are removed from a product.
+   *
+   * @param pairs - Array of validation pairs: { productId, optionId, valueIdsToCheck? }
+   * @param sharedContext - The shared context
+   * @throws MedusaError if any variants are using the option/values
+   */
+  @InjectTransactionManager()
+  protected async validateOptionRemoval_(
+    pairs: Array<{
+      productId: string
+      optionId: string
+      valueIdsToCheck?: string[]
+    }>,
+    @MedusaContext() sharedContext: Context = {}
+  ): Promise<void> {
+    if (pairs.length === 0) {
+      return
+    }
+
+    // Filter pairs that need validation (for option removal, check if option is linked)
+    const pairsToValidate: Array<{
+      productId: string
+      optionId: string
+      valueIdsToCheck?: string[]
+    }> = []
+
+    // For option removals (no valueIdsToCheck), check if options are linked to products
+    const optionRemovalPairs = pairs.filter((p) => !p.valueIdsToCheck)
+    if (optionRemovalPairs.length) {
+      const existingProductOptions =
+        await this.productProductOptionService_.list(
+          {
+            $or: optionRemovalPairs.map((p) => ({
+              product_id: p.productId,
+              product_option_id: p.optionId,
+            })),
+          },
+          {},
+          sharedContext
+        )
+
+      const existingPairsSet = new Set(
+        existingProductOptions.map(
+          (epo) =>
+            `${(epo as any).product_id}_${(epo as any).product_option_id}`
+        )
+      )
+
+      // Only validate pairs that are actually linked
+      for (const pair of optionRemovalPairs) {
+        const key = `${pair.productId}_${pair.optionId}`
+        if (existingPairsSet.has(key)) {
+          pairsToValidate.push(pair)
+        }
+      }
+    }
+
+    // For value removals (with valueIdsToCheck), always validate
+    const valueRemovalPairs = pairs.filter((p) => p.valueIdsToCheck)
+    pairsToValidate.push(...valueRemovalPairs)
+
+    if (pairsToValidate.length === 0) {
+      return // Nothing to validate
+    }
+
+    // Get all unique option IDs to fetch options with their values
+    const uniqueOptionIds = [...new Set(pairsToValidate.map((p) => p.optionId))]
+    const options = await this.productOptionService_.list(
+      { id: uniqueOptionIds },
+      { relations: ["values"] },
+      sharedContext
+    )
+
+    const optionsMap = new Map(options.map((opt) => [opt.id, opt]))
+
+    const bulkValidationPairs: Array<{
+      productId: string
+      optionValueIds: string[]
+      pair: { productId: string; optionId: string; valueIdsToCheck?: string[] }
+      option: InferEntityType<typeof ProductOption>
+    }> = []
+
+    for (const pair of pairsToValidate) {
+      const option = optionsMap.get(pair.optionId)
+      if (!option) {
+        continue // Option doesn't exist, skip
+      }
+
+      // if no subset is provided we check the whole option values
+      const valueIdsToValidate = pair.valueIdsToCheck
+        ? pair.valueIdsToCheck
+        : (option.values || []).map((v) => v.id)
+
+      if (valueIdsToValidate.length === 0) {
+        continue // No values to check
+      }
+
+      bulkValidationPairs.push({
+        productId: pair.productId,
+        optionValueIds: valueIdsToValidate,
+        pair,
+        option,
+      })
+    }
+
+    if (bulkValidationPairs.length > 0) {
+      const conflictingVariantsMap =
+        await this.productRepository_.checkVariantsUsingOptionValues(
+          bulkValidationPairs.map((p) => ({
+            productId: p.productId,
+            optionValueIds: p.optionValueIds,
+          })),
+          sharedContext
+        )
+
+      for (const bulkPair of bulkValidationPairs) {
+        const allConflictingVariants: Array<{
+          variant_id: string
+          title: string | null
+        }> = []
+
+        for (const valueId of bulkPair.optionValueIds) {
+          const key = `${bulkPair.productId}_${valueId}`
+          const variants = conflictingVariantsMap.get(key) || []
+          // Deduplicate variants by variant_id
+          for (const variant of variants) {
+            if (
+              !allConflictingVariants.some(
+                (v) => v.variant_id === variant.variant_id
+              )
+            ) {
+              allConflictingVariants.push({
+                variant_id: variant.variant_id,
+                title: variant.title,
+              })
+            }
+          }
+        }
+
+        if (allConflictingVariants.length > 0) {
+          const variantNames = allConflictingVariants.map(
+            (v) => v.title || v.variant_id
+          )
+
+          if (bulkPair.pair.valueIdsToCheck) {
+            // Specific values being removed
+            throw new MedusaError(
+              MedusaError.Types.INVALID_DATA,
+              `Cannot unassign option values from product because the following variant(s) are using it: ${variantNames.join(
+                ", "
+              )}`
+            )
+          } else {
+            // Entire option being removed
+            throw new MedusaError(
+              MedusaError.Types.INVALID_DATA,
+              `Cannot unassign product option from product which has variants for that option`
+            )
+          }
+        }
+      }
+    }
   }
 
   private filterOptionValuesByProducts(products: any[]): void {
