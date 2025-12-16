@@ -56,7 +56,7 @@ Currently, you can retrieve translations using the [Store API routes](!api!/stor
 Medusa determines the locale for the request in the following order of priority:
 
 - The `locale` query parameter in the API request.
-- The `Content-Language` header in the API request.
+- The `x-medusa-locale` header in the API request.
 
 If translations aren't available for the selected locale, or no locale is selected, the original content stored in the resource's data model is returned.
 

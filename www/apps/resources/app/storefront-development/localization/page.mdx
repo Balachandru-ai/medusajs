@@ -131,7 +131,7 @@ By default, Medusa serves the original content of a resource. You can override t
 
 The JS SDK has a `setLocale` method that you can use to set the locale for subsequent requests.
 
-The JS SDK will automatically include the `Content-Language` header in API requests. Also, if your application supports `localStorage`, the method sets the locale in the `medusa_locale` key of the `localStorage`.
+The JS SDK will automatically include the `x-medusa-locale` header in API requests. Also, if your application supports `localStorage`, the method sets the locale in the `medusa_locale` key of the `localStorage`.
 
 For example, when a customer selects a locale in your storefront, you can set the locale in the JS SDK:
 
@@ -154,7 +154,7 @@ console.log(currentLocale) // "fr-FR"
 
 ### Set Locale without JS SDK
 
-If you're sending requests to the Store API without using the JS SDK, you can set the locale using either the `locale` query parameter or the `Content-Language` header.
+If you're sending requests to the Store API without using the JS SDK, you can set the locale using either the `locale` query parameter or the `x-medusa-locale` header.
 
 <CodeTabs group="set-locale">
   <CodeTab label="Using Query Parameter" value="query-param">
@@ -170,7 +170,7 @@ curl "http://localhost:9000/store/products?locale=fr-FR" \
 ```bash
 curl "http://localhost:9000/store/products" \
 -H 'x-publishable-api-key: {your_publishable_api_key}' \
--H "Content-Language: fr-FR"
+-H "x-medusa-locale: fr-FR"
 ```
 
   </CodeTab>

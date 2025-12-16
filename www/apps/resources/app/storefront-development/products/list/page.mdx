@@ -247,7 +247,7 @@ You can set the locale using one of the following methods:
 
 - Use the JS SDK's `setLocale` method. The JS SDK will automatically include the locale in subsequent requests.
 - Pass the `locale` query parameter to the [List Products API route](!api!/store#products_getproducts).
-- Set the `Content-Language` header in the API request to the [List Products API route](!api!/store#products_getproducts).
+- Set the `x-medusa-locale` header in the API request to the [List Products API route](!api!/store#products_getproducts).
 
 For example:
 
@@ -276,7 +276,7 @@ curl "http://localhost:9000/store/products?locale=fr-FR" \
 ```bash
 curl "http://localhost:9000/store/products" \
 -H 'x-publishable-api-key: {your_publishable_api_key}' \
--H "Content-Language: fr-FR"
+-H "x-medusa-locale: fr-FR"
 ```
 
   </CodeTab>
