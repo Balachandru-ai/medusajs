@@ -1,5 +1,8 @@
 import { z } from "zod"
-import { applyAndAndOrOperators, booleanString } from "../../utils/common-validators"
+import {
+  applyAndAndOrOperators,
+  booleanString,
+} from "../../utils/common-validators"
 import {
   createFindParams,
   createOperatorMap,
@@ -10,9 +13,7 @@ export type StoreProductOptionParamsType = z.infer<
   typeof StoreProductOptionParams
 >
 
-export const StoreProductOptionParams = createSelectParams().merge(
-  z.object({})
-)
+export const StoreProductOptionParams = createSelectParams().merge(z.object({}))
 
 export const StoreProductOptionsParamsFields = z.object({
   q: z.string().optional(),

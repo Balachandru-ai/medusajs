@@ -2,6 +2,8 @@ import { medusaIntegrationTestRunner } from "@medusajs/test-utils"
 import {
   adminHeaders,
   createAdminUser,
+  generatePublishableKey,
+  generateStoreHeaders,
 } from "../../../helpers/create-admin-user"
 
 jest.setTimeout(30000)
@@ -12,9 +14,14 @@ medusaIntegrationTestRunner({
     let option1
     let option2
 
+    let storeHeaders
+
     beforeEach(async () => {
       const container = getContainer()
       await createAdminUser(dbConnection, adminHeaders, container)
+
+      const publishableKey = await generatePublishableKey(container)
+      storeHeaders = generateStoreHeaders({ publishableKey })
 
       option1 = (
         await api.post(
@@ -292,7 +299,7 @@ medusaIntegrationTestRunner({
 
     describe("GET /store/product-options", () => {
       it("should list product options", async () => {
-        const res = await api.get("/store/product-options")
+        const res = await api.get("/store/product-options", storeHeaders)
 
         expect(res.status).toEqual(200)
         expect(res.data.product_options.length).toEqual(2)
@@ -311,7 +318,10 @@ medusaIntegrationTestRunner({
       })
 
       it("should filter product options by is_exclusive", async () => {
-        const res = await api.get("/store/product-options?is_exclusive=true")
+        const res = await api.get(
+          "/store/product-options?is_exclusive=true",
+          storeHeaders
+        )
 
         expect(res.status).toEqual(200)
         expect(res.data.product_options).toEqual([
@@ -323,7 +333,7 @@ medusaIntegrationTestRunner({
       })
 
       it("should filter product options by free text search", async () => {
-        const res = await api.get("/store/product-options?q=1")
+        const res = await api.get("/store/product-options?q=1", storeHeaders)
 
         expect(res.status).toEqual(200)
         expect(res.data.product_options).toEqual([
@@ -337,7 +347,10 @@ medusaIntegrationTestRunner({
 
     describe("GET /store/product-options/[id]", () => {
       it("should retrieve a product option", async () => {
-        const res = await api.get(`/store/product-options/${option1.id}`)
+        const res = await api.get(
+          `/store/product-options/${option1.id}`,
+          storeHeaders
+        )
 
         expect(res.status).toEqual(200)
         expect(res.data.product_option).toEqual(
@@ -350,7 +363,7 @@ medusaIntegrationTestRunner({
 
       it("should return 404 when the product option does not exist", async () => {
         const error = await api
-          .get(`/store/product-options/not-found`)
+          .get(`/store/product-options/not-found`, storeHeaders)
           .catch((e) => e)
 
         expect(error.response.status).toEqual(404)
