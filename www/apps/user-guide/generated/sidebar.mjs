@@ -512,6 +512,14 @@ export const generatedSidebars = [
             "loaded": true,
             "isPathHref": true,
             "type": "link",
+            "title": "Translations",
+            "path": "/settings/translations",
+            "children": []
+          },
+          {
+            "loaded": true,
+            "isPathHref": true,
+            "type": "link",
             "title": "Developer Settings",
             "path": "/settings/developer",
             "children": [

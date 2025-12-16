@@ -317,6 +317,11 @@ export const sidebar = [
           },
           {
             type: "link",
+            title: "Translations",
+            path: "/settings/translations",
+          },
+          {
+            type: "link",
             title: "Developer Settings",
             path: "/settings/developer",
             children: [

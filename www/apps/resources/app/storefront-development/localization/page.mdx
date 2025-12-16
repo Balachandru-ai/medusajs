@@ -29,17 +29,13 @@ In this guide, you'll learn how to support multiple languages and locales in you
 
 Medusa provides localization features through the [Translation Module](../../commerce-modules/translation/page.mdx). The Translation Module allows you to manage locales and translations for various resources in your store, such as products and categories.
 
-{/* TODO: add links */}
-
-Admin users can [specify supported locales](#), and [add translations for different resources](#) from the Medusa Admin. Then, you can allow customers to choose their locale and show them translated content in your storefront.
+Admin users can [specify supported locales](!user-guide!/settings/store#manage-store-locales), and [add translations for different resources](!user-guide!/settings/translations) from the Medusa Admin. Then, you can allow customers to choose their locale and show them translated content in your storefront.
 
 Refer to the [Translation Module documentation](../../commerce-modules/translation/page.mdx) to learn more about translation concepts and features. This guide focuses on how to serve localized content in your storefront.
 
 ---
 
 ## Retrieve Supported Locales
-
-{/* TODO: check info */}
 
 You can retrieve the list of locales supported by your store using the [List Locales Store API route](!api!/store#locales_getlocales). You can display this list to customers, allowing them to select their preferred language.
 
@@ -121,8 +117,6 @@ Each locale has a `code` property that follows the [IETF BCP 47 standard](https:
 
 ## Retrieve Translations for Resources
 
-{/* TODO confirm information */}
-
 Currently, you can retrieve translations using the [Store API routes](!api!/store) for product-related resources, such as products, product variants, and categories. Future releases will expand translation support to additional resources.
 
 By default, Medusa serves the original content of a resource. You can override the locale for a request to get the translated content if available.
@@ -176,7 +170,7 @@ curl "http://localhost:9000/store/products" \
   </CodeTab>
 </CodeTabs>
 
-{/* TODO: add link to section */}
+Learn more in the [Store API reference](!api!/store#localization).
 
 ### Set Locale in Server Environments
 
@@ -233,7 +227,5 @@ When you pass the locale while fetching products, their content will be in the s
 ### Set Cart's Locale
 
 When creating a cart, you should set the cart's locale to ensure that item contents are in the correct language. You can also update the cart's locale later if the customer changes their language preference.
-
-{/* TODO: add links to sections */}
 
 Learn more in the [Create Cart](../cart/create/page.mdx) and [Update Cart](../cart/update/page.mdx) guides.
