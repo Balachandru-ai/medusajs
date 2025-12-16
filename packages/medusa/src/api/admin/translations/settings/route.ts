@@ -11,6 +11,10 @@ import {
 import TranslationFeatureFlag from "../../../../feature-flags/translation"
 import { AdminTranslationSettingsParamsType } from "../validators"
 
+/**
+ * @since 2.12.3
+ * @featureFlag translation
+ */
 export const GET = async (
   req: AuthenticatedMedusaRequest<
     undefined,
