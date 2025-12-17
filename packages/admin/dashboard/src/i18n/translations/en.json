@@ -2514,7 +2514,6 @@
       "manage": "Manage translations",
       "manageLocales": "Manage locales"
     },
-    "title": "Translation domains",
     "subtitle": "Manage translations of your data in Medusa",
     "list": {
       "metrics": "{{translated}} of {{total}} fields translated"
