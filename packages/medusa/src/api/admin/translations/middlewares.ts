@@ -6,6 +6,7 @@ import {
 import {
   AdminBatchTranslations,
   AdminGetTranslationsParams,
+  AdminTranslationSettingsParams,
   AdminTranslationStatistics,
 } from "./validators"
 import * as QueryConfig from "./query-config"
@@ -38,6 +39,8 @@ export const adminTranslationsRoutesMiddlewares: MiddlewareRoute[] = [
   {
     method: ["GET"],
     matcher: "/admin/translations/settings",
-    middlewares: [],
+    middlewares: [
+      validateAndTransformQuery(AdminTranslationSettingsParams, {}),
+    ],
   },
 ]

@@ -5,6 +5,9 @@ import {
 } from "@medusajs/framework/http"
 import { HttpTypes } from "@medusajs/framework/types"
 
+/**
+ * @since 2.12.3
+ */
 export const POST = async (
   req: AuthenticatedMedusaRequest<{}, HttpTypes.AdminOrderFilters>,
   res: MedusaResponse<HttpTypes.AdminExportOrderResponse>
