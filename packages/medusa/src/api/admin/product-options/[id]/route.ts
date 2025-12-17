@@ -7,10 +7,6 @@ import {
   MedusaResponse,
 } from "@medusajs/framework/http"
 
-import {
-  AdminGetProductOptionParamsType,
-  AdminUpdateProductOptionType,
-} from "../validators"
 import { HttpTypes } from "@medusajs/framework/types"
 import { ContainerRegistrationKeys } from "@medusajs/framework/utils"
 
@@ -18,7 +14,7 @@ import { ContainerRegistrationKeys } from "@medusajs/framework/utils"
  * @since 2.13.0
  */
 export const GET = async (
-  req: AuthenticatedMedusaRequest<AdminGetProductOptionParamsType>,
+  req: AuthenticatedMedusaRequest<{}, HttpTypes.SelectParams>,
   res: MedusaResponse<HttpTypes.AdminProductOptionResponse>
 ) => {
   const query = req.scope.resolve(ContainerRegistrationKeys.QUERY)
@@ -37,7 +33,7 @@ export const GET = async (
  * @since 2.13.0
  */
 export const POST = async (
-  req: AuthenticatedMedusaRequest<AdminUpdateProductOptionType>,
+  req: AuthenticatedMedusaRequest<HttpTypes.AdminUpdateProductOption>,
   res: MedusaResponse<HttpTypes.AdminProductOptionResponse>
 ) => {
   const { result } = await updateProductOptionsWorkflow(req.scope).run({

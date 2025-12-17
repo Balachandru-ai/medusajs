@@ -591,6 +591,10 @@ export interface AdminUpdateProductOption {
    * @since 2.13.0
    */
   is_exclusive?: boolean
+  /**
+   * Key-value pairs of custom data.
+   */
+  metadata?: Record<string, unknown> | null
 }
 
 /**
