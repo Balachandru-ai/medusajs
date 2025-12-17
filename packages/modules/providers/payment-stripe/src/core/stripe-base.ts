@@ -525,9 +525,24 @@ abstract class StripeBase extends AbstractPaymentProvider<StripeOptions> {
     }
   }
 
-  async deleteAccountHolder(_: DeleteAccountHolderInput): Promise<DeleteAccountHolderOutput> {
-    // We cannot delete an account from Stripe as it is a permanent operation.
-    return {}
+  async deleteAccountHolder({
+    context,
+  }: DeleteAccountHolderInput): Promise<DeleteAccountHolderOutput> {
+    const { account_holder } = context
+    const accountHolderId = account_holder?.data?.id as string | undefined
+    if (!accountHolderId) {
+      throw this.buildError(
+        "No account holder in context",
+        new Error("No account holder provided while deleting account holder")
+      )
+    }
+
+    try {
+      await this.stripe_.customers.del(accountHolderId)
+      return {}
+    } catch (e) {
+      throw this.buildError("An error occurred in deleteAccountHolder", e)
+    }
   }
 
   async listPaymentMethods({
