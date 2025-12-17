@@ -63,6 +63,8 @@ export interface StoreProductListParams
   locale?: string
   /**
    * Filter by the product's option values. Variants must include one of the provided values per option.
+   * 
+   * @since 2.13.0
    */
   option_value_id?: string | string[]
 }

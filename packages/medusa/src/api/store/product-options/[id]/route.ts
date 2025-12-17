@@ -8,6 +8,9 @@ import {
   MedusaResponse,
 } from "@medusajs/framework/http"
 
+/**
+ * @since 2.13.0
+ */
 export const GET = async (
   req: AuthenticatedMedusaRequest<HttpTypes.StoreProductOptionParams>,
   res: MedusaResponse<HttpTypes.StoreProductOptionResponse>
