@@ -359,6 +359,7 @@ export class Store {
 
   /**
    * @tags product
+   * @since 2.13.0
    */
   public productOption = {
     /**
@@ -374,6 +375,20 @@ export class Store {
      *
      * ```ts
      * sdk.store.productOption.list()
+     * .then(({ product_options, count, offset, limit }) => {
+     *   console.log(product_options)
+     * })
+     * ```
+     *
+     * To configure the pagination, pass the `limit` and `offset` query parameters.
+     *
+     * For example, to retrieve only 10 items and skip 10 items:
+     *
+     * ```ts
+     * sdk.store.productOption.list({
+     *   limit: 10,
+     *   offset: 10
+     * })
      * .then(({ product_options, count, offset, limit }) => {
      *   console.log(product_options)
      * })

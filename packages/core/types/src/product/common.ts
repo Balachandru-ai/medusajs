@@ -740,6 +740,8 @@ export interface FilterableProductProps
 
   /**
    * Filters on a product's options.
+   * 
+   * @since 2.13.0
    */
   options?: {
     /**
@@ -764,10 +766,14 @@ export interface FilterableProductProps
   type_id?: string | string[] | OperatorMap<string | string[]>
   /**
    * Filter a product by the ID of the associated option
+   * 
+   * @since 2.13.0
    */
   option_id?: string | string[] | OperatorMap<string | string[]>
   /**
    * Filter a product by the IDs of the associated option values.
+   * 
+   * @since 2.13.0
    */
   option_value_id?: string | string[]
   /**
