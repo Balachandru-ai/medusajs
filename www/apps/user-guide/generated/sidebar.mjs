@@ -152,6 +152,14 @@ export const generatedSidebars = [
                 "children": []
               }
             ]
+          },
+          {
+            "loaded": true,
+            "isPathHref": true,
+            "type": "link",
+            "title": "Export Orders",
+            "path": "/orders/export",
+            "children": []
           }
         ]
       },
@@ -515,6 +523,14 @@ export const generatedSidebars = [
                 "children": []
               }
             ]
+          },
+          {
+            "loaded": true,
+            "isPathHref": true,
+            "type": "link",
+            "title": "Translations",
+            "path": "/settings/translations",
+            "children": []
           },
           {
             "loaded": true,
