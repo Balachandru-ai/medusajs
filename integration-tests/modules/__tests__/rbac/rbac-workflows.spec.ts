@@ -4,16 +4,22 @@ import {
 } from "@medusajs/core-flows"
 import { medusaIntegrationTestRunner } from "@medusajs/test-utils"
 import { IRbacModuleService, MedusaContainer } from "@medusajs/types"
-import { ContainerRegistrationKeys, Modules } from "@medusajs/utils"
+import {
+  ContainerRegistrationKeys,
+  definePolicy,
+  Modules,
+  Policy,
+  PolicyResource,
+} from "@medusajs/utils"
 
-jest.setTimeout(50000)
+jest.setTimeout(60000)
 
 medusaIntegrationTestRunner({
   env: {},
   testSuite: ({ getContainer }) => {
     describe("Workflows: RBAC", () => {
       let appContainer: MedusaContainer
-      let rbacService: IRbacModuleService
+      let rbacService: IRbacModuleService & { onApplicationStart: Function }
 
       beforeAll(async () => {
         appContainer = getContainer()
@@ -822,6 +828,371 @@ medusaIntegrationTestRunner({
 
           expect(newRoles).toHaveLength(1)
           expect(newRoles[0].name).toBe("New Reader")
+        })
+      })
+
+      describe("Policy Registration and Synchronization", () => {
+        beforeEach(() => {
+          // Clear global policy registries before each test
+          Policy.clear()
+          PolicyResource.clear()
+        })
+
+        it("should register policies using definePolicy", () => {
+          // Register policies
+          definePolicy([
+            {
+              name: "ReadBrand",
+              resource: "brand",
+              operation: "read",
+              description: "Read brand data",
+            },
+            {
+              name: "WriteBrand",
+              resource: "brand",
+              operation: "write",
+              description: "Write brand data",
+            },
+            {
+              name: "ReadCategory",
+              resource: "category",
+              operation: "read",
+              description: "Read category data",
+            },
+          ])
+
+          // Verify Policy map contains named policies
+          expect(Policy.size).toBe(3)
+          expect(Policy.get("ReadBrand")).toEqual({
+            resource: "brand",
+            operation: "read",
+          })
+          expect(Policy.get("WriteBrand")).toEqual({
+            resource: "brand",
+            operation: "write",
+          })
+          expect(Policy.get("ReadCategory")).toEqual({
+            resource: "category",
+            operation: "read",
+          })
+
+          // Verify PolicyResource map contains resource-operation pairs
+          expect(PolicyResource.size).toBe(2)
+          expect(PolicyResource.get("brand")).toEqual(
+            new Set(["read", "write"])
+          )
+          expect(PolicyResource.get("category")).toEqual(new Set(["read"]))
+        })
+
+        it("should sync registered policies to database on application start", async () => {
+          // Register policies
+          definePolicy([
+            {
+              name: "ReadProduct",
+              resource: "product",
+              operation: "read",
+            },
+            {
+              name: "WriteProduct",
+              resource: "product",
+              operation: "write",
+            },
+            {
+              name: "DeleteProduct",
+              resource: "product",
+              operation: "delete",
+            },
+          ])
+
+          // Trigger sync by calling onApplicationStart
+          await rbacService.onApplicationStart()
+
+          // Verify policies were created in database
+          const policies = await rbacService.listRbacPolicies({
+            key: ["product:read", "product:write", "product:delete"],
+          })
+
+          expect(policies).toHaveLength(3)
+
+          const policyMap = new Map(policies.map((p) => [p.key, p]))
+          expect(policyMap.get("product:read")).toMatchObject({
+            name: "ReadProduct",
+            resource: "product",
+            operation: "read",
+          })
+          expect(policyMap.get("product:write")).toMatchObject({
+            name: "WriteProduct",
+            resource: "product",
+            operation: "write",
+          })
+          expect(policyMap.get("product:delete")).toMatchObject({
+            name: "DeleteProduct",
+            resource: "product",
+            operation: "delete",
+          })
+        })
+
+        it("should soft delete policies that are no longer registered", async () => {
+          // First sync: Register 3 policies
+          definePolicy([
+            {
+              name: "ReadOrder",
+              resource: "order",
+              operation: "read",
+            },
+            {
+              name: "WriteOrder",
+              resource: "order",
+              operation: "write",
+            },
+            {
+              name: "DeleteOrder",
+              resource: "order",
+              operation: "delete",
+            },
+          ])
+
+          await rbacService.onApplicationStart()
+
+          let policies = await rbacService.listRbacPolicies({
+            key: ["order:read", "order:write", "order:delete"],
+          })
+          expect(policies).toHaveLength(3)
+
+          // Second sync: Remove one policy from code
+          Policy.clear()
+          PolicyResource.clear()
+
+          definePolicy([
+            {
+              name: "ReadOrder",
+              resource: "order",
+              operation: "read",
+            },
+            {
+              name: "WriteOrder",
+              resource: "order",
+              operation: "write",
+            },
+          ])
+
+          await rbacService.onApplicationStart()
+
+          // Verify the removed policy is soft-deleted
+          policies = await rbacService.listRbacPolicies({
+            key: ["order:read", "order:write", "order:delete"],
+          })
+          expect(policies).toHaveLength(2) // Only active policies
+
+          // Verify soft-deleted policy exists with deleted_at
+          const allPolicies = await rbacService.listRbacPolicies(
+            { key: "order:delete" },
+            { withDeleted: true }
+          )
+          expect(allPolicies).toHaveLength(1)
+          expect(allPolicies[0].deleted_at).toBeTruthy()
+        })
+
+        it("should restore soft-deleted policies when they are re-registered", async () => {
+          // First sync: Register policies
+          definePolicy([
+            {
+              name: "ReadCustomer",
+              resource: "customer",
+              operation: "read",
+            },
+            {
+              name: "WriteCustomer",
+              resource: "customer",
+              operation: "write",
+            },
+          ])
+
+          await rbacService.onApplicationStart()
+
+          let policies = await rbacService.listRbacPolicies({
+            resource: "customer",
+          })
+          expect(policies).toHaveLength(2)
+          const originalWritePolicy = policies.find(
+            (p) => p.operation === "write"
+          )
+
+          // Second sync: Remove WriteCustomer
+          Policy.clear()
+          PolicyResource.clear()
+
+          definePolicy({
+            name: "ReadCustomer",
+            resource: "customer",
+            operation: "read",
+          })
+
+          await rbacService.onApplicationStart()
+
+          policies = await rbacService.listRbacPolicies({
+            resource: "customer",
+          })
+          expect(policies).toHaveLength(1)
+
+          // Third sync: Re-add WriteCustomer
+          Policy.clear()
+          PolicyResource.clear()
+
+          definePolicy([
+            {
+              name: "ReadCustomer",
+              resource: "customer",
+              operation: "read",
+            },
+            {
+              name: "WriteCustomer",
+              resource: "customer",
+              operation: "write",
+            },
+          ])
+
+          await rbacService.onApplicationStart()
+
+          // Verify policy was restored (same ID)
+          policies = await rbacService.listRbacPolicies({
+            resource: "customer",
+          })
+          expect(policies).toHaveLength(2)
+
+          const restoredWritePolicy = policies.find(
+            (p) => p.operation === "write"
+          )
+          expect(restoredWritePolicy!.id).toBe(originalWritePolicy!.id)
+          expect(restoredWritePolicy!.deleted_at).toBeNull()
+        })
+
+        it("should update policy name if it changes in code", async () => {
+          // First sync: Register with original name
+          definePolicy({
+            name: "ReadInventory",
+            resource: "inventory",
+            operation: "read",
+          })
+
+          await rbacService.onApplicationStart()
+
+          let policies = await rbacService.listRbacPolicies({
+            key: "inventory:read",
+          })
+          expect(policies).toHaveLength(1)
+          expect(policies[0].name).toBe("ReadInventory")
+          const policyId = policies[0].id
+
+          // Second sync: Change the name
+          Policy.clear()
+          PolicyResource.clear()
+
+          definePolicy({
+            name: "ViewInventory",
+            resource: "inventory",
+            operation: "read",
+          })
+
+          await rbacService.onApplicationStart()
+
+          // Verify name was updated but ID remains the same
+          policies = await rbacService.listRbacPolicies({
+            key: "inventory:read",
+          })
+          expect(policies).toHaveLength(1)
+          expect(policies[0].id).toBe(policyId)
+          expect(policies[0].name).toBe("ViewInventory")
+        })
+
+        it("should preserve role associations when policy is soft-deleted and restored", async () => {
+          // Register and sync policies
+          definePolicy([
+            {
+              name: "ReadStore",
+              resource: "store",
+              operation: "read",
+            },
+            {
+              name: "WriteStore",
+              resource: "store",
+              operation: "write",
+            },
+          ])
+
+          await rbacService.onApplicationStart()
+
+          const policies = await rbacService.listRbacPolicies({
+            resource: "store",
+          })
+          expect(policies).toHaveLength(2)
+
+          // Create a role with these policies
+          const rolesWorkflow = createRbacRolesWorkflow(appContainer)
+          const { result: roles } = await rolesWorkflow.run({
+            input: {
+              roles: [
+                {
+                  name: "Store Manager",
+                  policy_ids: policies.map((p) => p.id),
+                },
+              ],
+            },
+          })
+
+          const storeManagerRole = roles[0]
+
+          // Verify role has both policies
+          let roleWithPolicies = await rbacService.listRbacRoles(
+            { id: storeManagerRole.id },
+            { relations: ["policies"] }
+          )
+          expect(roleWithPolicies[0].policies).toHaveLength(2)
+
+          // Soft delete WriteStore policy
+          Policy.clear()
+          PolicyResource.clear()
+
+          definePolicy({
+            name: "ReadStore",
+            resource: "store",
+            operation: "read",
+          })
+
+          await rbacService.onApplicationStart()
+
+          // Role should now have only 1 active policy
+          roleWithPolicies = await rbacService.listRbacRoles(
+            { id: storeManagerRole.id },
+            { relations: ["policies"] }
+          )
+          expect(roleWithPolicies[0].policies).toHaveLength(1)
+
+          // Restore WriteStore policy
+          Policy.clear()
+          PolicyResource.clear()
+
+          definePolicy([
+            {
+              name: "ReadStore",
+              resource: "store",
+              operation: "read",
+            },
+            {
+              name: "WriteStore",
+              resource: "store",
+              operation: "write",
+            },
+          ])
+
+          await rbacService.onApplicationStart()
+
+          // Role should have both policies again (association preserved)
+          roleWithPolicies = await rbacService.listRbacRoles(
+            { id: storeManagerRole.id },
+            { relations: ["policies"] }
+          )
+          expect(roleWithPolicies[0].policies).toHaveLength(2)
         })
       })
     })

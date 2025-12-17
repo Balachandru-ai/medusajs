@@ -36,6 +36,12 @@ export default class RbacModuleService extends MedusaService<{
     this.rbacRepository_ = rbacRepository
   }
 
+  __hooks = {
+    onApplicationStart: async () => {
+      this.onApplicationStart()
+    },
+  }
+
   async onApplicationStart(): Promise<void> {
     await this.syncRegisteredPolicies()
   }

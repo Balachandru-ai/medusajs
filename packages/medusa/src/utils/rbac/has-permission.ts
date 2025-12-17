@@ -69,7 +69,6 @@ export async function hasPermission(
 
 /**
  * Fetches a single role's policies from cache or database.
- * Each role is cached individually for optimal cache reuse.
  */
 async function fetchSingleRolePolicies(
   roleId: string,
@@ -116,7 +115,6 @@ async function fetchSingleRolePolicies(
 
 /**
  * Fetches policies for multiple roles by composing individually cached role queries.
- * This allows for better cache reuse across different permission checks.
  */
 async function fetchRolePolicies(
   roleIds: string[],
