@@ -8,12 +8,18 @@ export interface CreateLocaleDTO {
   id?: string
 
   /**
-   * The BCP 47 language tag code of the locale (e.g., "en-US", "fr-FR").
+   * The BCP 47 language tag code of the locale.
+   * 
+   * @example
+   * "en-US"
    */
   code: string
 
   /**
-   * The human-readable name of the locale (e.g., "English (United States)").
+   * The human-readable name of the locale.
+   * 
+   * @example
+   * "English (United States)"
    */
   name: string
 }
@@ -24,11 +30,17 @@ export interface CreateLocaleDTO {
 export interface UpdateLocaleDataDTO {
   /**
    * The BCP 47 language tag code of the locale.
+   * 
+   * @example
+   * "en-US"
    */
   code?: string
 
   /**
    * The human-readable name of the locale.
+   * 
+   * @example
+   * "English (United States)"
    */
   name?: string
 }
@@ -54,11 +66,17 @@ export interface UpsertLocaleDTO {
 
   /**
    * The BCP 47 language tag code of the locale.
+   * 
+   * @example
+   * "en-US"
    */
   code?: string
 
   /**
    * The human-readable name of the locale.
+   * 
+   * @example
+   * "English (United States)"
    */
   name?: string
 }
@@ -68,22 +86,37 @@ export interface UpsertLocaleDTO {
  */
 export interface CreateTranslationDTO {
   /**
-   * The ID of the entity being translated.
+   * The ID of the data model being translated.
+   * 
+   * @example
+   * "prod_123"
    */
   reference_id: string
 
   /**
-   * The type of entity being translated (e.g., "product", "product_variant").
+   * The name of the table that the translation belongs to.
+   * 
+   * @example
+   * "product"
    */
   reference: string
 
   /**
-   * The BCP 47 language tag code for this translation (e.g., "en-US", "fr-FR").
+   * The BCP 47 language tag code for this translation.
+   * 
+   * @example
+   * "en-US"
    */
   locale_code: string
 
   /**
    * The translated fields as key-value pairs.
+   * 
+   * @example
+   * {
+   *   "title": "Product Title",
+   *   "description": "Product Description",
+   * }
    */
   translations: Record<string, unknown>
 }
@@ -93,22 +126,37 @@ export interface CreateTranslationDTO {
  */
 export interface UpdateTranslationDataDTO {
   /**
-   * The ID of the entity being translated.
+   * The ID of the data model being translated.
+   * 
+   * @example
+   * "prod_123"
    */
   reference_id?: string
 
   /**
-   * The type of entity being translated.
+   * The name of the table that the translation belongs to.
+   * 
+   * @example
+   * "product"
    */
   reference?: string
 
   /**
    * The BCP 47 language tag code for this translation.
+   * 
+   * @example
+   * "en-US"
    */
   locale_code?: string
 
   /**
    * The translated fields as key-value pairs.
+   * 
+   * @example
+   * {
+   *   "title": "Product Title",
+   *   "description": "Product Description",
+   * }
    */
   translations?: Record<string, unknown>
 }
@@ -133,22 +181,37 @@ export interface UpsertTranslationDTO {
   id?: string
 
   /**
-   * The ID of the entity being translated.
+   * The ID of the data model being translated.
+   * 
+   * @example
+   * "prod_123"
    */
   reference_id?: string
 
   /**
-   * The type of entity being translated.
+   * The name of the table that the translation belongs to.
+   * 
+   * @example
+   * "product"
    */
   reference?: string
 
   /**
    * The BCP 47 language tag code for this translation.
+   * 
+   * @example
+   * "en-US"
    */
   locale_code?: string
 
   /**
    * The translated fields as key-value pairs.
+   * 
+   * @example
+   * {
+   *   "title": "Product Title",
+   *   "description": "Product Description",
+   * }
    */
   translations?: Record<string, unknown>
 }
