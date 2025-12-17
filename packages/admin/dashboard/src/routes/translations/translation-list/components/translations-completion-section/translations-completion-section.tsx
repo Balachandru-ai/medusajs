@@ -95,14 +95,14 @@ export const TranslationsCompletionSection = ({
                 className="mr-0.5 h-full rounded-sm transition-all"
                 style={{
                   width: `${percentage}%`,
-                  backgroundColor: "var(--tag-blue-border)",
+                  backgroundColor: "var(--tag-blue-icon)",
                   boxShadow: "inset 0 0 0 0.5px var(--alpha-250)",
                 }}
               />
               <div
                 className="h-full flex-1 rounded-sm"
                 style={{
-                  backgroundColor: "var(--tag-blue-icon)",
+                  backgroundColor: "var(--tag-blue-border)",
                   boxShadow: "inset 0 0 0 0.5px var(--alpha-250)",
                 }}
               />
@@ -111,7 +111,7 @@ export const TranslationsCompletionSection = ({
             <div
               className="h-full w-full rounded-sm"
               style={{
-                backgroundColor: "var(--tag-blue-icon)",
+                backgroundColor: "var(--tag-blue-border)",
                 boxShadow: "inset 0 0 0 0.5px var(--alpha-250)",
               }}
             />
@@ -154,7 +154,7 @@ export const TranslationsCompletionSection = ({
                             <div
                               className="h-2 w-2 rounded-full"
                               style={{
-                                backgroundColor: "var(--tag-blue-border)",
+                                backgroundColor: "var(--tag-blue-icon)",
                                 boxShadow: "inset 0 0 0 0.5px var(--alpha-250)",
                               }}
                             />
@@ -179,7 +179,7 @@ export const TranslationsCompletionSection = ({
                             <div
                               className="h-2 w-2 rounded-full"
                               style={{
-                                backgroundColor: "var(--tag-blue-icon)",
+                                backgroundColor: "var(--tag-blue-border)",
                                 boxShadow: "inset 0 0 0 0.5px var(--alpha-250)",
                               }}
                             />
@@ -224,7 +224,7 @@ export const TranslationsCompletionSection = ({
                               className="w-full rounded-sm"
                               style={{
                                 height: `${100 - translatedPercent}%`,
-                                backgroundColor: "var(--tag-blue-icon)",
+                                backgroundColor: "var(--tag-blue-border)",
                                 boxShadow: "inset 0 0 0 0.5px var(--alpha-250)",
                                 minHeight: locale.toTranslate > 0 ? "2px" : "0",
                               }}
@@ -234,7 +234,7 @@ export const TranslationsCompletionSection = ({
                                 className="mt-0.5 w-full rounded-sm"
                                 style={{
                                   height: `${translatedPercent}%`,
-                                  backgroundColor: "var(--tag-blue-border)",
+                                  backgroundColor: "var(--tag-blue-icon)",
                                   boxShadow:
                                     "inset 0 0 0 0.5px var(--alpha-250)",
                                   minHeight:
