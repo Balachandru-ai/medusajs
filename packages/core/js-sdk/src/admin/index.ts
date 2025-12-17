@@ -47,6 +47,7 @@ import { Views } from "./views"
 import { WorkflowExecution } from "./workflow-execution"
 import { ShippingOptionType } from "./shipping-option-type"
 import { Locale } from "./locale"
+import { Translation } from "./translation"
 
 export class Admin {
   /**
@@ -232,6 +233,10 @@ export class Admin {
    */
   public taxProvider: TaxProvider
   /**
+   * @tags translations
+   */
+  public translation: Translation
+  /**
    * @tags promotion
    */
   public campaign: Campaign
@@ -275,6 +280,7 @@ export class Admin {
     this.claim = new Claim(client)
     this.taxRate = new TaxRate(client)
     this.taxRegion = new TaxRegion(client)
+    this.translation = new Translation(client)
     this.store = new Store(client)
     this.productTag = new ProductTag(client)
     this.user = new User(client)
