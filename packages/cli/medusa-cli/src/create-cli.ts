@@ -409,7 +409,7 @@ function buildLocalCommands(cli, isLocalProject) {
       builder: (_) =>
         _.option("types", {
           type: "boolean",
-          default: false,
+          default: true,
           describe:
             "Generate automated types for modules inside the .medusa directory",
         })
@@ -466,6 +466,11 @@ function buildLocalCommands(cli, isLocalProject) {
           type: "boolean",
           describe:
             "Only build the admin to serve it separately (outDir .medusa/admin)",
+        }).option("types", {
+          type: "boolean",
+          default: false,
+          describe:
+            "Generate automated types for modules inside the .medusa directory",
         }),
       handler: handlerP(
         getCommandHandler(`build`, (args, cmd) => {
