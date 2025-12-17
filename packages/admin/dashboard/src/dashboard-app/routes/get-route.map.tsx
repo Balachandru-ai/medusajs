@@ -1892,6 +1892,29 @@ export function getRouteMap({
                 },
               ],
             },
+            {
+              path: "translations",
+              errorElement: <ErrorBoundary />,
+              handle: {
+                breadcrumb: () => t("translations.domain"),
+              },
+              children: [
+                {
+                  path: "",
+                  lazy: () =>
+                    import("../../routes/translations/translation-list"),
+                },
+                {
+                  path: "edit",
+                  lazy: () =>
+                    import("../../routes/translations/translations-edit"),
+                },
+                {
+                  path: "add-locales",
+                  lazy: () => import("../../routes/translations/add-locales"),
+                },
+              ],
+            },
             ...(settingsRoutes?.[0]?.children || []),
           ],
         },
