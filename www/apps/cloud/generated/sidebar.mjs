@@ -116,6 +116,14 @@ export const generatedSidebars = [
                 "children": []
               }
             ]
+          },
+          {
+            "loaded": true,
+            "isPathHref": true,
+            "type": "link",
+            "title": "Account",
+            "path": "/user",
+            "children": []
           }
         ]
       },
