@@ -33,7 +33,11 @@ export const TranslationListSection = ({
           <Link
             to={`/settings/translations/edit?reference=${entity.reference}`}
           >
-            <Button variant="secondary" size="small" disabled={!hasLocales}>
+            <Button
+              variant="secondary"
+              size="small"
+              disabled={!hasLocales || !entity.totalCount}
+            >
               Edit
             </Button>
           </Link>
