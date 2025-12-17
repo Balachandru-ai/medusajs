@@ -163,7 +163,7 @@ export const generatedEditDates = {
   "app/storefront-development/products/collections/products/page.mdx": "2025-03-27T14:46:51.466Z",
   "app/storefront-development/products/collections/retrieve/page.mdx": "2025-03-27T14:46:51.458Z",
   "app/storefront-development/products/collections/page.mdx": "2024-06-11T19:55:56+02:00",
-  "app/storefront-development/products/list/page.mdx": "2025-12-09T13:32:29.583Z",
+  "app/storefront-development/products/list/page.mdx": "2025-12-17T09:53:29.075Z",
   "app/storefront-development/products/price/examples/sale-price/page.mdx": "2025-03-27T14:47:14.308Z",
   "app/storefront-development/products/price/examples/show-price/page.mdx": "2025-03-27T14:47:14.292Z",
   "app/storefront-development/products/price/examples/tax-price/page.mdx": "2025-03-27T14:47:14.292Z",
@@ -6739,5 +6739,6 @@ export const generatedEditDates = {
   "references/types/HttpTypes/interfaces/types.HttpTypes.AdminUpdateOrderChange/page.mdx": "2025-12-01T18:33:00.960Z",
   "references/promotion/types/promotion.ComputeActions/page.mdx": "2025-12-01T18:33:06.048Z",
   "references/utils/PromotionUtils/enums/utils.PromotionUtils.ComputedActions/page.mdx": "2025-12-01T18:33:07.491Z",
-  "app/integrations/guides/strapi/page.mdx": "2025-11-17T10:34:00.881Z"
+  "app/integrations/guides/strapi/page.mdx": "2025-11-17T10:34:00.881Z",
+  "app/storefront-development/products/options/page.mdx": "2025-12-17T09:54:15.246Z"
 }

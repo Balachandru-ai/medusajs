@@ -32,6 +32,10 @@ export const product = [
     "path": "https://docs.medusajs.com/user-guide/products/import"
   },
   {
+    "title": "Manage Product Options",
+    "path": "https://docs.medusajs.com/user-guide/products/options"
+  },
+  {
     "title": "Products Overview",
     "path": "https://docs.medusajs.com/user-guide/products"
   },
@@ -170,6 +174,10 @@ export const product = [
   {
     "title": "Show Products in Storefront",
     "path": "https://docs.medusajs.com/resources/storefront-development/products/list"
+  },
+  {
+    "title": "Use Product Options in Storefront",
+    "path": "https://docs.medusajs.com/resources/storefront-development/products/options"
   },
   {
     "title": "Example: Show Sale Price",

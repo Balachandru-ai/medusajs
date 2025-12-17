@@ -12005,6 +12005,14 @@ const generatedgeneratedCommerceModulesSidebarSidebar = {
               "title": "Show Products in Storefront",
               "path": "https://docs.medusajs.com/resources/storefront-development/products/list",
               "children": []
+            },
+            {
+              "loaded": true,
+              "isPathHref": true,
+              "type": "ref",
+              "title": "Use Product Options in Storefront",
+              "path": "https://docs.medusajs.com/resources/storefront-development/products/options",
+              "children": []
             }
           ]
         },
@@ -12080,6 +12088,14 @@ const generatedgeneratedCommerceModulesSidebarSidebar = {
               "type": "ref",
               "title": "Manage Product Collections",
               "path": "https://docs.medusajs.com/user-guide/products/collections",
+              "children": []
+            },
+            {
+              "loaded": true,
+              "isPathHref": true,
+              "type": "ref",
+              "title": "Manage Product Options",
+              "path": "https://docs.medusajs.com/user-guide/products/options",
               "children": []
             },
             {

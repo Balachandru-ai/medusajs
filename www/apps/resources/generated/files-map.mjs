@@ -1388,6 +1388,10 @@ export const filesMap = [
     "pathname": "/storefront-development/products/list"
   },
   {
+    "filePath": "/www/apps/resources/app/storefront-development/products/options/page.mdx",
+    "pathname": "/storefront-development/products/options"
+  },
+  {
     "filePath": "/www/apps/resources/app/storefront-development/products/price/examples/sale-price/page.mdx",
     "pathname": "/storefront-development/products/price/examples/sale-price"
   },
