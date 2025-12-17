@@ -108,7 +108,7 @@ export const TranslationsCompletionSection = ({
             </>
           ) : (
             <div
-              className="h-full w-full rounded-full"
+              className="h-full w-full rounded-sm"
               style={{
                 backgroundColor: "var(--bg-interactive)",
                 opacity: 0.3,
