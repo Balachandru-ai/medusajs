@@ -28,23 +28,30 @@ async function dismissVariantsInventory(
     },
   })
 
+  const variantInventoryItemsMap = new Map<string, string[]>()
+  for (const item of variantInventoryItems) {
+    variantInventoryItemsMap.set(item.variant_id, [
+      ...(variantInventoryItemsMap.get(item.variant_id) ?? []),
+      item.inventory_item_id,
+    ])
+  }
+
   const dismissLinks: LinkDefinition[] = []
   for (const variantId of variantIds) {
     if (!variantId) {
       continue
     }
 
-    dismissedVariantInventoryItems[variantId] = variantInventoryItems
-      .filter((item) => item.variant_id === variantId)
-      .map((item: { inventory_item_id: string }) => {
-        dismissLinks.push({
-          [Modules.PRODUCT]: { variant_id: variantId },
-          [Modules.INVENTORY]: {
-            inventory_item_id: item.inventory_item_id,
-          },
-        })
-        return item.inventory_item_id
+    dismissedVariantInventoryItems[variantId] =
+      variantInventoryItemsMap.get(variantId) ?? []
+
+    for (const inventoryItemId of variantInventoryItemsMap.get(variantId) ??
+      []) {
+      dismissLinks.push({
+        [Modules.PRODUCT]: { variant_id: variantId },
+        [Modules.INVENTORY]: { inventory_item_id: inventoryItemId },
       })
+    }
   }
 
   await link.dismiss(dismissLinks)
