@@ -62,6 +62,8 @@ export function applyTranslationsToItems<
           applyTranslation(itemAny, entity, key, translationKey)
         }
       }
+
+      itemAny.title = item.product_title ?? item.title
     })
 
     return item
