@@ -25,7 +25,7 @@ export const ActiveLocalesSection = ({
   const [isHovered, setIsHovered] = useState(false)
 
   const handleManageLocales = useCallback(() => {
-    navigate("/settings/store/locales")
+    navigate("/settings/translations/add-locales")
   }, [navigate])
 
   const renderLocales = useCallback(() => {

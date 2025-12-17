@@ -1857,6 +1857,10 @@ export function getRouteMap({
                   lazy: () =>
                     import("../../routes/translations/translations-edit"),
                 },
+                {
+                  path: "add-locales",
+                  lazy: () => import("../../routes/translations/add-locales"),
+                },
               ],
             },
             ...(settingsRoutes?.[0]?.children || []),
