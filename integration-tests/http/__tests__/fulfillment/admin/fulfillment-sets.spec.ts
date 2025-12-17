@@ -232,7 +232,7 @@ medusaIntegrationTestRunner({
         )
       })
 
-      it.only("should throw if invalid type is passed", async () => {
+      it("should throw if invalid type is passed", async () => {
         const stockLocationResponse = await api.post(
           `/admin/stock-locations`,
           {
