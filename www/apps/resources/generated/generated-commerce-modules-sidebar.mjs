@@ -11742,6 +11742,14 @@ const generatedgeneratedCommerceModulesSidebarSidebar = {
               "loaded": true,
               "isPathHref": true,
               "type": "link",
+              "path": "/commerce-modules/product/guides/filter-products",
+              "title": "Filter Products",
+              "children": []
+            },
+            {
+              "loaded": true,
+              "isPathHref": true,
+              "type": "link",
               "path": "/commerce-modules/product/guides/variant-inventory",
               "title": "Get Variant Inventory",
               "children": []

@@ -64,6 +64,10 @@ export const product = [
     "path": "https://docs.medusajs.com/resources/commerce-modules/product/extend"
   },
   {
+    "title": "Filter Products",
+    "path": "https://docs.medusajs.com/resources/commerce-modules/product/guides/filter-products"
+  },
+  {
     "title": "Get Variant Prices",
     "path": "https://docs.medusajs.com/resources/commerce-modules/product/guides/price"
   },

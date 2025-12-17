@@ -6815,5 +6815,6 @@ export const generatedEditDates = {
   "references/translation_models/variables/translation_models.Translation/page.mdx": "2025-12-10T15:54:22.073Z",
   "app/commerce-modules/translation/links-to-other-modules/page.mdx": "2025-12-16T06:36:50.848Z",
   "references/modules/translation/page.mdx": "2025-12-10T15:54:18.868Z",
-  "references/store_models/variables/store_models.StoreLocale/page.mdx": "2025-12-10T15:54:22.053Z"
+  "references/store_models/variables/store_models.StoreLocale/page.mdx": "2025-12-10T15:54:22.053Z",
+  "app/commerce-modules/product/guides/filter-products/page.mdx": "2025-12-17T11:41:29.808Z"
 }
