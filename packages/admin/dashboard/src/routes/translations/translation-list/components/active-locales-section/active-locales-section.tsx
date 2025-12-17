@@ -1,9 +1,16 @@
 import { PencilSquare, Language } from "@medusajs/icons"
-import { Container, Heading, IconButton, InlineTip, Text } from "@medusajs/ui"
+import {
+  Container,
+  Heading,
+  IconButton,
+  InlineTip,
+  Text,
+  Tooltip,
+} from "@medusajs/ui"
 import { useTranslation } from "react-i18next"
 import { IconAvatar } from "../../../../../components/common/icon-avatar"
 import { HttpTypes } from "@medusajs/types"
-import { useCallback } from "react"
+import { useCallback, useState } from "react"
 import { useNavigate } from "react-router-dom"
 
 type ActiveLocalesSectionProps = {
@@ -15,6 +22,7 @@ export const ActiveLocalesSection = ({
 }: ActiveLocalesSectionProps) => {
   const { t } = useTranslation()
   const navigate = useNavigate()
+  const [isHovered, setIsHovered] = useState(false)
 
   const handleManageLocales = useCallback(() => {
     navigate("/settings/store/locales")
@@ -44,19 +52,36 @@ export const ActiveLocalesSection = ({
       </div>
       <div className="px-1 pb-1">
         {hasLocales ? (
-          <Container className="bg-ui-bg-component border-r-1 flex items-center gap-x-4 px-[19px] py-2">
-            <IconAvatar className="border-ui-border-base border">
-              <Language />
-            </IconAvatar>
-            <div className="flex flex-col">
-              <Text size="small" weight="plus">
-                {t("translations.activeLocales.subtitle")}
-              </Text>
-              <Text className="text-ui-fg-subtle" size="small">
-                {renderLocales()}
-              </Text>
-            </div>
-          </Container>
+          <Tooltip
+            open={isHovered}
+            content={
+              <div className="flex flex-col gap-y-1 p-1">
+                {locales.map((locale) => (
+                  <Text key={locale.code} size="small" weight="plus">
+                    {locale.name}
+                  </Text>
+                ))}
+              </div>
+            }
+          >
+            <Container
+              className="bg-ui-bg-component border-r-1 flex items-center gap-x-4 px-[19px] py-2"
+              onMouseEnter={() => setIsHovered(true)}
+              onMouseLeave={() => setIsHovered(false)}
+            >
+              <IconAvatar className="border-ui-border-base border">
+                <Language />
+              </IconAvatar>
+              <div className="flex flex-col">
+                <Text size="small" weight="plus">
+                  {t("translations.activeLocales.subtitle")}
+                </Text>
+                <Text className="text-ui-fg-subtle" size="small">
+                  {renderLocales()}
+                </Text>
+              </div>
+            </Container>
+          </Tooltip>
         ) : (
           <InlineTip label="Tip">
             {t("translations.activeLocales.noLocalesTip")}
