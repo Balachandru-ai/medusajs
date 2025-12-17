@@ -190,45 +190,49 @@ export const TranslationsCompletionSection = ({
                       </div>
                     }
                   >
-                    <div
-                      className="flex min-w-2 max-w-[96px] flex-1 flex-col justify-end overflow-hidden rounded-t-sm transition-opacity"
-                      style={{ height: `${heightPercent}%` }}
-                      onMouseEnter={() => setHoveredLocale(locale.code)}
-                      onMouseLeave={() => setHoveredLocale(null)}
-                    >
-                      {translatedPercent === 0 ? (
-                        <div
-                          className="w-full rounded-sm"
-                          style={{
-                            height: "100%",
-                            backgroundColor: "var(--tag-neutral-bg)",
-                            boxShadow: "inset 0 0 0 0.5px var(--alpha-250)",
-                          }}
-                        />
-                      ) : (
-                        <>
+                    <div className="flex h-full flex-1 items-end justify-center">
+                      <div
+                        className="flex w-full min-w-2 max-w-[96px] flex-col justify-end overflow-hidden rounded-t-sm transition-opacity"
+                        style={{ height: `${heightPercent}%` }}
+                        onMouseEnter={() => setHoveredLocale(locale.code)}
+                        onMouseLeave={() => setHoveredLocale(null)}
+                      >
+                        {translatedPercent === 0 ? (
                           <div
                             className="w-full rounded-sm"
                             style={{
-                              height: `${100 - translatedPercent}%`,
-                              backgroundColor: "var(--tag-blue-icon)",
+                              height: "100%",
+                              backgroundColor: "var(--tag-neutral-bg)",
                               boxShadow: "inset 0 0 0 0.5px var(--alpha-250)",
-                              minHeight: locale.toTranslate > 0 ? "2px" : "0",
                             }}
                           />
-                          {translatedPercent > 0 && (
+                        ) : (
+                          <>
                             <div
-                              className="mt-0.5 w-full rounded-sm"
+                              className="w-full rounded-sm"
                               style={{
-                                height: `${translatedPercent}%`,
-                                backgroundColor: "var(--tag-blue-border)",
+                                height: `${100 - translatedPercent}%`,
+                                backgroundColor: "var(--tag-blue-icon)",
                                 boxShadow: "inset 0 0 0 0.5px var(--alpha-250)",
-                                minHeight: locale.translated > 0 ? "2px" : "0",
+                                minHeight: locale.toTranslate > 0 ? "2px" : "0",
                               }}
                             />
-                          )}
-                        </>
-                      )}
+                            {translatedPercent > 0 && (
+                              <div
+                                className="mt-0.5 w-full rounded-sm"
+                                style={{
+                                  height: `${translatedPercent}%`,
+                                  backgroundColor: "var(--tag-blue-border)",
+                                  boxShadow:
+                                    "inset 0 0 0 0.5px var(--alpha-250)",
+                                  minHeight:
+                                    locale.translated > 0 ? "2px" : "0",
+                                }}
+                              />
+                            )}
+                          </>
+                        )}
+                      </div>
                     </div>
                   </Tooltip>
                 )
@@ -237,14 +241,18 @@ export const TranslationsCompletionSection = ({
             {localeStatsCount < 9 && (
               <div className="flex w-full gap-1">
                 {localeStats.map((locale) => (
-                  <Text
+                  <div
                     key={locale.code}
-                    size="xsmall"
-                    weight="plus"
-                    className="text-ui-fg-subtle min-w-2 flex-1 whitespace-normal break-words text-center leading-tight"
+                    className="flex flex-1 items-center justify-center"
                   >
-                    {localeStatsCount < 6 ? locale.name : locale.code}
-                  </Text>
+                    <Text
+                      size="xsmall"
+                      weight="plus"
+                      className="text-ui-fg-subtle min-w-2 whitespace-normal break-words text-center leading-tight"
+                    >
+                      {localeStatsCount < 6 ? locale.name : locale.code}
+                    </Text>
+                  </div>
                 ))}
               </div>
             )}
