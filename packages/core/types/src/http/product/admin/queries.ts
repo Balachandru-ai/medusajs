@@ -66,7 +66,8 @@ export interface AdminProductListParams
   variants?: Omit<AdminProductVariantParams, "q">
 }
 
-export interface AdminProductExportParams extends Omit<AdminProductListParams, "tags" | "variants"> {
+export interface AdminProductExportParams
+  extends Omit<AdminProductListParams, "tags" | "variants"> {
   tags?: {
     id?: string[]
   }
@@ -79,4 +80,4 @@ export interface AdminProductExportParams extends Omit<AdminProductListParams, "
   }
 }
 export interface AdminProductOptionListParams
-  extends Omit<BaseProductOptionListParams, "categories"> {}
+  extends BaseProductOptionListParams {}

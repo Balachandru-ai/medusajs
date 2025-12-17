@@ -14,7 +14,8 @@ import {
 } from "../../common"
 import { deleteInventoryItemWorkflow } from "../../inventory"
 import { deleteProductsStep } from "../steps/delete-products"
-import { getProductsStep } from "../steps/get-products"
+import { removeProductOptionAssociationsStep } from "../steps/remove-product-option-associations"
+import { deleteProductOptionsWorkflow } from "./delete-product-options"
 
 /**
  * The data to delete one or more products.
@@ -53,47 +54,59 @@ export const deleteProductsWorkflowId = "delete-products"
 export const deleteProductsWorkflow = createWorkflow(
   deleteProductsWorkflowId,
   (input: WorkflowData<DeleteProductsWorkflowInput>) => {
-    const productsToDelete = getProductsStep({ ids: input.ids })
+    const productsToDeleteResponse = useQueryGraphStep({
+      entity: "product",
+      fields: [
+        "id",
+        "variants.id",
+        "variants.manage_inventory",
+        "variants.inventory.id",
+        "variants.inventory.variants.id",
+        "options.id",
+        "options.is_exclusive",
+      ],
+      filters: {
+        id: input.ids,
+      },
+    }).config({ name: "query-products-with-options-step" })
+
+    const productsToDelete = transform({ productsToDeleteResponse }, (data) => {
+      return data.productsToDeleteResponse.data
+    })
+
+    const exclusiveOptionsToDelete = transform(
+      { products: productsToDelete },
+      (data) => {
+        const products = data.products || []
+        const exclusiveOptionIds = new Set<string>()
+
+        products.forEach((product) => {
+          const productOptions = product.options || []
+          productOptions.forEach((option) => {
+            if (option.is_exclusive) {
+              exclusiveOptionIds.add(option.id)
+            }
+          })
+        })
+
+        return Array.from(exclusiveOptionIds)
+      }
+    )
+
     const variantsToBeDeleted = transform({ productsToDelete }, (data) => {
       return data.productsToDelete
         .flatMap((product) => product.variants)
         .map((variant) => variant.id)
     })
 
-    const variantsWithInventoryStepResponse = useQueryGraphStep({
-      entity: "variants",
-      fields: [
-        "id",
-        "manage_inventory",
-        "inventory.id",
-        "inventory.variants.id",
-      ],
-      filters: {
-        id: variantsToBeDeleted,
-      },
-    })
-
     const toDeleteInventoryItemIds = transform(
-      { variants: variantsWithInventoryStepResponse.data },
+      { variants: variantsToBeDeleted },
       (data) => {
-        const variants = data.variants || []
-
-        const variantsMap = new Map(variants.map((v) => [v.id, true]))
-        const toDeleteIds: Set<string> = new Set()
-
-        variants.forEach((variant) => {
-          if (!variant.manage_inventory) {
-            return
-          }
-
-          for (const inventoryItem of variant.inventory) {
-            if (inventoryItem.variants.every((v) => variantsMap.has(v.id))) {
-              toDeleteIds.add(inventoryItem.id)
-            }
-          }
-        })
-
-        return Array.from(toDeleteIds)
+        return data.variants
+          .filter((variant) => variant.manage_inventory)
+          .flatMap((variant) =>
+            variant.inventory.map((inventoryItem) => inventoryItem.id)
+          )
       }
     )
 
@@ -110,6 +123,17 @@ export const deleteProductsWorkflow = createWorkflow(
       }).config({ name: "remove-product-variant-link-step" }),
       deleteProductsStep(input.ids)
     )
+
+    // removeProductOptionAssociationsStep({
+    //   productIds: input.ids,
+    //   optionIds: exclusiveOptionsToDelete,
+    // })
+
+    deleteProductOptionsWorkflow.runAsStep({
+      input: {
+        ids: exclusiveOptionsToDelete,
+      },
+    })
 
     const productIdEvents = transform({ input }, ({ input }) => {
       return input.ids?.map((id) => {

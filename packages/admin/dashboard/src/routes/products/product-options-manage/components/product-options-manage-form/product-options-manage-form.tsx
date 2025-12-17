@@ -1,6 +1,7 @@
 import { HttpTypes } from "@medusajs/types"
 import { Button, Hint, Label, toast, Tooltip } from "@medusajs/ui"
-import { useMemo, useState } from "react"
+import { useState } from "react"
+import { InformationCircle } from "@medusajs/icons"
 import { useTranslation } from "react-i18next"
 import * as zod from "zod"
 
@@ -10,11 +11,13 @@ import { RouteDrawer, useRouteModal } from "../../../../../components/modals"
 import { KeyboundForm } from "../../../../../components/utilities/keybound-form"
 import { useExtendableForm } from "../../../../../dashboard-app"
 import {
+  productOptionsQueryKeys,
   useLinkProductOptions,
   useProductOptions,
 } from "../../../../../hooks/api"
 import { useExtension } from "../../../../../providers/extension-provider"
-import { InformationCircle, InformationCircleSolid } from "@medusajs/icons"
+import { useComboboxData } from "../../../../../hooks/use-combobox-data"
+import { sdk } from "../../../../../lib/client"
 
 type ProductOptionsManageFormProps = {
   product: HttpTypes.AdminProduct
@@ -33,17 +36,35 @@ export const ProductOptionsManageForm = ({
   const { getFormConfigs } = useExtension()
   const configs = getFormConfigs("product", "edit")
 
-  const { product_options = [], isLoading } = useProductOptions()
-
-  const productOptionChoices = useMemo(() => {
-    return product_options.map((option) => ({
-      value: option.id,
-      label: option.title,
-    }))
-  }, [product_options])
-
   const [selectedOptionIds, setSelectedOptionIds] = useState<string[]>(
     product.options?.map((opt) => opt.id) || []
+  )
+
+  const { options: productOptionChoices, isLoading } = useComboboxData({
+    queryKey: productOptionsQueryKeys.list({ is_exclusive: false }),
+    queryFn: (params) =>
+      sdk.admin.productOption.list({
+        ...params,
+        is_exclusive: false, // load all global options here
+      } as HttpTypes.AdminProductOptionListParams),
+    getOptions: (data) =>
+      [
+        ...data.product_options,
+        ...(product.options?.filter((opt) => opt.is_exclusive) || []), // join exclusive product options
+      ].map((option) => ({
+        label: option.title,
+        value: option.id,
+      })),
+  })
+
+  const { product_options = [] } = useProductOptions(
+    {
+      id: selectedOptionIds,
+      limit: selectedOptionIds.length,
+    },
+    {
+      enabled: !!selectedOptionIds.length,
+    }
   )
 
   const [selectedOptionValues, setSelectedOptionValues] = useState<
