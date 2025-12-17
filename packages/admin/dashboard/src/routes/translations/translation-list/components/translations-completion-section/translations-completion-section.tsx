@@ -1,5 +1,5 @@
 import { AdminTranslationEntityStatistics, HttpTypes } from "@medusajs/types"
-import { Container, Heading, Text, Tooltip } from "@medusajs/ui"
+import { Container, Divider, Heading, Text, Tooltip } from "@medusajs/ui"
 import { useMemo, useState } from "react"
 import { useTranslation } from "react-i18next"
 
@@ -95,14 +95,15 @@ export const TranslationsCompletionSection = ({
                 className="mr-0.5 h-full rounded-sm transition-all"
                 style={{
                   width: `${percentage}%`,
-                  backgroundColor: "var(--bg-interactive)",
+                  backgroundColor: "var(--tag-blue-border)",
+                  boxShadow: "inset 0 0 0 0.5px var(--alpha-250)",
                 }}
               />
               <div
                 className="h-full flex-1 rounded-sm"
                 style={{
-                  backgroundColor: "var(--bg-interactive)",
-                  opacity: 0.3,
+                  backgroundColor: "var(--tag-blue-icon)",
+                  boxShadow: "inset 0 0 0 0.5px var(--alpha-250)",
                 }}
               />
             </>
@@ -110,8 +111,8 @@ export const TranslationsCompletionSection = ({
             <div
               className="h-full w-full rounded-sm"
               style={{
-                backgroundColor: "var(--bg-interactive)",
-                opacity: 0.3,
+                backgroundColor: "var(--tag-blue-icon)",
+                boxShadow: "inset 0 0 0 0.5px var(--alpha-250)",
               }}
             />
           )}
@@ -128,116 +129,136 @@ export const TranslationsCompletionSection = ({
       </div>
 
       {localeStats.length > 0 && (
-        <div className="border-ui-border-strong flex flex-col gap-y-3 border-t border-dashed px-6 pb-6 pt-4">
-          <div className="flex h-32 w-full items-end gap-1">
-            {localeStats.map((locale) => {
-              const heightPercent = (locale.total / maxTotal) * 100
-              const translatedPercent =
-                locale.total > 0 ? (locale.translated / locale.total) * 100 : 0
+        <>
+          <Divider variant="dashed" />
+          <div className="flex flex-col gap-y-3 px-6 pb-6 pt-4">
+            <div className="flex h-32 w-full items-end gap-1">
+              {localeStats.map((locale) => {
+                const heightPercent = (locale.total / maxTotal) * 100
+                const translatedPercent =
+                  locale.total > 0
+                    ? (locale.translated / locale.total) * 100
+                    : 0
 
-              return (
-                <Tooltip
-                  key={locale.code}
-                  open={hoveredLocale === locale.code}
-                  content={
-                    <div className="flex flex-col gap-y-1 p-1">
-                      <Text size="small" weight="plus">
-                        {locale.name}
-                      </Text>
-                      <div className="flex items-center justify-between">
+                return (
+                  <Tooltip
+                    key={locale.code}
+                    open={hoveredLocale === locale.code}
+                    content={
+                      <div className="flex flex-col gap-y-1 p-1">
+                        <Text size="small" weight="plus">
+                          {locale.name}
+                        </Text>
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-x-2">
+                            <div
+                              className="h-2 w-2 rounded-full"
+                              style={{
+                                backgroundColor: "var(--tag-blue-border)",
+                              }}
+                            />
+                            <Text
+                              size="small"
+                              weight="plus"
+                              className="text-ui-fg-subtle"
+                            >
+                              {t("translations.completion.translated")}
+                            </Text>
+                          </div>
+                          <Text size="small" weight="plus">
+                            {locale.translated}
+                          </Text>
+                        </div>
                         <div className="flex items-center gap-x-2">
                           <div
                             className="h-2 w-2 rounded-full"
-                            style={{ backgroundColor: "var(--bg-interactive)" }}
+                            style={{
+                              backgroundColor: "var(--tag-blue-icon)",
+                            }}
                           />
                           <Text
                             size="small"
                             weight="plus"
                             className="text-ui-fg-subtle"
                           >
-                            {t("translations.completion.translated")}
+                            {t("translations.completion.toTranslate")}
+                          </Text>
+                          <Text size="small" weight="plus">
+                            {locale.toTranslate}
                           </Text>
                         </div>
-                        <Text size="small" weight="plus">
-                          {locale.translated}
-                        </Text>
                       </div>
-                      <div className="flex items-center gap-x-2">
-                        <div
-                          className="h-2 w-2 rounded-full"
-                          style={{
-                            backgroundColor: "var(--bg-interactive)",
-                            opacity: 0.3,
-                          }}
-                        />
-                        <Text
-                          size="small"
-                          weight="plus"
-                          className="text-ui-fg-subtle"
-                        >
-                          {t("translations.completion.toTranslate")}
-                        </Text>
-                        <Text size="small" weight="plus">
-                          {locale.toTranslate}
-                        </Text>
-                      </div>
-                    </div>
-                  }
-                >
-                  <div
-                    className="flex min-w-2 flex-1 flex-col justify-end overflow-hidden rounded-t-sm transition-opacity"
-                    style={{ height: `${heightPercent}%` }}
-                    onMouseEnter={() => setHoveredLocale(locale.code)}
-                    onMouseLeave={() => setHoveredLocale(null)}
+                    }
                   >
                     <div
-                      className="w-full rounded-t-sm"
-                      style={{
-                        height: `${100 - translatedPercent}%`,
-                        backgroundColor: "var(--bg-interactive)",
-                        opacity: 0.3,
-                        minHeight: locale.toTranslate > 0 ? "2px" : "0",
-                      }}
-                    />
-                    {translatedPercent > 0 && (
-                      <div
-                        className="mt-0.5 w-full rounded-sm"
-                        style={{
-                          height: `${translatedPercent}%`,
-                          backgroundColor: "var(--bg-interactive)",
-                          minHeight: locale.translated > 0 ? "2px" : "0",
-                        }}
-                      />
-                    )}
-                  </div>
-                </Tooltip>
-              )
-            })}
-          </div>
-          {localeStatsCount < 9 && (
-            <div className="flex w-full gap-1">
-              {localeStats.map((locale) => (
-                <Text
-                  key={locale.code}
-                  size="xsmall"
-                  weight="plus"
-                  className="text-ui-fg-subtle min-w-2 flex-1 whitespace-normal break-words text-center leading-tight"
-                >
-                  {localeStatsCount < 6 ? locale.name : locale.code}
-                </Text>
-              ))}
+                      className="flex min-w-2 max-w-[96px] flex-1 flex-col justify-end overflow-hidden rounded-t-sm transition-opacity"
+                      style={{ height: `${heightPercent}%` }}
+                      onMouseEnter={() => setHoveredLocale(locale.code)}
+                      onMouseLeave={() => setHoveredLocale(null)}
+                    >
+                      {translatedPercent === 0 ? (
+                        <div
+                          className="w-full rounded-sm"
+                          style={{
+                            height: "100%",
+                            backgroundColor: "var(--tag-neutral-bg)",
+                            boxShadow: "inset 0 0 0 0.5px var(--alpha-250)",
+                          }}
+                        />
+                      ) : (
+                        <>
+                          <div
+                            className="w-full rounded-sm"
+                            style={{
+                              height: `${100 - translatedPercent}%`,
+                              backgroundColor: "var(--tag-blue-icon)",
+                              boxShadow: "inset 0 0 0 0.5px var(--alpha-250)",
+                              minHeight: locale.toTranslate > 0 ? "2px" : "0",
+                            }}
+                          />
+                          {translatedPercent > 0 && (
+                            <div
+                              className="mt-0.5 w-full rounded-sm"
+                              style={{
+                                height: `${translatedPercent}%`,
+                                backgroundColor: "var(--tag-blue-border)",
+                                boxShadow: "inset 0 0 0 0.5px var(--alpha-250)",
+                                minHeight: locale.translated > 0 ? "2px" : "0",
+                              }}
+                            />
+                          )}
+                        </>
+                      )}
+                    </div>
+                  </Tooltip>
+                )
+              })}
             </div>
-          )}
-          {localeStatsCount > 9 && (
-            <Text
-              weight="plus"
-              size="xsmall"
-              className="text-ui-fg-subtle text-center"
-            >
-              {t("translations.completion.footer")}
-            </Text>
-          )}
-        </div>
+            {localeStatsCount < 9 && (
+              <div className="flex w-full gap-1">
+                {localeStats.map((locale) => (
+                  <Text
+                    key={locale.code}
+                    size="xsmall"
+                    weight="plus"
+                    className="text-ui-fg-subtle min-w-2 flex-1 whitespace-normal break-words text-center leading-tight"
+                  >
+                    {localeStatsCount < 6 ? locale.name : locale.code}
+                  </Text>
+                ))}
+              </div>
+            )}
+            {localeStatsCount > 9 && (
+              <Text
+                weight="plus"
+                size="xsmall"
+                className="text-ui-fg-subtle text-center"
+              >
+                {t("translations.completion.footer")}
+              </Text>
+            )}
+          </div>
+        </>
       )}
     </Container>
   )

@@ -44,8 +44,8 @@ export const ActiveLocalesSection = ({
       </div>
       <div className="px-1 pb-1">
         {hasLocales ? (
-          <Container className="bg-ui-bg-component flex items-center gap-x-4 px-6 py-2">
-            <IconAvatar>
+          <Container className="bg-ui-bg-component border-r-1 flex items-center gap-x-4 px-[19px] py-2">
+            <IconAvatar className="border-ui-border-base border">
               <Language />
             </IconAvatar>
             <div className="flex flex-col">
