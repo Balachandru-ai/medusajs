@@ -21,7 +21,7 @@ import {
   removeUndefined,
 } from "@medusajs/framework/utils"
 
-import { Store, StoreCurrency } from "@models"
+import { Store, StoreCurrency, StoreLocale } from "@models"
 import { UpdateStoreInput } from "@types"
 
 type InjectedDependencies = {
@@ -33,7 +33,8 @@ export default class StoreModuleService
   extends MedusaService<{
     Store: { dto: StoreTypes.StoreDTO }
     StoreCurrency: { dto: StoreTypes.StoreCurrencyDTO }
-  }>({ Store, StoreCurrency })
+    StoreLocale: { dto: StoreTypes.StoreLocaleDTO }
+  }>({ Store, StoreCurrency, StoreLocale })
   implements IStoreModuleService
 {
   protected baseRepository_: DAL.RepositoryService
@@ -89,7 +90,7 @@ export default class StoreModuleService
     return (
       await this.storeService_.upsertWithReplace(
         normalizedInput,
-        { relations: ["supported_currencies"] },
+        { relations: ["supported_currencies", "supported_locales"] },
         sharedContext
       )
     ).entities
@@ -201,7 +202,7 @@ export default class StoreModuleService
     return (
       await this.storeService_.upsertWithReplace(
         normalizedInput,
-        { relations: ["supported_currencies"] },
+        { relations: ["supported_currencies", "supported_locales"] },
         sharedContext
       )
     ).entities
@@ -227,20 +228,14 @@ export default class StoreModuleService
   ) {
     for (const store of stores) {
       if (store.supported_currencies?.length) {
-        const duplicates = getDuplicates(
-          store.supported_currencies?.map((c) => c.currency_code)
+        StoreModuleService.validateUnique(
+          store.supported_currencies.map((currency) => currency.currency_code),
+          "currency"
         )
 
-        if (duplicates.length) {
-          throw new MedusaError(
-            MedusaError.Types.INVALID_DATA,
-            `Duplicate currency codes: ${duplicates.join(", ")}`
-          )
-        }
-
         let seenDefault = false
-        store.supported_currencies?.forEach((c) => {
-          if (c.is_default) {
+        store.supported_currencies.forEach((currency) => {
+          if (currency.is_default) {
             if (seenDefault) {
               throw new MedusaError(
                 MedusaError.Types.INVALID_DATA,
@@ -258,6 +253,24 @@ export default class StoreModuleService
           )
         }
       }
+
+      if (store.supported_locales?.length) {
+        StoreModuleService.validateUnique(
+          store.supported_locales.map((locale) => locale.locale_code),
+          "locale"
+        )
+      }
+    }
+  }
+
+  private static validateUnique = (items: string[], fieldName: string) => {
+    const duplicates = getDuplicates(items)
+
+    if (duplicates.length) {
+      throw new MedusaError(
+        MedusaError.Types.INVALID_DATA,
+        `Duplicate ${fieldName} codes: ${duplicates.join(", ")}`
+      )
     }
   }
 

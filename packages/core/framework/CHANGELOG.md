@@ -1,5 +1,47 @@
 # @medusajs/framework
 
+## 2.12.3
+
+### Patch Changes
+
+- [#14305](https://github.com/medusajs/medusa/pull/14305) [`7b4dda5a179c78de5e099231ec407836db4c8dbd`](https://github.com/medusajs/medusa/commit/7b4dda5a179c78de5e099231ec407836db4c8dbd) Thanks [@adrien2p](https://github.com/adrien2p)! - chore(): apply locale middleware to all store routes
+
+- [#14300](https://github.com/medusajs/medusa/pull/14300) [`8964a03fa1b9e6a4c443bf5b21d65d41a8441d29`](https://github.com/medusajs/medusa/commit/8964a03fa1b9e6a4c443bf5b21d65d41a8441d29) Thanks [@NicolasGorga](https://github.com/NicolasGorga)! - chore(): Remove default_locale from StoreLocale
+
+- [#14318](https://github.com/medusajs/medusa/pull/14318) [`c8a7122ba918751b215dc0b19cf9b09b2c011ab8`](https://github.com/medusajs/medusa/commit/c8a7122ba918751b215dc0b19cf9b09b2c011ab8) Thanks [@adrien2p](https://github.com/adrien2p)! - chore(): Update locale header usage
+
+- Updated dependencies [[`b3cb904e9bce3bfad649e500a9e1be0c9bff0e1a`](https://github.com/medusajs/medusa/commit/b3cb904e9bce3bfad649e500a9e1be0c9bff0e1a), [`31a057558c0ec6ff7233489a28edc1fda0ec5375`](https://github.com/medusajs/medusa/commit/31a057558c0ec6ff7233489a28edc1fda0ec5375), [`8bb2ac654ce928edf1c3a2040f35614c924800c8`](https://github.com/medusajs/medusa/commit/8bb2ac654ce928edf1c3a2040f35614c924800c8), [`accb778039a52fae8eefbada77044c527b136114`](https://github.com/medusajs/medusa/commit/accb778039a52fae8eefbada77044c527b136114), [`8964a03fa1b9e6a4c443bf5b21d65d41a8441d29`](https://github.com/medusajs/medusa/commit/8964a03fa1b9e6a4c443bf5b21d65d41a8441d29), [`ba6ed8d9dd22be8646d311d9531c65aea1b7986a`](https://github.com/medusajs/medusa/commit/ba6ed8d9dd22be8646d311d9531c65aea1b7986a), [`70929ecac3e5610d90d47a40a517eac3cf3173a4`](https://github.com/medusajs/medusa/commit/70929ecac3e5610d90d47a40a517eac3cf3173a4), [`f13c23a4b709e31f9b2d42e98acc6e342c494403`](https://github.com/medusajs/medusa/commit/f13c23a4b709e31f9b2d42e98acc6e342c494403), [`d813fc4ff91e98b475a4eae11780ddc00caf66a8`](https://github.com/medusajs/medusa/commit/d813fc4ff91e98b475a4eae11780ddc00caf66a8)]:
+  - @medusajs/utils@2.12.3
+  - @medusajs/types@2.12.3
+  - @medusajs/cli@2.12.3
+  - @medusajs/modules-sdk@2.12.3
+  - @medusajs/orchestration@2.12.3
+  - @medusajs/workflows-sdk@2.12.3
+  - @medusajs/deps@2.12.3
+  - @medusajs/telemetry@2.12.3
+
+## 2.12.2
+
+### Patch Changes
+
+- [#14204](https://github.com/medusajs/medusa/pull/14204) [`9f7846ae0babbad39947a1f33d236bff8b5098d0`](https://github.com/medusajs/medusa/commit/9f7846ae0babbad39947a1f33d236bff8b5098d0) Thanks [@adrien2p](https://github.com/adrien2p)! - chore(): revert route loading parallelization
+
+- [#14074](https://github.com/medusajs/medusa/pull/14074) [`fe49b567d6d55ae224095c06c710d31d40887653`](https://github.com/medusajs/medusa/commit/fe49b567d6d55ae224095c06c710d31d40887653) Thanks [@adrien2p](https://github.com/adrien2p)! - chore: Backend HMR (expriemental)
+
+- [#14189](https://github.com/medusajs/medusa/pull/14189) [`6dc0b8bed84a330c1c24f4f1331f1ed078430a47`](https://github.com/medusajs/medusa/commit/6dc0b8bed84a330c1c24f4f1331f1ed078430a47) Thanks [@adrien2p](https://github.com/adrien2p)! - fix(framework): Prevent registering express handler for disabled routes
+
+- [#14262](https://github.com/medusajs/medusa/pull/14262) [`356283c359e5c30e0d31e6c6fd0fb8e16c025b78`](https://github.com/medusajs/medusa/commit/356283c359e5c30e0d31e6c6fd0fb8e16c025b78) Thanks [@adrien2p](https://github.com/adrien2p)! - chore(): Accept an extra agument 'all-or-nothing' on the migrate command
+
+- Updated dependencies [[`4dbf46f2cb64240092843ebfdef766ec5b2a7116`](https://github.com/medusajs/medusa/commit/4dbf46f2cb64240092843ebfdef766ec5b2a7116), [`e4877616c38777f583fe0b58bb10d1c7cf41c0b3`](https://github.com/medusajs/medusa/commit/e4877616c38777f583fe0b58bb10d1c7cf41c0b3), [`a78f68fa46dceb8e201fe60e770bd9ea654390d8`](https://github.com/medusajs/medusa/commit/a78f68fa46dceb8e201fe60e770bd9ea654390d8), [`fe49b567d6d55ae224095c06c710d31d40887653`](https://github.com/medusajs/medusa/commit/fe49b567d6d55ae224095c06c710d31d40887653), [`b517137466726c15d5e31ab0c9f42aa57af90c4e`](https://github.com/medusajs/medusa/commit/b517137466726c15d5e31ab0c9f42aa57af90c4e), [`fd3965974dc0b750d377ff621387d34611760957`](https://github.com/medusajs/medusa/commit/fd3965974dc0b750d377ff621387d34611760957), [`356283c359e5c30e0d31e6c6fd0fb8e16c025b78`](https://github.com/medusajs/medusa/commit/356283c359e5c30e0d31e6c6fd0fb8e16c025b78), [`5b7e3c0e7649a3a61b0a4fe796f37e5f7fbe9a3a`](https://github.com/medusajs/medusa/commit/5b7e3c0e7649a3a61b0a4fe796f37e5f7fbe9a3a)]:
+  - @medusajs/utils@2.12.2
+  - @medusajs/types@2.12.2
+  - @medusajs/workflows-sdk@2.12.2
+  - @medusajs/modules-sdk@2.12.2
+  - @medusajs/cli@2.12.2
+  - @medusajs/orchestration@2.12.2
+  - @medusajs/deps@2.12.2
+  - @medusajs/telemetry@2.12.2
+
 ## 2.12.1
 
 ### Patch Changes

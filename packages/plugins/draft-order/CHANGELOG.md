@@ -1,5 +1,31 @@
 # @medusajs/draft-order
 
+## 2.12.3
+
+### Patch Changes
+
+- Updated dependencies [[`665b80adb1f0ca2205307c0cc5294ad1d3b3ea58`](https://github.com/medusajs/medusa/commit/665b80adb1f0ca2205307c0cc5294ad1d3b3ea58), [`a43eb11d6565d19e82cf2b06e262ab509214b3d4`](https://github.com/medusajs/medusa/commit/a43eb11d6565d19e82cf2b06e262ab509214b3d4), [`accb778039a52fae8eefbada77044c527b136114`](https://github.com/medusajs/medusa/commit/accb778039a52fae8eefbada77044c527b136114), [`7b4dda5a179c78de5e099231ec407836db4c8dbd`](https://github.com/medusajs/medusa/commit/7b4dda5a179c78de5e099231ec407836db4c8dbd), [`8964a03fa1b9e6a4c443bf5b21d65d41a8441d29`](https://github.com/medusajs/medusa/commit/8964a03fa1b9e6a4c443bf5b21d65d41a8441d29), [`191e647eec8755f9680033077d164febefa976df`](https://github.com/medusajs/medusa/commit/191e647eec8755f9680033077d164febefa976df), [`c8a7122ba918751b215dc0b19cf9b09b2c011ab8`](https://github.com/medusajs/medusa/commit/c8a7122ba918751b215dc0b19cf9b09b2c011ab8)]:
+  - @medusajs/js-sdk@2.12.3
+  - @medusajs/icons@2.12.3
+  - @medusajs/framework@2.12.3
+  - @medusajs/test-utils@2.12.3
+  - @medusajs/cli@2.12.3
+  - @medusajs/ui@4.0.31
+  - @medusajs/admin-sdk@2.12.3
+
+## 2.12.2
+
+### Patch Changes
+
+- Updated dependencies [[`9f7846ae0babbad39947a1f33d236bff8b5098d0`](https://github.com/medusajs/medusa/commit/9f7846ae0babbad39947a1f33d236bff8b5098d0), [`e4877616c38777f583fe0b58bb10d1c7cf41c0b3`](https://github.com/medusajs/medusa/commit/e4877616c38777f583fe0b58bb10d1c7cf41c0b3), [`fe49b567d6d55ae224095c06c710d31d40887653`](https://github.com/medusajs/medusa/commit/fe49b567d6d55ae224095c06c710d31d40887653), [`6dc0b8bed84a330c1c24f4f1331f1ed078430a47`](https://github.com/medusajs/medusa/commit/6dc0b8bed84a330c1c24f4f1331f1ed078430a47), [`356283c359e5c30e0d31e6c6fd0fb8e16c025b78`](https://github.com/medusajs/medusa/commit/356283c359e5c30e0d31e6c6fd0fb8e16c025b78), [`5b7e3c0e7649a3a61b0a4fe796f37e5f7fbe9a3a`](https://github.com/medusajs/medusa/commit/5b7e3c0e7649a3a61b0a4fe796f37e5f7fbe9a3a)]:
+  - @medusajs/framework@2.12.2
+  - @medusajs/test-utils@2.12.2
+  - @medusajs/cli@2.12.2
+  - @medusajs/js-sdk@2.12.2
+  - @medusajs/admin-sdk@2.12.2
+  - @medusajs/icons@2.12.2
+  - @medusajs/ui@4.0.30
+
 ## 2.12.1
 
 ### Patch Changes

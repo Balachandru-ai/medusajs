@@ -1,5 +1,31 @@
 # @medusajs/link-modules
 
+## 2.12.3
+
+### Patch Changes
+
+- [#14293](https://github.com/medusajs/medusa/pull/14293) [`dd3eb10b1afd0659a6095b6a642d0bf5322285cd`](https://github.com/medusajs/medusa/commit/dd3eb10b1afd0659a6095b6a642d0bf5322285cd) Thanks [@NicolasGorga](https://github.com/NicolasGorga)! - fix(link-modules): export store locale link definition
+
+- [#14316](https://github.com/medusajs/medusa/pull/14316) [`f5ec359c4c4c81c007d57069df32ad6cc1f31c5d`](https://github.com/medusajs/medusa/commit/f5ec359c4c4c81c007d57069df32ad6cc1f31c5d) Thanks [@adrien2p](https://github.com/adrien2p)! - Fix/readonly link feature flag conditional
+
+- [#14307](https://github.com/medusajs/medusa/pull/14307) [`0f1566c64456a6f29a7bfb1dda5a7c470a84ace7`](https://github.com/medusajs/medusa/commit/0f1566c64456a6f29a7bfb1dda5a7c470a84ace7) Thanks [@adrien2p](https://github.com/adrien2p)! - feat(): Add support for store locales end point
+
+- Updated dependencies [[`7b4dda5a179c78de5e099231ec407836db4c8dbd`](https://github.com/medusajs/medusa/commit/7b4dda5a179c78de5e099231ec407836db4c8dbd), [`8964a03fa1b9e6a4c443bf5b21d65d41a8441d29`](https://github.com/medusajs/medusa/commit/8964a03fa1b9e6a4c443bf5b21d65d41a8441d29), [`c8a7122ba918751b215dc0b19cf9b09b2c011ab8`](https://github.com/medusajs/medusa/commit/c8a7122ba918751b215dc0b19cf9b09b2c011ab8)]:
+  - @medusajs/framework@2.12.3
+
+## 2.12.2
+
+### Patch Changes
+
+- [#14004](https://github.com/medusajs/medusa/pull/14004) [`5b7e3c0e7649a3a61b0a4fe796f37e5f7fbe9a3a`](https://github.com/medusajs/medusa/commit/5b7e3c0e7649a3a61b0a4fe796f37e5f7fbe9a3a) Thanks [@carlos-r-l-rodrigues](https://github.com/carlos-r-l-rodrigues)! - chore(link-modules): ignore duplicates link creation
+
+- [#14269](https://github.com/medusajs/medusa/pull/14269) [`d7398736e84cfab77db70a8eddf832bb64e89fe5`](https://github.com/medusajs/medusa/commit/d7398736e84cfab77db70a8eddf832bb64e89fe5) Thanks [@adrien2p](https://github.com/adrien2p)! - fix(): Remove unnecessary store support\_\* read only links
+
+- [#14276](https://github.com/medusajs/medusa/pull/14276) [`9852a7c74d3c27d38b60f865061fd39bc0c46911`](https://github.com/medusajs/medusa/commit/9852a7c74d3c27d38b60f865061fd39bc0c46911) Thanks [@adrien2p](https://github.com/adrien2p)! - fix(): Improve store currency readonly link
+
+- Updated dependencies [[`9f7846ae0babbad39947a1f33d236bff8b5098d0`](https://github.com/medusajs/medusa/commit/9f7846ae0babbad39947a1f33d236bff8b5098d0), [`fe49b567d6d55ae224095c06c710d31d40887653`](https://github.com/medusajs/medusa/commit/fe49b567d6d55ae224095c06c710d31d40887653), [`6dc0b8bed84a330c1c24f4f1331f1ed078430a47`](https://github.com/medusajs/medusa/commit/6dc0b8bed84a330c1c24f4f1331f1ed078430a47), [`356283c359e5c30e0d31e6c6fd0fb8e16c025b78`](https://github.com/medusajs/medusa/commit/356283c359e5c30e0d31e6c6fd0fb8e16c025b78)]:
+  - @medusajs/framework@2.12.2
+
 ## 2.12.1
 
 ### Patch Changes
