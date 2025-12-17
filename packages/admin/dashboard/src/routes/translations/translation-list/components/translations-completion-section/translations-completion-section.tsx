@@ -145,7 +145,7 @@ export const TranslationsCompletionSection = ({
                     key={locale.code}
                     open={hoveredLocale === locale.code}
                     content={
-                      <div className="flex flex-col gap-y-1 p-1">
+                      <div className="flex min-w-[150px] flex-col gap-y-1 p-1">
                         <Text size="small" weight="plus">
                           {locale.name}
                         </Text>
@@ -155,35 +155,47 @@ export const TranslationsCompletionSection = ({
                               className="h-2 w-2 rounded-full"
                               style={{
                                 backgroundColor: "var(--tag-blue-border)",
+                                boxShadow: "inset 0 0 0 0.5px var(--alpha-250)",
                               }}
                             />
                             <Text
                               size="small"
                               weight="plus"
-                              className="text-ui-fg-subtle"
+                              className="text-ui-fg-base"
                             >
                               {t("translations.completion.translated")}
                             </Text>
                           </div>
-                          <Text size="small" weight="plus">
-                            {locale.translated}
-                          </Text>
-                        </div>
-                        <div className="flex items-center gap-x-2">
-                          <div
-                            className="h-2 w-2 rounded-full"
-                            style={{
-                              backgroundColor: "var(--tag-blue-icon)",
-                            }}
-                          />
                           <Text
                             size="small"
                             weight="plus"
-                            className="text-ui-fg-subtle"
+                            className="text-ui-fg-base"
                           >
-                            {t("translations.completion.toTranslate")}
+                            {locale.translated}
                           </Text>
-                          <Text size="small" weight="plus">
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-x-2">
+                            <div
+                              className="h-2 w-2 rounded-full"
+                              style={{
+                                backgroundColor: "var(--tag-blue-icon)",
+                                boxShadow: "inset 0 0 0 0.5px var(--alpha-250)",
+                              }}
+                            />
+                            <Text
+                              size="small"
+                              weight="plus"
+                              className="text-ui-fg-base"
+                            >
+                              {t("translations.completion.toTranslate")}
+                            </Text>
+                          </div>
+                          <Text
+                            size="small"
+                            weight="plus"
+                            className="text-ui-fg-base"
+                          >
                             {locale.toTranslate}
                           </Text>
                         </div>

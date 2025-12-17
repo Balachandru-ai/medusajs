@@ -2538,7 +2538,7 @@
     "completion": {
       "heading": "Translated fields",
       "translated": "Translated",
-      "toTranslate": "To be translated",
+      "toTranslate": "Missing",
       "footer": "Languages"
     }
   },
