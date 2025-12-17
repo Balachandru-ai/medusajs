@@ -64,3 +64,10 @@ export const AdminTranslationStatistics = z
       ? data.entity_types
       : [data.entity_types],
   }))
+
+export type AdminTranslationSettingsParamsType = z.infer<
+  typeof AdminTranslationSettingsParams
+>
+export const AdminTranslationSettingsParams = z.object({
+  entity_type: z.string().optional(),
+})

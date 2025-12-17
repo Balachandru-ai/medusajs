@@ -51,3 +51,13 @@ export interface AdminTranslationStatisticsParams {
    */
   entity_types: string[]
 }
+
+/**
+ * Query parameters for translation settings endpoint.
+ */
+export interface AdminTranslationSettingsParams {
+  /**
+   * The entity type to get the settings for (e.g., "product").
+   */
+  entity_type?: string
+}
