@@ -1,66 +1,46 @@
 /**
- * @oas [post] /admin/products/export
- * operationId: PostProductsExport
- * summary: Export Products
- * description: >
- *   Start a product export process to retrieve a CSV of exported products.
- * 
- * 
- *   You'll receive in the response the transaction ID of the workflow generating the CSV file. To check the status of the execution, send a GET request to `/admin/workflows-executions/export-products/:transaction-id`.
- * 
- *   Once the execution finishes successfully, a notification is created for the export. You can retrieve the notifications using the `/admin/notification` API route to retrieve the file's download URL.
- * x-authenticated: true
+ * @oas [get] /store/product-options
+ * operationId: GetProductOptions
+ * summary: List Product Options
+ * description: Retrieve a list of product options. The product options can be filtered by fields such as `id`. The product options can also be sorted or paginated.
+ * x-authenticated: false
  * parameters:
- *   - name: fields
- *     in: query
- *     description: Comma-separated fields that should be included in the returned data. if a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default
- *       fields. without prefix it will replace the entire default fields.
+ *   - name: x-publishable-api-key
+ *     in: header
+ *     description: Publishable API Key created in the Medusa Admin.
+ *     required: true
+ *     schema:
+ *       type: string
+ *       externalDocs:
+ *         url: https://docs.medusajs.com/api/store#publishable-api-key
+ *   - name: Content-Language
+ *     in: header
+ *     description: The locale in BCP 47 format to retrieve localized content.
  *     required: false
  *     schema:
  *       type: string
- *       title: fields
- *       description: Comma-separated fields that should be included in the returned data. if a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default
- *         fields. without prefix it will replace the entire default fields.
+ *       example: en-US
  *       externalDocs:
- *         url: "#select-fields-and-relations"
- *   - name: tags
+ *         url: https://docs.medusajs.com/resources/commerce-modules/translation/storefront
+ *         description: Learn more in the Serve Translations in Storefront guide.
+ *   - name: locale
  *     in: query
- *     description: Filter products by their tags.
+ *     description: The locale in BCP 47 format to retrieve localized content.
  *     required: false
  *     schema:
- *       type: object
- *       description: Filter products by their tags.
- *       properties:
- *         id:
- *           type: array
- *           description: Filter by tag IDs.
- *           items:
- *             type: string
- *             title: id
- *             description: A tag ID.
- *   - name: variants
+ *       type: string
+ *       example: en-US
+ *       externalDocs:
+ *         url: https://docs.medusajs.com/resources/commerce-modules/translation/storefront
+ *         description: Learn more in the Serve Translations in Storefront guide.
+ *   - name: q
  *     in: query
- *     description: Filter the products' variants.
+ *     description: A search term to filter the product option's searchable fields.
  *     required: false
  *     schema:
- *       type: object
- *       description: Filter the products' variants.
- *       properties:
- *         options:
- *           type: object
- *           description: Filter the variants by their options.
- *           properties:
- *             value:
- *               type: string
- *               title: value
- *               description: The option's value.
- *             option_id:
- *               type: string
- *               title: option_id
- *               description: The option's ID.
- *             option:
- *               type: object
- *               description: The option's details.
+ *       type: string
+ *       title: q
+ *       description: A search term to filter the product option's searchable fields.
  *   - name: title
  *     in: query
  *     required: false
@@ -68,71 +48,28 @@
  *       oneOf:
  *         - type: string
  *           title: title
- *           description: Filter products by their title.
+ *           description: Filter by the product option's title.
  *         - type: array
- *           description: Filter products by multiple titles.
+ *           description: Filter by multiple product option titles.
  *           items:
  *             type: string
  *             title: title
- *             description: A product title.
- *   - name: status
+ *             description: A product option title.
+ *   - name: is_exclusive
  *     in: query
+ *     description: Filter by whether the product option is exclusive to a product or global.
  *     required: false
  *     schema:
- *       oneOf:
- *         - type: string
- *           title: status
- *           description: Filter products by their status.
- *           enum:
- *             - draft
- *             - proposed
- *             - published
- *             - rejected
- *         - type: array
- *           description: Filter products by multiple statuses.
- *           items:
- *             type: string
- *             description: A product status.
- *             enum:
- *               - draft
- *               - proposed
- *               - published
- *               - rejected
- *   - name: id
- *     in: query
- *     required: false
- *     schema:
- *       oneOf:
- *         - type: string
- *           title: id
- *           description: Filter products by their ID.
- *         - type: array
- *           description: Filter products by multiple IDs.
- *           items:
- *             type: string
- *             title: id
- *             description: A product ID.
- *   - name: sales_channel_id
- *     in: query
- *     required: false
- *     schema:
- *       oneOf:
- *         - type: string
- *           title: sales_channel_id
- *           description: Filter products by their sales channel ID.
- *         - type: array
- *           description: Filter products by multiple sales channel IDs.
- *           items:
- *             type: string
- *             title: sales_channel_id
- *             description: A sales channel ID.
+ *       type: boolean
+ *       title: is_exclusive
+ *       description: Filter by whether the product option is exclusive to a product or global.
  *   - name: created_at
  *     in: query
- *     description: Filter by a product's creation date.
+ *     description: Filter by a product option's creation date.
  *     required: false
  *     schema:
  *       type: object
- *       description: Filter by a product's creation date.
+ *       description: Filter by a product option's creation date.
  *       properties:
  *         $and:
  *           type: array
@@ -247,11 +184,11 @@
  *           description: Filter by whether a value for this parameter exists (not `null`).
  *   - name: updated_at
  *     in: query
- *     description: Filter by a product's update date.
+ *     description: Filter by a product option's update date.
  *     required: false
  *     schema:
  *       type: object
- *       description: Filter by a product's update date.
+ *       description: Filter by a product option's update date.
  *       properties:
  *         $and:
  *           type: array
@@ -364,63 +301,13 @@
  *           type: boolean
  *           title: $exists
  *           description: Filter by whether a value for this parameter exists (not `null`).
- *   - name: handle
- *     in: query
- *     required: false
- *     schema:
- *       oneOf:
- *         - type: string
- *           title: handle
- *           description: Filter products by their handle.
- *         - type: array
- *           description: Filter products by multiple handles.
- *           items:
- *             type: string
- *             title: handle
- *             description: A product handle.
- *   - name: is_giftcard
- *     in: query
- *     description: Filter products by whether they are gift cards.
- *     required: false
- *     schema:
- *       type: boolean
- *       title: is_giftcard
- *       description: Whether the product is a gift card.
- *   - name: collection_id
- *     in: query
- *     required: false
- *     schema:
- *       oneOf:
- *         - type: string
- *           title: collection_id
- *           description: Filter products by their collection ID.
- *         - type: array
- *           description: Filter products by multiple collection IDs.
- *           items:
- *             type: string
- *             title: collection_id
- *             description: A collection ID.
- *   - name: type_id
- *     in: query
- *     required: false
- *     schema:
- *       oneOf:
- *         - type: string
- *           title: type_id
- *           description: Filter products by their type ID.
- *         - type: array
- *           description: Filter products by multiple type IDs.
- *           items:
- *             type: string
- *             title: type_id
- *             description: The type ID's details.
  *   - name: deleted_at
  *     in: query
- *     description: Filter by a product's deletion date.
+ *     description: Filter by a product option's deletion date.
  *     required: false
  *     schema:
  *       type: object
- *       description: Filter by a product's deletion date.
+ *       description: Filter by a product option's deletion date.
  *       properties:
  *         $and:
  *           type: array
@@ -533,38 +420,6 @@
  *           type: boolean
  *           title: $exists
  *           description: Filter by whether a value for this parameter exists (not `null`).
- *   - name: order
- *     in: query
- *     description: The field to sort the data by. By default, the sort order is ascending. To change the order to descending, prefix the field name with `-`.
- *     required: false
- *     schema:
- *       type: string
- *       title: order
- *       description: The field to sort the data by. By default, the sort order is ascending. To change the order to descending, prefix the field name with `-`.
- *       externalDocs:
- *         url: "#pagination"
- *   - name: q
- *     in: query
- *     description: The product's q.
- *     required: false
- *     schema:
- *       type: string
- *       title: q
- *       description: The product's q.
- *   - name: category_id
- *     in: query
- *     required: false
- *     schema:
- *       oneOf:
- *         - type: string
- *           title: category_id
- *           description: Filter products by their category ID.
- *         - type: array
- *           description: Filter products by their category IDs.
- *           items:
- *             type: string
- *             title: category_id
- *             description: A category ID.
  *   - name: limit
  *     in: query
  *     description: Limit the number of items returned in the list.
@@ -585,14 +440,36 @@
  *       description: The number of items to skip when retrieving a list.
  *       externalDocs:
  *         url: "#pagination"
+ *   - name: order
+ *     in: query
+ *     description: The field to sort the data by. By default, the sort order is ascending. To change the order to descending, prefix the field name with `-`.
+ *     required: false
+ *     schema:
+ *       type: string
+ *       title: order
+ *       description: The field to sort the data by. By default, the sort order is ascending. To change the order to descending, prefix the field name with `-`.
+ *       externalDocs:
+ *         url: "#pagination"
  *   - name: with_deleted
  *     in: query
- *     description: The product's with deleted.
+ *     description: The product option's with deleted.
  *     required: false
  *     schema:
  *       type: boolean
  *       title: with_deleted
- *       description: The product's with deleted.
+ *       description: The product option's with deleted.
+ *   - name: fields
+ *     in: query
+ *     description: Comma-separated fields that should be included in the returned data. If a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default
+ *       fields. Without prefix it will replace the entire default fields.
+ *     required: false
+ *     schema:
+ *       type: string
+ *       title: fields
+ *       description: Comma-separated fields that should be included in the returned data. If a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default
+ *         fields. Without prefix it will replace the entire default fields.
+ *       externalDocs:
+ *         url: "#select-fields-and-relations"
  *   - name: $and
  *     in: query
  *     description: Join query parameters with an AND condition. Each object's content is the same type as the expected query parameters.
@@ -613,84 +490,76 @@
  *       items:
  *         type: object
  *       title: $or
- *   - name: price_list_id
- *     in: query
- *     required: false
- *     schema:
- *       oneOf:
- *         - type: string
- *           title: price_list_id
- *           description: Filter products by the ID of a price list they belong to.
- *         - type: array
- *           description: Filter products by the IDs of price lists they belong to.
- *           items:
- *             type: string
- *             title: price_list_id
- *             description: A price list ID.
- *   - name: option_id
- *     in: query
- *     required: false
- *     schema:
- *       oneOf:
- *         - type: string
- *           title: option_id
- *           description: Filter by an option ID to get products that use the given option.
- *         - type: array
- *           description: Filter by option IDs to get products that use the given options.
- *           items:
- *             type: string
- *             title: option_id
- *             description: An option ID.
- *   - name: option_value_id
- *     in: query
- *     required: false
- *     schema:
- *       oneOf:
- *         - type: string
- *           title: option_value_id
- *           description: Filter by an option value ID to get products with at least one variant that uses the given option value.
- *         - type: array
- *           description: Filter by option value IDs to get products with at least one variant that uses the given option values.
- *           items:
- *             type: string
- *             title: option_value_id
- *             description: An option value ID.
- * security:
- *   - api_token: []
- *   - cookie_auth: []
- *   - jwt_token: []
  * x-codeSamples:
  *   - lang: JavaScript
  *     label: JS SDK
  *     source: |-
  *       import Medusa from "@medusajs/js-sdk"
  * 
+ *       let MEDUSA_BACKEND_URL = "http://localhost:9000"
+ * 
+ *       if (process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL) {
+ *         MEDUSA_BACKEND_URL = process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL
+ *       }
+ * 
  *       export const sdk = new Medusa({
- *         baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
- *         debug: import.meta.env.DEV,
- *         auth: {
- *           type: "session",
- *         },
+ *         baseUrl: MEDUSA_BACKEND_URL,
+ *         debug: process.env.NODE_ENV === "development",
+ *         publishableKey: process.env.NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY,
  *       })
  * 
- *       sdk.admin.product.export({})
- *       .then(({ transaction_id }) => {
- *         console.log(transaction_id)
+ *       sdk.store.productOption.list()
+ *       .then(({ product_options, count, offset, limit }) => {
+ *         console.log(product_options)
  *       })
  *   - lang: Shell
  *     label: cURL
  *     source: |-
- *       curl -X POST '{backend_url}/admin/products/export' \
- *       -H 'Authorization: Bearer {jwt_token}'
+ *       curl '{backend_url}/store/product-options' \
+ *       -H 'x-publishable-api-key: {your_publishable_api_key}'
  * tags:
- *   - Products
+ *   - Product Options
  * responses:
- *   "202":
+ *   "200":
  *     description: OK
  *     content:
  *       application/json:
  *         schema:
- *           $ref: "#/components/schemas/AdminExportProductResponse"
+ *           allOf:
+ *             - type: object
+ *               description: This list of product options.
+ *               required:
+ *                 - limit
+ *                 - offset
+ *                 - count
+ *               properties:
+ *                 limit:
+ *                   type: number
+ *                   title: limit
+ *                   description: The maximum number of items returned.
+ *                 offset:
+ *                   type: number
+ *                   title: offset
+ *                   description: The number of items skipped before the returned items.
+ *                 count:
+ *                   type: number
+ *                   title: count
+ *                   description: The total number of items.
+ *                 estimate_count:
+ *                   type: number
+ *                   title: estimate_count
+ *                   description: The estimated count retrieved from the PostgreSQL query planner, which may be inaccurate.
+ *                   x-featureFlag: index_engine
+ *             - type: object
+ *               description: This list of product options.
+ *               required:
+ *                 - product_options
+ *               properties:
+ *                 product_options:
+ *                   type: array
+ *                   description: The list of product options.
+ *                   items:
+ *                     $ref: "#/components/schemas/StoreProductOption"
  *   "400":
  *     $ref: "#/components/responses/400_error"
  *   "401":
@@ -703,8 +572,7 @@
  *     $ref: "#/components/responses/invalid_request_error"
  *   "500":
  *     $ref: "#/components/responses/500_error"
- * x-workflow: exportProductsWorkflow
- * x-events: []
+ * x-since: 2.13.0
  * 
 */
 

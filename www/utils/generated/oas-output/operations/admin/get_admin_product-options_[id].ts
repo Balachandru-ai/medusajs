@@ -1,33 +1,26 @@
 /**
- * @oas [get] /admin/products/{id}/options/{option_id}
- * operationId: GetProductsIdOptionsOption_id
- * summary: Get a Product's Option
- * x-sidebar-summary: Get Option
- * description: Retrieve a product's option by its ID.
+ * @oas [get] /admin/product-options/{id}
+ * operationId: GetProductOptionsId
+ * summary: Get a Product Option
+ * description: Retrieve a product option by its ID. You can expand the product option's relations or select the fields that should be returned.
  * x-authenticated: true
  * parameters:
  *   - name: id
  *     in: path
- *     description: The product's ID.
- *     required: true
- *     schema:
- *       type: string
- *   - name: option_id
- *     in: path
- *     description: The product's option id.
+ *     description: The product option's ID.
  *     required: true
  *     schema:
  *       type: string
  *   - name: fields
  *     in: query
- *     description: Comma-separated fields that should be included in the returned data. if a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default
- *       fields. without prefix it will replace the entire default fields.
+ *     description: Comma-separated fields that should be included in the returned data. If a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default
+ *       fields. Without prefix it will replace the entire default fields.
  *     required: false
  *     schema:
  *       type: string
  *       title: fields
- *       description: Comma-separated fields that should be included in the returned data. if a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default
- *         fields. without prefix it will replace the entire default fields.
+ *       description: Comma-separated fields that should be included in the returned data. If a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default
+ *         fields. Without prefix it will replace the entire default fields.
  *       externalDocs:
  *         url: "#select-fields-and-relations"
  * security:
@@ -48,20 +41,17 @@
  *         },
  *       })
  * 
- *       sdk.admin.product.retrieveOption(
- *         "prod_123",
- *         "prodopt_123"
- *       )
+ *       sdk.admin.productOption.retrieve("opt_123")
  *       .then(({ product_option }) => {
  *         console.log(product_option)
  *       })
  *   - lang: Shell
  *     label: cURL
  *     source: |-
- *       curl '{backend_url}/admin/products/{id}/options/{option_id}' \
- *       -H 'Authorization: Bearer {jwt_token}'
+ *       curl '{backend_url}/admin/product-options/{id}' \
+ *       -H 'Authorization: Bearer {access_token}'
  * tags:
- *   - Products
+ *   - Product Options
  * responses:
  *   "200":
  *     description: OK
@@ -81,6 +71,7 @@
  *     $ref: "#/components/responses/invalid_request_error"
  *   "500":
  *     $ref: "#/components/responses/500_error"
+ * x-since: 2.13.0
  * 
 */
 

@@ -5,7 +5,6 @@
  * x-sidebar-summary: List Settings
  * description: Retrieve the list of translatable fields for all entities, such as products and collections.
  * x-authenticated: true
- * parameters: []
  * security:
  *   - api_token: []
  *   - cookie_auth: []
