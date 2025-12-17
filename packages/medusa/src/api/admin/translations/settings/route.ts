@@ -10,6 +10,10 @@ import {
 } from "@medusajs/framework/utils"
 import TranslationFeatureFlag from "../../../../feature-flags/translation"
 
+/**
+ * @since 2.12.3
+ * @featureFlag translation
+ */
 export const GET = async (
   req: AuthenticatedMedusaRequest,
   res: MedusaResponse<HttpTypes.AdminTranslationSettingsResponse>

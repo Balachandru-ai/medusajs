@@ -553,7 +553,9 @@ export interface ProductOptionDTO {
    */
   title: string
   /**
-   * Whether the product option is exclusive or global.
+   * Whether the product option is exclusive to a product or shared across products.
+   * 
+   * @since 2.13.0
    */
   is_exclusive: boolean
   /**
@@ -735,6 +737,16 @@ export interface FilterableProductProps
      */
     id?: string[]
   }
+
+  /**
+   * Filters on a product's options.
+   */
+  options?: {
+    /**
+     * Filter a product by the IDs of their associated options.
+     */
+    id?: string[]
+  }
   /**
    * Filters on a product's variant properties.
    */
@@ -750,6 +762,14 @@ export interface FilterableProductProps
    * Filter a product by the ID of the associated type
    */
   type_id?: string | string[] | OperatorMap<string | string[]>
+  /**
+   * Filter a product by the ID of the associated option
+   */
+  option_id?: string | string[] | OperatorMap<string | string[]>
+  /**
+   * Filter a product by the IDs of the associated option values.
+   */
+  option_value_id?: string | string[]
   /**
    * Filter a product by the IDs of their associated categories.
    */
@@ -844,7 +864,9 @@ export interface FilterableProductOptionProps
    */
   title?: string | string[]
   /**
-   * Filter the product options by exclusivity.
+   * Filter the product options by whether they are exclusive to a product or shared across products.
+   * 
+   * @since 2.13.0
    */
   is_exclusive?: boolean
 }
@@ -1214,15 +1236,21 @@ export interface CreateProductOptionDTO {
    */
   values: string[]
   /**
-   * The rank for each option value.
+   * The rank for each option value. The key is the option value, and the value is the rank.
+   * 
+   * @since 2.13.0
    */
   ranks?: Record<string, number>
   /**
-   * Whether the product option is exclusive or global.
+   * Whether the product option is exclusive to a product or shared across products.
+   * 
+   * @since 2.13.0
    */
   is_exclusive?: boolean
   /**
    * The metadata of the product option.
+   * 
+   * @since 2.13.0
    */
   metadata?: MetadataType
 }
@@ -1233,7 +1261,9 @@ export interface CreateProductOptionValueDTO {
    */
   value: string
   /**
-   * The rank of the product option value.
+   * The rank of the product option value among other option values.
+   * 
+   * @since 2.13.0
    */
   rank?: number
   /**
@@ -1266,15 +1296,28 @@ export interface UpdateProductOptionDTO {
    */
   values?: string[]
   /**
-   * The rank for each option value.
+   * The rank for each option value. The key is the option value, and the value is the rank.
+   * 
+   * @since 2.13.0
+   * 
+   * @example
+   * {
+   *   "Small": 1,
+   *   "Medium": 2,
+   *   "Large": 3
+   * }
    */
   ranks?: Record<string, number>
   /**
-   * Whether the product option is exclusive or global.
+   * Whether the product option is exclusive to a product or shared across products.
+   * 
+   * @since 2.13.0
    */
   is_exclusive?: boolean
   /**
    * The metadata of the product option.
+   * 
+   * @since 2.13.0
    */
   metadata?: MetadataType
 }
@@ -1564,7 +1607,7 @@ export interface CreateProductDTO {
          */
         id: string
         /**
-         * The IDs of specific option values to link. If undefined, every value will be linked by default.
+         * The IDs of specific option values to link. If undefined, every value will be added to the product by default.
          */
         value_ids?: string[]
       }

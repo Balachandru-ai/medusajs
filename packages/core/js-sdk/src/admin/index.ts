@@ -67,6 +67,7 @@ export class Admin {
   public productCategory: ProductCategory
   /**
    * @tags product
+   * @since 2.13.0
    */
   public productOption: ProductOption
   /**
@@ -187,6 +188,7 @@ export class Admin {
   public currency: Currency
   /**
    * @tags locale
+   * @since 2.12.3
    */
   public locale: Locale
   /**

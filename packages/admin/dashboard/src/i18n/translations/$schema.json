@@ -3224,6 +3224,23 @@
           "required": ["header"],
           "additionalProperties": false
         },
+        "products": {
+          "type": "object",
+          "properties": {
+            "list": {
+              "type": "object",
+              "properties": {
+                "noRecords": {
+                  "type": "string"
+                }
+              },
+              "required": ["noRecords"],
+              "additionalProperties": false
+            }
+          },
+          "required": ["list"],
+          "additionalProperties": false
+        },
         "create": {
           "type": "object",
           "properties": {
@@ -3251,6 +3268,16 @@
             }
           },
           "required": ["header", "hint", "successToast", "tabs"],
+          "additionalProperties": false
+        },
+        "manage": {
+          "type": "object",
+          "properties": {
+            "exclusiveOption": {
+              "type": "string"
+            }
+          },
+          "required": ["exclusiveOption"],
           "additionalProperties": false
         },
         "edit": {
@@ -3320,7 +3347,9 @@
         "domain",
         "subtitle",
         "values",
+        "products",
         "create",
+        "manage",
         "edit",
         "delete",
         "fields"
@@ -9561,10 +9590,10 @@
         "removeLocaleWarning_other": {
           "type": "string"
         },
-        "localeAlreadyAdded": {
+        "currencyAlreadyAdded": {
           "type": "string"
         },
-        "currencyAlreadyAdded": {
+        "localeAlreadyAdded": {
           "type": "string"
         },
         "edit": {
@@ -9583,10 +9612,10 @@
             "update": {
               "type": "string"
             },
-            "localesUpdated": {
+            "currenciesUpdated": {
               "type": "string"
             },
-            "currenciesUpdated": {
+            "localesUpdated": {
               "type": "string"
             },
             "currenciesRemoved": {
@@ -9601,8 +9630,8 @@
           },
           "required": [
             "update",
-            "localesUpdated",
             "currenciesUpdated",
+            "localesUpdated",
             "currenciesRemoved",
             "localesRemoved",
             "updatedTaxInclusivitySuccessfully"

@@ -2,6 +2,8 @@ import { medusaIntegrationTestRunner } from "@medusajs/test-utils"
 import {
   adminHeaders,
   createAdminUser,
+  generatePublishableKey,
+  generateStoreHeaders,
 } from "../../../helpers/create-admin-user"
 
 jest.setTimeout(30000)
@@ -12,9 +14,14 @@ medusaIntegrationTestRunner({
     let option1
     let option2
 
+    let storeHeaders
+
     beforeEach(async () => {
       const container = getContainer()
       await createAdminUser(dbConnection, adminHeaders, container)
+
+      const publishableKey = await generatePublishableKey(container)
+      storeHeaders = generateStoreHeaders({ publishableKey })
 
       option1 = (
         await api.post(
@@ -287,6 +294,82 @@ medusaIntegrationTestRunner({
 
         expect(res.status).toEqual(200)
         expect(res.data.product_options.length).toEqual(1)
+      })
+    })
+
+    describe("GET /store/product-options", () => {
+      it("should list product options", async () => {
+        const res = await api.get("/store/product-options", storeHeaders)
+
+        expect(res.status).toEqual(200)
+        expect(res.data.product_options.length).toEqual(2)
+        expect(res.data.product_options).toEqual(
+          expect.arrayContaining([
+            expect.objectContaining({
+              id: option1.id,
+              title: "option1",
+            }),
+            expect.objectContaining({
+              id: option2.id,
+              title: "option2",
+            }),
+          ])
+        )
+      })
+
+      it("should filter product options by is_exclusive", async () => {
+        const res = await api.get(
+          "/store/product-options?is_exclusive=true",
+          storeHeaders
+        )
+
+        expect(res.status).toEqual(200)
+        expect(res.data.product_options).toEqual([
+          expect.objectContaining({
+            id: option2.id,
+            is_exclusive: true,
+          }),
+        ])
+      })
+
+      it("should filter product options by free text search", async () => {
+        const res = await api.get("/store/product-options?q=1", storeHeaders)
+
+        expect(res.status).toEqual(200)
+        expect(res.data.product_options).toEqual([
+          expect.objectContaining({
+            id: option1.id,
+            title: "option1",
+          }),
+        ])
+      })
+    })
+
+    describe("GET /store/product-options/[id]", () => {
+      it("should retrieve a product option", async () => {
+        const res = await api.get(
+          `/store/product-options/${option1.id}`,
+          storeHeaders
+        )
+
+        expect(res.status).toEqual(200)
+        expect(res.data.product_option).toEqual(
+          expect.objectContaining({
+            id: option1.id,
+            title: "option1",
+          })
+        )
+      })
+
+      it("should return 404 when the product option does not exist", async () => {
+        const error = await api
+          .get(`/store/product-options/not-found`, storeHeaders)
+          .catch((e) => e)
+
+        expect(error.response.status).toEqual(404)
+        expect(error.response.data.message).toEqual(
+          "Product option with id: not-found was not found"
+        )
       })
     })
   },

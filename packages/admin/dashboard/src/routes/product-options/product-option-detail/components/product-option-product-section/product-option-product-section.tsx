@@ -1,4 +1,3 @@
-import { HttpTypes } from "@medusajs/types"
 import { Container } from "@medusajs/ui"
 import { keepPreviousData } from "@tanstack/react-query"
 import { useMemo } from "react"
@@ -9,29 +8,29 @@ import { useProductTableColumns } from "../../../../../hooks/table/columns"
 import { useProductTableQuery } from "../../../../../hooks/table/query"
 
 type ProductOptionProductSectionProps = {
-  productOption: HttpTypes.AdminProductOption
+  productOptionId: string
 }
 
 const PAGE_SIZE = 10
 
 export const ProductOptionProductSection = ({
-  productOption,
+  productOptionId,
 }: ProductOptionProductSectionProps) => {
   const { t } = useTranslation()
 
   const { searchParams } = useProductTableQuery({ pageSize: PAGE_SIZE })
 
-  const productIds = productOption.products?.map((p: any) => p.id) || []
-
   const { products, count, isLoading, isError, error } = useProducts(
     {
       limit: PAGE_SIZE,
       ...searchParams,
-      id: productIds.length > 0 ? productIds : undefined,
+      fields:
+        "id,title,handle,thumbnail,status,*collection,*sales_channels,*product_options,variants.id",
+      option_id: productOptionId,
     },
     {
       placeholderData: keepPreviousData,
-      enabled: productIds.length > 0,
+      enabled: !!productOptionId,
     }
   )
 
@@ -52,7 +51,16 @@ export const ProductOptionProductSection = ({
         heading={t("products.domain")}
         emptyState={{
           empty: {
-            heading: t("general.noRecordsMessage"),
+            heading: (
+              <span className="text-ui-fg-subtle">
+                {t("general.noRecordsMessage")}
+              </span>
+            ),
+            description: (
+              <span className="text-ui-fg-muted">
+                {t("productOptions.products.list.noRecords")}
+              </span>
+            ),
           },
           filtered: {
             heading: t("general.noRecordsMessage"),
