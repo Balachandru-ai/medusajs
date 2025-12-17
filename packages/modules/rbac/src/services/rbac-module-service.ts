@@ -3,6 +3,7 @@ import {
   InjectManager,
   MedusaContext,
   MedusaService,
+  Policy,
 } from "@medusajs/framework/utils"
 import {
   RbacPolicy,
@@ -33,6 +34,88 @@ export default class RbacModuleService extends MedusaService<{
     // @ts-ignore
     super(...arguments)
     this.rbacRepository_ = rbacRepository
+  }
+
+  async onApplicationStart(): Promise<void> {
+    await this.syncRegisteredPolicies()
+  }
+
+  @InjectManager()
+  private async syncRegisteredPolicies(
+    @MedusaContext() sharedContext: Context = {}
+  ): Promise<void> {
+    const registeredPolicies = Array.from(Policy.entries()).map(
+      ([name, { resource, operation }]) => ({
+        key: `${resource}:${operation}`,
+        name,
+        resource,
+        operation,
+      })
+    )
+
+    if (registeredPolicies.length === 0) {
+      return
+    }
+
+    const registeredKeys = registeredPolicies.map((p) => p.key)
+
+    // Fetch all existing policies (including soft-deleted ones)
+    const existingPolicies = await this.listRbacPolicies(
+      {},
+      { withDeleted: true },
+      sharedContext
+    )
+
+    const existingPoliciesMap = new Map(existingPolicies.map((p) => [p.key, p]))
+
+    const policiesToCreate: any[] = []
+    const policiesToUpdate: any[] = []
+    const policiesToRestore: string[] = []
+
+    // Process registered policies
+    for (const registeredPolicy of registeredPolicies) {
+      const existing = existingPoliciesMap.get(registeredPolicy.key)
+
+      if (!existing) {
+        policiesToCreate.push(registeredPolicy)
+      } else if (existing.deleted_at) {
+        policiesToRestore.push(existing.id)
+        // Update in case name changed
+        if (existing.name !== registeredPolicy.name) {
+          policiesToUpdate.push({
+            id: existing.id,
+            name: registeredPolicy.name,
+          })
+        }
+      } else if (existing.name !== registeredPolicy.name) {
+        // Existing policy with different name - update it
+        policiesToUpdate.push({
+          id: existing.id,
+          name: registeredPolicy.name,
+        })
+      }
+    }
+
+    const policiesToSoftDelete = existingPolicies
+      .filter((p) => !p.deleted_at && !registeredKeys.includes(p.key))
+      .map((p) => p.id)
+
+    // Execute updates
+    if (policiesToRestore.length > 0) {
+      await this.restoreRbacPolicies(policiesToRestore, {}, sharedContext)
+    }
+
+    if (policiesToCreate.length > 0) {
+      await this.createRbacPolicies(policiesToCreate, sharedContext)
+    }
+
+    if (policiesToUpdate.length > 0) {
+      await this.updateRbacPolicies(policiesToUpdate, sharedContext)
+    }
+
+    if (policiesToSoftDelete.length > 0) {
+      await this.softDeleteRbacPolicies(policiesToSoftDelete, {}, sharedContext)
+    }
   }
 
   @InjectManager()

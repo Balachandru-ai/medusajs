@@ -11,10 +11,12 @@ import {
   dynamicImport,
   FileSystem,
   generateContainerTypes,
+  generatePolicyTypes,
   gqlSchemaToTypes,
   GracefulShutdownServer,
   isFileSkipped,
   isPresent,
+  promiseAll,
 } from "@medusajs/framework/utils"
 
 import { MedusaModule } from "@medusajs/framework/modules-sdk"
@@ -279,22 +281,36 @@ async function start(args: {
          */
         await new FileSystem(typesDirectory).cleanup({ recursive: true })
 
-        await generateContainerTypes(modules, {
-          outputDir: typesDirectory,
-          interfaceName: "ModuleImplementations",
-        })
-        logger.debug("Generated container types")
+        const fileGenPromises: Promise<void>[] = []
+
+        fileGenPromises.push(
+          generateContainerTypes(modules, {
+            outputDir: typesDirectory,
+            interfaceName: "ModuleImplementations",
+          })
+        )
 
         if (gqlSchema) {
-          await gqlSchemaToTypes({
-            outputDir: typesDirectory,
-            filename: "query-entry-points",
-            interfaceName: "RemoteQueryEntryPoints",
-            schema: gqlSchema,
-            joinerConfigs: MedusaModule.getAllJoinerConfigs(),
-          })
-          logger.debug("Generated modules types")
+          fileGenPromises.push(
+            gqlSchemaToTypes({
+              outputDir: typesDirectory,
+              filename: "query-entry-points",
+              interfaceName: "RemoteQueryEntryPoints",
+              schema: gqlSchema,
+              joinerConfigs: MedusaModule.getAllJoinerConfigs(),
+            })
+          )
         }
+
+        fileGenPromises.push(
+          generatePolicyTypes({
+            outputDir: typesDirectory,
+            interfaceName: "RegisteredPolicies",
+          })
+        )
+
+        await promiseAll(fileGenPromises)
+        logger.debug("Generated policy types")
       }
 
       // Register a health check endpoint. Ideally this also checks the readiness of the service, rather than just returning a static response.

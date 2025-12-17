@@ -1,6 +1,5 @@
 import { MedusaContainer } from "@medusajs/framework/types"
-import { useCache } from "../caching"
-import { ContainerRegistrationKeys } from "../common"
+import { ContainerRegistrationKeys, useCache } from "@medusajs/framework/utils"
 
 export type PermissionAction = {
   resource: string
@@ -101,7 +100,6 @@ async function fetchSingleRolePolicies(
           resourceMap.get(policy.resource)!.add(policy.operation)
         }
 
-        // Store policy IDs for cache tagging
         ;(resourceMap as any).__policyIds = policyIds
       }
 
@@ -110,7 +108,7 @@ async function fetchSingleRolePolicies(
     {
       container,
       key: roleId,
-      tags: [`role:${roleId}`], // TODO: fix this
+      tags: [`role:${roleId}`],
       ttl: 60 * 60 * 24 * 7,
     }
   )
@@ -126,7 +124,6 @@ async function fetchRolePolicies(
 ): Promise<RolePoliciesCache> {
   const rolePoliciesMap: RolePoliciesCache = new Map()
 
-  // Fetch each role's policies individually (cached)
   await Promise.all(
     roleIds.map(async (roleId) => {
       const resourceMap = await fetchSingleRolePolicies(roleId, container)
