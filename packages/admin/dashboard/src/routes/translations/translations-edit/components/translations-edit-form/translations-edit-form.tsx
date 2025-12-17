@@ -18,29 +18,17 @@ import {
 import { KeyboundForm } from "../../../../../components/utilities/keybound-form"
 import { useBatchTranslations } from "../../../../../hooks/api/translations"
 
-/**
- * Schema for an entity's translations (parent row in DataGrid).
- * Contains all locale translations for that entity.
- */
 const EntityTranslationsSchema = z.object({
   id: z.string().nullish(),
   fields: z.record(z.string().optional()),
 })
 export type EntityTranslationsSchema = z.infer<typeof EntityTranslationsSchema>
 
-/**
- * Form schema
- * Maps each reference_id to their corresponding translations for each locale
- */
 export const TranslationsFormSchema = z.object({
   entities: z.record(EntityTranslationsSchema),
 })
 export type TranslationsFormSchema = z.infer<typeof TranslationsFormSchema>
 
-/**
- * Row types for the DataGrid.
- * Parent rows are entities, subrows are translatable fields.
- */
 export type TranslationRow = EntityRow | FieldRow
 
 export type EntityRow = {
@@ -63,44 +51,146 @@ export function isFieldRow(row: TranslationRow): row is FieldRow {
   return row._type === "field"
 }
 
-function initTranslationsFormState(
+type LocaleSnapshot = {
+  localeCode: string
+  entities: Record<string, EntityTranslationsSchema>
+}
+
+function buildLocaleSnapshot(
   translations: HttpTypes.AdminTranslation[],
   references: { id: string; [key: string]: string }[],
-  locale: AdminStoreLocale,
+  localeCode: string,
   translatableFields: string[]
-): TranslationsFormSchema {
-  const existingMap = new Map<string, HttpTypes.AdminTranslation>()
-  const localeTranslations = translations.filter(
-    (t) => t.locale_code === locale.locale_code
-  )
-
-  for (const t of localeTranslations) {
-    existingMap.set(t.reference_id, t)
+): LocaleSnapshot {
+  const referenceTranslations = new Map<string, HttpTypes.AdminTranslation>()
+  for (const t of translations) {
+    if (t.locale_code === localeCode) {
+      referenceTranslations.set(t.reference_id, t)
+    }
   }
 
-  const entitiesTranslationState: Record<string, EntityTranslationsSchema> = {}
-
-  for (const reference of references) {
-    const existingReferenceTranslation = existingMap.get(reference.id)
-
+  const entities: Record<string, EntityTranslationsSchema> = {}
+  for (const ref of references) {
+    const existing = referenceTranslations.get(ref.id)
     const fields: Record<string, string> = {}
+
     for (const fieldName of translatableFields) {
-      const fieldValue =
-        (existingReferenceTranslation?.translations?.[fieldName] as string) ??
-        ""
-      fields[fieldName] = fieldValue
+      fields[fieldName] = (existing?.translations?.[fieldName] as string) ?? ""
     }
 
-    entitiesTranslationState[reference.id] = {
-      id: existingReferenceTranslation?.id ?? null,
+    entities[ref.id] = {
+      id: existing?.id ?? null,
       fields,
     }
   }
 
-  return {
-    entities: entitiesTranslationState,
-  }
+  return { localeCode, entities }
 }
+
+function extendSnapshot(
+  snapshot: LocaleSnapshot,
+  translations: HttpTypes.AdminTranslation[],
+  newReferences: { id: string; [key: string]: string }[],
+  translatableFields: string[]
+): LocaleSnapshot {
+  const referenceTranslations = new Map<string, HttpTypes.AdminTranslation>()
+  for (const t of translations) {
+    if (t.locale_code === snapshot.localeCode) {
+      referenceTranslations.set(t.reference_id, t)
+    }
+  }
+
+  const extendedEntities = { ...snapshot.entities }
+
+  for (const ref of newReferences) {
+    if (!extendedEntities[ref.id]) {
+      const existing = referenceTranslations.get(ref.id)
+      const fields: Record<string, string> = {}
+
+      for (const fieldName of translatableFields) {
+        fields[fieldName] =
+          (existing?.translations?.[fieldName] as string) ?? ""
+      }
+
+      extendedEntities[ref.id] = {
+        id: existing?.id ?? null,
+        fields,
+      }
+    }
+  }
+
+  return { ...snapshot, entities: extendedEntities }
+}
+
+function snapshotToFormValues(
+  snapshot: LocaleSnapshot
+): TranslationsFormSchema {
+  return { entities: snapshot.entities }
+}
+
+type ChangeDetectionResult = {
+  hasChanges: boolean
+  payload: Required<HttpTypes.AdminBatchTranslations>
+}
+
+function computeChanges(
+  currentState: TranslationsFormSchema,
+  snapshot: LocaleSnapshot,
+  entityType: string,
+  localeCode: string
+): ChangeDetectionResult {
+  const payload: Required<HttpTypes.AdminBatchTranslations> = {
+    create: [],
+    update: [],
+    delete: [],
+  }
+
+  for (const [entityId, entityData] of Object.entries(currentState.entities)) {
+    const baseline = snapshot.entities[entityId]
+    if (!baseline) {
+      continue
+    }
+
+    const hasContent = Object.values(entityData.fields).some(
+      (v) => v !== undefined && v.trim() !== ""
+    )
+    const hadContent = Object.values(baseline.fields).some(
+      (v) => v !== undefined && v.trim() !== ""
+    )
+    const hasChanged =
+      JSON.stringify(entityData.fields) !== JSON.stringify(baseline.fields)
+
+    if (!entityData.id && hasContent) {
+      payload.create.push({
+        reference_id: entityId,
+        reference: entityType,
+        locale_code: localeCode,
+        translations: entityData.fields,
+      })
+    } else if (entityData.id && hasContent && hasChanged) {
+      payload.update.push({
+        id: entityData.id,
+        translations: entityData.fields,
+      })
+    } else if (entityData.id && !hasContent && hadContent) {
+      payload.delete.push(entityData.id)
+    }
+  }
+
+  const hasChanges =
+    payload.create.length > 0 ||
+    payload.update.length > 0 ||
+    payload.delete.length > 0
+
+  return { hasChanges, payload }
+}
+
+const columnHelper = createDataGridHelper<
+  TranslationRow,
+  TranslationsFormSchema
+>()
+
+const FIELD_COLUMN_WIDTH = 350
 
 function buildTranslationRows(
   references: { id: string; [key: string]: string }[],
@@ -117,104 +207,25 @@ function buildTranslationRows(
   }))
 }
 
-function transformToBatchPayload(
-  currentState: TranslationsFormSchema,
-  initialState: TranslationsFormSchema,
-  entityType: string,
-  locale: AdminStoreLocale
-): Required<HttpTypes.AdminBatchTranslations> {
-  const payload: Required<HttpTypes.AdminBatchTranslations> = {
-    create: [],
-    update: [],
-    delete: [],
-  }
-
-  for (const [entityId, entityData] of Object.entries(currentState.entities)) {
-    const initial = initialState.entities[entityId]
-    const hasContent = Object.values(entityData.fields).some(
-      (v) => v !== undefined && v.trim() !== ""
-    )
-
-    const hadContent =
-      initial &&
-      Object.values(initial.fields).some(
-        (v) => v !== undefined && v.trim() !== ""
-      )
-
-    if (!entityData.id && hasContent) {
-      payload.create.push({
-        reference_id: entityId,
-        reference: entityType,
-        locale_code: locale.locale_code,
-        translations: entityData.fields,
-      })
-    } else if (entityData.id && hasContent) {
-      const hasChanged =
-        !initial ||
-        JSON.stringify(entityData.fields) !== JSON.stringify(initial.fields)
-
-      if (hasChanged) {
-        payload.update.push({
-          id: entityData.id,
-          translations: entityData.fields,
-        })
-      }
-    } else if (entityData.id && !hasContent && hadContent) {
-      payload.delete.push(entityData.id)
-    }
-  }
-
-  return payload
-}
-
-function hasLocaleChanges(
-  currentState: TranslationsFormSchema,
-  initialState: TranslationsFormSchema
-): boolean {
-  for (const [entityId, entityData] of Object.entries(currentState.entities)) {
-    const initial = initialState.entities[entityId]
-
-    for (const [fieldName, fieldValue] of Object.entries(entityData.fields)) {
-      const initialValue = initial?.fields[fieldName] ?? ""
-      const currentValue = fieldValue ?? ""
-
-      if (currentValue !== initialValue) {
-        return true
-      }
-    }
-  }
-
-  return false
-}
-
-const columnHelper = createDataGridHelper<
-  TranslationRow,
-  TranslationsFormSchema
->()
-
-const FIELD_COLUMN_WIDTH = 350
-
 function useTranslationsGridColumns({
   entities,
-  translatableFields,
   availableLocales,
   selectedLocale,
   dynamicColumnWidth,
 }: {
   entities: { id: string; [key: string]: string }[]
-  translatableFields: string[]
   availableLocales: AdminStoreLocale[]
   selectedLocale: string
   dynamicColumnWidth: number
 }) {
   const { t } = useTranslation()
 
-  const columns: ColumnDef<TranslationRow>[] = useMemo(() => {
+  return useMemo(() => {
     const selectedLocaleData = availableLocales.find(
       (l) => l.locale_code === selectedLocale
     )
 
-    const baseColumns = [
+    const columns: ColumnDef<TranslationRow>[] = [
       columnHelper.column({
         id: "field",
         name: "field",
@@ -224,9 +235,7 @@ function useTranslationsGridColumns({
           const row = context.row.original
 
           if (isEntityRow(row)) {
-            return (
-              <DataGrid.ReadonlyCell context={context}></DataGrid.ReadonlyCell>
-            )
+            return <DataGrid.ReadonlyCell context={context} />
           }
 
           return (
@@ -261,14 +270,10 @@ function useTranslationsGridColumns({
           const row = context.row.original
 
           if (isEntityRow(row)) {
-            return (
-              <DataGrid.ReadonlyCell context={context}></DataGrid.ReadonlyCell>
-            )
+            return <DataGrid.ReadonlyCell context={context} />
           }
 
-          const entity = entities.find(
-            (entity) => entity.id === row.reference_id
-          )
+          const entity = entities.find((e) => e.id === row.reference_id)
           if (!entity) {
             return null
           }
@@ -285,7 +290,7 @@ function useTranslationsGridColumns({
     ]
 
     if (selectedLocaleData) {
-      baseColumns.push(
+      columns.push(
         columnHelper.column({
           id: selectedLocaleData.locale_code,
           name: selectedLocaleData.locale.name,
@@ -318,17 +323,8 @@ function useTranslationsGridColumns({
       )
     }
 
-    return baseColumns
-  }, [
-    t,
-    translatableFields,
-    availableLocales,
-    selectedLocale,
-    entities,
-    dynamicColumnWidth,
-  ])
-
-  return columns
+    return columns
+  }, [t, availableLocales, selectedLocale, entities, dynamicColumnWidth])
 }
 
 type TranslationsEditFormProps = {
@@ -383,84 +379,105 @@ export const TranslationsEditForm = ({
   const [selectedLocale, setSelectedLocale] = useState<string>(
     availableLocales[0]?.locale_code ?? ""
   )
-
   const [showUnsavedPrompt, setShowUnsavedPrompt] = useState(false)
   const [pendingLocale, setPendingLocale] = useState<string | null>(null)
+  const [isSwitchingLocale, setIsSwitchingLocale] = useState(false)
 
-  const entities = useMemo(() => references, [references])
-  const totalCount = useMemo(
+  const snapshotRef = useRef<LocaleSnapshot>(
+    buildLocaleSnapshot(
+      translations,
+      references,
+      selectedLocale,
+      translatableFields
+    )
+  )
+
+  const knownEntityIdsRef = useRef<Set<string>>(
+    new Set(references.map((r) => r.id))
+  )
+
+  const latestPropsRef = useRef({ translations, references })
+  useEffect(() => {
+    latestPropsRef.current = { translations, references }
+  }, [translations, references])
+
+  const form = useForm<TranslationsFormSchema>({
+    resolver: zodResolver(TranslationsFormSchema),
+    defaultValues: snapshotToFormValues(snapshotRef.current),
+  })
+
+  useEffect(() => {
+    const currentIds = new Set(references.map((r) => r.id))
+    const newReferences = references.filter(
+      (r) => !knownEntityIdsRef.current.has(r.id)
+    )
+
+    if (newReferences.length === 0) {
+      return
+    }
+
+    knownEntityIdsRef.current = currentIds
+    snapshotRef.current = extendSnapshot(
+      snapshotRef.current,
+      translations,
+      newReferences,
+      translatableFields
+    )
+
+    const currentValues = form.getValues()
+    const newFormValues: TranslationsFormSchema = {
+      entities: { ...currentValues.entities },
+    }
+
+    for (const ref of newReferences) {
+      if (!newFormValues.entities[ref.id]) {
+        newFormValues.entities[ref.id] = snapshotRef.current.entities[ref.id]
+      }
+    }
+
+    form.reset(newFormValues, {
+      keepDirty: true,
+      keepDirtyValues: true,
+    })
+  }, [references, translations, translatableFields, form])
+
+  const rows = useMemo(
+    () => buildTranslationRows(references, translatableFields),
+    [references, translatableFields]
+  )
+
+  const totalRowCount = useMemo(
     () => referenceCount * (translatableFields.length + 1),
     [referenceCount, translatableFields]
   )
 
-  const initialState = useRef(
-    initTranslationsFormState(
-      translations,
-      entities,
-      availableLocales.find((l) => l.locale_code === selectedLocale) ??
-        availableLocales[0]!,
-      translatableFields
-    )
+  const selectedLocaleDisplay = useMemo(
+    () =>
+      availableLocales.find((l) => l.locale_code === selectedLocale)?.locale
+        .name,
+    [availableLocales, selectedLocale]
   )
 
-  useEffect(() => {
-    const newState = initTranslationsFormState(
-      translations,
-      entities,
-      availableLocales.find((l) => l.locale_code === selectedLocale) ??
-        availableLocales[0]!,
-      translatableFields
-    )
-    initialState.current = newState
-    form.reset(newState)
-  }, [selectedLocale])
-
-  const form = useForm<TranslationsFormSchema>({
-    resolver: zodResolver(TranslationsFormSchema),
-    defaultValues: initialState.current,
+  const columns = useTranslationsGridColumns({
+    entities: references,
+    availableLocales,
+    selectedLocale,
+    dynamicColumnWidth,
   })
 
-  const rows = useMemo(
-    () => buildTranslationRows(entities, translatableFields),
-    [entities, translatableFields]
-  )
-
-  const { mutateAsync, isPending } = useBatchTranslations(entityType)
-
-  const handleLocaleChange = useCallback(
-    (newLocale: string) => {
-      if (newLocale === selectedLocale) {
-        return
-      }
-
-      const currentValues = form.getValues()
-      const hasChanges = hasLocaleChanges(currentValues, initialState.current)
-
-      if (hasChanges) {
-        setPendingLocale(newLocale)
-        setShowUnsavedPrompt(true)
-      } else {
-        setSelectedLocale(newLocale)
-      }
-    },
-    [selectedLocale, form]
-  )
+  const { mutateAsync, isPending, invalidateQueries } =
+    useBatchTranslations(entityType)
 
   const saveCurrentLocale = useCallback(async () => {
     const currentValues = form.getValues()
-    const payload = transformToBatchPayload(
+    const { hasChanges, payload } = computeChanges(
       currentValues,
-      initialState.current,
+      snapshotRef.current,
       entityType,
-      availableLocales.find((l) => l.locale_code === selectedLocale) ??
-        availableLocales[0]!
+      selectedLocale
     )
 
-    if (
-      payload.create.length === 0 &&
-      payload.update.length === 0 &&
-      payload.delete.length === 0
-    ) {
+    if (!hasChanges) {
       return true
     }
 
@@ -472,11 +489,13 @@ export const TranslationsEditForm = ({
 
       for (let i = 0; i < batchCount; i++) {
         let currentBatchAvailable = BATCH_SIZE
+
         const currentBatch: HttpTypes.AdminBatchTranslations = {
           create: [],
           update: [],
           delete: [],
         }
+
         if (payload.create.length > 0) {
           currentBatch.create = payload.create.splice(0, currentBatchAvailable)
           currentBatchAvailable -= currentBatch.create.length
@@ -487,7 +506,6 @@ export const TranslationsEditForm = ({
         }
         if (payload.delete.length > 0) {
           currentBatch.delete = payload.delete.splice(0, currentBatchAvailable)
-          currentBatchAvailable -= currentBatch.delete.length
         }
 
         const response = await mutateAsync(currentBatch, {
@@ -501,24 +519,23 @@ export const TranslationsEditForm = ({
             form.setValue(`entities.${created.reference_id}.id`, created.id, {
               shouldDirty: false,
             })
-            if (initialState.current.entities[created.reference_id]) {
-              initialState.current.entities[created.reference_id].id =
-                created.id
+            if (snapshotRef.current.entities[created.reference_id]) {
+              snapshotRef.current.entities[created.reference_id].id = created.id
             }
           }
         }
       }
 
-      const updatedInitialState = { ...initialState.current }
-      for (const entityId of Object.keys(currentValues.entities)) {
-        if (updatedInitialState.entities[entityId]) {
-          updatedInitialState.entities[entityId] = {
-            ...currentValues.entities[entityId],
+      const savedValues = form.getValues()
+      for (const entityId of Object.keys(savedValues.entities)) {
+        if (snapshotRef.current.entities[entityId]) {
+          snapshotRef.current.entities[entityId] = {
+            ...savedValues.entities[entityId],
           }
         }
       }
-      initialState.current = updatedInitialState
-      form.reset(currentValues)
+
+      form.reset(savedValues)
 
       return true
     } catch (error) {
@@ -529,15 +546,70 @@ export const TranslationsEditForm = ({
     }
   }, [form, entityType, selectedLocale, mutateAsync])
 
+  const switchToLocale = useCallback(
+    async (newLocale: string) => {
+      setIsSwitchingLocale(true)
+
+      try {
+        await invalidateQueries()
+
+        await new Promise((resolve) => requestAnimationFrame(resolve))
+
+        const { translations, references } = latestPropsRef.current
+
+        const newSnapshot = buildLocaleSnapshot(
+          translations,
+          references,
+          newLocale,
+          translatableFields
+        )
+
+        snapshotRef.current = newSnapshot
+        knownEntityIdsRef.current = new Set(references.map((r) => r.id))
+
+        form.reset(snapshotToFormValues(newSnapshot))
+
+        setSelectedLocale(newLocale)
+      } finally {
+        setIsSwitchingLocale(false)
+      }
+    },
+    [translatableFields, form, invalidateQueries]
+  )
+
+  const handleLocaleChange = useCallback(
+    (newLocale: string) => {
+      if (newLocale === selectedLocale) {
+        return
+      }
+
+      const currentValues = form.getValues()
+      const { hasChanges } = computeChanges(
+        currentValues,
+        snapshotRef.current,
+        entityType,
+        selectedLocale
+      )
+
+      if (hasChanges) {
+        setPendingLocale(newLocale)
+        setShowUnsavedPrompt(true)
+      } else {
+        switchToLocale(newLocale)
+      }
+    },
+    [selectedLocale, form, entityType, switchToLocale]
+  )
+
   const handleSaveAndSwitch = useCallback(async () => {
     const success = await saveCurrentLocale()
     if (success && pendingLocale) {
       toast.success(t("translations.edit.successToast"))
-      setSelectedLocale(pendingLocale)
+      await switchToLocale(pendingLocale)
     }
     setShowUnsavedPrompt(false)
     setPendingLocale(null)
-  }, [saveCurrentLocale, pendingLocale, t])
+  }, [saveCurrentLocale, pendingLocale, t, switchToLocale])
 
   const handleCancelSwitch = useCallback(() => {
     setShowUnsavedPrompt(false)
@@ -557,25 +629,19 @@ export const TranslationsEditForm = ({
     [saveCurrentLocale, t, handleSuccess]
   )
 
-  const columns = useTranslationsGridColumns({
-    entities,
-    translatableFields,
-    availableLocales,
-    selectedLocale,
-    dynamicColumnWidth,
-  })
+  const handleClose = useCallback(() => {
+    invalidateQueries()
+  }, [invalidateQueries])
 
-  const selectedLocaleDisplay = availableLocales.find(
-    (l) => l.locale_code === selectedLocale
-  )?.locale.name
+  const isLoading = isPending || isSwitchingLocale
 
   return (
-    <RouteFocusModal.Form form={form}>
+    <RouteFocusModal.Form form={form} onClose={handleClose}>
       <KeyboundForm
         onSubmit={() => handleSave(true)}
         className="flex h-full flex-col overflow-hidden"
       >
-        <RouteFocusModal.Header></RouteFocusModal.Header>
+        <RouteFocusModal.Header />
         <RouteFocusModal.Body className="size-full overflow-hidden">
           <div ref={containerRef} className="size-full">
             <DataGrid
@@ -589,13 +655,13 @@ export const TranslationsEditForm = ({
               }}
               state={form}
               onEditingChange={(editing) => setCloseOnEscape(!editing)}
-              totalRowCount={totalCount}
+              totalRowCount={totalRowCount}
               onFetchMore={fetchNextPage}
               isFetchingMore={isFetchingNextPage}
               hasNextPage={hasNextPage}
               headerContent={
                 <Select
-                  disabled={isPending}
+                  disabled={isLoading}
                   value={selectedLocale}
                   onValueChange={handleLocaleChange}
                   size="small"
@@ -625,7 +691,7 @@ export const TranslationsEditForm = ({
                 type="button"
                 size="small"
                 variant="secondary"
-                isLoading={isPending}
+                isLoading={isLoading}
               >
                 {t("actions.cancel")}
               </Button>
@@ -635,11 +701,11 @@ export const TranslationsEditForm = ({
               type="button"
               variant="secondary"
               onClick={() => handleSave(false)}
-              isLoading={isPending}
+              isLoading={isLoading}
             >
               {t("actions.saveChanges")}
             </Button>
-            <Button size="small" type="submit" isLoading={isPending}>
+            <Button size="small" type="submit" isLoading={isLoading}>
               {t("actions.saveAndClose")}
             </Button>
           </div>
@@ -669,7 +735,7 @@ export const TranslationsEditForm = ({
               size="small"
               onClick={handleSaveAndSwitch}
               type="button"
-              isLoading={isPending}
+              isLoading={isLoading}
             >
               {t("actions.saveChanges")}
             </Button>

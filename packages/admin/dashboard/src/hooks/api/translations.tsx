@@ -229,6 +229,15 @@ export const useTranslations = (
   return { ...data, ...rest }
 }
 
+const referenceInvalidationKeysMap = new Map<string, QueryKey>([
+  ["product", productsQueryKeys.lists()],
+  ["product_variant", productVariantQueryKeys.lists()],
+  ["product_category", categoriesQueryKeys.lists()],
+  ["product_collection", collectionsQueryKeys.lists()],
+  ["product_type", productTypesQueryKeys.lists()],
+  ["product_tag", productTagsQueryKeys.lists()],
+])
+
 export const useBatchTranslations = (
   reference: string,
   options?: UseMutationOptions<
@@ -237,30 +246,30 @@ export const useBatchTranslations = (
     HttpTypes.AdminBatchTranslations
   >
 ) => {
-  const referenceInvalidationKeysMap = new Map<string, QueryKey>([
-    ["product", productsQueryKeys.lists()],
-    ["product_variant", productVariantQueryKeys.lists()],
-    ["product_category", categoriesQueryKeys.lists()],
-    ["product_collection", collectionsQueryKeys.lists()],
-    ["product_type", productTypesQueryKeys.lists()],
-    ["product_tag", productTagsQueryKeys.lists()],
-  ])
-
-  return useMutation({
+  const mutation = useMutation({
     mutationFn: (payload: HttpTypes.AdminBatchTranslations) =>
       sdk.admin.translation.batch(payload),
-    onSuccess: (data, variables, context) => {
-      queryClient.invalidateQueries({
-        queryKey: referenceInvalidationKeysMap.get(reference),
-      })
-      queryClient.invalidateQueries({
-        queryKey: translationStatisticsQueryKeys.lists(),
-      })
-
-      options?.onSuccess?.(data, variables, context)
-    },
     ...options,
   })
+
+  /**
+   * Useful to call the invalidation separately from the batch request and await the refetch finishes.
+   */
+  const invalidateQueries = async () => {
+    await Promise.all([
+      queryClient.invalidateQueries({
+        queryKey: referenceInvalidationKeysMap.get(reference),
+      }),
+      queryClient.invalidateQueries({
+        queryKey: translationStatisticsQueryKeys.lists(),
+      }),
+    ])
+  }
+
+  return {
+    ...mutation,
+    invalidateQueries,
+  }
 }
 
 export const useTranslationSettings = (
