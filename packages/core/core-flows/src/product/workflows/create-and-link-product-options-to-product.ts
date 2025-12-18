@@ -6,11 +6,13 @@ import {
   WorkflowData,
   WorkflowResponse,
 } from "@medusajs/framework/workflows-sdk"
+import { isString, ProductWorkflowEvents } from "@medusajs/framework/utils"
+
 import {
   createProductOptionsStep,
   linkProductOptionsToProductStep,
 } from "../steps"
-import { isString } from "@medusajs/framework/utils"
+import { emitEventStep } from "../../common"
 
 /**
  * The data to manage product options of a product.
@@ -23,7 +25,7 @@ export type LinkProductOptionsToProductWorkflowInput = {
   /**
    * The product options to add to the product. You can pass one of the
    * following:
-   * 
+   *
    * 1. The ID of an existing product option as a string.
    * 2. An object with `id` and `value_ids` to add an existing product option with specific values. This
    * is useful when you want to associate only specific option values of an option to the product.
@@ -31,16 +33,16 @@ export type LinkProductOptionsToProductWorkflowInput = {
    */
   add?: (
     | string
-    | { 
-      /**
-       * The ID of the product option to add.
-       */
-      id: string;
-      /**
-       * The IDs of the product option values to associate with the product option.
-       */ 
-      value_ids: string[]
-    }
+    | {
+        /**
+         * The ID of the product option to add.
+         */
+        id: string
+        /**
+         * The IDs of the product option values to associate with the product option.
+         */
+        value_ids: string[]
+      }
     | ProductTypes.CreateProductOptionDTO
   )[]
   /**
@@ -56,9 +58,9 @@ export const createAndLinkProductOptionsToProductWorkflowId =
  * [Manage Product Options](https://docs.medusajs.com/api/admin#products_postproductsidoptions).
  * This workflow also creates non-existing product options before adding them to the product.
  *
- * You can also use this workflow within your customizations or your own custom workflows, allowing you 
+ * You can also use this workflow within your customizations or your own custom workflows, allowing you
  * to wrap custom logic around product-option and product association.
- * 
+ *
  * @since 2.13.0
  *
  * @example
@@ -163,6 +165,13 @@ export const createAndLinkProductOptionsToProductWorkflow = createWorkflow(
       product_id: input.product_id,
       add: toAddOptions,
       remove: input.remove,
+    })
+
+    const eventData = transform(input, ({ product_id }) => ({ id: product_id }))
+
+    emitEventStep({
+      eventName: ProductWorkflowEvents.UPDATED,
+      data: eventData,
     })
 
     return new WorkflowResponse(productOptions)
