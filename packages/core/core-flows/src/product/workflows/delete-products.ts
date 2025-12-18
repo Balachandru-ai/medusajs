@@ -14,7 +14,6 @@ import {
 } from "../../common"
 import { deleteInventoryItemWorkflow } from "../../inventory"
 import { deleteProductsStep } from "../steps/delete-products"
-import { removeProductOptionAssociationsStep } from "../steps/remove-product-option-associations"
 import { deleteProductOptionsWorkflow } from "./delete-product-options"
 
 /**
@@ -93,11 +92,18 @@ export const deleteProductsWorkflow = createWorkflow(
       }
     )
 
-    const variantsToBeDeleted = transform({ productsToDelete }, (data) => {
-      return data.productsToDelete
-        .flatMap((product) => product.variants)
-        .map((variant) => variant.id)
-    })
+    const [variantsToBeDeleted, allVariantsIds] = transform(
+      { productsToDelete },
+      (data) => {
+        const allVariants = data.productsToDelete.flatMap(
+          (product) => product.variants
+        )
+
+        const allVariantsIds = allVariants.map((variant) => variant.id)
+
+        return [allVariants, allVariantsIds]
+      }
+    )
 
     const toDeleteInventoryItemIds = transform(
       { variants: variantsToBeDeleted },
@@ -130,20 +136,13 @@ export const deleteProductsWorkflow = createWorkflow(
     const [, deletedProduct] = parallelize(
       removeRemoteLinkStep({
         [Modules.PRODUCT]: {
-          variant_id: variantsToBeDeleted,
+          variant_id: allVariantsIds,
           product_id: input.ids,
         },
       }).config({ name: "remove-product-variant-link-step" }),
       deleteProductsStep(input.ids)
     )
 
-    // unassociate ALL! product <> options
-    removeProductOptionAssociationsStep({
-      productIds: input.ids,
-      optionIds: exclusiveOptionsToDelete,
-    })
-
-    // TODO: delete only exclusive options
     deleteProductOptionsWorkflow.runAsStep({
       input: {
         ids: exclusiveOptionsToDelete,
