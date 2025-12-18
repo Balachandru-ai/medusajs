@@ -294,4 +294,38 @@ export class ProductRepository extends DALUtils.mikroOrmBaseRepositoryFactory(
 
     return resultMap
   }
+
+  /**
+   * Checks if product options can be deleted.
+   * An option cannot be deleted if there are non-deleted products using it.
+   *
+   * @param optionIds - Array of option IDs to check
+   * @param context - The context
+   * @returns true if all options can be deleted, false if any cannot be deleted
+   */
+  async canDeleteProductOption(
+    optionIds: string[],
+    context: Context = {}
+  ): Promise<boolean> {
+    if (!optionIds.length) {
+      return true
+    }
+
+    const manager = this.getActiveManager<SqlEntityManager>(context)
+    const connection = manager.getConnection()
+    const knex = connection.getKnex()
+
+    const blockingOptions = await knex
+      .select("ppo.product_option_id")
+      .from("product_product_option as ppo")
+      .innerJoin("product as p", "p.id", "ppo.product_id")
+      .innerJoin("product_option as po", "po.id", "ppo.product_option_id")
+      .whereIn("ppo.product_option_id", optionIds)
+      .whereNull("ppo.deleted_at")
+      .whereNull("p.deleted_at") // <- allow soft deleting an option that is associated with a soft deleted product
+      .whereNull("po.deleted_at")
+      .limit(1)
+
+    return !blockingOptions.length
+  }
 }

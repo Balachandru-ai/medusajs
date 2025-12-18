@@ -1,4 +1,7 @@
-import { deleteProductsWorkflow } from "@medusajs/core-flows"
+import {
+  deleteProductsWorkflow,
+  deleteProductsWorkflowId,
+} from "@medusajs/core-flows"
 import { medusaIntegrationTestRunner } from "@medusajs/test-utils"
 import {
   IFulfillmentModuleService,
@@ -30,7 +33,7 @@ medusaIntegrationTestRunner({
       })
 
       describe("deleteProductsWorkflow", () => {
-        it.only("should delete exclusive option when deleting its only associated product", async () => {
+        it("should delete exclusive option when deleting its only associated product", async () => {
           const workflow = deleteProductsWorkflow(appContainer)
 
           const product = await service.createProducts({
@@ -139,6 +142,72 @@ medusaIntegrationTestRunner({
           })
           expect(nonExclusiveOptions).toHaveLength(1)
           expect(nonExclusiveOptions[0].id).toBe(globalOption.id)
+        })
+
+        it("should restore options and product data when a failure step is added at the end", async () => {
+          const workflow = deleteProductsWorkflow(appContainer)
+
+          const product = await service.createProducts({
+            title: "Test Product",
+            shipping_profile_id: shippingProfile.id,
+            options: [
+              {
+                title: "Size",
+                values: ["S", "M", "L"],
+              },
+            ],
+          })
+
+          const option = product.options[0]
+          expect(option.is_exclusive).toBe(true)
+
+          workflow.appendAction("throw", deleteProductsWorkflowId, {
+            invoke: async () => {
+              throw new Error(`Failed after product deletion`)
+            },
+          })
+
+          const { errors } = await workflow.run({
+            input: {
+              ids: [product.id],
+            },
+            throwOnError: false,
+          })
+
+          expect(errors).toEqual([
+            {
+              action: "throw",
+              handlerType: "invoke",
+              error: expect.objectContaining({
+                message: `Failed after product deletion`,
+              }),
+            },
+          ])
+
+          const restoredProducts = await service.listProducts(
+            {
+              id: [product.id],
+            },
+            {
+              relations: ["options", "options.values"],
+            }
+          )
+          expect(restoredProducts).toHaveLength(1)
+          expect(restoredProducts[0].id).toBe(product.id)
+          expect(restoredProducts[0].deleted_at).toBeNull()
+
+          expect(restoredProducts[0].options).toHaveLength(1)
+          expect(restoredProducts[0].options[0].id).toBe(option.id)
+          expect(
+            restoredProducts[0].options[0].values.map((v) => v.id)
+          ).toEqual(expect.arrayContaining(option.values.map((v) => v.id)))
+
+          const restoredOptions = await service.listProductOptions({
+            id: [option.id],
+          })
+          expect(restoredOptions).toHaveLength(1)
+          expect(restoredOptions[0].id).toBe(option.id)
+          expect(restoredOptions[0].deleted_at).toBeNull()
         })
       })
     })

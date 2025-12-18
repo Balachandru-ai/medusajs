@@ -9,6 +9,7 @@ import {
   ModuleJoinerConfig,
   ModulesSdkTypes,
   ProductTypes,
+  RestoreReturn,
   SoftDeleteReturn,
 } from "@medusajs/framework/types"
 import { CreateProductOptionDTO } from "@medusajs/types"
@@ -119,6 +120,9 @@ export default class ProductModuleService
     ProductImage: {
       dto: ProductTypes.ProductImageDTO
     }
+    ProductProductOption: {
+      dto: ProductTypes.ProductProductOptionDTO
+    }
   }>({
     Product,
     ProductCategory,
@@ -129,6 +133,7 @@ export default class ProductModuleService
     ProductType,
     ProductVariant,
     ProductImage,
+    ProductProductOption,
   })
   implements ProductTypes.IProductModuleService
 {
@@ -1330,21 +1335,58 @@ export default class ProductModuleService
             : (primaryKeyValues as any).id,
         ]
 
-    const productOptionsProducts = await this.productProductOptionService_.list(
+    const canDelete = await this.productRepository_.canDeleteProductOption(
+      optionIds,
+      sharedContext
+    )
+
+    if (!canDelete) {
+      throw new MedusaError(
+        MedusaError.Types.INVALID_DATA,
+        "Cannot delete product options that are associated with non-deleted products."
+      )
+    }
+
+    const productProductOptions = await this.productProductOptionService_.list(
       {
         product_option_id: optionIds,
       },
       {
         select: ["id"],
-        take: 1,
       },
       sharedContext
     )
 
-    if (productOptionsProducts.length > 0) {
-      throw new MedusaError(
-        MedusaError.Types.INVALID_DATA,
-        "Cannot delete product options that are associated with products."
+    const productProductOptionIds = productProductOptions.map((ppo) => ppo.id)
+
+    if (productProductOptionIds.length) {
+      const productProductOptionValues =
+        await this.productProductOptionValueService_.list(
+          {
+            product_product_option_id: productProductOptionIds,
+          },
+          {
+            select: ["id"],
+          },
+          sharedContext
+        )
+
+      const productProductOptionValueIds = productProductOptionValues.map(
+        (ppov) => ppov.id
+      )
+
+      if (productProductOptionValueIds.length) {
+        await this.productProductOptionValueService_.softDelete(
+          productProductOptionValueIds,
+          sharedContext
+        )
+      }
+    }
+
+    if (productProductOptionIds.length) {
+      await this.productProductOptionService_.softDelete(
+        productProductOptionIds,
+        sharedContext
       )
     }
 
@@ -1353,6 +1395,77 @@ export default class ProductModuleService
       config,
       sharedContext
     )
+  }
+
+  @InjectManager()
+  @EmitEvents()
+  // @ts-ignore
+  async restoreProductOptions<TReturnableLinkableKeys extends string>(
+    ids: string | object | string[] | object[],
+    config?: RestoreReturn<TReturnableLinkableKeys>,
+    @MedusaContext() sharedContext: Context = {}
+  ): Promise<Record<string, string[]> | void> {
+    return await this.restoreProductOptions_(ids, config, sharedContext)
+  }
+
+  @InjectTransactionManager()
+  protected async restoreProductOptions_<
+    TReturnableLinkableKeys extends string
+  >(
+    ids: string | object | string[] | object[],
+    config?: RestoreReturn<TReturnableLinkableKeys>,
+    @MedusaContext() sharedContext: Context = {}
+  ): Promise<Record<string, string[]> | void> {
+    const optionIds = Array.isArray(ids)
+      ? ids.map((v) => (isString(v) ? v : (v as any).id))
+      : [isString(ids) ? ids : (ids as any).id]
+
+    const productProductOptions = await this.productProductOptionService_.list(
+      {
+        product_option_id: optionIds,
+      },
+      {
+        select: ["id"],
+        withDeleted: true,
+      },
+      sharedContext
+    )
+
+    const productProductOptionIds = productProductOptions.map((ppo) => ppo.id)
+
+    if (productProductOptionIds.length) {
+      const productProductOptionValues =
+        await this.productProductOptionValueService_.list(
+          {
+            product_product_option_id: productProductOptionIds,
+          },
+          {
+            select: ["id"],
+            withDeleted: true,
+          },
+          sharedContext
+        )
+
+      const productProductOptionValueIds = productProductOptionValues.map(
+        (ppov) => ppov.id
+      )
+
+      if (productProductOptionValueIds.length) {
+        await this.productProductOptionValueService_.restore(
+          productProductOptionValueIds,
+          sharedContext
+        )
+      }
+    }
+
+    if (productProductOptionIds.length) {
+      await this.productProductOptionService_.restore(
+        productProductOptionIds,
+        sharedContext
+      )
+    }
+
+    return await super.restoreProductOptions(ids, config, sharedContext)
   }
 
   async addProductOptionToProduct(
@@ -1524,7 +1637,7 @@ export default class ProductModuleService
       {
         $or: pairs,
       },
-      { withDeleted: true }, // TODO: temp test
+      {},
       sharedContext
     )
 
@@ -1556,6 +1669,37 @@ export default class ProductModuleService
 
     await this.productProductOptionService_.delete(
       productOptionsProductIds,
+      sharedContext
+    )
+  }
+
+  @InjectManager()
+  // @ts-expect-error
+  async softDeleteProductProductOptions<
+    TReturnableLinkableKeys extends string = string
+  >(
+    primaryKeyValues: string | object | string[] | object[],
+    config?: SoftDeleteReturn<TReturnableLinkableKeys>,
+    @MedusaContext() sharedContext: Context = {}
+  ): Promise<Record<string, string[]> | void> {
+    return await this.softDeleteProductProductOptions_(
+      primaryKeyValues,
+      config,
+      sharedContext
+    )
+  }
+
+  @InjectTransactionManager()
+  protected async softDeleteProductProductOptions_<
+    TReturnableLinkableKeys extends string = string
+  >(
+    primaryKeyValues: string | object | string[] | object[],
+    config?: SoftDeleteReturn<TReturnableLinkableKeys>,
+    @MedusaContext() sharedContext: Context = {}
+  ): Promise<Record<string, string[]> | void> {
+    return await super.softDeleteProductProductOptions(
+      primaryKeyValues,
+      config,
       sharedContext
     )
   }
