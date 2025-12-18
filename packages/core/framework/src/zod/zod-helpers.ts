@@ -13,7 +13,7 @@ function getReceivedValue(issue: ZodIssueInvalidValue, body: any) {
     return issue.received
   } else {
     return issue.path.reduce(
-      (acc: any, curr: string | number | symbol) => acc[curr as string],
+      (acc: any, curr: string | number | symbol) => acc?.[curr as string],
       body
     )
   }
