@@ -409,7 +409,7 @@ function buildLocalCommands(cli, isLocalProject) {
       builder: (_) =>
         _.option("types", {
           type: "boolean",
-          default: true,
+          default: false,
           describe:
             "Generate automated types for modules inside the .medusa directory",
         })
