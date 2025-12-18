@@ -1343,7 +1343,7 @@ export default class ProductModuleService
     if (!canDelete) {
       throw new MedusaError(
         MedusaError.Types.INVALID_DATA,
-        "Cannot delete product options that are associated with non-deleted products."
+        "Cannot delete product options that are associated with products."
       )
     }
 

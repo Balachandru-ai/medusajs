@@ -114,6 +114,14 @@ medusaIntegrationTestRunner({
                 values: ["S", "M", "L"],
               },
             ],
+            variants: [
+              {
+                title: "Small",
+                options: {
+                  Size: "S",
+                },
+              },
+            ],
           })
 
           const exclusiveOption = product.options[0]
@@ -130,13 +138,11 @@ medusaIntegrationTestRunner({
             },
           })
 
-          // Verify the exclusive option is deleted
           const exclusiveOptions = await service.listProductOptions({
             id: [exclusiveOption.id],
           })
           expect(exclusiveOptions).toHaveLength(0)
 
-          // Verify the non-exclusive option still exists
           const nonExclusiveOptions = await service.listProductOptions({
             id: [globalOption.id],
           })
@@ -154,6 +160,14 @@ medusaIntegrationTestRunner({
               {
                 title: "Size",
                 values: ["S", "M", "L"],
+              },
+            ],
+            variants: [
+              {
+                title: "Small",
+                options: {
+                  Size: "S",
+                },
               },
             ],
           })
@@ -189,12 +203,14 @@ medusaIntegrationTestRunner({
               id: [product.id],
             },
             {
-              relations: ["options", "options.values"],
+              relations: ["options", "options.values", "variants"],
             }
           )
           expect(restoredProducts).toHaveLength(1)
           expect(restoredProducts[0].id).toBe(product.id)
           expect(restoredProducts[0].deleted_at).toBeNull()
+
+          expect(restoredProducts[0].variants).toHaveLength(1)
 
           expect(restoredProducts[0].options).toHaveLength(1)
           expect(restoredProducts[0].options[0].id).toBe(option.id)
