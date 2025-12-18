@@ -92,7 +92,7 @@ export const deleteProductsWorkflow = createWorkflow(
       }
     )
 
-    const [variantsToBeDeleted, allVariantsIds] = transform(
+    const { variantsToBeDeleted, allVariantsIds } = transform(
       { productsToDelete },
       (data) => {
         const allVariants = data.productsToDelete.flatMap(
@@ -101,7 +101,7 @@ export const deleteProductsWorkflow = createWorkflow(
 
         const allVariantsIds = allVariants.map((variant) => variant.id)
 
-        return [allVariants, allVariantsIds]
+        return { variantsToBeDeleted: allVariants, allVariantsIds }
       }
     )
 
