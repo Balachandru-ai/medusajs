@@ -21,7 +21,7 @@ const PREFIX = "cusord"
 const PAGE_SIZE = 10
 const DEFAULT_RELATIONS = "*customer,*items,*sales_channel"
 const DEFAULT_FIELDS =
-  "id,status,display_id,created_at,email,fulfillment_status,payment_status,total,currency_code,payment_collections"
+  "id,status,display_id,created_at,email,fulfillment_status,payment_status,total,currency_code,payment_collections,shipping_address.country_code"
 
 export const CustomerOrderSection = ({
   customer,

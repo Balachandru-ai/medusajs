@@ -121,7 +121,7 @@ export const useOrderTableColumns = (props: UseOrderTableColumnsProps) => {
       columnHelper.display({
         id: "actions",
         cell: ({ row }) => {
-          const country = row.original.shipping_address?.country
+          const country = row.original.shipping_address?.country_code
 
           return <CountryCell country={country} />
         },
