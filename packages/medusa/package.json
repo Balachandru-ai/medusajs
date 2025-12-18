@@ -94,6 +94,7 @@
     "@medusajs/pricing": "2.12.2",
     "@medusajs/product": "2.12.2",
     "@medusajs/promotion": "2.12.2",
+    "@medusajs/rbca": "2.12.2",
     "@medusajs/region": "2.12.2",
     "@medusajs/sales-channel": "2.12.2",
     "@medusajs/settings": "2.12.2",

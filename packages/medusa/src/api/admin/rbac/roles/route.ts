@@ -3,7 +3,12 @@ import {
   AuthenticatedMedusaRequest,
   MedusaResponse,
 } from "@medusajs/framework/http"
-import { ContainerRegistrationKeys } from "@medusajs/framework/utils"
+import {
+  ContainerRegistrationKeys,
+  defineFileConfig,
+  FeatureFlag,
+} from "@medusajs/framework/utils"
+import RbacFeatureFlag from "../../../../feature-flags/rbac"
 import { AdminCreateRbacRoleType } from "./validators"
 
 export const GET = async (
@@ -51,3 +56,7 @@ export const POST = async (
 
   res.status(200).json({ role })
 }
+
+defineFileConfig({
+  isDisabled: () => !FeatureFlag.isFeatureEnabled(RbacFeatureFlag.key),
+})
