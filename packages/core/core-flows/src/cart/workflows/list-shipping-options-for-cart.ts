@@ -365,7 +365,7 @@ export const listShippingOptionsForCartWorkflow = createWorkflow(
       locale: cart.locale,
     })
 
-    return new WorkflowResponse(translatedShippingOptions, {
+    return new WorkflowResponse(translatedShippingOptions as any[], {
       hooks: [setPricingContext, setShippingOptionsContext] as const,
     })
   }
