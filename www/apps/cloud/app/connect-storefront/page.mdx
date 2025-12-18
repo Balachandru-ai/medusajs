@@ -6,11 +6,16 @@ export const metadata = {
 
 In this guide, you'll learn how to allow your production storefront to send requests to your Medusa application deployed on Cloud.
 
-## Cloud and Storefront Hosting Overview
+## Cloud and External Storefront Hosting Overview
 
-Cloud only hosts Medusa applications. It doesn't support hosting your storefronts. Instead, you can use hosting providers like [Vercel](https://vercel.com/) to host your storefronts.
+Medusa provides [storefront deployment](../storefront/page.mdx) alongside your Medusa application on Cloud. By deploying your storefront with Cloud, Medusa automatically handles the necessary configurations to connect your storefront to your Medusa application.
 
-If you're using the [Next.js Starter Storefront](!resources!/nextjs-starter), you can follow the [Deploy to Vercel](!resources!/deployment/storefront/vercel) guide to deploy your storefront.
+You can also host your storefront with an external provider, such as Vercel or Netlify. You may need this setup if:
+
+1. Your storefront isn't part of a monorepo with your Medusa application.
+2. You want to use an account with an external provider to manage your storefront hosting.
+
+If you're using the [Next.js Starter Storefront](!resources!/nextjs-starter), you can follow the [Deploy to Vercel](!resources!/deployment/storefront/vercel) guide to deploy your storefront externally.
 
 To send requests from your production storefront, you need to add some configurations both to it and the Medusa application deployed on Cloud. Otherwise, you'll receive an error when trying to send requests from the storefront.
 

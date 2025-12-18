@@ -1,0 +1,51 @@
+export const metadata = {
+  title: `Storefront Deployment on Cloud`,
+}
+
+# {metadata.title}
+
+In this guide, you'll learn how to deploy your storefront with your Medusa application on Cloud.
+
+## Storefront Deployment Overview
+
+Medusa allows you to deploy your storefront alongside your Medusa application on Cloud, enabling you to host and manage both backend and frontend in a single platform.
+
+To deploy a storefront with your Medusa application on Cloud, you need a monorepo structure where both the Medusa application and storefront code are in the same repository. Medusa will then build and deploy both the backend and frontend.
+
+![Diagram showcasing how a monorepo is deployed on Cloud. A project will hold a Medusa application with a server and admin, and a storefront.](https://res.cloudinary.com/dza7lstvk/image/upload/v1766044505/Cloud/storefront-overview_ebmefz.jpg)
+
+### Storefront Deployment Per Environment
+
+Similar to the Medusa server, Medusa deploys separate instances of your storefront for every long-lived and preview environment, based on your plan's limits. This allows you to test and preview changes in isolation.
+
+Medusa also automatically configures the necessary settings for each environment, such as URLs, API keys, and Cross-Origin Resource Sharing (CORS) settings, to ensure seamless connectivity between the storefront and Medusa application.
+
+---
+
+## Storefront Hosting Pricing
+
+Storefront deployment is included in your organization's [plan](../pricing/page.mdx) at no additional cost, subject to usage limits.
+
+Exceeding these limits may incur [Flex Usage](../usage/page.mdx#what-is-flex-usage) charges.
+
+---
+
+## Storefront Hosting Features
+
+Cloud's storefront hosting includes the following features:
+
+1. **End-to-end deployment of your commerce application**: Host and manage all components of your commerce application, including server, admin, and storefront, in a single platform.
+2. **Zero-configuration deployment**: Medusa automatically configures your server and storefront settings, including URLs and CORS, to ensure seamless connectivity between the two.
+3. **Storefront previews**: Medusa creates both backend and storefront previews for GitHub pull requests, automatically configuring preview URLs and settings to connect to the corresponding Medusa preview. You can preview changes in your storefront while previewing backend changes.
+4. **Framework agnostic**: Deploy storefronts built with any frontend framework, such as Tanstack Start, Next.js, or Vite.
+5. **Custom domains**: Set up custom domains for your storefronts to use branded URLs for your customers.
+6. **SSL Certificates**: Cloud automatically provisions and renews SSL certificates for your custom domains, ensuring secure connections for your customers.
+7. **Global CDN**: Storefronts are served via a global Content Delivery Network (CDN), ensuring fast load times for your customers regardless of their location.
+8. **Environment-specific configurations**: Each environment (production, staging, previews) has its own configuration, allowing you to test changes without affecting the live storefront.
+9. **Multi-storefront support**: Deploy multiple storefronts from the same monorepo. For example, you can deploy both a Direct-to-Consumer (DTC) and a Business-to-Business (B2B) storefront that connect to the same Medusa server.
+
+---
+
+## Access Storefront Deployment
+
+Storefront deployment is currently in beta and available for select users. If you're interested in trying it out, contact support.

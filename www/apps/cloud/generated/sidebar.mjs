@@ -138,6 +138,18 @@ export const generatedSidebars = [
             "loaded": true,
             "isPathHref": true,
             "type": "link",
+            "title": "Storefront",
+            "path": "/storefront",
+            "badge": {
+              "text": "Beta",
+              "variant": "blue"
+            },
+            "children": []
+          },
+          {
+            "loaded": true,
+            "isPathHref": true,
+            "type": "link",
             "title": "Database",
             "path": "/database",
             "children": []

@@ -94,6 +94,15 @@ export const sidebar = [
         children: [
           {
             type: "link",
+            title: "Storefront",
+            path: "/storefront",
+            badge: {
+              text: "Beta",
+              variant: "blue",
+            },
+          },
+          {
+            type: "link",
             title: "Database",
             path: "/database",
           },
@@ -135,15 +144,6 @@ export const sidebar = [
             type: "link",
             title: "Loyalty",
             path: "/loyalty-plugin",
-          },
-          {
-            type: "link",
-            title: "Draft Orders",
-            path: "https://docs.medusajs.com/resources/commerce-modules/order/draft-orders",
-            badge: {
-              text: "Published",
-              variant: "blue",
-            },
           },
         ],
       },
