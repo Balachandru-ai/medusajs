@@ -6,11 +6,9 @@ import { generateTypes } from "./utils/generate-types"
 export default async function build({
   directory,
   adminOnly,
-  types,
 }: {
   directory: string
   adminOnly: boolean
-  types?: boolean
 }) {
   const container = await initializeContainer(directory, {
     skipDbConnection: true,
