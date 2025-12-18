@@ -89,6 +89,7 @@ async function fetchSingleRolePolicies(
 ): Promise<Map<string, Set<string>>> {
   const query = container.resolve(ContainerRegistrationKeys.QUERY)
 
+  const tags: string[] = []
   return await useCache<Map<string, Set<string>>>(
     async () => {
       const { data: roles } = await query.graph({
@@ -100,6 +101,8 @@ async function fetchSingleRolePolicies(
       const role = roles[0]
       const resourceMap = new Map<string, Set<string>>()
 
+      tags.push(`rbac_role:${roleId}`)
+
       if (role?.policies && Array.isArray(role.policies)) {
         const policyIds: string[] = []
 
@@ -110,9 +113,9 @@ async function fetchSingleRolePolicies(
             resourceMap.set(policy.resource, new Set())
           }
           resourceMap.get(policy.resource)!.add(policy.operation)
-        }
 
-        ;(resourceMap as any).__policyIds = policyIds
+          tags.push(`rbac_policy:${policy.id}`)
+        }
       }
 
       return resourceMap
@@ -120,7 +123,7 @@ async function fetchSingleRolePolicies(
     {
       container,
       key: roleId,
-      tags: [`role:${roleId}`],
+      tags,
       ttl: 60 * 60 * 24 * 7,
     }
   )
