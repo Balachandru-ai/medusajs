@@ -211,18 +211,6 @@ export const generatedSidebars = [
             "title": "Loyalty",
             "path": "/loyalty-plugin",
             "children": []
-          },
-          {
-            "loaded": true,
-            "isPathHref": true,
-            "type": "link",
-            "title": "Draft Orders",
-            "path": "https://docs.medusajs.com/resources/commerce-modules/order/draft-orders",
-            "badge": {
-              "text": "Published",
-              "variant": "blue"
-            },
-            "children": []
           }
         ]
       },
