@@ -50,7 +50,7 @@ export default class RbacModuleService extends MedusaService<{
   private async syncRegisteredPolicies(
     @MedusaContext() sharedContext: Context = {}
   ): Promise<void> {
-    const registeredPolicies = Array.from(Policy.entries()).map(
+    const registeredPolicies = Object.entries(Policy).map(
       ([name, { resource, operation }]) => ({
         key: `${resource}:${operation}`,
         name,

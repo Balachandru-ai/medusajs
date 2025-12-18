@@ -305,7 +305,6 @@ async function start(args: {
         fileGenPromises.push(
           generatePolicyTypes({
             outputDir: typesDirectory,
-            interfaceName: "RegisteredPolicies",
           })
         )
 

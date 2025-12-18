@@ -1,5 +1,16 @@
 import { getCallerFilePath, isFileDisabled, MEDUSA_SKIP_FILE } from "../common"
 
+/**
+ * Converts a string to snake_case
+ */
+function toSnakeCase(str: string): string {
+  return str
+    .replace(/([a-z])([A-Z])/g, "$1_$2")
+    .replace(/[^a-zA-Z0-9]+/g, "_")
+    .replace(/^_+|_+$/g, "")
+    .toLowerCase()
+}
+
 export const MedusaPolicySymbol = Symbol.for("MedusaPolicy")
 
 export interface PolicyDefinition {
@@ -18,7 +29,11 @@ declare global {
   // eslint-disable-next-line no-var
   var PolicyResource: Map<string, Set<string>>
   // eslint-disable-next-line no-var
-  var Policy: Map<string, { resource: string; operation: string }>
+  var Resource: Record<string, string>
+  // eslint-disable-next-line no-var
+  var Operation: Record<string, string>
+  // eslint-disable-next-line no-var
+  var Policy: Record<string, { resource: string; operation: string }>
 }
 
 /**
@@ -30,11 +45,84 @@ export const PolicyResource =
 global.PolicyResource ??= PolicyResource
 
 /**
- * Global registry for named RBAC policies.
- * Maps policy names to their resource-operation pairs.
+ * Global registry for all unique resources.
  */
-export const Policy =
-  global.Policy ?? new Map<string, { resource: string; operation: string }>()
+const defaultResources = [
+  "api-key",
+  "campaign",
+  "claim",
+  "collection",
+  "currency",
+  "customer",
+  "customer-group",
+  "draft-order",
+  "exchange",
+  "fulfillment",
+  "fulfillment-provider",
+  "fulfillment-set",
+  "inventory",
+  "inventory-item",
+  "invite",
+  "locale",
+  "notification",
+  "order",
+  "order-change",
+  "order-edit",
+  "payment",
+  "payment-collection",
+  "payment-provider",
+  "price-list",
+  "price-preference",
+  "product",
+  "product-category",
+  "product-tag",
+  "product-type",
+  "product-variant",
+  "promotion",
+  "rbac",
+  "refund-reason",
+  "region",
+  "reservation",
+  "return",
+  "return-reason",
+  "sales-channel",
+  "shipping-option",
+  "shipping-option-type",
+  "shipping-profile",
+  "stock-location",
+  "store",
+  "tax",
+  "tax-provider",
+  "tax-rate",
+  "tax-region",
+  "translation",
+  "upload",
+  "user",
+  "workflow-execution",
+]
+
+export const Resource = global.Resource ?? {}
+global.Resource ??= Resource
+
+for (const resource of defaultResources) {
+  const resourceKey = toSnakeCase(resource)
+  Resource[resourceKey] = resource
+}
+
+/**
+ * Global registry for all unique operations.
+ */
+const defaultOperations = ["read", "write", "update", "delete", "*"]
+
+export const Operation = global.Operation ?? {}
+global.Operation ??= Operation
+
+for (const operation of defaultOperations) {
+  const operationKey = operation === "*" ? "all" : toSnakeCase(operation)
+  Operation[operationKey] = operation
+}
+
+export const Policy = global.Policy ?? {}
 global.Policy ??= Policy
 
 /**
@@ -88,17 +176,25 @@ export function definePolicy(
   }
 
   for (const policy of policiesArray) {
-    // Register in PolicyResource map
+    policy.resource = policy.resource.toLowerCase()
+    policy.operation = policy.operation.toLowerCase()
+
     if (!PolicyResource.has(policy.resource)) {
       PolicyResource.set(policy.resource, new Set())
     }
     PolicyResource.get(policy.resource)!.add(policy.operation)
 
-    // Register in Policy map with name as key
-    Policy.set(policy.name, {
+    const resourceKey = toSnakeCase(policy.resource)
+    Resource[resourceKey] = policy.resource
+
+    const operationKey = toSnakeCase(policy.operation)
+    Operation[operationKey] = policy.operation
+
+    // Register in Policy object with name as key
+    Policy[policy.name] = {
       resource: policy.resource,
       operation: policy.operation,
-    })
+    }
   }
 
   const output: DefinePolicyExport = {

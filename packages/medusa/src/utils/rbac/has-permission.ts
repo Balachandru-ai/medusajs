@@ -102,7 +102,6 @@ async function fetchSingleRolePolicies(
       const resourceMap = new Map<string, Set<string>>()
 
       tags.push(`rbac_role:${roleId}`)
-
       if (role?.policies && Array.isArray(role.policies)) {
         const policyIds: string[] = []
 
@@ -125,6 +124,7 @@ async function fetchSingleRolePolicies(
       key: roleId,
       tags,
       ttl: 60 * 60 * 24 * 7,
+      providers: ["cache-memory"],
     }
   )
 }

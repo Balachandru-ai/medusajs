@@ -1,29 +1,24 @@
 import { FileSystem } from "../common/file-system"
-import { Policy } from "./define-policy"
+import { Operation, Policy, Resource } from "./define-policy"
 
 /**
- * Generates TypeScript type definitions for all registered RBAC policies.
- * Creates a "policy-bindings.d.ts" file with named policy types and a namespace.
+ * Generates TypeScript type definitions for RBAC Resource, Operation, and Policy.
+ * Creates a "policy-bindings.d.ts" file with type-safe autocomplete.
  *
  * @param outputDir - Directory where the type definition file should be created
- * @param interfaceName - Name of the namespace to generate (default: "RegisteredPolicies")
  */
 export async function generatePolicyTypes({
   outputDir,
-  interfaceName = "RegisteredPolicies",
 }: {
   outputDir: string
-  interfaceName?: string
 }) {
   const policyTypeEntries: string[] = []
-  const policyNames: string[] = []
 
-  // Generate type entries for each named policy
-  for (const [name, { resource, operation }] of Policy.entries()) {
+  // Generate type entries for each named policy from Policy object
+  for (const [name, { resource, operation }] of Object.entries(Policy)) {
     policyTypeEntries.push(
       `  ${name}: { resource: "${resource}"; operation: "${operation}" }`
     )
-    policyNames.push(`"${name}"`)
   }
 
   // If no policies are registered, create empty types
@@ -32,29 +27,52 @@ export async function generatePolicyTypes({
       ? `{\n${policyTypeEntries.join("\n")}\n}`
       : "{}"
 
-  const policyNamesUnion =
-    policyNames.length > 0 ? policyNames.join(" | ") : "never"
-
   const fileSystem = new FileSystem(outputDir)
   const fileName = "policy-bindings.d.ts"
-  const fileContents = `declare module '@medusajs/framework/types' {
+  const fileContents = `declare module '@medusajs/framework/utils' {
   /**
-   * Registered RBAC policies with their resource and operation mappings.
-   * Access policies using Policy.PolicyName (e.g., Policy.ReadProduct)
+   * RBAC Resource registry with lowercase keys for type-safe access.
+   * All resource names are normalized to lowercase.
+   * 
+   * @example
+   * import { Resource } from '@medusajs/framework/utils'
+   * 
+   * const productResource = Resource.product // "product"
+   * const apiKeyResource = Resource.api_key // "api-key"
+   */
+  export const Resource: {
+${Object.entries(Resource)
+  .map(([key, val]) => `    readonly ${key}: "${val}"`)
+  .join("\n")}
+  }
+
+  /**
+   * RBAC Operation registry with lowercase keys for type-safe access.
+   * All operation names are normalized to lowercase.
+   * 
+   * @example
+   * import { Operation } from '@medusajs/framework/utils'
+   * 
+   * const readOp = Operation.read // "read"
+   * const allOp = Operation.all // "*"
+   */
+  export const Operation: {
+${Object.entries(Operation)
+  .map(([key, val]) => `    readonly ${key}: "${val}"`)
+  .join("\n")}
+  }
+
+  /**
+   * RBAC Policy registry with all defined policies.
+   * Maps policy names to their resource and operation pairs.
    * 
    * @example
    * import { Policy } from '@medusajs/framework/utils'
    * 
-   * // Access a policy definition
    * const readProduct = Policy.ReadProduct
    * // { resource: "product", operation: "read" }
    */
-  export type ${interfaceName} = ${policyInterface}
-
-  /**
-   * Union type of all registered policy names
-   */
-  export type ${interfaceName}Names = ${policyNamesUnion}
+  export const Policy: ${policyInterface}
 }`
 
   await fileSystem.create(fileName, fileContents)

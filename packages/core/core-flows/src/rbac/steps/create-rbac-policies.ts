@@ -22,7 +22,14 @@ export const createRbacPoliciesStep = createStep(
   async (data: CreateRbacPoliciesStepInput, { container }) => {
     const service = container.resolve<IRbacModuleService>(Modules.RBAC)
 
-    const created = await service.createRbacPolicies(data.policies)
+    // Normalize resource and operation to lowercase
+    const normalizedPolicies = data.policies.map((policy) => ({
+      ...policy,
+      resource: policy.resource.toLowerCase(),
+      operation: policy.operation.toLowerCase(),
+    }))
+
+    const created = await service.createRbacPolicies(normalizedPolicies)
 
     return new StepResponse(
       created,
