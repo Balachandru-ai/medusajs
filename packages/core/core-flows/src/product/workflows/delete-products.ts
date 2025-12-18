@@ -14,6 +14,7 @@ import {
 } from "../../common"
 import { deleteInventoryItemWorkflow } from "../../inventory"
 import { deleteProductsStep } from "../steps/delete-products"
+import { removeProductOptionAssociationsStep } from "../steps/remove-product-option-associations"
 import { deleteProductOptionsWorkflow } from "./delete-product-options"
 
 /**
@@ -123,11 +124,13 @@ export const deleteProductsWorkflow = createWorkflow(
       deleteProductsStep(input.ids)
     )
 
-    // removeProductOptionAssociationsStep({
-    //   productIds: input.ids,
-    //   optionIds: exclusiveOptionsToDelete,
-    // })
+    // unassociate ALL! product <> options
+    removeProductOptionAssociationsStep({
+      productIds: input.ids,
+      optionIds: exclusiveOptionsToDelete,
+    })
 
+    // TODO: delete only exclusive options
     deleteProductOptionsWorkflow.runAsStep({
       input: {
         ids: exclusiveOptionsToDelete,
