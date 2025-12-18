@@ -4,7 +4,10 @@ import {
   ContainerRegistrationKeys,
   FileSystem,
   generateContainerTypes,
+  getResolvedPlugins,
   gqlSchemaToTypes,
+  mergePluginModules,
+  validateModuleName,
 } from "@medusajs/framework/utils"
 import path from "path"
 import { initializeContainer } from "../loaders"
@@ -26,18 +29,20 @@ export default async function build({
 
   if (types) {
     logger.info("Generating types...")
-    await new MedusaAppLoader().load({
-      registerInContainer: false,
-      migrationOnly: true,
-    })
 
     const configModule = container.resolve(
       ContainerRegistrationKeys.CONFIG_MODULE
     )
 
-    const { gqlSchema, modules } = await MedusaApp({
-      modulesConfig: configModule.modules,
-      sharedContainer: container,
+    const plugins = await getResolvedPlugins(directory, configModule, true)
+    mergePluginModules(configModule, plugins)
+
+    Object.keys(configModule.modules ?? {}).forEach((key) => {
+      validateModuleName(key)
+    })
+
+    const { gqlSchema, modules } = await new MedusaAppLoader().load({
+      registerInContainer: false,
       migrationOnly: true,
     })
 
