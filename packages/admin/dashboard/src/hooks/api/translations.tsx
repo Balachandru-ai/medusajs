@@ -293,6 +293,32 @@ export const useTranslationSettings = (
   return { ...data, ...rest }
 }
 
+const TRANSLATION_ENTITIES_QUERY_KEY = "translation_entities" as const
+export const translationEntitiesQueryKeys = queryKeysFactory(
+  TRANSLATION_ENTITIES_QUERY_KEY
+)
+
+export const useTranslationEntities = (
+  query: HttpTypes.AdminTranslationEntitiesParams,
+  options?: Omit<
+    UseQueryOptions<
+      HttpTypes.AdminTranslationEntitiesResponse,
+      FetchError,
+      HttpTypes.AdminTranslationEntitiesResponse,
+      QueryKey
+    >,
+    "queryFn" | "queryKey"
+  >
+) => {
+  const { data, ...rest } = useQuery({
+    queryKey: translationEntitiesQueryKeys.list(query),
+    queryFn: () => sdk.admin.translation.entities(query),
+    ...options,
+  })
+
+  return { ...data, ...rest }
+}
+
 export const useTranslationStatistics = (
   query?: HttpTypes.AdminTranslationStatisticsParams,
   options?: Omit<
