@@ -6,7 +6,7 @@ export function filterTranslationFields(
 ): TranslationTypes.TranslationDTO[] {
   return translations.map((translation) => {
     const allowedFields = translatableFieldsConfig[translation.reference]
-    if (!allowedFields || allowedFields.length === 0) {
+    if (!allowedFields?.length) {
       return { ...translation, translations: {} }
     }
 

@@ -117,9 +117,12 @@ export default class TranslationModuleService
     config: FindConfig<TranslationTypes.TranslationDTO> = {},
     @MedusaContext() sharedContext: Context = {}
   ): Promise<TranslationTypes.TranslationDTO> {
+    const configWithReference =
+      TranslationModuleService.ensureReferenceFieldInConfig(config)
+
     const result = await this.translationService_.retrieve(
       id,
-      config,
+      configWithReference,
       sharedContext
     )
 
@@ -136,6 +139,25 @@ export default class TranslationModuleService
     return filterTranslationFields([serialized], translatableFieldsConfig)[0]
   }
 
+  /**
+   * Ensures the 'reference' field is included in the select config.
+   * This is needed for filtering translations by translatable fields.
+   */
+  static ensureReferenceFieldInConfig(
+    config: FindConfig<TranslationTypes.TranslationDTO>
+  ): FindConfig<TranslationTypes.TranslationDTO> {
+    if (!config?.select?.length) {
+      return config
+    }
+
+    const select = config.select as string[]
+    if (!select.includes("reference")) {
+      return { ...config, select: [...select, "reference"] }
+    }
+
+    return config
+  }
+
   @InjectManager()
   // @ts-expect-error
   async listTranslations(
@@ -144,10 +166,12 @@ export default class TranslationModuleService
     @MedusaContext() sharedContext: Context = {}
   ): Promise<TranslationTypes.TranslationDTO[]> {
     const preparedFilters = TranslationModuleService.prepareFilters(filters)
+    const configWithReference =
+      TranslationModuleService.ensureReferenceFieldInConfig(config)
 
     const results = await this.translationService_.list(
       preparedFilters,
-      config,
+      configWithReference,
       sharedContext
     )
 
@@ -171,10 +195,12 @@ export default class TranslationModuleService
     @MedusaContext() sharedContext: Context = {}
   ): Promise<[TranslationTypes.TranslationDTO[], number]> {
     const preparedFilters = TranslationModuleService.prepareFilters(filters)
+    const configWithReference =
+      TranslationModuleService.ensureReferenceFieldInConfig(config)
 
     const [results, count] = await this.translationService_.listAndCount(
       preparedFilters,
-      config,
+      configWithReference,
       sharedContext
     )
 
