@@ -71,3 +71,15 @@ export type AdminTranslationSettingsParamsType = z.infer<
 export const AdminTranslationSettingsParams = z.object({
   entity_type: z.string().optional(),
 })
+
+export type AdminTranslationEntitiesParamsType = z.infer<
+  typeof AdminTranslationEntitiesParams
+>
+export const AdminTranslationEntitiesParams = createFindParams({
+  limit: 20,
+  offset: 0,
+}).merge(
+  z.object({
+    type: z.string(),
+  })
+)

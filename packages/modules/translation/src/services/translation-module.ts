@@ -44,13 +44,13 @@ export default class TranslationModuleService
     Translation: {
       dto: TranslationTypes.TranslationDTO
     }
-    Settings: {
+    TranslationSettings: {
       dto: TranslationTypes.TranslationSettingsDTO
     }
   }>({
     Locale,
     Translation,
-    Settings,
+    TranslationSettings: Settings,
   })
   implements ITranslationModuleService
 {
