@@ -24,6 +24,7 @@ import Translation from "@models/translation"
 import Settings from "@models/settings"
 import { computeTranslatedFieldCount } from "@utils/compute-translated-field-count"
 import { TRANSLATABLE_FIELDS_CONFIG_KEY } from "@utils/constants"
+import { filterTranslationFields } from "@utils/filter-translation-fields"
 
 type InjectedDependencies = {
   baseRepository: DAL.RepositoryService
@@ -77,10 +78,6 @@ export default class TranslationModuleService
     this.settingsService_ = translationSettingsService
   }
 
-  /**
-   * Fetches translatable fields configuration from the database.
-   * Returns a map of entity_type -> fields[]
-   */
   @InjectManager()
   async getTranslatableFields(
     entityType?: string,
@@ -113,35 +110,6 @@ export default class TranslationModuleService
     return restFilters
   }
 
-  /**
-   * Filters the translations object to only include configured fields
-   */
-  private filterTranslationFields(
-    translations: TranslationTypes.TranslationDTO[],
-    translatableFieldsConfig: Record<string, string[]>
-  ): TranslationTypes.TranslationDTO[] {
-    return translations.map((translation) => {
-      const allowedFields = translatableFieldsConfig[translation.reference]
-      if (!allowedFields || allowedFields.length === 0) {
-        return { ...translation, translations: {} }
-      }
-
-      const filteredTranslations: Record<string, unknown> = {}
-      for (const field of allowedFields) {
-        if (
-          translation.translations &&
-          field in (translation.translations as Record<string, unknown>)
-        ) {
-          filteredTranslations[field] = (
-            translation.translations as Record<string, unknown>
-          )[field]
-        }
-      }
-
-      return { ...translation, translations: filteredTranslations }
-    })
-  }
-
   @InjectManager()
   // @ts-expect-error
   async retrieveTranslation(
@@ -165,10 +133,7 @@ export default class TranslationModuleService
       sharedContext
     )
 
-    return this.filterTranslationFields(
-      [serialized],
-      translatableFieldsConfig
-    )[0]
+    return filterTranslationFields([serialized], translatableFieldsConfig)[0]
   }
 
   @InjectManager()
@@ -195,7 +160,7 @@ export default class TranslationModuleService
       sharedContext
     )
 
-    return this.filterTranslationFields(serialized, translatableFieldsConfig)
+    return filterTranslationFields(serialized, translatableFieldsConfig)
   }
 
   @InjectManager()
@@ -223,7 +188,7 @@ export default class TranslationModuleService
     )
 
     return [
-      this.filterTranslationFields(serialized, translatableFieldsConfig),
+      filterTranslationFields(serialized, translatableFieldsConfig),
       count,
     ]
   }
