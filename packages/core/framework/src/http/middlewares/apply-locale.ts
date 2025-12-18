@@ -5,14 +5,14 @@ import type {
   MedusaResponse,
 } from "../types"
 
-const CONTENT_LANGUAGE_HEADER = "content-language"
+const CONTENT_LANGUAGE_HEADER = "x-medusa-locale"
 
 /**
  * Middleware that resolves the locale for the current request.
  *
  * Resolution order:
  * 1. Query parameter `?locale=en-US`
- * 2. Content-Language header
+ * 2. x-medusa-locale header
  *
  * The resolved locale is set on `req.locale`.
  */
@@ -29,7 +29,7 @@ export async function applyLocale(
     return next()
   }
 
-  // 2. Check Content-Language header
+  // 2. Check x-medusa-locale header
   const headerLocale = req.get(CONTENT_LANGUAGE_HEADER)
   if (headerLocale) {
     req.locale = normalizeLocale(headerLocale)
