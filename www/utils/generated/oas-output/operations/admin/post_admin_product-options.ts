@@ -1,17 +1,10 @@
 /**
- * @oas [post] /admin/products/{id}/options
- * operationId: PostProductsIdOptions
- * summary: Create a Product Option
- * x-sidebar-summary: Create Option
- * description: Create an option exclusive for a product.
+ * @oas [post] /admin/product-options
+ * operationId: PostProductOptions
+ * summary: Create Product Option
+ * description: Create a product option.
  * x-authenticated: true
- * parameters:
- *   - name: id
- *     in: path
- *     description: The product's ID.
- *     required: true
- *     schema:
- *       type: string
+ * parameters: []
  * security:
  *   - api_token: []
  *   - cookie_auth: []
@@ -20,7 +13,7 @@
  *   content:
  *     application/json:
  *       schema:
- *         $ref: "#/components/schemas/AdminLinkProductOptions"
+ *         $ref: "#/components/schemas/AdminCreateProductOption"
  * x-codeSamples:
  *   - lang: JavaScript
  *     label: JS SDK
@@ -35,41 +28,34 @@
  *         },
  *       })
  * 
- *       sdk.admin.product.linkOptions("prod_123", {
- *         add: [
- *           "opt_123",
- *           {
- *             product_option_id: "opt_789",
- *             product_id: "prod_123",
- *             product_option_value_ids: ["optval_1", "optval_2"]
- *           }
- *         ],
- *         remove: ["opt_456"]
+ *       sdk.admin.productOption.create({
+ *         title: "Size",
+ *         values: ["S", "M"]
  *       })
- *       .then(({ product }) => {
- *         console.log(product)
+ *       .then(({ product_option }) => {
+ *         console.log(product_option)
  *       })
  *   - lang: Shell
  *     label: cURL
  *     source: |-
- *       curl -X POST '{backend_url}/admin/products/{id}/options' \
- *       -H 'Authorization: Bearer {jwt_token}' \
+ *       curl -X POST '{backend_url}/admin/product-options' \
+ *       -H 'Authorization: Bearer {access_token}' \
  *       -H 'Content-Type: application/json' \
  *       --data-raw '{
- *         "title": "{value}",
+ *         "title": "cuppedia",
  *         "values": [
  *           "{value}"
  *         ]
  *       }'
  * tags:
- *   - Products
+ *   - Product Options
  * responses:
  *   "200":
  *     description: OK
  *     content:
  *       application/json:
  *         schema:
- *           $ref: "#/components/schemas/AdminProductResponse"
+ *           $ref: "#/components/schemas/AdminProductOptionResponse"
  *   "400":
  *     $ref: "#/components/responses/400_error"
  *   "401":
@@ -82,8 +68,18 @@
  *     $ref: "#/components/responses/invalid_request_error"
  *   "500":
  *     $ref: "#/components/responses/500_error"
- * x-workflow: createAndLinkProductOptionsToProductWorkflow
- * x-events: []
+ * x-workflow: createProductOptionsWorkflow
+ * x-events:
+ *   - name: product-option.created
+ *     payload: |-
+ *       ```ts
+ *       {
+ *         id, // The ID of the product option
+ *       }
+ *       ```
+ *     description: Emitted when product options are created.
+ *     deprecated: false
+ * x-since: 2.13.0
  * 
 */
 

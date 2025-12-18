@@ -1,14 +1,13 @@
 /**
- * @oas [post] /admin/products/{id}/options
- * operationId: PostProductsIdOptions
- * summary: Create a Product Option
- * x-sidebar-summary: Create Option
- * description: Create an option exclusive for a product.
+ * @oas [post] /admin/product-options/{id}
+ * operationId: PostProductOptionsId
+ * summary: Update a Product Option
+ * description: Update a product option's details.
  * x-authenticated: true
  * parameters:
  *   - name: id
  *     in: path
- *     description: The product's ID.
+ *     description: The product option's ID.
  *     required: true
  *     schema:
  *       type: string
@@ -20,7 +19,7 @@
  *   content:
  *     application/json:
  *       schema:
- *         $ref: "#/components/schemas/AdminLinkProductOptions"
+ *         $ref: "#/components/schemas/AdminUpdateProductOption"
  * x-codeSamples:
  *   - lang: JavaScript
  *     label: JS SDK
@@ -35,41 +34,26 @@
  *         },
  *       })
  * 
- *       sdk.admin.product.linkOptions("prod_123", {
- *         add: [
- *           "opt_123",
- *           {
- *             product_option_id: "opt_789",
- *             product_id: "prod_123",
- *             product_option_value_ids: ["optval_1", "optval_2"]
- *           }
- *         ],
- *         remove: ["opt_456"]
+ *       sdk.admin.productOption.update("opt_123", {
+ *         title: "Size"
  *       })
- *       .then(({ product }) => {
- *         console.log(product)
+ *       .then(({ product_option }) => {
+ *         console.log(product_option)
  *       })
  *   - lang: Shell
  *     label: cURL
  *     source: |-
- *       curl -X POST '{backend_url}/admin/products/{id}/options' \
- *       -H 'Authorization: Bearer {jwt_token}' \
- *       -H 'Content-Type: application/json' \
- *       --data-raw '{
- *         "title": "{value}",
- *         "values": [
- *           "{value}"
- *         ]
- *       }'
+ *       curl -X POST '{backend_url}/admin/product-options/{id}' \
+ *       -H 'Authorization: Bearer {access_token}'
  * tags:
- *   - Products
+ *   - Product Options
  * responses:
  *   "200":
  *     description: OK
  *     content:
  *       application/json:
  *         schema:
- *           $ref: "#/components/schemas/AdminProductResponse"
+ *           $ref: "#/components/schemas/AdminProductOptionResponse"
  *   "400":
  *     $ref: "#/components/responses/400_error"
  *   "401":
@@ -82,8 +66,18 @@
  *     $ref: "#/components/responses/invalid_request_error"
  *   "500":
  *     $ref: "#/components/responses/500_error"
- * x-workflow: createAndLinkProductOptionsToProductWorkflow
- * x-events: []
+ * x-workflow: updateProductOptionsWorkflow
+ * x-events:
+ *   - name: product-option.updated
+ *     payload: |-
+ *       ```ts
+ *       {
+ *         id, // The ID of the product option
+ *       }
+ *       ```
+ *     description: Emitted when product options are updated.
+ *     deprecated: false
+ * x-since: 2.13.0
  * 
 */
 
