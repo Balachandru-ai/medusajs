@@ -17,13 +17,11 @@ export default async function build({
   })
   const logger = container.resolve(ContainerRegistrationKeys.LOGGER)
 
-  if (types) {
-    await generateTypes({
-      directory,
-      container,
-      logger,
-    })
-  }
+  await generateTypes({
+    directory,
+    container,
+    logger,
+  })
 
   logger.info("Starting build...")
   const compiler = new Compiler(directory, logger)
