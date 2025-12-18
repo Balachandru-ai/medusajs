@@ -947,7 +947,7 @@ medusaIntegrationTestRunner({
             expect(entity).toHaveProperty("id")
             expect(entity.title).toBeDefined()
             expect(entity.description).toBeDefined()
-            expect(entity.handle).toBeDefined()
+            expect(entity.material).toBeDefined()
             expect(entity.status).not.toBeDefined()
           })
         })
@@ -1018,7 +1018,6 @@ medusaIntegrationTestRunner({
           response.data.data.forEach((variant: Record<string, unknown>) => {
             expect(variant).toHaveProperty("id")
             expect(variant.title).toBeDefined()
-            expect(variant.material).toBeDefined()
             expect(variant.manage_inventory).not.toBeDefined()
           })
         })
