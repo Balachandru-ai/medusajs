@@ -1,12 +1,12 @@
 {
-	"id": 391,
+	"id": 17453,
 	"name": "translation-models",
 	"variant": "project",
 	"kind": 1,
 	"flags": {},
 	"children": [
 		{
-			"id": 399,
+			"id": 17462,
 			"name": "Locale",
 			"variant": "declaration",
 			"kind": 32,
@@ -18,7 +18,7 @@
 					"fileName": "locale.ts",
 					"line": 3,
 					"character": 6,
-					"url": "https://github.com/medusajs/medusa/blob/8bd1d22765edef3b3d2ff31c8f8935049d8b280a/packages/modules/translation/src/models/locale.ts#L3"
+					"url": "https://github.com/medusajs/medusa/blob/774bbf68b2397e995bfbaf67198ab8d774373b2e/packages/modules/translation/src/models/locale.ts#L3"
 				}
 			],
 			"type": {
@@ -38,24 +38,32 @@
 							{
 								"type": "reflection",
 								"declaration": {
-									"id": 400,
+									"id": 17463,
 									"name": "__type",
 									"variant": "declaration",
 									"kind": 65536,
 									"flags": {},
 									"children": [
 										{
-											"id": 401,
+											"id": 17464,
 											"name": "id",
 											"variant": "declaration",
 											"kind": 1024,
 											"flags": {},
+											"comment": {
+												"summary": [
+													{
+														"kind": "text",
+														"text": "The ID of the locale."
+													}
+												]
+											},
 											"sources": [
 												{
 													"fileName": "locale.ts",
 													"line": 5,
 													"character": 4,
-													"url": "https://github.com/medusajs/medusa/blob/8bd1d22765edef3b3d2ff31c8f8935049d8b280a/packages/modules/translation/src/models/locale.ts#L5"
+													"url": "https://github.com/medusajs/medusa/blob/774bbf68b2397e995bfbaf67198ab8d774373b2e/packages/modules/translation/src/models/locale.ts#L5"
 												}
 											],
 											"type": {
@@ -81,17 +89,29 @@
 											"defaultValue": "..."
 										},
 										{
-											"id": 402,
+											"id": 17465,
 											"name": "code",
 											"variant": "declaration",
 											"kind": 1024,
 											"flags": {},
+											"comment": {
+												"summary": [
+													{
+														"kind": "text",
+														"text": "The BCP 47 language tag code of the locale (e.g., \"en-US\", \"da-DK\")."
+													},
+													{
+														"kind": "text",
+														"text": "The code of the locale in BCP 47 format. For example, `en-US`."
+													}
+												]
+											},
 											"sources": [
 												{
 													"fileName": "locale.ts",
-													"line": 6,
+													"line": 9,
 													"character": 4,
-													"url": "https://github.com/medusajs/medusa/blob/8bd1d22765edef3b3d2ff31c8f8935049d8b280a/packages/modules/translation/src/models/locale.ts#L6"
+													"url": "https://github.com/medusajs/medusa/blob/774bbf68b2397e995bfbaf67198ab8d774373b2e/packages/modules/translation/src/models/locale.ts#L9"
 												}
 											],
 											"type": {
@@ -106,17 +126,29 @@
 											"defaultValue": "..."
 										},
 										{
-											"id": 403,
+											"id": 17466,
 											"name": "name",
 											"variant": "declaration",
 											"kind": 1024,
 											"flags": {},
+											"comment": {
+												"summary": [
+													{
+														"kind": "text",
+														"text": "The human-readable name of the locale (e.g., \"English (US)\", \"Danish\")."
+													},
+													{
+														"kind": "text",
+														"text": "The display name of the locale"
+													}
+												]
+											},
 											"sources": [
 												{
 													"fileName": "locale.ts",
-													"line": 7,
+													"line": 13,
 													"character": 4,
-													"url": "https://github.com/medusajs/medusa/blob/8bd1d22765edef3b3d2ff31c8f8935049d8b280a/packages/modules/translation/src/models/locale.ts#L7"
+													"url": "https://github.com/medusajs/medusa/blob/774bbf68b2397e995bfbaf67198ab8d774373b2e/packages/modules/translation/src/models/locale.ts#L13"
 												}
 											],
 											"type": {
@@ -135,9 +167,9 @@
 										{
 											"title": "Properties",
 											"children": [
-												401,
-												402,
-												403
+												17464,
+												17465,
+												17466
 											]
 										}
 									],
@@ -146,7 +178,7 @@
 											"fileName": "locale.ts",
 											"line": 4,
 											"character": 20,
-											"url": "https://github.com/medusajs/medusa/blob/8bd1d22765edef3b3d2ff31c8f8935049d8b280a/packages/modules/translation/src/models/locale.ts#L4"
+											"url": "https://github.com/medusajs/medusa/blob/774bbf68b2397e995bfbaf67198ab8d774373b2e/packages/modules/translation/src/models/locale.ts#L4"
 										}
 									]
 								}
@@ -166,7 +198,7 @@
 			"defaultValue": "..."
 		},
 		{
-			"id": 392,
+			"id": 17454,
 			"name": "Translation",
 			"variant": "declaration",
 			"kind": 32,
@@ -178,7 +210,7 @@
 					"fileName": "translation.ts",
 					"line": 3,
 					"character": 6,
-					"url": "https://github.com/medusajs/medusa/blob/8bd1d22765edef3b3d2ff31c8f8935049d8b280a/packages/modules/translation/src/models/translation.ts#L3"
+					"url": "https://github.com/medusajs/medusa/blob/774bbf68b2397e995bfbaf67198ab8d774373b2e/packages/modules/translation/src/models/translation.ts#L3"
 				}
 			],
 			"type": {
@@ -198,24 +230,32 @@
 							{
 								"type": "reflection",
 								"declaration": {
-									"id": 393,
+									"id": 17455,
 									"name": "__type",
 									"variant": "declaration",
 									"kind": 65536,
 									"flags": {},
 									"children": [
 										{
-											"id": 394,
+											"id": 17456,
 											"name": "id",
 											"variant": "declaration",
 											"kind": 1024,
 											"flags": {},
+											"comment": {
+												"summary": [
+													{
+														"kind": "text",
+														"text": "The ID of the translation."
+													}
+												]
+											},
 											"sources": [
 												{
 													"fileName": "translation.ts",
 													"line": 5,
 													"character": 4,
-													"url": "https://github.com/medusajs/medusa/blob/8bd1d22765edef3b3d2ff31c8f8935049d8b280a/packages/modules/translation/src/models/translation.ts#L5"
+													"url": "https://github.com/medusajs/medusa/blob/774bbf68b2397e995bfbaf67198ab8d774373b2e/packages/modules/translation/src/models/translation.ts#L5"
 												}
 											],
 											"type": {
@@ -241,92 +281,162 @@
 											"defaultValue": "..."
 										},
 										{
-											"id": 395,
+											"id": 17457,
 											"name": "reference_id",
 											"variant": "declaration",
 											"kind": 1024,
 											"flags": {},
-											"sources": [
-												{
-													"fileName": "translation.ts",
-													"line": 6,
-													"character": 4,
-													"url": "https://github.com/medusajs/medusa/blob/8bd1d22765edef3b3d2ff31c8f8935049d8b280a/packages/modules/translation/src/models/translation.ts#L6"
-												}
-											],
-											"type": {
-												"type": "reference",
-												"target": {
-													"sourceFileName": "../../../../packages/core/utils/src/dml/properties/text.ts",
-													"qualifiedName": "TextProperty"
-												},
-												"name": "TextProperty",
-												"package": "@medusajs/utils"
+											"comment": {
+												"summary": [
+													{
+														"kind": "text",
+														"text": "The ID of the entity that the translation belongs to. For example, the ID of a product or a product variant."
+													},
+													{
+														"kind": "text",
+														"text": "The ID of the resource that this translation belongs to. For example, the product ID."
+													}
+												]
 											},
-											"defaultValue": "..."
-										},
-										{
-											"id": 396,
-											"name": "reference",
-											"variant": "declaration",
-											"kind": 1024,
-											"flags": {},
-											"sources": [
-												{
-													"fileName": "translation.ts",
-													"line": 7,
-													"character": 4,
-													"url": "https://github.com/medusajs/medusa/blob/8bd1d22765edef3b3d2ff31c8f8935049d8b280a/packages/modules/translation/src/models/translation.ts#L7"
-												}
-											],
-											"type": {
-												"type": "reference",
-												"target": {
-													"sourceFileName": "../../../../packages/core/utils/src/dml/properties/text.ts",
-													"qualifiedName": "TextProperty"
-												},
-												"name": "TextProperty",
-												"package": "@medusajs/utils"
-											},
-											"defaultValue": "..."
-										},
-										{
-											"id": 397,
-											"name": "locale_code",
-											"variant": "declaration",
-											"kind": 1024,
-											"flags": {},
-											"sources": [
-												{
-													"fileName": "translation.ts",
-													"line": 8,
-													"character": 4,
-													"url": "https://github.com/medusajs/medusa/blob/8bd1d22765edef3b3d2ff31c8f8935049d8b280a/packages/modules/translation/src/models/translation.ts#L8"
-												}
-											],
-											"type": {
-												"type": "reference",
-												"target": {
-													"sourceFileName": "../../../../packages/core/utils/src/dml/properties/text.ts",
-													"qualifiedName": "TextProperty"
-												},
-												"name": "TextProperty",
-												"package": "@medusajs/utils"
-											},
-											"defaultValue": "..."
-										},
-										{
-											"id": 398,
-											"name": "translations",
-											"variant": "declaration",
-											"kind": 1024,
-											"flags": {},
 											"sources": [
 												{
 													"fileName": "translation.ts",
 													"line": 9,
 													"character": 4,
-													"url": "https://github.com/medusajs/medusa/blob/8bd1d22765edef3b3d2ff31c8f8935049d8b280a/packages/modules/translation/src/models/translation.ts#L9"
+													"url": "https://github.com/medusajs/medusa/blob/774bbf68b2397e995bfbaf67198ab8d774373b2e/packages/modules/translation/src/models/translation.ts#L9"
+												}
+											],
+											"type": {
+												"type": "reference",
+												"target": {
+													"sourceFileName": "../../../../packages/core/utils/src/dml/properties/text.ts",
+													"qualifiedName": "TextProperty"
+												},
+												"name": "TextProperty",
+												"package": "@medusajs/utils"
+											},
+											"defaultValue": "..."
+										},
+										{
+											"id": 17458,
+											"name": "reference",
+											"variant": "declaration",
+											"kind": 1024,
+											"flags": {},
+											"comment": {
+												"summary": [
+													{
+														"kind": "text",
+														"text": "The name of the table that the translation belongs to. For example, \"product\" or \"product_variant\"."
+													},
+													{
+														"kind": "text",
+														"text": "The name of the table that the resource belongs to. For example, `product`."
+													}
+												]
+											},
+											"sources": [
+												{
+													"fileName": "translation.ts",
+													"line": 13,
+													"character": 4,
+													"url": "https://github.com/medusajs/medusa/blob/774bbf68b2397e995bfbaf67198ab8d774373b2e/packages/modules/translation/src/models/translation.ts#L13"
+												}
+											],
+											"type": {
+												"type": "reference",
+												"target": {
+													"sourceFileName": "../../../../packages/core/utils/src/dml/properties/text.ts",
+													"qualifiedName": "TextProperty"
+												},
+												"name": "TextProperty",
+												"package": "@medusajs/utils"
+											},
+											"defaultValue": "..."
+										},
+										{
+											"id": 17459,
+											"name": "locale_code",
+											"variant": "declaration",
+											"kind": 1024,
+											"flags": {},
+											"comment": {
+												"summary": [
+													{
+														"kind": "text",
+														"text": "The BCP 47 language tag code of the locale"
+													},
+													{
+														"kind": "text",
+														"text": "The translation's locale code in BCP 47 format. For example, `en-US`."
+													}
+												],
+												"blockTags": [
+													{
+														"tag": "@example",
+														"content": [
+															{
+																"kind": "code",
+																"text": "```ts\n\"en-US\"\n```"
+															}
+														]
+													}
+												]
+											},
+											"sources": [
+												{
+													"fileName": "translation.ts",
+													"line": 20,
+													"character": 4,
+													"url": "https://github.com/medusajs/medusa/blob/774bbf68b2397e995bfbaf67198ab8d774373b2e/packages/modules/translation/src/models/translation.ts#L20"
+												}
+											],
+											"type": {
+												"type": "reference",
+												"target": {
+													"sourceFileName": "../../../../packages/core/utils/src/dml/properties/text.ts",
+													"qualifiedName": "TextProperty"
+												},
+												"name": "TextProperty",
+												"package": "@medusajs/utils"
+											},
+											"defaultValue": "..."
+										},
+										{
+											"id": 17460,
+											"name": "translations",
+											"variant": "declaration",
+											"kind": 1024,
+											"flags": {},
+											"comment": {
+												"summary": [
+													{
+														"kind": "text",
+														"text": "The translations of the entity.\nThe object's keys are the field names of the entity, and its value is the translated value."
+													},
+													{
+														"kind": "text",
+														"text": "The key-value pairs of the translated fields. The key is a property in the referenced resource, and the value is the translated value for that property."
+													}
+												],
+												"blockTags": [
+													{
+														"tag": "@example",
+														"content": [
+															{
+																"kind": "code",
+																"text": "```ts\n{\n     *   \"title\": \"Product Title\",\n     *   \"description\": \"Product Description\",\n     * }\n```"
+															}
+														]
+													}
+												]
+											},
+											"sources": [
+												{
+													"fileName": "translation.ts",
+													"line": 31,
+													"character": 4,
+													"url": "https://github.com/medusajs/medusa/blob/774bbf68b2397e995bfbaf67198ab8d774373b2e/packages/modules/translation/src/models/translation.ts#L31"
 												}
 											],
 											"type": {
@@ -339,17 +449,55 @@
 												"package": "@medusajs/utils"
 											},
 											"defaultValue": "..."
+										},
+										{
+											"id": 17461,
+											"name": "translated_field_count",
+											"variant": "declaration",
+											"kind": 1024,
+											"flags": {},
+											"comment": {
+												"summary": [
+													{
+														"kind": "text",
+														"text": "Precomputed count of translated fields of a resource.\nUseful for optimization purposes."
+													},
+													{
+														"kind": "text",
+														"text": "The translated field count of the translation"
+													}
+												]
+											},
+											"sources": [
+												{
+													"fileName": "translation.ts",
+													"line": 36,
+													"character": 4,
+													"url": "https://github.com/medusajs/medusa/blob/774bbf68b2397e995bfbaf67198ab8d774373b2e/packages/modules/translation/src/models/translation.ts#L36"
+												}
+											],
+											"type": {
+												"type": "reference",
+												"target": {
+													"sourceFileName": "../../../../packages/core/utils/src/dml/properties/number.ts",
+													"qualifiedName": "NumberProperty"
+												},
+												"name": "NumberProperty",
+												"package": "@medusajs/utils"
+											},
+											"defaultValue": "..."
 										}
 									],
 									"groups": [
 										{
 											"title": "Properties",
 											"children": [
-												394,
-												395,
-												396,
-												397,
-												398
+												17456,
+												17457,
+												17458,
+												17459,
+												17460,
+												17461
 											]
 										}
 									],
@@ -358,7 +506,7 @@
 											"fileName": "translation.ts",
 											"line": 4,
 											"character": 25,
-											"url": "https://github.com/medusajs/medusa/blob/8bd1d22765edef3b3d2ff31c8f8935049d8b280a/packages/modules/translation/src/models/translation.ts#L4"
+											"url": "https://github.com/medusajs/medusa/blob/774bbf68b2397e995bfbaf67198ab8d774373b2e/packages/modules/translation/src/models/translation.ts#L4"
 										}
 									]
 								}
@@ -382,62 +530,66 @@
 		{
 			"title": "Variables",
 			"children": [
-				399,
-				392
+				17462,
+				17454
 			]
 		}
 	],
 	"packageName": "@medusajs/translation",
 	"symbolIdMap": {
-		"391": {
+		"17453": {
 			"sourceFileName": "../../../../packages/modules/translation/src/models/index.ts",
 			"qualifiedName": ""
 		},
-		"392": {
+		"17454": {
 			"sourceFileName": "../../../../packages/modules/translation/src/models/translation.ts",
 			"qualifiedName": "Translation"
 		},
-		"393": {
+		"17455": {
 			"sourceFileName": "../../../../packages/modules/translation/src/models/translation.ts",
 			"qualifiedName": "__object"
 		},
-		"394": {
+		"17456": {
 			"sourceFileName": "../../../../packages/modules/translation/src/models/translation.ts",
 			"qualifiedName": "__object.id"
 		},
-		"395": {
+		"17457": {
 			"sourceFileName": "../../../../packages/modules/translation/src/models/translation.ts",
 			"qualifiedName": "__object.reference_id"
 		},
-		"396": {
+		"17458": {
 			"sourceFileName": "../../../../packages/modules/translation/src/models/translation.ts",
 			"qualifiedName": "__object.reference"
 		},
-		"397": {
+		"17459": {
 			"sourceFileName": "../../../../packages/modules/translation/src/models/translation.ts",
 			"qualifiedName": "__object.locale_code"
 		},
-		"398": {
+		"17460": {
 			"sourceFileName": "../../../../packages/modules/translation/src/models/translation.ts",
 			"qualifiedName": "__object.translations"
 		},
-		"399": {
+		"17461": {
+			"sourceFileName": "../../../../packages/modules/translation/src/models/translation.ts",
+			"qualifiedName": "__object.translated_field_count"
+		},
+		"17462": {
 			"sourceFileName": "../../../../packages/modules/translation/src/models/locale.ts",
 			"qualifiedName": "Locale"
 		},
-		"400": {
+		"17463": {
 			"sourceFileName": "../../../../packages/modules/translation/src/models/locale.ts",
 			"qualifiedName": "__object"
 		},
-		"401": {
+		"17464": {
 			"sourceFileName": "../../../../packages/modules/translation/src/models/locale.ts",
 			"qualifiedName": "__object.id"
 		},
-		"402": {
+		"17465": {
 			"sourceFileName": "../../../../packages/modules/translation/src/models/locale.ts",
 			"qualifiedName": "__object.code"
 		},
-		"403": {
+		"17466": {
 			"sourceFileName": "../../../../packages/modules/translation/src/models/locale.ts",
 			"qualifiedName": "__object.name"
 		}
@@ -447,7 +599,7 @@
 			"1": "../../../../packages/modules/translation/src/models/index.ts"
 		},
 		"reflections": {
-			"1": 391
+			"1": 17453
 		}
 	}
 }
