@@ -7,7 +7,8 @@ export function filterTranslationFields(
   return translations.map((translation) => {
     const allowedFields = translatableFieldsConfig[translation.reference]
     if (!allowedFields?.length) {
-      return { ...translation, translations: {} }
+      translation.translations = {}
+      return translation
     }
 
     const filteredTranslations: Record<string, unknown> = {}
@@ -22,6 +23,7 @@ export function filterTranslationFields(
       }
     }
 
-    return { ...translation, translations: filteredTranslations }
+    translation.translations = filteredTranslations
+    return translation
   })
 }
