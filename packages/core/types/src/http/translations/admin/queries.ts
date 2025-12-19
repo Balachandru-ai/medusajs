@@ -74,4 +74,15 @@ export interface AdminTranslationEntitiesParams extends FindParams {
    * "product"
    */
   type: string
+
+  /**
+   * Filter by entity ID(s). Can be a single ID or an array of IDs.
+   *
+   * @example
+   * "prod_123"
+   *
+   * @example
+   * ["prod_123", "prod_456"]
+   */
+  id?: string | string[]
 }

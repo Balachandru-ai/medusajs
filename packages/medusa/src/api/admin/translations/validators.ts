@@ -81,5 +81,6 @@ export const AdminTranslationEntitiesParams = createFindParams({
 }).merge(
   z.object({
     type: z.string(),
+    id: z.union([z.string(), z.array(z.string())]).optional(),
   })
 )

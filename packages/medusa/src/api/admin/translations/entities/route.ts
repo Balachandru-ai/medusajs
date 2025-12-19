@@ -13,7 +13,7 @@ export const GET = async (
   res: MedusaResponse<HttpTypes.AdminTranslationEntitiesResponse>
 ) => {
   const query = req.scope.resolve(ContainerRegistrationKeys.QUERY)
-  const { type } = req.validatedQuery
+  const { type, id } = req.validatedQuery
 
   const {
     data: [translationSettings],
@@ -32,11 +32,18 @@ export const GET = async (
 
   const translatableFields = translationSettings?.fields ?? []
 
-  const { data: entities, metadata } = await query
+  // Build filters - only add id filter if provided
+  const filters: Record<string, unknown> = {}
+  if (id) {
+    filters.id = id
+  }
+
+  const { data: entities = [], metadata } = await query
     .graph(
       {
         entity: type,
         fields: ["id", ...translatableFields],
+        filters,
         pagination: req.queryConfig.pagination,
       },
       {
@@ -54,8 +61,30 @@ export const GET = async (
       throw e
     })
 
+  let aggregatedData = entities as (Record<string, unknown> & {
+    translations: HttpTypes.AdminTranslation[]
+  })[]
+
+  if (aggregatedData.length) {
+    const { data: translations } = await query.graph({
+      entity: "translations",
+      fields: ["*"],
+      filters: {
+        reference_id: entities.map((entity) => entity.id),
+      },
+    })
+
+    // aggregate data - include all translations for all locales
+    aggregatedData = entities.map((entity) => {
+      entity.translations = translations.filter(
+        (translation) => translation.reference_id === entity.id
+      )
+      return entity
+    })
+  }
+
   return res.json({
-    data: entities,
+    data: aggregatedData,
     count: metadata?.count ?? 0,
     offset: metadata?.skip ?? 0,
     limit: metadata?.take ?? 0,
