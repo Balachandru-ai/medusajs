@@ -74,11 +74,18 @@ export const CreateProductOptionForm = () => {
   const handleSubmit = form.handleSubmit((data) => {
     const { title, values, value_ranks } = data
 
+    const ranks = value_ranks ?? {}
+
+    // populate default ranks as what user saw by default (i.e. in order that values were entered)
+    if (!Object.keys(ranks).length) {
+      values.forEach((value, index) => (ranks[value] = index + 1))
+    }
+
     mutateAsync(
       {
         title,
         values,
-        ranks: value_ranks,
+        ranks,
       },
       {
         onSuccess: ({ product_option }) => {
