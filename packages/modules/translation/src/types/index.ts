@@ -6,9 +6,11 @@ import { RemoteQueryEntryPoints } from "@medusajs/framework/types"
  * This filters out relations and other non-string fields.
  */
 type StringValuedKeys<T> = {
-  [K in keyof T]: "__typename" extends K
+  [K in keyof T]: K extends `${string}_id`
     ? never
-    : "id" extends keyof T[K]
+    : "__typename" extends K
+    ? never
+    : "id" extends keyof K
     ? never
     : NonNullable<T[K]> extends string
     ? K
