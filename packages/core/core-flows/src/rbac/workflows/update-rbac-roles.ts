@@ -7,7 +7,7 @@ import {
   when,
 } from "@medusajs/framework/workflows-sdk"
 import { UpdateRbacRoleDTO } from "@medusajs/types"
-import { createRbacRolePoliciesStep, setRoleInheritanceStep } from "../steps"
+import { createRbacRolePoliciesStep, setRoleParentStep } from "../steps"
 import { updateRbacRolesStep } from "../steps/update-rbac-roles"
 import { validateUserPermissionsStep } from "../steps/validate-user-permissions"
 
@@ -15,7 +15,7 @@ export type UpdateRbacRolesWorkflowInput = {
   user_id?: string
   selector: Record<string, any>
   update: Omit<UpdateRbacRoleDTO, "id"> & {
-    inherited_role_ids?: string[]
+    parent_ids?: string[]
     policy_ids?: string[]
   }
 }
@@ -50,21 +50,21 @@ export const updateRbacRolesWorkflow = createWorkflow(
 
     const updatedRoles = updateRbacRolesStep(roleUpdateData)
 
-    const inheritanceUpdateData = transform(
+    const parentUpdateData = transform(
       { input, updatedRoles },
       ({ input, updatedRoles }) => {
-        if (!isDefined(input.update.inherited_role_ids)) {
+        if (!isDefined(input.update.parent_ids)) {
           return []
         }
 
         return updatedRoles.map((role) => ({
           role_id: role.id,
-          inherited_role_ids: input.update.inherited_role_ids || [],
+          parent_ids: input.update.parent_ids || [],
         }))
       }
     )
 
-    setRoleInheritanceStep(inheritanceUpdateData)
+    setRoleParentStep(parentUpdateData)
 
     const policiesUpdateData = transform(
       { input, updatedRoles },
@@ -79,7 +79,7 @@ export const updateRbacRolesWorkflow = createWorkflow(
           policyIds.forEach((policy_id) => {
             allPolicies.push({
               role_id: role.id,
-              scope_id: policy_id,
+              parent_id: policy_id,
             })
           })
         })

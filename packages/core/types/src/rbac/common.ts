@@ -34,25 +34,25 @@ export type FilterableRbacPolicyProps = {
 export type RbacRolePolicyDTO = {
   id: string
   role_id: string
-  scope_id: string
+  policy_id: string
   metadata?: Record<string, unknown> | null
 }
 
 export type FilterableRbacRolePolicyProps = {
   id?: string | string[]
   role_id?: string | string[]
-  scope_id?: string | string[]
+  policy_id?: string | string[]
 }
 
-export type RbacRoleInheritanceDTO = {
+export type RbacRoleParentDTO = {
   id: string
   role_id: string
-  inherited_role_id: string
+  parent_id: string
   metadata?: Record<string, unknown> | null
 }
 
-export type FilterableRbacRoleInheritanceProps = {
+export type FilterableRbacRoleParentProps = {
   id?: string | string[]
   role_id?: string | string[]
-  inherited_role_id?: string | string[]
+  parent_id?: string | string[]
 }

@@ -1,12 +1,12 @@
 import {
-  WorkflowData,
-  WorkflowResponse,
   createWorkflow,
   transform,
   when,
+  WorkflowData,
+  WorkflowResponse,
 } from "@medusajs/framework/workflows-sdk"
 import {
-  createRbacRoleInheritancesStep,
+  createRbacRoleParentsStep,
   createRbacRolePoliciesStep,
   createRbacRolesStep,
 } from "../steps"
@@ -18,7 +18,7 @@ export type CreateRbacRolesWorkflowInput = {
     name: string
     description?: string | null
     metadata?: Record<string, unknown> | null
-    inherited_role_ids?: string[]
+    parent_ids?: string[]
     policy_ids?: string[]
   }[]
 }
@@ -55,22 +55,22 @@ export const createRbacRolesWorkflow = createWorkflow(
 
     const createdRoles = createRbacRolesStep(roleData)
 
-    const inheritanceData = transform(
+    const parentData = transform(
       { input, createdRoles },
       ({ input, createdRoles }) => {
-        const inheritances: any[] = []
+        const parents: any[] = []
 
         createdRoles.forEach((role, index) => {
-          const inheritedRoleIds = input.roles[index].inherited_role_ids || []
+          const inheritedRoleIds = input.roles[index].parent_ids || []
           inheritedRoleIds.forEach((inheritedRoleId) => {
-            inheritances.push({
+            parents.push({
               role_id: role.id,
-              inherited_role_id: inheritedRoleId,
+              parent_id: inheritedRoleId,
             })
           })
         })
 
-        return { role_inheritances: inheritances }
+        return { role_parents: parents }
       }
     )
 
@@ -83,7 +83,7 @@ export const createRbacRolesWorkflow = createWorkflow(
           policyIds.forEach((policy_id) => {
             allPolicies.push({
               role_id: role.id,
-              scope_id: policy_id,
+              policy_id: policy_id,
             })
           })
         })
@@ -91,7 +91,7 @@ export const createRbacRolesWorkflow = createWorkflow(
       }
     )
 
-    createRbacRoleInheritancesStep(inheritanceData)
+    createRbacRoleParentsStep(parentData)
 
     createRbacRolePoliciesStep(policiesData)
 

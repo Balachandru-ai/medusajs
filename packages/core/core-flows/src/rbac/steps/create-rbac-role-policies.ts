@@ -4,7 +4,7 @@ import { IRbacModuleService } from "@medusajs/types"
 
 export type CreateRbacRolePolicyDTO = {
   role_id: string
-  scope_id: string
+  policy_id: string
   metadata?: Record<string, unknown> | null
 }
 

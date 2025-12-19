@@ -5,12 +5,7 @@ import {
   MedusaService,
   Policy,
 } from "@medusajs/framework/utils"
-import {
-  RbacPolicy,
-  RbacRole,
-  RbacRoleInheritance,
-  RbacRolePolicy,
-} from "@models"
+import { RbacPolicy, RbacRole, RbacRoleParent, RbacRolePolicy } from "@models"
 import { RbacRepository } from "../repositories"
 
 type InjectedDependencies = {
@@ -20,12 +15,12 @@ type InjectedDependencies = {
 export default class RbacModuleService extends MedusaService<{
   RbacRole: { dto: any }
   RbacPolicy: { dto: any }
-  RbacRoleInheritance: { dto: any }
+  RbacRoleParent: { dto: any }
   RbacRolePolicy: { dto: any }
 }>({
   RbacRole,
   RbacPolicy,
-  RbacRoleInheritance,
+  RbacRoleParent,
   RbacRolePolicy,
 }) {
   protected readonly rbacRepository_: RbacRepository
@@ -51,11 +46,12 @@ export default class RbacModuleService extends MedusaService<{
     @MedusaContext() sharedContext: Context = {}
   ): Promise<void> {
     const registeredPolicies = Object.entries(Policy).map(
-      ([name, { resource, operation }]) => ({
+      ([name, { resource, operation, description }]) => ({
         key: `${resource}:${operation}`,
         name,
         resource,
         operation,
+        description,
       })
     )
 
@@ -93,11 +89,15 @@ export default class RbacModuleService extends MedusaService<{
             name: registeredPolicy.name,
           })
         }
-      } else if (existing.name !== registeredPolicy.name) {
+      } else if (
+        existing.name !== registeredPolicy.name ||
+        existing.description !== registeredPolicy.description
+      ) {
         // Existing policy with different name - update it
         policiesToUpdate.push({
           id: existing.id,
           name: registeredPolicy.name,
+          description: registeredPolicy.description,
         })
       }
     }
@@ -190,5 +190,69 @@ export default class RbacModuleService extends MedusaService<{
     }
 
     return [roles, count]
+  }
+
+  @InjectManager()
+  // @ts-expect-error
+  async createRbacRoleParents(
+    data: any[],
+    @MedusaContext() sharedContext: Context = {}
+  ): Promise<any[]> {
+    for (const parent of data) {
+      const { role_id, parent_id } = parent
+
+      if (role_id === parent_id) {
+        throw new Error(
+          `Cannot create role parent relationship: a role cannot be its own parent (role_id: ${role_id})`
+        )
+      }
+
+      const wouldCreateCycle = await this.rbacRepository_.checkForCycle(
+        role_id,
+        parent_id,
+        sharedContext
+      )
+
+      if (wouldCreateCycle) {
+        throw new Error(
+          `Cannot create role parent relationship: this would create a circular dependency (role_id: ${role_id}, parent_id: ${parent_id})`
+        )
+      }
+    }
+
+    return await super.createRbacRoleParents(data, sharedContext)
+  }
+
+  @InjectManager()
+  // @ts-expect-error
+  async updateRbacRoleParents(
+    data: any[],
+    @MedusaContext() sharedContext: Context = {}
+  ): Promise<any[]> {
+    for (const parent of data) {
+      const { role_id, parent_id } = parent
+
+      if (parent_id) {
+        if (role_id === parent_id) {
+          throw new Error(
+            `Cannot update role parent relationship: a role cannot be its own parent (role_id: ${role_id})`
+          )
+        }
+
+        const wouldCreateCycle = await this.rbacRepository_.checkForCycle(
+          role_id,
+          parent_id,
+          sharedContext
+        )
+
+        if (wouldCreateCycle) {
+          throw new Error(
+            `Cannot update role parent relationship: this would create a circular dependency (role_id: ${role_id}, parent_id: ${parent_id})`
+          )
+        }
+      }
+    }
+
+    return await super.updateRbacRoleParents(data, sharedContext)
   }
 }

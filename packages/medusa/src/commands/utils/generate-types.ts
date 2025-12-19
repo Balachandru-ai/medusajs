@@ -2,12 +2,11 @@ import { LinkLoader, MedusaAppLoader } from "@medusajs/framework"
 import { MedusaModule } from "@medusajs/framework/modules-sdk"
 import {
   ContainerRegistrationKeys,
+  FileSystem,
   generateContainerTypes,
-  generatePolicyTypes,
   getResolvedPlugins,
   gqlSchemaToTypes,
   mergePluginModules,
-  promiseAll,
   validateModuleName,
 } from "@medusajs/framework/utils"
 import { Logger, MedusaContainer } from "@medusajs/types"
@@ -47,33 +46,27 @@ export async function generateTypes({
 
   const typesDirectory = path.join(directory, ".medusa/types")
 
-  const fileGenPromises: Promise<void>[] = []
+  /**
+   * Cleanup existing types directory before creating new artifacts
+   */
+  await new FileSystem(typesDirectory).cleanup({ recursive: true })
 
-  fileGenPromises.push(
-    generateContainerTypes(modules, {
-      outputDir: typesDirectory,
-      interfaceName: "ModuleImplementations",
-    })
-  )
+  await generateContainerTypes(modules, {
+    outputDir: typesDirectory,
+    interfaceName: "ModuleImplementations",
+  })
+  logger.debug("Generated container types")
 
   if (gqlSchema) {
-    fileGenPromises.push(
-      gqlSchemaToTypes({
-        outputDir: typesDirectory,
-        filename: "query-entry-points",
-        interfaceName: "RemoteQueryEntryPoints",
-        schema: gqlSchema,
-        joinerConfigs: MedusaModule.getAllJoinerConfigs(),
-      })
-    )
+    await gqlSchemaToTypes({
+      outputDir: typesDirectory,
+      filename: "query-entry-points",
+      interfaceName: "RemoteQueryEntryPoints",
+      schema: gqlSchema,
+      joinerConfigs: MedusaModule.getAllJoinerConfigs(),
+    })
+    logger.debug("Generated modules types")
   }
 
-  fileGenPromises.push(
-    generatePolicyTypes({
-      outputDir: typesDirectory,
-    })
-  )
-
-  await promiseAll(fileGenPromises)
   logger.info("Types generated successfully")
 }

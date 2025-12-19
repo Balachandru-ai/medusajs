@@ -3,22 +3,22 @@ import { IModuleService } from "../modules-sdk"
 import { Context } from "../shared-context"
 import {
   FilterableRbacPolicyProps,
-  FilterableRbacRoleInheritanceProps,
+  FilterableRbacRoleParentProps,
   FilterableRbacRolePolicyProps,
   FilterableRbacRoleProps,
   RbacPolicyDTO,
   RbacRoleDTO,
-  RbacRoleInheritanceDTO,
+  RbacRoleParentDTO,
   RbacRolePolicyDTO,
 } from "./common"
 import {
   CreateRbacPolicyDTO,
   CreateRbacRoleDTO,
-  CreateRbacRoleInheritanceDTO,
+  CreateRbacRoleParentDTO,
   CreateRbacRolePolicyDTO,
   UpdateRbacPolicyDTO,
   UpdateRbacRoleDTO,
-  UpdateRbacRoleInheritanceDTO,
+  UpdateRbacRoleParentDTO,
   UpdateRbacRolePolicyDTO,
 } from "./mutations"
 
@@ -146,46 +146,46 @@ export interface IRbacModuleService extends IModuleService {
     sharedContext?: Context
   ): Promise<[RbacRolePolicyDTO[], number]>
 
-  createRbacRoleInheritances(
-    data: CreateRbacRoleInheritanceDTO,
+  createRbacRoleParents(
+    data: CreateRbacRoleParentDTO,
     sharedContext?: Context
-  ): Promise<RbacRoleInheritanceDTO>
-  createRbacRoleInheritances(
-    data: CreateRbacRoleInheritanceDTO[],
+  ): Promise<RbacRoleParentDTO>
+  createRbacRoleParents(
+    data: CreateRbacRoleParentDTO[],
     sharedContext?: Context
-  ): Promise<RbacRoleInheritanceDTO[]>
+  ): Promise<RbacRoleParentDTO[]>
 
-  updateRbacRoleInheritances(
-    data: UpdateRbacRoleInheritanceDTO,
+  updateRbacRoleParents(
+    data: UpdateRbacRoleParentDTO,
     sharedContext?: Context
-  ): Promise<RbacRoleInheritanceDTO>
-  updateRbacRoleInheritances(
-    data: UpdateRbacRoleInheritanceDTO[],
+  ): Promise<RbacRoleParentDTO>
+  updateRbacRoleParents(
+    data: UpdateRbacRoleParentDTO[],
     sharedContext?: Context
-  ): Promise<RbacRoleInheritanceDTO[]>
+  ): Promise<RbacRoleParentDTO[]>
 
-  deleteRbacRoleInheritances(
+  deleteRbacRoleParents(
     ids: string | string[],
     sharedContext?: Context
   ): Promise<void>
 
-  retrieveRbacRoleInheritance(
+  retrieveRbacRoleParent(
     id: string,
-    config?: FindConfig<RbacRoleInheritanceDTO>,
+    config?: FindConfig<RbacRoleParentDTO>,
     sharedContext?: Context
-  ): Promise<RbacRoleInheritanceDTO>
+  ): Promise<RbacRoleParentDTO>
 
-  listRbacRoleInheritances(
-    filters?: FilterableRbacRoleInheritanceProps,
-    config?: FindConfig<RbacRoleInheritanceDTO>,
+  listRbacRoleParents(
+    filters?: FilterableRbacRoleParentProps,
+    config?: FindConfig<RbacRoleParentDTO>,
     sharedContext?: Context
-  ): Promise<RbacRoleInheritanceDTO[]>
+  ): Promise<RbacRoleParentDTO[]>
 
-  listAndCountRbacRoleInheritances(
-    filters?: FilterableRbacRoleInheritanceProps,
-    config?: FindConfig<RbacRoleInheritanceDTO>,
+  listAndCountRbacRoleParents(
+    filters?: FilterableRbacRoleParentProps,
+    config?: FindConfig<RbacRoleParentDTO>,
     sharedContext?: Context
-  ): Promise<[RbacRoleInheritanceDTO[], number]>
+  ): Promise<[RbacRoleParentDTO[], number]>
 
   listPoliciesForRole(
     roleId: string,

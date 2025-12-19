@@ -9,10 +9,15 @@ import {
   definePolicy,
   Modules,
   Policy,
-  PolicyResource,
 } from "@medusajs/utils"
 
 jest.setTimeout(60000)
+
+function clearPolicies() {
+  for (const policy of Object.keys(Policy)) {
+    delete Policy[policy]
+  }
+}
 
 medusaIntegrationTestRunner({
   env: {},
@@ -23,11 +28,13 @@ medusaIntegrationTestRunner({
 
       beforeAll(async () => {
         appContainer = getContainer()
-        rbacService = appContainer.resolve(Modules.RBAC)
+        rbacService = appContainer.resolve(
+          Modules.RBAC
+        ) as IRbacModuleService & { onApplicationStart: Function }
       })
 
-      describe("Role Inheritance and Policy Management", () => {
-        it("should create roles with inheritance and policies, then list all inherited policies", async () => {
+      describe("Role Parent and Policy Management", () => {
+        it("should create roles with parent and policies, then list all inherited policies", async () => {
           // Step 1: Create base policies
           const policiesWorkflow = createRbacPoliciesWorkflow(appContainer)
           const { result: createdPolicies } = await policiesWorkflow.run({
@@ -123,7 +130,7 @@ medusaIntegrationTestRunner({
                   name: "Admin",
                   description:
                     "Inherits from Viewer and Editor, plus can delete users",
-                  inherited_role_ids: [viewerRole.id, editorRole.id],
+                  parent_ids: [viewerRole.id, editorRole.id],
                   policy_ids: [
                     createdPolicies[4].id, // delete:users
                   ],
@@ -135,21 +142,21 @@ medusaIntegrationTestRunner({
           expect(adminRoles).toHaveLength(1)
           const adminRole = adminRoles[0]
 
-          // Step 4: Verify role inheritance was created
-          const inheritances = await rbacService.listRbacRoleInheritances({
+          // Step 4: Verify role parent was created
+          const parents = await rbacService.listRbacRoleParents({
             role_id: adminRole.id,
           })
 
-          expect(inheritances).toHaveLength(2)
-          expect(inheritances).toEqual(
+          expect(parents).toHaveLength(2)
+          expect(parents).toEqual(
             expect.arrayContaining([
               expect.objectContaining({
                 role_id: adminRole.id,
-                inherited_role_id: viewerRole.id,
+                parent_id: viewerRole.id,
               }),
               expect.objectContaining({
                 role_id: adminRole.id,
-                inherited_role_id: editorRole.id,
+                parent_id: editorRole.id,
               }),
             ])
           )
@@ -163,7 +170,7 @@ medusaIntegrationTestRunner({
           expect(adminDirectPolicies[0]).toEqual(
             expect.objectContaining({
               role_id: adminRole.id,
-              scope_id: createdPolicies[4].id, // delete:users
+              policy_id: createdPolicies[4].id, // delete:users
             })
           )
 
@@ -255,7 +262,7 @@ medusaIntegrationTestRunner({
           )
         })
 
-        it("should handle multi-level role inheritance", async () => {
+        it("should handle multi-level role parent", async () => {
           // Create policies
           const policiesWorkflow = createRbacPoliciesWorkflow(appContainer)
           const { result: policies } = await policiesWorkflow.run({
@@ -307,7 +314,7 @@ medusaIntegrationTestRunner({
                 {
                   name: "Manager",
                   description: "Manager with write access",
-                  inherited_role_ids: [basicRole.id],
+                  parent_ids: [basicRole.id],
                   policy_ids: [policies[1].id], // write:catalog
                 },
               ],
@@ -322,7 +329,7 @@ medusaIntegrationTestRunner({
                 {
                   name: "SuperAdmin",
                   description: "Super admin with all access",
-                  inherited_role_ids: [managerRole.id],
+                  parent_ids: [managerRole.id],
                   policy_ids: [policies[2].id], // admin:system
                 },
               ],
@@ -330,7 +337,7 @@ medusaIntegrationTestRunner({
           })
           const superAdminRole = superAdminRoles[0]
 
-          // Verify SuperAdmin has all policies through inheritance chain
+          // Verify SuperAdmin has all policies through parent chain
           const superAdminPolicies = await rbacService.listPoliciesForRole(
             superAdminRole.id
           )
@@ -414,7 +421,7 @@ medusaIntegrationTestRunner({
                 {
                   name: "Inventory Manager",
                   description: "Manager with write access",
-                  inherited_role_ids: [basicRole.id],
+                  parent_ids: [basicRole.id],
                   policy_ids: [policies[1].id], // write:inventory
                 },
               ],
@@ -429,7 +436,7 @@ medusaIntegrationTestRunner({
                 {
                   name: "Inventory SuperAdmin",
                   description: "Super admin with all access",
-                  inherited_role_ids: [managerRole.id],
+                  parent_ids: [managerRole.id],
                   policy_ids: [policies[2].id], // admin:inventory
                 },
               ],
@@ -463,7 +470,7 @@ medusaIntegrationTestRunner({
             role_id: basicRole.id,
           })
           const readPolicyAssociation = basicRolePolicies.find(
-            (rp) => rp.scope_id === policies[0].id
+            (rp) => rp.policy_id === policies[0].id
           )
           await rbacService.deleteRbacRolePolicies([readPolicyAssociation!.id])
 
@@ -479,7 +486,7 @@ medusaIntegrationTestRunner({
           expect(managerPolicies).toHaveLength(1)
           expect(managerPolicies[0].key).toBe("write:inventory")
 
-          // Verify SuperAdmin role also lost the read policy through inheritance chain
+          // Verify SuperAdmin role also lost the read policy through parent chain
           superAdminPolicies = await rbacService.listPoliciesForRole(
             superAdminRole.id
           )
@@ -510,11 +517,266 @@ medusaIntegrationTestRunner({
           const policies = await rbacService.listPoliciesForRole(emptyRole.id)
           expect(policies).toHaveLength(0)
 
-          // Verify no inheritance
-          const inheritances = await rbacService.listRbacRoleInheritances({
+          // Verify no parent
+          const parents = await rbacService.listRbacRoleParents({
             role_id: emptyRole.id,
           })
-          expect(inheritances).toHaveLength(0)
+          expect(parents).toHaveLength(0)
+        })
+      })
+
+      describe("Circular Dependency Prevention", () => {
+        it("should prevent creating a role parent relationship where role is its own parent", async () => {
+          const rolesWorkflow = createRbacRolesWorkflow(appContainer)
+          const { result: roles } = await rolesWorkflow.run({
+            input: {
+              roles: [
+                {
+                  name: "Test Role",
+                  description: "Test role for self-reference check",
+                },
+              ],
+            },
+          })
+          const testRole = roles[0]
+
+          // Try to create a self-referencing parent relationship
+          await expect(
+            rbacService.createRbacRoleParents([
+              {
+                role_id: testRole.id,
+                parent_id: testRole.id,
+              },
+            ])
+          ).rejects.toThrow(/cannot be its own parent/)
+        })
+
+        it("should prevent creating a circular dependency (A -> B -> A)", async () => {
+          const rolesWorkflow = createRbacRolesWorkflow(appContainer)
+          const { result: roles } = await rolesWorkflow.run({
+            input: {
+              roles: [
+                {
+                  name: "Role A",
+                  description: "First role",
+                },
+                {
+                  name: "Role B",
+                  description: "Second role",
+                },
+              ],
+            },
+          })
+          const roleA = roles[0]
+          const roleB = roles[1]
+
+          // Create A -> B (A inherits from B)
+          await rbacService.createRbacRoleParents([
+            {
+              role_id: roleA.id,
+              parent_id: roleB.id,
+            },
+          ])
+
+          // Try to create B -> A (would create a cycle)
+
+          let error: Error | undefined
+          try {
+            await rbacService.createRbacRoleParents([
+              {
+                role_id: roleB.id,
+                parent_id: roleA.id,
+              },
+            ])
+          } catch (e) {
+            error = e
+          }
+          expect(error).toBeDefined()
+          expect(error?.message).toContain("circular dependency")
+        })
+
+        it("should prevent creating a circular dependency (A -> B -> C -> A)", async () => {
+          const rolesWorkflow = createRbacRolesWorkflow(appContainer)
+          const { result: roles } = await rolesWorkflow.run({
+            input: {
+              roles: [
+                {
+                  name: "Role A",
+                  description: "First role",
+                },
+                {
+                  name: "Role B",
+                  description: "Second role",
+                },
+                {
+                  name: "Role C",
+                  description: "Third role",
+                },
+              ],
+            },
+          })
+          const roleA = roles[0]
+          const roleB = roles[1]
+          const roleC = roles[2]
+
+          // Create A -> B (A inherits from B)
+          await rbacService.createRbacRoleParents([
+            {
+              role_id: roleA.id,
+              parent_id: roleB.id,
+            },
+          ])
+
+          // Create B -> C (B inherits from C)
+          await rbacService.createRbacRoleParents([
+            {
+              role_id: roleB.id,
+              parent_id: roleC.id,
+            },
+          ])
+
+          // Try to create C -> A (would create a cycle)
+          let error: Error | undefined
+          try {
+            await rbacService.createRbacRoleParents([
+              {
+                role_id: roleC.id,
+                parent_id: roleA.id,
+              },
+            ])
+          } catch (e) {
+            error = e
+          }
+          expect(error).toBeDefined()
+          expect(error?.message).toContain("circular dependency")
+        })
+
+        it("should prevent updating a role parent to create a circular dependency", async () => {
+          const rolesWorkflow = createRbacRolesWorkflow(appContainer)
+          const { result: roles } = await rolesWorkflow.run({
+            input: {
+              roles: [
+                {
+                  name: "Role X",
+                  description: "First role",
+                },
+                {
+                  name: "Role Y",
+                  description: "Second role",
+                },
+                {
+                  name: "Role Z",
+                  description: "Third role",
+                },
+              ],
+            },
+          })
+          const roleX = roles[0]
+          const roleY = roles[1]
+          const roleZ = roles[2]
+
+          // Create X -> Y (X inherits from Y)
+          const [parentRelation] = await rbacService.createRbacRoleParents([
+            {
+              role_id: roleX.id,
+              parent_id: roleY.id,
+            },
+          ])
+
+          // Create Y -> Z (Y inherits from Z)
+          await rbacService.createRbacRoleParents([
+            {
+              role_id: roleY.id,
+              parent_id: roleZ.id,
+            },
+          ])
+
+          // Try to update X's parent to Z -> X (would create a cycle)
+          let error: Error | undefined
+          try {
+            await rbacService.updateRbacRoleParents([
+              {
+                id: parentRelation.id,
+                role_id: roleZ.id,
+                parent_id: roleX.id,
+              },
+            ])
+          } catch (e) {
+            error = e
+          }
+          expect(error).toBeDefined()
+          expect(error?.message).toContain("circular dependency")
+        })
+
+        it("should allow valid multi-level hierarchy without cycles", async () => {
+          const rolesWorkflow = createRbacRolesWorkflow(appContainer)
+          const { result: roles } = await rolesWorkflow.run({
+            input: {
+              roles: [
+                {
+                  name: "Junior",
+                  description: "Junior role",
+                },
+                {
+                  name: "Senior",
+                  description: "Senior role",
+                },
+                {
+                  name: "Lead",
+                  description: "Lead role",
+                },
+                {
+                  name: "Manager",
+                  description: "Manager role",
+                },
+              ],
+            },
+          })
+          const junior = roles[0]
+          const senior = roles[1]
+          const lead = roles[2]
+          const manager = roles[3]
+
+          // Create valid hierarchy: Junior -> Senior -> Lead -> Manager
+          await rbacService.createRbacRoleParents([
+            {
+              role_id: junior.id,
+              parent_id: senior.id,
+            },
+          ])
+
+          await rbacService.createRbacRoleParents([
+            {
+              role_id: senior.id,
+              parent_id: lead.id,
+            },
+          ])
+
+          await rbacService.createRbacRoleParents([
+            {
+              role_id: lead.id,
+              parent_id: manager.id,
+            },
+          ])
+
+          // Verify the hierarchy was created successfully
+          const juniorParents = await rbacService.listRbacRoleParents({
+            role_id: junior.id,
+          })
+          expect(juniorParents).toHaveLength(1)
+          expect(juniorParents[0].parent_id).toBe(senior.id)
+
+          const seniorParents = await rbacService.listRbacRoleParents({
+            role_id: senior.id,
+          })
+          expect(seniorParents).toHaveLength(1)
+          expect(seniorParents[0].parent_id).toBe(lead.id)
+
+          const leadParents = await rbacService.listRbacRoleParents({
+            role_id: lead.id,
+          })
+          expect(leadParents).toHaveLength(1)
+          expect(leadParents[0].parent_id).toBe(manager.id)
         })
       })
 
@@ -788,7 +1050,7 @@ medusaIntegrationTestRunner({
               roles: [
                 {
                   name: "Inventory Manager",
-                  inherited_role_ids: [baseRoles[0].id],
+                  parent_ids: [baseRoles[0].id],
                   policy_ids: [policies[1].id],
                 },
               ],
@@ -820,7 +1082,7 @@ medusaIntegrationTestRunner({
               roles: [
                 {
                   name: "New Reader",
-                  policy_ids: [policies[0].id], // read - user has via inheritance
+                  policy_ids: [policies[0].id], // read - user has via parent
                 },
               ],
             },
@@ -834,8 +1096,7 @@ medusaIntegrationTestRunner({
       describe("Policy Registration and Synchronization", () => {
         beforeEach(() => {
           // Clear global policy registries before each test
-          Policy.clear()
-          PolicyResource.clear()
+          clearPolicies()
         })
 
         it("should register policies using definePolicy", () => {
@@ -861,27 +1122,26 @@ medusaIntegrationTestRunner({
             },
           ])
 
-          // Verify Policy map contains named policies
-          expect(Policy.size).toBe(3)
-          expect(Policy.get("ReadBrand")).toEqual({
+          // Verify Policy object contains named policies
+          expect(Object.keys(Policy).length).toBe(3)
+          expect(Policy["ReadBrand"]).toEqual({
             resource: "brand",
+            name: "ReadBrand",
             operation: "read",
+            description: "Read brand data",
           })
-          expect(Policy.get("WriteBrand")).toEqual({
+          expect(Policy["WriteBrand"]).toEqual({
             resource: "brand",
+            name: "WriteBrand",
             operation: "write",
+            description: "Write brand data",
           })
-          expect(Policy.get("ReadCategory")).toEqual({
+          expect(Policy["ReadCategory"]).toEqual({
             resource: "category",
+            name: "ReadCategory",
             operation: "read",
+            description: "Read category data",
           })
-
-          // Verify PolicyResource map contains resource-operation pairs
-          expect(PolicyResource.size).toBe(2)
-          expect(PolicyResource.get("brand")).toEqual(
-            new Set(["read", "write"])
-          )
-          expect(PolicyResource.get("category")).toEqual(new Set(["read"]))
         })
 
         it("should sync registered policies to database on application start", async () => {
@@ -960,9 +1220,8 @@ medusaIntegrationTestRunner({
           expect(policies).toHaveLength(3)
 
           // Second sync: Remove one policy from code
-          Policy.clear()
-          PolicyResource.clear()
 
+          clearPolicies()
           definePolicy([
             {
               name: "ReadOrder",
@@ -1019,8 +1278,7 @@ medusaIntegrationTestRunner({
           )
 
           // Second sync: Remove WriteCustomer
-          Policy.clear()
-          PolicyResource.clear()
+          clearPolicies()
 
           definePolicy({
             name: "ReadCustomer",
@@ -1036,8 +1294,7 @@ medusaIntegrationTestRunner({
           expect(policies).toHaveLength(1)
 
           // Third sync: Re-add WriteCustomer
-          Policy.clear()
-          PolicyResource.clear()
+          clearPolicies()
 
           definePolicy([
             {
@@ -1085,8 +1342,7 @@ medusaIntegrationTestRunner({
           const policyId = policies[0].id
 
           // Second sync: Change the name
-          Policy.clear()
-          PolicyResource.clear()
+          clearPolicies()
 
           definePolicy({
             name: "ViewInventory",
@@ -1150,8 +1406,7 @@ medusaIntegrationTestRunner({
           expect(roleWithPolicies[0].policies).toHaveLength(2)
 
           // Soft delete WriteStore policy
-          Policy.clear()
-          PolicyResource.clear()
+          clearPolicies()
 
           definePolicy({
             name: "ReadStore",
@@ -1169,8 +1424,7 @@ medusaIntegrationTestRunner({
           expect(roleWithPolicies[0].policies).toHaveLength(1)
 
           // Restore WriteStore policy
-          Policy.clear()
-          PolicyResource.clear()
+          clearPolicies()
 
           definePolicy([
             {

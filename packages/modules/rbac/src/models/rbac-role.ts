@@ -1,5 +1,5 @@
 import { model } from "@medusajs/framework/utils"
-import RbacRoleInheritance from "./rbac-role-inheritance"
+import RbacRoleParent from "./rbac-role-parent"
 import RbacRolePolicy from "./rbac-role-policy"
 
 const RbacRole = model
@@ -11,7 +11,7 @@ const RbacRole = model
     policies: model.hasMany(() => RbacRolePolicy, {
       mappedBy: "role",
     }),
-    inheritances: model.hasMany(() => RbacRoleInheritance, {
+    parents: model.hasMany(() => RbacRoleParent, {
       mappedBy: "role",
     }),
   })

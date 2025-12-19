@@ -27,22 +27,15 @@ export interface DefinePolicyExport {
 
 declare global {
   // eslint-disable-next-line no-var
-  var PolicyResource: Map<string, Set<string>>
-  // eslint-disable-next-line no-var
   var Resource: Record<string, string>
   // eslint-disable-next-line no-var
   var Operation: Record<string, string>
   // eslint-disable-next-line no-var
-  var Policy: Record<string, { resource: string; operation: string }>
+  var Policy: Record<
+    string,
+    { resource: string; operation: string; description?: string }
+  >
 }
-
-/**
- * Global registry for resource-operation mappings.
- * Maps resource names to sets of operations.
- */
-export const PolicyResource =
-  global.PolicyResource ?? new Map<string, Set<string>>()
-global.PolicyResource ??= PolicyResource
 
 /**
  * Global registry for all unique resources.
@@ -137,6 +130,7 @@ global.Policy ??= Policy
  *   name: "ReadBrands",
  *   resource: "brand",
  *   operation: "read"
+ *   description: "Read brands"
  * })
  *
  * definePolicy([
@@ -179,11 +173,6 @@ export function definePolicy(
     policy.resource = policy.resource.toLowerCase()
     policy.operation = policy.operation.toLowerCase()
 
-    if (!PolicyResource.has(policy.resource)) {
-      PolicyResource.set(policy.resource, new Set())
-    }
-    PolicyResource.get(policy.resource)!.add(policy.operation)
-
     const resourceKey = toSnakeCase(policy.resource)
     Resource[resourceKey] = policy.resource
 
@@ -191,10 +180,7 @@ export function definePolicy(
     Operation[operationKey] = policy.operation
 
     // Register in Policy object with name as key
-    Policy[policy.name] = {
-      resource: policy.resource,
-      operation: policy.operation,
-    }
+    Policy[policy.name] = { ...policy }
   }
 
   const output: DefinePolicyExport = {
