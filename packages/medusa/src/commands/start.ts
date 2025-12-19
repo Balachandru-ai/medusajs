@@ -11,6 +11,7 @@ import {
   dynamicImport,
   FileSystem,
   generateContainerTypes,
+  getResolvedPlugins,
   gqlSchemaToTypes,
   GracefulShutdownServer,
   isFileSkipped,
@@ -272,28 +273,36 @@ async function start(args: {
       })
 
       if (generateTypes) {
-        const typesDirectory = path.join(directory, ".medusa/types")
+        const configModule = container.resolve(
+          ContainerRegistrationKeys.CONFIG_MODULE
+        )
+        const localPlugins = (await getResolvedPlugins(directory, configModule, true))
+          .filter((p) => p.admin?.type === "local")
 
-        /**
-         * Cleanup existing types directory before creating new artifacts
-         */
-        await new FileSystem(typesDirectory).cleanup({ recursive: true })
+        for (const plugin of localPlugins) {
+          const typesDirectory = path.join(plugin.admin!.resolve, "../../.medusa/types")
 
-        await generateContainerTypes(modules, {
-          outputDir: typesDirectory,
-          interfaceName: "ModuleImplementations",
-        })
-        logger.debug("Generated container types")
+          /**
+           * Cleanup existing types directory before creating new artifacts
+           */
+          await new FileSystem(typesDirectory).cleanup({ recursive: true })
 
-        if (gqlSchema) {
-          await gqlSchemaToTypes({
+          await generateContainerTypes(modules, {
             outputDir: typesDirectory,
-            filename: "query-entry-points",
-            interfaceName: "RemoteQueryEntryPoints",
-            schema: gqlSchema,
-            joinerConfigs: MedusaModule.getAllJoinerConfigs(),
+            interfaceName: "ModuleImplementations",
           })
-          logger.debug("Generated modules types")
+          logger.debug("Generated container types")
+
+          if (gqlSchema) {
+            await gqlSchemaToTypes({
+              outputDir: typesDirectory,
+              filename: "query-entry-points",
+              interfaceName: "RemoteQueryEntryPoints",
+              schema: gqlSchema,
+              joinerConfigs: MedusaModule.getAllJoinerConfigs(),
+            })
+            logger.debug("Generated modules types")
+          }
         }
       }
 
