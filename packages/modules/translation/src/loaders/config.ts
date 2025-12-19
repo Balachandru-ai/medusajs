@@ -8,15 +8,12 @@ import { TRANSLATABLE_FIELDS_CONFIG_KEY } from "@utils/constants"
 import { asValue } from "awilix"
 import { translatableFieldsConfig } from "../utils/translatable-fields"
 import Settings from "@models/settings"
-
-type ModuleOptions = {
-  entities?: { type: string; fields: string[] }[]
-}
+import type { TranslationModuleOptions } from "../types"
 
 export default async ({
   container,
   options,
-}: LoaderOptions<ModuleOptions>): Promise<void> => {
+}: LoaderOptions<TranslationModuleOptions>): Promise<void> => {
   const logger =
     container.resolve<Logger>(ContainerRegistrationKeys.LOGGER) ?? console
   const settingsService: ModulesSdkTypes.IMedusaInternalService<
