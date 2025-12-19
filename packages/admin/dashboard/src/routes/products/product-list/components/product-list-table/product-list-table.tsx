@@ -20,6 +20,7 @@ import { useDataTable } from "../../../../../hooks/use-data-table"
 import { productsLoader } from "../../loader"
 import { useFeatureFlag } from "../../../../../providers/feature-flag-provider"
 import { ConfigurableProductListTable } from "./configurable-product-list-table"
+import { usePermissionsContext } from "../../../../../providers/permissions-provider"
 
 const PAGE_SIZE = 20
 
@@ -107,10 +108,47 @@ export const ProductListTable = () => {
 }
 
 const ProductActions = ({ product }: { product: HttpTypes.AdminProduct }) => {
+  const { hasAnyPermission, hasAllPermissions } = usePermissionsContext()
   const { t } = useTranslation()
   const prompt = usePrompt()
   const { mutateAsync } = useDeleteProduct(product.id)
   const isTranslationsEnabled = useFeatureFlag("translation")
+
+  const createPermissions = hasAnyPermission([
+    "products:create",
+    "products:manage",
+    "products:*",
+  ])
+  const deletePermissions = hasAnyPermission([
+    "products:delete",
+    "products:manage",
+    "products:*",
+  ])
+  const editPermissions = hasAnyPermission([
+    "products:edit",
+    "products:manage",
+    "products:*",
+  ])
+  const viewPermissions = hasAnyPermission([
+    "products:view",
+    "products:manage",
+    "products:*",
+  ])
+  const listPermissions = hasAnyPermission([
+    "products:list",
+    "products:manage",
+    "products:*",
+  ])
+  const exportPermissions = hasAnyPermission([
+    "products:export",
+    "products:manage",
+    "products:*",
+  ])
+  const importPermissions = hasAnyPermission([
+    "products:import",
+    "products:manage",
+    "products:*",
+  ])
 
   const handleDelete = async () => {
     const res = await prompt({
@@ -148,6 +186,7 @@ const ProductActions = ({ product }: { product: HttpTypes.AdminProduct }) => {
         {
           actions: [
             {
+              disabled: !editPermissions,
               icon: <PencilSquare />,
               label: t("actions.edit"),
               to: `/products/${product.id}/edit`,
@@ -170,6 +209,7 @@ const ProductActions = ({ product }: { product: HttpTypes.AdminProduct }) => {
         {
           actions: [
             {
+              disabled: !deletePermissions,
               icon: <Trash />,
               label: t("actions.delete"),
               onClick: handleDelete,

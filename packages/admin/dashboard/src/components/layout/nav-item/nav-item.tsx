@@ -29,6 +29,7 @@ export type INavItem = {
   from?: string
   nested?: string
   translationNs?: string
+  hasPermissions?: boolean
 }
 
 const BASE_NAV_LINK_CLASSES =

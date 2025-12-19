@@ -30,6 +30,8 @@ import { useExtension } from "../../../providers/extension-provider"
 import { useSearch } from "../../../providers/search-provider"
 import { UserMenu } from "../user-menu"
 import { useDocumentDirection } from "../../../hooks/use-document-direction"
+import { PermissionGuard } from "../../common/permission-guard"
+import { usePermissionsContext } from "../../../providers/permissions-provider"
 
 export const MainLayout = () => {
   return (
@@ -107,8 +109,7 @@ const Header = () => {
 
   return (
     <div className="w-full p-3">
-    <DropdownMenu
-          dir={direction}>
+      <DropdownMenu dir={direction}>
         <DropdownMenu.Trigger
           disabled={!isLoaded}
           className={clx(
@@ -179,24 +180,29 @@ const Header = () => {
 
 const useCoreRoutes = (): Omit<INavItem, "pathname">[] => {
   const { t } = useTranslation()
+  const { hasAnyPermission } = usePermissionsContext()
 
   return [
     {
       icon: <ShoppingCart />,
       label: t("orders.domain"),
       to: "/orders",
-      items: [
-        // TODO: Enable when domin is introduced
-        // {
-        //   label: t("draftOrders.domain"),
-        //   to: "/draft-orders",
-        // },
-      ],
+      hasPermissions: hasAnyPermission([
+        "orders:read",
+        "orders:manage",
+        "orders:*",
+      ]),
+      items: [],
     },
     {
       icon: <Tag />,
       label: t("products.domain"),
       to: "/products",
+      hasPermissions: hasAnyPermission([
+        "products:read",
+        "products:manage",
+        "products:*",
+      ]),
       items: [
         {
           label: t("collections.domain"),
@@ -206,17 +212,17 @@ const useCoreRoutes = (): Omit<INavItem, "pathname">[] => {
           label: t("categories.domain"),
           to: "/categories",
         },
-        // TODO: Enable when domin is introduced
-        // {
-        //   label: t("giftCards.domain"),
-        //   to: "/gift-cards",
-        // },
       ],
     },
     {
       icon: <Buildings />,
       label: t("inventory.domain"),
       to: "/inventory",
+      hasPermissions: hasAnyPermission([
+        "inventory:read",
+        "inventory:manage",
+        "inventory:*",
+      ]),
       items: [
         {
           label: t("reservations.domain"),
@@ -228,6 +234,11 @@ const useCoreRoutes = (): Omit<INavItem, "pathname">[] => {
       icon: <Users />,
       label: t("customers.domain"),
       to: "/customers",
+      hasPermissions: hasAnyPermission([
+        "customers:read",
+        "customers:manage",
+        "customers:*",
+      ]),
       items: [
         {
           label: t("customerGroups.domain"),
@@ -239,6 +250,11 @@ const useCoreRoutes = (): Omit<INavItem, "pathname">[] => {
       icon: <ReceiptPercent />,
       label: t("promotions.domain"),
       to: "/promotions",
+      hasPermissions: hasAnyPermission([
+        "promotions:read",
+        "promotions:manage",
+        "promotions:*",
+      ]),
       items: [
         {
           label: t("campaigns.domain"),
@@ -250,6 +266,11 @@ const useCoreRoutes = (): Omit<INavItem, "pathname">[] => {
       icon: <CurrencyDollar />,
       label: t("priceLists.domain"),
       to: "/price-lists",
+      hasPermissions: hasAnyPermission([
+        "price_lists:read",
+        "price_lists:manage",
+        "price_lists:*",
+      ]),
     },
   ]
 }
@@ -301,9 +322,11 @@ const CoreRouteSection = () => {
   return (
     <nav className="flex flex-col gap-y-1 py-3">
       <Searchbar />
-      {coreRoutes.map((route) => {
-        return <NavItem key={route.to} {...route} />
-      })}
+      {coreRoutes
+        .filter((route) => route.hasPermissions)
+        .map((route) => {
+          return <NavItem key={route.to} {...route} />
+        })}
     </nav>
   )
 }
