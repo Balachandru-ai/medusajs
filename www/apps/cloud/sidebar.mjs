@@ -80,6 +80,11 @@ export const sidebar = [
               },
             ],
           },
+          {
+            type: "link",
+            title: "Account",
+            path: "/user",
+          },
         ],
       },
       {

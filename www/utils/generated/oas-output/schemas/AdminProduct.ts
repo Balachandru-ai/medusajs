@@ -173,6 +173,11 @@
  *     description: The date the product was deleted.
  *   shipping_profile:
  *     $ref: "#/components/schemas/AdminShippingProfile"
+ *   translations:
+ *     type: array
+ *     description: The product's translations.
+ *     items:
+ *       $ref: "#/components/schemas/AdminTranslation"
  * 
 */
 

@@ -108,6 +108,10 @@ export const storefront = [
     "path": "https://docs.medusajs.com/resources/storefront-development/guides/react-native-expo"
   },
   {
+    "title": "Storefront Localization",
+    "path": "https://docs.medusajs.com/resources/storefront-development/localization"
+  },
+  {
     "title": "Storefront Production Optimization Tips",
     "path": "https://docs.medusajs.com/resources/storefront-development/production-optimizations"
   },
@@ -210,6 +214,10 @@ export const storefront = [
   {
     "title": "fulfillment",
     "path": "https://docs.medusajs.com/resources/references/js-sdk/store/fulfillment"
+  },
+  {
+    "title": "locale",
+    "path": "https://docs.medusajs.com/resources/references/js-sdk/store/locale"
   },
   {
     "title": "order",

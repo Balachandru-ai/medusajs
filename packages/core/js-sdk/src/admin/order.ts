@@ -676,7 +676,8 @@ export class Order {
   }
 
   /**
-   * This method starts an order export process to retrieve a CSV of exported orders.
+   * This method starts an order export process to retrieve a CSV of exported orders. It sends
+   * a request to the [Export Orders](https://docs.medusajs.com/api/admin#orders_postordersexport) API route.
    *
    * You'll receive in the response the transaction ID of the workflow generating the CSV file.
    * To check the status of the execution, send a `GET` request to
@@ -685,13 +686,15 @@ export class Order {
    * Once the execution finishes successfully, a notification is created for the export.
    * You can retrieve the notifications using the `/admin/notification` API route to
    * retrieve the file's download URL.
+   * 
+   * @since 2.12.3
    *
    * @param query - Filters to specify which orders to export.
    * @param headers - Headers to pass in the request.
    * @returns The export's details.
    *
    * @example
-   * sdk.admin.order.export({})
+   * sdk.admin.order.export()
    * .then(({ transaction_id }) => {
    *   console.log(transaction_id)
    * })

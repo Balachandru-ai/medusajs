@@ -609,6 +609,15 @@ const generatedgeneratedReferencesSidebarSidebar = {
                   "loaded": true,
                   "isPathHref": true,
                   "type": "link",
+                  "path": "/references/medusa-workflows/steps/updateCartItemsTranslationsStep",
+                  "title": "updateCartItemsTranslationsStep",
+                  "description": "",
+                  "children": []
+                },
+                {
+                  "loaded": true,
+                  "isPathHref": true,
+                  "type": "link",
                   "path": "/references/medusa-workflows/steps/updateCartPromotionsStep",
                   "title": "updateCartPromotionsStep",
                   "description": "",
@@ -824,6 +833,15 @@ const generatedgeneratedReferencesSidebarSidebar = {
                   "type": "link",
                   "path": "/references/medusa-workflows/steps/emitEventStep",
                   "title": "emitEventStep",
+                  "description": "",
+                  "children": []
+                },
+                {
+                  "loaded": true,
+                  "isPathHref": true,
+                  "type": "link",
+                  "path": "/references/medusa-workflows/steps/getTranslatedLineItemsStep",
+                  "title": "getTranslatedLineItemsStep",
                   "description": "",
                   "children": []
                 },
@@ -2742,6 +2760,15 @@ const generatedgeneratedReferencesSidebarSidebar = {
                   "loaded": true,
                   "isPathHref": true,
                   "type": "link",
+                  "path": "/references/medusa-workflows/exportOrdersWorkflow",
+                  "title": "exportOrdersWorkflow",
+                  "description": "Export orders with filtering capabilities.",
+                  "children": []
+                },
+                {
+                  "loaded": true,
+                  "isPathHref": true,
+                  "type": "link",
                   "path": "/references/medusa-workflows/fetchShippingOptionForOrderWorkflow",
                   "title": "fetchShippingOptionForOrderWorkflow",
                   "description": "Fetch a shipping option for an order.",
@@ -3389,6 +3416,15 @@ const generatedgeneratedReferencesSidebarSidebar = {
                   "loaded": true,
                   "isPathHref": true,
                   "type": "link",
+                  "path": "/references/medusa-workflows/steps/exportOrdersStep",
+                  "title": "exportOrdersStep",
+                  "description": "",
+                  "children": []
+                },
+                {
+                  "loaded": true,
+                  "isPathHref": true,
+                  "type": "link",
                   "path": "/references/medusa-workflows/steps/listOrderChangeActionsByTypeStep",
                   "title": "listOrderChangeActionsByTypeStep",
                   "description": "",
@@ -3463,6 +3499,15 @@ const generatedgeneratedReferencesSidebarSidebar = {
                   "type": "link",
                   "path": "/references/medusa-workflows/steps/updateOrderChangesStep",
                   "title": "updateOrderChangesStep",
+                  "description": "",
+                  "children": []
+                },
+                {
+                  "loaded": true,
+                  "isPathHref": true,
+                  "type": "link",
+                  "path": "/references/medusa-workflows/steps/updateOrderItemsTranslationsStep",
+                  "title": "updateOrderItemsTranslationsStep",
                   "description": "",
                   "children": []
                 },
@@ -6618,6 +6663,102 @@ const generatedgeneratedReferencesSidebarSidebar = {
           "loaded": true,
           "isPathHref": true,
           "type": "category",
+          "title": "Translation",
+          "children": [
+            {
+              "loaded": true,
+              "isPathHref": true,
+              "type": "sub-category",
+              "title": "Workflows",
+              "children": [
+                {
+                  "loaded": true,
+                  "isPathHref": true,
+                  "type": "link",
+                  "path": "/references/medusa-workflows/batchTranslationsWorkflow",
+                  "title": "batchTranslationsWorkflow",
+                  "description": "Create, update, and delete translations.",
+                  "children": []
+                },
+                {
+                  "loaded": true,
+                  "isPathHref": true,
+                  "type": "link",
+                  "path": "/references/medusa-workflows/createTranslationsWorkflow",
+                  "title": "createTranslationsWorkflow",
+                  "description": "Create one or more translations.",
+                  "children": []
+                },
+                {
+                  "loaded": true,
+                  "isPathHref": true,
+                  "type": "link",
+                  "path": "/references/medusa-workflows/deleteTranslationsWorkflow",
+                  "title": "deleteTranslationsWorkflow",
+                  "description": "Delete one or more translations.",
+                  "children": []
+                },
+                {
+                  "loaded": true,
+                  "isPathHref": true,
+                  "type": "link",
+                  "path": "/references/medusa-workflows/updateTranslationsWorkflow",
+                  "title": "updateTranslationsWorkflow",
+                  "description": "Update translations.",
+                  "children": []
+                }
+              ]
+            },
+            {
+              "loaded": true,
+              "isPathHref": true,
+              "type": "sub-category",
+              "title": "Steps",
+              "children": [
+                {
+                  "loaded": true,
+                  "isPathHref": true,
+                  "type": "link",
+                  "path": "/references/medusa-workflows/steps/createTranslationsStep",
+                  "title": "createTranslationsStep",
+                  "description": "",
+                  "children": []
+                },
+                {
+                  "loaded": true,
+                  "isPathHref": true,
+                  "type": "link",
+                  "path": "/references/medusa-workflows/steps/deleteTranslationsStep",
+                  "title": "deleteTranslationsStep",
+                  "description": "",
+                  "children": []
+                },
+                {
+                  "loaded": true,
+                  "isPathHref": true,
+                  "type": "link",
+                  "path": "/references/medusa-workflows/steps/updateTranslationsStep",
+                  "title": "updateTranslationsStep",
+                  "description": "",
+                  "children": []
+                },
+                {
+                  "loaded": true,
+                  "isPathHref": true,
+                  "type": "link",
+                  "path": "/references/medusa-workflows/steps/validateTranslationsStep",
+                  "title": "validateTranslationsStep",
+                  "description": "",
+                  "children": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "loaded": true,
+          "isPathHref": true,
+          "type": "category",
           "title": "User",
           "children": [
             {
@@ -7179,6 +7320,15 @@ const generatedgeneratedReferencesSidebarSidebar = {
               "type": "link",
               "path": "/references/helper-steps/emitEventStep",
               "title": "emitEventStep",
+              "description": "",
+              "children": []
+            },
+            {
+              "loaded": true,
+              "isPathHref": true,
+              "type": "link",
+              "path": "/references/helper-steps/getTranslatedLineItemsStep",
+              "title": "getTranslatedLineItemsStep",
               "description": "",
               "children": []
             },
