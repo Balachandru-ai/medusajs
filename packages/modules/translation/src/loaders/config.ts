@@ -28,8 +28,8 @@ export default async ({
   const userProvidedFields = options?.entities ?? []
   for (const field of userProvidedFields) {
     mergedConfig[field.type] ??= []
-    field.fields = Array.from(
-      new Set([...mergedConfig[field.type], ...field.fields])
+    mergedConfig[field.type] = Array.from(
+      new Set([...(mergedConfig[field.type] ?? []), ...field.fields])
     )
   }
 
