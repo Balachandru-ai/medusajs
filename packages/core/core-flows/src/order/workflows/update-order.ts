@@ -1,8 +1,4 @@
-import type {
-  OrderDTO,
-  OrderWorkflow,
-  ShippingOptionDTO,
-} from "@medusajs/framework/types"
+import type { OrderDTO, OrderWorkflow } from "@medusajs/framework/types"
 import {
   OrderPreviewDTO,
   RegisterOrderChangeDTO,
@@ -28,12 +24,10 @@ import {
   previewOrderChangeStep,
   registerOrderChangesStep,
   updateOrderItemsTranslationsStep,
-  updateOrderShippingMethodsStep,
   updateOrderShippingMethodsTranslationsStep,
   updateOrdersStep,
 } from "../steps"
 import { throwIfOrderIsCancelled } from "../utils/order-validation"
-import { getTranslatedShippingOptionsStep } from "../../common/steps/get-translated-shipping-option"
 
 /**
  * The data to validate the order update.
