@@ -12,6 +12,7 @@ import {
   FileSystem,
   generateContainerTypes,
   generatePolicyTypes,
+  getResolvedPlugins,
   gqlSchemaToTypes,
   GracefulShutdownServer,
   isFileSkipped,
