@@ -11,7 +11,6 @@ import {
   dynamicImport,
   FileSystem,
   generateContainerTypes,
-  getResolvedPlugins,
   gqlSchemaToTypes,
   GracefulShutdownServer,
   isFileSkipped,
@@ -273,36 +272,28 @@ async function start(args: {
       })
 
       if (generateTypes) {
-        const configModule = container.resolve(
-          ContainerRegistrationKeys.CONFIG_MODULE
-        )
-        const localPlugins = (await getResolvedPlugins(directory, configModule, true))
-          .filter((p) => p.admin?.type === "local")
+        const typesDirectory = path.join(directory, ".medusa/types")
 
-        for (const plugin of localPlugins) {
-          const typesDirectory = path.join(plugin.admin!.resolve, "../../.medusa/types")
+        /**
+         * Cleanup existing types directory before creating new artifacts
+         */
+        await new FileSystem(typesDirectory).cleanup({ recursive: true })
 
-          /**
-           * Cleanup existing types directory before creating new artifacts
-           */
-          await new FileSystem(typesDirectory).cleanup({ recursive: true })
+        await generateContainerTypes(modules, {
+          outputDir: typesDirectory,
+          interfaceName: "ModuleImplementations",
+        })
+        logger.debug("Generated container types")
 
-          await generateContainerTypes(modules, {
+        if (gqlSchema) {
+          await gqlSchemaToTypes({
             outputDir: typesDirectory,
-            interfaceName: "ModuleImplementations",
+            filename: "query-entry-points",
+            interfaceName: "RemoteQueryEntryPoints",
+            schema: gqlSchema,
+            joinerConfigs: MedusaModule.getAllJoinerConfigs(),
           })
-          logger.debug("Generated container types")
-
-          if (gqlSchema) {
-            await gqlSchemaToTypes({
-              outputDir: typesDirectory,
-              filename: "query-entry-points",
-              interfaceName: "RemoteQueryEntryPoints",
-              schema: gqlSchema,
-              joinerConfigs: MedusaModule.getAllJoinerConfigs(),
-            })
-            logger.debug("Generated modules types")
-          }
+          logger.debug("Generated modules types")
         }
       }
 
