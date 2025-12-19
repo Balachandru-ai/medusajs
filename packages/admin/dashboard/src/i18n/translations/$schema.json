@@ -400,10 +400,10 @@
         "saveChanges": {
           "type": "string"
         },
-        "saveAndClose": {
+        "saveAsDraft": {
           "type": "string"
         },
-        "saveAsDraft": {
+        "saveAndClose": {
           "type": "string"
         },
         "copy": {
@@ -9549,6 +9549,19 @@
         "domain": {
           "type": "string"
         },
+        "actions": {
+          "type": "object",
+          "properties": {
+            "manage": {
+              "type": "string"
+            },
+            "manageLocales": {
+              "type": "string"
+            }
+          },
+          "required": ["manage", "manageLocales"],
+          "additionalProperties": false
+        },
         "subtitle": {
           "type": "string"
         },
@@ -9559,19 +9572,8 @@
               "type": "string"
             }
           },
-          "required": ["metrics"]
-        },
-        "actions": {
-          "type": "object",
-          "properties": {
-            "manageLocales": {
-              "type": "string"
-            },
-            "manage": {
-              "type": "string"
-            }
-          },
-          "required": ["manageLocales", "manage"]
+          "required": ["metrics"],
+          "additionalProperties": false
         },
         "edit": {
           "type": "object",
@@ -9589,10 +9591,12 @@
                   "type": "string"
                 }
               },
-              "required": ["title", "description"]
+              "required": ["title", "description"],
+              "additionalProperties": false
             }
           },
-          "required": ["successToast", "unsavedChanges"]
+          "required": ["successToast", "unsavedChanges"],
+          "additionalProperties": false
         },
         "bulk": {
           "type": "object",
@@ -9604,7 +9608,8 @@
               "type": "string"
             }
           },
-          "required": ["header"]
+          "required": ["header", "mainColumn"],
+          "additionalProperties": false
         },
         "activeLocales": {
           "type": "object",
@@ -9619,7 +9624,8 @@
               "type": "string"
             }
           },
-          "required": ["heading", "subtitle", "noLocalesTip"]
+          "required": ["heading", "subtitle", "noLocalesTip"],
+          "additionalProperties": false
         },
         "completion": {
           "type": "object",
@@ -9637,17 +9643,21 @@
               "type": "string"
             }
           },
-          "required": ["heading", "translated", "toTranslate", "footer"]
+          "required": ["heading", "translated", "toTranslate", "footer"],
+          "additionalProperties": false
         }
       },
       "required": [
         "domain",
         "actions",
         "subtitle",
+        "list",
+        "edit",
         "bulk",
-        "completion",
-        "edit"
-      ]
+        "activeLocales",
+        "completion"
+      ],
+      "additionalProperties": false
     },
     "store": {
       "type": "object",
@@ -12477,6 +12487,7 @@
     "priceLists",
     "profile",
     "users",
+    "translations",
     "store",
     "regions",
     "taxes",

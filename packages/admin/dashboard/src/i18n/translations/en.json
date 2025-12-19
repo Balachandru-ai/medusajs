@@ -874,7 +874,7 @@
       "successToast": "Product option \"{{title}}\" was successfully created.",
       "tabs": {
         "details": "Details",
-        "organize": "Organize"
+        "organize": "Organize rankings"
       }
     },
     "manage": {

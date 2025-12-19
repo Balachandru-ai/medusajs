@@ -16,7 +16,7 @@ export const CreateProductOptionDetails = ({
   const { t } = useTranslation()
 
   return (
-    <div className="flex flex-col items-center p-16">
+    <div className="mt-16 flex flex-col items-center px-16">
       <div className="flex w-full max-w-[720px] flex-col gap-y-8">
         <div>
           <Heading>{t("productOptions.create.header")}</Heading>

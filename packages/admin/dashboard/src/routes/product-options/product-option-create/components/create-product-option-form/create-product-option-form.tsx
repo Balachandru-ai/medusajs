@@ -1,9 +1,8 @@
 import { zodResolver } from "@hookform/resolvers/zod"
-import { Button, ProgressStatus, ProgressTabs, toast } from "@medusajs/ui"
+import { Button, toast } from "@medusajs/ui"
 import { useForm } from "react-hook-form"
 import { useTranslation } from "react-i18next"
 
-import { useState } from "react"
 import {
   RouteFocusModal,
   useRouteModal,
@@ -12,23 +11,11 @@ import { KeyboundForm } from "../../../../../components/utilities/keybound-form"
 import { useCreateProductOption } from "../../../../../hooks/api"
 import { CreateProductOptionDetails } from "./create-product-option-details"
 import { CreateProductOptionOrganize } from "./create-product-option-organize"
-import {
-  CreateProductOptionDetailsSchema,
-  CreateProductOptionSchema,
-} from "./schema"
-import { useDocumentDirection } from "../../../../../hooks/use-document-direction"
-
-enum Tab {
-  DETAILS = "details",
-  ORGANIZE = "organize",
-}
+import { CreateProductOptionSchema } from "./schema"
 
 export const CreateProductOptionForm = () => {
   const { t } = useTranslation()
   const { handleSuccess } = useRouteModal()
-  const direction = useDocumentDirection()
-  const [activeTab, setActiveTab] = useState<Tab>(Tab.DETAILS)
-  const [validDetails, setValidDetails] = useState(false)
 
   const form = useForm<CreateProductOptionSchema>({
     defaultValues: {
@@ -39,35 +26,7 @@ export const CreateProductOptionForm = () => {
     resolver: zodResolver(CreateProductOptionSchema),
   })
 
-  const handleTabChange = (tab: Tab) => {
-    if (tab === Tab.ORGANIZE) {
-      const { title, values } = form.getValues()
-
-      const result = CreateProductOptionDetailsSchema.safeParse({
-        title,
-        values,
-      })
-
-      if (!result.success) {
-        result.error.errors.forEach((error) => {
-          form.setError(
-            error.path.join(".") as keyof CreateProductOptionSchema,
-            {
-              type: "manual",
-              message: error.message,
-            }
-          )
-        })
-
-        return
-      }
-
-      form.clearErrors()
-      setValidDetails(true)
-    }
-
-    setActiveTab(tab)
-  }
+  const hasValues = (form.watch("values")?.length ?? 0) > 0
 
   const { mutateAsync, isPending } = useCreateProductOption()
 
@@ -104,95 +63,34 @@ export const CreateProductOptionForm = () => {
     )
   })
 
-  const organizeStatus: ProgressStatus =
-    form.getFieldState("value_ranks")?.isDirty || activeTab === Tab.ORGANIZE
-      ? "in-progress"
-      : "not-started"
-
-  const detailsStatus: ProgressStatus = validDetails
-    ? "completed"
-    : "in-progress"
-
   return (
     <RouteFocusModal.Form form={form}>
       <KeyboundForm
         onSubmit={handleSubmit}
         className="flex size-full flex-col overflow-hidden"
       >
-        <ProgressTabs
-          dir={direction}
-          value={activeTab}
-          onValueChange={(tab) => handleTabChange(tab as Tab)}
-          className="flex size-full flex-col"
-        >
-          <RouteFocusModal.Header>
-            <div className="flex w-full items-center justify-between">
-              <div className="-my-2 w-full max-w-[400px] border-l">
-                <ProgressTabs.List className="grid w-full grid-cols-2">
-                  <ProgressTabs.Trigger
-                    value={Tab.DETAILS}
-                    status={detailsStatus}
-                    className="w-full min-w-0 overflow-hidden"
-                  >
-                    <span className="truncate">
-                      {t("productOptions.create.tabs.details")}
-                    </span>
-                  </ProgressTabs.Trigger>
-                  <ProgressTabs.Trigger
-                    value={Tab.ORGANIZE}
-                    status={organizeStatus}
-                    className="w-full min-w-0 overflow-hidden"
-                  >
-                    <span className="truncate">
-                      {t("productOptions.create.tabs.organize")}
-                    </span>
-                  </ProgressTabs.Trigger>
-                </ProgressTabs.List>
-              </div>
-            </div>
-          </RouteFocusModal.Header>
-          <RouteFocusModal.Body className="flex size-full flex-col overflow-auto">
-            <ProgressTabs.Content value={Tab.DETAILS}>
-              <CreateProductOptionDetails form={form} />
-            </ProgressTabs.Content>
-            <ProgressTabs.Content
-              value={Tab.ORGANIZE}
-              className="bg-ui-bg-subtle flex-1"
+        <RouteFocusModal.Header />
+        <RouteFocusModal.Body className="flex size-full flex-col gap-y-16 overflow-auto">
+          <CreateProductOptionDetails form={form} />
+          {hasValues && <CreateProductOptionOrganize form={form} />}
+        </RouteFocusModal.Body>
+        <RouteFocusModal.Footer>
+          <div className="flex items-center justify-end gap-x-2">
+            <RouteFocusModal.Close asChild>
+              <Button size="small" variant="secondary">
+                {t("actions.cancel")}
+              </Button>
+            </RouteFocusModal.Close>
+            <Button
+              size="small"
+              variant="primary"
+              type="submit"
+              isLoading={isPending}
             >
-              <CreateProductOptionOrganize form={form} />
-            </ProgressTabs.Content>
-          </RouteFocusModal.Body>
-          <RouteFocusModal.Footer>
-            <div className="flex items-center justify-end gap-x-2">
-              <RouteFocusModal.Close asChild>
-                <Button size="small" variant="secondary">
-                  {t("actions.cancel")}
-                </Button>
-              </RouteFocusModal.Close>
-              {activeTab === Tab.ORGANIZE ? (
-                <Button
-                  key="submit-btn"
-                  size="small"
-                  variant="primary"
-                  type="submit"
-                  isLoading={isPending}
-                >
-                  {t("actions.save")}
-                </Button>
-              ) : (
-                <Button
-                  key="continue-btn"
-                  size="small"
-                  variant="primary"
-                  type="button"
-                  onClick={() => handleTabChange(Tab.ORGANIZE)}
-                >
-                  {t("actions.continue")}
-                </Button>
-              )}
-            </div>
-          </RouteFocusModal.Footer>
-        </ProgressTabs>
+              {t("actions.save")}
+            </Button>
+          </div>
+        </RouteFocusModal.Footer>
       </KeyboundForm>
     </RouteFocusModal.Form>
   )

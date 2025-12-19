@@ -1,6 +1,8 @@
-import { Text } from "@medusajs/ui"
 import { useMemo } from "react"
 import { UseFormReturn, useWatch } from "react-hook-form"
+import { useTranslation } from "react-i18next"
+
+import { Text } from "@medusajs/ui"
 import { SortableList } from "../../../../../components/common/sortable-list"
 import { CreateProductOptionSchema } from "./schema"
 
@@ -17,6 +19,8 @@ type ValueItem = {
 export const CreateProductOptionOrganize = ({
   form,
 }: CreateProductOptionOrganizeProps) => {
+  const { t } = useTranslation()
+
   const values = useWatch({
     control: form.control,
     name: "values",
@@ -58,20 +62,31 @@ export const CreateProductOptionOrganize = ({
   }
 
   return (
-    <SortableList
-      items={items}
-      onChange={handleChange}
-      renderItem={(item) => (
-        <SortableList.Item
-          id={item.id}
-          className="border-ui-border-base border-b last:border-b-0"
-        >
-          <div className="flex flex-1 items-center gap-x-3 px-4 py-3">
-            <SortableList.DragHandle />
-            <Text size="small">{item.value}</Text>
+    <div className="px-16">
+      <div className="mx-auto flex w-full max-w-[720px] flex-col gap-y-8 ">
+        <div className="border-ui-border-base flex flex-col gap-y-2 rounded-xl border">
+          <div className="border-b-base bg-ui-bg-component border-b p-2">
+            <Text size="small" leading="compact" weight="plus">
+              {t("productOptions.create.tabs.organize")}
+            </Text>
           </div>
-        </SortableList.Item>
-      )}
-    />
+          <SortableList
+            items={items}
+            onChange={handleChange}
+            renderItem={(item) => (
+              <SortableList.Item
+                id={item.id}
+                className="border-ui-border-base border-b last:border-b-0"
+              >
+                <div className="flex flex-1 items-center gap-x-3 px-4 py-3">
+                  <SortableList.DragHandle />
+                  <Text size="small">{item.value}</Text>
+                </div>
+              </SortableList.Item>
+            )}
+          />{" "}
+        </div>
+      </div>
+    </div>
   )
 }
