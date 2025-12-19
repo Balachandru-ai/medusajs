@@ -1,6 +1,6 @@
 import { HttpTypes } from "@medusajs/types"
 import { Button, Hint, Label, toast, Tooltip } from "@medusajs/ui"
-import { useState } from "react"
+import { useMemo, useState } from "react"
 import { InformationCircle } from "@medusajs/icons"
 import { useTranslation } from "react-i18next"
 import * as zod from "zod"
@@ -40,7 +40,7 @@ export const ProductOptionsManageForm = ({
     product.options?.map((opt) => opt.id) || []
   )
 
-  const { options: productOptionChoices, isLoading } = useComboboxData({
+  const { options: _productOptionChoices, isLoading } = useComboboxData({
     queryKey: productOptionsQueryKeys.list({ is_exclusive: false }),
     queryFn: (params) =>
       sdk.admin.productOption.list({
@@ -48,14 +48,25 @@ export const ProductOptionsManageForm = ({
         is_exclusive: false, // load all global options here
       } as HttpTypes.AdminProductOptionListParams),
     getOptions: (data) =>
-      [
-        ...data.product_options,
-        ...(product.options?.filter((opt) => opt.is_exclusive) || []), // join exclusive product options
-      ].map((option) => ({
+      data.product_options.map((option) => ({
         label: option.title,
         value: option.id,
       })),
   })
+
+  const productOptionChoices = useMemo(
+    () => [
+      // prepand product specific options
+      ...(product.options?.filter((opt) => opt.is_exclusive) || []).map(
+        (option) => ({
+          label: option.title,
+          value: option.id,
+        })
+      ),
+      ..._productOptionChoices,
+    ],
+    [_productOptionChoices, product.options]
+  )
 
   const { product_options = [] } = useProductOptions(
     {
