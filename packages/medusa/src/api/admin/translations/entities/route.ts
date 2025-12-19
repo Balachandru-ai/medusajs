@@ -32,7 +32,6 @@ export const GET = async (
 
   const translatableFields = translationSettings?.fields ?? []
 
-  // Build filters - only add id filter if provided
   const filters: Record<string, unknown> = {}
   if (id) {
     filters.id = id
@@ -61,21 +60,20 @@ export const GET = async (
       throw e
     })
 
-  let aggregatedData = entities as (Record<string, unknown> & {
-    translations: HttpTypes.AdminTranslation[]
-  })[]
+  let aggregatedData =
+    entities as HttpTypes.AdminTranslationEntitiesResponse["data"]
 
   if (aggregatedData.length) {
     const { data: translations } = await query.graph({
       entity: "translations",
       fields: ["*"],
       filters: {
-        reference_id: entities.map((entity) => entity.id),
+        reference_id: aggregatedData.map((entity) => entity.id),
       },
     })
 
     // aggregate data - include all translations for all locales
-    aggregatedData = entities.map((entity) => {
+    aggregatedData = aggregatedData.map((entity) => {
       entity.translations = translations.filter(
         (translation) => translation.reference_id === entity.id
       )
