@@ -68,6 +68,7 @@ const modules = {
   },
   [Modules.RBAC]: {
     resolve: "@medusajs/rbac",
+    disable: process.env.MEDUSA_FF_RBAC !== "true",
   },
 }
 

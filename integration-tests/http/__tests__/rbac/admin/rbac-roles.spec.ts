@@ -298,7 +298,7 @@ medusaIntegrationTestRunner({
             "/admin/rbac/role-policies",
             {
               role_id: viewerRole.id,
-              parent_id: policies[0].id,
+              policy_id: policies[0].id,
             },
             adminHeaders
           )
@@ -307,7 +307,7 @@ medusaIntegrationTestRunner({
           expect(response.data.role_policy).toEqual(
             expect.objectContaining({
               role_id: viewerRole.id,
-              parent_id: policies[0].id,
+              policy_id: policies[0].id,
             })
           )
         })
@@ -317,7 +317,7 @@ medusaIntegrationTestRunner({
             "/admin/rbac/role-policies",
             {
               role_id: viewerRole.id,
-              parent_id: policies[0].id,
+              policy_id: policies[0].id,
             },
             adminHeaders
           )
@@ -326,7 +326,7 @@ medusaIntegrationTestRunner({
             "/admin/rbac/role-policies",
             {
               role_id: viewerRole.id,
-              parent_id: policies[1].id,
+              policy_id: policies[1].id,
             },
             adminHeaders
           )
@@ -342,11 +342,11 @@ medusaIntegrationTestRunner({
             expect.arrayContaining([
               expect.objectContaining({
                 role_id: viewerRole.id,
-                parent_id: policies[0].id,
+                policy_id: policies[0].id,
               }),
               expect.objectContaining({
                 role_id: viewerRole.id,
-                parent_id: policies[1].id,
+                policy_id: policies[1].id,
               }),
             ])
           )
@@ -357,7 +357,7 @@ medusaIntegrationTestRunner({
             "/admin/rbac/role-policies",
             {
               role_id: editorRole.id,
-              parent_id: policies[2].id,
+              policy_id: policies[2].id,
             },
             adminHeaders
           )
