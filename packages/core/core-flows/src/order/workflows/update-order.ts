@@ -29,6 +29,7 @@ import {
   registerOrderChangesStep,
   updateOrderItemsTranslationsStep,
   updateOrderShippingMethodsStep,
+  updateOrderShippingMethodsTranslationsStep,
   updateOrdersStep,
 } from "../steps"
 import { throwIfOrderIsCancelled } from "../utils/order-validation"
@@ -271,33 +272,15 @@ export const updateOrderWorkflow = createWorkflow(
     when("locale-changed", { input, order }, ({ input, order }) => {
       return !!input.locale && input.locale !== order.locale
     }).then(() => {
-      const translatedShippingOptions = getTranslatedShippingOptionsStep({
-        locale: input.locale!,
-        shippingOptions: transform({ order }, ({ order }) =>
-          order.shipping_methods.map((sm) => ({
-            id: sm.shipping_option_id,
-            shipping_method_id: sm.id,
-            name: sm.name,
-          }))
-        ),
-      }) as unknown as (ShippingOptionDTO & { shipping_method_id: string })[]
-
-      const updateShippingMethodsInput = transform(
-        { translatedShippingOptions },
-        ({ translatedShippingOptions }) => {
-          return translatedShippingOptions.map((sm) => ({
-            id: sm.shipping_method_id,
-            name: sm.name,
-          }))
-        }
-      )
-
       parallelize(
         updateOrderItemsTranslationsStep({
           order_id: input.id,
           locale: input.locale!,
         }),
-        updateOrderShippingMethodsStep(updateShippingMethodsInput)
+        updateOrderShippingMethodsTranslationsStep({
+          locale: input.locale!,
+          shippingMethods: order.shipping_methods,
+        })
       )
     })
 
