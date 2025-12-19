@@ -15,7 +15,7 @@ export const getTranslatedShippingOptionsStep = createStep(
   async (data: GetTranslatedShippingOptionsStepInput, { container }) => {
     const isTranslationEnabled = FeatureFlag.isFeatureEnabled("translation")
 
-    if (isTranslationEnabled && !!data.locale && data.shippingOptions?.length) {
+    if (isTranslationEnabled && !!data.locale && data.shippingOptions.length) {
       await applyTranslations({
         localeCode: data.locale,
         objects: data.shippingOptions,
