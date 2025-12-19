@@ -12,7 +12,6 @@ import {
   FileSystem,
   generateContainerTypes,
   generatePolicyTypes,
-  getResolvedPlugins,
   gqlSchemaToTypes,
   GracefulShutdownServer,
   isFileSkipped,
@@ -275,49 +274,37 @@ async function start(args: {
       })
 
       if (generateTypes) {
-        const configModule = container.resolve(
-          ContainerRegistrationKeys.CONFIG_MODULE
+        const typesDirectory = path.join(directory, ".medusa/types")
+
+        const fileGenPromises: Promise<void>[] = []
+
+        fileGenPromises.push(
+          generateContainerTypes(modules, {
+            outputDir: typesDirectory,
+            interfaceName: "ModuleImplementations",
+          })
         )
-        const localPlugins = (
-          await getResolvedPlugins(directory, configModule, true)
-        ).filter((p) => p.admin?.type === "local")
 
-        for (const plugin of localPlugins) {
-          const typesDirectory = path.join(
-            plugin.admin!.resolve,
-            "../../.medusa/types"
-          )
-
-          const fileGenPromises: Promise<void>[] = []
-
+        if (gqlSchema) {
           fileGenPromises.push(
-            generateContainerTypes(modules, {
+            gqlSchemaToTypes({
               outputDir: typesDirectory,
-              interfaceName: "ModuleImplementations",
+              filename: "query-entry-points",
+              interfaceName: "RemoteQueryEntryPoints",
+              schema: gqlSchema,
+              joinerConfigs: MedusaModule.getAllJoinerConfigs(),
             })
           )
-
-          if (gqlSchema) {
-            fileGenPromises.push(
-              gqlSchemaToTypes({
-                outputDir: typesDirectory,
-                filename: "query-entry-points",
-                interfaceName: "RemoteQueryEntryPoints",
-                schema: gqlSchema,
-                joinerConfigs: MedusaModule.getAllJoinerConfigs(),
-              })
-            )
-          }
-
-          fileGenPromises.push(
-            generatePolicyTypes({
-              outputDir: typesDirectory,
-            })
-          )
-
-          await promiseAll(fileGenPromises)
-          logger.debug("Generated policy types")
         }
+
+        fileGenPromises.push(
+          generatePolicyTypes({
+            outputDir: typesDirectory,
+          })
+        )
+
+        await promiseAll(fileGenPromises)
+        logger.debug("Generated policy types")
       }
 
       // Register a health check endpoint. Ideally this also checks the readiness of the service, rather than just returning a static response.
