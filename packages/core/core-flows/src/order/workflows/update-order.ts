@@ -1,4 +1,8 @@
-import type { OrderDTO, OrderWorkflow } from "@medusajs/framework/types"
+import type {
+  OrderDTO,
+  OrderWorkflow,
+  ShippingOptionDTO,
+} from "@medusajs/framework/types"
 import {
   OrderPreviewDTO,
   RegisterOrderChangeDTO,
@@ -24,10 +28,11 @@ import {
   previewOrderChangeStep,
   registerOrderChangesStep,
   updateOrderItemsTranslationsStep,
+  updateOrderShippingMethodsStep,
   updateOrdersStep,
 } from "../steps"
 import { throwIfOrderIsCancelled } from "../utils/order-validation"
-import { updateOrderShippingMethodsTranslationsWorkflow } from "./update-order-shipping-methods-translations"
+import { getTranslatedShippingOptionsStep } from "../../common/steps/get-translated-shipping-option"
 
 /**
  * The data to validate the order update.
@@ -136,6 +141,9 @@ export const updateOrderWorkflow = createWorkflow(
         "shipping_address.*",
         "billing_address.*",
         "metadata",
+        "shipping_methods.id",
+        "shipping_methods.name",
+        "shipping_methods.shipping_option_id",
       ],
       filters: { id: input.id },
       options: { throwIfKeyNotFound: true },
@@ -263,17 +271,33 @@ export const updateOrderWorkflow = createWorkflow(
     when("locale-changed", { input, order }, ({ input, order }) => {
       return !!input.locale && input.locale !== order.locale
     }).then(() => {
+      const translatedShippingOptions = getTranslatedShippingOptionsStep({
+        locale: input.locale!,
+        shippingOptions: transform({ order }, ({ order }) =>
+          order.shipping_methods.map((sm) => ({
+            id: sm.shipping_option_id,
+            shipping_method_id: sm.id,
+            name: sm.name,
+          }))
+        ),
+      }) as unknown as (ShippingOptionDTO & { shipping_method_id: string })[]
+
+      const updateShippingMethodsInput = transform(
+        { translatedShippingOptions },
+        ({ translatedShippingOptions }) => {
+          return translatedShippingOptions.map((sm) => ({
+            id: sm.shipping_method_id,
+            name: sm.name,
+          }))
+        }
+      )
+
       parallelize(
         updateOrderItemsTranslationsStep({
           order_id: input.id,
           locale: input.locale!,
         }),
-        updateOrderShippingMethodsTranslationsWorkflow.runAsStep({
-          input: {
-            order_id: input.id,
-            locale: input.locale!,
-          },
-        })
+        updateOrderShippingMethodsStep(updateShippingMethodsInput)
       )
     })
 
