@@ -6,6 +6,8 @@ import {
 
 jest.setTimeout(60000)
 
+process.env.MEDUSA_FF_RBAC = "true"
+
 medusaIntegrationTestRunner({
   testSuite: ({ dbConnection, api, getContainer }) => {
     let container
@@ -13,6 +15,10 @@ medusaIntegrationTestRunner({
     beforeEach(async () => {
       container = getContainer()
       await createAdminUser(dbConnection, adminHeaders, container)
+    })
+
+    afterAll(async () => {
+      delete process.env.MEDUSA_FF_RBAC
     })
 
     describe("RBAC Roles - Admin API", () => {
@@ -292,7 +298,7 @@ medusaIntegrationTestRunner({
             "/admin/rbac/role-policies",
             {
               role_id: viewerRole.id,
-              scope_id: policies[0].id,
+              parent_id: policies[0].id,
             },
             adminHeaders
           )
@@ -301,7 +307,7 @@ medusaIntegrationTestRunner({
           expect(response.data.role_policy).toEqual(
             expect.objectContaining({
               role_id: viewerRole.id,
-              scope_id: policies[0].id,
+              parent_id: policies[0].id,
             })
           )
         })
@@ -311,7 +317,7 @@ medusaIntegrationTestRunner({
             "/admin/rbac/role-policies",
             {
               role_id: viewerRole.id,
-              scope_id: policies[0].id,
+              parent_id: policies[0].id,
             },
             adminHeaders
           )
@@ -320,7 +326,7 @@ medusaIntegrationTestRunner({
             "/admin/rbac/role-policies",
             {
               role_id: viewerRole.id,
-              scope_id: policies[1].id,
+              parent_id: policies[1].id,
             },
             adminHeaders
           )
@@ -336,11 +342,11 @@ medusaIntegrationTestRunner({
             expect.arrayContaining([
               expect.objectContaining({
                 role_id: viewerRole.id,
-                scope_id: policies[0].id,
+                parent_id: policies[0].id,
               }),
               expect.objectContaining({
                 role_id: viewerRole.id,
-                scope_id: policies[1].id,
+                parent_id: policies[1].id,
               }),
             ])
           )
@@ -351,7 +357,7 @@ medusaIntegrationTestRunner({
             "/admin/rbac/role-policies",
             {
               role_id: editorRole.id,
-              scope_id: policies[2].id,
+              parent_id: policies[2].id,
             },
             adminHeaders
           )
