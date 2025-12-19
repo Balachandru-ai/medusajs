@@ -274,12 +274,14 @@ async function start(args: {
       })
 
       if (generateTypes) {
-        const typesDirectory = path.join(directory, ".medusa/types")
+        const configModule = container.resolve(
+          ContainerRegistrationKeys.CONFIG_MODULE
+        )
+        const localPlugins = (await getResolvedPlugins(directory, configModule, true))
+          .filter((p) => p.admin?.type === "local")
 
-        /**
-         * Cleanup existing types directory before creating new artifacts
-         */
-        await new FileSystem(typesDirectory).cleanup({ recursive: true })
+        for (const plugin of localPlugins) {
+          const typesDirectory = path.join(plugin.admin!.resolve, "../../.medusa/types")
 
         const fileGenPromises: Promise<void>[] = []
 
