@@ -66,6 +66,14 @@ const generatedgeneratedHowToTutorialsSidebarSidebar = {
               "loaded": true,
               "isPathHref": true,
               "type": "ref",
+              "title": "Create Caching Provider",
+              "path": "https://docs.medusajs.com/resources/references/caching-module-provider",
+              "children": []
+            },
+            {
+              "loaded": true,
+              "isPathHref": true,
+              "type": "ref",
               "title": "Create Event Module",
               "path": "https://docs.medusajs.com/resources/infrastructure-modules/event/create",
               "children": []
@@ -194,6 +202,14 @@ const generatedgeneratedHowToTutorialsSidebarSidebar = {
               "loaded": true,
               "isPathHref": true,
               "type": "ref",
+              "title": "Use Caching Module",
+              "path": "https://docs.medusajs.com/resources/references/caching-service",
+              "children": []
+            },
+            {
+              "loaded": true,
+              "isPathHref": true,
+              "type": "ref",
               "title": "Use Event Module",
               "path": "https://docs.medusajs.com/resources/references/event-service",
               "children": []
@@ -240,6 +256,7 @@ const generatedgeneratedHowToTutorialsSidebarSidebar = {
           "autogenerate_tags": "howTo+admin",
           "autogenerate_as_ref": true,
           "sort_sidebar": "alphabetize",
+          "description": "These how-to guides help you customize the Medusa Admin dashboard with practical examples.",
           "children": [
             {
               "loaded": true,
@@ -368,6 +385,14 @@ const generatedgeneratedHowToTutorialsSidebarSidebar = {
                   ]
                 }
               ]
+            },
+            {
+              "loaded": true,
+              "isPathHref": true,
+              "type": "link",
+              "title": "Custom Admin Authentication",
+              "path": "/how-to-tutorials/how-to/admin/auth",
+              "children": []
             }
           ]
         }
@@ -397,6 +422,15 @@ const generatedgeneratedHowToTutorialsSidebarSidebar = {
           "title": "Add Gift Message",
           "path": "/how-to-tutorials/tutorials/gift-message",
           "description": "Learn how to add a gift option and message to items in the cart.",
+          "children": []
+        },
+        {
+          "loaded": true,
+          "isPathHref": true,
+          "type": "link",
+          "title": "Add Product Category Images",
+          "path": "/how-to-tutorials/tutorials/category-images",
+          "description": "Learn how to add images to product categories in Medusa.",
           "children": []
         },
         {
@@ -433,6 +467,15 @@ const generatedgeneratedHowToTutorialsSidebarSidebar = {
           "title": "Custom Item Pricing",
           "path": "/examples/guides/custom-item-price",
           "description": "Learn how to use prices from external systems for products.",
+          "children": []
+        },
+        {
+          "loaded": true,
+          "isPathHref": true,
+          "type": "link",
+          "title": "Customer Tiers",
+          "path": "/how-to-tutorials/tutorials/customer-tiers",
+          "description": "Learn how to implement customer tiers in your Medusa store.",
           "children": []
         },
         {
@@ -584,6 +627,15 @@ const generatedgeneratedHowToTutorialsSidebarSidebar = {
           "title": "Product Builder",
           "path": "/how-to-tutorials/tutorials/product-builder",
           "description": "Learn how to implement a product builder that allows customers to customize products before adding them to the cart.",
+          "children": []
+        },
+        {
+          "loaded": true,
+          "isPathHref": true,
+          "type": "link",
+          "title": "Product Rentals",
+          "path": "/how-to-tutorials/tutorials/product-rentals",
+          "description": "Learn how to implement product rentals in your Medusa store.",
           "children": []
         },
         {

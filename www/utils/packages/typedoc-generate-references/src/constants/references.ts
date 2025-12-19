@@ -16,6 +16,7 @@ export const modules = [
   "stock-location-next",
   "store",
   "tax",
+  "translation",
   "user",
 ]
 
@@ -38,6 +39,7 @@ const allReferences = [
   "workflows",
   "locking",
   "cache",
+  "caching",
   "event",
   "file-service",
   "notification-service",

@@ -1,3 +1,4 @@
+import { FindParams } from "../../common"
 import {
   BaseCustomerAddressFilters,
   BaseCustomerFilters,
@@ -15,4 +16,4 @@ export interface AdminCustomerFilters extends BaseCustomerFilters {
   has_account?: boolean
 }
 export interface AdminCustomerAddressFilters
-  extends BaseCustomerAddressFilters {}
+  extends BaseCustomerAddressFilters, FindParams {}

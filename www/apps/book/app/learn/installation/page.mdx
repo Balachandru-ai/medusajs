@@ -8,9 +8,17 @@ export const metadata = {
 
 In this chapter, you'll learn how to install and run a Medusa application.
 
-## Create Medusa Application
+## Get Started with Cloud
 
-A Medusa application is made up of a Node.js server and an admin dashboard. You can optionally install the [Next.js Starter Storefront](!resources!/nextjs-starter) separately either while installing the Medusa application or at a later point.
+[Cloud](!cloud!) is Medusa's PaaS platform that allows you to deploy and manage production-ready Medusa applications with ease. Benefit from features like zero-configuration deployments, automatic scaling, and GitHub integration to streamline your development workflow.
+
+[Sign up](http://cloud.medusajs.com/signup) with Cloud and create your first Medusa project in minutes.
+
+---
+
+## Create Medusa Application Locally
+
+A Medusa application is made up of a Node.js server and a Vite admin dashboard. You can optionally install the [Next.js Starter Storefront](!resources!/nextjs-starter) separately either while installing the Medusa application or at a later point.
 
 <Note>
 
@@ -20,7 +28,7 @@ While this is the recommended way to create a Medusa application, you can altern
 
 <Prerequisites items={[
   {
-    text: "Node.js v20+",
+    text: "Node.js v20+ (LTS versions only)",
     link: "https://nodejs.org/en/download"
   },
   {
@@ -28,7 +36,7 @@ While this is the recommended way to create a Medusa application, you can altern
     link: "https://git-scm.com/downloads"
   },
   {
-    text: "PostgreSQL",
+    text: "PostgreSQL installed and running",
     link: "https://www.postgresql.org/download/"
   }
 ]} />

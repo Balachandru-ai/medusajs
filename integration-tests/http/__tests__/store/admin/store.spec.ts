@@ -1,6 +1,6 @@
+import { medusaIntegrationTestRunner } from "@medusajs/test-utils"
 import { IStoreModuleService } from "@medusajs/types"
 import { Modules } from "@medusajs/utils"
-import { medusaIntegrationTestRunner } from "@medusajs/test-utils"
 import {
   adminHeaders,
   createAdminUser,
@@ -66,6 +66,32 @@ medusaIntegrationTestRunner({
       })
 
       describe("POST /admin/stores", () => {
+        it("should update store", async () => {
+          const response = await api.post(
+            `/admin/stores/${store.id}`,
+            {
+              name: "Updated store",
+              
+              supported_currencies: [
+                { currency_code: "eur", is_default: true },
+                { currency_code: "usd" },
+              ],
+            },
+            adminHeaders
+          ).catch((e) => e)
+
+          expect(response.status).toEqual(200)
+          expect(response.data.store).toEqual(
+            expect.objectContaining({
+              name: "Updated store",
+              supported_currencies: [
+                expect.objectContaining({ currency_code: "eur" }),
+                expect.objectContaining({ currency_code: "usd" }),
+              ],
+            })
+          )
+        })
+
         it("fails to update default currencies if there is no default one", async () => {
           const err = await api
             .post(

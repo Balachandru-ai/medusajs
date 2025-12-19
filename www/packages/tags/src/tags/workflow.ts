@@ -196,6 +196,10 @@ export const workflow = [
     "path": "https://docs.medusajs.com/resources/references/medusa-workflows/cancelDraftOrderEditWorkflow"
   },
   {
+    "title": "computeDraftOrderAdjustmentsWorkflow",
+    "path": "https://docs.medusajs.com/resources/references/medusa-workflows/computeDraftOrderAdjustmentsWorkflow"
+  },
+  {
     "title": "confirmDraftOrderEditWorkflow",
     "path": "https://docs.medusajs.com/resources/references/medusa-workflows/confirmDraftOrderEditWorkflow"
   },
@@ -460,6 +464,10 @@ export const workflow = [
     "path": "https://docs.medusajs.com/resources/references/medusa-workflows/completeOrderWorkflow"
   },
   {
+    "title": "computeAdjustmentsForPreviewWorkflow",
+    "path": "https://docs.medusajs.com/resources/references/medusa-workflows/computeAdjustmentsForPreviewWorkflow"
+  },
+  {
     "title": "confirmClaimRequestWorkflow",
     "path": "https://docs.medusajs.com/resources/references/medusa-workflows/confirmClaimRequestWorkflow"
   },
@@ -556,6 +564,10 @@ export const workflow = [
     "path": "https://docs.medusajs.com/resources/references/medusa-workflows/dismissItemReturnRequestWorkflow"
   },
   {
+    "title": "exportOrdersWorkflow",
+    "path": "https://docs.medusajs.com/resources/references/medusa-workflows/exportOrdersWorkflow"
+  },
+  {
     "title": "fetchShippingOptionForOrderWorkflow",
     "path": "https://docs.medusajs.com/resources/references/medusa-workflows/fetchShippingOptionForOrderWorkflow"
   },
@@ -582,6 +594,10 @@ export const workflow = [
   {
     "title": "maybeRefreshShippingMethodsWorkflow",
     "path": "https://docs.medusajs.com/resources/references/medusa-workflows/maybeRefreshShippingMethodsWorkflow"
+  },
+  {
+    "title": "onCarryPromotionsFlagSet",
+    "path": "https://docs.medusajs.com/resources/references/medusa-workflows/onCarryPromotionsFlagSet"
   },
   {
     "title": "orderClaimAddNewItemWorkflow",
@@ -694,6 +710,10 @@ export const workflow = [
   {
     "title": "updateOrderChangeActionsWorkflow",
     "path": "https://docs.medusajs.com/resources/references/medusa-workflows/updateOrderChangeActionsWorkflow"
+  },
+  {
+    "title": "updateOrderChangeWorkflow",
+    "path": "https://docs.medusajs.com/resources/references/medusa-workflows/updateOrderChangeWorkflow"
   },
   {
     "title": "updateOrderChangesWorkflow",
@@ -812,6 +832,10 @@ export const workflow = [
     "path": "https://docs.medusajs.com/resources/references/medusa-workflows/updatePricePreferencesWorkflow"
   },
   {
+    "title": "batchImageVariantsWorkflow",
+    "path": "https://docs.medusajs.com/resources/references/medusa-workflows/batchImageVariantsWorkflow"
+  },
+  {
     "title": "batchLinkProductsToCategoryWorkflow",
     "path": "https://docs.medusajs.com/resources/references/medusa-workflows/batchLinkProductsToCategoryWorkflow"
   },
@@ -826,6 +850,10 @@ export const workflow = [
   {
     "title": "batchProductsWorkflow",
     "path": "https://docs.medusajs.com/resources/references/medusa-workflows/batchProductsWorkflow"
+  },
+  {
+    "title": "batchVariantImagesWorkflow",
+    "path": "https://docs.medusajs.com/resources/references/medusa-workflows/batchVariantImagesWorkflow"
   },
   {
     "title": "createCollectionsWorkflow",
@@ -1122,6 +1150,22 @@ export const workflow = [
   {
     "title": "updateTaxRegionsWorkflow",
     "path": "https://docs.medusajs.com/resources/references/medusa-workflows/updateTaxRegionsWorkflow"
+  },
+  {
+    "title": "batchTranslationsWorkflow",
+    "path": "https://docs.medusajs.com/resources/references/medusa-workflows/batchTranslationsWorkflow"
+  },
+  {
+    "title": "createTranslationsWorkflow",
+    "path": "https://docs.medusajs.com/resources/references/medusa-workflows/createTranslationsWorkflow"
+  },
+  {
+    "title": "deleteTranslationsWorkflow",
+    "path": "https://docs.medusajs.com/resources/references/medusa-workflows/deleteTranslationsWorkflow"
+  },
+  {
+    "title": "updateTranslationsWorkflow",
+    "path": "https://docs.medusajs.com/resources/references/medusa-workflows/updateTranslationsWorkflow"
   },
   {
     "title": "createUserAccountWorkflow",

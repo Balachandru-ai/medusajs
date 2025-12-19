@@ -91,11 +91,6 @@ async function loadEntrypoints(
     ContainerRegistrationKeys.CONFIG_MODULE
   )
 
-  if (shouldLoadBackgroundProcessors(configModule)) {
-    await subscribersLoader(plugins, container)
-    await jobsLoader(plugins, container)
-  }
-
   if (isWorkerMode(configModule)) {
     return async () => {}
   }
@@ -119,17 +114,18 @@ async function loadEntrypoints(
     next()
   })
 
-  const { shutdown } = await expressLoader({
-    app: expressApp,
-    container,
-  })
-
-  await adminLoader({ app: expressApp, configModule, rootDirectory, plugins })
-  await apiLoader({
-    container,
-    plugins,
-    app: expressApp,
-  })
+  const [{ shutdown }] = await promiseAll([
+    expressLoader({
+      app: expressApp,
+      container,
+    }),
+    adminLoader({ app: expressApp, configModule, rootDirectory, plugins }),
+    apiLoader({
+      container,
+      plugins,
+      app: expressApp,
+    }),
+  ])
 
   return shutdown
 }
@@ -140,10 +136,8 @@ export async function initializeContainer(
     skipDbConnection?: boolean
   }
 ): Promise<MedusaContainer> {
-  // custom flags from medusa project
   await featureFlagsLoader(rootDirectory)
   const configDir = await configLoader(rootDirectory, "medusa-config")
-  // core flags
   await featureFlagsLoader(join(__dirname, ".."))
 
   const customLogger = configDir.logger ?? defaultLogger
@@ -199,6 +193,14 @@ export default async ({
   const workflowsSourcePaths = plugins.map((p) => join(p.resolve, "workflows"))
   const workflowLoader = new WorkflowLoader(workflowsSourcePaths, container)
   await workflowLoader.load()
+
+  // Subscribers should be loaded no matter the worker mode, simply they will never handle anything
+  // since worker/shared instances only will have a running worker to process events.
+  await subscribersLoader(plugins, container)
+
+  if (shouldLoadBackgroundProcessors(configModule)) {
+    await jobsLoader(plugins, container)
+  }
 
   const entrypointsShutdown = skipLoadingEntryPoints
     ? () => {}

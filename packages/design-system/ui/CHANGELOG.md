@@ -1,5 +1,67 @@
 # @medusajs/ui
 
+## 4.0.31
+
+### Patch Changes
+
+- Updated dependencies [[`a43eb11d6565d19e82cf2b06e262ab509214b3d4`](https://github.com/medusajs/medusa/commit/a43eb11d6565d19e82cf2b06e262ab509214b3d4)]:
+  - @medusajs/icons@2.12.3
+
+## 4.0.30
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @medusajs/icons@2.12.2
+
+## 4.0.29
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @medusajs/icons@2.12.1
+
+## 4.0.28
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @medusajs/icons@2.12.0
+
+## 4.0.27
+
+### Patch Changes
+
+- [#13910](https://github.com/medusajs/medusa/pull/13910) [`224ab39a81e8d3cf3d6fa3ff5eee82541f64728d`](https://github.com/medusajs/medusa/commit/224ab39a81e8d3cf3d6fa3ff5eee82541f64728d) Thanks [@adrien2p](https://github.com/adrien2p)! - chore(): Dependencies cleanup and improvements
+
+- [#13940](https://github.com/medusajs/medusa/pull/13940) [`afb40d437b3cc4ceb015df70985b2f005f40eaff`](https://github.com/medusajs/medusa/commit/afb40d437b3cc4ceb015df70985b2f005f40eaff) Thanks [@adrien2p](https://github.com/adrien2p)! - chore(): Cleanup and organize deps
+
+- [#13932](https://github.com/medusajs/medusa/pull/13932) [`37563987b8fe75c9acfe62957a33e8398977647a`](https://github.com/medusajs/medusa/commit/37563987b8fe75c9acfe62957a33e8398977647a) Thanks [@adrien2p](https://github.com/adrien2p)! - chore(): Fix dependencies vulnerabilities
+
+- Updated dependencies [[`224ab39a81e8d3cf3d6fa3ff5eee82541f64728d`](https://github.com/medusajs/medusa/commit/224ab39a81e8d3cf3d6fa3ff5eee82541f64728d), [`afb40d437b3cc4ceb015df70985b2f005f40eaff`](https://github.com/medusajs/medusa/commit/afb40d437b3cc4ceb015df70985b2f005f40eaff), [`37563987b8fe75c9acfe62957a33e8398977647a`](https://github.com/medusajs/medusa/commit/37563987b8fe75c9acfe62957a33e8398977647a)]:
+  - @medusajs/icons@2.11.3
+
+## 4.0.26
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @medusajs/icons@2.11.2
+
+## 4.0.25
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @medusajs/icons@2.11.1
+
+## 4.0.24
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @medusajs/icons@2.11.0
+
 ## 4.0.23
 
 ### Patch Changes

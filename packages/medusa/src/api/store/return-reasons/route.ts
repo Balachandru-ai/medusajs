@@ -1,12 +1,12 @@
+import { MedusaRequest, MedusaResponse } from "@medusajs/framework/http"
+import { HttpTypes } from "@medusajs/framework/types"
 import {
   ContainerRegistrationKeys,
   remoteQueryObjectFromString,
 } from "@medusajs/framework/utils"
-import { MedusaRequest, MedusaResponse } from "@medusajs/framework/http"
-import { HttpTypes } from "@medusajs/framework/types"
 
 export const GET = async (
-  req: MedusaRequest,
+  req: MedusaRequest<HttpTypes.FindParams>,
   res: MedusaResponse<HttpTypes.StoreReturnReasonListResponse>
 ) => {
   const remoteQuery = req.scope.resolve(ContainerRegistrationKeys.REMOTE_QUERY)

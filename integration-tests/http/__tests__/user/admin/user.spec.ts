@@ -106,14 +106,25 @@ medusaIntegrationTestRunner({
 
     describe("DELETE /admin/users", () => {
       it("Deletes a user and updates associated auth identity", async () => {
+        const userTwoAdminHeaders = {
+            headers: { "x-medusa-access-token": "test_token" },
+        }
+
+        const { user: userTwo, authIdentity: userTwoAuthIdentity } = await createAdminUser(
+            dbConnection,
+            userTwoAdminHeaders,
+            container,
+            { email: "test@test.com" },
+          )
+
         const response = await api.delete(
-          `/admin/users/${user.id}`,
+          `/admin/users/${userTwo.id}`,
           adminHeaders
         )
 
         expect(response.status).toEqual(200)
         expect(response.data).toEqual({
-          id: user.id,
+          id: userTwo.id,
           object: "user",
           deleted: true,
         })
@@ -121,15 +132,15 @@ medusaIntegrationTestRunner({
         const authModule: IAuthModuleService = container.resolve(Modules.AUTH)
 
         const updatedAuthIdentity = await authModule.retrieveAuthIdentity(
-          authIdentity.id
+            userTwoAuthIdentity.id
         )
 
         // Ensure the auth identity has been updated to not contain the user's id
         expect(updatedAuthIdentity).toEqual(
           expect.objectContaining({
-            id: authIdentity.id,
+            id: userTwoAuthIdentity.id,
             app_metadata: expect.not.objectContaining({
-              user_id: user.id,
+              user_id: userTwo.id,
             }),
           })
         )
@@ -137,7 +148,7 @@ medusaIntegrationTestRunner({
         // Authentication should still succeed
         const authenticateToken = (
           await api.post(`/auth/user/emailpass`, {
-            email: user.email,
+            email: userTwo.email,
             password: "somepassword",
           })
         ).data.token
@@ -156,22 +167,14 @@ medusaIntegrationTestRunner({
         expect(meResponse.response.status).toEqual(401)
       })
 
-      it("throws if you attempt to delete another user", async () => {
-        const userModule = container.resolve(Modules.USER)
-
-        const userTwo = await userModule.createUsers({
-          email: "test@test.com",
-          password: "test",
-          role: "member",
-        })
-
+      it("throws if you attempt to delete your own user", async () => {
         const error = await api
-          .delete(`/admin/users/${userTwo.id}`, adminHeaders)
+          .delete(`/admin/users/${user.id}`, adminHeaders)
           .catch((e) => e)
 
         expect(error.response.status).toEqual(400)
         expect(error.response.data.message).toEqual(
-          "You are not allowed to delete other users"
+          "A user cannot delete itself"
         )
       })
 

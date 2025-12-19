@@ -28,7 +28,10 @@ export const GET = async (
 }
 
 export const POST = async (
-  req: AuthenticatedMedusaRequest<HttpTypes.AdminCreatePricePreference>,
+  req: AuthenticatedMedusaRequest<
+    HttpTypes.AdminCreatePricePreference,
+    HttpTypes.AdminPricePreferenceParams
+  >,
   res: MedusaResponse<HttpTypes.AdminPricePreferenceResponse>
 ) => {
   const workflow = createPricePreferencesWorkflow(req.scope)

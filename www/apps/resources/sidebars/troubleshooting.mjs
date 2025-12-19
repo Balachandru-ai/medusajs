@@ -95,7 +95,7 @@ export const troubleshootingSidebar = [
           {
             type: "link",
             path: "/troubleshooting/query/filter-linked",
-            title: "Not Exising Property",
+            title: "Not Existing Property",
           },
           {
             type: "link",
@@ -205,7 +205,7 @@ export const troubleshootingSidebar = [
           {
             type: "link",
             path: "/troubleshooting/nextjs-starter-rewrites",
-            title: "Cloud Run Error",
+            title: "Google Cloud Run Error",
           },
         ],
       },

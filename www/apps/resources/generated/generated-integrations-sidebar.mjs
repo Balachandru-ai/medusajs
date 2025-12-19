@@ -60,6 +60,14 @@ const generatedgeneratedIntegrationsSidebarSidebar = {
           "path": "/commerce-modules/auth/auth-providers/github",
           "title": "GitHub",
           "children": []
+        },
+        {
+          "loaded": true,
+          "isPathHref": true,
+          "type": "link",
+          "path": "/integrations/guides/okta",
+          "title": "Okta",
+          "children": []
         }
       ]
     },
@@ -92,6 +100,14 @@ const generatedgeneratedIntegrationsSidebarSidebar = {
           "type": "link",
           "path": "/integrations/guides/sanity",
           "title": "Sanity",
+          "children": []
+        },
+        {
+          "loaded": true,
+          "isPathHref": true,
+          "type": "link",
+          "path": "/integrations/guides/strapi",
+          "title": "Strapi",
           "children": []
         }
       ]
@@ -268,6 +284,23 @@ const generatedgeneratedIntegrationsSidebarSidebar = {
           "type": "link",
           "path": "/integrations/guides/meilisearch",
           "title": "Meilisearch",
+          "children": []
+        }
+      ]
+    },
+    {
+      "loaded": true,
+      "isPathHref": true,
+      "type": "category",
+      "title": "Tax",
+      "initialOpen": true,
+      "children": [
+        {
+          "loaded": true,
+          "isPathHref": true,
+          "type": "link",
+          "path": "/integrations/guides/avalara",
+          "title": "Avalara",
           "children": []
         }
       ]

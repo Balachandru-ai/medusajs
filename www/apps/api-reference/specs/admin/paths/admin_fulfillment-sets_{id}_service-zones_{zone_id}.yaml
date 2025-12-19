@@ -116,7 +116,7 @@ post:
     content:
       application/json:
         schema:
-          $ref: ../components/schemas/AdminUpdateFulfillmentSetServiceZones.yaml
+          $ref: ../components/schemas/AdminUpdateFulfillmentSetServiceZone.yaml
   x-codeSamples:
     - lang: JavaScript
       label: JS SDK

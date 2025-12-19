@@ -72,6 +72,18 @@ export const sidebar = [
             type: "link",
             title: "Deployments",
             path: "/deployments",
+            children: [
+              {
+                type: "link",
+                title: "Troubleshooting",
+                path: "/deployments/troubleshooting",
+              },
+            ],
+          },
+          {
+            type: "link",
+            title: "Account",
+            path: "/user",
           },
         ],
       },
@@ -94,6 +106,23 @@ export const sidebar = [
             type: "link",
             title: "S3",
             path: "/s3",
+          },
+          {
+            type: "link",
+            title: "Cache",
+            path: "/cache",
+          },
+          {
+            type: "link",
+            title: "Emails",
+            path: "/emails",
+            children: [
+              {
+                type: "link",
+                title: "React Email Templates",
+                path: "/emails/react-email",
+              },
+            ],
           },
         ],
       },

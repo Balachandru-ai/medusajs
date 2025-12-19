@@ -135,13 +135,7 @@ class OasKindGenerator extends FunctionKindGenerator {
     },
   ]
   readonly RESPONSE_TYPE_NAMES = ["MedusaResponse"]
-  readonly FIELD_QUERY_PARAMS = ["fields", "expand"]
-  readonly PAGINATION_QUERY_PARAMS = [
-    "limit",
-    "offset",
-    "order",
-    "with_deleted",
-  ]
+  readonly LOCALIZED_ROUTES = ["store/"]
 
   /**
    * This map collects tags of all the generated OAS, then, once the generation process finishes,
@@ -355,16 +349,17 @@ class OasKindGenerator extends FunctionKindGenerator {
       node,
       tagName,
       methodName,
+      oasPath,
     })
 
     oas.parameters?.push(...queryParameters)
-    if (requestSchema && Object.keys(requestSchema).length > 0) {
+    if (!this.oasSchemaHelper.isSchemaEmpty(requestSchema)) {
       oas.requestBody = {
         content: {
           "application/json": {
             schema:
-              this.oasSchemaHelper.namedSchemaToReference(requestSchema) ||
-              this.oasSchemaHelper.schemaChildrenToRefs(requestSchema),
+              this.oasSchemaHelper.namedSchemaToReference(requestSchema!) ||
+              this.oasSchemaHelper.schemaChildrenToRefs(requestSchema!),
           },
         },
       }
@@ -589,6 +584,7 @@ class OasKindGenerator extends FunctionKindGenerator {
       node,
       tagName,
       methodName,
+      oasPath,
       forUpdate: true,
     })
 
@@ -617,10 +613,7 @@ class OasKindGenerator extends FunctionKindGenerator {
 
     parametersUpdated = updatedRequestSchema?.wasUpdated || parametersUpdated
 
-    if (
-      !updatedRequestSchema?.schema ||
-      Object.keys(updatedRequestSchema.schema).length === 0
-    ) {
+    if (this.oasSchemaHelper.isSchemaEmpty(updatedRequestSchema?.schema)) {
       // if there's no request schema, remove it from the OAS
       delete oas.requestBody
     } else {
@@ -630,10 +623,10 @@ class OasKindGenerator extends FunctionKindGenerator {
           "application/json": {
             schema:
               this.oasSchemaHelper.namedSchemaToReference(
-                updatedRequestSchema.schema
+                updatedRequestSchema!.schema!
               ) ||
               this.oasSchemaHelper.schemaChildrenToRefs(
-                updatedRequestSchema.schema
+                updatedRequestSchema!.schema!
               ),
           },
         },
@@ -1180,6 +1173,7 @@ class OasKindGenerator extends FunctionKindGenerator {
     node,
     tagName,
     methodName,
+    oasPath,
     forUpdate = false,
   }: {
     /**
@@ -1194,6 +1188,10 @@ class OasKindGenerator extends FunctionKindGenerator {
      * The tag's name.
      */
     tagName?: string
+    /**
+     * The OAS path.
+     */
+    oasPath: string
     /**
      * Whether the request parameters are retrieved for update purposes only.
      */
@@ -1210,6 +1208,30 @@ class OasKindGenerator extends FunctionKindGenerator {
   } {
     const queryParameters: OpenAPIV3.ParameterObject[] = []
     let requestSchema: OpenApiSchema | undefined
+    const isLocalizedRoute = this.LOCALIZED_ROUTES.some((route) =>
+      oasPath.startsWith(route)
+    )
+
+    if (isLocalizedRoute) {
+      queryParameters.push(
+        this.getParameterObject({
+          type: "query",
+          name: "locale",
+          description:
+            "The locale in BCP 47 format to retrieve localized content.",
+          required: false,
+          schema: {
+            type: "string",
+            example: "en-US",
+            externalDocs: {
+              url: "https://docs.medusajs.com/resources/commerce-modules/translation/storefront",
+              description:
+                "Learn more in the Serve Translations in Storefront guide.",
+            },
+          },
+        })
+      )
+    }
 
     if (
       !node.parameters[0].type ||
@@ -1224,53 +1246,6 @@ class OasKindGenerator extends FunctionKindGenerator {
     const requestType = this.checker.getTypeFromTypeNode(
       node.parameters[0].type
     ) as ts.TypeReference
-    // TODO for now I'll use the type for validatedQuery until
-    // we have an actual approach to infer query types
-    const querySymbol = requestType.getProperty("validatedQuery")
-    if (querySymbol) {
-      const { shouldAddFields, shouldAddPagination } =
-        this.shouldAddQueryParams(node)
-      const queryType = this.checker.getTypeOfSymbol(querySymbol)
-      const queryTypeName = this.checker.typeToString(queryType)
-      queryType.getProperties().forEach((property) => {
-        const propertyName = property.getName()
-        // if this is a field / pagination query parameter and
-        // they're not used in the route, don't add them.
-        if (
-          (this.FIELD_QUERY_PARAMS.includes(propertyName) &&
-            !shouldAddFields) ||
-          (this.PAGINATION_QUERY_PARAMS.includes(propertyName) &&
-            !shouldAddPagination)
-        ) {
-          return
-        }
-        const propertyType = this.checker.getTypeOfSymbol(property)
-        const descriptionOptions: SchemaDescriptionOptions = {
-          typeStr: propertyName,
-          parentName: tagName,
-          rawParentName: queryTypeName,
-          node: property.valueDeclaration,
-          symbol: property,
-          nodeType: propertyType,
-        }
-        queryParameters.push(
-          this.getParameterObject({
-            name: propertyName,
-            type: "query",
-            description: this.getSchemaDescription(descriptionOptions),
-            required: this.isRequired(property),
-            schema: this.typeToSchema({
-              itemType: propertyType,
-              title: propertyName,
-              descriptionOptions,
-              context: "query",
-              saveSchema: !forUpdate,
-              symbol: property,
-            }),
-          })
-        )
-      })
-    }
 
     const requestTypeArguments =
       requestType.typeArguments || requestType.aliasTypeArguments
@@ -1397,6 +1372,22 @@ class OasKindGenerator extends FunctionKindGenerator {
           type: "string",
           externalDocs: {
             url: "https://docs.medusajs.com/api/store#publishable-api-key",
+          },
+        },
+      }),
+      this.getParameterObject({
+        type: "header",
+        name: "Content-Language",
+        description:
+          "The locale in BCP 47 format to retrieve localized content.",
+        required: false,
+        schema: {
+          type: "string",
+          example: "en-US",
+          externalDocs: {
+            url: "https://docs.medusajs.com/resources/commerce-modules/translation/storefront",
+            description:
+              "Learn more in the Serve Translations in Storefront guide.",
           },
         },
       }),
@@ -2535,7 +2526,7 @@ class OasKindGenerator extends FunctionKindGenerator {
     }
 
     if (oldSchemaObj?.deprecated !== newSchemaObj?.deprecated) {
-      // avoid many changes to exising OAS
+      // avoid many changes to existing OAS
       if (!newSchemaObj?.deprecated) {
         if (oldSchemaObj!.deprecated) {
           wasUpdated = true
@@ -2548,7 +2539,7 @@ class OasKindGenerator extends FunctionKindGenerator {
     }
 
     if (oldSchemaObj?.["x-featureFlag"] !== newSchemaObj?.["x-featureFlag"]) {
-      // avoid many changes to exising OAS
+      // avoid many changes to existing OAS
       if (!newSchemaObj?.["x-featureFlag"]) {
         if (oldSchemaObj!["x-featureFlag"]) {
           wasUpdated = true
@@ -2760,18 +2751,6 @@ class OasKindGenerator extends FunctionKindGenerator {
       })
       // write to the file
       writeFileSync(areaYamlPath, stringify(areaYaml))
-    }
-  }
-
-  shouldAddQueryParams(node: FunctionNode): {
-    shouldAddFields: boolean
-    shouldAddPagination: boolean
-  } {
-    const fnText = node.getText()
-
-    return {
-      shouldAddFields: fnText.includes(`req.queryConfig.fields`),
-      shouldAddPagination: fnText.includes(`req.queryConfig.pagination`),
     }
   }
 

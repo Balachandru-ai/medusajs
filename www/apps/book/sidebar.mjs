@@ -27,13 +27,13 @@ export const sidebars = [
           },
           {
             type: "link",
-            title: "Architecture",
-            path: "/learn/introduction/architecture",
+            title: "AI Assistants and LLMs",
+            path: "/learn/introduction/build-with-llms-ai",
           },
           {
             type: "link",
-            title: "AI Assistants and LLMs",
-            path: "/learn/introduction/build-with-llms-ai",
+            title: "Architecture",
+            path: "/learn/introduction/architecture",
           },
           {
             type: "link",
@@ -441,7 +441,7 @@ export const sidebars = [
               {
                 type: "link",
                 path: "/learn/fundamentals/workflows/execute-another-workflow",
-                title: "Execute Nested Workflows",
+                title: "Nested Workflows",
               },
               {
                 type: "link",
@@ -556,6 +556,11 @@ export const sidebars = [
           },
           {
             type: "link",
+            path: "/learn/fundamentals/admin/translations",
+            title: "Translations",
+          },
+          {
+            type: "link",
             path: "/learn/fundamentals/admin/constraints",
             title: "Constraints",
           },
@@ -585,6 +590,13 @@ export const sidebars = [
             type: "link",
             title: "Medusa Configuations",
             path: "/learn/configurations/medusa-config",
+            children: [
+              {
+                type: "link",
+                title: "Asymmetric Encryption",
+                path: "/learn/configurations/medusa-config/asymmetric-encryption",
+              },
+            ],
           },
           {
             type: "link",
@@ -669,6 +681,22 @@ export const sidebars = [
       },
       {
         type: "category",
+        title: "Best Practices",
+        children: [
+          {
+            type: "link",
+            path: "/learn/best-practices/third-party-sync",
+            title: "Third-Party Syncing",
+          },
+          {
+            type: "ref",
+            path: "/learn/fundamentals/scheduled-jobs/interval",
+            title: "Scheduled Job Intervals",
+          },
+        ],
+      },
+      {
+        type: "category",
         title: "Production",
         children: [
           {
@@ -679,7 +707,7 @@ export const sidebars = [
           {
             type: "link",
             path: "/learn/production/worker-mode",
-            title: "Worker Mode",
+            title: "Worker Modes",
           },
           {
             type: "link",
@@ -708,6 +736,18 @@ export const sidebars = [
             type: "external",
             path: "https://github.com/medusajs/medusa/releases",
             title: "Release Notes",
+          },
+          {
+            type: "link",
+            path: "/learn/codemods",
+            title: "Codemods",
+            children: [
+              {
+                type: "link",
+                title: "Replace Imports (v2.11.0+)",
+                path: "/learn/codemods/replace-imports",
+              },
+            ],
           },
         ],
       },

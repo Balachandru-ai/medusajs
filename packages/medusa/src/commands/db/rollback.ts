@@ -1,4 +1,4 @@
-import { MedusaAppLoader } from "@medusajs/framework"
+import { MedusaAppLoader, Migrator } from "@medusajs/framework"
 import { LinkLoader } from "@medusajs/framework/links"
 import {
   ContainerRegistrationKeys,
@@ -13,6 +13,8 @@ import { ensureDbExists } from "../utils"
 const TERMINAL_SIZE = process.stdout.columns
 
 const main = async function ({ directory, modules }) {
+  process.env.MEDUSA_WORKER_MODE = "server"
+
   const container = await initializeContainer(directory)
   const logger = container.resolve(ContainerRegistrationKeys.LOGGER)
 
@@ -40,6 +42,10 @@ const main = async function ({ directory, modules }) {
      * Reverting migrations
      */
     logger.info("Reverting migrations...")
+
+    const migrator = new Migrator({ container })
+    await migrator.ensureMigrationsTable()
+
     await medusaAppLoader.runModulesMigrations({
       moduleNames: modules,
       action: "revert",

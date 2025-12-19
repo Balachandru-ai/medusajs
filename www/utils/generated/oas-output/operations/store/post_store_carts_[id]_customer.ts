@@ -23,6 +23,16 @@
  *       type: string
  *       externalDocs:
  *         url: https://docs.medusajs.com/api/store#publishable-api-key
+ *   - name: Content-Language
+ *     in: header
+ *     description: The locale in BCP 47 format to retrieve localized content.
+ *     required: false
+ *     schema:
+ *       type: string
+ *       example: en-US
+ *       externalDocs:
+ *         url: https://docs.medusajs.com/resources/commerce-modules/translation/storefront
+ *         description: Learn more in the Serve Translations in Storefront guide.
  *   - name: fields
  *     in: query
  *     description: |-
@@ -37,6 +47,29 @@
  *         fields. Without prefix it will replace the entire default fields.
  *       externalDocs:
  *         url: "#select-fields-and-relations"
+ *   - name: locale
+ *     in: query
+ *     description: The locale in BCP 47 format to retrieve localized content.
+ *     required: false
+ *     schema:
+ *       type: string
+ *       example: en-US
+ *       externalDocs:
+ *         url: https://docs.medusajs.com/resources/commerce-modules/translation/storefront
+ *         description: Learn more in the Serve Translations in Storefront guide.
+ * security:
+ *   - cookie_auth: []
+ *   - jwt_token: []
+ * requestBody:
+ *   content:
+ *     application/json:
+ *       schema:
+ *         type: object
+ *         description: Optional additional data to pass to the underlying workflow.
+ *         properties:
+ *           additional_data:
+ *             type: object
+ *             description: Pass additional custom data to the API route. This data is passed to the underlying workflow under the `additional_data` parameter.
  * x-codeSamples:
  *   - lang: JavaScript
  *     label: JS SDK
@@ -100,19 +133,6 @@
  *     description: Emitted when the customer in the cart is transferred.
  *     deprecated: false
  *     since: 2.8.0
- * security:
- *   - cookie_auth: []
- *   - jwt_token: []
- * requestBody:
- *   content:
- *     application/json:
- *       schema:
- *         type: object
- *         description: Optional additional data to pass to the underlying workflow.
- *         properties:
- *           additional_data:
- *             type: object
- *             description: Pass additional custom data to the API route. This data is passed to the underlying workflow under the `additional_data` parameter.
- *
+ * 
 */
 

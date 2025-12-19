@@ -38,6 +38,9 @@
         "search": {
           "type": "string"
         },
+        "original": {
+          "type": "string"
+        },
         "of": {
           "type": "string"
         },
@@ -102,6 +105,9 @@
           "type": "string"
         },
         "removed": {
+          "type": "string"
+        },
+        "remaining": {
           "type": "string"
         },
         "admin": {
@@ -191,6 +197,7 @@
         "apply",
         "range",
         "search",
+        "original",
         "of",
         "results",
         "pages",
@@ -213,6 +220,7 @@
         "modified",
         "added",
         "removed",
+        "remaining",
         "admin",
         "store",
         "details",
@@ -381,6 +389,12 @@
         "save": {
           "type": "string"
         },
+        "saveChanges": {
+          "type": "string"
+        },
+        "saveAndClose": {
+          "type": "string"
+        },
         "saveAsDraft": {
           "type": "string"
         },
@@ -450,6 +464,12 @@
         "idCopiedToClipboard": {
           "type": "string"
         },
+        "editVariantImages": {
+          "type": "string"
+        },
+        "editImages": {
+          "type": "string"
+        },
         "addReason": {
           "type": "string"
         },
@@ -507,7 +527,9 @@
       },
       "required": [
         "save",
+        "saveChanges",
         "saveAsDraft",
+        "saveAndClose",
         "copy",
         "copied",
         "duplicate",
@@ -530,6 +552,8 @@
         "continue",
         "continueWithEmail",
         "idCopiedToClipboard",
+        "editVariantImages",
+        "editImages",
         "addReason",
         "addNote",
         "reset",
@@ -1912,6 +1936,9 @@
             "editHint": {
               "type": "string"
             },
+            "manageImageVariants": {
+              "type": "string"
+            },
             "makeThumbnail": {
               "type": "string"
             },
@@ -1922,6 +1949,9 @@
               "type": "string"
             },
             "invalidFileType": {
+              "type": "string"
+            },
+            "fileTooLarge": {
               "type": "string"
             },
             "failedToUpload": {
@@ -1969,15 +1999,32 @@
             },
             "successToast": {
               "type": "string"
+            },
+            "variantImages": {
+              "type": "string"
+            },
+            "showAvailableImages": {
+              "type": "string"
+            },
+            "availableImages": {
+              "type": "string"
+            },
+            "selectToAdd": {
+              "type": "string"
+            },
+            "removeSelected": {
+              "type": "string"
             }
           },
           "required": [
             "label",
             "editHint",
+            "manageImageVariants",
             "makeThumbnail",
             "uploadImagesLabel",
             "uploadImagesHint",
             "invalidFileType",
+            "fileTooLarge",
             "failedToUpload",
             "deleteWarning_one",
             "deleteWarning_other",
@@ -1988,7 +2035,57 @@
             "downloadImageLabel",
             "deleteImageLabel",
             "emptyState",
-            "successToast"
+            "successToast",
+            "variantImages",
+            "showAvailableImages",
+            "availableImages",
+            "selectToAdd",
+            "removeSelected"
+          ],
+          "additionalProperties": false
+        },
+        "variantMedia": {
+          "type": "object",
+          "properties": {
+            "label": {
+              "type": "string"
+            },
+            "manageVariants": {
+              "type": "string"
+            },
+            "addToMultipleVariants": {
+              "type": "string"
+            },
+            "manageVariantsDescription": {
+              "type": "string"
+            },
+            "successToast": {
+              "type": "string"
+            },
+            "emptyState": {
+              "type": "object",
+              "properties": {
+                "header": {
+                  "type": "string"
+                },
+                "description": {
+                  "type": "string"
+                },
+                "action": {
+                  "type": "string"
+                }
+              },
+              "required": ["header", "description", "action"],
+              "additionalProperties": false
+            }
+          },
+          "required": [
+            "label",
+            "manageVariants",
+            "addToMultipleVariants",
+            "manageVariantsDescription",
+            "successToast",
+            "emptyState"
           ],
           "additionalProperties": false
         },
@@ -2736,6 +2833,7 @@
         "editOptions",
         "editPrices",
         "media",
+        "variantMedia",
         "discountableHint",
         "noSalesChannels",
         "variantCount_one",
@@ -3967,6 +4065,45 @@
           "required": ["noRecordsMessage"],
           "additionalProperties": false
         },
+        "export": {
+          "type": "object",
+          "properties": {
+            "header": {
+              "type": "string"
+            },
+            "description": {
+              "type": "string"
+            },
+            "success": {
+              "type": "object",
+              "properties": {
+                "title": {
+                  "type": "string"
+                },
+                "description": {
+                  "type": "string"
+                }
+              },
+              "required": ["title", "description"],
+              "additionalProperties": false
+            },
+            "filters": {
+              "type": "object",
+              "properties": {
+                "title": {
+                  "type": "string"
+                },
+                "description": {
+                  "type": "string"
+                }
+              },
+              "required": ["title", "description"],
+              "additionalProperties": false
+            }
+          },
+          "required": ["header", "description", "success", "filters"],
+          "additionalProperties": false
+        },
         "status": {
           "type": "object",
           "properties": {
@@ -4826,6 +4963,15 @@
             "refundAmount": {
               "type": "string"
             },
+            "carryOverPromotion": {
+              "type": "string"
+            },
+            "carryOverPromotionHint": {
+              "type": "string"
+            },
+            "carryOverPromotionTooltip": {
+              "type": "string"
+            },
             "activeChangeError": {
               "type": "string"
             },
@@ -4907,6 +5053,9 @@
             "outboundShipping",
             "outboundShippingHint",
             "refundAmount",
+            "carryOverPromotion",
+            "carryOverPromotionHint",
+            "carryOverPromotionTooltip",
             "activeChangeError",
             "actions",
             "cancel",
@@ -5003,6 +5152,12 @@
             "trackingNumber": {
               "type": "string"
             },
+            "trackingUrl": {
+              "type": "string"
+            },
+            "labelUrl": {
+              "type": "string"
+            },
             "addTracking": {
               "type": "string"
             },
@@ -5019,6 +5174,8 @@
           "required": [
             "title",
             "trackingNumber",
+            "trackingUrl",
+            "labelUrl",
             "addTracking",
             "sendNotification",
             "sendNotificationHint",
@@ -5638,6 +5795,7 @@
         "orderCanceled",
         "onDateFromSalesChannel",
         "list",
+        "export",
         "status",
         "summary",
         "transfer",
@@ -7581,6 +7739,12 @@
             "taxInclusive": {
               "type": "string"
             },
+            "usageLimit": {
+              "type": "string"
+            },
+            "usage": {
+              "type": "string"
+            },
             "amount": {
               "type": "object",
               "properties": {
@@ -7678,9 +7842,12 @@
             "campaign",
             "method",
             "allocation",
+            "allocationTooltip",
             "addCondition",
             "clearAll",
             "taxInclusive",
+            "usageLimit",
+            "usage",
             "amount",
             "conditions"
           ],
@@ -8127,6 +8294,19 @@
               },
               "required": ["fixed", "percentage"],
               "additionalProperties": false
+            },
+            "limit": {
+              "type": "object",
+              "properties": {
+                "title": {
+                  "type": "string"
+                },
+                "description": {
+                  "type": "string"
+                }
+              },
+              "required": ["title", "description"],
+              "additionalProperties": false
             }
           },
           "required": [
@@ -8142,7 +8322,8 @@
             "allocation",
             "code",
             "value",
-            "value_type"
+            "value_type",
+            "limit"
           ],
           "additionalProperties": false
         },
@@ -9163,6 +9344,112 @@
       ],
       "additionalProperties": false
     },
+    "translations": {
+      "type": "object",
+      "properties": {
+        "domain": {
+          "type": "string"
+        },
+        "subtitle": {
+          "type": "string"
+        },
+        "list": {
+          "type": "object",
+          "properties": {
+            "metrics": {
+              "type": "string"
+            }
+          },
+          "required": ["metrics"]
+        },
+        "actions": {
+          "type": "object",
+          "properties": {
+            "manageLocales": {
+              "type": "string"
+            },
+            "manage": {
+              "type": "string"
+            }
+          },
+          "required": ["manageLocales", "manage"]
+        },
+        "edit": {
+          "type": "object",
+          "properties": {
+            "successToast": {
+              "type": "string"
+            },
+            "unsavedChanges": {
+              "type": "object",
+              "properties": {
+                "title": {
+                  "type": "string"
+                },
+                "description": {
+                  "type": "string"
+                }
+              },
+              "required": ["title", "description"]
+            }
+          },
+          "required": ["successToast", "unsavedChanges"]
+        },
+        "bulk": {
+          "type": "object",
+          "properties": {
+            "header": {
+              "type": "string"
+            },
+            "mainColumn": {
+              "type": "string"
+            }
+          },
+          "required": ["header"]
+        },
+        "activeLocales": {
+          "type": "object",
+          "properties": {
+            "heading": {
+              "type": "string"
+            },
+            "subtitle": {
+              "type": "string"
+            },
+            "noLocalesTip": {
+              "type": "string"
+            }
+          },
+          "required": ["heading", "subtitle", "noLocalesTip"]
+        },
+        "completion": {
+          "type": "object",
+          "properties": {
+            "heading": {
+              "type": "string"
+            },
+            "translated": {
+              "type": "string"
+            },
+            "toTranslate": {
+              "type": "string"
+            },
+            "footer": {
+              "type": "string"
+            }
+          },
+          "required": ["heading", "translated", "toTranslate", "footer"]
+        }
+      },
+      "required": [
+        "domain",
+        "actions",
+        "subtitle",
+        "bulk",
+        "completion",
+        "edit"
+      ]
+    },
     "store": {
       "type": "object",
       "properties": {
@@ -9176,6 +9463,9 @@
           "type": "string"
         },
         "defaultCurrency": {
+          "type": "string"
+        },
+        "defaultLocale": {
           "type": "string"
         },
         "defaultRegion": {
@@ -9196,6 +9486,9 @@
         "inviteLinkTemplate": {
           "type": "string"
         },
+        "locales": {
+          "type": "string"
+        },
         "currencies": {
           "type": "string"
         },
@@ -9212,6 +9505,15 @@
           "type": "string"
         },
         "removeCurrencyWarning_other": {
+          "type": "string"
+        },
+        "removeLocaleWarning_one": {
+          "type": "string"
+        },
+        "removeLocaleWarning_other": {
+          "type": "string"
+        },
+        "localeAlreadyAdded": {
           "type": "string"
         },
         "currencyAlreadyAdded": {
@@ -9233,10 +9535,16 @@
             "update": {
               "type": "string"
             },
+            "localesUpdated": {
+              "type": "string"
+            },
             "currenciesUpdated": {
               "type": "string"
             },
             "currenciesRemoved": {
+              "type": "string"
+            },
+            "localesRemoved": {
               "type": "string"
             },
             "updatedTaxInclusivitySuccessfully": {
@@ -9245,8 +9553,10 @@
           },
           "required": [
             "update",
+            "localesUpdated",
             "currenciesUpdated",
             "currenciesRemoved",
+            "localesRemoved",
             "updatedTaxInclusivitySuccessfully"
           ],
           "additionalProperties": false
@@ -9257,19 +9567,24 @@
         "manageYourStoresDetails",
         "editStore",
         "defaultCurrency",
+        "defaultLocale",
         "defaultRegion",
         "defaultSalesChannel",
         "defaultLocation",
         "swapLinkTemplate",
         "paymentLinkTemplate",
         "inviteLinkTemplate",
+        "locales",
         "currencies",
         "addCurrencies",
         "enableTaxInclusivePricing",
         "disableTaxInclusivePricing",
         "removeCurrencyWarning_one",
         "removeCurrencyWarning_other",
+        "removeLocaleWarning_one",
+        "removeLocaleWarning_other",
         "currencyAlreadyAdded",
+        "localeAlreadyAdded",
         "edit",
         "toast"
       ],

@@ -303,6 +303,15 @@ const generatedgeneratedToolsSidebarSidebar = {
                   "loaded": true,
                   "isPathHref": true,
                   "type": "link",
+                  "path": "/references/js-sdk/store/locale",
+                  "title": "locale",
+                  "description": "",
+                  "children": []
+                },
+                {
+                  "loaded": true,
+                  "isPathHref": true,
+                  "type": "link",
                   "path": "/references/js-sdk/store/order",
                   "title": "order",
                   "description": "",
@@ -458,6 +467,15 @@ const generatedgeneratedToolsSidebarSidebar = {
                   "type": "link",
                   "path": "/references/js-sdk/admin/invite",
                   "title": "invite",
+                  "description": "",
+                  "children": []
+                },
+                {
+                  "loaded": true,
+                  "isPathHref": true,
+                  "type": "link",
+                  "path": "/references/js-sdk/admin/locale",
+                  "title": "locale",
                   "description": "",
                   "children": []
                 },
@@ -726,6 +744,15 @@ const generatedgeneratedToolsSidebarSidebar = {
                   "loaded": true,
                   "isPathHref": true,
                   "type": "link",
+                  "path": "/references/js-sdk/admin/translation",
+                  "title": "translation",
+                  "description": "",
+                  "children": []
+                },
+                {
+                  "loaded": true,
+                  "isPathHref": true,
+                  "type": "link",
                   "path": "/references/js-sdk/admin/upload",
                   "title": "upload",
                   "description": "",
@@ -833,6 +860,14 @@ const generatedgeneratedToolsSidebarSidebar = {
                   "loaded": true,
                   "isPathHref": true,
                   "type": "ref",
+                  "title": "Customer Tiers",
+                  "path": "https://docs.medusajs.com/resources/how-to-tutorials/tutorials/customer-tiers",
+                  "children": []
+                },
+                {
+                  "loaded": true,
+                  "isPathHref": true,
+                  "type": "ref",
                   "title": "First-Purchase Discount",
                   "path": "https://docs.medusajs.com/resources/how-to-tutorials/tutorials/first-purchase-discounts",
                   "children": []
@@ -859,6 +894,22 @@ const generatedgeneratedToolsSidebarSidebar = {
                   "type": "ref",
                   "title": "Implement Product Builder",
                   "path": "https://docs.medusajs.com/resources/how-to-tutorials/tutorials/product-builder",
+                  "children": []
+                },
+                {
+                  "loaded": true,
+                  "isPathHref": true,
+                  "type": "ref",
+                  "title": "Implement Product Rentals",
+                  "path": "https://docs.medusajs.com/resources/how-to-tutorials/tutorials/product-rentals",
+                  "children": []
+                },
+                {
+                  "loaded": true,
+                  "isPathHref": true,
+                  "type": "ref",
+                  "title": "Megamenu and Category Banner",
+                  "path": "https://docs.medusajs.com/resources/how-to-tutorials/tutorials/category-images",
                   "children": []
                 },
                 {

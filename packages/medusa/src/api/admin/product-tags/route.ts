@@ -29,7 +29,10 @@ export const GET = async (
 }
 
 export const POST = async (
-  req: AuthenticatedMedusaRequest<HttpTypes.AdminCreateProductTag>,
+  req: AuthenticatedMedusaRequest<
+    HttpTypes.AdminCreateProductTag,
+    HttpTypes.AdminProductTagParams
+  >,
   res: MedusaResponse<HttpTypes.AdminProductTagResponse>
 ) => {
   const input = [req.validatedBody]

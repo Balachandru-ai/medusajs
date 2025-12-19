@@ -80,12 +80,10 @@ export const SearchProvider = ({
 
   const modalRef = useRef<HTMLDialogElement | null>(null)
 
-  const searchClient: SearchClient = useMemo(() => {
-    const algoliaClient = algoliasearch(algolia.appId, algolia.apiKey)
-    return {
-      ...algoliaClient,
-    }
-  }, [algolia.appId, algolia.apiKey])
+  const searchClient: SearchClient = useMemo(
+    () => algoliasearch(algolia.appId, algolia.apiKey),
+    [algolia.appId, algolia.apiKey]
+  )
 
   useEffect(() => {
     if (initialDefaultIndex !== selectedIndex) {

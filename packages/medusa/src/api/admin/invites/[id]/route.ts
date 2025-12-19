@@ -9,7 +9,7 @@ import { refetchInvite } from "../helpers"
 import { HttpTypes } from "@medusajs/framework/types"
 
 export const GET = async (
-  req: AuthenticatedMedusaRequest,
+  req: AuthenticatedMedusaRequest<HttpTypes.SelectParams>,
   res: MedusaResponse<HttpTypes.AdminInviteResponse>
 ) => {
   const { id } = req.params

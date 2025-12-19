@@ -83,6 +83,11 @@ export const sidebar = [
               },
             ],
           },
+          {
+            type: "link",
+            title: "Export Orders",
+            path: "/orders/export",
+          },
         ],
       },
       {
@@ -275,6 +280,11 @@ export const sidebar = [
           },
           {
             type: "link",
+            title: "Refund Reasons",
+            path: "/settings/refund-reasons",
+          },
+          {
+            type: "link",
             title: "Sales Channels",
             path: "/settings/sales-channels",
           },
@@ -309,6 +319,11 @@ export const sidebar = [
                 path: "/settings/locations-and-shipping/shipping-option-types",
               },
             ],
+          },
+          {
+            type: "link",
+            title: "Translations",
+            path: "/settings/translations",
           },
           {
             type: "link",

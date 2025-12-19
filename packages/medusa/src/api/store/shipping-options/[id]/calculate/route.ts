@@ -1,10 +1,13 @@
-import { HttpTypes } from "@medusajs/framework/types"
-import { MedusaRequest, MedusaResponse } from "@medusajs/framework/http"
 import { calculateShippingOptionsPricesWorkflow } from "@medusajs/core-flows"
+import { MedusaRequest, MedusaResponse } from "@medusajs/framework/http"
+import { HttpTypes } from "@medusajs/framework/types"
 import { ContainerRegistrationKeys } from "@medusajs/framework/utils"
 
 export const POST = async (
-  req: MedusaRequest<HttpTypes.StoreCalculateShippingOptionPrice>,
+  req: MedusaRequest<
+    HttpTypes.StoreCalculateShippingOptionPrice,
+    HttpTypes.SelectParams
+  >,
   res: MedusaResponse<HttpTypes.StoreShippingOptionResponse>
 ) => {
   const query = req.scope.resolve(ContainerRegistrationKeys.QUERY)

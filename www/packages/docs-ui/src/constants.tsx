@@ -168,6 +168,11 @@ export const navDropdownItems: NavigationItem[] = [
           },
           {
             type: "link",
+            title: "Translation",
+            link: "/resources/commerce-modules/translation",
+          },
+          {
+            type: "link",
             title: "User",
             link: "/resources/commerce-modules/user",
           },
@@ -185,8 +190,8 @@ export const navDropdownItems: NavigationItem[] = [
           },
           {
             type: "link",
-            title: "Cache",
-            link: "/resources/infrastructure-modules/cache",
+            title: "Caching",
+            link: "/resources/infrastructure-modules/caching",
           },
           {
             type: "link",
@@ -494,3 +499,10 @@ export const products: Product[] = [
     image: "/images/user-icon.png",
   },
 ]
+
+export enum DocsTrackingEvents {
+  SURVEY = "survey",
+  SURVEY_API = "survey_api-ref",
+  CODE_BLOCK_COPY = "code_block_copy",
+  AI_ASSISTANT_START_CHAT = "ai_assistant_start_chat",
+}

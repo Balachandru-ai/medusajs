@@ -125,6 +125,13 @@ export function getRouteMap({
                             import("../../routes/products/product-media"),
                         },
                         {
+                          path: "images/:image_id/variants",
+                          lazy: () =>
+                            import(
+                              "../../routes/products/product-image-variants-edit"
+                            ),
+                        },
+                        {
                           path: "prices",
                           lazy: () =>
                             import("../../routes/products/product-prices"),
@@ -196,6 +203,13 @@ export function getRouteMap({
                           lazy: () =>
                             import(
                               "../../routes/product-variants/product-variant-manage-inventory-items"
+                            ),
+                        },
+                        {
+                          path: "media",
+                          lazy: () =>
+                            import(
+                              "../../routes/product-variants/product-variant-media"
                             ),
                         },
                         {
@@ -286,6 +300,12 @@ export function getRouteMap({
                 {
                   path: "",
                   lazy: () => import("../../routes/orders/order-list"),
+                  children: [
+                    {
+                      path: "export",
+                      lazy: () => import("../../routes/orders/order-export"),
+                    },
+                  ],
                 },
                 {
                   path: ":id",
@@ -994,6 +1014,10 @@ export function getRouteMap({
                 {
                   path: "currencies",
                   lazy: () => import("../../routes/store/store-add-currencies"),
+                },
+                {
+                  path: "locales",
+                  lazy: () => import("../../routes/store/store-add-locales"),
                 },
                 {
                   path: "metadata/edit",
@@ -1813,6 +1837,29 @@ export function getRouteMap({
                       ],
                     },
                   ],
+                },
+              ],
+            },
+            {
+              path: "translations",
+              errorElement: <ErrorBoundary />,
+              handle: {
+                breadcrumb: () => t("translations.domain"),
+              },
+              children: [
+                {
+                  path: "",
+                  lazy: () =>
+                    import("../../routes/translations/translation-list"),
+                },
+                {
+                  path: "edit",
+                  lazy: () =>
+                    import("../../routes/translations/translations-edit"),
+                },
+                {
+                  path: "add-locales",
+                  lazy: () => import("../../routes/translations/add-locales"),
                 },
               ],
             },

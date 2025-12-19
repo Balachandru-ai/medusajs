@@ -152,6 +152,14 @@ export const generatedSidebars = [
                 "children": []
               }
             ]
+          },
+          {
+            "loaded": true,
+            "isPathHref": true,
+            "type": "link",
+            "title": "Export Orders",
+            "path": "/orders/export",
+            "children": []
           }
         ]
       },
@@ -447,6 +455,14 @@ export const generatedSidebars = [
             "loaded": true,
             "isPathHref": true,
             "type": "link",
+            "title": "Refund Reasons",
+            "path": "/settings/refund-reasons",
+            "children": []
+          },
+          {
+            "loaded": true,
+            "isPathHref": true,
+            "type": "link",
             "title": "Sales Channels",
             "path": "/settings/sales-channels",
             "children": []
@@ -499,6 +515,14 @@ export const generatedSidebars = [
                 "children": []
               }
             ]
+          },
+          {
+            "loaded": true,
+            "isPathHref": true,
+            "type": "link",
+            "title": "Translations",
+            "path": "/settings/translations",
+            "children": []
           },
           {
             "loaded": true,

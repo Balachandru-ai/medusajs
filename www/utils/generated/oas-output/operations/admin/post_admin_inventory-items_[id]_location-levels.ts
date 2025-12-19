@@ -32,7 +32,7 @@
  *   content:
  *     application/json:
  *       schema:
- *         $ref: "#/components/schemas/AdminCreateInventoryLocationLevel"
+ *         $ref: "#/components/schemas/AdminBatchCreateInventoryItemLocationLevels"
  * x-codeSamples:
  *   - lang: Shell
  *     label: cURL

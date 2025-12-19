@@ -7,7 +7,6 @@ import {
   FilterableOrderReturnReasonProps,
   FindConfig,
   InferEntityType,
-  InternalModuleDeclaration,
   IOrderModuleService,
   ModuleJoinerConfig,
   ModulesSdkTypes,
@@ -218,6 +217,14 @@ export default class OrderModuleService
   }>(generateMethodForModels)
   implements IOrderModuleService
 {
+  protected generateCustomDisplayId_: (
+    this: OrderModuleService,
+    order: OrderTypes.CreateOrderDTO,
+    sharedContext: Context
+  ) => Promise<string | undefined> = async () => {
+    return undefined
+  }
+
   protected baseRepository_: DAL.RepositoryService
   protected orderService_: OrderService
   protected orderAddressService_: ModulesSdkTypes.IMedusaInternalService<
@@ -311,7 +318,12 @@ export default class OrderModuleService
       orderExchangeService,
       orderCreditLineService,
     }: InjectedDependencies,
-    protected readonly moduleDeclaration: InternalModuleDeclaration
+    options?: {
+      generateCustomDisplayId?: (
+        order: OrderTypes.CreateOrderDTO,
+        sharedContext: Context
+      ) => Promise<string | undefined>
+    }
   ) {
     // @ts-ignore
     super(...arguments)
@@ -338,6 +350,9 @@ export default class OrderModuleService
     this.orderClaimService_ = orderClaimService
     this.orderExchangeService_ = orderExchangeService
     this.orderCreditLineService_ = orderCreditLineService
+
+    this.generateCustomDisplayId_ =
+      options?.generateCustomDisplayId ?? this.generateCustomDisplayId_
   }
 
   __joinerConfig(): ModuleJoinerConfig {
@@ -740,14 +755,15 @@ export default class OrderModuleService
     const creditLinesToCreate: CreateOrderCreditLineDTO[] = []
     const createdOrders: InferEntityType<typeof Order>[] = []
 
-    for (const {
-      items,
-      shipping_methods,
-      credit_lines,
-      shipping_address,
-      billing_address,
-      ...order
-    } of data) {
+    for (const data_ of data) {
+      const {
+        items,
+        shipping_methods,
+        credit_lines,
+        shipping_address,
+        billing_address,
+        ...order
+      } = data_
       const ord = order as any
 
       const shippingMethods = shipping_methods?.map((sm: any) => {
@@ -776,6 +792,11 @@ export default class OrderModuleService
       ord.summary = {
         totals: calculated.summary,
       }
+
+      ord.custom_display_id = await this.generateCustomDisplayId_.bind(this)(
+        data_,
+        sharedContext
+      )
 
       const created = await this.orderService_.create(ord, sharedContext)
 
@@ -2519,19 +2540,29 @@ export default class OrderModuleService
       sharedContext
     )
 
-    const { itemsToUpsert, shippingMethodsToUpsert, calculatedOrders } =
-      await applyChangesToOrder(
-        [order],
-        { [order.id]: orderChange.actions },
-        { addActionReferenceToObject: true }
-      )
+    // We need to apply the latest ordering actions last
+    const sortedActions = orderChange.actions.sort((a, b) => {
+      return a.ordering - b.ordering
+    })
+
+    const {
+      itemsToUpsert,
+      shippingMethodsToUpsert,
+      calculatedOrders,
+      lineItemAdjustmentsToCreate,
+    } = await applyChangesToOrder(
+      [order],
+      { [order.id]: sortedActions },
+      { addActionReferenceToObject: true }
+    )
 
     const calculated = calculatedOrders[order.id]
 
-    await this.includeTaxLinesAndAdjustementsToPreview(
+    await this.includeTaxLinesAndAdjustmentsToPreview(
       calculated.order,
       itemsToUpsert,
       shippingMethodsToUpsert,
+      lineItemAdjustmentsToCreate, // this will add "virtual" adjustments for the preview version but no actual adjustments will be created in the DB
       sharedContext
     )
 
@@ -2547,10 +2578,11 @@ export default class OrderModuleService
     return calcOrder
   }
 
-  private async includeTaxLinesAndAdjustementsToPreview(
+  private async includeTaxLinesAndAdjustmentsToPreview(
     order,
     itemsToUpsert,
     shippingMethodsToUpsert,
+    lineItemAdjustmentsToCreate,
     sharedContext: Context = {}
   ) {
     const addedItems = {}
@@ -2598,6 +2630,11 @@ export default class OrderModuleService
 
         //@ts-ignore
         const newItem = itemsToUpsert.find((d) => d.item_id === item.id)!
+
+        const adjustments = lineItemAdjustmentsToCreate.filter(
+          (d) => d.item_id === newItem.item_id
+        )
+
         const unitPrice = newItem?.unit_price ?? item.unit_price
         const compareAtUnitPrice =
           newItem?.compare_at_unit_price ?? item.compare_at_unit_price
@@ -2611,6 +2648,7 @@ export default class OrderModuleService
           quantity: newItem.quantity,
           unit_price: unitPrice,
           compare_at_unit_price: compareAtUnitPrice || null,
+          adjustments: adjustments,
           detail: {
             ...newItem,
             ...item,
@@ -3116,6 +3154,21 @@ export default class OrderModuleService
       this.orderShippingService_.softDelete(orderShippingIds, sharedContext)
     )
 
+    // Order Credit Lines
+    const orderCreditLines = await this.orderCreditLineService_.list(
+      {
+        order_id: order.id,
+        version: currentVersion,
+      },
+      { select: ["id", "version"] },
+      sharedContext
+    )
+    const orderCreditLineIds = orderCreditLines.map((cl) => cl.id)
+
+    updatePromises.push(
+      this.orderCreditLineService_.softDelete(orderCreditLineIds, sharedContext)
+    )
+
     // Order
     updatePromises.push(
       this.orderService_.update(
@@ -3220,6 +3273,21 @@ export default class OrderModuleService
       this.orderShippingService_.softDelete(orderShippingIds, sharedContext)
     )
 
+    // Order Credit Lines
+    const orderCreditLines = await this.orderCreditLineService_.list(
+      {
+        order_id: order.id,
+        version: currentVersion,
+      },
+      { select: ["id", "version"] },
+      sharedContext
+    )
+    const orderCreditLineIds = orderCreditLines.map((cl) => cl.id)
+
+    updatePromises.push(
+      this.orderCreditLineService_.softDelete(orderCreditLineIds, sharedContext)
+    )
+
     // Order
     updatePromises.push(
       this.orderService_.update(
@@ -3268,6 +3336,7 @@ export default class OrderModuleService
         "status",
         "description",
         "internal_note",
+        "carry_over_promotions",
       ],
       relations: [] as string[],
       order: {},
@@ -3487,12 +3556,13 @@ export default class OrderModuleService
       shippingMethodsToUpsert,
       summariesToUpsert,
       orderToUpdate,
-      creditLinesToCreate,
+      creditLinesToUpsert,
+      lineItemAdjustmentsToCreate,
     } = await applyChangesToOrder(orders, actionsMap, {
       addActionReferenceToObject: true,
-      includeTaxLinesAndAdjustementsToPreview: async (...args) => {
+      includeTaxLinesAndAdjustmentsToPreview: async (...args) => {
         args.push(sharedContext)
-        return await this.includeTaxLinesAndAdjustementsToPreview.apply(
+        return await this.includeTaxLinesAndAdjustmentsToPreview.apply(
           this,
           args
         )
@@ -3505,7 +3575,7 @@ export default class OrderModuleService
       orderItems,
       _orderSummaryUpdate,
       orderShippingMethods,
-      createdOrderCreditLines,
+      orderCreditLines,
     ] = await promiseAll([
       orderToUpdate.length
         ? this.orderService_.update(orderToUpdate, sharedContext)
@@ -3525,9 +3595,17 @@ export default class OrderModuleService
             sharedContext
           )
         : null,
-      creditLinesToCreate.length
-        ? this.orderCreditLineService_.create(
-            creditLinesToCreate,
+      creditLinesToUpsert.length
+        ? this.orderCreditLineService_.upsert(
+            creditLinesToUpsert,
+            sharedContext
+          )
+        : null,
+      lineItemAdjustmentsToCreate.length
+        ? this.orderLineItemAdjustmentService_.create(
+            // this is called when a new order version is confirmed so we only create a new set of adjustments for that version
+            // there is no removal or upsert
+            lineItemAdjustmentsToCreate,
             sharedContext
           )
         : null,
@@ -3536,7 +3614,7 @@ export default class OrderModuleService
     return {
       items: orderItems ?? [],
       shipping_methods: orderShippingMethods ?? [],
-      credit_lines: createdOrderCreditLines ?? ([] as any),
+      credit_lines: orderCreditLines ?? ([] as any),
     }
   }
 

@@ -43,6 +43,14 @@ git clone https://github.com/medusajs/medusa-starter-default.git --depth=1 my-me
 
 This command clones the repository into a directory named `my-medusa-store`.
 
+Make sure to change into the newly created directory:
+
+```bash
+cd my-medusa-store
+```
+
+The rest of the steps will be performed inside this directory.
+
 ---
 
 ## 2. Create `docker-compose.yml`
@@ -89,6 +97,7 @@ services:
       - redis
     ports:
       - "9000:9000"
+      - "5173:5173"
     environment:
       - NODE_ENV=development
       - DATABASE_URL=postgres://postgres:postgres@postgres:5432/medusa-store
@@ -96,8 +105,8 @@ services:
     env_file:
       - .env
     volumes:
-      - .:/app
-      - /app/node_modules
+      - .:/server
+      - /server/node_modules
     networks:
       - medusa_network
 
@@ -131,6 +140,7 @@ If this isn't the first Medusa project you're setting up with Docker on your mac
     - Use `"5433:5432"` for PostgreSQL.
     - Use `"6380:6379"` for Redis.
     - Use `"9001:9000"` for the Medusa server.
+    - Use `"5174:5173"` for the Medusa Admin dashboard.
 - Update the `DATABASE_URL` and `REDIS_URL` environment variables accordingly.
 
 ---
@@ -238,7 +248,7 @@ WORKDIR /server
 COPY package.json package-lock.json ./
 
 # Install all dependencies using npm
-RUN npm install
+RUN npm install --legacy-peer-deps
 
 # Copy source code
 COPY . .
@@ -272,9 +282,29 @@ If you're using a different Yarn version, or you're using NPM, you need to insta
 
 To install the dependencies, run the following command:
 
-```bash npm2yarn
-npm install
+<CodeTabs group="npm2yarn">
+  <CodeTab value="npm" label="npm">
+
+```bash
+npm install --legacy-peer-deps
 ```
+
+  </CodeTab>
+  <CodeTab value="yarn" label="yarn">
+
+```bash
+yarn install
+```
+
+  </CodeTab>
+  <CodeTab value="pnpm" label="pnpm">
+
+```bash
+pnpm install
+```
+
+  </CodeTab>
+</CodeTabs>
 
 This will update `yarn.lock` or generate a `package-lock.json` file, depending on your package manager.
 
@@ -305,6 +335,8 @@ Where:
 
 ## 7. Update Medusa Configuration
 
+### Disable SSL for PostgreSQL Connection
+
 If you try to run the Medusa application now with Docker, you'll encounter an SSL error as the server tries to connect to the PostgreSQL database.
 
 To resolve the error, add the following configurations in `medusa-config.ts`:
@@ -326,6 +358,43 @@ module.exports = defineConfig({
 ```
 
 You add the [projectConfig.databaseDriverOptions](../../configurations/medusa-config/page.mdx#databasedriveroptions) to disable SSL for the PostgreSQL database connection.
+
+### Add Vite Configuration for Medusa Admin
+
+To ensure that the Medusa Admin dashboard works correctly when running inside Docker, connects to the Medusa server, and reloads properly with Hot Module Replacement (HMR), add the following Vite configuration in `medusa-config.ts`:
+
+```ts title="medusa-config.ts"
+module.exports = defineConfig({
+  // ...
+  admin: {
+    vite: (config) => {
+      return {
+        ...config,
+        server: {
+          ...config.server,
+          host: "0.0.0.0",
+          // Allow all hosts when running in Docker (development mode)
+          // In production, this should be more restrictive
+          allowedHosts: [
+            "localhost",
+            ".localhost",
+            "127.0.0.1",
+          ],
+          hmr: {
+            ...config.server?.hmr,
+            // HMR websocket port inside container
+            port: 5173, 
+            // Port browser connects to (exposed in docker-compose.yml)
+            clientPort: 5173,
+          },
+        },
+      }
+    },
+  },
+})
+```
+
+You configure the Vite development server to listen on all network interfaces (`0.0.0.0`) and set up HMR to work correctly within the Docker environment.
 
 ---
 
@@ -434,6 +503,53 @@ docker compose logs -f medusa
 ```
 
 This command shows the logs of the `medusa` service, allowing you to see any errors or messages from the Medusa application.
+
+---
+
+## Troubleshooting
+
+### start.sh Not Found Error
+
+If you get the following error when starting the Medusa application with Docker:
+
+```bash
+medusa_backend exited with code 127 (restarting)
+medusa_backend   | /usr/local/bin/docker-entrypoint.sh: exec: line 11: ./start.sh: not found
+```
+
+This is a common error for Windows users. It usually occurs when the `start.sh` file uses CRLF line endings instead of LF.
+
+To fix this, ensure that the `start.sh` file uses LF line endings. You can configure Git to maintain LF line endings by following [this guide from GitHub](https://docs.github.com/en/get-started/git-basics/configuring-git-to-handle-line-endings).
+
+### Couldn't Find X File or Directory Errors
+
+If you encounter errors indicating that certain files or directories couldn't be found, make sure you're running the commands from the root directory of your Medusa application (the same directory where the `docker-compose.yml` file is located).
+
+For example, if you run the `docker:up` command and see an error like this:
+
+```bash
+error Couldn't find a package.json file in "/"
+```
+
+Ensure that your terminal's current working directory is the root of your Medusa application, then try running the command again.
+
+### Container Name Conflicts
+
+If you're running multiple Medusa projects with Docker or have previously run this guide, you may encounter container name conflicts.
+
+To resolve this, ensure that the `container_name` values in your `docker-compose.yml` file are unique for each project. You can modify them by appending a unique identifier to each name.
+
+For example, change:
+
+```yaml title="docker-compose.yml"
+container_name: medusa_postgres
+```
+
+to
+
+```yaml title="docker-compose.yml"
+container_name: medusa_postgres_myproject
+```
 
 ---
 

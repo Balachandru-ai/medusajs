@@ -115,6 +115,12 @@ export type TransactionStepsDefinition = {
    */
   next?: TransactionStepsDefinition | TransactionStepsDefinition[]
 
+  /**
+   * @private
+   * Whether we need to store checkpoint at this step.
+   */
+  store?: boolean
+
   // TODO: add metadata field for customizations
 }
 
@@ -263,6 +269,9 @@ export type StepFeatures = {
   hasAsyncSteps: boolean
   hasStepTimeouts: boolean
   hasRetriesTimeout: boolean
+  parallelSteps?: number
+  stepId?: string
+  _v?: number
 }
 
 export type TransactionOptions = TransactionModelOptions & StepFeatures
@@ -276,6 +285,7 @@ export type TransactionFlow = {
   metadata?: {
     eventGroupId?: string
     parentIdempotencyKey?: string
+    cancelingFromParentStep?: boolean
     sourcePath?: string
     preventReleaseEvents?: boolean
     parentStepIdempotencyKey?: string
@@ -295,4 +305,5 @@ export type TransactionFlow = {
   steps: {
     [key: string]: TransactionStep
   }
+  _v: number
 }

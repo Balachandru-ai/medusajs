@@ -8,13 +8,13 @@
  *   - items
  *   - shipping_methods
  *   - status
- *   - currency_code
  *   - id
  *   - version
  *   - region_id
  *   - customer_id
  *   - sales_channel_id
  *   - email
+ *   - currency_code
  *   - payment_status
  *   - fulfillment_status
  *   - summary
@@ -267,6 +267,12 @@
  *     type: number
  *     title: shipping_discount_total
  *     description: The total discount amount applied on the order's shipping.
+ *   custom_display_id:
+ *     type: string
+ *     title: custom_display_id
+ *     description: The custom display ID of the order.
+ *     externalDocs:
+ *       url: https://docs.medusajs.com/resources/commerce-modules/order/custom-display-id
  * 
 */
 

@@ -77,7 +77,10 @@ If you chose the "Amount off Products" promotion type in the first section, fill
 7. In the Maximum Quantity field, set the maximum quantity line-item quantity that the promotion is applied to in the cart.
     - For example, if set to `1` and the customer has a line item with quantity two in the cart, the promotion is only applied to one of them.
     - This condition is applied on the quantity of every applicable item in the cart. For example, if set to `1` and the customer has two applicable items in the cart, the promotion is applied to one of each of them.
-8. In the "What items will the promotion be applied to?" section, you'll specify the items in the cart that the promotion can be applied to. To add a condition, click on the "Add condition" button. For each condition:
+8. In the Allocation field, choose how the discount is applied when there are multiple applicable items in the cart:
+    - **Each**: The discount is applied to each applicable item in the cart.
+    - **Once**: The discount is applied to a specific number of applicable items in the cart, which is determined by the Maximum Quantity field.
+9. In the "What items will the promotion be applied to?" section, you'll specify the items in the cart that the promotion can be applied to. To add a condition, click on the "Add condition" button. For each condition:
     - Select the attribute in the first field. This is the attribute that the condition applies to. It can be:
         - **Product**: The promotion applies / doesn't apply to the specified product(s).
         - **Product Category**: The promotion applies / doesn't apply to the products belonging to the specified categories.
@@ -92,7 +95,11 @@ If you chose the "Amount off Products" promotion type in the first section, fill
         - Set the Attribute to Product Category.
         - Set the Operator to In.
         - Set the Value to the Shirts product category.
-9. Once you're done, click Next and move on to the [next step](#step-3-campaign).
+10. In the Usage Limit field, optionally set the maximum number of times this promotion can be used across all orders.
+    - For example, if you set this field to `10`, the promotion can be used a total of 10 times across all orders. After that, the promotion can't be used anymore.
+    - If left empty, the promotion can be used an unlimited number of times, or until the campaign's usage limit is reached if the promotion is part of a campaign.
+    - You can't update this field after creating the promotion.
+10. Once you're done, click Next and move on to the [next step](#step-3-campaign).
 
 ![What items will the promotion be applied to section](https://res.cloudinary.com/dza7lstvk/image/upload/v1739898160/User%20Guide/Screenshot_2025-02-18_at_7.02.26_PM_izi1sv.png)
 
@@ -126,9 +133,19 @@ If you chose the "Amount off Order" promotion type in the first section, fill ou
 ![Who can use this code form](https://res.cloudinary.com/dza7lstvk/image/upload/v1739898239/User%20Guide/Screenshot_2025-02-18_at_7.03.46_PM_iawubi.png)
 
 6. In the Promotion Value field, set the amount to be discounted from the order when the promotion is applied. The amount is in the currency you chose in the previous section.
-7. Once you're done, click Next and move on to the [next step](#step-3-campaign).
+7. In the Usage Limit field, optionally set the maximum number of times this promotion can be used across all orders.
+    - For example, if you set this field to `10`, the promotion can be used a total of 10 times across all orders. After that, the promotion can't be used anymore.
+    - If left empty, the promotion can be used an unlimited number of times, or until the campaign's usage limit is reached if the promotion is part of a campaign.
+    - You can't update this field after creating the promotion.
+8. Once you're done, click Next and move on to the [next step](#step-3-campaign).
 
 ### c. Percentage off Product
+
+<Note>
+
+If any of the fields are not visible in your admin, contact your technical team to [update your Medusa version](!docs!/learn/update).
+
+</Note>
 
 If you chose the "Percentage off Product" promotion type in the first section, fill out the following in the Details step:
 
@@ -158,7 +175,10 @@ If you chose the "Percentage off Product" promotion type in the first section, f
 
 6. In the Promotion Value field, set the amount to be discounted from applicable products when the promotion is applied. The amount is in the currency you chose in the previous section.
 7. In the Maximum Quantity field, set the maximum quantity of the applicable that the promotion is applied to in the cart. For example, if set to `1` and the customer has two applicable items in the cart, the promotion is only applied to one of them.
-8. In the "What items will the promotion be applied to?" section, you'll specify the items in the cart that the promotion can be applied to. To add a condition, click on the "Add condition" button. For each condition:
+8. In the Allocation field, choose how the discount is applied when there are multiple applicable items in the cart:
+    - **Each**: The discount is applied to each applicable item in the cart.
+    - **Once**: The discount is applied to a specific number of applicable items in the cart, which is determined by the Maximum Quantity field.
+9. In the "What items will the promotion be applied to?" section, you'll specify the items in the cart that the promotion can be applied to. To add a condition, click on the "Add condition" button. For each condition:
     - Select the attribute in the first field. This is the attribute that the condition applies to. It can be:
         - **Product**: The promotion applies / doesn't apply to the specified product(s).
         - **Product Category**: The promotion applies / doesn't apply to the products belonging to the specified categories.
@@ -173,7 +193,11 @@ If you chose the "Percentage off Product" promotion type in the first section, f
         - Set the Attribute to Product Category.
         - Set the Operator to In.
         - Set the Value to the Shirts product category.
-9. Once you're done, click Next and move on to the [next step](#step-3-campaign).
+10. In the Usage Limit field, optionally set the maximum number of times this promotion can be used across all orders.
+    - For example, if you set this field to `10`, the promotion can be used a total of 10 times across all orders. After that, the promotion can't be used anymore.
+    - If left empty, the promotion can be used an unlimited number of times, or until the campaign's usage limit is reached if the promotion is part of a campaign.
+    - You can't update this field after creating the promotion.
+11. Once you're done, click Next and move on to the [next step](#step-3-campaign).
 
 ![What items will the promotion be applied to section](https://res.cloudinary.com/dza7lstvk/image/upload/v1739898386/User%20Guide/Screenshot_2025-02-18_at_7.06.14_PM_bdi5jv.png)
 
@@ -206,7 +230,11 @@ If you chose the "Percentage off Order" promotion type in the first section, fil
 ![Who can use this code section](https://res.cloudinary.com/dza7lstvk/image/upload/v1739898478/User%20Guide/Screenshot_2025-02-18_at_7.07.46_PM_eriyxm.png)
 
 6. In the Promotion Value field, set the amount to be discounted from applicable products when the promotion is applied. The amount is in the currency you chose in the previous section.
-7. Once you're done, click Next and move on to the [next step](#step-3-campaign).
+7. In the Usage Limit field, optionally set the maximum number of times this promotion can be used across all orders.
+    - For example, if you set this field to `10`, the promotion can be used a total of 10 times across all orders. After that, the promotion can't be used anymore.
+    - If left empty, the promotion can be used an unlimited number of times, or until the campaign's usage limit is reached if the promotion is part of a campaign.
+    - You can't update this field after creating the promotion.
+8. Once you're done, click Next and move on to the [next step](#step-3-campaign).
 
 ### e. Buy X Get Y
 
@@ -269,7 +297,11 @@ If you chose the "Buy X Get Y" promotion type in the first section, fill out the
             - Set the Attribute to Product Category.
             - Set the Operator to "Not In".
             - Set the Value to the "Shirt" category.
-7. Once you're done, click Next and move on to the [next step](#step-3-campaign).
+7. In the Usage Limit field, optionally set the maximum number of times this promotion can be used across all orders.
+    - For example, if you set this field to `10`, the promotion can be used a total of 10 times across all orders. After that, the promotion can't be used anymore.
+    - If left empty, the promotion can be used an unlimited number of times, or until the campaign's usage limit is reached if the promotion is part of a campaign.
+    - You can't update this field after creating the promotion.
+8. Once you're done, click Next and move on to the [next step](#step-3-campaign).
 
 ### f. Free Shipping
 
@@ -312,7 +344,11 @@ If you chose the "Free Shipping" promotion type in the first section, fill out t
         - Set the Attribute to Shipping Option Type.
         - Set the Operator to In.
         - Set the Value to the "Express" shipping option type.
-6. Once you're done, click Next and move on to the [next step](#step-3-campaign).
+6. In the Usage Limit field, optionally set the maximum number of times this promotion can be used across all orders.
+    - For example, if you set this field to `10`, the promotion can be used a total of 10 times across all orders. After that, the promotion can't be used anymore.
+    - If left empty, the promotion can be used an unlimited number of times, or until the campaign's usage limit is reached if the promotion is part of a campaign.
+    - You can't update this field after creating the promotion.
+7. Once you're done, click Next and move on to the [next step](#step-3-campaign).
 
 ![What shipping methods will the promotion be applied to section](https://res.cloudinary.com/dza7lstvk/image/upload/v1756368838/User%20Guide/CleanShot_2025-08-28_at_11.13.29_2x_rdcivr.png)
 
@@ -332,8 +368,8 @@ In the campaigns section, you can select whether to:
 
 If you selected a new campaign, you need to fill out the following to create a campaign and add the promotion to it:
 
-1. In the Name field, enter the campaign's name.
-2. In the Identifier field, enter a custom identifier for the campaign. This is useful if you're associating the campaign with a campaign in an external system, for example.
+1. In the **Name** field, enter the campaign's name.
+2. In the **Identifier** field, enter a custom identifier for the campaign. This is useful if you're associating the campaign with a campaign in an external system, for example.
 3. Optionally enter a description, and start and end dates.
     - If a start date is specified, all promotions in the campaign can be used after the specified date.
     - If an end date is specified, all promotions in the campaign can't be used after the specified date.
@@ -341,7 +377,17 @@ If you selected a new campaign, you need to fill out the following to create a c
     - For Type, you can choose to set the budget either based on:
         - **Usage**: How many times the promotions in the campaign can be used. Once the number of times exceed the limit, the campaign and its promotions expire.
         - **Spend**: The total amount that can be discounted by the promotions in the campaign. Once the total amount discounted exceeds the limit, the campaign and its promotions expire. This is disabled if you select the "Buy X Get Y" or "Free Shipping" promotion types.
-    - In the Limit field, enter the budget limit based on the chosen type.
+    - In the **Limit** field, enter the budget limit based on the chosen type.
+    - If you chose the **Usage** type, you can optionally set the **Limit usage per** field to apply the limitation for each customer or email.
+        - If you don't select any condition, the limit is applied globally. For example, if the limit is set to 5, the promotions in the campaign can be used a total of 5 times.
+        - If you select "Customer", the limit is applied for each customer based on their unique identifier. For example, if the limit is set to 5, each customer can use the promotions in the campaign 5 times.
+        - If you select "Customer Email", the limit is applied for each customer based on their email address. For example, if the limit is set to 5, each unique email address can use the promotions in the campaign 5 times.
 5. Once you're done, click on the Save button.
+
+<Note>
+
+The **Limit usage per** field is available from [Medusa Admin v2.11.0](https://github.com/medusajs/medusa/releases/tag/v2.11.0). If you don't see it, request your technical team to [upgrade your Medusa application](!docs!/learn/update).
+
+</Note>
 
 You can now [manage the promotion](../manage/page.mdx) you created.

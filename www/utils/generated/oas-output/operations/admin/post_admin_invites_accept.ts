@@ -95,9 +95,9 @@
  *   - name: user.created
  *     payload: |-
  *       ```ts
- *       [{
+ *       {
  *         id, // The ID of the user
- *       }]
+ *       }
  *       ```
  *     description: Emitted when users are created.
  *     deprecated: false

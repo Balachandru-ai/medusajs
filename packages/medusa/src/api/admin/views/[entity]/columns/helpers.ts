@@ -22,14 +22,19 @@ export const getColumnCategory = (
   semanticType?: string
 ): HttpTypes.AdminColumn["category"] => {
   // Check semantic type first
-  if (semanticType === "timestamp") return "timestamp"
-  if (semanticType === "status") return "status"
+  if (semanticType === "timestamp") {
+    return "timestamp"
+  }
+  if (semanticType === "status") {
+    return "status"
+  }
 
   // Check field name patterns
   if (
     fieldName.includes("_id") ||
     fieldName === "id" ||
     fieldName.includes("display_id") ||
+    fieldName.includes("custom_display_id") ||
     fieldName === "code"
   ) {
     return "identifier"
@@ -191,7 +196,7 @@ export const getTypeInfoFromGraphQLType = (
       semantic_type: "object",
       context: "metadata",
     }
-  } else if (fieldName === "display_id") {
+  } else if (fieldName === "display_id" || fieldName === "custom_display_id") {
     return {
       data_type: "string",
       semantic_type: "identifier",
@@ -264,6 +269,7 @@ const ADDITIONAL_ENTITY_TYPES: Partial<Record<Entities, string[]>> = {
 export const DEFAULT_COLUMN_ORDERS: Record<Entities, Record<string, number>> = {
   orders: {
     display_id: 100,
+    custom_display_id: 101,
     created_at: 200,
     customer_display: 300,
     "sales_channel.name": 400,
@@ -370,6 +376,10 @@ export const generateEntityColumns = (
     directFields.unshift("display_id")
   }
 
+  if (entity === "orders" && !directFields.includes("custom_display_id")) {
+    directFields.unshift("custom_display_id")
+  }
+
   const additionalTypes = ADDITIONAL_ENTITY_TYPES[entity as Entities] ?? []
 
   additionalTypes.forEach((typeName) => {
@@ -380,11 +390,7 @@ export const generateEntityColumns = (
       return
     }
 
-    const additionalFields = graphqlSchemaToFields(
-      schemaTypeMap,
-      typeName,
-      []
-    )
+    const additionalFields = graphqlSchemaToFields(schemaTypeMap, typeName, [])
 
     additionalFields.forEach((fieldName) => {
       if (directFields.includes(fieldName)) {
@@ -460,7 +466,8 @@ export const generateEntityColumns = (
   const directColumns = directFields.map((fieldName) => {
     const displayName = formatFieldName(fieldName)
 
-    const fieldDef = entityFields[fieldName] || additionalFieldDefinitions.get(fieldName)
+    const fieldDef =
+      entityFields[fieldName] || additionalFieldDefinitions.get(fieldName)
     const typeInfo = fieldDef
       ? getTypeInfoFromGraphQLType(fieldDef.type, fieldName)
       : getTypeInfoFromGraphQLType(null, fieldName)

@@ -12,6 +12,7 @@ import {
   IEventBusModuleService,
   IFileModuleService,
   IFulfillmentModuleService,
+  IIndexService,
   IInventoryService,
   ILockingModule,
   INotificationModuleService,
@@ -26,6 +27,7 @@ import {
   IStockLocationService,
   IStoreModuleService,
   ITaxModuleService,
+  ITranslationModuleService,
   IUserModuleService,
   IWorkflowEngineService,
   Logger,
@@ -33,8 +35,8 @@ import {
   RemoteQueryFunction,
 } from "@medusajs/types"
 import { ContainerRegistrationKeys, Modules } from "@medusajs/utils"
-import { Knex } from "../deps/mikro-orm-knex"
 import { AwilixContainer, ResolveOptions } from "../deps/awilix"
+import { Knex } from "../deps/mikro-orm-knex"
 
 declare module "@medusajs/types" {
   export interface ModuleImplementations {
@@ -78,6 +80,8 @@ declare module "@medusajs/types" {
     [Modules.LOCKING]: ILockingModule
     [Modules.SETTINGS]: ISettingsModuleService
     [Modules.CACHING]: ICachingModuleService
+    [Modules.INDEX]: IIndexService
+    [Modules.TRANSLATION]: ITranslationModuleService
   }
 }
 

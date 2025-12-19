@@ -39,7 +39,7 @@ post:
     content:
       application/json:
         schema:
-          $ref: ../components/schemas/AdminPostReturnsReceiveItemsReqSchema.yaml
+          $ref: ../components/schemas/AdminReceiveItems.yaml
   x-codeSamples:
     - lang: JavaScript
       label: JS SDK

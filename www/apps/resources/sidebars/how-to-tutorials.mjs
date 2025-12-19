@@ -34,6 +34,8 @@ export const howToTutorialsSidebar = [
         autogenerate_tags: "howTo+admin",
         autogenerate_as_ref: true,
         sort_sidebar: "alphabetize",
+        description:
+          "These how-to guides help you customize the Medusa Admin dashboard with practical examples.",
         children: [
           {
             type: "sidebar",
@@ -60,6 +62,11 @@ export const howToTutorialsSidebar = [
               },
             ],
           },
+          {
+            type: "link",
+            title: "Custom Admin Authentication",
+            path: "/how-to-tutorials/how-to/admin/auth",
+          },
         ],
       },
     ],
@@ -78,6 +85,12 @@ While tutorials show you a specific use case, they also help you understand how 
         path: "/how-to-tutorials/tutorials/gift-message",
         description:
           "Learn how to add a gift option and message to items in the cart.",
+      },
+      {
+        type: "link",
+        title: "Add Product Category Images",
+        path: "/how-to-tutorials/tutorials/category-images",
+        description: "Learn how to add images to product categories in Medusa.",
       },
       {
         type: "link",
@@ -113,6 +126,13 @@ While tutorials show you a specific use case, they also help you understand how 
         path: "/examples/guides/custom-item-price",
         description:
           "Learn how to use prices from external systems for products.",
+      },
+      {
+        type: "link",
+        title: "Customer Tiers",
+        path: "/how-to-tutorials/tutorials/customer-tiers",
+        description:
+          "Learn how to implement customer tiers in your Medusa store.",
       },
       {
         type: "link",
@@ -196,6 +216,13 @@ While tutorials show you a specific use case, they also help you understand how 
         path: "/how-to-tutorials/tutorials/product-builder",
         description:
           "Learn how to implement a product builder that allows customers to customize products before adding them to the cart.",
+      },
+      {
+        type: "link",
+        title: "Product Rentals",
+        path: "/how-to-tutorials/tutorials/product-rentals",
+        description:
+          "Learn how to implement product rentals in your Medusa store.",
       },
       {
         type: "link",

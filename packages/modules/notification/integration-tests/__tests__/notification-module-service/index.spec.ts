@@ -1,4 +1,7 @@
-import { INotificationModuleService } from "@medusajs/framework/types"
+import {
+  CreateNotificationDTO,
+  INotificationModuleService,
+} from "@medusajs/framework/types"
 import {
   CommonEvents,
   composeMessage,
@@ -7,11 +10,11 @@ import {
   NotificationEvents,
   NotificationStatus,
 } from "@medusajs/framework/utils"
-import { NotificationModuleService } from "@services"
 import {
   MockEventBusService,
   moduleIntegrationTestRunner,
 } from "@medusajs/test-utils"
+import { NotificationModuleService } from "@services"
 import { resolve } from "path"
 
 let moduleOptions = {
@@ -74,19 +77,29 @@ moduleIntegrationTestRunner<INotificationModuleService>({
       it("should send a notification and stores it in the database", async () => {
         const notification = {
           to: "admin@medusa.com",
+          from: "sender@verified.com",
           template: "some-template",
           channel: "email",
-          data: {},
-        }
+          data: { link: "http://test.com" },
+          provider_data: { cc: "cc@test.com" },
+        } as CreateNotificationDTO
 
         const result = await service.createNotifications(notification)
-        expect(result).toEqual(
-          expect.objectContaining({
-            provider_id: "test-provider",
-            external_id: "external_id",
-            status: NotificationStatus.SUCCESS,
-          })
-        )
+        const retrieved = await service.retrieveNotification(result.id)
+
+        const expected = {
+          to: "admin@medusa.com",
+          from: "sender@verified.com",
+          template: "some-template",
+          channel: "email",
+          data: { link: "http://test.com" },
+          provider_data: { cc: "cc@test.com" },
+          provider_id: "test-provider",
+          external_id: "external_id",
+          status: NotificationStatus.SUCCESS,
+        }
+        expect(result).toEqual(expect.objectContaining(expected))
+        expect(retrieved).toEqual(expect.objectContaining(expected))
       })
 
       it("should send a notification and don't store the content in the database", async () => {
@@ -108,6 +121,30 @@ moduleIntegrationTestRunner<INotificationModuleService>({
             provider_id: "test-provider",
             external_id: "external_id",
             status: NotificationStatus.SUCCESS,
+            template: "signup-template",
+          })
+        )
+        expect(dbEntry).not.toHaveProperty("content")
+      })
+
+      it("should send a notification without a template", async () => {
+        const notification = {
+          to: "admin@medusa.com",
+          channel: "email",
+          content: {
+            html: "<p>Welcome to medusa</p>",
+          },
+        }
+
+        const result = await service.createNotifications(notification)
+        const dbEntry = await service.retrieveNotification(result.id)
+
+        expect(dbEntry).toEqual(
+          expect.objectContaining({
+            provider_id: "test-provider",
+            external_id: "external_id",
+            status: NotificationStatus.SUCCESS,
+            template: null,
           })
         )
         expect(dbEntry).not.toHaveProperty("content")

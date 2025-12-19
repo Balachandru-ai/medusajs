@@ -6,7 +6,7 @@
  * description: Retrieve the addresses of the logged-in customer. The addresses can be filtered by fields such as `country_code`. The addresses can also be sorted or paginated.
  * x-authenticated: true
  * externalDocs:
- *   url: https://docs.medusajs.com/v2/resources/storefront-development/customers/addresses#list-customer-addresses
+ *   url: https://docs.medusajs.com/resources/storefront-development/customers/addresses#list-customer-addresses
  *   description: "Storefront guide: How to retrieve the logged-in customer's addresses."
  * parameters:
  *   - name: x-publishable-api-key
@@ -17,48 +17,16 @@
  *       type: string
  *       externalDocs:
  *         url: https://docs.medusajs.com/api/store#publishable-api-key
- *   - name: fields
- *     in: query
- *     description: Comma-separated fields that should be included in the returned data. if a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default
- *       fields. without prefix it will replace the entire default fields. This API route restricts the fields that can be selected. Learn how to override the retrievable fields in the [Retrieve Custom
- *       Links](https://docs.medusajs.com/learn/fundamentals/api-routes/retrieve-custom-links) documentation.
+ *   - name: Content-Language
+ *     in: header
+ *     description: The locale in BCP 47 format to retrieve localized content.
  *     required: false
  *     schema:
  *       type: string
- *       title: fields
- *       description: Comma-separated fields that should be included in the returned data. if a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default
- *         fields. without prefix it will replace the entire default fields. This API route restricts the fields that can be selected. Learn how to override the retrievable fields in the [Retrieve Custom
- *         Links](https://docs.medusajs.com/learn/fundamentals/api-routes/retrieve-custom-links) documentation.
+ *       example: en-US
  *       externalDocs:
- *         url: "#select-fields-and-relations"
- *   - name: offset
- *     in: query
- *     description: The number of items to skip when retrieving a list.
- *     required: false
- *     schema:
- *       type: number
- *       title: offset
- *       description: The number of items to skip when retrieving a list.
- *       externalDocs:
- *         url: "#pagination"
- *   - name: limit
- *     in: query
- *     description: Limit the number of items returned in the list.
- *     required: false
- *     schema:
- *       type: number
- *       title: limit
- *       description: Limit the number of items returned in the list.
- *       externalDocs:
- *         url: "#pagination"
- *   - name: order
- *     in: query
- *     description: The field to sort the data by. By default, the sort order is ascending. To change the order to descending, prefix the field name with `-`.
- *     required: false
- *     schema:
- *       type: string
- *       title: order
- *       description: The field to sort the data by. By default, the sort order is ascending. To change the order to descending, prefix the field name with `-`.
+ *         url: https://docs.medusajs.com/resources/commerce-modules/translation/storefront
+ *         description: Learn more in the Serve Translations in Storefront guide.
  *   - name: city
  *     in: query
  *     description: Filter by the address's city.
@@ -112,14 +80,64 @@
  *       type: string
  *       title: q
  *       description: Search term to filter the address's searchable properties.
- *   - name: with_deleted
+ *   - name: company
  *     in: query
- *     description: Whether to include deleted records in the result.
  *     required: false
  *     schema:
- *       type: boolean
- *       title: with_deleted
- *       description: Whether to include deleted records in the result.
+ *       oneOf:
+ *         - type: string
+ *           title: company
+ *           description: Filter addresses by company.
+ *         - type: array
+ *           description: Filter addresses by companies.
+ *           items:
+ *             type: string
+ *             title: company
+ *             description: A company.
+ *   - name: province
+ *     in: query
+ *     required: false
+ *     schema:
+ *       oneOf:
+ *         - type: string
+ *           title: province
+ *           description: Filter addresses by province.
+ *         - type: array
+ *           description: Filter addresses by provinces.
+ *           items:
+ *             type: string
+ *             title: province
+ *             description: A province.
+ *   - name: $and
+ *     in: query
+ *     description: Join query parameters with an AND condition. Each object's content is the same type as the expected query parameters.
+ *     required: false
+ *     schema:
+ *       type: array
+ *       description: Join query parameters with an AND condition. Each object's content is the same type as the expected query parameters.
+ *       items:
+ *         type: object
+ *       title: $and
+ *   - name: $or
+ *     in: query
+ *     description: Join query parameters with an OR condition. Each object's content is the same type as the expected query parameters.
+ *     required: false
+ *     schema:
+ *       type: array
+ *       description: Join query parameters with an OR condition. Each object's content is the same type as the expected query parameters.
+ *       items:
+ *         type: object
+ *       title: $or
+ *   - name: locale
+ *     in: query
+ *     description: The locale in BCP 47 format to retrieve localized content.
+ *     required: false
+ *     schema:
+ *       type: string
+ *       example: en-US
+ *       externalDocs:
+ *         url: https://docs.medusajs.com/resources/commerce-modules/translation/storefront
+ *         description: Learn more in the Serve Translations in Storefront guide.
  * security:
  *   - cookie_auth: []
  *   - jwt_token: []

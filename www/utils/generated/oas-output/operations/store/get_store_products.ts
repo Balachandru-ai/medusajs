@@ -2,10 +2,17 @@
  * @oas [get] /store/products
  * operationId: GetProducts
  * summary: List Products
- * description: Retrieve a list of products. The products can be filtered by fields such as `id`. The products can also be sorted or paginated.
+ * description: >
+ *   Retrieve a list of products. The products can be filtered by fields such as `id`. The products can also be sorted or paginated.
+ * 
+ * 
+ *   You can retrieve the content of the products translated to a specific locale either by passing the `locale` query parameter or by setting the `Content-Language` header to the desired locale code in BCP 47 format. If you don't pass a locale, and your store has a default locale, the default locale will be used.
+ * 
+ * 
+ *   With localization, the products' content like title and description will be in the specified locale if a translation is available,  and fallback to the original content otherwise. Learn more in the [Localization](#localization) section.
  * x-authenticated: false
  * externalDocs:
- *   url: https://docs.medusajs.com/v2/resources/storefront-development/products/price
+ *   url: https://docs.medusajs.com/resources/storefront-development/products/price
  *   description: "Storefront guide: How to retrieve a product variants' prices."
  * parameters:
  *   - name: x-publishable-api-key
@@ -16,6 +23,16 @@
  *       type: string
  *       externalDocs:
  *         url: https://docs.medusajs.com/api/store#publishable-api-key
+ *   - name: Content-Language
+ *     in: header
+ *     description: The locale in BCP 47 format to retrieve localized content.
+ *     required: false
+ *     schema:
+ *       type: string
+ *       example: en-US
+ *       externalDocs:
+ *         url: https://docs.medusajs.com/resources/commerce-modules/translation/storefront
+ *         description: Learn more in the Serve Translations in Storefront guide.
  *   - name: fields
  *     in: query
  *     description: Comma-separated fields that should be included in the returned data. if a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default
@@ -143,7 +160,7 @@
  *     schema:
  *       description: Filter by a collection's ID to retrieve the products in it.
  *       externalDocs:
- *         url: https://docs.medusajs.com/v2/resources/storefront-development/products/collections/products
+ *         url: https://docs.medusajs.com/resources/storefront-development/products/collections/products
  *         description: "Storefront guide: Retrieve a collection's products."
  *       items:
  *         type: string
@@ -650,7 +667,7 @@
  *       title: region_id
  *       description: The ID of the region the products are being viewed from. This is required if you're retrieving product variant prices with taxes.
  *       externalDocs:
- *         url: https://docs.medusajs.com/v2/resources/storefront-development/products/price/examples/tax-price
+ *         url: https://docs.medusajs.com/resources/storefront-development/products/price/examples/tax-price
  *         description: "Storefront guide: How to show product variants' prices with taxes."
  *   - name: province
  *     in: query
@@ -732,6 +749,16 @@
  *       type: string
  *       title: cart_id
  *       description: The product's cart id.
+ *   - name: locale
+ *     in: query
+ *     description: The locale in BCP 47 format to retrieve localized content.
+ *     required: false
+ *     schema:
+ *       type: string
+ *       example: en-US
+ *       externalDocs:
+ *         url: https://docs.medusajs.com/resources/commerce-modules/translation/storefront
+ *         description: Learn more in the Serve Translations in Storefront guide.
  * x-codeSamples:
  *   - lang: JavaScript
  *     label: JS SDK

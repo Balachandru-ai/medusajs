@@ -32,7 +32,7 @@
  *   content:
  *     application/json:
  *       schema:
- *         $ref: "#/components/schemas/AdminPostExchangesShippingReqSchema"
+ *         $ref: "#/components/schemas/AdminExchangeAddOutboundShipping"
  * x-codeSamples:
  *   - lang: JavaScript
  *     label: JS SDK

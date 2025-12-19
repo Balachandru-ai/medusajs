@@ -608,6 +608,14 @@ moduleIntegrationTestRunner<IOrderModuleService>({
                 quantity: 1,
               },
             },
+            {
+              action: ChangeActionType.CREDIT_LINE_ADD,
+              order_id: createdOrder.id,
+              version: createdOrder.version,
+              reference: "gesture_of_goodwill",
+              reference_id: "refr_123",
+              amount: 10,
+            },
           ],
         })
 
@@ -627,9 +635,15 @@ moduleIntegrationTestRunner<IOrderModuleService>({
             "items.detail",
             "summary",
             "shipping_methods",
+            "credit_lines",
             "transactions",
           ],
-          relations: ["items", "shipping_methods", "transactions"],
+          relations: [
+            "items",
+            "shipping_methods",
+            "credit_lines",
+            "transactions",
+          ],
         })
 
         const serializedModifiedOrder = JSON.parse(JSON.stringify(modified))
@@ -642,6 +656,10 @@ moduleIntegrationTestRunner<IOrderModuleService>({
 
         expect(serializedModifiedOrder.shipping_methods).toHaveLength(1)
         expect(serializedModifiedOrder.shipping_methods[0].amount).toEqual(10)
+
+        expect(serializedModifiedOrder.credit_lines).toHaveLength(1)
+        expect(serializedModifiedOrder.credit_lines[0].amount).toEqual(10)
+        expect(serializedModifiedOrder.credit_lines[0].version).toEqual(2)
 
         expect(serializedModifiedOrder.items).toEqual(
           expect.arrayContaining([
@@ -694,8 +712,9 @@ moduleIntegrationTestRunner<IOrderModuleService>({
             "items.detail",
             "summary",
             "shipping_methods",
+            "credit_lines",
           ],
-          relations: ["items"],
+          relations: ["items", "credit_lines"],
         })
 
         const serializedRevertedOrder = JSON.parse(
@@ -709,6 +728,8 @@ moduleIntegrationTestRunner<IOrderModuleService>({
 
         expect(serializedRevertedOrder.shipping_methods).toHaveLength(1)
         expect(serializedRevertedOrder.shipping_methods[0].amount).toEqual(10)
+
+        expect(serializedRevertedOrder.credit_lines).toHaveLength(0)
 
         expect(serializedRevertedOrder.items).toEqual(
           expect.arrayContaining([
@@ -846,6 +867,86 @@ moduleIntegrationTestRunner<IOrderModuleService>({
             canceled_at: null,
           })
         )
+      })
+
+      it("should create an order change, update items, and have the pending difference updated", async function () {
+        const createdOrder = await service.createOrders({
+          email: "foo@bar.com",
+          items: [
+            {
+              title: "Item 1",
+              subtitle: "Subtitle 1",
+              thumbnail: "thumbnail1.jpg",
+              quantity: new BigNumber(1),
+              product_id: "product1",
+              product_title: "Product 1",
+              product_description: "Description 1",
+              product_subtitle: "Product Subtitle 1",
+              product_type: "Type 1",
+              product_collection: "Collection 1",
+              product_handle: "handle1",
+              variant_id: "variant1",
+              variant_sku: "SKU1",
+              variant_barcode: "Barcode1",
+              variant_title: "Variant 1",
+              variant_option_values: {
+                color: "Red",
+                size: "Large",
+              },
+              requires_shipping: true,
+              is_discountable: true,
+              is_tax_inclusive: true,
+              compare_at_unit_price: 10,
+              unit_price: 10,
+              tax_lines: [],
+              adjustments: [
+                {
+                  code: "VIP_10",
+                  amount: 1,
+                  description: "VIP discount",
+                  promotion_id: "prom_123",
+                  provider_id: "coupon_kings",
+                },
+              ],
+            },
+          ],
+          sales_channel_id: "test",
+          transactions: [
+            {
+              amount: 9,
+              currency_code: "USD",
+              reference: "payment",
+              reference_id: "pay_123",
+            },
+          ],
+          currency_code: "usd",
+          customer_id: "joe",
+        } as CreateOrderDTO)
+
+        const orderChange = await service.createOrderChange({
+          order_id: createdOrder.id,
+          actions: [
+            {
+              action: ChangeActionType.ITEM_UPDATE,
+              details: {
+                reference_id: createdOrder.items![0].id,
+                quantity: 0,
+              },
+            },
+          ],
+        })
+
+        await service.confirmOrderChange({
+          id: orderChange.id,
+        })
+
+        const changedOrder = await service.retrieveOrder(createdOrder.id, {
+          select: ["total", "summary", "total"],
+          relations: ["items"],
+        })
+
+        // @ts-ignore
+        expect(changedOrder.summary?.pending_difference.numeric).toEqual(-9)
       })
     })
   },

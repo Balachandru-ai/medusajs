@@ -106,6 +106,23 @@ export const generatedSidebars = [
             "type": "link",
             "title": "Deployments",
             "path": "/deployments",
+            "children": [
+              {
+                "loaded": true,
+                "isPathHref": true,
+                "type": "link",
+                "title": "Troubleshooting",
+                "path": "/deployments/troubleshooting",
+                "children": []
+              }
+            ]
+          },
+          {
+            "loaded": true,
+            "isPathHref": true,
+            "type": "link",
+            "title": "Account",
+            "path": "/user",
             "children": []
           }
         ]
@@ -140,6 +157,31 @@ export const generatedSidebars = [
             "title": "S3",
             "path": "/s3",
             "children": []
+          },
+          {
+            "loaded": true,
+            "isPathHref": true,
+            "type": "link",
+            "title": "Cache",
+            "path": "/cache",
+            "children": []
+          },
+          {
+            "loaded": true,
+            "isPathHref": true,
+            "type": "link",
+            "title": "Emails",
+            "path": "/emails",
+            "children": [
+              {
+                "loaded": true,
+                "isPathHref": true,
+                "type": "link",
+                "title": "React Email Templates",
+                "path": "/emails/react-email",
+                "children": []
+              }
+            ]
           }
         ]
       },

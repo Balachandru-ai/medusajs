@@ -14,6 +14,7 @@ import { adminFulfillmentsRoutesMiddlewares } from "./admin/fulfillments/middlew
 import { adminInventoryRoutesMiddlewares } from "./admin/inventory-items/middlewares"
 import { adminInviteRoutesMiddlewares } from "./admin/invites/middlewares"
 import { adminNotificationRoutesMiddlewares } from "./admin/notifications/middlewares"
+import { adminOrderChangesRoutesMiddlewares } from "./admin/order-changes/middlewares"
 import { adminOrderEditRoutesMiddlewares } from "./admin/order-edits/middlewares"
 import { adminOrderRoutesMiddlewares } from "./admin/orders/middlewares"
 import { adminPaymentCollectionsMiddlewares } from "./admin/payment-collections/middlewares"
@@ -58,11 +59,15 @@ import { storePaymentProvidersMiddlewares } from "./store/payment-providers/midd
 import { storeProductCategoryRoutesMiddlewares } from "./store/product-categories/middlewares"
 import { storeProductTagRoutesMiddlewares } from "./store/product-tags/middlewares"
 import { storeProductTypeRoutesMiddlewares } from "./store/product-types/middlewares"
+import { storeProductVariantRoutesMiddlewares } from "./store/product-variants/middlewares"
 import { storeProductRoutesMiddlewares } from "./store/products/middlewares"
 import { storeRegionRoutesMiddlewares } from "./store/regions/middlewares"
 import { storeReturnReasonRoutesMiddlewares } from "./store/return-reasons/middlewares"
 import { storeShippingOptionRoutesMiddlewares } from "./store/shipping-options/middlewares"
 import { adminShippingOptionTypeRoutesMiddlewares } from "./admin/shipping-option-types/middlewares"
+import { adminIndexRoutesMiddlewares } from "./admin/index/middlewares"
+import { adminLocalesRoutesMiddlewares } from "./admin/locales/middlewares"
+import { adminTranslationsRoutesMiddlewares } from "./admin/translations/middlewares"
 
 export default defineMiddlewares([
   ...storeRoutesMiddlewares,
@@ -91,10 +96,12 @@ export default defineMiddlewares([
   ...adminInviteRoutesMiddlewares,
   ...adminTaxRateRoutesMiddlewares,
   ...adminTaxRegionRoutesMiddlewares,
+  ...adminTranslationsRoutesMiddlewares,
   ...adminApiKeyRoutesMiddlewares,
   ...hooksRoutesMiddlewares,
   ...adminStoreRoutesMiddlewares,
   ...adminCurrencyRoutesMiddlewares,
+  ...adminLocalesRoutesMiddlewares,
   ...storeCurrencyRoutesMiddlewares,
   ...adminProductRoutesMiddlewares,
   ...adminPaymentRoutesMiddlewares,
@@ -119,6 +126,7 @@ export default defineMiddlewares([
   ...adminFulfillmentsRoutesMiddlewares,
   ...adminFulfillmentProvidersRoutesMiddlewares,
   ...storeProductRoutesMiddlewares,
+  ...storeProductVariantRoutesMiddlewares,
   ...storeReturnReasonRoutesMiddlewares,
   ...adminReturnReasonRoutesMiddlewares,
   ...adminClaimRoutesMiddlewares,
@@ -126,8 +134,10 @@ export default defineMiddlewares([
   ...adminExchangeRoutesMiddlewares,
   ...adminProductVariantRoutesMiddlewares,
   ...adminTaxProviderRoutesMiddlewares,
+  ...adminOrderChangesRoutesMiddlewares,
   ...adminOrderEditRoutesMiddlewares,
   ...adminPaymentCollectionsMiddlewares,
   ...viewConfigurationRoutesMiddlewares,
   ...columnRoutesMiddlewares,
+  ...adminIndexRoutesMiddlewares,
 ])

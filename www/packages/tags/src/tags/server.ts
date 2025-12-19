@@ -56,12 +56,24 @@ export const server = [
     "path": "https://docs.medusajs.com/resources/examples/guides/quote-management"
   },
   {
+    "title": "Custom Admin Authentication",
+    "path": "https://docs.medusajs.com/resources/how-to-tutorials/how-to/admin/auth"
+  },
+  {
     "title": "Abandoned Cart Notification",
     "path": "https://docs.medusajs.com/resources/how-to-tutorials/tutorials/abandoned-cart"
   },
   {
     "title": "Agentic Commerce",
     "path": "https://docs.medusajs.com/resources/how-to-tutorials/tutorials/agentic-commerce"
+  },
+  {
+    "title": "Product Category Images",
+    "path": "https://docs.medusajs.com/resources/how-to-tutorials/tutorials/category-images"
+  },
+  {
+    "title": "Customer Tiers",
+    "path": "https://docs.medusajs.com/resources/how-to-tutorials/tutorials/customer-tiers"
   },
   {
     "title": "First-Purchase Discount",
@@ -94,6 +106,10 @@ export const server = [
   {
     "title": "Meta Product Feed",
     "path": "https://docs.medusajs.com/resources/how-to-tutorials/tutorials/product-feed"
+  },
+  {
+    "title": "Product Rentals",
+    "path": "https://docs.medusajs.com/resources/how-to-tutorials/tutorials/product-rentals"
   },
   {
     "title": "Product Reviews",
@@ -132,6 +148,10 @@ export const server = [
     "path": "https://docs.medusajs.com/resources/integrations/guides/mailchimp"
   },
   {
+    "title": "Integrate Okta",
+    "path": "https://docs.medusajs.com/resources/integrations/guides/okta"
+  },
+  {
     "title": "Integrate Payload",
     "path": "https://docs.medusajs.com/resources/integrations/guides/payload"
   },
@@ -142,6 +162,10 @@ export const server = [
   {
     "title": "Integrate Slack",
     "path": "https://docs.medusajs.com/resources/integrations/guides/slack"
+  },
+  {
+    "title": "Integrate Strapi",
+    "path": "https://docs.medusajs.com/resources/integrations/guides/strapi"
   },
   {
     "title": "Build Wishlist Plugin",
@@ -170,6 +194,14 @@ export const server = [
   {
     "title": "Use Cache Module",
     "path": "https://docs.medusajs.com/resources/references/cache-service"
+  },
+  {
+    "title": "Use Caching Module",
+    "path": "https://docs.medusajs.com/resources/references/caching-service"
+  },
+  {
+    "title": "Create Caching Provider",
+    "path": "https://docs.medusajs.com/resources/references/caching-module-provider"
   },
   {
     "title": "Use Event Module",

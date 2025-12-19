@@ -174,6 +174,12 @@ medusaIntegrationTestRunner({
           )
           .catch((e) => e.message)
 
+        // With axios 1.6+, the 'auth' field takes precedence over headers
+        // So we need to manually construct the Basic auth header and let adminHeaders override it
+        const basicAuthHeader = `Basic ${Buffer.from(
+          created.data.api_key.token + ":"
+        ).toString("base64")}`
+
         const createdRegion = await api.post(
           `/admin/regions`,
           {
@@ -182,10 +188,10 @@ medusaIntegrationTestRunner({
             countries: ["us", "ca"],
           },
           {
-            auth: {
-              username: created.data.api_key.token,
+            headers: {
+              Authorization: basicAuthHeader, // Try revoked API key first
+              ...adminHeaders.headers, // This will override with valid Bearer token
             },
-            ...adminHeaders,
           }
         )
 

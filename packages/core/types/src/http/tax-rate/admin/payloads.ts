@@ -1,4 +1,4 @@
-interface AdminCreateTaxRateRule {
+export interface AdminCreateTaxRateRule {
   /**
    * The name of the table that the rule references.
    * 

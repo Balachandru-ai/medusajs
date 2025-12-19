@@ -20,7 +20,6 @@ import { RadioGroup } from "@medusajs/ui"
 
 export type FeedbackProps = {
   event: string
-  pathName: string
   reportLink?: string
   question?: string
   positiveBtn?: string
@@ -55,7 +54,6 @@ const feedbackOptions = {
 
 export const Feedback = ({
   event,
-  pathName,
   reportLink: initReportLink,
   question = "Was this page helpful?",
   positiveBtn = "It was helpful",
@@ -90,12 +88,9 @@ export const Feedback = ({
     : showForm
       ? inlineQuestionRef
       : inlineFeedbackRef
-  const { loaded, track } = useAnalytics()
+  const { track } = useAnalytics()
 
   function handleFeedback(feedback: boolean) {
-    if (!loaded) {
-      return
-    }
     setPositiveFeedback(feedback)
     setShowForm(true)
     submitFeedback(feedback)
@@ -109,15 +104,12 @@ export const Feedback = ({
       event: {
         event,
         options: {
-          url: pathName,
-          label: document.title,
           feedback:
             (feedback !== null && feedback) ||
             (feedback === null && positiveFeedback)
               ? "yes"
               : "no",
           message: message?.length ? message : null,
-          os: window.navigator.userAgent,
           feedbackOption,
           ...extraData,
         },
@@ -127,7 +119,6 @@ export const Feedback = ({
             resetForm()
           }
         },
-        tracker: ["segment", "posthog"],
       },
     })
   }
