@@ -109,6 +109,9 @@ export function validateHighlightsPlugin(options?: Options): Transformer {
           return
         }
       } else {
+        if (highlightsAttr.value.expression.type !== "Identifier") {
+          return
+        }
         const name = (highlightsAttr.value.expression as Identifier).name
         highlights = highlightConsts.get(name)
 

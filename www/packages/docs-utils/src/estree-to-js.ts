@@ -122,6 +122,9 @@ function declarationToJs(declaration: VariableDeclaration): {
   name: string
   value: ExpressionJsVar | ExpressionJsVar[] | undefined
 } {
+  if (!declaration.declarations.length) {
+    throw new Error("No declarations found")
+  }
   const name = declaration.declarations[0].id.name
   const value = expressionToJs(declaration.declarations[0].init)
   return {
