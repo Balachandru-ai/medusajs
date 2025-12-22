@@ -22,41 +22,42 @@ export const updateOrderShippingMethodsTranslationsStep = createStep(
     { container }
   ) => {
     const isTranslationEnabled = FeatureFlag.isFeatureEnabled("translation")
+
+    if (!isTranslationEnabled || !data.locale || !data.shippingMethods.length) {
+      return new StepResponse(data.shippingMethods)
+    }
+
     const query = container.resolve(ContainerRegistrationKeys.QUERY)
     const orderModuleService = container.resolve(Modules.ORDER)
 
-    if (isTranslationEnabled && !!data.locale && data.shippingMethods.length) {
-      const { data: translatedShippingOptions } = await query.graph({
-        entity: "shipping_option",
-        fields: ["id", "name"],
-        filters: {
-          id: data.shippingMethods.map((sm) => sm.shipping_option_id),
-        },
-      })
+    const { data: translatedShippingOptions } = await query.graph({
+      entity: "shipping_option",
+      fields: ["id", "name"],
+      filters: {
+        id: data.shippingMethods.map((sm) => sm.shipping_option_id),
+      },
+    })
 
-      await applyTranslations({
-        localeCode: data.locale,
-        objects: translatedShippingOptions,
-        container,
-      })
+    await applyTranslations({
+      localeCode: data.locale,
+      objects: translatedShippingOptions,
+      container,
+    })
 
-      const shippingOptionTranslationMap = new Map<string, string>(
-        translatedShippingOptions.map((tos) => [tos.id, tos.name])
+    const shippingOptionTranslationMap = new Map<string, string>(
+      translatedShippingOptions.map((tos) => [tos.id, tos.name])
+    )
+    const updatedShippingMethods =
+      await orderModuleService.updateOrderShippingMethods(
+        data.shippingMethods.map((sm) => ({
+          ...sm,
+          name: sm.shipping_option_id
+            ? shippingOptionTranslationMap.get(sm.shipping_option_id)
+            : sm.name,
+        }))
       )
-      const updatedShippingMethods =
-        await orderModuleService.updateOrderShippingMethods(
-          data.shippingMethods.map((sm) => ({
-            ...sm,
-            name: sm.shipping_option_id
-              ? shippingOptionTranslationMap.get(sm.shipping_option_id)
-              : sm.name,
-          }))
-        )
 
-      return new StepResponse(updatedShippingMethods, data.shippingMethods)
-    }
-
-    return new StepResponse(data.shippingMethods)
+    return new StepResponse(updatedShippingMethods, data.shippingMethods)
   },
   async (dataBeforeUpdate, { container }) => {
     if (!dataBeforeUpdate?.length) {
