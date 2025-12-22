@@ -13,15 +13,11 @@ export interface GetTranslatedShippingOptionsStepInput {
 export const getTranslatedShippingOptionsStep = createStep(
   getTranslatedShippingOptionsStepId,
   async (data: GetTranslatedShippingOptionsStepInput, { container }) => {
-    const isTranslationEnabled = FeatureFlag.isFeatureEnabled("translation")
-
-    if (isTranslationEnabled && !!data.locale && data.shippingOptions.length) {
-      await applyTranslations({
-        localeCode: data.locale,
-        objects: data.shippingOptions,
-        container,
-      })
-    }
+    await applyTranslations({
+      localeCode: data.locale,
+      objects: data.shippingOptions,
+      container,
+    })
 
     return new StepResponse(data.shippingOptions)
   }
