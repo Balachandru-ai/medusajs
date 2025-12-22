@@ -76,10 +76,10 @@ export const updateRbacRolesWorkflow = createWorkflow(
         const allPolicies: any[] = []
         updatedRoles.forEach((role) => {
           const policyIds = input.update.policy_ids || []
-          policyIds.forEach((policy_id) => {
+          policyIds.forEach((policyId) => {
             allPolicies.push({
               role_id: role.id,
-              parent_id: policy_id,
+              policy_id: policyId,
             })
           })
         })
