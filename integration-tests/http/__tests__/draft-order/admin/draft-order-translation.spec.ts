@@ -21,13 +21,16 @@ medusaIntegrationTestRunner({
       let shippingProfile: { id: string }
       let stockLocation: { id: string }
       let shippingOption: { id: string }
+      let taxRate: { id: string }
 
       beforeAll(async () => {
         appContainer = getContainer()
       })
 
       beforeEach(async () => {
-        await setupTaxStructure(appContainer.resolve(Modules.TAX))
+        const taxStructure = await setupTaxStructure(
+          appContainer.resolve(Modules.TAX)
+        )
         await createAdminUser(dbConnection, adminHeaders, appContainer)
 
         salesChannel = (
@@ -162,6 +165,14 @@ medusaIntegrationTestRunner({
           )
         ).data.shipping_option
 
+        const taxRatesResponse = await api.get(
+          `/admin/tax-rates?tax_region_id=${taxStructure.us.children.cal.province.id}`,
+          adminHeaders
+        )
+        taxRate = taxRatesResponse.data.tax_rates.find(
+          (rate: { code: string }) => rate.code === "CADEFAULT"
+        )
+
         await api.post(
           "/admin/translations/batch",
           {
@@ -224,6 +235,22 @@ medusaIntegrationTestRunner({
                   name: "Test-Versandoption",
                 },
               },
+              {
+                reference_id: taxRate.id,
+                reference: "tax_rate",
+                locale_code: "fr-FR",
+                translations: {
+                  name: "Taux par défaut CA",
+                },
+              },
+              {
+                reference_id: taxRate.id,
+                reference: "tax_rate",
+                locale_code: "de-DE",
+                translations: {
+                  name: "CA Standardsteuersatz",
+                },
+              },
             ],
           },
           adminHeaders
@@ -244,6 +271,7 @@ medusaIntegrationTestRunner({
                   address_1: "123 Main St",
                   city: "Anytown",
                   country_code: "us",
+                  province: "ca",
                   postal_code: "12345",
                   first_name: "John",
                 },
@@ -283,6 +311,12 @@ medusaIntegrationTestRunner({
               variant_title: "Petit",
             })
           )
+
+          expect(updatedDraftOrder.items[0].tax_lines.length).toBeGreaterThan(0)
+          const taxLine = updatedDraftOrder.items[0].tax_lines.find(
+            (tl) => tl.code === "CADEFAULT"
+          )
+          expect(taxLine.description).toEqual("Taux par défaut CA")
         })
 
         it("should have original values when draft order has no locale", async () => {
@@ -297,6 +331,7 @@ medusaIntegrationTestRunner({
                   address_1: "123 Main St",
                   city: "Anytown",
                   country_code: "us",
+                  province: "ca",
                   postal_code: "12345",
                   first_name: "John",
                 },
@@ -336,6 +371,12 @@ medusaIntegrationTestRunner({
               variant_title: "Small",
             })
           )
+
+          expect(updatedDraftOrder.items[0].tax_lines.length).toBeGreaterThan(0)
+          const taxLine = updatedDraftOrder.items[0].tax_lines.find(
+            (tl) => tl.code === "CADEFAULT"
+          )
+          expect(taxLine.description).toEqual("CA Default Rate")
         })
 
         it("should translate multiple items added to draft order", async () => {
@@ -351,6 +392,7 @@ medusaIntegrationTestRunner({
                   address_1: "123 Main St",
                   city: "Anytown",
                   country_code: "us",
+                  province: "ca",
                   postal_code: "12345",
                   first_name: "John",
                 },
@@ -407,6 +449,18 @@ medusaIntegrationTestRunner({
               variant_title: "Mittel",
             })
           )
+
+          expect(smallItem.tax_lines.length).toBeGreaterThan(0)
+          const smallTaxLine = smallItem.tax_lines.find(
+            (tl) => tl.code === "CADEFAULT"
+          )
+          expect(smallTaxLine.description).toEqual("CA Standardsteuersatz")
+
+          expect(mediumItem.tax_lines.length).toBeGreaterThan(0)
+          const mediumTaxLine = mediumItem.tax_lines.find(
+            (tl) => tl.code === "CADEFAULT"
+          )
+          expect(mediumTaxLine.description).toEqual("CA Standardsteuersatz")
         })
       })
 
@@ -424,6 +478,7 @@ medusaIntegrationTestRunner({
                   address_1: "123 Main St",
                   city: "Anytown",
                   country_code: "us",
+                  province: "ca",
                   postal_code: "12345",
                   first_name: "John",
                 },
@@ -464,6 +519,12 @@ medusaIntegrationTestRunner({
           )
           expect(frenchSmallItem.variant_title).toEqual("Petit")
 
+          expect(frenchSmallItem.tax_lines.length).toBeGreaterThan(0)
+          const frenchTaxLine = frenchSmallItem.tax_lines.find(
+            (tl) => tl.code === "CADEFAULT"
+          )
+          expect(frenchTaxLine.description).toEqual("Taux par défaut CA")
+
           await api.post(
             `/admin/draft-orders/${draftOrder.id}`,
             { locale: "de-DE" },
@@ -493,6 +554,22 @@ medusaIntegrationTestRunner({
               product_title: "Medusa T-Shirt DE",
               variant_title: "Mittel",
             })
+          )
+
+          expect(germanSmallItem.tax_lines.length).toBeGreaterThan(0)
+          const germanSmallTaxLine = germanSmallItem.tax_lines.find(
+            (tl) => tl.code === "CADEFAULT"
+          )
+          expect(germanSmallTaxLine.description).toEqual(
+            "CA Standardsteuersatz"
+          )
+
+          expect(germanMediumItem.tax_lines.length).toBeGreaterThan(0)
+          const germanMediumTaxLine = germanMediumItem.tax_lines.find(
+            (tl) => tl.code === "CADEFAULT"
+          )
+          expect(germanMediumTaxLine.description).toEqual(
+            "CA Standardsteuersatz"
           )
         })
       })
