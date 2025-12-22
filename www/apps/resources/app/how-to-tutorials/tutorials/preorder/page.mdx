@@ -538,12 +538,12 @@ If you get a type error on resolving the Preorder Module, run the Medusa applica
 </Note>
 
 export const updatePreorderVariantStepHighlights = [
-  ["16", "preorderModuleService", "Resolve the Preorder Module's service from the Medusa container."],
-  ["20", "oldData", "Retrieve existing record to undo updates if an error occurs."],
-  ["24", "preorderVariant", "Update the pre-order variant."],
-  ["28", "preorderVariant", "Return the updated pre-order variant."],
-  ["28", "oldData", "Pass the old data to the compensation function."],
-  ["39", "updatePreorderVariants", "Undo updates if an error occurs during the workflow execution."]
+  ["17", "preorderModuleService", "Resolve the Preorder Module's service from the Medusa container."],
+  ["21", "oldData", "Retrieve existing record to undo updates if an error occurs."],
+  ["25", "preorderVariant", "Update the pre-order variant."],
+  ["29", "preorderVariant", "Return the updated pre-order variant."],
+  ["29", "oldData", "Pass the old data to the compensation function."],
+  ["40", "updatePreorderVariants", "Undo updates if an error occurs during the workflow execution."]
 ]
 
 ```ts title="src/workflows/steps/update-preorder-variant.ts" highlights={updatePreorderVariantStepHighlights}
