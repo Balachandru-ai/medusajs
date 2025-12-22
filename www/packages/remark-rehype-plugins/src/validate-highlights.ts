@@ -216,10 +216,7 @@ const validateCodeHighlights = ({
       }
 
       const line = lines[Number(lineNumber) - 1]?.trim()
-      if (!line.length) {
-        throw new Error(`Highlight line number ${lineNumber} is empty`)
-      }
-      if (!line) {
+      if (line === undefined) {
         throw new Error(`Highlight line number ${lineNumber} not found in code`)
       }
 
@@ -230,11 +227,13 @@ const validateCodeHighlights = ({
       }
     }
   } catch (err) {
-    formatError({
-      message: (err as Error).message,
-      code,
-      verbose,
-    })
+    throw new Error(
+      formatError({
+        message: (err as Error).message,
+        code,
+        verbose,
+      })
+    )
   }
 }
 
