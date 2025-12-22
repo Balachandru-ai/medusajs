@@ -479,6 +479,15 @@ medusaIntegrationTestRunner({
             (tl) => tl.code === "CADEFAULT"
           )
           expect(taxLine.description).toEqual("Taux par défaut CA")
+
+          const outboundShippingMethod = updatedOrder.shipping_methods.find(
+            (sm) => sm.shipping_option_id === outboundShippingOption.id
+          )
+          expect(outboundShippingMethod.tax_lines.length).toBeGreaterThan(0)
+          const shippingTaxLine = outboundShippingMethod.tax_lines.find(
+            (tl) => tl.code === "CADEFAULT"
+          )
+          expect(shippingTaxLine.description).toEqual("Taux par défaut CA")
         })
 
         it("should have original values when order has no locale", async () => {
@@ -551,6 +560,15 @@ medusaIntegrationTestRunner({
             (tl) => tl.code === "CADEFAULT"
           )
           expect(taxLine.description).toEqual("CA Default Rate")
+
+          const outboundShippingMethod = updatedOrder.shipping_methods.find(
+            (sm) => sm.shipping_option_id === outboundShippingOption.id
+          )
+          expect(outboundShippingMethod.tax_lines.length).toBeGreaterThan(0)
+          const shippingTaxLine = outboundShippingMethod.tax_lines.find(
+            (tl) => tl.code === "CADEFAULT"
+          )
+          expect(shippingTaxLine.description).toEqual("CA Default Rate")
         })
       })
 
