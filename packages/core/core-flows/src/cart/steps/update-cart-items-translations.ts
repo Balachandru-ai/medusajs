@@ -84,7 +84,7 @@ export const updateCartItemsTranslationsStep = createStep(
     try {
       const isTranslationEnabled = FeatureFlag.isFeatureEnabled("translation")
 
-      if (!isTranslationEnabled || !data.locale) {
+      if (!isTranslationEnabled) {
         return new StepResponse(void 0, [])
       }
 
