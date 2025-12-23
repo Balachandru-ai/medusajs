@@ -1,4 +1,4 @@
-import { applyTranslations, FeatureFlag } from "@medusajs/framework/utils"
+import { applyTranslations } from "@medusajs/framework/utils"
 import { createStep, StepResponse } from "@medusajs/framework/workflows-sdk"
 import { ShippingOptionDTO } from "@medusajs/types"
 
