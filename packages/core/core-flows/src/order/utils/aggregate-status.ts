@@ -1,24 +1,14 @@
 import type { OrderDetailDTO } from "@medusajs/framework/types"
 import {
   defaultCurrencies,
+  FulfillmentStatus,
   getEpsilonFromDecimalPrecision,
   isDefined,
   MathBN,
+  PaymentStatus,
 } from "@medusajs/framework/utils"
 
 export const getLastPaymentStatus = (order: OrderDetailDTO) => {
-  const PaymentStatus = {
-    NOT_PAID: "not_paid",
-    AWAITING: "awaiting",
-    CAPTURED: "captured",
-    PARTIALLY_CAPTURED: "partially_captured",
-    PARTIALLY_REFUNDED: "partially_refunded",
-    REFUNDED: "refunded",
-    CANCELED: "canceled",
-    REQUIRES_ACTION: "requires_action",
-    AUTHORIZED: "authorized",
-    PARTIALLY_AUTHORIZED: "partially_authorized",
-  }
 
   const upperCurCode = order.currency_code?.toUpperCase() as string
   const currencyEpsilon = getEpsilonFromDecimalPrecision(
@@ -112,16 +102,6 @@ export const getLastPaymentStatus = (order: OrderDetailDTO) => {
 }
 
 export const getLastFulfillmentStatus = (order: OrderDetailDTO) => {
-  const FulfillmentStatus = {
-    NOT_FULFILLED: "not_fulfilled",
-    PARTIALLY_FULFILLED: "partially_fulfilled",
-    FULFILLED: "fulfilled",
-    PARTIALLY_SHIPPED: "partially_shipped",
-    SHIPPED: "shipped",
-    DELIVERED: "delivered",
-    PARTIALLY_DELIVERED: "partially_delivered",
-    CANCELED: "canceled",
-  }
 
   let fulfillmentStatus = {}
 

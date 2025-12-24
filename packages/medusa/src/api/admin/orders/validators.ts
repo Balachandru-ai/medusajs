@@ -1,4 +1,5 @@
 import { z } from "zod"
+import { FulfillmentStatus, PaymentStatus } from "@medusajs/framework/utils"
 import { AddressPayload } from "../../utils/common-validators"
 import {
   createFindParams,
@@ -6,6 +7,9 @@ import {
   createSelectParams,
   WithAdditionalData,
 } from "../../utils/validators"
+
+const paymentStatusEnum = z.nativeEnum(PaymentStatus)
+const fulfillmentStatusEnum = z.nativeEnum(FulfillmentStatus)
 
 export const AdminGetOrdersOrderParams = createSelectParams().merge(
   z.object({
@@ -53,6 +57,12 @@ export const AdminGetOrdersParams = createFindParams({
       .optional(),
     status: z
       .union([z.string(), z.array(z.string()), createOperatorMap()])
+      .optional(),
+    payment_status: z
+      .union([paymentStatusEnum, z.array(paymentStatusEnum)])
+      .optional(),
+    fulfillment_status: z
+      .union([fulfillmentStatusEnum, z.array(fulfillmentStatusEnum)])
       .optional(),
     name: z.union([z.string(), z.array(z.string())]).optional(),
     sales_channel_id: z.array(z.string()).optional(),

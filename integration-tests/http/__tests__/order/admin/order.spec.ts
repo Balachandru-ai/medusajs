@@ -154,6 +154,193 @@ medusaIntegrationTestRunner({
           }),
         ])
       })
+
+      it("should filter orders by payment_status", async () => {
+        // The seeded order should have payment_status "authorized" since payment was authorized but not yet captured
+        let response = await api.get(
+          `/admin/orders?payment_status=authorized`,
+          adminHeaders
+        )
+
+        expect(response.data.orders).toHaveLength(1)
+        expect(response.data.orders[0]).toEqual(
+          expect.objectContaining({
+            id: order.id,
+            payment_status: "authorized",
+          })
+        )
+
+        // Filter by a different payment status should return no results
+        response = await api.get(
+          `/admin/orders?payment_status=not_paid`,
+          adminHeaders
+        )
+
+        expect(response.data.orders).toHaveLength(0)
+
+        // Filter by multiple payment statuses
+        response = await api.get(
+          `/admin/orders?payment_status=authorized&payment_status=awaiting`,
+          adminHeaders
+        )
+
+        expect(response.data.orders).toHaveLength(1)
+        expect(response.data.orders[0].id).toEqual(order.id)
+      })
+
+      it("should filter orders by fulfillment_status", async () => {
+        // The seeded order should have fulfillment_status "not_fulfilled" initially
+        let response = await api.get(
+          `/admin/orders?fulfillment_status=not_fulfilled`,
+          adminHeaders
+        )
+
+        expect(response.data.orders).toHaveLength(1)
+        expect(response.data.orders[0]).toEqual(
+          expect.objectContaining({
+            id: order.id,
+            fulfillment_status: "not_fulfilled",
+          })
+        )
+
+        // Filter by a different fulfillment status should return no results
+        response = await api.get(
+          `/admin/orders?fulfillment_status=shipped`,
+          adminHeaders
+        )
+
+        expect(response.data.orders).toHaveLength(0)
+
+        // Create a fulfillment for the order
+        const fulfillmentResponse = await api.post(
+          `/admin/orders/${order.id}/fulfillments`,
+          {
+            items: [
+              {
+                id: order.items[0].id,
+                quantity: 1,
+              },
+            ],
+          },
+          adminHeaders
+        )
+
+        expect(fulfillmentResponse.status).toBe(200)
+
+        // Now filter by fulfilled status
+        response = await api.get(
+          `/admin/orders?fulfillment_status=fulfilled`,
+          adminHeaders
+        )
+
+        expect(response.data.orders).toHaveLength(1)
+        expect(response.data.orders[0]).toEqual(
+          expect.objectContaining({
+            id: order.id,
+            fulfillment_status: "fulfilled",
+          })
+        )
+
+        // Filter by not_fulfilled should now return no results
+        response = await api.get(
+          `/admin/orders?fulfillment_status=not_fulfilled`,
+          adminHeaders
+        )
+
+        expect(response.data.orders).toHaveLength(0)
+      })
+
+      it("should filter orders by both payment_status and fulfillment_status", async () => {
+        // Filter by both statuses
+        let response = await api.get(
+          `/admin/orders?payment_status=authorized&fulfillment_status=not_fulfilled`,
+          adminHeaders
+        )
+
+        expect(response.data.orders).toHaveLength(1)
+        expect(response.data.orders[0]).toEqual(
+          expect.objectContaining({
+            id: order.id,
+            payment_status: "authorized",
+            fulfillment_status: "not_fulfilled",
+          })
+        )
+
+        // Filter with mismatched statuses should return no results
+        response = await api.get(
+          `/admin/orders?payment_status=not_paid&fulfillment_status=not_fulfilled`,
+          adminHeaders
+        )
+
+        expect(response.data.orders).toHaveLength(0)
+
+        // Create a fulfillment
+        await api.post(
+          `/admin/orders/${order.id}/fulfillments`,
+          {
+            items: [
+              {
+                id: order.items[0].id,
+                quantity: 1,
+              },
+            ],
+          },
+          adminHeaders
+        )
+
+        // Filter by both statuses after fulfillment
+        // Note: After fulfillment is created, payment is still authorized (not captured)
+        response = await api.get(
+          `/admin/orders?payment_status=authorized&fulfillment_status=fulfilled`,
+          adminHeaders
+        )
+
+        expect(response.data.orders).toHaveLength(1)
+        expect(response.data.orders[0]).toEqual(
+          expect.objectContaining({
+            id: order.id,
+            payment_status: "authorized",
+            fulfillment_status: "fulfilled",
+          })
+        )
+      })
+
+      it("should combine status filters with other filters", async () => {
+        // Filter by payment_status and email search (q parameter)
+        let response = await api.get(
+          `/admin/orders?payment_status=authorized&q=tony@stark`,
+          adminHeaders
+        )
+
+        // Should find the order by email
+        expect(response.data.orders).toHaveLength(1)
+        expect(response.data.orders[0].id).toEqual(order.id)
+
+        // Filter by payment_status and specific order ID
+        response = await api.get(
+          `/admin/orders?payment_status=authorized&id=${order.id}`,
+          adminHeaders
+        )
+
+        expect(response.data.orders).toHaveLength(1)
+        expect(response.data.orders[0].id).toEqual(order.id)
+
+        // Filter by payment_status with non-matching email should return empty
+        response = await api.get(
+          `/admin/orders?payment_status=authorized&q=nonexistent@email.com`,
+          adminHeaders
+        )
+
+        expect(response.data.orders).toHaveLength(0)
+
+        // Filter by wrong payment_status should not find the order
+        response = await api.get(
+          `/admin/orders?payment_status=not_paid&id=${order.id}`,
+          adminHeaders
+        )
+
+        expect(response.data.orders).toHaveLength(0)
+      })
     })
 
     describe("POST /orders/:id", () => {

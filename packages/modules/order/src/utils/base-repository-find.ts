@@ -4,6 +4,10 @@ import { LoadStrategy } from "@medusajs/framework/mikro-orm/core"
 import { Order, OrderClaim, OrderLineItemAdjustment } from "@models"
 
 import { mapRepositoryToOrderModel } from "."
+import {
+  buildPaymentStatusCaseExpression,
+  buildFulfillmentStatusCaseExpression,
+} from "./status-subqueries"
 
 export function setFindMethods<T>(klass: Constructor<T>, entity: any) {
   klass.prototype.find = async function find(
@@ -18,6 +22,15 @@ export function setFindMethods<T>(klass: Constructor<T>, entity: any) {
     findOptions_.options ??= {}
     findOptions_.where ??= {}
 
+    // Extract status filters before processing
+    const paymentStatusFilter = findOptions_.where.payment_status
+    const fulfillmentStatusFilter = findOptions_.where.fulfillment_status
+    const hasStatusFilters = paymentStatusFilter || fulfillmentStatusFilter
+
+    // Remove status filters from where clause to prevent errors
+    delete findOptions_.where.payment_status
+    delete findOptions_.where.fulfillment_status
+
     if (!("strategy" in findOptions_.options)) {
       if (findOptions_.options.limit != null || findOptions_.options.offset) {
         Object.assign(findOptions_.options, {
@@ -27,6 +40,20 @@ export function setFindMethods<T>(klass: Constructor<T>, entity: any) {
     }
 
     const isRelatedEntity = entity.name !== Order.name
+
+    // Only apply status filtering for Order entity (not related entities)
+    if (hasStatusFilters && !isRelatedEntity) {
+      // Use custom query with status filtering
+      return await findWithStatusFilters(
+        manager,
+        knex,
+        findOptions_,
+        paymentStatusFilter,
+        fulfillmentStatusFilter,
+        this.entity,
+        context
+      )
+    }
 
     const config = mapRepositoryToOrderModel(findOptions_, isRelatedEntity)
     config.options ??= {}
@@ -128,6 +155,15 @@ export function setFindMethods<T>(klass: Constructor<T>, entity: any) {
     findOptions_.options ??= {}
     findOptions_.where ??= {}
 
+    // Extract status filters before processing
+    const paymentStatusFilter = findOptions_.where.payment_status
+    const fulfillmentStatusFilter = findOptions_.where.fulfillment_status
+    const hasStatusFilters = paymentStatusFilter || fulfillmentStatusFilter
+
+    // Remove status filters from where clause to prevent errors
+    delete findOptions_.where.payment_status
+    delete findOptions_.where.fulfillment_status
+
     if (!("strategy" in findOptions_.options)) {
       Object.assign(findOptions_.options, {
         strategy: LoadStrategy.SELECT_IN,
@@ -135,6 +171,20 @@ export function setFindMethods<T>(klass: Constructor<T>, entity: any) {
     }
 
     const isRelatedEntity = entity.name !== Order.name
+
+    // Only apply status filtering for Order entity (not related entities)
+    if (hasStatusFilters && !isRelatedEntity) {
+      // Use custom query with CTEs for status filtering
+      return await findAndCountWithStatusFilters(
+        manager,
+        knex,
+        findOptions_,
+        paymentStatusFilter,
+        fulfillmentStatusFilter,
+        this.entity,
+        context
+      )
+    }
 
     const config = mapRepositoryToOrderModel(findOptions_, isRelatedEntity)
 
@@ -214,6 +264,221 @@ export function setFindMethods<T>(klass: Constructor<T>, entity: any) {
 
     return [result, count]
   }
+}
+
+/**
+ * Custom find implementation that supports filtering by calculated status fields
+ * Uses SQL subqueries to filter orders by payment_status and fulfillment_status at the database level
+ */
+async function findWithStatusFilters(
+  manager,
+  knex,
+  findOptions_,
+  paymentStatusFilter,
+  fulfillmentStatusFilter,
+  entity,
+  context
+) {
+  const isRelatedEntity = false // Always false when this function is called
+
+  const config = mapRepositoryToOrderModel(findOptions_, isRelatedEntity)
+  config.options ??= {}
+  config.options.populate ??= []
+
+  const strategy = findOptions_.options?.strategy ?? LoadStrategy.JOINED
+  let orderAlias = "o0"
+
+  let defaultVersion = knex.raw(`"${orderAlias}"."version"`)
+  if (strategy === LoadStrategy.SELECT_IN) {
+    const sql = manager
+      .qb(toMikroORMEntity(Order), "_sub0")
+      .select("version")
+      .where({ id: knex.raw(`"${orderAlias}"."order_id"`) })
+      .getKnexQuery()
+      .toString()
+
+    defaultVersion = knex.raw(`(${sql})`)
+  }
+
+  const version = config.where?.version ?? defaultVersion
+  delete config.where?.version
+
+  configurePopulateWhere(config, isRelatedEntity, version)
+
+  let loadAdjustments = false
+  if (config.options.populate.includes("items.item.adjustments")) {
+    loadAdjustments = true
+    config.options.populate.splice(
+      config.options.populate.indexOf("items.item.adjustments"),
+      1
+    )
+
+    config.options.populate.push("items")
+    config.options.populate.push("items.item")
+
+    if (config.options.fields?.some((f) => f.includes("items.item."))) {
+      config.options.fields.push("items.version")
+    }
+  }
+
+  if (!config.options.orderBy) {
+    config.options.orderBy = { id: "ASC" }
+  }
+
+  config.where ??= {}
+
+  // Build and execute the subquery that filters orders by status
+  const statusFilterQuery = `
+    SELECT DISTINCT o.id
+    FROM "order" o
+    WHERE o.id IN (
+      SELECT o2.id FROM "order" o2
+      WHERE 1=1
+      ${paymentStatusFilter ? `AND ${buildPaymentStatusCaseExpression(knex, 'o2').toString()} IN (${
+        Array.isArray(paymentStatusFilter)
+          ? paymentStatusFilter.map(() => '?').join(',')
+          : '?'
+      })` : ''}
+      ${fulfillmentStatusFilter ? `AND ${buildFulfillmentStatusCaseExpression(knex, 'o2').toString()} IN (${
+        Array.isArray(fulfillmentStatusFilter)
+          ? fulfillmentStatusFilter.map(() => '?').join(',')
+          : '?'
+      })` : ''}
+    )
+  `
+  
+  const statusFilterParams = [
+    ...(paymentStatusFilter ? (Array.isArray(paymentStatusFilter) ? paymentStatusFilter : [paymentStatusFilter]) : []),
+    ...(fulfillmentStatusFilter ? (Array.isArray(fulfillmentStatusFilter) ? fulfillmentStatusFilter : [fulfillmentStatusFilter]) : []),
+  ]
+  
+  // Execute the query to get filtered IDs
+  const filteredIdsResult = await knex.raw(statusFilterQuery, statusFilterParams)
+  const filteredIds = filteredIdsResult.rows.map((row: any) => row.id)
+  
+  // Add the filtered IDs to the where clause
+  if (filteredIds.length === 0) {
+    // No matching orders, use a non-existent ID to return empty results
+    config.where.id = '__no_match__'
+  } else {
+    config.where.id = filteredIds
+  }
+
+  const result = await manager.find(entity, config.where, config.options)
+
+  if (loadAdjustments) {
+    await loadItemAdjustments(manager, result)
+  }
+
+  return result
+}
+
+/**
+ * Custom findAndCount implementation that supports filtering by calculated status fields
+ * Uses SQL CTEs to filter orders by payment_status and fulfillment_status at the database level
+ */
+async function findAndCountWithStatusFilters(
+  manager,
+  knex,
+  findOptions_,
+  paymentStatusFilter,
+  fulfillmentStatusFilter,
+  entity,
+  context
+): Promise<[any[], number]> {
+  const isRelatedEntity = false // Always false when this function is called
+
+  const config = mapRepositoryToOrderModel(findOptions_, isRelatedEntity)
+
+  let orderAlias = "o0"
+  const strategy = config.options?.strategy ?? LoadStrategy.SELECT_IN
+
+  let defaultVersion = knex.raw(`"${orderAlias}"."version"`)
+  if (strategy === LoadStrategy.SELECT_IN) {
+    defaultVersion = getVersionSubQuery(manager, orderAlias)
+  }
+
+  const version = config.where?.version ?? defaultVersion
+  delete config.where?.version
+
+  let loadAdjustments = false
+  if (config.options?.populate?.includes("items.item.adjustments")) {
+    loadAdjustments = true
+    config.options.populate.splice(
+      config.options.populate.indexOf("items.item.adjustments"),
+      1
+    )
+
+    config.options.populate.push("items")
+    config.options.populate.push("items.item")
+
+    if (config.options.fields?.some((f) => f.includes("items.item."))) {
+      config.options.fields.push("items.version")
+    }
+  }
+
+  configurePopulateWhere(
+    config,
+    isRelatedEntity,
+    version,
+    strategy === LoadStrategy.SELECT_IN,
+    manager
+  )
+
+  if (!config.options?.orderBy) {
+    config.options = config.options || {}
+    config.options.orderBy = { id: "ASC" }
+  }
+
+  // Build and execute the subquery that filters orders by status
+  const statusFilterQuery = `
+    SELECT DISTINCT o.id
+    FROM "order" o
+    WHERE o.id IN (
+      SELECT o2.id FROM "order" o2
+      WHERE 1=1
+      ${paymentStatusFilter ? `AND ${buildPaymentStatusCaseExpression(knex, 'o2').toString()} IN (${
+        Array.isArray(paymentStatusFilter)
+          ? paymentStatusFilter.map(() => '?').join(',')
+          : '?'
+      })` : ''}
+      ${fulfillmentStatusFilter ? `AND ${buildFulfillmentStatusCaseExpression(knex, 'o2').toString()} IN (${
+        Array.isArray(fulfillmentStatusFilter)
+          ? fulfillmentStatusFilter.map(() => '?').join(',')
+          : '?'
+      })` : ''}
+    )
+  `
+  
+  const statusFilterParams = [
+    ...(paymentStatusFilter ? (Array.isArray(paymentStatusFilter) ? paymentStatusFilter : [paymentStatusFilter]) : []),
+    ...(fulfillmentStatusFilter ? (Array.isArray(fulfillmentStatusFilter) ? fulfillmentStatusFilter : [fulfillmentStatusFilter]) : []),
+  ]
+  
+  // Execute the query to get filtered IDs
+  const filteredIdsResult = await knex.raw(statusFilterQuery, statusFilterParams)
+  const filteredIds = filteredIdsResult.rows.map((row: any) => row.id)
+  
+  // Add the filtered IDs to the where clause
+  config.where = config.where || {}
+  if (filteredIds.length === 0) {
+    // No matching orders, use a non-existent ID to return empty results
+    config.where.id = '__no_match__'
+  } else {
+    config.where.id = filteredIds
+  }
+
+  const [result, count] = await manager.findAndCount(
+    entity,
+    config.where,
+    config.options
+  )
+
+  if (loadAdjustments) {
+    await loadItemAdjustments(manager, result)
+  }
+
+  return [result, count]
 }
 
 /**
