@@ -904,6 +904,7 @@ export default class OrderModuleService
     const orderAddressIds = orders
       .map((order) => [order.shipping_address_id, order.billing_address_id])
       .flat(1)
+      .filter(Boolean)
 
     const orderChanges = await this.orderChangeService_.list(
       { order_id: ids },
