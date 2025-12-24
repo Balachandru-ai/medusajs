@@ -14,14 +14,7 @@ export async function setSecretApiKeyContext(
   _: MedusaResponse,
   next: MedusaNextFunction
 ) {
-  if (!req.auth_context) {
-    throw new MedusaError(
-      MedusaErrorTypes.INVALID_DATA,
-      "No `auth_context` found in request, make sure to apply this middleware after the `authenticate` middleware."
-    )
-  }
-
-  const shouldSkip = req.auth_context.actor_type !== "api-key"
+  const shouldSkip = req.auth_context?.actor_type !== "api-key"
   if (shouldSkip) {
     return next()
   }
