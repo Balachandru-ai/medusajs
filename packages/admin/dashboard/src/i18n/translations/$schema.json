@@ -5860,6 +5860,32 @@
           "required": ["open", "completed"],
           "additionalProperties": false
         },
+        "list": {
+          "type": "object",
+          "properties": {
+            "description": {
+              "type": "string"
+            },
+            "noRecordsMessage": {
+              "type": "string"
+            },
+            "filtered": {
+              "type": "object",
+              "properties": {
+                "heading": {
+                  "type": "string"
+                },
+                "description": {
+                  "type": "string"
+                }
+              },
+              "required": ["heading", "description"],
+              "additionalProperties": false
+            }
+          },
+          "required": ["description", "noRecordsMessage", "filtered"],
+          "additionalProperties": false
+        },
         "create": {
           "type": "object",
           "properties": {
