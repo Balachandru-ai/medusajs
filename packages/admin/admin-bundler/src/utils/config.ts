@@ -24,7 +24,12 @@ export async function getViteConfig(
   const backendUrl = options.backendUrl ?? ""
   const storefrontUrl = options.storefrontUrl ?? ""
   const authType = process.env.ADMIN_AUTH_TYPE ?? undefined
-  const jwtTokenStorageKey = process.env.ADMIN_JWT_TOKEN_STORAGE_KEY ?? undefined
+  const jwtTokenStorageKey =
+    process.env.ADMIN_JWT_TOKEN_STORAGE_KEY ?? undefined
+  const cloudAuthEnabled =
+    process.env.EXECUTION_CONTEXT === "medusa-cloud" &&
+    process.env.MEDUSA_CLOUD_OAUTH_DISABLED !== "true"
+  console.log("cloudAuthEnabled", cloudAuthEnabled)
 
   const baseConfig: InlineConfig = {
     root,
@@ -53,6 +58,7 @@ export async function getViteConfig(
       __AUTH_TYPE__: JSON.stringify(authType),
       __JWT_TOKEN_STORAGE_KEY__: JSON.stringify(jwtTokenStorageKey),
       __STOREFRONT_URL__: JSON.stringify(storefrontUrl),
+      __MEDUSA_CLOUD_AUTH__: JSON.stringify(cloudAuthEnabled),
     },
     server: {
       fs: {

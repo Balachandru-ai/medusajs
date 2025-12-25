@@ -10,6 +10,7 @@ import AvatarBox from "../../components/common/logo-box/avatar-box"
 import { useSignInWithEmailPass } from "../../hooks/api"
 import { isFetchError } from "../../lib/is-fetch-error"
 import { useExtension } from "../../providers/extension-provider"
+import { CloudAuthLogin } from "./cloud-auth-login"
 
 const LoginSchema = z.object({
   email: z.string().email(),
@@ -69,6 +70,11 @@ export const Login = () => {
   const validationError =
     form.formState.errors.email?.message ||
     form.formState.errors.password?.message
+
+  const loginAfterWidgets = getWidgets("login.after")
+  if (__MEDUSA_CLOUD_AUTH__) {
+    loginAfterWidgets.push(CloudAuthLogin)
+  }
 
   return (
     <div className="bg-ui-bg-subtle flex min-h-dvh w-dvw items-center justify-center">
@@ -150,7 +156,7 @@ export const Login = () => {
               </Button>
             </form>
           </Form>
-          {getWidgets("login.after").map((Component, i) => {
+          {loginAfterWidgets.map((Component, i) => {
             return <Component key={i} />
           })}
         </div>
