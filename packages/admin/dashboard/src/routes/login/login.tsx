@@ -11,7 +11,7 @@ import { useSignInWithEmailPass } from "../../hooks/api"
 import { useCloudAuthEnabled } from "../../hooks/api/cloud"
 import { isFetchError } from "../../lib/is-fetch-error"
 import { useExtension } from "../../providers/extension-provider"
-import { CloudAuthLogin } from "./cloud-auth-login"
+import { CloudAuthLogin } from "./components/cloud-auth-login"
 
 const LoginSchema = z.object({
   email: z.string().email(),
@@ -73,7 +73,7 @@ export const Login = () => {
     form.formState.errors.email?.message ||
     form.formState.errors.password?.message
 
-  const loginAfterWidgets = getWidgets("login.after")
+  const loginAfterWidgets = [...getWidgets("login.after")] // cloning to avoid mutating the original array below
   if (cloudAuth?.enabled) {
     loginAfterWidgets.push(CloudAuthLogin)
   }
