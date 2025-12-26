@@ -148,16 +148,21 @@ moduleIntegrationTestRunner<IAuthModuleService>({
             },
           })
 
+          expect(mockTokenFetch.mock.calls[0][0]).toBe(
+            "https://medusa.cloud/oauth/token"
+          )
           expect(mockTokenFetch.mock.calls[0][1].method).toBe("POST")
-          const tokenURL = new URL(mockTokenFetch.mock.calls[0][0])
-          const params = tokenURL.searchParams
-          expect(params.get("client_id")).toBe("test-environment")
-          expect(params.get("client_secret")).toBe("test-api-key")
-          expect(params.get("code")).toBe("code1")
-          expect(params.get("redirect_uri")).toBe(
+          expect(mockTokenFetch.mock.calls[0][1].headers).toEqual({
+            "Content-Type": "application/x-www-form-urlencoded",
+          })
+          const body = mockTokenFetch.mock.calls[0][1].body as URLSearchParams
+          expect(body.get("client_id")).toBe("test-environment")
+          expect(body.get("client_secret")).toBe("test-api-key")
+          expect(body.get("code")).toBe("code1")
+          expect(body.get("redirect_uri")).toBe(
             "https://store.app/oauth/callback"
           )
-          expect(params.get("grant_type")).toBe("authorization_code")
+          expect(body.get("grant_type")).toBe("authorization_code")
         })
 
         it("should return an error if the code is not provided", async () => {

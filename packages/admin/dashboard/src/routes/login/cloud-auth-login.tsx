@@ -3,6 +3,7 @@ import { useMutation } from "@tanstack/react-query"
 import { useEffect, useMemo } from "react"
 import { decodeToken } from "react-jwt"
 import { useNavigate, useSearchParams } from "react-router-dom"
+import { useCreateCloudAuthUser } from "../../hooks/api/cloud"
 import { sdk } from "../../lib/client"
 
 const CLOUD_AUTH_PROVIDER = "cloud"
@@ -10,6 +11,7 @@ const CLOUD_AUTH_PROVIDER = "cloud"
 export const CloudAuthLogin = () => {
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
+  const { mutateAsync: createCloudAuthUser } = useCreateCloudAuthUser()
 
   const { mutateAsync: handleCallback, isPending } = useMutation({
     mutationFn: async () => {
@@ -32,11 +34,8 @@ export const CloudAuthLogin = () => {
       const userExists = decodedToken?.actor_id !== ""
       if (!userExists) {
         // Create user account for this auth identity
-        await sdk.client.fetch("/cloud/auth/users", {
-          method: "POST",
-          body: {
-            email: decodedToken.user_metadata?.email as string,
-          },
+        await createCloudAuthUser({
+          email: decodedToken.user_metadata?.email as string,
         })
 
         // Refresh token to get the updated token with actor_id

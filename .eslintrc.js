@@ -256,7 +256,6 @@ module.exports = {
       },
       globals: {
         __BASE__: "readonly",
-        __MEDUSA_CLOUD_AUTH__: "readonly",
       },
       env: {
         browser: true,

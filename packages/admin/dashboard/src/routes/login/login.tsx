@@ -8,6 +8,7 @@ import * as z from "zod"
 import { Form } from "../../components/common/form"
 import AvatarBox from "../../components/common/logo-box/avatar-box"
 import { useSignInWithEmailPass } from "../../hooks/api"
+import { useCloudAuthEnabled } from "../../hooks/api/cloud"
 import { isFetchError } from "../../lib/is-fetch-error"
 import { useExtension } from "../../providers/extension-provider"
 import { CloudAuthLogin } from "./cloud-auth-login"
@@ -22,6 +23,7 @@ export const Login = () => {
   const location = useLocation()
   const navigate = useNavigate()
   const { getWidgets } = useExtension()
+  const { data: cloudAuth } = useCloudAuthEnabled()
 
   const from = location.state?.from?.pathname || "/orders"
 
@@ -72,7 +74,7 @@ export const Login = () => {
     form.formState.errors.password?.message
 
   const loginAfterWidgets = getWidgets("login.after")
-  if (__MEDUSA_CLOUD_AUTH__) {
+  if (cloudAuth?.enabled) {
     loginAfterWidgets.push(CloudAuthLogin)
   }
 

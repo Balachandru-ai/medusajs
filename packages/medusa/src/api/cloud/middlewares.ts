@@ -7,6 +7,11 @@ import { CreateCloudAuthUserSchema } from "./auth/users/route"
 
 export const cloudRoutesMiddlewares: MiddlewareRoute[] = [
   {
+    matcher: "/cloud/auth",
+    method: ["GET"],
+    middlewares: [],
+  },
+  {
     matcher: "/cloud/auth/users",
     method: ["POST"],
     middlewares: [

@@ -88,21 +88,27 @@ export class MedusaCloudAuthService extends AbstractAuthModuleProvider {
     }
 
     const clientId = this.getClientId()
-    const exchangeTokenUrl = new URL(this.config_.oauth_token_endpoint)
-    exchangeTokenUrl.searchParams.set("client_id", clientId)
-    exchangeTokenUrl.searchParams.set("client_secret", this.config_.api_key)
-    exchangeTokenUrl.searchParams.set("code", code)
-    exchangeTokenUrl.searchParams.set(
-      "redirect_uri",
-      state.callback_url as string
-    )
-    exchangeTokenUrl.searchParams.set("grant_type", "authorization_code")
 
     try {
-      const response = await fetch(exchangeTokenUrl, {
+      const response = await fetch(this.config_.oauth_token_endpoint, {
         method: "POST",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+        body: new URLSearchParams({
+          client_id: clientId,
+          client_secret: this.config_.api_key,
+          code,
+          redirect_uri: state.callback_url as string,
+          grant_type: "authorization_code",
+        }),
       }).then((r) => {
         if (!r.ok) {
+          this.logger_.warn(
+            `Could not exchange token, ${r.status}, ${
+              r.statusText
+            }: response: ${JSON.stringify(r)}`
+          )
           throw new MedusaError(
             MedusaError.Types.INVALID_DATA,
             `Could not exchange token, ${r.status}, ${r.statusText}`
