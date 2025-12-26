@@ -1,7 +1,7 @@
 import clsx from "clsx"
 import React from "react"
 
-type RadioItemProps = React.DetailedHTMLProps<
+export type RadioItemProps = React.DetailedHTMLProps<
   React.InputHTMLAttributes<HTMLInputElement>,
   HTMLInputElement
 > & {

@@ -17,7 +17,7 @@ import {
   getSidebarItemWithHistory,
   isSidebarItemLink,
 } from "../../utils/sidebar-utils"
-import { useSiteConfig } from "../SiteConifg"
+import { useSiteConfig } from "../SiteConfig"
 import { useIsBrowser } from "../BrowserProvider"
 import { getScrolledTop } from "../../utils"
 import { usePathname, useRouter } from "next/navigation"

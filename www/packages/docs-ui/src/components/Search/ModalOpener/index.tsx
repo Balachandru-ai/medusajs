@@ -2,7 +2,7 @@
 
 import React, { MouseEvent } from "react"
 import { useSearch } from "@/providers"
-import { Button } from "@/components"
+import { Button } from "@/components/Button"
 import { MagnifyingGlass } from "@medusajs/icons"
 import { useKeyboardShortcut } from "@/hooks"
 

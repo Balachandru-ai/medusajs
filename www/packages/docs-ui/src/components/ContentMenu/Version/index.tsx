@@ -3,7 +3,7 @@ import { Card } from "../../Card"
 import { useIsBrowser, useSiteConfig } from "../../../providers"
 import clsx from "clsx"
 
-const LOCAL_STORAGE_KEY = "last-version"
+export const LOCAL_STORAGE_KEY = "last-version"
 
 export const ContentMenuVersion = () => {
   const {

@@ -2,13 +2,11 @@
 
 import React from "react"
 import clsx from "clsx"
-import { CardProps } from "../.."
-import {
-  BorderedIcon,
-  Button,
-  ThemeImage,
-  useIsExternalLink,
-} from "../../../.."
+import { CardProps } from "@/components/Card"
+import { BorderedIcon } from "@/components/BorderedIcon"
+import { Button } from "@/components/Button"
+import { ThemeImage } from "@/components/ThemeImage"
+import { useIsExternalLink } from "@/hooks/use-is-external-link"
 import Link from "next/link"
 import Image from "next/image"
 import { ArrowUpRightOnBox, TriangleRightMini, XMark } from "@medusajs/icons"
@@ -91,19 +89,29 @@ export const CardLayoutMini = ({
         )}
         <div className="flex flex-col">
           {title && (
-            <span className="text-x-small-plus text-medusa-fg-base">
+            <span
+              className="text-x-small-plus text-medusa-fg-base"
+              data-testid="title"
+            >
               {title}
             </span>
           )}
           {text && (
-            <span className="text-x-small-plus text-medusa-fg-subtle">
+            <span
+              className="text-x-small-plus text-medusa-fg-subtle"
+              data-testid="text"
+            >
               {text}
             </span>
           )}
         </div>
         {!closeable && (
           <span className="text-medusa-fg-subtle">
-            {isExternal ? <ArrowUpRightOnBox /> : <TriangleRightMini />}
+            {isExternal ? (
+              <ArrowUpRightOnBox data-testid="external-icon" />
+            ) : (
+              <TriangleRightMini data-testid="internal-icon" />
+            )}
           </span>
         )}
         {href && (
@@ -119,8 +127,9 @@ export const CardLayoutMini = ({
             variant="transparent-clear"
             onClick={onClose}
             className="!p-[2.5px] z-[2] hover:!bg-medusa-button-transparent-hover focus:!shadow-none focus:!bg-transparent"
+            data-testid="close-button"
           >
-            <XMark />
+            <XMark data-testid="close-icon" />
           </Button>
         )}
       </div>

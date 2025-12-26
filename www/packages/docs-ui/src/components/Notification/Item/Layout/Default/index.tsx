@@ -1,5 +1,5 @@
 import React from "react"
-import { NotificationItemProps } from "../.."
+import { NotificationItemProps } from "@/components/Notification/Item"
 import clsx from "clsx"
 import {
   CheckCircleSolid,
@@ -7,7 +7,7 @@ import {
   InformationCircleSolid,
   XCircleSolid,
 } from "@medusajs/icons"
-import { Button } from "@/components"
+import { Button } from "@/components/Button"
 
 export type NotificationItemLayoutDefaultProps = NotificationItemProps & {
   handleClose: () => void

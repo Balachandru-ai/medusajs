@@ -1,16 +1,14 @@
 "use client"
 
 import React, { useEffect, useMemo, useRef, useState } from "react"
-import {
-  Details,
-  CopyButton,
-  DetailsSummary,
-  ExpandableNotice,
-  FeatureFlagNotice,
-  InlineCode,
-  MarkdownContent,
-  MDXComponents,
-} from "@/components"
+import { Details } from "@/components/Details"
+import { CopyButton } from "@/components/CopyButton"
+import { DetailsSummary } from "@/components/Details/Summary"
+import { ExpandableNotice } from "@/components/Notices/ExpandableNotice"
+import { FeatureFlagNotice } from "@/components/Notices/FeatureFlagNotice"
+import { InlineCode } from "@/components/InlineCode"
+import { MarkdownContent } from "@/components/MarkdownContent"
+import { MDXComponents } from "@/components/MDXComponents"
 import clsx from "clsx"
 import { Type, CommonProps as ParentCommonProps } from ".."
 import {

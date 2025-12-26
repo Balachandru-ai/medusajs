@@ -12,7 +12,7 @@ import React, {
 } from "react"
 import type { Source } from "@kapaai/react-sdk"
 import useResizeObserver from "@react-hook/resize-observer"
-import { AiAssistantSearchWindow } from "../../components"
+import { AiAssistantSearchWindow } from "../../components/AiAssistant/SearchWindow"
 import { useIsBrowser } from "../BrowserProvider"
 
 export type AiAssistantChatType = "default" | "popover"

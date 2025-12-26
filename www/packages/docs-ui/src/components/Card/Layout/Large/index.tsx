@@ -1,6 +1,6 @@
 import React from "react"
-import { CardProps } from "../.."
-import { useIsExternalLink } from "../../../.."
+import { CardProps } from "@/components/Card"
+import { useIsExternalLink } from "@/hooks/use-is-external-link"
 import clsx from "clsx"
 import { ArrowUpRightOnBox, TriangleRightMini } from "@medusajs/icons"
 import Link from "next/link"
@@ -47,14 +47,28 @@ export const CardLargeLayout = ({
       </div>
       <div className="flex flex-col">
         <div className="flex gap-docs_0.25 items-center text-medusa-fg-base">
-          {title && <span className="text-compact-small-plus">{title}</span>}
-          {href && isExternal && <ArrowUpRightOnBox />}
+          {title && (
+            <span className="text-compact-small-plus" data-testid="title">
+              {title}
+            </span>
+          )}
+          {href && isExternal && (
+            <ArrowUpRightOnBox data-testid="external-icon" />
+          )}
           {href && !isExternal && (
-            <TriangleRightMini className="group-hover:translate-x-docs_0.125 transition-transform" />
+            <TriangleRightMini
+              className="group-hover:translate-x-docs_0.125 transition-transform"
+              data-testid="internal-icon"
+            />
           )}
         </div>
         {text && (
-          <span className="text-small-plus text-medusa-fg-subtle">{text}</span>
+          <span
+            className="text-small-plus text-medusa-fg-subtle"
+            data-testid="text"
+          >
+            {text}
+          </span>
         )}
       </div>
       {href && (

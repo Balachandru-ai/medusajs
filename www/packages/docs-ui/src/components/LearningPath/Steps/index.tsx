@@ -4,7 +4,9 @@ import { LearningPathStepActions } from "./Actions"
 import clsx from "clsx"
 import { IconCircleDottedLine } from "@/components/Icons"
 import { CheckCircleSolid, CircleMiniSolid, ListBullet } from "@medusajs/icons"
-import { Badge, Button, Link } from "@/components"
+import { Badge } from "@/components/Badge"
+import { Button } from "@/components/Button"
+import { Link } from "@/components/Link"
 // @ts-expect-error can't install the types package because it doesn't support React v19
 import { CSSTransition, SwitchTransition } from "react-transition-group"
 
