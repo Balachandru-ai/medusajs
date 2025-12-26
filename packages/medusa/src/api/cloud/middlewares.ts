@@ -16,7 +16,7 @@ export const cloudRoutesMiddlewares: MiddlewareRoute[] = [
     method: ["POST"],
     middlewares: [
       // Allow users who are authenticated but don't yet have an actor (user record)
-      authenticate("user", "bearer", {
+      authenticate("user", ["session", "bearer"], {
         allowUnregistered: true,
       }),
       validateAndTransformBody(CreateCloudAuthUserSchema),
