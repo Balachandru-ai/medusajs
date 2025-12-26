@@ -13,7 +13,7 @@ export const CloudAuthLogin = () => {
   const [searchParams] = useSearchParams()
   const { mutateAsync: createCloudAuthUser } = useCreateCloudAuthUser()
 
-  const { mutateAsync: handleCallback, isPending } = useMutation({
+  const { mutateAsync: handleCallback, status: callbackStatus } = useMutation({
     mutationFn: async () => {
       let token: string
       try {
@@ -57,10 +57,11 @@ export const CloudAuthLogin = () => {
     searchParams.has("code") && searchParams.has("state")
 
   useEffect(() => {
-    if (hasCallbackParams) {
+    // Only trigger if we have callback params AND mutation hasn't started yet
+    if (hasCallbackParams && callbackStatus === "idle") {
       handleCallback()
     }
-  }, [hasCallbackParams, handleCallback])
+  }, [hasCallbackParams, callbackStatus, handleCallback])
 
   // Handle login button click
   const handleCloudLogin = async () => {
@@ -89,8 +90,8 @@ export const CloudAuthLogin = () => {
         variant="secondary"
         onClick={handleCloudLogin}
         className="w-full"
-        disabled={isPending}
-        isLoading={isPending}
+        disabled={callbackStatus === "pending"}
+        isLoading={callbackStatus === "pending"}
       >
         Login with Medusa Cloud
       </Button>
