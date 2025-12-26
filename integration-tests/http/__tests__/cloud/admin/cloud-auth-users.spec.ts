@@ -44,6 +44,11 @@ medusaIntegrationTestRunner({
             {
               provider: "cloud",
               entity_id: "cloud-user-123",
+              user_metadata: {
+                email: "john@doe.com",
+                given_name: "John",
+                family_name: "Doe",
+              },
             },
           ],
         })
@@ -55,6 +60,7 @@ medusaIntegrationTestRunner({
             actor_type: "user",
             auth_identity_id: authIdentity.id,
             user_metadata: {
+              email: "john@doe.com",
               given_name: "John",
               family_name: "Doe",
             },
@@ -66,7 +72,7 @@ medusaIntegrationTestRunner({
         // Call the endpoint to create the user
         const createUserResponse = await api.post(
           "/cloud/auth/users",
-          { email: "john@doe.com", first_name: "John", last_name: "Doe" },
+          {},
           { headers: { authorization: `Bearer ${token}` } }
         )
         expect(createUserResponse.status).toEqual(201)
@@ -115,6 +121,11 @@ medusaIntegrationTestRunner({
             {
               provider: "cloud",
               entity_id: "cloud-user-123",
+              user_metadata: {
+                email: existingUser.email,
+                given_name: "John",
+                family_name: "Doe",
+              },
             },
           ],
         })
@@ -125,6 +136,11 @@ medusaIntegrationTestRunner({
             actor_id: "",
             actor_type: "user",
             auth_identity_id: authIdentity.id,
+            user_metadata: {
+              email: existingUser.email,
+              given_name: "John",
+              family_name: "Doe",
+            },
           },
           jwtSecret,
           { expiresIn: "1d" }
@@ -133,7 +149,7 @@ medusaIntegrationTestRunner({
         // Call the endpoint to create the user
         const createUserResponse = await api.post(
           "/cloud/auth/users",
-          { email: existingUser.email },
+          {},
           { headers: { authorization: `Bearer ${token}` } }
         )
         expect(createUserResponse.status).toEqual(200)

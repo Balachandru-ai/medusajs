@@ -28,21 +28,12 @@ export const useCloudAuthEnabled = (
 }
 
 export const useCreateCloudAuthUser = (
-  options?: UseMutationOptions<
-    void,
-    FetchError,
-    {
-      email: string
-      first_name?: string
-      last_name?: string
-    }
-  >
+  options?: UseMutationOptions<void, FetchError>
 ) => {
   return useMutation({
-    mutationFn: async (body) => {
+    mutationFn: async () => {
       await sdk.client.fetch("/cloud/auth/users", {
         method: "POST",
-        body,
       })
     },
     ...options,

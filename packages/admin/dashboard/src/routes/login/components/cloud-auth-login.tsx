@@ -1,6 +1,6 @@
 import { Button, toast } from "@medusajs/ui"
 import { useMutation } from "@tanstack/react-query"
-import { useEffect, useMemo } from "react"
+import { useEffect } from "react"
 import { decodeToken } from "react-jwt"
 import { useNavigate, useSearchParams } from "react-router-dom"
 import { useCreateCloudAuthUser } from "../../../hooks/api/cloud"
@@ -31,14 +31,9 @@ export const CloudAuthLogin = () => {
         user_metadata: Record<string, unknown>
       }
 
-      const userExists = decodedToken?.actor_id !== ""
-      if (!userExists) {
-        // Create user account for this auth identity
-        await createCloudAuthUser({
-          email: decodedToken.user_metadata.email as string,
-          first_name: decodedToken.user_metadata.given_name as any,
-          last_name: decodedToken.user_metadata.family_name as any,
-        })
+      // If user doesn't exist, create it
+      if (!decodedToken?.actor_id) {
+        await createCloudAuthUser()
 
         // Refresh token to get the updated token with actor_id
         const newToken = await sdk.auth.refresh()
@@ -50,7 +45,7 @@ export const CloudAuthLogin = () => {
       return true
     },
     onSuccess: () => {
-      navigate("/app")
+      navigate("/")
     },
     onError: (error) => {
       toast.error(error.message || "Authentication failed")
@@ -58,9 +53,8 @@ export const CloudAuthLogin = () => {
   })
 
   // Check if we're returning from the OAuth callback
-  const hasCallbackParams = useMemo(() => {
-    return searchParams.has("code") && searchParams.has("state")
-  }, [searchParams])
+  const hasCallbackParams =
+    searchParams.has("code") && searchParams.has("state")
 
   useEffect(() => {
     if (hasCallbackParams) {

@@ -1,9 +1,4 @@
-import {
-  authenticate,
-  MiddlewareRoute,
-  validateAndTransformBody,
-} from "@medusajs/framework/http"
-import { CreateCloudAuthUserSchema } from "./auth/users/route"
+import { authenticate, MiddlewareRoute } from "@medusajs/framework/http"
 
 export const cloudRoutesMiddlewares: MiddlewareRoute[] = [
   {
@@ -19,7 +14,6 @@ export const cloudRoutesMiddlewares: MiddlewareRoute[] = [
       authenticate("user", ["session", "bearer"], {
         allowUnregistered: true,
       }),
-      validateAndTransformBody(CreateCloudAuthUserSchema),
     ],
   },
 ]

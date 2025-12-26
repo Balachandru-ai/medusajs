@@ -10,34 +10,25 @@ import {
   ContainerRegistrationKeys,
   MedusaError,
 } from "@medusajs/framework/utils"
-import z from "zod"
-
-export const CreateCloudAuthUserSchema = z.object({
-  email: z.string().email(),
-  first_name: z.string().optional(),
-  last_name: z.string().optional(),
-})
-
-type CreateCloudAuthUserBody = z.infer<typeof CreateCloudAuthUserSchema>
 
 export const POST = async (
-  req: AuthenticatedMedusaRequest<CreateCloudAuthUserBody>,
+  req: AuthenticatedMedusaRequest,
   res: MedusaResponse
 ) => {
   const query = req.scope.resolve(ContainerRegistrationKeys.QUERY)
 
   // If user already exists for this auth identity, reject
-  if (req.auth_context?.actor_id) {
+  if (req.auth_context.actor_id) {
     throw new MedusaError(
       MedusaError.Types.INVALID_DATA,
       "The user is already registered and cannot create a new account."
     )
   }
 
-  if (!req.auth_context?.auth_identity_id) {
+  if (!req.auth_context.user_metadata.email) {
     throw new MedusaError(
-      MedusaError.Types.UNAUTHORIZED,
-      "Authentication required to create a user account."
+      MedusaError.Types.INVALID_DATA,
+      "Email is required to create a user account."
     )
   }
 
@@ -46,7 +37,7 @@ export const POST = async (
       entity: "user",
       fields: ["id"],
       filters: {
-        email: req.validatedBody.email,
+        email: req.auth_context.user_metadata.email,
       },
     })
     .then((result) => result.data[0])
@@ -80,9 +71,9 @@ export const POST = async (
     input: {
       authIdentityId: req.auth_context.auth_identity_id,
       userData: {
-        email: req.validatedBody.email,
-        first_name: req.validatedBody.first_name,
-        last_name: req.validatedBody.last_name,
+        email: req.auth_context.user_metadata.email as string,
+        first_name: req.auth_context.user_metadata.given_name as string,
+        last_name: req.auth_context.user_metadata.family_name as string,
       },
     },
   })
