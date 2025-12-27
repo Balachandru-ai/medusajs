@@ -1,10 +1,6 @@
 {
     "locales": [
         {
-            "code": "af",
-            "name": "Afrikaans"
-        },
-        {
             "code": "af-NA",
             "name": "Afrikaans (Namibia)"
         },
@@ -13,16 +9,8 @@
             "name": "Afrikaans (South Africa)"
         },
         {
-            "code": "ak",
-            "name": "Akan"
-        },
-        {
             "code": "ak-GH",
             "name": "Akan (Ghana)"
-        },
-        {
-            "code": "sq",
-            "name": "Albanian"
         },
         {
             "code": "sq-AL",
@@ -37,16 +25,8 @@
             "name": "Albanian (Macedonia)"
         },
         {
-            "code": "am",
-            "name": "Amharic"
-        },
-        {
             "code": "am-ET",
             "name": "Amharic (Ethiopia)"
-        },
-        {
-            "code": "ar",
-            "name": "Arabic"
         },
         {
             "code": "ar-DZ",
@@ -157,64 +137,24 @@
             "name": "Arabic (Yemen)"
         },
         {
-            "code": "hy",
-            "name": "Armenian"
-        },
-        {
             "code": "hy-AM",
             "name": "Armenian (Armenia)"
-        },
-        {
-            "code": "as",
-            "name": "Assamese"
         },
         {
             "code": "as-IN",
             "name": "Assamese (India)"
         },
         {
-            "code": "az",
-            "name": "Azerbaijani"
-        },
-        {
             "code": "az-AZ",
             "name": "Azerbaijani (Azerbaijan)"
-        },
-        {
-            "code": "az-Cyrl",
-            "name": "Azerbaijani (Cyrillic)"
-        },
-        {
-            "code": "az-Latn",
-            "name": "Azerbaijani (Latin)"
-        },
-        {
-            "code": "bm",
-            "name": "Bambara"
-        },
-        {
-            "code": "bm-Latn",
-            "name": "Bambara (Latin)"
-        },
-        {
-            "code": "eu",
-            "name": "Basque"
         },
         {
             "code": "eu-ES",
             "name": "Basque (Spain)"
         },
         {
-            "code": "be",
-            "name": "Belarusian"
-        },
-        {
             "code": "be-BY",
             "name": "Belarusian (Belarus)"
-        },
-        {
-            "code": "bn",
-            "name": "Bengali"
         },
         {
             "code": "bn-BD",
@@ -225,48 +165,20 @@
             "name": "Bengali (India)"
         },
         {
-            "code": "bs",
-            "name": "Bosnian"
-        },
-        {
             "code": "bs-BA",
             "name": "Bosnian (Bosnia & Herzegovina)"
-        },
-        {
-            "code": "bs-Cyrl",
-            "name": "Bosnian (Cyrillic)"
-        },
-        {
-            "code": "bs-Latn",
-            "name": "Bosnian (Latin)"
-        },
-        {
-            "code": "br",
-            "name": "Breton"
         },
         {
             "code": "br-FR",
             "name": "Breton (France)"
         },
         {
-            "code": "bg",
-            "name": "Bulgarian"
-        },
-        {
             "code": "bg-BG",
             "name": "Bulgarian (Bulgaria)"
         },
         {
-            "code": "my",
-            "name": "Burmese"
-        },
-        {
             "code": "my-MM",
             "name": "Burmese (Myanmar (Burma))"
-        },
-        {
-            "code": "ca",
-            "name": "Catalan"
         },
         {
             "code": "ca-AD",
@@ -285,10 +197,6 @@
             "name": "Catalan (Spain)"
         },
         {
-            "code": "zh",
-            "name": "Chinese"
-        },
-        {
             "code": "zh-CN",
             "name": "Chinese (China)"
         },
@@ -301,10 +209,6 @@
             "name": "Chinese (Macau SAR China)"
         },
         {
-            "code": "zh-Hans",
-            "name": "Chinese (Simplified)"
-        },
-        {
             "code": "zh-SG",
             "name": "Chinese (Singapore)"
         },
@@ -313,20 +217,8 @@
             "name": "Chinese (Taiwan)"
         },
         {
-            "code": "zh-Hant",
-            "name": "Chinese (Traditional)"
-        },
-        {
-            "code": "kw",
-            "name": "Cornish"
-        },
-        {
             "code": "kw-GB",
             "name": "Cornish (United Kingdom)"
-        },
-        {
-            "code": "hr",
-            "name": "Croatian"
         },
         {
             "code": "hr-BA",
@@ -337,16 +229,8 @@
             "name": "Croatian (Croatia)"
         },
         {
-            "code": "cs",
-            "name": "Czech"
-        },
-        {
             "code": "cs-CZ",
             "name": "Czech (Czech Republic)"
-        },
-        {
-            "code": "da",
-            "name": "Danish"
         },
         {
             "code": "da-DK",
@@ -355,10 +239,6 @@
         {
             "code": "da-GL",
             "name": "Danish (Greenland)"
-        },
-        {
-            "code": "nl",
-            "name": "Dutch"
         },
         {
             "code": "nl-AW",
@@ -389,16 +269,8 @@
             "name": "Dutch (Suriname)"
         },
         {
-            "code": "dz",
-            "name": "Dzongkha"
-        },
-        {
             "code": "dz-BT",
             "name": "Dzongkha (Bhutan)"
-        },
-        {
-            "code": "en",
-            "name": "English"
         },
         {
             "code": "en-AS",
@@ -765,20 +637,8 @@
             "name": "English (Zimbabwe)"
         },
         {
-            "code": "eo",
-            "name": "Esperanto"
-        },
-        {
-            "code": "et",
-            "name": "Estonian"
-        },
-        {
             "code": "et-EE",
             "name": "Estonian (Estonia)"
-        },
-        {
-            "code": "ee",
-            "name": "Ewe"
         },
         {
             "code": "ee-GH",
@@ -789,24 +649,12 @@
             "name": "Ewe (Togo)"
         },
         {
-            "code": "fo",
-            "name": "Faroese"
-        },
-        {
             "code": "fo-FO",
             "name": "Faroese (Faroe Islands)"
         },
         {
-            "code": "fi",
-            "name": "Finnish"
-        },
-        {
             "code": "fi-FI",
             "name": "Finnish (Finland)"
-        },
-        {
-            "code": "fr",
-            "name": "French"
         },
         {
             "code": "fr-DZ",
@@ -993,10 +841,6 @@
             "name": "French (Wallis & Futuna)"
         },
         {
-            "code": "ff",
-            "name": "Fulah"
-        },
-        {
             "code": "ff-CM",
             "name": "Fulah (Cameroon)"
         },
@@ -1013,32 +857,16 @@
             "name": "Fulah (Senegal)"
         },
         {
-            "code": "gl",
-            "name": "Galician"
-        },
-        {
             "code": "gl-ES",
             "name": "Galician (Spain)"
-        },
-        {
-            "code": "lg",
-            "name": "Ganda"
         },
         {
             "code": "lg-UG",
             "name": "Ganda (Uganda)"
         },
         {
-            "code": "ka",
-            "name": "Georgian"
-        },
-        {
             "code": "ka-GE",
             "name": "Georgian (Georgia)"
-        },
-        {
-            "code": "de",
-            "name": "German"
         },
         {
             "code": "de-AT",
@@ -1065,10 +893,6 @@
             "name": "German (Switzerland)"
         },
         {
-            "code": "el",
-            "name": "Greek"
-        },
-        {
             "code": "el-CY",
             "name": "Greek (Cyprus)"
         },
@@ -1077,24 +901,12 @@
             "name": "Greek (Greece)"
         },
         {
-            "code": "gu",
-            "name": "Gujarati"
-        },
-        {
             "code": "gu-IN",
             "name": "Gujarati (India)"
         },
         {
-            "code": "ha",
-            "name": "Hausa"
-        },
-        {
             "code": "ha-GH",
             "name": "Hausa (Ghana)"
-        },
-        {
-            "code": "ha-Latn",
-            "name": "Hausa (Latin)"
         },
         {
             "code": "ha-NE",
@@ -1105,64 +917,32 @@
             "name": "Hausa (Nigeria)"
         },
         {
-            "code": "he",
-            "name": "Hebrew"
-        },
-        {
             "code": "he-IL",
             "name": "Hebrew (Israel)"
-        },
-        {
-            "code": "hi",
-            "name": "Hindi"
         },
         {
             "code": "hi-IN",
             "name": "Hindi (India)"
         },
         {
-            "code": "hu",
-            "name": "Hungarian"
-        },
-        {
             "code": "hu-HU",
             "name": "Hungarian (Hungary)"
-        },
-        {
-            "code": "is",
-            "name": "Icelandic"
         },
         {
             "code": "is-IS",
             "name": "Icelandic (Iceland)"
         },
         {
-            "code": "ig",
-            "name": "Igbo"
-        },
-        {
             "code": "ig-NG",
             "name": "Igbo (Nigeria)"
-        },
-        {
-            "code": "id",
-            "name": "Indonesian"
         },
         {
             "code": "id-ID",
             "name": "Indonesian (Indonesia)"
         },
         {
-            "code": "ga",
-            "name": "Irish"
-        },
-        {
             "code": "ga-IE",
             "name": "Irish (Ireland)"
-        },
-        {
-            "code": "it",
-            "name": "Italian"
         },
         {
             "code": "it-IT",
@@ -1177,80 +957,36 @@
             "name": "Italian (Switzerland)"
         },
         {
-            "code": "ja",
-            "name": "Japanese"
-        },
-        {
             "code": "ja-JP",
             "name": "Japanese (Japan)"
-        },
-        {
-            "code": "kl",
-            "name": "Kalaallisut"
         },
         {
             "code": "kl-GL",
             "name": "Kalaallisut (Greenland)"
         },
         {
-            "code": "kn",
-            "name": "Kannada"
-        },
-        {
             "code": "kn-IN",
             "name": "Kannada (India)"
-        },
-        {
-            "code": "ks",
-            "name": "Kashmiri"
-        },
-        {
-            "code": "ks-Arab",
-            "name": "Kashmiri (Arabic)"
         },
         {
             "code": "ks-IN",
             "name": "Kashmiri (India)"
         },
         {
-            "code": "kk",
-            "name": "Kazakh"
-        },
-        {
-            "code": "kk-Cyrl",
-            "name": "Kazakh (Cyrillic)"
-        },
-        {
             "code": "kk-KZ",
             "name": "Kazakh (Kazakhstan)"
-        },
-        {
-            "code": "km",
-            "name": "Khmer"
         },
         {
             "code": "km-KH",
             "name": "Khmer (Cambodia)"
         },
         {
-            "code": "ki",
-            "name": "Kikuyu"
-        },
-        {
             "code": "ki-KE",
             "name": "Kikuyu (Kenya)"
         },
         {
-            "code": "rw",
-            "name": "Kinyarwanda"
-        },
-        {
             "code": "rw-RW",
             "name": "Kinyarwanda (Rwanda)"
-        },
-        {
-            "code": "ko",
-            "name": "Korean"
         },
         {
             "code": "ko-KP",
@@ -1261,36 +997,16 @@
             "name": "Korean (South Korea)"
         },
         {
-            "code": "ky",
-            "name": "Kyrgyz"
-        },
-        {
-            "code": "ky-Cyrl",
-            "name": "Kyrgyz (Cyrillic)"
-        },
-        {
             "code": "ky-KG",
             "name": "Kyrgyz (Kyrgyzstan)"
-        },
-        {
-            "code": "lo",
-            "name": "Lao"
         },
         {
             "code": "lo-LA",
             "name": "Lao (Laos)"
         },
         {
-            "code": "lv",
-            "name": "Latvian"
-        },
-        {
             "code": "lv-LV",
             "name": "Latvian (Latvia)"
-        },
-        {
-            "code": "ln",
-            "name": "Lingala"
         },
         {
             "code": "ln-AO",
@@ -1309,56 +1025,28 @@
             "name": "Lingala (Congo-Kinshasa)"
         },
         {
-            "code": "lt",
-            "name": "Lithuanian"
-        },
-        {
             "code": "lt-LT",
             "name": "Lithuanian (Lithuania)"
-        },
-        {
-            "code": "lu",
-            "name": "Luba-Katanga"
         },
         {
             "code": "lu-CD",
             "name": "Luba-Katanga (Congo-Kinshasa)"
         },
         {
-            "code": "lb",
-            "name": "Luxembourgish"
-        },
-        {
             "code": "lb-LU",
             "name": "Luxembourgish (Luxembourg)"
-        },
-        {
-            "code": "mk",
-            "name": "Macedonian"
         },
         {
             "code": "mk-MK",
             "name": "Macedonian (Macedonia)"
         },
         {
-            "code": "mg",
-            "name": "Malagasy"
-        },
-        {
             "code": "mg-MG",
             "name": "Malagasy (Madagascar)"
         },
         {
-            "code": "ms",
-            "name": "Malay"
-        },
-        {
             "code": "ms-BN",
             "name": "Malay (Brunei)"
-        },
-        {
-            "code": "ms-Latn",
-            "name": "Malay (Latin)"
         },
         {
             "code": "ms-MY",
@@ -1369,52 +1057,24 @@
             "name": "Malay (Singapore)"
         },
         {
-            "code": "ml",
-            "name": "Malayalam"
-        },
-        {
             "code": "ml-IN",
             "name": "Malayalam (India)"
-        },
-        {
-            "code": "mt",
-            "name": "Maltese"
         },
         {
             "code": "mt-MT",
             "name": "Maltese (Malta)"
         },
         {
-            "code": "gv",
-            "name": "Manx"
-        },
-        {
             "code": "gv-IM",
             "name": "Manx (Isle of Man)"
-        },
-        {
-            "code": "mr",
-            "name": "Marathi"
         },
         {
             "code": "mr-IN",
             "name": "Marathi (India)"
         },
         {
-            "code": "mn",
-            "name": "Mongolian"
-        },
-        {
-            "code": "mn-Cyrl",
-            "name": "Mongolian (Cyrillic)"
-        },
-        {
             "code": "mn-MN",
             "name": "Mongolian (Mongolia)"
-        },
-        {
-            "code": "ne",
-            "name": "Nepali"
         },
         {
             "code": "ne-IN",
@@ -1425,16 +1085,8 @@
             "name": "Nepali (Nepal)"
         },
         {
-            "code": "nd",
-            "name": "North Ndebele"
-        },
-        {
             "code": "nd-ZW",
             "name": "North Ndebele (Zimbabwe)"
-        },
-        {
-            "code": "se",
-            "name": "Northern Sami"
         },
         {
             "code": "se-FI",
@@ -1449,16 +1101,8 @@
             "name": "Northern Sami (Sweden)"
         },
         {
-            "code": "no",
-            "name": "Norwegian"
-        },
-        {
             "code": "no-NO",
             "name": "Norwegian (Norway)"
-        },
-        {
-            "code": "nb",
-            "name": "Norwegian Bokmål"
         },
         {
             "code": "nb-NO",
@@ -1469,24 +1113,12 @@
             "name": "Norwegian Bokmål (Svalbard & Jan Mayen)"
         },
         {
-            "code": "nn",
-            "name": "Norwegian Nynorsk"
-        },
-        {
             "code": "nn-NO",
             "name": "Norwegian Nynorsk (Norway)"
         },
         {
-            "code": "or",
-            "name": "Oriya"
-        },
-        {
             "code": "or-IN",
             "name": "Oriya (India)"
-        },
-        {
-            "code": "om",
-            "name": "Oromo"
         },
         {
             "code": "om-ET",
@@ -1497,10 +1129,6 @@
             "name": "Oromo (Kenya)"
         },
         {
-            "code": "os",
-            "name": "Ossetic"
-        },
-        {
             "code": "os-GE",
             "name": "Ossetic (Georgia)"
         },
@@ -1509,16 +1137,8 @@
             "name": "Ossetic (Russia)"
         },
         {
-            "code": "ps",
-            "name": "Pashto"
-        },
-        {
             "code": "ps-AF",
             "name": "Pashto (Afghanistan)"
-        },
-        {
-            "code": "fa",
-            "name": "Persian"
         },
         {
             "code": "fa-AF",
@@ -1529,16 +1149,8 @@
             "name": "Persian (Iran)"
         },
         {
-            "code": "pl",
-            "name": "Polish"
-        },
-        {
             "code": "pl-PL",
             "name": "Polish (Poland)"
-        },
-        {
-            "code": "pt",
-            "name": "Portuguese"
         },
         {
             "code": "pt-AO",
@@ -1577,28 +1189,12 @@
             "name": "Portuguese (Timor-Leste)"
         },
         {
-            "code": "pa",
-            "name": "Punjabi"
-        },
-        {
-            "code": "pa-Arab",
-            "name": "Punjabi (Arabic)"
-        },
-        {
-            "code": "pa-Guru",
-            "name": "Punjabi (Gurmukhi)"
-        },
-        {
             "code": "pa-IN",
             "name": "Punjabi (India)"
         },
         {
             "code": "pa-PK",
             "name": "Punjabi (Pakistan)"
-        },
-        {
-            "code": "qu",
-            "name": "Quechua"
         },
         {
             "code": "qu-BO",
@@ -1613,10 +1209,6 @@
             "name": "Quechua (Peru)"
         },
         {
-            "code": "ro",
-            "name": "Romanian"
-        },
-        {
             "code": "ro-MD",
             "name": "Romanian (Moldova)"
         },
@@ -1625,24 +1217,12 @@
             "name": "Romanian (Romania)"
         },
         {
-            "code": "rm",
-            "name": "Romansh"
-        },
-        {
             "code": "rm-CH",
             "name": "Romansh (Switzerland)"
         },
         {
-            "code": "rn",
-            "name": "Rundi"
-        },
-        {
             "code": "rn-BI",
             "name": "Rundi (Burundi)"
-        },
-        {
-            "code": "ru",
-            "name": "Russian"
         },
         {
             "code": "ru-BY",
@@ -1669,40 +1249,20 @@
             "name": "Russian (Ukraine)"
         },
         {
-            "code": "sg",
-            "name": "Sango"
-        },
-        {
             "code": "sg-CF",
             "name": "Sango (Central African Republic)"
-        },
-        {
-            "code": "gd",
-            "name": "Scottish Gaelic"
         },
         {
             "code": "gd-GB",
             "name": "Scottish Gaelic (United Kingdom)"
         },
         {
-            "code": "sr",
-            "name": "Serbian"
-        },
-        {
             "code": "sr-BA",
             "name": "Serbian (Bosnia & Herzegovina)"
         },
         {
-            "code": "sr-Cyrl",
-            "name": "Serbian (Cyrillic)"
-        },
-        {
             "code": "sr-XK",
             "name": "Serbian (Kosovo)"
-        },
-        {
-            "code": "sr-Latn",
-            "name": "Serbian (Latin)"
         },
         {
             "code": "sr-ME",
@@ -1713,56 +1273,28 @@
             "name": "Serbian (Serbia)"
         },
         {
-            "code": "sh",
-            "name": "Serbo-Croatian"
-        },
-        {
             "code": "sh-BA",
             "name": "Serbo-Croatian (Bosnia & Herzegovina)"
-        },
-        {
-            "code": "sn",
-            "name": "Shona"
         },
         {
             "code": "sn-ZW",
             "name": "Shona (Zimbabwe)"
         },
         {
-            "code": "ii",
-            "name": "Sichuan Yi"
-        },
-        {
             "code": "ii-CN",
             "name": "Sichuan Yi (China)"
-        },
-        {
-            "code": "si",
-            "name": "Sinhala"
         },
         {
             "code": "si-LK",
             "name": "Sinhala (Sri Lanka)"
         },
         {
-            "code": "sk",
-            "name": "Slovak"
-        },
-        {
             "code": "sk-SK",
             "name": "Slovak (Slovakia)"
         },
         {
-            "code": "sl",
-            "name": "Slovenian"
-        },
-        {
             "code": "sl-SI",
             "name": "Slovenian (Slovenia)"
-        },
-        {
-            "code": "so",
-            "name": "Somali"
         },
         {
             "code": "so-DJ",
@@ -1779,10 +1311,6 @@
         {
             "code": "so-SO",
             "name": "Somali (Somalia)"
-        },
-        {
-            "code": "es",
-            "name": "Spanish"
         },
         {
             "code": "es-AR",
@@ -1885,10 +1413,6 @@
             "name": "Spanish (Venezuela)"
         },
         {
-            "code": "sw",
-            "name": "Swahili"
-        },
-        {
             "code": "sw-KE",
             "name": "Swahili (Kenya)"
         },
@@ -1899,10 +1423,6 @@
         {
             "code": "sw-UG",
             "name": "Swahili (Uganda)"
-        },
-        {
-            "code": "sv",
-            "name": "Swedish"
         },
         {
             "code": "sv-AX",
@@ -1917,16 +1437,8 @@
             "name": "Swedish (Sweden)"
         },
         {
-            "code": "tl",
-            "name": "Tagalog"
-        },
-        {
             "code": "tl-PH",
             "name": "Tagalog (Philippines)"
-        },
-        {
-            "code": "ta",
-            "name": "Tamil"
         },
         {
             "code": "ta-IN",
@@ -1945,24 +1457,12 @@
             "name": "Tamil (Sri Lanka)"
         },
         {
-            "code": "te",
-            "name": "Telugu"
-        },
-        {
             "code": "te-IN",
             "name": "Telugu (India)"
         },
         {
-            "code": "th",
-            "name": "Thai"
-        },
-        {
             "code": "th-TH",
             "name": "Thai (Thailand)"
-        },
-        {
-            "code": "bo",
-            "name": "Tibetan"
         },
         {
             "code": "bo-CN",
@@ -1973,10 +1473,6 @@
             "name": "Tibetan (India)"
         },
         {
-            "code": "ti",
-            "name": "Tigrinya"
-        },
-        {
             "code": "ti-ER",
             "name": "Tigrinya (Eritrea)"
         },
@@ -1985,16 +1481,8 @@
             "name": "Tigrinya (Ethiopia)"
         },
         {
-            "code": "to",
-            "name": "Tongan"
-        },
-        {
             "code": "to-TO",
             "name": "Tongan (Tonga)"
-        },
-        {
-            "code": "tr",
-            "name": "Turkish"
         },
         {
             "code": "tr-CY",
@@ -2005,16 +1493,8 @@
             "name": "Turkish (Turkey)"
         },
         {
-            "code": "uk",
-            "name": "Ukrainian"
-        },
-        {
             "code": "uk-UA",
             "name": "Ukrainian (Ukraine)"
-        },
-        {
-            "code": "ur",
-            "name": "Urdu"
         },
         {
             "code": "ur-IN",
@@ -2025,72 +1505,28 @@
             "name": "Urdu (Pakistan)"
         },
         {
-            "code": "ug",
-            "name": "Uyghur"
-        },
-        {
-            "code": "ug-Arab",
-            "name": "Uyghur (Arabic)"
-        },
-        {
             "code": "ug-CN",
             "name": "Uyghur (China)"
-        },
-        {
-            "code": "uz",
-            "name": "Uzbek"
         },
         {
             "code": "uz-AF",
             "name": "Uzbek (Afghanistan)"
         },
         {
-            "code": "uz-Arab",
-            "name": "Uzbek (Arabic)"
-        },
-        {
-            "code": "uz-Cyrl",
-            "name": "Uzbek (Cyrillic)"
-        },
-        {
-            "code": "uz-Latn",
-            "name": "Uzbek (Latin)"
-        },
-        {
             "code": "uz-UZ",
             "name": "Uzbek (Uzbekistan)"
-        },
-        {
-            "code": "vi",
-            "name": "Vietnamese"
         },
         {
             "code": "vi-VN",
             "name": "Vietnamese (Vietnam)"
         },
         {
-            "code": "cy",
-            "name": "Welsh"
-        },
-        {
             "code": "cy-GB",
             "name": "Welsh (United Kingdom)"
         },
         {
-            "code": "fy",
-            "name": "Western Frisian"
-        },
-        {
             "code": "fy-NL",
             "name": "Western Frisian (Netherlands)"
-        },
-        {
-            "code": "yi",
-            "name": "Yiddish"
-        },
-        {
-            "code": "yo",
-            "name": "Yoruba"
         },
         {
             "code": "yo-BJ",
@@ -2099,10 +1535,6 @@
         {
             "code": "yo-NG",
             "name": "Yoruba (Nigeria)"
-        },
-        {
-            "code": "zu",
-            "name": "Zulu"
         },
         {
             "code": "zu-ZA",
