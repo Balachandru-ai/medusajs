@@ -8,6 +8,7 @@ import {
   normalizeLocale,
 } from "@medusajs/framework/utils"
 import Locale from "@models/locale"
+import localesList from "./locales-list.json";
 
 /**
  * BCP 47 Language Tags
@@ -15,59 +16,7 @@ import Locale from "@models/locale"
  * Format: language[-script][-region]
  * Examples: "en-US" (English, United States), "zh-Hans-CN" (Chinese Simplified, China)
  */
-const defaultLocales = [
-  { code: "en-US", name: "English (United States)" },
-  { code: "en-GB", name: "English (United Kingdom)" },
-  { code: "en-AU", name: "English (Australia)" },
-  { code: "en-CA", name: "English (Canada)" },
-  { code: "es-ES", name: "Spanish (Spain)" },
-  { code: "es-MX", name: "Spanish (Mexico)" },
-  { code: "es-AR", name: "Spanish (Argentina)" },
-  { code: "fr-FR", name: "French (France)" },
-  { code: "fr-CA", name: "French (Canada)" },
-  { code: "fr-BE", name: "French (Belgium)" },
-  { code: "de-DE", name: "German (Germany)" },
-  { code: "de-AT", name: "German (Austria)" },
-  { code: "de-CH", name: "German (Switzerland)" },
-  { code: "it-IT", name: "Italian (Italy)" },
-  { code: "pt-BR", name: "Portuguese (Brazil)" },
-  { code: "pt-PT", name: "Portuguese (Portugal)" },
-  { code: "nl-NL", name: "Dutch (Netherlands)" },
-  { code: "nl-BE", name: "Dutch (Belgium)" },
-  { code: "da-DK", name: "Danish (Denmark)" },
-  { code: "sv-SE", name: "Swedish (Sweden)" },
-  { code: "nb-NO", name: "Norwegian Bokmål (Norway)" },
-  { code: "fi-FI", name: "Finnish (Finland)" },
-  { code: "pl-PL", name: "Polish (Poland)" },
-  { code: "lt-LT", name: "Lithuanian (Lithuania)" },
-  { code: "cs-CZ", name: "Czech (Czech Republic)" },
-  { code: "sk-SK", name: "Slovak (Slovakia)" },
-  { code: "hu-HU", name: "Hungarian (Hungary)" },
-  { code: "ro-RO", name: "Romanian (Romania)" },
-  { code: "bg-BG", name: "Bulgarian (Bulgaria)" },
-  { code: "el-GR", name: "Greek (Greece)" },
-  { code: "tr-TR", name: "Turkish (Turkey)" },
-  { code: "ru-RU", name: "Russian (Russia)" },
-  { code: "uk-UA", name: "Ukrainian (Ukraine)" },
-  { code: "ar-SA", name: "Arabic (Saudi Arabia)" },
-  { code: "ar-AE", name: "Arabic (United Arab Emirates)" },
-  { code: "ar-EG", name: "Arabic (Egypt)" },
-  { code: "he-IL", name: "Hebrew (Israel)" },
-  { code: "hi-IN", name: "Hindi (India)" },
-  { code: "bn-BD", name: "Bengali (Bangladesh)" },
-  { code: "th-TH", name: "Thai (Thailand)" },
-  { code: "vi-VN", name: "Vietnamese (Vietnam)" },
-  { code: "id-ID", name: "Indonesian (Indonesia)" },
-  { code: "ms-MY", name: "Malay (Malaysia)" },
-  { code: "tl-PH", name: "Tagalog (Philippines)" },
-  { code: "zh-CN", name: "Chinese Simplified (China)" },
-  { code: "zh-TW", name: "Chinese Traditional (Taiwan)" },
-  { code: "zh-HK", name: "Chinese Traditional (Hong Kong)" },
-  { code: "ja-JP", name: "Japanese (Japan)" },
-  { code: "ko-KR", name: "Korean (South Korea)" },
-  { code: "ka-GE", name: "Georgian (Georgia)" },
-  { code: "mn-MN", name: "Mongolian (Mongolia)" },
-]
+const defaultLocales = localesList.locales;
 
 export default async ({ container }: LoaderOptions): Promise<void> => {
   const logger =
