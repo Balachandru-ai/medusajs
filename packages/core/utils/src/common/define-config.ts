@@ -529,7 +529,7 @@ function applyCloudOptionsToModules(
       case Modules.AUTH:
         let callbackUrl = config.oauthCallbackUrl
         if (!callbackUrl && adminConfig?.backendUrl) {
-          callbackUrl = `${adminConfig?.backendUrl}/app/login?auth_provider=cloud`
+          callbackUrl = `${adminConfig?.backendUrl}${adminConfig?.path}/login?auth_provider=cloud`
         }
         module.options = {
           cloud: {

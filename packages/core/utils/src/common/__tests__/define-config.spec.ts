@@ -2042,7 +2042,7 @@ describe("defineConfig", function () {
             "options": {
               "cloud": {
                 "api_key": "test-api-key",
-                "callback_url": "test-backend-url/app/login",
+                "callback_url": "test-backend-url/app/login?auth_provider=cloud",
                 "disabled": true,
                 "environment_handle": "test-environment",
                 "oauth_authorize_endpoint": "test-oauth-authorize-endpoint",
@@ -2254,7 +2254,7 @@ describe("defineConfig", function () {
             "options": {
               "cloud": {
                 "api_key": "test-api-key",
-                "callback_url": "test-backend-url/app/login",
+                "callback_url": "test-backend-url/app/login?auth_provider=cloud",
                 "disabled": true,
                 "environment_handle": undefined,
                 "oauth_authorize_endpoint": "test-oauth-authorize-endpoint",
@@ -2475,7 +2475,7 @@ describe("defineConfig", function () {
             "options": {
               "cloud": {
                 "api_key": "overriden-api-key",
-                "callback_url": "//app/login",
+                "callback_url": "//app/login?auth_provider=cloud",
                 "disabled": true,
                 "environment_handle": "overriden-environment",
                 "oauth_authorize_endpoint": "overriden-oauth-authorize-endpoint",

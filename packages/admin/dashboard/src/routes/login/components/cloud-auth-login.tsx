@@ -31,7 +31,10 @@ export const CloudAuthLogin = () => {
 
   const handleCloudLogin = async () => {
     try {
-      const result = await sdk.auth.login("user", CLOUD_AUTH_PROVIDER, {})
+      const result = await sdk.auth.login("user", CLOUD_AUTH_PROVIDER, {
+        // in case the admin is on a different domain, or the backend URL is set to just "/" which won't work for the callback
+        callback_url: `${window.location.origin}${window.location.pathname}?auth_provider=${CLOUD_AUTH_PROVIDER}`,
+      })
 
       if (typeof result === "object" && result.location) {
         // Redirect to Medusa Cloud for authentication
