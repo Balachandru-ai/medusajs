@@ -1,6 +1,7 @@
 import { Button, toast } from "@medusajs/ui"
 import { useMutation } from "@tanstack/react-query"
-import { useEffect } from "react"
+import { useEffect, useRef } from "react"
+import { useTranslation } from "react-i18next"
 import { decodeToken } from "react-jwt"
 import { useNavigate, useSearchParams } from "react-router-dom"
 import { useCreateCloudAuthUser } from "../../../hooks/api/cloud"
@@ -9,61 +10,25 @@ import { sdk } from "../../../lib/client"
 const CLOUD_AUTH_PROVIDER = "cloud"
 
 export const CloudAuthLogin = () => {
-  const navigate = useNavigate()
+  const { t } = useTranslation()
   const [searchParams] = useSearchParams()
-  const { mutateAsync: createCloudAuthUser } = useCreateCloudAuthUser()
 
-  const { mutateAsync: handleCallback, status: callbackStatus } = useMutation({
-    mutationFn: async () => {
-      let token: string
-      try {
-        token = await sdk.auth.callback(
-          "user",
-          CLOUD_AUTH_PROVIDER,
-          Object.fromEntries(searchParams)
-        )
-      } catch (error) {
-        throw new Error("Authentication failed")
-      }
-
-      const decodedToken = decodeToken(token) as {
-        actor_id: string
-        user_metadata: Record<string, unknown>
-      }
-
-      // If user doesn't exist, create it
-      if (!decodedToken?.actor_id) {
-        await createCloudAuthUser()
-
-        // Refresh token to get the updated token with actor_id
-        const newToken = await sdk.auth.refresh()
-        if (!newToken) {
-          throw new Error("Failed to refresh token after user creation")
-        }
-      }
-
-      return true
-    },
-    onSuccess: () => {
-      navigate("/")
-    },
-    onError: (error) => {
-      toast.error(error.message || "Authentication failed")
-    },
-  })
+  const { handleCallback, isCallbackPending } = useAuthCallback(searchParams)
 
   // Check if we're returning from the OAuth callback
   const hasCallbackParams =
-    searchParams.has("code") && searchParams.has("state")
+    searchParams.get("auth_provider") === CLOUD_AUTH_PROVIDER &&
+    searchParams.has("code") &&
+    searchParams.has("state")
 
+  const callbackInitiated = useRef(false) // ref to prevent duplicate calls in React strict mode and other unmounting+mounting scenarios
   useEffect(() => {
-    // Only trigger if we have callback params AND mutation hasn't started yet
-    if (hasCallbackParams && callbackStatus === "idle") {
+    if (hasCallbackParams && !callbackInitiated.current) {
+      callbackInitiated.current = true
       handleCallback()
     }
-  }, [hasCallbackParams, callbackStatus, handleCallback])
+  }, [hasCallbackParams, handleCallback])
 
-  // Handle login button click
   const handleCloudLogin = async () => {
     try {
       const result = await sdk.auth.login("user", CLOUD_AUTH_PROVIDER, {})
@@ -74,12 +39,9 @@ export const CloudAuthLogin = () => {
         return
       }
 
-      if (typeof result !== "string") {
-        toast.error("Authentication failed")
-        return
-      }
+      throw new Error("Unexpected login response")
     } catch {
-      toast.error("Failed to initiate authentication")
+      toast.error(t("auth.login.authenticationFailed"))
     }
   }
 
@@ -90,11 +52,60 @@ export const CloudAuthLogin = () => {
         variant="secondary"
         onClick={handleCloudLogin}
         className="w-full"
-        disabled={callbackStatus === "pending"}
-        isLoading={callbackStatus === "pending"}
+        disabled={isCallbackPending}
+        isLoading={isCallbackPending}
       >
-        Login with Medusa Cloud
+        {t("auth.login.cloud")}
       </Button>
     </>
   )
+}
+
+const useAuthCallback = (searchParams: URLSearchParams) => {
+  const { t } = useTranslation()
+  const navigate = useNavigate()
+  const { mutateAsync: createCloudAuthUser } = useCreateCloudAuthUser()
+
+  const { mutateAsync: handleCallback, isPending: isCallbackPending } =
+    useMutation({
+      mutationFn: async () => {
+        let token: string
+        try {
+          const query = Object.fromEntries(searchParams)
+          delete query.auth_provider // BE doesn't need this
+
+          token = await sdk.auth.callback("user", CLOUD_AUTH_PROVIDER, query)
+        } catch (error) {
+          throw new Error("Authentication callback failed")
+        }
+
+        const decodedToken = decodeToken(token) as {
+          actor_id: string
+          user_metadata: Record<string, unknown>
+        }
+
+        // If user doesn't exist, create it
+        if (!decodedToken?.actor_id) {
+          await createCloudAuthUser()
+
+          if (__AUTH_TYPE__ === "jwt") {
+            // Refresh token to get the updated token with actor_id
+            const newToken = await sdk.auth.refresh()
+            if (!newToken) {
+              throw new Error("Failed to refresh token after user creation")
+            }
+          }
+        }
+
+        return true
+      },
+      onSuccess: () => {
+        navigate("/")
+      },
+      onError: () => {
+        toast.error(t("auth.login.authenticationFailed"))
+      },
+    })
+
+  return { handleCallback, isCallbackPending }
 }
