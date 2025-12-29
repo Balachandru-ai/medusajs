@@ -3,7 +3,7 @@
 import React, { createContext, useContext, useState } from "react"
 import { DocsConfig, FrontMatter, ToCItem } from "types"
 import { globalConfig } from "../../global-config"
-import { GITHUB_ISSUES_LINK } from "../.."
+import { GITHUB_ISSUES_LINK } from "../../constants"
 
 export type SiteConfigContextType = {
   config: DocsConfig

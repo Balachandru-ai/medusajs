@@ -78,6 +78,10 @@ const AiAssistantInnerProvider = ({
     }
     const parent = contentRef.current?.parentElement as HTMLElement
 
+    if (!parent) {
+      return
+    }
+
     parent.scrollTop = parent.scrollHeight
   }
 
