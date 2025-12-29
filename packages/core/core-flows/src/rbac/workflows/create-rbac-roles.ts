@@ -13,7 +13,8 @@ import {
 import { validateUserPermissionsStep } from "../steps/validate-user-permissions"
 
 export type CreateRbacRolesWorkflowInput = {
-  user_id?: string
+  actor_id?: string
+  actor?: string
   roles: {
     name: string
     description?: string | null
@@ -34,13 +35,14 @@ export const createRbacRolesWorkflow = createWorkflow(
         role.policy_ids?.forEach((policyId) => allPolicyIds.add(policyId))
       })
       return {
-        user_id: input.user_id!,
+        actor_id: input.actor_id!,
+        actor: input.actor,
         policy_ids: Array.from(allPolicyIds),
       }
     })
 
     when({ validationData }, ({ validationData }) => {
-      return !!validationData?.user_id && !!validationData?.policy_ids?.length
+      return !!validationData?.actor_id && !!validationData?.policy_ids?.length
     }).then(() => {
       validateUserPermissionsStep(validationData)
     })

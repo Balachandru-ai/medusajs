@@ -12,7 +12,8 @@ import { updateRbacRolesStep } from "../steps/update-rbac-roles"
 import { validateUserPermissionsStep } from "../steps/validate-user-permissions"
 
 export type UpdateRbacRolesWorkflowInput = {
-  user_id?: string
+  actor_id?: string
+  actor?: string
   selector: Record<string, any>
   update: Omit<UpdateRbacRoleDTO, "id"> & {
     parent_ids?: string[]
@@ -28,13 +29,14 @@ export const updateRbacRolesWorkflow = createWorkflow(
     const validationData = transform({ input }, ({ input }) => {
       const policyIds = input.update.policy_ids || []
       return {
-        user_id: input.user_id!,
+        actor_id: input.actor_id!,
         policy_ids: policyIds,
+        actor: input.actor,
       }
     })
 
     when({ validationData }, ({ validationData }) => {
-      return !!validationData?.user_id && !!validationData?.policy_ids?.length
+      return !!validationData?.actor_id && !!validationData?.policy_ids?.length
     }).then(() => {
       validateUserPermissionsStep(validationData)
     })

@@ -66,7 +66,10 @@ export async function hasPermission(
       }
 
       const operations = resourceMap.get(action.resource)
-      if (operations && operations.has(action.operation)) {
+      if (
+        operations &&
+        (operations.has(action.operation) || operations.has("*"))
+      ) {
         hasAccess = true
         break
       }

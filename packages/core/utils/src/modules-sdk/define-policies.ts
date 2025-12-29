@@ -10,7 +10,7 @@ export interface PolicyDefinition {
   description?: string
 }
 
-export interface DefinePolicyExport {
+export interface definePoliciesExport {
   [MedusaPolicySymbol]: boolean
   policies: PolicyDefinition[]
 }
@@ -84,12 +84,12 @@ const defaultResources = [
   "workflow-execution",
 ]
 
-export const Resource = global.Resource ?? {}
-global.Resource ??= Resource
+export const PolicyResource = global.PolicyResource ?? {}
+global.PolicyResource ??= PolicyResource
 
 for (const resource of defaultResources) {
   const resourceKey = toSnakeCase(resource)
-  Resource[resourceKey] = resource
+  PolicyResource[resourceKey] = resource
 }
 
 /**
@@ -97,12 +97,12 @@ for (const resource of defaultResources) {
  */
 const defaultOperations = ["read", "write", "update", "delete", "*"]
 
-export const Operation = global.Operation ?? {}
-global.Operation ??= Operation
+export const PolicyOperation = global.PolicyOperation ?? {}
+global.PolicyOperation ??= PolicyOperation
 
 for (const operation of defaultOperations) {
   const operationKey = toSnakeCase(operation)
-  Operation[operationKey] = operation
+  PolicyOperation[operationKey] = operation
 }
 
 export const Policy = global.Policy ?? {}
@@ -116,14 +116,14 @@ global.Policy ??= Policy
  *
  * @example
  * ```ts
- * definePolicy({
+ * definePolicies({
  *   name: "ReadBrands",
  *   resource: "brand",
  *   operation: "read"
  *   description: "Read brands"
  * })
  *
- * definePolicy([
+ * definePolicies([
  *   {
  *     name: "ReadBrands",
  *     resource: "brand",
@@ -137,9 +137,9 @@ global.Policy ??= Policy
  * ])
  * ```
  */
-export function definePolicy(
+export function definePolicies(
   policies: PolicyDefinition | PolicyDefinition[]
-): DefinePolicyExport {
+): definePoliciesExport {
   const callerFilePath = getCallerFilePath()
   if (isFileDisabled(callerFilePath ?? "")) {
     return { [MEDUSA_SKIP_FILE]: true } as any
@@ -164,16 +164,16 @@ export function definePolicy(
     policy.operation = policy.operation.toLowerCase()
 
     const resourceKey = toSnakeCase(policy.resource)
-    Resource[resourceKey] = policy.resource
+    PolicyResource[resourceKey] = policy.resource
 
     const operationKey = toSnakeCase(policy.operation)
-    Operation[operationKey] = policy.operation
+    PolicyOperation[operationKey] = policy.operation
 
     // Register in Policy object with name as key
     Policy[policy.name] = { ...policy }
   }
 
-  const output: DefinePolicyExport = {
+  const output: definePoliciesExport = {
     [MedusaPolicySymbol]: true,
     policies: policiesArray,
   }

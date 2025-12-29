@@ -48,11 +48,11 @@ export async function generateJwtTokenForAuthIdentity(
   let roles: string[] = []
 
   if (FeatureFlag.isFeatureEnabled(RbacFeatureFlag.key)) {
-    if (container && entityId && actorType === "user") {
+    if (container && entityId) {
       try {
         const query = container.resolve(ContainerRegistrationKeys.QUERY)
         const { data: userRoles } = await query.graph({
-          entity: "user",
+          entity: actorType,
           fields: ["rbac_roles.id"],
           filters: {
             id: entityId,
@@ -62,9 +62,8 @@ export async function generateJwtTokenForAuthIdentity(
         if (userRoles?.[0]?.rbac_roles) {
           roles = userRoles[0].rbac_roles.map((role) => role.id)
         }
-      } catch (error) {
-        // If RBAC module is not available or query fails, continue without roles
-        console.warn("Failed to fetch user roles for JWT token:", error)
+      } catch {
+        // ignore
       }
     }
   }

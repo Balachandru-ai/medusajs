@@ -6,7 +6,7 @@ import { medusaIntegrationTestRunner } from "@medusajs/test-utils"
 import { IRbacModuleService, MedusaContainer } from "@medusajs/types"
 import {
   ContainerRegistrationKeys,
-  definePolicy,
+  definePolicies,
   Modules,
   Policy,
 } from "@medusajs/utils"
@@ -1099,9 +1099,9 @@ medusaIntegrationTestRunner({
           clearPolicies()
         })
 
-        it("should register policies using definePolicy", () => {
+        it("should register policies using definePolicies", () => {
           // Register policies
-          definePolicy([
+          definePolicies([
             {
               name: "ReadBrand",
               resource: "brand",
@@ -1146,7 +1146,7 @@ medusaIntegrationTestRunner({
 
         it("should sync registered policies to database on application start", async () => {
           // Register policies
-          definePolicy([
+          definePolicies([
             {
               name: "ReadProduct",
               resource: "product",
@@ -1194,7 +1194,7 @@ medusaIntegrationTestRunner({
 
         it("should soft delete policies that are no longer registered", async () => {
           // First sync: Register 3 policies
-          definePolicy([
+          definePolicies([
             {
               name: "ReadOrder",
               resource: "order",
@@ -1222,7 +1222,7 @@ medusaIntegrationTestRunner({
           // Second sync: Remove one policy from code
 
           clearPolicies()
-          definePolicy([
+          definePolicies([
             {
               name: "ReadOrder",
               resource: "order",
@@ -1254,7 +1254,7 @@ medusaIntegrationTestRunner({
 
         it("should restore soft-deleted policies when they are re-registered", async () => {
           // First sync: Register policies
-          definePolicy([
+          definePolicies([
             {
               name: "ReadCustomer",
               resource: "customer",
@@ -1280,7 +1280,7 @@ medusaIntegrationTestRunner({
           // Second sync: Remove WriteCustomer
           clearPolicies()
 
-          definePolicy({
+          definePolicies({
             name: "ReadCustomer",
             resource: "customer",
             operation: "read",
@@ -1296,7 +1296,7 @@ medusaIntegrationTestRunner({
           // Third sync: Re-add WriteCustomer
           clearPolicies()
 
-          definePolicy([
+          definePolicies([
             {
               name: "ReadCustomer",
               resource: "customer",
@@ -1326,7 +1326,7 @@ medusaIntegrationTestRunner({
 
         it("should update policy name if it changes in code", async () => {
           // First sync: Register with original name
-          definePolicy({
+          definePolicies({
             name: "ReadInventory",
             resource: "inventory",
             operation: "read",
@@ -1344,7 +1344,7 @@ medusaIntegrationTestRunner({
           // Second sync: Change the name
           clearPolicies()
 
-          definePolicy({
+          definePolicies({
             name: "ViewInventory",
             resource: "inventory",
             operation: "read",
@@ -1363,7 +1363,7 @@ medusaIntegrationTestRunner({
 
         it("should preserve role associations when policy is soft-deleted and restored", async () => {
           // Register and sync policies
-          definePolicy([
+          definePolicies([
             {
               name: "ReadStore",
               resource: "store",
@@ -1408,7 +1408,7 @@ medusaIntegrationTestRunner({
           // Soft delete WriteStore policy
           clearPolicies()
 
-          definePolicy({
+          definePolicies({
             name: "ReadStore",
             resource: "store",
             operation: "read",
@@ -1426,7 +1426,7 @@ medusaIntegrationTestRunner({
           // Restore WriteStore policy
           clearPolicies()
 
-          definePolicy([
+          definePolicies([
             {
               name: "ReadStore",
               resource: "store",

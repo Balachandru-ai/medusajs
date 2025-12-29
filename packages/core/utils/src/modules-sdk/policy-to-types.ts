@@ -1,5 +1,5 @@
 import { FileSystem } from "../common/file-system"
-import { Operation, Policy, Resource } from "./define-policy"
+import { Policy, PolicyOperation, PolicyResource } from "./define-policies"
 
 /**
  * Generates TypeScript type definitions for RBAC Resource, Operation, and Policy.
@@ -35,13 +35,13 @@ export async function generatePolicyTypes({
    * All resource names are normalized to lowercase.
    * 
    * @example
-   * import { Resource } from '@medusajs/framework/utils'
+   * import { PolicyResource } from '@medusajs/framework/utils'
    * 
-   * const productResource = Resource.product // "product"
-   * const apiKeyResource = Resource.api_key // "api-key"
+   * const productResource = PolicyResource.product // "product"
+   * const apiKeyResource = PolicyResource.api_key // "api-key"
    */
   export const Resource: {
-${Object.entries(Resource)
+${Object.entries(PolicyResource)
   .map(([key, val]) => `    readonly ${key}: "${val}"`)
   .join("\n")}
   }
@@ -51,13 +51,12 @@ ${Object.entries(Resource)
    * All operation names are normalized to lowercase.
    * 
    * @example
-   * import { Operation } from '@medusajs/framework/utils'
+   * import { PolicyOperation } from '@medusajs/framework/utils'
    * 
-   * const readOp = Operation.read // "read"
-   * const allOp = Operation.all // "*"
+   * const readOp = PolicyOperation.read // "read"
    */
   export const Operation: {
-${Object.entries(Operation)
+${Object.entries(PolicyOperation)
   .map(([key, val]) => `    readonly ${key}: "${val}"`)
   .join("\n")}
   }

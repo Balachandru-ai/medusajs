@@ -6,7 +6,8 @@ import {
 import { createStep } from "@medusajs/framework/workflows-sdk"
 
 export type ValidateUserPermissionsStepInput = {
-  user_id: string
+  actor_id: string
+  actor?: string
   policy_ids?: string[]
   actions?: {
     resource: string
@@ -23,7 +24,7 @@ export const validateUserPermissionsStepId = "validate-user-permissions"
 export const validateUserPermissionsStep = createStep(
   validateUserPermissionsStepId,
   async (data: ValidateUserPermissionsStepInput, { container }) => {
-    const { user_id, policy_ids, actions } = data
+    const { actor_id, actor, policy_ids, actions } = data
 
     if (!policy_ids?.length && !actions?.length) {
       return
@@ -31,9 +32,9 @@ export const validateUserPermissionsStep = createStep(
 
     const query = container.resolve(ContainerRegistrationKeys.QUERY)
     const { data: users } = await query.graph({
-      entity: "user",
+      entity: actor ?? "user",
       fields: ["rbac_roles.id", "rbac_roles.policies.*"],
-      filters: { id: user_id },
+      filters: { id: actor_id },
     })
 
     if (!users?.[0]?.rbac_roles || users[0].rbac_roles.length === 0) {

@@ -52,7 +52,7 @@ export async function discoverPoliciesFromDir(
             return
           }
 
-          // Import the file - this will execute definePolicy() calls
+          // Import the file - this will execute definePolicies() calls
           const fileExports = await dynamicImport(join(scanDir, entry.name))
 
           // Validate that at least one export is a policy

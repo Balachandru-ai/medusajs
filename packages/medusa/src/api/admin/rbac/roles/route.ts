@@ -40,7 +40,8 @@ export const POST = async (
 
   const { result } = await createRbacRolesWorkflow(req.scope).run({
     input: {
-      user_id: req.auth_context.actor_id,
+      actor_id: req.auth_context.actor_id,
+      actor: req.auth_context.actor_type,
       roles: input,
     },
   })
