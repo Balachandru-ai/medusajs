@@ -231,8 +231,17 @@ medusaIntegrationTestRunner({
         let policies
         let viewerRole
         let editorRole
+        let adminUser
 
         beforeEach(async () => {
+          const {
+            Modules,
+            ContainerRegistrationKeys,
+          } = require("@medusajs/framework/utils")
+          const userModule = container.resolve(Modules.USER)
+          const remoteLink = container.resolve(ContainerRegistrationKeys.LINK)
+
+          // Create policies
           const policy1 = await api.post(
             "/admin/rbac/policies",
             {
@@ -272,6 +281,40 @@ medusaIntegrationTestRunner({
             policy3.data.policy,
           ]
 
+          // Create an admin role with all policies
+          const adminRoleResponse = await api.post(
+            "/admin/rbac/roles",
+            {
+              name: "Admin Role",
+              description: "Has all permissions",
+            },
+            adminHeaders
+          )
+          const adminRole = adminRoleResponse.data.role
+
+          // Associate all policies with the admin role using the module directly
+          const rbacModule = container.resolve(Modules.RBAC)
+          await rbacModule.createRbacRolePolicies([
+            { role_id: adminRole.id, policy_id: policies[0].id },
+            { role_id: adminRole.id, policy_id: policies[1].id },
+            { role_id: adminRole.id, policy_id: policies[2].id },
+          ])
+
+          // Get the admin user
+          const users = await userModule.listUsers({ email: "admin@medusa.js" })
+          adminUser = users[0]
+
+          // Link the admin user to the admin role
+          await remoteLink.create({
+            [Modules.USER]: {
+              user_id: adminUser.id,
+            },
+            [Modules.RBAC]: {
+              rbac_role_id: adminRole.id,
+            },
+          })
+
+          // Create viewer and editor roles for the tests
           const viewer = await api.post(
             "/admin/rbac/roles",
             {

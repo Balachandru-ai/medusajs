@@ -23,11 +23,15 @@ export const createRbacRolePoliciesWorkflow = createWorkflow(
   createRbacRolePoliciesWorkflowId,
   (input: WorkflowData<CreateRbacRolePoliciesWorkflowInput>) => {
     const validationData = transform({ input }, ({ input }) => {
+      if (!input.actor_id) {
+        return null
+      }
+
       const policyIds = new Set<string>()
       input.role_policies.forEach((rp) => policyIds.add(rp.policy_id))
 
       return {
-        actor_id: input.actor_id!,
+        actor_id: input.actor_id,
         actor: input.actor,
         policy_ids: Array.from(policyIds),
       }
