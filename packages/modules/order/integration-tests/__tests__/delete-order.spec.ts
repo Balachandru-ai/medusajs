@@ -149,7 +149,7 @@ moduleIntegrationTestRunner<IOrderModuleService>({
         expect(shippingMethods).toEqual([])
       })
 
-      // CONTEXT: We had an issue with deleting an order without an address, that would trigger a cascade delete to all other orders
+      // CONTEXT: The following tests checks that deleting an order without an address does not affect other orders through cascade deletes.
       //   See the following advisory for more details: https://github.com/medusajs/medusa/security/advisories/GHSA-hc6q-q5gm-w585
       it("should delete an order without an address without affecting other orders", async function () {
         const createdOrder = await service.retrieveOrder(order.id)
@@ -170,6 +170,55 @@ moduleIntegrationTestRunner<IOrderModuleService>({
         const orders = await service.listOrders({})
         expect(orders.length).toEqual(1)
         expect(orders[0].id).toEqual(order.id)
+      })
+
+      it("should delete an order address and set null on the order through the FK", async function () {
+        const createdOrder = await service.retrieveOrder(order.id)
+        expect(createdOrder).toEqual(
+          expect.objectContaining({
+            id: order.id,
+          })
+        )
+
+        const createdOrderWithAddresses = await service.createOrders({
+          email: "foo@bar.com",
+          currency_code: "usd",
+          customer_id: "joe",
+          shipping_address: {
+            first_name: "Test",
+            last_name: "Test",
+            address_1: "Test",
+            city: "Test",
+            country_code: "US",
+            postal_code: "12345",
+          },
+          billing_address: {
+            first_name: "Test",
+            last_name: "Test",
+            address_1: "Test",
+            city: "Test",
+            country_code: "US",
+            postal_code: "12345",
+          },
+        } as CreateOrderDTO)
+
+        const orderWithAddresses = await service.retrieveOrder(
+          createdOrderWithAddresses.id,
+          { relations: ["shipping_address", "billing_address"] }
+        )
+
+        await service.deleteOrderAddresses([
+          orderWithAddresses.shipping_address?.id!,
+          orderWithAddresses.billing_address?.id!,
+        ])
+
+        const retrievedOrder = await service.retrieveOrder(
+          createdOrderWithAddresses.id,
+          { relations: ["shipping_address", "billing_address"] }
+        )
+
+        expect(retrievedOrder.shipping_address).toEqual(null)
+        expect(retrievedOrder.billing_address).toEqual(null)
       })
     })
   },
