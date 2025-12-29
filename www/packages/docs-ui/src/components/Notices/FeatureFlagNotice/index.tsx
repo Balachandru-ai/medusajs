@@ -21,8 +21,7 @@ export const FeatureFlagNotice = ({
     <Tooltip
       tooltipChildren={
         <span className={tooltipTextClassName}>
-          To use this {type}, make sure to
-          <br />
+          To use this {type}, make sure to <br />
           {/* TODO add doc link once available */}
           enable its feature flag: <code>{featureFlag}</code>
         </span>

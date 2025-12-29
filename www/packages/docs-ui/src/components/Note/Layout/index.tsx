@@ -1,7 +1,8 @@
 import React, { useMemo } from "react"
 import { NoteProps } from ".."
 import clsx from "clsx"
-import { MarkdownContent } from "../../.."
+import { MarkdownContent } from "../../MarkdownContent"
+import { node } from "prop-types"
 
 type StringInfo = {
   allStringChildren: boolean
@@ -39,7 +40,13 @@ export const NoteLayout = ({
         child.props.children
       ) {
         const typeStr = child.type.toString()
-        if (typeStr.includes(`"li"`)) {
+        if (
+          typeStr.includes("InlineCode") &&
+          typeof child.props.children === "string"
+        ) {
+          stringChildren.push(`\`${child.props.children}\``)
+          return
+        } else if (typeStr.includes(`li`)) {
           allStringChildren = false
           return
         } else if (
@@ -47,12 +54,6 @@ export const NoteLayout = ({
           typeof child.props.children === "string"
         ) {
           stringChildren.push(`[${child.props.children}](${child.props.href})`)
-          return
-        } else if (
-          typeStr.includes("InlineCode") &&
-          typeof child.props.children === "string"
-        ) {
-          stringChildren.push(`\`${child.props.children}\``)
           return
         }
 
@@ -99,6 +100,7 @@ export const NoteLayout = ({
         "flex gap-docs_0.75 rounded-docs_DEFAULT items-stretch",
         "bg-medusa-bg-component border border-medusa-border-base"
       )}
+      data-testid="note-layout"
     >
       <span
         className={clsx(
@@ -111,10 +113,14 @@ export const NoteLayout = ({
           // TODO remove once all soon components are removed
           type === "soon" && "bg-medusa-tag-blue-icon"
         )}
+        data-testid="note-layout-indicator"
       ></span>
       <div className="flex-1">
         <div className="text-small text-medusa-fg-subtle [&_ol]:!mb-0 [&_ul]:!mb-0">
-          <span className={clsx("text-small-plus text-medusa-fg-base")}>
+          <span
+            className={clsx("text-small-plus text-medusa-fg-base")}
+            data-testid="note-layout-title"
+          >
             {title}
             {showColon ? ":" : ""}&nbsp;
           </span>

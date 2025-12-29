@@ -4,7 +4,7 @@ import { Link } from "@/components/Link"
 import { Tooltip } from "@/components/Tooltip"
 
 export type ExpandableNoticeProps = {
-  type: "request" | "method" | "workflow"
+  type?: "request" | "method" | "workflow"
   link: string
   badgeContent?: React.ReactNode
   badgeClassName?: string

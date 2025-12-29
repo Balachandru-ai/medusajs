@@ -11,7 +11,7 @@ import {
   useInstantSearch,
 } from "react-instantsearch"
 import { SearchNoResult } from "../NoResults"
-import { useSearch } from "@/providers"
+import { useSearch } from "@/providers/Search"
 import { Badge } from "@/components/Badge"
 import { Link } from "@/components/Link"
 import { SearchHitGroupName } from "@/components/Search/Hits/GroupName"

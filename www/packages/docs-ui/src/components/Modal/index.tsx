@@ -105,6 +105,7 @@ export const Modal = ({
           "h-auto w-full",
           modalContainerClassName
         )}
+        data-testid="modal-container"
       >
         {title && <ModalHeader title={title} />}
         <div
@@ -112,6 +113,7 @@ export const Modal = ({
             "overflow-auto py-docs_1.5 px-docs_2 rounded-docs_lg",
             contentClassName
           )}
+          data-testid="modal-content"
         >
           {children}
         </div>
