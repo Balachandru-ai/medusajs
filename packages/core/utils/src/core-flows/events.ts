@@ -51,7 +51,7 @@ export const CartWorkflowEvents = {
 
   /**
    * Emitted when the customer in the cart is transferred.
-   * 
+   *
    * @since 2.8.0
    *
    * @eventPayload
@@ -365,6 +365,7 @@ export const AuthWorkflowEvents = {
    *   entity_id, // The identifier of the user or customer. For example, an email address.
    *   actor_type, // The type of actor. For example, "customer", "user", or custom.
    *   token, // The generated token.
+   *   metadata?, // Optional custom metadata passed from the request.
    * }
    * ```
    */
@@ -897,7 +898,7 @@ export const PaymentEvents = {
 export const TranslationWorkflowEvents = {
   /**
    * Emitted when translations are created.
-   * 
+   *
    * @since 2.12.3
    * @featureFlag translation
    * @eventPayload
