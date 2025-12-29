@@ -75,7 +75,7 @@ medusaIntegrationTestRunner({
           {},
           { headers: { authorization: `Bearer ${token}` } }
         )
-        expect(createUserResponse.status).toEqual(201)
+        expect(createUserResponse.status).toEqual(200)
         expect(createUserResponse.data.user).toMatchObject({
           id: expect.any(String),
           email: "john@doe.com",

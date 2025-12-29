@@ -78,5 +78,5 @@ export const POST = async (
     },
   })
 
-  res.status(201).json({ user: createdUser })
+  res.status(200).json({ user: createdUser })
 }
