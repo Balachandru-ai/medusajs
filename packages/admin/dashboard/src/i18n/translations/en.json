@@ -3285,7 +3285,7 @@
   "auth": {
     "login": {
       "authenticationFailed": "Authentication failed",
-      "cloud": "Login with Medusa Cloud"
+      "cloud": "Log in with Medusa Cloud"
     }
   }
 }
