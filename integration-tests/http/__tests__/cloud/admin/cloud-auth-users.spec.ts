@@ -179,6 +179,47 @@ medusaIntegrationTestRunner({
           existingUser.id
         )
       })
+
+      it("should not allow non-cloud identities to create a user", async () => {
+        // Create an auth identity
+        const authIdentity = await authModule.createAuthIdentities({
+          provider_identities: [
+            {
+              provider: "github",
+              entity_id: "github-user-123",
+              user_metadata: {
+                email: "john@doe.com",
+                given_name: "John",
+                family_name: "Doe",
+              },
+            },
+          ],
+        })
+
+        // Generate a token for this auth identity (without actor_id since user doesn't exist yet)
+        const token = jwt.sign(
+          {
+            actor_id: "",
+            actor_type: "user",
+            auth_identity_id: authIdentity.id,
+            user_metadata: {
+              email: "john@doe.com",
+              given_name: "John",
+              family_name: "Doe",
+            },
+          },
+          jwtSecret,
+          { expiresIn: "1d" }
+        )
+
+        // Call the endpoint to create the user
+        const createUserResponse = await api.post(
+          "/cloud/auth/users",
+          {},
+          { headers: { authorization: `Bearer ${token}` } }
+        ).catch((error) => error.response)
+        expect(createUserResponse.status).toEqual(401)
+      })
     })
   },
 })
