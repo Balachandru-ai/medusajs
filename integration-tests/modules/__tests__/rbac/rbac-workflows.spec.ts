@@ -815,7 +815,7 @@ medusaIntegrationTestRunner({
           try {
             await rolesWorkflow.run({
               input: {
-                user_id: user.id,
+                actor_id: user.id,
                 roles: [
                   {
                     name: "Test Role",
@@ -903,7 +903,7 @@ medusaIntegrationTestRunner({
           try {
             await rolesWorkflow.run({
               input: {
-                user_id: user.id,
+                actor_id: user.id,
                 roles: [
                   {
                     name: "New Role",
@@ -983,7 +983,7 @@ medusaIntegrationTestRunner({
           // User should be able to create a role with read permission (which they have)
           const { result: newRoles } = await rolesWorkflow.run({
             input: {
-              user_id: user.id,
+              actor_id: user.id,
               roles: [
                 {
                   name: "Order Viewer",
@@ -1078,7 +1078,7 @@ medusaIntegrationTestRunner({
           // User should be able to create a role with read permission (inherited)
           const { result: newRoles } = await rolesWorkflow.run({
             input: {
-              user_id: user.id,
+              actor_id: user.id,
               roles: [
                 {
                   name: "New Reader",
