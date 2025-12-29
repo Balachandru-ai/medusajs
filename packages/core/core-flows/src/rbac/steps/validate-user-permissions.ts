@@ -1,6 +1,7 @@
 import {
   ContainerRegistrationKeys,
   MedusaError,
+  toSnakeCase,
 } from "@medusajs/framework/utils"
 import { createStep } from "@medusajs/framework/workflows-sdk"
 
@@ -45,7 +46,8 @@ export const validateUserPermissionsStep = createStep(
     const operationMap = new Map()
     users[0].rbac_roles.forEach((role) => {
       role.policies.forEach((policy) => {
-        operationMap.set(`${policy.resource}:${policy.operation}`, policy.id)
+        const op = toSnakeCase(policy.operation)
+        operationMap.set(`${policy.resource}:${op}`, policy.id)
       })
     })
 
@@ -64,7 +66,8 @@ export const validateUserPermissionsStep = createStep(
       unauthorizedPolicies = actions
         .filter(
           (action) =>
-            !operationMap.has(`${action.resource}:${action.operation}`)
+            !operationMap.has(`${action.resource}:${action.operation}`) &&
+            !operationMap.has(`${action.resource}:*`)
         )
         .map((action) => `${action.resource}:${action.operation}`)
     }

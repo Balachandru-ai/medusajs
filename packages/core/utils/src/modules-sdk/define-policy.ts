@@ -1,15 +1,5 @@
 import { getCallerFilePath, isFileDisabled, MEDUSA_SKIP_FILE } from "../common"
-
-/**
- * Converts a string to snake_case
- */
-function toSnakeCase(str: string): string {
-  return str
-    .replace(/([a-z])([A-Z])/g, "$1_$2")
-    .replace(/[^a-zA-Z0-9]+/g, "_")
-    .replace(/^_+|_+$/g, "")
-    .toLowerCase()
-}
+import { toSnakeCase } from "../common/to-snake-case"
 
 export const MedusaPolicySymbol = Symbol.for("MedusaPolicy")
 
@@ -111,7 +101,7 @@ export const Operation = global.Operation ?? {}
 global.Operation ??= Operation
 
 for (const operation of defaultOperations) {
-  const operationKey = operation === "*" ? "all" : toSnakeCase(operation)
+  const operationKey = toSnakeCase(operation)
   Operation[operationKey] = operation
 }
 
