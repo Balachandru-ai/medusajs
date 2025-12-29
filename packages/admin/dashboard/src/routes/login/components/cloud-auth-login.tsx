@@ -91,12 +91,12 @@ const useAuthCallback = (searchParams: URLSearchParams) => {
         if (!decodedToken?.actor_id) {
           await createCloudAuthUser()
 
-          if (__AUTH_TYPE__ === "jwt") {
-            // Refresh token to get the updated token with actor_id
-            const newToken = await sdk.auth.refresh()
-            if (!newToken) {
-              throw new Error("Failed to refresh token after user creation")
-            }
+          // Refresh token to get the updated token with actor_id
+          const refreshedToken = await sdk.auth.refresh({
+            Authorization: `Bearer ${token}`, // passing it manually in case the auth type is session
+          })
+          if (!refreshedToken) {
+            throw new Error("Failed to refresh token after user creation")
           }
         }
 
