@@ -38,7 +38,58 @@ const expectedWidgets = `
     widgets: [
         {
             Component: WidgetComponent0,
-            zone: ["product.details.after"]
+            zone: ["product.details.after"],
+            rank: undefined
+        }
+    ]
+`
+
+const mockFileContentsWithRank = `
+    import { defineWidgetConfig } from "@medusajs/admin-sdk"
+
+    const Widget = () => {
+        return <div>Widget with rank</div>
+    }
+
+    export const config = defineWidgetConfig({
+        zone: "product.details.after",
+        rank: 5,
+    })
+
+    export default Widget
+`
+
+const expectedWidgetsWithRank = `
+    widgets: [
+        {
+            Component: WidgetComponent0,
+            zone: ["product.details.after"],
+            rank: 5
+        }
+    ]
+`
+
+const mockFileContentsWithNegativeRank = `
+    import { defineWidgetConfig } from "@medusajs/admin-sdk"
+
+    const Widget = () => {
+        return <div>Widget with negative rank</div>
+    }
+
+    export const config = defineWidgetConfig({
+        zone: "product.details.after",
+        rank: -1,
+    })
+
+    export default Widget
+`
+
+const expectedWidgetsWithNegativeRank = `
+    widgets: [
+        {
+            Component: WidgetComponent0,
+            zone: ["product.details.after"],
+            rank: -1
         }
     ]
 `
@@ -63,6 +114,47 @@ describe("generateWidgets", () => {
       utils.normalizeString(expectedWidgets)
     )
   })
+
+  it("should generate widgets with rank", async () => {
+    const mockFiles = ["Users/user/medusa/src/admin/widgets/widget.tsx"]
+    vi.mocked(utils.crawl).mockResolvedValue(mockFiles)
+
+    vi.mocked(fs.readFile).mockImplementation(async () =>
+      Promise.resolve(mockFileContentsWithRank)
+    )
+
+    const result = await generateWidgets(
+      new Set(["Users/user/medusa/src/admin"])
+    )
+
+    expect(result.imports).toEqual([
+      `import WidgetComponent0, { config as WidgetConfig0 } from "Users/user/medusa/src/admin/widgets/widget.tsx"`,
+    ])
+    expect(utils.normalizeString(result.code)).toEqual(
+      utils.normalizeString(expectedWidgetsWithRank)
+    )
+  })
+
+  it("should generate widgets with negative rank", async () => {
+    const mockFiles = ["Users/user/medusa/src/admin/widgets/widget.tsx"]
+    vi.mocked(utils.crawl).mockResolvedValue(mockFiles)
+
+    vi.mocked(fs.readFile).mockImplementation(async () =>
+      Promise.resolve(mockFileContentsWithNegativeRank)
+    )
+
+    const result = await generateWidgets(
+      new Set(["Users/user/medusa/src/admin"])
+    )
+
+    expect(result.imports).toEqual([
+      `import WidgetComponent0, { config as WidgetConfig0 } from "Users/user/medusa/src/admin/widgets/widget.tsx"`,
+    ])
+    expect(utils.normalizeString(result.code)).toEqual(
+      utils.normalizeString(expectedWidgetsWithNegativeRank)
+    )
+  })
+
   it("should handle windows paths", async () => {
     const mockFiles = ["C:\\medusa\\src\\admin\\widgets\\widget.tsx"]
     vi.mocked(utils.crawl).mockResolvedValue(mockFiles)

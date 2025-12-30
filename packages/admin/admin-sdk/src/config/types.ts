@@ -14,6 +14,12 @@ export interface WidgetConfig {
    * The injection zone or zones that the widget should be injected into.
    */
   zone: InjectionZone | InjectionZone[]
+  /**
+   * The ranking of the widget among other widgets in the same zone.
+   * Widgets are sorted in ascending order (lower rank appears first).
+   * If not provided, the widget will be ranked after all widgets with explicit ranks.
+   */
+  rank?: number
 }
 
 export interface RouteConfig {
