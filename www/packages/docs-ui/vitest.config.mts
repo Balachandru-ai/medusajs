@@ -4,10 +4,15 @@ import tsconfigPaths from 'vite-tsconfig-paths'
 import { resolve } from 'path'
 
 export default defineConfig({
-  plugins: [tsconfigPaths(), react()],
+  plugins: [
+    tsconfigPaths({
+      configNames: ["tsconfig.tests.json"]
+    }), 
+    react()
+  ],
   test: {
     environment: 'jsdom',
-    setupFiles: [resolve(__dirname, './vitest.setup.ts')],
+    setupFiles: [resolve(__dirname, '../../vitest.setup.ts')],
   },
 })
 

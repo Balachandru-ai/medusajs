@@ -20,7 +20,7 @@
     "lint:content": "turbo run lint:content",
     "watch": "turbo run watch",
     "prep": "turbo run prep",
-    "test": "vitest",
+    "test": "turbo run test -- run",
     "up:medusa": "yarn workspaces foreach -v --topological-dev --recursive exec yarn up @medusajs/icons @medusajs/ui @medusajs/ui-preset --exact"
   },
   "dependencies": {
