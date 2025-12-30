@@ -155,6 +155,9 @@ export const computeDraftOrderAdjustmentsWorkflow = createWorkflow(
               // Buy-Get promotions rely on the product ID, so we need to manually set it before refreshing adjustments
               product: { id: item.product_id },
             })),
+            options: {
+              skip_usage_limit_checks: true,
+            },
           } as ComputeActionContext
         }
       )
