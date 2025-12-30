@@ -6,7 +6,8 @@ import { Star, StarSolid } from "@medusajs/icons"
 import { Button } from "@/components/Button"
 import { Label } from "@/components/Label"
 import { TextArea } from "@/components/TextArea"
-import { useAnalytics, useNotifications } from "@/providers"
+import { useAnalytics } from "@/providers/Analytics"
+import { useNotifications } from "@/providers/Notification"
 
 export type RatingProps = {
   event?: string

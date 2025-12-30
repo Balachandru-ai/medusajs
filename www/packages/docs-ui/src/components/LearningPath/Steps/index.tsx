@@ -1,4 +1,4 @@
-import { useLearningPath } from "@/providers"
+import { useLearningPath } from "@/providers/LearningPath"
 import React, { useCallback, useEffect, useRef, useState } from "react"
 import { LearningPathStepActions } from "./Actions"
 import clsx from "clsx"
