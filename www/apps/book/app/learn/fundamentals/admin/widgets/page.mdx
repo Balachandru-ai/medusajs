@@ -1,4 +1,4 @@
-import { Prerequisites } from "docs-ui"
+import { Prerequisites, CodeTab, CodeTabs } from "docs-ui"
 
 export const metadata = {
   title: `${pageNumber} Admin Widgets`,
@@ -68,7 +68,10 @@ In the example above, the widget is injected at the top of a product’s details
 
 You export the `ProductWidget` component, which displays the heading `Product Widget`. In the widget, you use [Medusa UI](!ui!) to customize the dashboard with the same components used to build it.
 
-To export the widget's configuration, you use `defineWidgetConfig` from the Admin Extension SDK. It accepts an object as a parameter with the `zone` property, whose value is a string or an array of strings, each being the name of the zone to inject the widget into.
+To export the widget's configuration, you use `defineWidgetConfig` from the Admin Extension SDK. It accepts an object as a parameter with the following properties:
+
+- `zone`: a string or an array of strings, each being the name of the zone to inject the widget into.
+- `rank`: an optional number to order the widget among other widgets in the same zone. Learn more in the [Specify Widget Rank](#specify-widget-rank) section.
 
 <Note title="Important" type="warning">
 
@@ -84,7 +87,96 @@ To test out the widget, start the Medusa application:
 npm run dev
 ```
 
-Then, open a product’s details page. You’ll find your custom widget at the top of the page.
+Then, open a product's details page. You'll find your custom widget at the top of the page.
+
+---
+
+## Specify Widget Rank
+
+<Note>
+
+Widget ranking is available starting Medusa v2.x.x.
+
+</Note>
+
+By default, widgets in the same injection zone are displayed in the order their files are loaded. This applies to your custom widgets, and widgets defined in plugins.
+
+You can specify the ranking of your widget using the `rank` property passed to `defineWidgetConfig`.
+
+For example, consider you have the following widgets in the same zone:
+
+<CodeTabs group="widgets">
+  <CodeTab label="Widget 1" value="widget-1">
+
+```tsx title="src/admin/widgets/product-widget-first.tsx" highlights={[["14"]]}
+import { defineWidgetConfig } from "@medusajs/admin-sdk"
+import { Container, Heading } from "@medusajs/ui"
+
+const ProductWidgetFirst = () => {
+  return (
+    <Container className="divide-y p-0">
+      <div className="flex items-center justify-between px-6 py-4">
+        <Heading level="h2">First Widget</Heading>
+      </div>
+    </Container>
+  )
+}
+
+export const config = defineWidgetConfig({
+  zone: "product.details.after",
+  rank: 1,
+})
+
+export default ProductWidgetFirst
+```
+
+  </CodeTab>
+  <CodeTab label="Widget 2" value="widget-2">
+
+```tsx title="src/admin/widgets/product-widget-second.tsx" highlights={[["14"]]}
+import { defineWidgetConfig } from "@medusajs/admin-sdk"
+import { Container, Heading } from "@medusajs/ui"
+
+const ProductWidgetSecond = () => {
+  return (
+    <Container className="divide-y p-0">
+      <div className="flex items-center justify-between px-6 py-4">
+        <Heading level="h2">Second Widget</Heading>
+      </div>
+    </Container>
+  )
+}
+
+export const config = defineWidgetConfig({
+  zone: "product.details.after",
+  rank: 2,
+})
+
+export default ProductWidgetSecond
+```
+
+  </CodeTab>
+</CodeTabs>
+
+In the product details page, "First Widget" with the rank `1` will be displayed before "Second Widget" with the rank `2`.
+
+### How are Widgets Sorted
+
+Medusa sorts widgets within the same injection zone based on their rank:
+
+1. Widgets that have ranks are sorted in ascending order (lower rank appears first).
+2. Widgets without a rank are added after the ranked widgets.
+
+### Negative Ranks
+
+Widgets support negative rank values. This is useful when you want a widget to appear before other widgets that may have a rank of `0` or higher:
+
+```tsx title="src/admin/widgets/product-widget-priority.tsx"
+export const config = defineWidgetConfig({
+  zone: "product.details.after",
+  rank: -1, // Will appear before widgets with rank 0, 1, 2, etc.
+})
+```
 
 ---
 
