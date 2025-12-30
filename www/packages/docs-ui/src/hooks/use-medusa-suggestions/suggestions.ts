@@ -15,6 +15,20 @@ const CLOUD_MAIL_SUGGESTION: CardProps = {
   icon: ColoredMedusaIcon,
 }
 
+const CLOUD_S3_SUGGESTION: CardProps = {
+  title: "Deploy to Cloud",
+  text: "Deploy to Cloud with S3 storage support out-of-the-box.",
+  href: "https://cloud.medusajs.com/signup",
+  icon: ColoredMedusaIcon,
+}
+
+const CLOUD_CACHE_SUGGESTION: CardProps = {
+  title: "Deploy to Cloud",
+  text: "Deploy to Cloud with caching support out-of-the-box.",
+  href: "https://cloud.medusajs.com/signup",
+  icon: ColoredMedusaIcon,
+}
+
 type Suggestions = Map<string, CardProps>
 
 export const medusaSuggestions: Suggestions = new Map([
@@ -24,4 +38,8 @@ export const medusaSuggestions: Suggestions = new Map([
   ["coolify", CLOUD_SUGGESTION],
   ["resend", CLOUD_MAIL_SUGGESTION],
   ["sendgrid", CLOUD_MAIL_SUGGESTION],
+  ["s3", CLOUD_S3_SUGGESTION],
+  ["minio", CLOUD_S3_SUGGESTION],
+  ["cache", CLOUD_CACHE_SUGGESTION],
+  ["caching", CLOUD_CACHE_SUGGESTION],
 ])
