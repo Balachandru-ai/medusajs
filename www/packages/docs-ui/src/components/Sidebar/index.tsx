@@ -1,7 +1,7 @@
 "use client"
 
 import React, { Suspense, useMemo, useRef } from "react"
-import { useSidebar } from "@/providers"
+import { useSidebar } from "@/providers/Sidebar"
 import clsx from "clsx"
 import { Loading } from "@/components/Loading"
 import { SidebarItem } from "./Item"
