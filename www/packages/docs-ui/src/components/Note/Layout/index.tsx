@@ -2,7 +2,6 @@ import React, { useMemo } from "react"
 import { NoteProps } from ".."
 import clsx from "clsx"
 import { MarkdownContent } from "../../MarkdownContent"
-import { node } from "prop-types"
 
 type StringInfo = {
   allStringChildren: boolean
