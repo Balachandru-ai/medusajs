@@ -47,7 +47,8 @@ export const validateUserPermissionsStep = createStep(
     const operationMap = new Map()
     users[0].rbac_roles.forEach((role) => {
       role.policies.forEach((policy) => {
-        const op = toSnakeCase(policy.operation)
+        const op =
+          policy.operation === "*" ? "*" : toSnakeCase(policy.operation)
         operationMap.set(`${policy.resource}:${op}`, policy.id)
       })
     })
@@ -65,11 +66,15 @@ export const validateUserPermissionsStep = createStep(
       )
     } else if (actions?.length) {
       unauthorizedPolicies = actions
-        .filter(
-          (action) =>
-            !operationMap.has(`${action.resource}:${action.operation}`) &&
+        .filter((action) => {
+          const op =
+            action.operation === "*" ? "*" : toSnakeCase(action.operation)
+
+          return (
+            !operationMap.has(`${action.resource}:${op}`) &&
             !operationMap.has(`${action.resource}:*`)
-        )
+          )
+        })
         .map((action) => `${action.resource}:${action.operation}`)
     }
 

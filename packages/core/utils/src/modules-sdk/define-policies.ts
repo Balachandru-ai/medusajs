@@ -101,7 +101,7 @@ export const PolicyOperation = global.PolicyOperation ?? {}
 global.PolicyOperation ??= PolicyOperation
 
 for (const operation of defaultOperations) {
-  const operationKey = toSnakeCase(operation)
+  const operationKey = operation === "*" ? "*" : toSnakeCase(operation)
   PolicyOperation[operationKey] = operation
 }
 
