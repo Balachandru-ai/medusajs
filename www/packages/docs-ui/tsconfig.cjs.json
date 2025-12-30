@@ -7,6 +7,7 @@
   },
   "exclude": [
     "tailwind.config.js",
-    "postcss.config.js"
+    "postcss.config.js",
+    "**/__tests__/**"
   ]
 }
