@@ -109,6 +109,9 @@ vi.mock("@/components/Search/Footer", () => ({
 vi.mock("@/components/Loading/Spinner", () => ({
   SpinnerLoading: () => <div data-testid="spinner-loading">Loading</div>,
 }))
+vi.mock("@/components/Search/Callout", () => ({
+  SearchCallout: () => <div data-testid="search-callout">Callout</div>,
+}))
 
 import { Search } from "../../Search"
 
@@ -207,6 +210,15 @@ describe("rendering", () => {
     )
     const footer = container.querySelector("[data-testid='search-footer']")
     expect(footer).toBeInTheDocument()
+  })
+
+  test("renders SearchCallout", () => {
+    const suggestions: SearchSuggestionType[] = []
+    const { container } = render(
+      <Search algolia={defaultAlgoliaProps} suggestions={suggestions} />
+    )
+    const callout = container.querySelector("[data-testid='search-callout']")
+    expect(callout).toBeInTheDocument()
   })
 
   test("passes checkInternalPattern to SearchHitsWrapper", () => {
