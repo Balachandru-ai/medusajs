@@ -33,7 +33,7 @@ export const POST = async (
   }
 
   // Check that the auth identity is from Medusa Cloud
-  const authIdentity = await query
+  const providerIdentities = await query
     .graph({
       entity: "auth_identity",
       fields: ["id", "provider_identities.provider"],
@@ -41,11 +41,11 @@ export const POST = async (
         id: req.auth_context.auth_identity_id,
       },
     })
-    .then((result) => result.data[0])
-  const isCloudIdentity = authIdentity?.provider_identities?.some(
-    (identity) => identity.provider === "cloud"
-  )
-  if (!isCloudIdentity) {
+    .then((result) => result.data[0]?.provider_identities)
+  if (
+    providerIdentities?.length !== 1 ||
+    providerIdentities[0].provider !== "cloud"
+  ) {
     throw new MedusaError(
       MedusaError.Types.UNAUTHORIZED,
       "Only cloud identities can create a user account"
