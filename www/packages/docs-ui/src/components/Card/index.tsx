@@ -31,6 +31,7 @@ export type CardProps = {
   highlightText?: string[]
   closeable?: boolean
   onClose?: () => void
+  onClick?: () => void
   hrefProps?: Partial<LinkProps & React.AllHTMLAttributes<HTMLAnchorElement>>
   cardRef?: React.Ref<HTMLDivElement>
 }

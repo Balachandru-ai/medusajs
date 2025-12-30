@@ -52,6 +52,9 @@ vi.mock("@/components/AiAssistant/ThreadItem", () => ({
     <div className="thread-item">ThreadItem - type: {item.type}</div>
   ),
 }))
+vi.mock("@/components/AiAssistant/ChatWindow/Callout", () => ({
+  AiAssistantChatWindowCallout: () => <div data-testid="callout">Callout</div>,
+}))
 
 import { AiAssistantChatWindow } from "../../ChatWindow"
 
@@ -81,6 +84,7 @@ describe("rendering", () => {
     expect(container).toHaveTextContent("Header")
     expect(container).toHaveTextContent("Input")
     expect(container).toHaveTextContent("Footer")
+    expect(container).toHaveTextContent("Callout")
   })
 
   test("chat is hidden when chatOpened is false", () => {

@@ -46,6 +46,7 @@ const createMockConversation = () => {
       }
     },
     getLatest: mockGetLatest,
+    getLatestCompleted: mockGetLatest,
     map(callback: (item: unknown, index: number) => React.ReactNode) {
       return conversationItems.map(callback)
     },

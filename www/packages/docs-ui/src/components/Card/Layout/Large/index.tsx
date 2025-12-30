@@ -12,6 +12,7 @@ export const CardLargeLayout = ({
   icon,
   href,
   className,
+  onClick,
 }: CardProps) => {
   const isExternal = useIsExternalLink({ href })
   const IconComponent = icon
@@ -76,6 +77,10 @@ export const CardLargeLayout = ({
           href={href}
           className="absolute left-0 top-0 h-full w-full rounded"
           prefetch={false}
+          rel={isExternal ? "noopener noreferrer" : undefined}
+          target={isExternal ? "_blank" : undefined}
+          aria-label={title}
+          onClick={onClick}
         />
       )}
     </div>

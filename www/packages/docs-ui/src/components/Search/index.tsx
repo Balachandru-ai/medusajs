@@ -12,6 +12,7 @@ import { useSearchNavigation } from "@/hooks/use-search-navigation"
 import { OptionType } from "@/hooks/use-select"
 import { SearchFooter } from "./Footer"
 import { SearchFilters } from "./Filters"
+import { SearchCallout } from "./Callout"
 
 export type SearchProps = {
   algolia: AlgoliaProps
@@ -112,6 +113,7 @@ export const Search = ({
           <SearchEmptyQueryBoundary
             fallback={<SearchSuggestions suggestions={suggestions} />}
           >
+            <SearchCallout />
             <SearchHitsWrapper
               configureProps={{}}
               checkInternalPattern={checkInternalPattern}

@@ -60,6 +60,8 @@ describe("rendering", () => {
     const linkElement = container.querySelector("a")
     expect(linkElement).toBeInTheDocument()
     expect(linkElement).toHaveAttribute("href", href)
+    expect(linkElement).toHaveAttribute("rel", "noopener noreferrer")
+    expect(linkElement).toHaveAttribute("target", "_blank")
   })
   test("renders card mini layout with internal href", () => {
     const href = "/example"
@@ -70,6 +72,8 @@ describe("rendering", () => {
     const linkElement = container.querySelector("a")
     expect(linkElement).toBeInTheDocument()
     expect(linkElement).toHaveAttribute("href", href)
+    expect(linkElement).not.toHaveAttribute("target")
+    expect(linkElement).not.toHaveAttribute("rel")
   })
   test("renders card mini layout with icon", () => {
     const icon = () => <div data-testid="icon">Icon</div>
@@ -200,5 +204,19 @@ describe("rendering", () => {
     )
     expect(themeImageElement).toBeInTheDocument()
     expect(themeImageElement).toHaveClass(iconClassName)
+  })
+})
+
+describe("interaction", () => {
+  test("calls onClick when card mini layout with link is clicked", () => {
+    const onClick = vi.fn()
+    const { container } = render(
+      <CardLayoutMini onClick={onClick} href="#">Click me</CardLayoutMini>
+    )
+    expect(container).toBeInTheDocument()
+    const link = container.querySelector("a")
+    expect(link).toBeInTheDocument()
+    fireEvent.click(link!)
+    expect(onClick).toHaveBeenCalled()
   })
 })

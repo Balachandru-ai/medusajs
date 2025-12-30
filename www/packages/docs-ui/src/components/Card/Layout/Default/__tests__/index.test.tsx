@@ -1,6 +1,6 @@
 import React from "react"
 import { describe, expect, test, vi } from "vitest"
-import { render } from "@testing-library/react"
+import { fireEvent, render } from "@testing-library/react"
 import { CardDefaultLayout } from "../index"
 import { IconProps } from "@medusajs/icons/dist/types"
 import { LinkProps } from "../../../../Link"
@@ -108,6 +108,8 @@ describe("rendering", () => {
     const linkElement = container.querySelector("a")
     expect(linkElement).toBeInTheDocument()
     expect(linkElement).toHaveAttribute("href", href)
+    expect(linkElement).toHaveAttribute("target", "_blank")
+    expect(linkElement).toHaveAttribute("rel", "noopener noreferrer")
     const arrowUpRightOnBoxElement = container.querySelector(
       "[data-testid='external-icon']"
     )
@@ -126,6 +128,8 @@ describe("rendering", () => {
     const linkElement = container.querySelector("a")
     expect(linkElement).toBeInTheDocument()
     expect(linkElement).toHaveAttribute("href", href)
+    expect(linkElement).not.toHaveAttribute("target")
+    expect(linkElement).not.toHaveAttribute("rel")
     const internalIconElement = container.querySelector(
       "[data-testid='internal-icon']"
     )
@@ -211,5 +215,19 @@ describe("highlight text", () => {
       "[data-testid='highlight-text']"
     )
     expect(highlightTextElement).not.toBeInTheDocument()
+  })
+})
+
+describe("interaction", () => {
+  test("onClick is called when card's link is clicked", () => {
+    const handleClick = vi.fn()
+    const { container } = render(
+      <CardDefaultLayout onClick={handleClick} href="#">Click me</CardDefaultLayout>
+    )
+    expect(container).toBeInTheDocument()
+    const link = container.querySelector("a")
+    expect(link).toBeInTheDocument()
+    fireEvent.click(link!)
+    expect(handleClick).toHaveBeenCalledTimes(1)
   })
 })

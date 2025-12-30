@@ -20,6 +20,7 @@ export const CardDefaultLayout = ({
   badge,
   rightIcon: RightIconComponent,
   highlightText = [],
+  onClick,
 }: CardProps) => {
   const isExternal = useIsExternalLink({ href })
 
@@ -113,6 +114,10 @@ export const CardDefaultLayout = ({
           href={href}
           className="absolute left-0 top-0 h-full w-full rounded"
           prefetch={false}
+          rel={isExternal ? "noopener noreferrer" : undefined}
+          target={isExternal ? "_blank" : undefined}
+          aria-label={title}
+          onClick={onClick}
         />
       )}
     </div>

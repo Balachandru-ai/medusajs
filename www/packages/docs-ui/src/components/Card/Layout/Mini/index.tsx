@@ -25,6 +25,7 @@ export const CardLayoutMini = ({
   imageDimensions = { width: 45, height: 36 },
   iconClassName,
   cardRef,
+  onClick,
 }: CardProps) => {
   const isExternal = useIsExternalLink({ href })
 
@@ -120,6 +121,10 @@ export const CardLayoutMini = ({
             className="absolute left-0 top-0 w-full h-full z-[1]"
             prefetch={false}
             {...hrefProps}
+            rel={isExternal ? "noopener noreferrer" : undefined}
+            target={isExternal ? "_blank" : undefined}
+            aria-label={title}
+            onClick={onClick}
           />
         )}
         {closeable && (
