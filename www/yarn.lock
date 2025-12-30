@@ -6364,6 +6364,8 @@ __metadata:
     tailwindcss: 3.3.3
     types: "*"
     typescript: 5.1.6
+    vite-tsconfig-paths: ^5.1.4
+    vitest: ^2.1.8
     yaml: ^2.3.1
   languageName: unknown
   linkType: soft
