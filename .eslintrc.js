@@ -256,6 +256,7 @@ module.exports = {
       },
       globals: {
         __BASE__: "readonly",
+        __AUTH_TYPE__: "readonly",
       },
       env: {
         browser: true,

@@ -3281,5 +3281,11 @@
         "cancelText": "Cancel"
       }
     }
+  },
+  "auth": {
+    "login": {
+      "authenticationFailed": "Authentication failed",
+      "cloud": "Log in with Medusa Cloud"
+    }
   }
 }
