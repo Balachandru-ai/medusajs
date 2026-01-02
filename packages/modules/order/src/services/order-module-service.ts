@@ -932,12 +932,18 @@ export default class OrderModuleService
       (orderShipping) => orderShipping.shipping_method_id
     )
 
+    const deletions: Promise<string[]>[] = []
+
     if (orderAddressIds.length) {
-      await this.orderAddressService_.delete(orderAddressIds, sharedContext)
+      deletions.push(this.orderAddressService_.delete(orderAddressIds, sharedContext))
     }
 
     if (orderChangeIds.length) {
-      await this.orderChangeService_.delete(orderChangeIds, sharedContext)
+      deletions.push(this.orderChangeService_.delete(orderChangeIds, sharedContext))
+    }
+
+    if (deletions.length) {
+      await promiseAll(deletions)
     }
 
     // Delete order, order items, summary, shipping methods, transactions and credit lines
