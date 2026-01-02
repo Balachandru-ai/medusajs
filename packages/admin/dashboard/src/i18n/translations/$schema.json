@@ -6059,6 +6059,32 @@
           "required": ["open", "completed"],
           "additionalProperties": false
         },
+        "list": {
+          "type": "object",
+          "properties": {
+            "description": {
+              "type": "string"
+            },
+            "noRecordsMessage": {
+              "type": "string"
+            },
+            "filtered": {
+              "type": "object",
+              "properties": {
+                "heading": {
+                  "type": "string"
+                },
+                "description": {
+                  "type": "string"
+                }
+              },
+              "required": ["heading", "description"],
+              "additionalProperties": false
+            }
+          },
+          "required": ["description", "noRecordsMessage", "filtered"],
+          "additionalProperties": false
+        },
         "create": {
           "type": "object",
           "properties": {
@@ -12441,6 +12467,26 @@
         "prompts"
       ],
       "additionalProperties": false
+    },
+    "auth": {
+      "type": "object",
+      "properties": {
+        "login": {
+          "type": "object",
+          "properties": {
+            "authenticationFailed": {
+              "type": "string"
+            },
+            "cloud": {
+              "type": "string"
+            }
+          },
+          "required": ["authenticationFailed", "cloud"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["login"],
+      "additionalProperties": false
     }
   },
   "required": [
@@ -12499,7 +12545,8 @@
     "labels",
     "fields",
     "dateTime",
-    "views"
+    "views",
+    "auth"
   ],
   "additionalProperties": false
 }
