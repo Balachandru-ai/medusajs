@@ -1108,6 +1108,10 @@ export const filesMap = [
     "pathname": "/nextjs-starter/guides/customize-stripe"
   },
   {
+    "filePath": "/www/apps/resources/app/nextjs-starter/guides/remove-country-code/page.mdx",
+    "pathname": "/nextjs-starter/guides/remove-country-code"
+  },
+  {
     "filePath": "/www/apps/resources/app/nextjs-starter/guides/revalidate-cache/page.mdx",
     "pathname": "/nextjs-starter/guides/revalidate-cache"
   },

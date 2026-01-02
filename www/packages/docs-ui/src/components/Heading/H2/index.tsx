@@ -2,8 +2,10 @@
 
 import clsx from "clsx"
 import React from "react"
-import { CopyButton, Link } from "@/components"
-import { useHeadingUrl, useLayout } from "../../.."
+import { CopyButton } from "@/components/CopyButton"
+import { Link } from "@/components/Link"
+import { useHeadingUrl } from "../../../hooks/use-heading-url"
+import { useLayout } from "../../../providers/Layout"
 
 export type H2Props = React.HTMLAttributes<HTMLHeadingElement> & {
   id?: string

@@ -12242,6 +12242,26 @@
         "prompts"
       ],
       "additionalProperties": false
+    },
+    "auth": {
+      "type": "object",
+      "properties": {
+        "login": {
+          "type": "object",
+          "properties": {
+            "authenticationFailed": {
+              "type": "string"
+            },
+            "cloud": {
+              "type": "string"
+            }
+          },
+          "required": ["authenticationFailed", "cloud"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["login"],
+      "additionalProperties": false
     }
   },
   "required": [
@@ -12299,7 +12319,8 @@
     "labels",
     "fields",
     "dateTime",
-    "views"
+    "views",
+    "auth"
   ],
   "additionalProperties": false
 }
