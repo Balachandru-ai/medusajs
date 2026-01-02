@@ -862,6 +862,46 @@ export const ShippingOptionTypeWorkflowEvents = {
 }
 
 /**
+ * @category Shipping Option
+ * @customNamespace Fulfillment
+ */
+export const ShippingOptionWorkflowEvents = {
+  /**
+   * Emitted when shipping options are created.
+   *
+   * @eventPayload
+   * ```ts
+   * {
+   *   id, // The ID of the shipping option
+   * }
+   * ```
+   */
+  CREATED: "shipping-option.created",
+  /**
+   * Emitted when shipping options are updated.
+   *
+   * @eventPayload
+   * ```ts
+   * {
+   *   id, // The ID of the shipping option
+   * }
+   * ```
+   */
+  UPDATED: "shipping-option.updated",
+  /**
+   * Emitted when shipping options are deleted.
+   *
+   * @eventPayload
+   * ```ts
+   * {
+   *   id, // The ID of the shipping option
+   * }
+   * ```
+   */
+  DELETED: "shipping-option.deleted",
+}
+
+/**
  * @category Payment
  * @customNamespace Payment
  */
