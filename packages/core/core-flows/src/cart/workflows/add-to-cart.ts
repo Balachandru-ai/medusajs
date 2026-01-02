@@ -53,7 +53,7 @@ export const addToCartWorkflowId = "add-to-cart"
  * For example, you can use this workflow to add a line item to the cart with a custom price.
  *
  * @example
- * const lineItems = await addToCartWorkflow(container)
+ * const [createdLineItems, updatedLineItems] = await addToCartWorkflow(container)
  * .run({
  *   input: {
  *     cart_id: "cart_123",
@@ -328,7 +328,7 @@ export const addToCartWorkflow = createWorkflow(
       })
     )
 
-    return new WorkflowResponse(createdLineItems, {
+    return new WorkflowResponse([createdLineItems, updatedLineItems], {
       hooks: [validate, setPricingContext] as const,
     })
   }
