@@ -14,6 +14,7 @@ import {
   WorkflowResponse,
   createStep,
   createWorkflow,
+  parallelize,
   transform,
   when,
 } from "@medusajs/framework/workflows-sdk"
@@ -23,6 +24,7 @@ import {
   previewOrderChangeStep,
   registerOrderChangesStep,
   updateOrderItemsTranslationsStep,
+  updateOrderShippingMethodsTranslationsStep,
   updateOrdersStep,
 } from "../steps"
 import { throwIfOrderIsCancelled } from "../utils/order-validation"
@@ -134,6 +136,9 @@ export const updateOrderWorkflow = createWorkflow(
         "shipping_address.*",
         "billing_address.*",
         "metadata",
+        "shipping_methods.id",
+        "shipping_methods.name",
+        "shipping_methods.shipping_option_id",
       ],
       filters: { id: input.id },
       options: { throwIfKeyNotFound: true },
@@ -261,10 +266,16 @@ export const updateOrderWorkflow = createWorkflow(
     when("locale-changed", { input, order }, ({ input, order }) => {
       return !!input.locale && input.locale !== order.locale
     }).then(() => {
-      updateOrderItemsTranslationsStep({
-        order_id: input.id,
-        locale: input.locale!,
-      })
+      parallelize(
+        updateOrderItemsTranslationsStep({
+          order_id: input.id,
+          locale: input.locale!,
+        }),
+        updateOrderShippingMethodsTranslationsStep({
+          locale: input.locale!,
+          shippingMethods: order.shipping_methods,
+        })
+      )
     })
 
     emitEventStep({
