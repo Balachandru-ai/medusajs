@@ -8,14 +8,16 @@ import React, {
   useRef,
   useState,
 } from "react"
-import { useAiAssistant, useIsBrowser } from "../../../providers"
+import { useAiAssistant } from "../../../providers/AiAssistant"
+import { useIsBrowser } from "../../../providers/BrowserProvider"
 import { AiAssistantChatWindowHeader } from "./Header"
 import { AiAssistantSuggestions } from "../Suggestions"
 import { AiAssistantThreadItem } from "../ThreadItem"
 import { AiAssistantChatWindowInput } from "./Input"
-import { useKeyboardShortcut } from "../../.."
+import { useKeyboardShortcut } from "../../../hooks/use-keyboard-shortcut"
 import { AiAssistantChatWindowFooter } from "./Footer"
 import { useChat } from "@kapaai/react-sdk"
+import { AiAssistantChatWindowCallout } from "./Callout"
 
 const DEFAULT_HEIGHT = "calc(100% - 8px)"
 
@@ -203,6 +205,7 @@ export const AiAssistantChatWindow = () => {
             )}
           ></span>
         </div>
+        <AiAssistantChatWindowCallout />
         <AiAssistantChatWindowInput chatWindowRef={chatWindowRef} />
         <AiAssistantChatWindowFooter />
       </div>
