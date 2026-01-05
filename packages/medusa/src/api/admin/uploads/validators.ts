@@ -1,4 +1,4 @@
-import { z, ZodType } from "zod"
+import { z, ZodType } from "@medusajs/framework/zod"
 import { HttpTypes } from "@medusajs/types"
 import { createSelectParams } from "../../utils/validators"
 

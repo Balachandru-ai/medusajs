@@ -1,6 +1,6 @@
 import { dynamicImport, FileSystem, isFileSkipped } from "@medusajs/utils"
 import { join } from "path"
-import zod from "zod"
+import zod from "@medusajs/deps/zod"
 
 import { logger } from "../logger"
 import {

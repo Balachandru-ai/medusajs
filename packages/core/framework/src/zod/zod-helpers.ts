@@ -5,7 +5,7 @@ import {
   ZodInvalidTypeIssue,
   ZodInvalidUnionIssue,
   ZodIssue,
-} from "zod"
+} from "@medusajs/deps/zod"
 
 const formatPath = (issue: ZodIssue) => {
   return issue.path.join(", ")

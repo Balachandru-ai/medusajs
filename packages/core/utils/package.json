@@ -43,8 +43,7 @@
     "jsonwebtoken": "^9.0.2",
     "pg-connection-string": "^2.7.0",
     "pluralize": "^8.0.0",
-    "ulid": "^2.3.0",
-    "zod": "3.25.76"
+    "ulid": "^2.3.0"
   },
   "peerDependencies": {
     "express": "^4.21.0"

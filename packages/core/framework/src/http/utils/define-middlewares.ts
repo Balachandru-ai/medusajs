@@ -6,7 +6,7 @@ import {
   MiddlewareVerb,
   ParserConfig,
 } from "../types"
-import { ZodRawShape } from "zod"
+import { ZodRawShape } from "@medusajs/deps/zod"
 
 /**
  * A helper function to configure the routes by defining custom middleware,
