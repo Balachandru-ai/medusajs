@@ -36,16 +36,19 @@ export const ProductOptionsManageForm = ({
   const { getFormConfigs } = useExtension()
   const configs = getFormConfigs("product", "edit")
 
-  const [selectedOptionIds, setSelectedOptionIds] = useState<string[]>(
-    product.options?.map((opt) => opt.id) || []
-  )
+  const productOptionIds = product.options?.map((opt) => opt.id) || []
 
-  const { options: _productOptionChoices, isLoading } = useComboboxData({
+  const [selectedOptionIds, setSelectedOptionIds] =
+    useState<string[]>(productOptionIds)
+
+  const { options: productOptionChoices, isLoading } = useComboboxData({
     queryKey: productOptionsQueryKeys.list({ is_exclusive: false }),
     queryFn: (params) =>
       sdk.admin.productOption.list({
         ...params,
-        is_exclusive: false, // load all global options here
+        ...(productOptionIds.length
+          ? { $or: [{ is_exclusive: false }, { id: productOptionIds }] }
+          : { is_exclusive: false }),
       } as HttpTypes.AdminProductOptionListParams),
     getOptions: (data) =>
       data.product_options.map((option) => ({
@@ -53,20 +56,6 @@ export const ProductOptionsManageForm = ({
         value: option.id,
       })),
   })
-
-  const productOptionChoices = useMemo(
-    () => [
-      // prepand product specific options
-      ...(product.options?.filter((opt) => opt.is_exclusive) || []).map(
-        (option) => ({
-          label: option.title,
-          value: option.id,
-        })
-      ),
-      ..._productOptionChoices,
-    ],
-    [_productOptionChoices, product.options]
-  )
 
   const { product_options = [] } = useProductOptions(
     {
