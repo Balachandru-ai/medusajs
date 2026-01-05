@@ -4,6 +4,7 @@ import {
   MedusaContext,
   MedusaService,
   Policy,
+  promiseAll,
 } from "@medusajs/framework/utils"
 import { RbacPolicy, RbacRole, RbacRoleParent, RbacRolePolicy } from "@models"
 import { RbacRepository } from "../repositories"
@@ -12,12 +13,7 @@ type InjectedDependencies = {
   rbacRepository: RbacRepository
 }
 
-export default class RbacModuleService extends MedusaService<{
-  RbacRole: { dto: any }
-  RbacPolicy: { dto: any }
-  RbacRoleParent: { dto: any }
-  RbacRolePolicy: { dto: any }
-}>({
+export default class RbacModuleService extends MedusaService({
   RbacRole,
   RbacPolicy,
   RbacRoleParent,
@@ -107,21 +103,16 @@ export default class RbacModuleService extends MedusaService<{
       .map((p) => p.id)
 
     // Execute updates
-    if (policiesToRestore.length > 0) {
-      await this.restoreRbacPolicies(policiesToRestore, {}, sharedContext)
-    }
-
-    if (policiesToCreate.length > 0) {
-      await this.createRbacPolicies(policiesToCreate, sharedContext)
-    }
-
-    if (policiesToUpdate.length > 0) {
-      await this.updateRbacPolicies(policiesToUpdate, sharedContext)
-    }
-
-    if (policiesToSoftDelete.length > 0) {
-      await this.softDeleteRbacPolicies(policiesToSoftDelete, {}, sharedContext)
-    }
+    await promiseAll([
+      policiesToRestore.length > 0 &&
+        this.restoreRbacPolicies(policiesToRestore, {}, sharedContext),
+      policiesToCreate.length > 0 &&
+        this.createRbacPolicies(policiesToCreate, sharedContext),
+      policiesToUpdate.length > 0 &&
+        this.updateRbacPolicies(policiesToUpdate, sharedContext),
+      policiesToSoftDelete.length > 0 &&
+        this.softDeleteRbacPolicies(policiesToSoftDelete, {}, sharedContext),
+    ])
   }
 
   @InjectManager()
