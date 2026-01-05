@@ -1620,7 +1620,7 @@ export default class ProductModuleService
       | ProductTypes.ProductOptionProductPair[],
     @MedusaContext() sharedContext: Context = {}
   ): Promise<void> {
-    await this.removeProductOptionFromProduct_(data, undefined, sharedContext)
+    await this.removeProductOptionFromProduct_(data, new Set(), sharedContext)
   }
 
   @InjectTransactionManager()
@@ -1628,7 +1628,7 @@ export default class ProductModuleService
     data:
       | ProductTypes.ProductOptionProductPair
       | ProductTypes.ProductOptionProductPair[],
-    alreadyValidatedProductIds: Set<string> = new Set(),
+    alreadyValidatedProductIds: Set<string>,
     @MedusaContext() sharedContext: Context = {}
   ): Promise<void> {
     const pairs = Array.isArray(data) ? data : [data]
