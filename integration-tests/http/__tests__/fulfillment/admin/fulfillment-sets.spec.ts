@@ -291,7 +291,7 @@ medusaIntegrationTestRunner({
 
         expect(errorResponse.status).toEqual(400)
         expect(errorResponse.data.message).toContain(
-          `Invalid request: Field 'type' is required`
+          `Invalid request: Field 'geo_zones, 2, type' is required`
         )
       })
 

@@ -13,29 +13,30 @@ export function getFieldLabel(name: string, label?: string) {
 }
 
 export function getFieldType(type: z.ZodType): FormFieldType {
-  const schemaType = type.type
-
-  if (schemaType === "string") {
+  if (type instanceof z.ZodString) {
     return "text"
   }
 
-  if (schemaType === "number") {
+  if (type instanceof z.ZodNumber) {
     return "number"
   }
 
-  if (schemaType === "boolean") {
+  if (type instanceof z.ZodBoolean) {
     return "boolean"
   }
 
-  if (schemaType === "nullable" || schemaType === "optional") {
-    const innerType = (
-      type as z.ZodNullable<z.ZodType> | z.ZodOptional<z.ZodType>
-    ).unwrap()
+  if (type instanceof z.ZodNullable) {
+    const innerType = type.unwrap() as z.ZodType
     return getFieldType(innerType)
   }
 
-  if (schemaType === "pipe") {
-    const innerType = (type._zod.def as unknown as { in: z.ZodType }).in
+  if (type instanceof z.ZodOptional) {
+    const innerType = type.unwrap() as z.ZodType
+    return getFieldType(innerType)
+  }
+
+  if (type instanceof z.ZodPipe) {
+    const innerType = type.def.in as z.ZodType
     return getFieldType(innerType)
   }
 
@@ -43,11 +44,10 @@ export function getFieldType(type: z.ZodType): FormFieldType {
 }
 
 export function getIsFieldOptional(type: z.ZodType) {
-  const schemaType = type.type
   return (
-    schemaType === "optional" ||
-    schemaType === "null" ||
-    schemaType === "undefined" ||
-    schemaType === "nullable"
+    type instanceof z.ZodOptional ||
+    type instanceof z.ZodNull ||
+    type instanceof z.ZodUndefined ||
+    type instanceof z.ZodNullable
   )
 }

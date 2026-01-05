@@ -1,6 +1,12 @@
 import { z, ZodError } from "zod"
 import { MedusaError } from "../utils"
 
+/**
+ * Zod v4 does not export public issue types, so we use internal types from z.core.
+ * These are prefixed with $ to indicate they are internal.
+ * While internal, they are stable for type-checking purposes.
+ * Runtime behavior relies on the `code` property, not these types.
+ */
 type ZodIssue = z.core.$ZodIssue
 type ZodIssueInvalidType = z.core.$ZodIssueInvalidType
 type ZodIssueInvalidUnion = z.core.$ZodIssueInvalidUnion
@@ -20,12 +26,22 @@ const formatPath = (issue: ZodIssue) => {
   return issue.path.join(", ")
 }
 
-const formatInvalidType = (issues: ZodIssue[]) => {
+/**
+ * Gets the actual value from body using issue path.
+ * Used to distinguish between missing fields and wrong type values.
+ */
+function getValueFromBody(issue: ZodIssue, body: any): any {
+  return issue.path.reduce<any>((acc, curr: PropertyKey) => acc?.[curr], body)
+}
+
+const formatInvalidType = (issues: ZodIssue[], body?: any) => {
   const expected = issues
     .map((i) => {
       if (i?.code === "invalid_type") {
         const invalidTypeIssue = i as ZodIssueInvalidType
-        if (invalidTypeIssue.input !== undefined) {
+        // In Zod v4, check if value exists in body to distinguish wrong type vs missing
+        const receivedValue = body !== undefined ? getValueFromBody(i, body) : undefined
+        if (receivedValue !== undefined) {
           return invalidTypeIssue.expected
         }
       }
@@ -37,29 +53,28 @@ const formatInvalidType = (issues: ZodIssue[]) => {
     return
   }
 
-  const received = (issues?.[0] as ZodIssueInvalidType)?.input
+  const firstIssue = issues[0] as ZodIssueInvalidType
+  const received = body !== undefined ? getValueFromBody(firstIssue, body) : "unknown"
 
   return `Expected type: '${expected.join(", ")}' for field '${formatPath(
-    issues[0]
+    firstIssue
   )}', got: '${received}'`
 }
 
-const formatRequiredField = (issues: ZodIssue[]) => {
-  // Find the first issue that indicates a required field (input is undefined)
+const formatRequiredField = (issues: ZodIssue[], body?: any) => {
+  // Find the first issue that indicates a required field (value is undefined in body)
   const requiredIssue = issues
     .filter((i) => i != null)
     .find((i) => {
       if (i?.code === "invalid_type") {
-        const invalidTypeIssue = i as ZodIssueInvalidType
-        return invalidTypeIssue.input === undefined
+        // In Zod v4, check if value is undefined in body to detect missing fields
+        const valueInBody = body !== undefined ? getValueFromBody(i, body) : undefined
+        return valueInBody === undefined
       }
-      // Also check invalid_value issues - if there's no input property or it's undefined
+      // Also check invalid_value issues - if value is undefined in body
       if (i?.code === "invalid_value") {
-        const invalidValueIssue = i as ZodIssueInvalidValue
-        return (
-          !("input" in invalidValueIssue) ||
-          invalidValueIssue.input === undefined
-        )
+        const valueInBody = body !== undefined ? getValueFromBody(i, body) : undefined
+        return valueInBody === undefined
       }
       return false
     })
@@ -71,7 +86,7 @@ const formatRequiredField = (issues: ZodIssue[]) => {
   return `Field '${formatPath(requiredIssue)}' is required`
 }
 
-const formatUnionError = (issue: ZodIssueInvalidUnion) => {
+const formatUnionError = (issue: ZodIssueInvalidUnion, body?: any) => {
   const parentPath = issue.path ?? []
   const issues = (issue.errors ?? [])
     .flatMap((e: { issues?: ZodIssue[] }) => e?.issues ?? (e as ZodIssue[]))
@@ -86,7 +101,7 @@ const formatUnionError = (issue: ZodIssueInvalidUnion) => {
   }
 
   return (
-    formatInvalidType(issues) || formatRequiredField(issues) || issue.message
+    formatInvalidType(issues, body) || formatRequiredField(issues, body) || issue.message
   )
 }
 
@@ -95,8 +110,8 @@ const formatError = (err: ZodError, body: any) => {
     switch (issue.code) {
       case "invalid_type":
         return (
-          formatInvalidType([issue]) ||
-          formatRequiredField([issue]) ||
+          formatInvalidType([issue], body) ||
+          formatRequiredField([issue], body) ||
           issue.message
         )
       case "invalid_value": {
@@ -121,7 +136,7 @@ const formatError = (err: ZodError, body: any) => {
         return issue.message
       }
       case "invalid_union":
-        return formatUnionError(issue as ZodIssueInvalidUnion)
+        return formatUnionError(issue as ZodIssueInvalidUnion, body)
       case "unrecognized_keys":
         return `Unrecognized fields: '${issue.keys.join(", ")}'`
       case "too_small":

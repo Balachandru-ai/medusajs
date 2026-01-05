@@ -9,7 +9,7 @@ interface UseExtendableFormProps<
   TContext = any,
   TData = any
 > extends Omit<UseFormProps<z.infer<TSchema>, TContext>, "resolver"> {
-  schema: TSchema
+  schema: TSchema | z.ZodPipe<TSchema, z.ZodType>
   configs: ConfigField[]
   data?: TData
 }
@@ -21,12 +21,27 @@ function createAdditionalDataSchema(configs: ConfigField[]) {
   }, {} as Record<string, z.ZodTypeAny>)
 }
 
-function createExtendedSchema<TSchema extends ZodObject<any>>(
-  baseSchema: TSchema,
+/**
+ * Extracts the shape from a schema, handling both ZodObject and ZodPipe.
+ * ZodPipe is created by .transform() and wraps the original schema.
+ */
+function getSchemaShape(
+  schema: ZodObject<any> | z.ZodPipe<ZodObject<any>, z.ZodType>
+): z.ZodRawShape {
+  if (schema instanceof z.ZodPipe) {
+    return (schema.def.in as ZodObject<any>).shape
+  }
+  return schema.shape
+}
+
+function createExtendedSchema(
+  baseSchema: ZodObject<any> | z.ZodPipe<ZodObject<any>, z.ZodType>,
   additionalDataSchema: Record<string, z.ZodTypeAny>
 ) {
+  const baseShape = getSchemaShape(baseSchema)
+
   const extendedObjectSchema = z.object({
-    ...baseSchema.shape,
+    ...baseShape,
     additional_data: z.object(additionalDataSchema).optional(),
   })
 
