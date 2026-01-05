@@ -1,4 +1,4 @@
-import { z } from "@medusajs/framework/zod"
+import { z } from "@medusajs/deps/zod"
 import { ProductStatus } from "./enums"
 
 export const booleanString = () =>
