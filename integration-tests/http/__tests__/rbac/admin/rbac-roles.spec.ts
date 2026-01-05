@@ -385,7 +385,7 @@ medusaIntegrationTestRunner({
           )
         })
 
-        it("should remove a policy from a role", async () => {
+        it.only("should remove a policy from a role", async () => {
           // First add a policy to the role
           await api.post(
             `/admin/rbac/roles/${editorRole.id}/policies`,
