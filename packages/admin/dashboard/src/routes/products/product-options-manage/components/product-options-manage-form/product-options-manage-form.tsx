@@ -86,26 +86,6 @@ export const ProductOptionsManageForm = ({
 
   const handleProductOptionSelect = (optionIds: string[]) => {
     form.setValue("option_ids", optionIds)
-
-    const currentOptionValues = form.getValues("option_values") || {}
-
-    // Initialize selected values for new options (select all by default)
-    const newSelectedValues: Record<string, string[]> = {}
-    const selectedProductOptions = product_options.filter((option) =>
-      optionIds.includes(option.id)
-    )
-
-    selectedProductOptions.forEach((option) => {
-      // If option was already selected, keep its current value selection
-      if (currentOptionValues[option.id]) {
-        newSelectedValues[option.id] = currentOptionValues[option.id]
-      } else {
-        // New option - select all values by default
-        newSelectedValues[option.id] = option.values?.map((v) => v.id) || []
-      }
-    })
-
-    form.setValue("option_values", newSelectedValues)
   }
 
   const handleValueChange = (optionId: string, valueIds: string[]) => {
@@ -142,11 +122,18 @@ export const ProductOptionsManageForm = ({
       const isNewOption = !currentOptionIds.includes(newId)
 
       if (isNewOption) {
+        const optionValues = data.option_values?.[newId]
+
+        if (!optionValues) {
+          toast.error(t("products.options.manage.error.noValues"))
+          return
+        }
+
         optionsToAdd.push(
           data.option_values
             ? {
                 id: newId,
-                value_ids: data.option_values[newId],
+                value_ids: optionValues,
               }
             : newId
         )
