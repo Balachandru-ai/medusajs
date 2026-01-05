@@ -1,14 +1,4 @@
-import {
-  ZodBoolean,
-  ZodEffects,
-  ZodNull,
-  ZodNullable,
-  ZodNumber,
-  ZodOptional,
-  ZodString,
-  ZodType,
-  ZodUndefined,
-} from "zod"
+import { z } from "zod"
 import { FormFieldType } from "./types"
 
 export function getFieldLabel(name: string, label?: string) {
@@ -22,45 +12,42 @@ export function getFieldLabel(name: string, label?: string) {
     .join(" ")
 }
 
-export function getFieldType(type: ZodType): FormFieldType {
-  if (type instanceof ZodString) {
+export function getFieldType(type: z.ZodType): FormFieldType {
+  const schemaType = type.type
+
+  if (schemaType === "string") {
     return "text"
   }
 
-  if (type instanceof ZodNumber) {
+  if (schemaType === "number") {
     return "number"
   }
 
-  if (type instanceof ZodBoolean) {
+  if (schemaType === "boolean") {
     return "boolean"
   }
 
-  if (type instanceof ZodNullable) {
-    const innerType = type.unwrap()
-
+  if (schemaType === "nullable" || schemaType === "optional") {
+    const innerType = (
+      type as z.ZodNullable<z.ZodType> | z.ZodOptional<z.ZodType>
+    ).unwrap()
     return getFieldType(innerType)
   }
 
-  if (type instanceof ZodOptional) {
-    const innerType = type.unwrap()
-
-    return getFieldType(innerType)
-  }
-
-  if (type instanceof ZodEffects) {
-    const innerType = type.innerType()
-
+  if (schemaType === "pipe") {
+    const innerType = (type._zod.def as unknown as { in: z.ZodType }).in
     return getFieldType(innerType)
   }
 
   return "unsupported"
 }
 
-export function getIsFieldOptional(type: ZodType) {
+export function getIsFieldOptional(type: z.ZodType) {
+  const schemaType = type.type
   return (
-    type instanceof ZodOptional ||
-    type instanceof ZodNull ||
-    type instanceof ZodUndefined ||
-    type instanceof ZodNullable
+    schemaType === "optional" ||
+    schemaType === "null" ||
+    schemaType === "undefined" ||
+    schemaType === "nullable"
   )
 }

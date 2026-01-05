@@ -72,9 +72,14 @@ const formatRequiredField = (issues: ZodIssue[]) => {
 }
 
 const formatUnionError = (issue: ZodIssueInvalidUnion) => {
+  const parentPath = issue.path ?? []
   const issues = (issue.errors ?? [])
     .flatMap((e: { issues?: ZodIssue[] }) => e?.issues ?? (e as ZodIssue[]))
     .filter((i): i is ZodIssue => i != null)
+    .map((i) => ({
+      ...i,
+      path: [...parentPath, ...i.path],
+    }))
 
   if (!issues.length) {
     return issue.message
