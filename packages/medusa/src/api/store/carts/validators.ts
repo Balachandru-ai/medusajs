@@ -23,7 +23,7 @@ export const CreateCart = z
     sales_channel_id: z.string().nullish(),
     promo_codes: z.array(z.string()).optional(),
     metadata: z.record(z.string(), z.unknown()).nullish(),
-    locale: z.string().optional(),
+    locale: z.string().nullish(),
   })
   .strict()
 export const StoreCreateCart = WithAdditionalData(CreateCart)
@@ -44,9 +44,11 @@ export const StoreRemoveCartPromotions = z
   })
   .strict()
 
-const StoreCartUpsertAddress = AddressPayload.merge(z.object({
-	id: z.string().optional(),
-}))
+const StoreCartUpsertAddress = AddressPayload.merge(
+  z.object({
+    id: z.string().optional(),
+  })
+)
 
 export type StoreUpdateCartType = z.infer<typeof UpdateCart>
 export const UpdateCart = z
@@ -58,7 +60,7 @@ export const UpdateCart = z
     sales_channel_id: z.string().nullish(),
     metadata: z.record(z.string(), z.unknown()).nullish(),
     promo_codes: z.array(z.string()).optional(),
-    locale: z.string().optional(),
+    locale: z.string().nullish(),
   })
   .strict()
 export const StoreUpdateCart = WithAdditionalData(UpdateCart)

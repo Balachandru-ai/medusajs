@@ -11,7 +11,8 @@
     "start": "next start",
     "start:monorepo": "yarn start -p 3000",
     "lint": "next lint --fix",
-    "prep": "node ./scripts/prepare.mjs"
+    "prep": "node ./scripts/prepare.mjs",
+    "test": "vitest"
   },
   "dependencies": {
     "@mdx-js/loader": "^3.1.0",
@@ -64,7 +65,9 @@
     "eslint": "^9.13.0",
     "eslint-plugin-prettier": "^5.2.1",
     "eslint-plugin-react-hooks": "^5.0.0",
-    "types": "*"
+    "types": "*",
+    "vite-tsconfig-paths": "^5.1.4",
+    "vitest": "^2.1.8"
   },
   "engines": {
     "node": ">=20"
