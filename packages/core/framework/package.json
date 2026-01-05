@@ -45,7 +45,8 @@
     "./opentelemetry/resources": "./dist/deps/opentelemetry-resources.js",
     "./opentelemetry/api": "./dist/deps/opentelemetry-api.js",
     "./awilix": "./dist/deps/awilix.js",
-    "./pg": "./dist/deps/pg.js"
+    "./pg": "./dist/deps/pg.js",
+    "./zod": "./dist/deps/zod.js"
   },
   "engines": {
     "node": ">=20"

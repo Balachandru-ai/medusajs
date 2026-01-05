@@ -3503,6 +3503,7 @@ __metadata:
     "@opentelemetry/sdk-trace-node": ^2.0.0
     awilix: ^8.0.1
     pg: ^8.16.3
+    zod: 3.25.76
   languageName: unknown
   linkType: soft
 
