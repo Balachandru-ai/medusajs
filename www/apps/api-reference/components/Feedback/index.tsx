@@ -6,7 +6,7 @@ import {
   FeedbackProps,
   DocsTrackingEvents,
 } from "docs-ui"
-import { useArea } from "../../providers/area"
+import { useArea } from "@/providers/area"
 
 export const Feedback = (props: Partial<FeedbackProps>) => {
   const { area } = useArea()

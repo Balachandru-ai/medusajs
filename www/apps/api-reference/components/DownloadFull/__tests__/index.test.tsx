@@ -8,7 +8,7 @@ const mockUseArea = vi.fn(() => ({
 }))
 
 // mock components
-vi.mock("@/providers/Area", () => ({
+vi.mock("@/providers/area", () => ({
   useArea: () => mockUseArea(),
 }))
 
