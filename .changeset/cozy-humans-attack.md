@@ -1,5 +1,5 @@
 ---
-"@medusajs/promotion": major
+"@medusajs/promotion": patch
 ---
 
-Add a changeset - Run yarn changeset (I'll walk you through this after you push
+Fixed Buy X Get Y promotion discount calculation for tax-inclusive products
