@@ -108,6 +108,7 @@ export const beginOrderEditOrderWorkflow = createWorkflow(
         created_by: input.created_by,
         description: input.description,
         internal_note: input.internal_note,
+        carry_over_promotions: true,
       }
     })
 

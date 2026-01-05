@@ -105,18 +105,6 @@ export const addDraftOrderItemsWorkflow = createWorkflow(
       (order) => order.promotions?.map((promotion) => promotion.code) ?? []
     )
 
-    // If any the order has any promo codes, then we need to refresh the adjustments.
-    when(
-      appliedPromoCodes,
-      (appliedPromoCodes) => appliedPromoCodes.length > 0
-    ).then(() => {
-      computeDraftOrderAdjustmentsWorkflow.runAsStep({
-        input: {
-          order_id: input.order_id,
-        },
-      })
-    })
-
     const orderChangeActionInput = transform(
       { order, orderChange, items: input.items, lineItems },
       ({ order, orderChange, items, lineItems }) => {
@@ -141,6 +129,21 @@ export const addDraftOrderItemsWorkflow = createWorkflow(
 
     createOrderChangeActionsWorkflow.runAsStep({
       input: orderChangeActionInput,
+    })
+
+    // Compute promotions after the ITEM_ADD actions are created
+    // so the preview includes the new items
+    when(
+      appliedPromoCodes,
+      (appliedPromoCodes) => appliedPromoCodes.length > 0
+    ).then(() => {
+      computeDraftOrderAdjustmentsWorkflow
+        .runAsStep({
+          input: {
+            order_id: input.order_id,
+          },
+        })
+        .config({ name: "compute-draft-order-adjustments-after-item-add" })
     })
 
     releaseLockStep({
