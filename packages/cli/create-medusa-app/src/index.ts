@@ -42,6 +42,9 @@ program
     "Show all logs of underlying commands. Useful for debugging.",
     false
   )
+  .option("--use-npm", "Use npm as the package manager")
+  .option("--use-pnpm", "Use pnpm as the package manager")
+  .option("--use-yarn", "Use yarn as the package manager")
   .parse()
 
 void create(program.args, program.opts())
