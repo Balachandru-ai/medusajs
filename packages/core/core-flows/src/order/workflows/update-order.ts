@@ -28,6 +28,7 @@ import {
   updateOrdersStep,
 } from "../steps"
 import { throwIfOrderIsCancelled } from "../utils/order-validation"
+import { findOrCreateCustomerStep } from "../../cart"
 
 /**
  * The data to validate the order update.
@@ -151,30 +152,43 @@ export const updateOrderWorkflow = createWorkflow(
 
     updateOrderValidationStep({ order, input })
 
-    const updateInput = transform({ input, order }, ({ input, order }) => {
-      const update: UpdateOrderDTO = {}
-
-      if (input.shipping_address) {
-        const address = {
-          // we want to create a new address
-          ...order.shipping_address,
-          ...input.shipping_address,
-        }
-        delete address.id
-        update.shipping_address = address
-      }
-
-      if (input.billing_address) {
-        const address = {
-          ...order.billing_address,
-          ...input.billing_address,
-        }
-        delete address.id
-        update.billing_address = address
-      }
-
-      return { ...input, ...update }
+    const customerData = when({ input, order }, ({ input, order }) => {
+      return !order.email && !!input.email
+    }).then(() => {
+      return findOrCreateCustomerStep({ email: input.email })
     })
+
+    const updateInput = transform(
+      { input, order, customerData },
+      ({ input, order, customerData }) => {
+        const update: UpdateOrderDTO = {}
+
+        if (input.shipping_address) {
+          const address = {
+            // we want to create a new address
+            ...order.shipping_address,
+            ...input.shipping_address,
+          }
+          delete address.id
+          update.shipping_address = address
+        }
+
+        if (input.billing_address) {
+          const address = {
+            ...order.billing_address,
+            ...input.billing_address,
+          }
+          delete address.id
+          update.billing_address = address
+        }
+
+        if (!!customerData?.customer) {
+          update.customer_id = customerData.customer.id
+        }
+
+        return { ...input, ...update }
+      }
+    )
 
     const updatedOrders = updateOrdersStep({
       selector: { id: input.id },
