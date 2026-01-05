@@ -171,7 +171,6 @@ medusaIntegrationTestRunner({
                 title: "Extra variant",
                 sku: "extra-variant",
                 options: { size: "large" },
-                manage_inventory: false,
                 prices: [{ currency_code: "usd", amount: 50 }],
               },
             ],
@@ -203,16 +202,14 @@ medusaIntegrationTestRunner({
         await api.get(`/admin/inventory-items?sku=extra-variant`, adminHeaders)
       ).data.inventory_items[0]
 
-      if (inventoryItemExtra) {
-        await api.post(
-          `/admin/inventory-items/${inventoryItemExtra.id}/location-levels`,
-          {
-            location_id: location.id,
-            stocked_quantity: 10,
-          },
-          adminHeaders
-        )
-      }
+      await api.post(
+        `/admin/inventory-items/${inventoryItemExtra.id}/location-levels`,
+        {
+          location_id: location.id,
+          stocked_quantity: 10,
+        },
+        adminHeaders
+      )
 
       const remoteLink = appContainer.resolve(
         ContainerRegistrationKeys.REMOTE_LINK
@@ -540,6 +537,8 @@ medusaIntegrationTestRunner({
         })
 
         it("should use original tax line description when order has no locale", async () => {
+          order = await createOrderWithLocale()
+
           const claim = (
             await api.post(
               "/admin/claims",
@@ -589,6 +588,8 @@ medusaIntegrationTestRunner({
 
       describe("when adding outbound shipping methods to a claim", () => {
         it("should translate shipping method tax lines based on order locale", async () => {
+          order = await createOrderWithLocale("fr-FR")
+
           await api.post(
             `/admin/orders/${order.id}`,
             { locale: "fr-FR" },
@@ -644,6 +645,8 @@ medusaIntegrationTestRunner({
         })
 
         it("should use original tax line description when order has no locale", async () => {
+          order = await createOrderWithLocale()
+
           const claim = (
             await api.post(
               "/admin/claims",
@@ -695,6 +698,8 @@ medusaIntegrationTestRunner({
 
       describe("when updating outbound items in a claim", () => {
         it("should preserve tax line translations when updating item quantity", async () => {
+          order = await createOrderWithLocale("fr-FR")
+
           await api.post(
             `/admin/orders/${order.id}`,
             { locale: "fr-FR" },
