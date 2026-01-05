@@ -68,14 +68,4 @@ export const adminRbacRoleRoutesMiddlewares: MiddlewareRoute[] = [
       ),
     ],
   },
-  {
-    method: ["DELETE"],
-    matcher: "/admin/rbac/roles/:id",
-    middlewares: [],
-  },
-  {
-    method: ["DELETE"],
-    matcher: "/admin/rbac/roles/:id/policies/:policyId",
-    middlewares: [],
-  },
 ]

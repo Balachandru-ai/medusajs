@@ -7,8 +7,6 @@ import {
   ContainerRegistrationKeys,
   defineFileConfig,
   FeatureFlag,
-  MedusaError,
-  Modules,
 } from "@medusajs/framework/utils"
 import RbacFeatureFlag from "../../../../../../feature-flags/rbac"
 import { listTransformQueryConfig } from "../../query-config"
@@ -65,51 +63,6 @@ export const POST = async (
   })
 
   res.status(200).json({ role_policies })
-}
-
-export const DELETE = async (
-  req: AuthenticatedMedusaRequest,
-  res: MedusaResponse
-) => {
-  const roleId = req.params.id
-  const policyId = req.params.policyId
-
-  if (!policyId) {
-    throw new MedusaError(
-      MedusaError.Types.INVALID_DATA,
-      `policyId is required in the URL parameters`
-    )
-  }
-
-  const rbacService = req.scope.resolve(Modules.RBAC)
-  const query = req.scope.resolve(ContainerRegistrationKeys.QUERY)
-
-  const { data: rolePolicies } = await query.graph({
-    entity: "rbac_role_policy",
-    fields: ["id"],
-    filters: {
-      role_id: roleId,
-      policy_id: policyId,
-    },
-    pagination: { take: 1 },
-  })
-
-  const rolePolicy = rolePolicies?.[0]
-
-  if (!rolePolicy) {
-    throw new MedusaError(
-      MedusaError.Types.NOT_FOUND,
-      `Policy with id ${policyId} is not associated with role ${roleId}`
-    )
-  }
-
-  await rbacService.deleteRbacRolePolicies([rolePolicy.id])
-
-  res.status(200).json({
-    id: rolePolicy.id,
-    object: "rbac_role_policy",
-    deleted: true,
-  })
 }
 
 defineFileConfig({

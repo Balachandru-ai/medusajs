@@ -10,14 +10,14 @@ export const DELETE = async (
   req: AuthenticatedMedusaRequest,
   res: MedusaResponse
 ) => {
-  const { policyId } = req.params
+  const { policy_id } = req.params
 
   await deleteRbacPoliciesWorkflow(req.scope).run({
-    input: { ids: [policyId] },
+    input: { ids: [policy_id] },
   })
 
   res.status(200).json({
-    id: policyId,
+    id: policy_id,
     object: "rbac_policy",
     deleted: true,
   })
