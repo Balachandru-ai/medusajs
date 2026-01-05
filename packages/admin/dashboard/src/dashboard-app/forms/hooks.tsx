@@ -29,7 +29,12 @@ function getSchemaShape(
   schema: ZodObject<any> | z.ZodPipe<ZodObject<any>, z.ZodType>
 ): z.ZodRawShape {
   if (schema instanceof z.ZodPipe) {
-    return (schema.def.in as ZodObject<any>).shape
+    const innerSchema = schema.def.in
+    // Guard: ensure inner schema is a ZodObject before accessing shape
+    if (innerSchema instanceof ZodObject) {
+      return innerSchema.shape
+    }
+    return {}
   }
   return schema.shape
 }

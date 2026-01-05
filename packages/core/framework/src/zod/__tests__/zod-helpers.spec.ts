@@ -22,7 +22,9 @@ describe("zodValidator", () => {
         count: z.number(),
       })
 
-      await expect(zodValidator(schema, { count: "not a number" })).rejects.toThrow(
+      await expect(
+        zodValidator(schema, { count: "not a number" })
+      ).rejects.toThrow(
         new MedusaError(
           MedusaError.Types.INVALID_DATA,
           "Invalid request: Expected type: 'number' for field 'count', got: 'not a number'"
@@ -83,6 +85,36 @@ describe("zodValidator", () => {
           "Invalid request: Field 'geo_zones, 2, type' is required"
         )
       )
+    })
+
+    it("should handle discriminated union with invalid type value", async () => {
+      // This matches the actual geo_zones schema structure with z.union of z.literal types
+      const geoZoneCountrySchema = z.object({
+        type: z.literal("country"),
+        country_code: z.string(),
+      })
+
+      const geoZoneProvinceSchema = z.object({
+        type: z.literal("province"),
+        country_code: z.string(),
+        province_code: z.string(),
+      })
+
+      const schema = z.object({
+        geo_zones: z.array(
+          z.union([geoZoneCountrySchema, geoZoneProvinceSchema])
+        ),
+      })
+
+      await expect(
+        zodValidator(schema, {
+          geo_zones: [
+            { type: "country", country_code: "US" },
+            { type: "province", country_code: "CA", province_code: "ON" },
+            { type: "region", country_code: "UK" }, // invalid type
+          ],
+        })
+      ).rejects.toThrow(/geo_zones.*2.*type/)
     })
 
     it("should preserve parent path in nested union errors", async () => {
