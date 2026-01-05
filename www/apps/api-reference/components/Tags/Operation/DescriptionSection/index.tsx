@@ -144,7 +144,7 @@ const TagsOperationDescriptionSection = ({
           parameters={operation.parameters}
         />
       )}
-      {operation.requestBody &&
+      {operation.requestBody?.content !== undefined &&
         Object.keys(operation.requestBody.content).length > 0 && (
           <TagsOperationDescriptionSectionRequest
             requestBody={operation.requestBody}

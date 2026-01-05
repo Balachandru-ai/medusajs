@@ -29,7 +29,8 @@ const TagsOperationCodeSectionResponsesSample = ({
   }, [examples])
 
   const isEmptyResponse =
-    response?.content && Object.keys(response.content).length === 0
+    response?.content === undefined ||
+    Object.keys(response.content).length === 0
 
   return (
     <>

@@ -21,7 +21,8 @@ const TagsOperationDescriptionSectionResponses = ({
         {Object.entries(responses).map(([code, response], index) => {
           const successCode = code.startsWith("20")
           const isEmptyResponse =
-            response?.content && Object.keys(response.content).length === 0
+            response?.content === undefined ||
+            Object.keys(response.content).length === 0
           return (
             <Fragment key={index}>
               {!isEmptyResponse && (
