@@ -2,9 +2,9 @@ import { MedusaError } from "../utils"
 import {
   z,
   ZodError,
-  ZodInvalidTypeIssue,
-  ZodInvalidUnionIssue,
-  ZodIssue,
+  type ZodInvalidTypeIssue,
+  type ZodInvalidUnionIssue,
+  type ZodIssue,
 } from "@medusajs/deps/zod"
 
 const formatPath = (issue: ZodIssue) => {
