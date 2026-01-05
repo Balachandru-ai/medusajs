@@ -1,6 +1,6 @@
 import { OrchestrationUtils } from "@medusajs/utils"
 
-type ZodLike<T = any> = {
+type ZodLike<T = unknown> = {
   parse(data: unknown): T
 }
 import {

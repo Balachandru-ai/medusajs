@@ -34,7 +34,7 @@ function createExtendedSchema<TSchema extends ZodObject<any>>(
     .superRefine((data, ctx) => {
       const result = extendedObjectSchema.safeParse(data)
       if (!result.success) {
-        result.error.issues.forEach((issue) => ctx.addIssue(issue as any))
+        result.error.issues.forEach((issue) => ctx.addIssue({ ...issue }))
       }
     })
     .and(extendedObjectSchema)

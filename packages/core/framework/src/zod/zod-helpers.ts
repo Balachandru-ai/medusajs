@@ -12,10 +12,7 @@ function getReceivedValue(issue: ZodIssueInvalidValue, body: any) {
   } else if ("received" in issue) {
     return issue.received
   } else {
-    return issue.path.reduce(
-      (acc: any, curr: string | number | symbol) => acc?.[curr as string],
-      body
-    )
+    return issue.path.reduce<any>((acc, curr: PropertyKey) => acc?.[curr], body)
   }
 }
 
@@ -58,12 +55,11 @@ const formatRequiredField = (issues: ZodIssue[]) => {
       }
       // Also check invalid_value issues - if there's no input property or it's undefined
       if (i?.code === "invalid_value") {
-        const issueAny = i as any
-        const hasInput = "input" in issueAny || "received" in issueAny
-        if (!hasInput) {
-          return true
-        }
-        return issueAny.input === undefined && issueAny.received === undefined
+        const invalidValueIssue = i as ZodIssueInvalidValue
+        return (
+          !("input" in invalidValueIssue) ||
+          invalidValueIssue.input === undefined
+        )
       }
       return false
     })
@@ -147,6 +143,16 @@ const formatError = (err: ZodError, body: any) => {
   return issueMessages.join("; ")
 }
 
+function isZodError(err: unknown): err is ZodError {
+  return (
+    err instanceof ZodError ||
+    (err !== null &&
+      typeof err === "object" &&
+      "issues" in err &&
+      Array.isArray((err as { issues: unknown }).issues))
+  )
+}
+
 export async function zodValidator<T>(
   zodSchema: z.ZodObject<any, any> | z.ZodType<any, any, any>,
   body: T
@@ -159,7 +165,7 @@ export async function zodValidator<T>(
   try {
     return await strictSchema.parseAsync(body)
   } catch (err) {
-    if (err instanceof ZodError || err.name === "ZodError") {
+    if (isZodError(err)) {
       throw new MedusaError(
         MedusaError.Types.INVALID_DATA,
         `Invalid request: ${formatError(err, body)}`
