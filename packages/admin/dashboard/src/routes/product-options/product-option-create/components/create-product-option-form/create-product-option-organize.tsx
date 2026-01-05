@@ -48,7 +48,7 @@ export const CreateProductOptionOrganize = ({
   const handleChange = (newItems: ValueItem[]) => {
     const newRanks: Record<string, number> = {}
     newItems.forEach((item, index) => {
-      newRanks[item.value] = index
+      newRanks[item.value] = index + 1
     })
 
     form.setValue("value_ranks", newRanks, {
