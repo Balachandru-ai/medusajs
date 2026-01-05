@@ -1,8 +1,4 @@
 import { OrchestrationUtils } from "@medusajs/utils"
-
-type ZodLike<T = any> = {
-  parse(data: unknown): T
-}
 import {
   CompensateFn,
   createStep,
@@ -12,6 +8,10 @@ import {
 import { StepResponse } from "./helpers"
 import { createStepHandler } from "./helpers/create-step-handler"
 import type { CreateWorkflowComposerContext } from "./type"
+
+type ZodLike<T = any> = {
+  parse(data: unknown): T
+}
 
 const NOOP_RESULT = Symbol.for("NOOP")
 
