@@ -19,6 +19,9 @@ export const createRbacRolesStep = createStep(
   async (data: CreateRbacRolesStepInput, { container }) => {
     const service = container.resolve<IRbacModuleService>(Modules.RBAC)
 
+    if (!data.roles?.length) {
+      return new StepResponse([], [])
+    }
     const created = await service.createRbacRoles(data.roles)
 
     return new StepResponse(

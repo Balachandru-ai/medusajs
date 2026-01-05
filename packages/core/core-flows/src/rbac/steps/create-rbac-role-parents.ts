@@ -19,7 +19,7 @@ export const createRbacRoleParentsStep = createStep(
   async (data: CreateRbacRoleParentsStepInput, { container }) => {
     const service = container.resolve<IRbacModuleService>(Modules.RBAC)
 
-    if (!data.role_parents || data.role_parents.length === 0) {
+    if (!data.role_parents?.length) {
       return new StepResponse([], [])
     }
 

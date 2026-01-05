@@ -16,7 +16,7 @@ export const setRoleParentStep = createStep(
 
     const allCompensationData: Array<{
       role_id: string
-      previousInheritedRoleIds: string[]
+      previous_inherited_role_ids: string[]
     }> = []
 
     if (!data || data.length === 0) {
@@ -41,7 +41,7 @@ export const setRoleParentStep = createStep(
 
       allCompensationData.push({
         role_id: roleData.role_id,
-        previousInheritedRoleIds: existingInheritedRoleIds,
+        previous_inherited_role_ids: existingInheritedRoleIds,
       })
 
       const toAdd = roleData.parent_ids.filter(
@@ -84,7 +84,7 @@ export const setRoleParentStep = createStep(
   },
   async (
     compensationData:
-      | Array<{ role_id: string; previousInheritedRoleIds: string[] }>
+      | Array<{ role_id: string; previous_inherited_role_ids: string[] }>
       | undefined,
     { container }
   ) => {
@@ -103,9 +103,9 @@ export const setRoleParentStep = createStep(
         await service.deleteRbacRoleParents(currentParent.map((ri) => ri.id))
       }
 
-      if (roleCompensation.previousInheritedRoleIds.length > 0) {
+      if (roleCompensation.previous_inherited_role_ids.length > 0) {
         await service.createRbacRoleParents(
-          roleCompensation.previousInheritedRoleIds.map((parent_id) => ({
+          roleCompensation.previous_inherited_role_ids.map((parent_id) => ({
             role_id: roleCompensation.role_id,
             parent_id,
           }))

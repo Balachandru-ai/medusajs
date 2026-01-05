@@ -346,6 +346,7 @@ medusaIntegrationTestRunner({
           )
 
           expect(response.status).toEqual(200)
+
           expect(response.data.role_policies).toHaveLength(1)
           expect(response.data.role_policies[0]).toMatchObject({
             role_id: viewerRole.id,
@@ -365,7 +366,7 @@ medusaIntegrationTestRunner({
 
           // List the role to get its policies
           const response = await api.get(
-            `/admin/rbac/roles/${viewerRole.id}?fields[]=policies`,
+            `/admin/rbac/roles/${viewerRole.id}/?fields=policies`,
             adminHeaders
           )
 
@@ -396,7 +397,7 @@ medusaIntegrationTestRunner({
 
           // Verify the policy was added
           const initialResponse = await api.get(
-            `/admin/rbac/roles/${editorRole.id}?fields[]=policies`,
+            `/admin/rbac/roles/${editorRole.id}?fields=policies`,
             adminHeaders
           )
           expect(initialResponse.data.role.policies).toHaveLength(1)
@@ -410,13 +411,13 @@ medusaIntegrationTestRunner({
           expect(deleteResponse.status).toEqual(200)
           expect(deleteResponse.data).toEqual({
             id: policies[2].id,
-            object: "policy",
+            object: "rbac_policy",
             deleted: true,
           })
 
           // Verify the policy was removed
           const finalResponse = await api.get(
-            `/admin/rbac/roles/${editorRole.id}?fields[]=policies`,
+            `/admin/rbac/roles/${editorRole.id}?fields=policies`,
             adminHeaders
           )
           expect(finalResponse.data.role.policies).toHaveLength(0)

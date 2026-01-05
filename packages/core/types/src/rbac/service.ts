@@ -1,4 +1,5 @@
 import { FindConfig } from "../common"
+import { RestoreReturn, SoftDeleteReturn } from "../dal"
 import { IModuleService } from "../modules-sdk"
 import { Context } from "../shared-context"
 import {
@@ -191,4 +192,45 @@ export interface IRbacModuleService extends IModuleService {
     roleId: string,
     sharedContext?: Context
   ): Promise<RbacPolicyDTO[]>
+
+  softDeleteRbacRoles<TReturnableLinkableKeys extends string = string>(
+    roleIds: string | string[],
+    config?: SoftDeleteReturn<TReturnableLinkableKeys>,
+    sharedContext?: Context
+  ): Promise<Record<string, string[]> | void>
+  restoreRbacRoles<TReturnableLinkableKeys extends string = string>(
+    roleIds: string | string[],
+    config?: RestoreReturn<TReturnableLinkableKeys>,
+    sharedContext?: Context
+  ): Promise<Record<string, string[]> | void>
+  softDeleteRbacPolicies<TReturnableLinkableKeys extends string = string>(
+    policyIds: string | string[],
+    config?: SoftDeleteReturn<TReturnableLinkableKeys>,
+    sharedContext?: Context
+  ): Promise<Record<string, string[]> | void>
+  restoreRbacPolicies<TReturnableLinkableKeys extends string = string>(
+    policyIds: string | string[],
+    config?: RestoreReturn<TReturnableLinkableKeys>,
+    sharedContext?: Context
+  ): Promise<Record<string, string[]> | void>
+  softDeleteRbacRolePolicies<TReturnableLinkableKeys extends string = string>(
+    rolePolicyIds: string | string[],
+    config?: SoftDeleteReturn<TReturnableLinkableKeys>,
+    sharedContext?: Context
+  ): Promise<Record<string, string[]> | void>
+  restoreRbacRolePolicies<TReturnableLinkableKeys extends string = string>(
+    rolePolicyIds: string | string[],
+    config?: RestoreReturn<TReturnableLinkableKeys>,
+    sharedContext?: Context
+  ): Promise<Record<string, string[]> | void>
+  softDeleteRbacRoleParents<TReturnableLinkableKeys extends string = string>(
+    roleParentIds: string | string[],
+    config?: SoftDeleteReturn<TReturnableLinkableKeys>,
+    sharedContext?: Context
+  ): Promise<Record<string, string[]> | void>
+  restoreRbacRoleParents<TReturnableLinkableKeys extends string = string>(
+    roleParentIds: string | string[],
+    config?: RestoreReturn<TReturnableLinkableKeys>,
+    sharedContext?: Context
+  ): Promise<Record<string, string[]> | void>
 }

@@ -1,15 +1,6 @@
 import { Modules } from "@medusajs/framework/utils"
 import { StepResponse, createStep } from "@medusajs/framework/workflows-sdk"
-import { IRbacModuleService } from "@medusajs/types"
-
-export type CreateRbacPolicyDTO = {
-  key: string
-  resource: string
-  operation: string
-  name?: string | null
-  description?: string | null
-  metadata?: Record<string, unknown> | null
-}
+import { CreateRbacPolicyDTO, IRbacModuleService } from "@medusajs/types"
 
 export type CreateRbacPoliciesStepInput = {
   policies: CreateRbacPolicyDTO[]

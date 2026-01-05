@@ -7,6 +7,7 @@ import {
 import { MiddlewareRoute } from "@medusajs/framework/http"
 
 import {
+  AdminAddRolePoliciesType,
   AdminCreateRbacRole,
   AdminGetRbacRoleParams,
   AdminGetRbacRolesParams,
@@ -57,8 +58,24 @@ export const adminRbacRoleRoutesMiddlewares: MiddlewareRoute[] = [
     ],
   },
   {
+    method: ["POST"],
+    matcher: "/admin/rbac/roles/:id/policies",
+    middlewares: [
+      validateAndTransformBody(AdminAddRolePoliciesType),
+      validateAndTransformQuery(
+        AdminGetRbacRoleParams,
+        QueryConfig.retrieveRolePoliciesTransformQueryConfig
+      ),
+    ],
+  },
+  {
     method: ["DELETE"],
     matcher: "/admin/rbac/roles/:id",
+    middlewares: [],
+  },
+  {
+    method: ["DELETE"],
+    matcher: "/admin/rbac/roles/:id/policies/:policyId",
     middlewares: [],
   },
 ]

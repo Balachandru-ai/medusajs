@@ -19,3 +19,23 @@ export const listTransformQueryConfig = {
   defaultLimit: 20,
   isList: true,
 }
+
+export const defaultAdminRolePoliciesFields = [
+  "id",
+  "role_id",
+  "policy_id",
+  "metadata",
+  "created_at",
+  "updated_at",
+  "deleted_at",
+]
+
+export const retrieveRolePoliciesTransformQueryConfig = {
+  defaults: defaultAdminRolePoliciesFields,
+  isList: false,
+}
+
+export const listRolePoliciesTransformQueryConfig = {
+  ...retrieveRolePoliciesTransformQueryConfig,
+  isList: true,
+}
