@@ -299,7 +299,7 @@ function applyPromotionToTargetItems(
     const appliedPromoValue =
       methodIdPromoValueMap.get(item.id) ?? MathBN.convert(0)
     const multiplier = MathBN.min(targetItem.quantity, remainingQtyToApply)
-    const pricePerUnit = MathBN.div(item.is_tax_inclusive ? item.original_total :item.subtotal, item.quantity)
+    const pricePerUnit = MathBN.div(promotion.is_tax_inclusive ? item.original_total :item.subtotal, item.quantity)
     const applicableAmount = MathBN.mult(pricePerUnit, multiplier)
     const amount = MathBN.mult(
       applicableAmount,
