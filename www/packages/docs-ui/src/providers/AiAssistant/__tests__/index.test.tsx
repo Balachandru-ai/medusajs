@@ -1,7 +1,7 @@
 import React from "react"
 import { afterEach, beforeEach, describe, expect, test, vi } from "vitest"
 import { cleanup, fireEvent, render, waitFor } from "@testing-library/react"
-import * as AiAssistantMocks from "@/components/AiAssistant/__mocks__"
+import * as AiAssistantMocks from "../../../components/AiAssistant/__mocks__"
 
 // Mock dependencies
 const mockUseIsBrowser = vi.fn(() => ({
@@ -297,6 +297,9 @@ describe("useAiAssistant hook", () => {
 
     // Mock grecaptcha to be available after a delay
     setTimeout(() => {
+      if (!window) {
+        return
+      }
       ;(window as unknown as { grecaptcha?: unknown }).grecaptcha = {}
     }, 100)
 
