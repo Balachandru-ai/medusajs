@@ -828,6 +828,14 @@ const generatedgeneratedToolsSidebarSidebar = {
                   "path": "/nextjs-starter/guides/revalidate-cache",
                   "title": "Revalidate Cache",
                   "children": []
+                },
+                {
+                  "loaded": true,
+                  "isPathHref": true,
+                  "type": "link",
+                  "path": "/nextjs-starter/guides/remove-country-code",
+                  "title": "Remove Country Code from URLs",
+                  "children": []
                 }
               ]
             },

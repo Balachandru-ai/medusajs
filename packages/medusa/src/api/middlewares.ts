@@ -52,6 +52,7 @@ import { adminIndexRoutesMiddlewares } from "./admin/index/middlewares"
 import { adminLocalesRoutesMiddlewares } from "./admin/locales/middlewares"
 import { adminShippingOptionTypeRoutesMiddlewares } from "./admin/shipping-option-types/middlewares"
 import { adminTranslationsRoutesMiddlewares } from "./admin/translations/middlewares"
+import { cloudRoutesMiddlewares } from "./cloud/middlewares"
 import { hooksRoutesMiddlewares } from "./hooks/middlewares"
 import { storeCartRoutesMiddlewares } from "./store/carts/middlewares"
 import { storeCollectionRoutesMiddlewares } from "./store/collections/middlewares"
@@ -142,4 +143,5 @@ export default defineMiddlewares([
   ...viewConfigurationRoutesMiddlewares,
   ...columnRoutesMiddlewares,
   ...adminIndexRoutesMiddlewares,
+  ...cloudRoutesMiddlewares,
 ])
