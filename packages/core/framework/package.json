@@ -93,7 +93,6 @@
     "morgan": "^1.9.1",
     "path-to-regexp": "^8.2.0",
     "tsconfig-paths": "^4.2.0",
-    "zod": "3.25.76",
     "zod-validation-error": "3.5.1"
   },
   "peerDependencies": {
