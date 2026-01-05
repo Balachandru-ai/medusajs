@@ -1,6 +1,5 @@
 import { HttpTypes } from "@medusajs/types"
 import { Button, Hint, Label, toast, Tooltip } from "@medusajs/ui"
-import { useMemo, useState } from "react"
 import { InformationCircle } from "@medusajs/icons"
 import { useTranslation } from "react-i18next"
 import * as zod from "zod"
@@ -38,8 +37,24 @@ export const ProductOptionsManageForm = ({
 
   const productOptionIds = product.options?.map((opt) => opt.id) || []
 
-  const [selectedOptionIds, setSelectedOptionIds] =
-    useState<string[]>(productOptionIds)
+  const form = useExtendableForm({
+    defaultValues: {
+      option_ids: productOptionIds,
+      option_values: (() => {
+        const initialValues: Record<string, string[]> = {}
+        product.options?.forEach((opt) => {
+          initialValues[opt.id] = opt.values?.map((v) => v.id) || []
+        })
+        return initialValues
+      })(),
+    },
+    schema: ProductOptionsManageSchema,
+    configs: configs,
+    data: product,
+  })
+
+  const selectedOptionIds = form.watch("option_ids") || []
+  const selectedOptionValues = form.watch("option_values") || {}
 
   const { options: productOptionChoices, isLoading } = useComboboxData({
     queryKey: productOptionsQueryKeys.list({ is_exclusive: false }),
@@ -67,38 +82,12 @@ export const ProductOptionsManageForm = ({
     }
   )
 
-  const [selectedOptionValues, setSelectedOptionValues] = useState<
-    Record<string, string[]>
-  >(() => {
-    // Initialize with existing product option values
-    const initialValues: Record<string, string[]> = {}
-    product.options?.forEach((opt) => {
-      initialValues[opt.id] = opt.values?.map((v) => v.id) || []
-    })
-    return initialValues
-  })
-
-  const form = useExtendableForm({
-    defaultValues: {
-      option_ids: product.options?.map((opt) => opt.id) || [],
-      option_values: (() => {
-        const initialValues: Record<string, string[]> = {}
-        product.options?.forEach((opt) => {
-          initialValues[opt.id] = opt.values?.map((v) => v.id) || []
-        })
-        return initialValues
-      })(),
-    },
-    schema: ProductOptionsManageSchema,
-    configs: configs,
-    data: product,
-  })
-
   const { mutateAsync, isPending } = useLinkProductOptions(product.id)
 
   const handleProductOptionSelect = (optionIds: string[]) => {
-    setSelectedOptionIds(optionIds)
     form.setValue("option_ids", optionIds)
+
+    const currentOptionValues = form.getValues("option_values") || {}
 
     // Initialize selected values for new options (select all by default)
     const newSelectedValues: Record<string, string[]> = {}
@@ -108,15 +97,14 @@ export const ProductOptionsManageForm = ({
 
     selectedProductOptions.forEach((option) => {
       // If option was already selected, keep its current value selection
-      if (selectedOptionValues[option.id]) {
-        newSelectedValues[option.id] = selectedOptionValues[option.id]
+      if (currentOptionValues[option.id]) {
+        newSelectedValues[option.id] = currentOptionValues[option.id]
       } else {
         // New option - select all values by default
         newSelectedValues[option.id] = option.values?.map((v) => v.id) || []
       }
     })
 
-    setSelectedOptionValues(newSelectedValues)
     form.setValue("option_values", newSelectedValues)
   }
 
@@ -126,12 +114,12 @@ export const ProductOptionsManageForm = ({
       return
     }
 
+    const currentOptionValues = form.getValues("option_values") || {}
     const updatedSelectedValues = {
-      ...selectedOptionValues,
+      ...currentOptionValues,
       [optionId]: valueIds,
     }
 
-    setSelectedOptionValues(updatedSelectedValues)
     form.setValue("option_values", updatedSelectedValues)
   }
 
