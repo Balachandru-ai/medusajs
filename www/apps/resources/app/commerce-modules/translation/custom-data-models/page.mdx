@@ -190,7 +190,7 @@ In your custom API routes, you can retrieve the request's locale from the `local
 For example, to retrieve blog posts with translated titles in the `/store/posts` API route:
 
 export const apiRouteHighlights = [
-  ["13", "locale", "Pass the request locale to the query options."],
+  ["15", "locale", "Pass the request locale to the query options."],
 ]
 
 ```ts title="src/api/routes/store/posts.ts" highlights={apiRouteHighlights}
@@ -202,13 +202,15 @@ export async function GET(
 ) {
   const query = req.scope.resolve("query")
 
-  const { data: posts } = await query.graph({
-    entity: "post",
-    fields: ["id", "title"],
-    options: {
-      locale: req.locale,
+  const { data: posts } = await query.graph(
+    {
+      entity: "post",
+      fields: ["id", "title"],
     },
-  })
+    {
+      locale: req.locale,
+    }
+  )
 
   res.json({ posts })
 }

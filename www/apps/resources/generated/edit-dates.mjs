@@ -6937,5 +6937,5 @@ export const generatedEditDates = {
   "app/how-to-tutorials/how-to/admin/auth/page.mdx": "2025-12-30T06:35:28.828Z",
   "app/integrations/guides/okta/page.mdx": "2025-12-30T06:35:28.653Z",
   "app/nextjs-starter/guides/remove-country-code/page.mdx": "2025-12-30T10:28:10.072Z",
-  "app/commerce-modules/translation/custom-data-models/page.mdx": "2026-01-06T08:49:12.704Z"
+  "app/commerce-modules/translation/custom-data-models/page.mdx": "2026-01-06T15:54:25.801Z"
 }
