@@ -64380,18 +64380,19 @@ paths:
   /admin/translations/entities:
     get:
       operationId: GetTranslationsEntities
-      summary: List Translations
-      description: Retrieve a list of translations. The translations can be filtered by fields such as `id`. The translations can also be sorted or paginated.
+      summary: List Translatable Entities
+      description: Retrieve a list of translatable entities. The entities can be filtered by fields such as `id`. The entities can also be sorted or paginated.
       x-authenticated: true
       parameters:
         - name: type
           in: query
-          description: The translation's type.
+          description: Filter by a translatable entity type.
           required: true
           schema:
             type: string
             title: type
-            description: The translation's type.
+            description: Filter by a translatable entity type.
+            example: product
         - name: id
           in: query
           required: false
@@ -64399,13 +64400,13 @@ paths:
             oneOf:
               - type: string
                 title: id
-                description: The translation's ID.
+                description: Filter by an entity's ID.
               - type: array
-                description: The translation's ID.
+                description: Filter by entity IDs.
                 items:
                   type: string
                   title: id
-                  description: The id's ID.
+                  description: An entity's ID.
         - name: limit
           in: query
           description: Limit the number of items returned in the list.
@@ -67764,9 +67765,17 @@ paths:
           application/json:
             schema:
               type: object
-              title: identifier
-              description: The user's identifier for the selected auth provider. For example, for the `emailpass` auth provider, the value is the user's email.
-              example: admin@medusa-test.com
+              description: The input data necessary to generate a reset password token.
+              required:
+                - identifier
+              properties:
+                identifier:
+                  type: string
+                  description: The identifier of the admin user. For example, their email address.
+                  example: admin@medusa-test.com
+                metadata:
+                  type: object
+                  description: Optional metadata to include with the reset password token generation request.
       x-codeSamples:
         - lang: JavaScript
           label: JS SDK
@@ -67825,6 +67834,7 @@ paths:
               entity_id, // The identifier of the user or customer. For example, an email address.
               actor_type, // The type of actor. For example, "customer", "user", or custom.
               token, // The generated token.
+              metadata, // Optional custom metadata passed from the request.
             }
             ```
           description: |-
@@ -81580,7 +81590,7 @@ components:
           description: The date that the translation was deleted.
     AdminTranslationEntitiesResponse:
       type: object
-      description: SUMMARY
+      description: The list of translatable entities.
       x-schemaName: AdminTranslationEntitiesResponse
       required:
         - data
@@ -81590,13 +81600,11 @@ components:
       properties:
         data:
           type: array
-          description: The translation's data.
+          description: The list of translatable entities.
           items:
             allOf:
               - type: object
-                description: The datum's data.
-              - type: object
-                description: The datum's data.
+                description: The entity's data.
                 required:
                   - id
                   - translations
@@ -81604,70 +81612,24 @@ components:
                   id:
                     type: string
                     title: id
-                    description: The datum's ID.
+                    description: The entity's ID.
                   translations:
                     type: array
-                    description: The datum's translations.
+                    description: The entity's translations.
                     items:
-                      type: object
-                      description: The translation's translations.
-                      x-schemaName: AdminTranslation
-                      required:
-                        - id
-                        - reference_id
-                        - reference
-                        - locale_code
-                        - translations
-                        - created_at
-                        - updated_at
-                        - deleted_at
-                      properties:
-                        id:
-                          type: string
-                          title: id
-                          description: The translation's ID.
-                        reference_id:
-                          type: string
-                          title: reference_id
-                          description: The translation's reference id.
-                        reference:
-                          type: string
-                          title: reference
-                          description: The translation's reference.
-                        locale_code:
-                          type: string
-                          title: locale_code
-                          description: The translation's locale code.
-                        translations:
-                          type: object
-                          description: The translation's translations.
-                        created_at:
-                          type: string
-                          format: date-time
-                          title: created_at
-                          description: The translation's created at.
-                        updated_at:
-                          type: string
-                          format: date-time
-                          title: updated_at
-                          description: The translation's updated at.
-                        deleted_at:
-                          type: string
-                          format: date-time
-                          title: deleted_at
-                          description: The translation's deleted at.
+                      $ref: '#/components/schemas/AdminTranslation'
         count:
           type: number
           title: count
-          description: The translation's count.
+          description: The total number of translatable entities.
         offset:
           type: number
           title: offset
-          description: The translation's offset.
+          description: The number of items skipped before retrieving the returned items.
         limit:
           type: number
           title: limit
-          description: The translation's limit.
+          description: The maximum number of items returned in the response.
     AdminTranslationSettingsResponse:
       type: object
       description: The translation settings' details.
@@ -90168,7 +90130,7 @@ components:
         completed_at:
           type: string
           title: completed_at
-          description: The cart's completed at.
+          description: The date the cart was completed.
           format: date-time
     StoreCartAddPromotion:
       type: object

@@ -1,18 +1,19 @@
 /**
  * @oas [get] /admin/translations/entities
  * operationId: GetTranslationsEntities
- * summary: List Translations
- * description: Retrieve a list of translations. The translations can be filtered by fields such as `id`. The translations can also be sorted or paginated.
+ * summary: List Translatable Entities
+ * description: Retrieve a list of translatable entities. The entities can be filtered by fields such as `id`. The entities can also be sorted or paginated.
  * x-authenticated: true
  * parameters:
  *   - name: type
  *     in: query
- *     description: The translation's type.
+ *     description: Filter by a translatable entity type.
  *     required: true
  *     schema:
  *       type: string
  *       title: type
- *       description: The translation's type.
+ *       description: Filter by a translatable entity type.
+ *       example: product
  *   - name: id
  *     in: query
  *     required: false
@@ -20,13 +21,13 @@
  *       oneOf:
  *         - type: string
  *           title: id
- *           description: The translation's ID.
+ *           description: Filter by an entity's ID.
  *         - type: array
- *           description: The translation's ID.
+ *           description: Filter by entity IDs.
  *           items:
  *             type: string
  *             title: id
- *             description: The id's ID.
+ *             description: An entity's ID.
  *   - name: limit
  *     in: query
  *     description: Limit the number of items returned in the list.
