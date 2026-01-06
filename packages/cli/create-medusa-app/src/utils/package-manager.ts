@@ -90,8 +90,8 @@ export default class PackageManager {
           }
 
           logMessage({
-            type: "warn",
-            message: `The specified package manager "${this.chosenPackageManager}" is not available. Detecting available package manager...`,
+            type: "error",
+            message: `The specified package manager "${this.chosenPackageManager}" is not available. Please install it or choose another package manager.`,
           })
         }
 

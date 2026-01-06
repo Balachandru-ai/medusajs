@@ -119,25 +119,16 @@ describe("PackageManager", () => {
       )
     })
 
-    it("should warn and fallback when chosen package manager is not available", async () => {
-      mockExecute
-        .mockRejectedValueOnce(new Error("Command not found"))
-        .mockResolvedValueOnce({ stdout: "1.22.0", stderr: "" })
+    it("should throw error when chosen package manager is not available", async () => {
+      mockExecute.mockRejectedValueOnce(new Error("Command not found"))
 
-      process.env.npm_config_user_agent = "yarn/1.22.0"
       const pm = new PackageManager(processManager, { usePnpm: true })
 
       await pm.setPackageManager({})
 
-      expect(pm.getPackageManager()).toBe("yarn")
       expect(mockLogMessage).toHaveBeenCalledWith({
-        type: "warn",
+        type: "error",
         message: expect.stringContaining('"pnpm" is not available'),
-      })
-      // Detection message should not be logged in non-verbose mode
-      expect(mockLogMessage).not.toHaveBeenCalledWith({
-        type: "info",
-        message: expect.stringContaining('Using detected package manager "yarn"'),
       })
     })
 
