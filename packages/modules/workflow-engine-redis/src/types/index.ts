@@ -178,7 +178,7 @@ export type RedisWorkflowsOptions = {
   }
 }
 
-declare module "@medusajs/framework/types" {
+declare module "@medusajs/types" {
   interface ModuleOptions {
     "@medusajs/workflow-engine-redis": RedisWorkflowsOptions
     "@medusajs/medusa/workflow-engine-redis": RedisWorkflowsOptions

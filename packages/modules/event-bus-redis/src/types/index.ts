@@ -70,7 +70,7 @@ export type EventBusRedisModuleOptions = {
   jobOptions?: EmitOptions
 }
 
-declare module "@medusajs/framework/types" {
+declare module "@medusajs/types" {
   interface ModuleOptions {
     "@medusajs/event-bus-redis": EventBusRedisModuleOptions
     "@medusajs/medusa/event-bus-redis": EventBusRedisModuleOptions
