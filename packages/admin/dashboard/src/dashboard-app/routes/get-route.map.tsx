@@ -1863,7 +1863,7 @@ export function getRouteMap({
                 },
               ],
             },
-            ...(settingsRoutes?.[0]?.children || []),
+            ...(settingsRoutes.flatMap(r => r?.children || [])),
           ],
         },
       ],
