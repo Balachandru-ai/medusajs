@@ -5271,7 +5271,6 @@ __metadata:
     "@medusajs/cli": 2.12.3
     "@medusajs/framework": 2.12.3
     "@medusajs/icons": 2.12.3
-    "@medusajs/js-sdk": 2.12.3
     "@medusajs/test-utils": 2.12.3
     "@medusajs/types": 2.12.3
     "@medusajs/ui": 4.0.31
@@ -5483,7 +5482,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@medusajs/js-sdk@2.12.3, @medusajs/js-sdk@workspace:^, @medusajs/js-sdk@workspace:packages/core/js-sdk":
+"@medusajs/js-sdk@workspace:packages/core/js-sdk":
   version: 0.0.0-use.local
   resolution: "@medusajs/js-sdk@workspace:packages/core/js-sdk"
   dependencies:
@@ -31382,7 +31381,6 @@ __metadata:
     "@changesets/cli": ^2.26.0
     "@faker-js/faker": ^9.2.0
     "@medusajs/admin": ^7.1.18
-    "@medusajs/js-sdk": "workspace:^"
     "@rollup/plugin-node-resolve": ^15.1.0
     "@rollup/plugin-replace": ^5.0.2
     "@storybook/addon-essentials": ^8.3.5
