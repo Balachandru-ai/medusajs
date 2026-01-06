@@ -14,6 +14,7 @@ import {
 import {
   Cached,
   MedusaError,
+  applyTranslations,
   isObject,
   remoteQueryObjectFromString,
   unflattenObjectKeys,
@@ -238,7 +239,17 @@ export class Query {
       )
     }
 
-    return this.#unwrapRemoteQueryResponse(response)
+    const result = this.#unwrapRemoteQueryResponse(response)
+
+    if (options?.locale) {
+      applyTranslations({
+        localeCode: options.locale,
+        objects: result.data,
+        container: this.container,
+      })
+    }
+
+    return result
   }
 
   /**

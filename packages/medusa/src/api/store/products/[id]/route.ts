@@ -2,6 +2,7 @@ import { MedusaResponse } from "@medusajs/framework/http"
 import { HttpTypes } from "@medusajs/framework/types"
 import {
   applyTranslations,
+  ContainerRegistrationKeys,
   isPresent,
   MedusaError,
   QueryContext,
@@ -49,11 +50,18 @@ export const GET = async (
     req.queryConfig.fields.push("categories.is_internal")
   }
 
-  const product = await refetchProduct(
-    filters,
-    req.scope,
-    req.queryConfig.fields
+  const query = req.scope.resolve(ContainerRegistrationKeys.QUERY)
+  const { data: products } = await query.graph(
+    {
+      entity: "product",
+      filters,
+      fields: req.queryConfig.fields,
+    },
+    {
+      locale: req.locale,
+    }
   )
+  const product = products[0]
 
   if (!product) {
     throw new MedusaError(
@@ -74,10 +82,5 @@ export const GET = async (
   }
 
   await wrapProductsWithTaxPrices(req, [product])
-  await applyTranslations({
-    localeCode: req.locale,
-    objects: [product],
-    container: req.scope,
-  })
   res.json({ product })
 }
