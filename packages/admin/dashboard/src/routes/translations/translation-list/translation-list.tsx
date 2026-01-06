@@ -1,14 +1,9 @@
-import {
-  Alert,
-  Button,
-  Container,
-  Heading,
-  IconButton,
-  InlineTip,
-  Text,
-} from "@medusajs/ui"
-import { TwoColumnPage } from "../../../components/layout/pages"
+import { Alert, Button, Container, Heading, Text } from "@medusajs/ui"
+import { useCallback, useMemo } from "react"
 import { useTranslation } from "react-i18next"
+import { useNavigate } from "react-router-dom"
+import { TwoColumnPageSkeleton } from "../../../components/common/skeleton"
+import { TwoColumnPage } from "../../../components/layout/pages"
 import {
   useStore,
   useTranslationSettings,
@@ -17,10 +12,6 @@ import {
 import { ActiveLocalesSection } from "./components/active-locales-section/active-locales-section"
 import { TranslationListSection } from "./components/translation-list-section/translation-list-section"
 import { TranslationsCompletionSection } from "./components/translations-completion-section/translations-completion-section"
-import { TwoColumnPageSkeleton } from "../../../components/common/skeleton"
-import { useCallback, useMemo } from "react"
-import { CogSixTooth } from "@medusajs/icons"
-import { useNavigate } from "react-router-dom"
 
 export type TranslatableEntity = {
   label: string
@@ -134,7 +125,7 @@ export const TranslationList = () => {
         {!hasLocales && (
           <Alert
             variant="info"
-            className="bg-ui-bg-base flex items-center  px-6 py-4"
+            className="bg-ui-bg-base flex items-center px-6 py-4"
           >
             <div className="flex items-center justify-between gap-x-2">
               <p>{t("translations.activeLocales.noLocalesTip")}.</p>
