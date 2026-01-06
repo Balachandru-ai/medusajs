@@ -1,4 +1,4 @@
-import { deleteRbacPoliciesWorkflow } from "@medusajs/core-flows"
+import { deleteRbacRolePoliciesWorkflow } from "@medusajs/core-flows"
 import {
   AuthenticatedMedusaRequest,
   MedusaResponse,
@@ -10,15 +10,27 @@ export const DELETE = async (
   req: AuthenticatedMedusaRequest,
   res: MedusaResponse
 ) => {
-  const { policy_id } = req.params
+  const { policy_id, id: role_id } = req.params
 
-  await deleteRbacPoliciesWorkflow(req.scope).run({
-    input: { ids: [policy_id] },
+  // First, we need to find the role_policy_id that connects this role and policy
+  const query = req.scope.resolve("query")
+  const { data: rolePolicies } = await query.graph({
+    entity: "rbac_role_policy",
+    fields: ["id"],
+    filters: { role_id, policy_id },
+  })
+
+  const rolePolicyId = rolePolicies[0].id
+
+  await deleteRbacRolePoliciesWorkflow(req.scope).run({
+    input: {
+      role_policy_ids: [rolePolicyId],
+    },
   })
 
   res.status(200).json({
-    id: policy_id,
-    object: "rbac_policy",
+    id: rolePolicyId,
+    object: "rbac_role_policy",
     deleted: true,
   })
 }

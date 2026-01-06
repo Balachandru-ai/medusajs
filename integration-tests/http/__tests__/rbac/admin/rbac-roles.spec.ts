@@ -385,7 +385,7 @@ medusaIntegrationTestRunner({
           )
         })
 
-        it.only("should remove a policy from a role", async () => {
+        it("should remove a policy from a role", async () => {
           // First add a policy to the role
           await api.post(
             `/admin/rbac/roles/${editorRole.id}/policies`,
@@ -410,8 +410,8 @@ medusaIntegrationTestRunner({
 
           expect(deleteResponse.status).toEqual(200)
           expect(deleteResponse.data).toEqual({
-            id: policies[2].id,
-            object: "rbac_policy",
+            id: expect.stringContaining("rlpl_"),
+            object: "rbac_role_policy",
             deleted: true,
           })
 
