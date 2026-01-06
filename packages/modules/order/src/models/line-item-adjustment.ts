@@ -21,6 +21,12 @@ const _OrderLineItemAdjustment = model
       on: ["item_id"],
       unique: false,
     },
+    {
+      name: "IDX_order_line_item_adjustment_version_item",
+      on: ["version", "item_id"],
+      unique: true,
+      where: "deleted_at IS NULL",
+    },
   ])
 
 export const OrderLineItemAdjustment = _OrderLineItemAdjustment
