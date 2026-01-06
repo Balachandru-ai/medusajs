@@ -23,6 +23,6 @@ export default ({ message, type = "info", stack }: LogOptions) => {
       logger.info(`${chalk.bgYellowBright("VERBOSE LOG:")} ${message}`)
       break
     case "error":
-      program.error(chalk.bold.red(message.trim() + stack))
+      program.error(chalk.bold.red(message.trim() + (stack || "")))
   }
 }
