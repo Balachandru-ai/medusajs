@@ -210,8 +210,8 @@ async function prepareProject({
     })
 
     // run migrations
-    const migrationExecResult = await packageManager.runCommand(
-      "medusa db:migrate",
+    const migrationExecResult = await packageManager.runMedusaCommand(
+      "db:migrate",
       npxOptions,
       {
         verbose,
@@ -252,8 +252,8 @@ async function prepareProject({
       message: "Ran Migrations",
     })
 
-    const userExecResult = (await packageManager.runCommand(
-      `medusa user -e ${ADMIN_EMAIL} --invite`,
+    const userExecResult = (await packageManager.runMedusaCommand(
+      `user -e ${ADMIN_EMAIL} --invite`,
       npxOptions,
       { verbose, needOutput: true }
     )) as ExecuteResult

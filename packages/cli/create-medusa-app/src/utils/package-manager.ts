@@ -193,6 +193,35 @@ export default class PackageManager {
     })
   }
 
+  async runMedusaCommand(
+    command: string,
+    execOptions: Record<string, unknown>,
+    verboseOptions: VerboseOptions = {}
+  ) {
+    if (!this.packageManager) {
+      await this.setPackageManager(execOptions)
+    }
+
+    const formats: Record<PackageManagerType, string> = {
+      yarn: `yarn medusa ${command}`,
+      pnpm: `pnpm medusa ${command}`,
+      npm: `npx medusa ${command}`,
+    }
+
+    const commandStr =
+      formats[this.packageManager || "npm"]
+
+    return await this.processManager.runProcess({
+      process: async () => {
+        return await execute([commandStr, execOptions], {
+          verbose: this.verbose,
+          ...verboseOptions,
+        })
+      },
+      ignoreERESOLVE: true,
+    })
+  }
+
   getCommandStr(command: string): string {
     if (!this.packageManager) {
       throw new Error("Package manager not set")
