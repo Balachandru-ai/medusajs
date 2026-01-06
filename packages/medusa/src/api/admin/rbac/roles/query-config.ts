@@ -24,6 +24,7 @@ export const defaultAdminRolePoliciesFields = [
   "id",
   "role_id",
   "policy_id",
+  "policy",
   "metadata",
   "created_at",
   "updated_at",

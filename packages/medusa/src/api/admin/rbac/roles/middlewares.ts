@@ -58,6 +58,16 @@ export const adminRbacRoleRoutesMiddlewares: MiddlewareRoute[] = [
     ],
   },
   {
+    method: ["GET"],
+    matcher: "/admin/rbac/roles/:id/policies",
+    middlewares: [
+      validateAndTransformQuery(
+        AdminGetRbacRoleParams,
+        QueryConfig.retrieveRolePoliciesTransformQueryConfig
+      ),
+    ],
+  },
+  {
     method: ["POST"],
     matcher: "/admin/rbac/roles/:id/policies",
     middlewares: [
