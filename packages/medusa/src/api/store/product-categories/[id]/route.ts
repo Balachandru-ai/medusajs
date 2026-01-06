@@ -18,7 +18,7 @@ export const GET = async (
   const { data: category } = await query.graph(
     {
       entity: "product_category",
-      filters: { id: req.params.id },
+      filters: { id: req.params.id, ...req.filterableFields },
       fields: req.queryConfig.fields,
     },
     {
