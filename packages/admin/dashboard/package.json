@@ -4,7 +4,7 @@
   "scripts": {
     "generate:static": "node ./scripts/generate-currencies.js && prettier --write ./src/lib/currencies.ts",
     "dev": "../../../node_modules/.bin/vite",
-    "build": "yarn run -T tsup && node ./scripts/generate-types.js",
+    "build": "../../../node_modules/.bin/vite build",
     "build:preview": "../../../node_modules/.bin/vite build",
     "preview": "../../../node_modules/.bin/vite preview",
     "test": "../../../node_modules/.bin/vitest --run",
