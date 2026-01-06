@@ -1,4 +1,4 @@
-import { Button } from "@medusajs/ui"
+import { Button, toast } from "@medusajs/ui"
 import { useEffect, useRef } from "react"
 import { useTranslation } from "react-i18next"
 import { useSearchParams } from "react-router-dom"
@@ -13,19 +13,23 @@ export const CloudAuthLogin = () => {
   const { handleCallback, isCallbackPending } =
     useCloudAuthCallback(searchParams)
 
-  // Check if we're returning from the OAuth callback
-  const hasCallbackParams =
-    searchParams.get("auth_provider") === CLOUD_AUTH_PROVIDER &&
-    searchParams.has("code") &&
-    searchParams.has("state")
-
   const callbackInitiated = useRef(false) // ref to prevent duplicate calls in React strict mode and other unmounting+mounting scenarios
   useEffect(() => {
-    if (hasCallbackParams && !callbackInitiated.current) {
+    const isSuccessfulCallback =
+      searchParams.get("auth_provider") === CLOUD_AUTH_PROVIDER &&
+      searchParams.has("code") &&
+      searchParams.has("state")
+    const isErrorCallback =
+      searchParams.get("auth_provider") === CLOUD_AUTH_PROVIDER &&
+      searchParams.has("error")
+
+    if (isErrorCallback) {
+      toast.error(t("auth.login.authenticationFailed"))
+    } else if (isSuccessfulCallback && !callbackInitiated.current) {
       callbackInitiated.current = true
       handleCallback()
     }
-  }, [hasCallbackParams, handleCallback])
+  }, [searchParams, t, handleCallback])
 
   const { handleLogin } = useCloudLogin()
 
