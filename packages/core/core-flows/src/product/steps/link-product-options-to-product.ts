@@ -1,5 +1,5 @@
 import { IProductModuleService, ProductTypes } from "@medusajs/framework/types"
-import { Modules, promiseAll } from "@medusajs/framework/utils"
+import { Modules } from "@medusajs/framework/utils"
 import { createStep, StepResponse } from "@medusajs/framework/workflows-sdk"
 
 /**
@@ -25,7 +25,7 @@ export const linkProductOptionsToProductStepId =
 /**
  * This step manages options of a product. You can add or remove
  * options from a product.
- * 
+ *
  * @since 2.13.0
  *
  * @example
@@ -68,14 +68,8 @@ export const linkProductOptionsToProductStep = createStep(
       }
     })
 
-    const promises: Promise<any>[] = []
-    if (toAdd.length) {
-      promises.push(service.addProductOptionToProduct(toAdd))
-    }
-    if (toRemove.length) {
-      promises.push(service.removeProductOptionFromProduct(toRemove))
-    }
-    await promiseAll(promises)
+    await service.addProductOptionToProduct(toAdd)
+    await service.removeProductOptionFromProduct(toRemove)
 
     return new StepResponse(void 0, { toAdd, toRemove })
   },
