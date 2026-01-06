@@ -51,10 +51,6 @@ export default class RbacModuleService extends MedusaService({
       })
     )
 
-    if (registeredPolicies.length === 0) {
-      return
-    }
-
     const registeredKeys = registeredPolicies.map((p) => p.key)
 
     // Fetch all existing policies (including soft-deleted ones)

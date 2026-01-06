@@ -3,6 +3,7 @@ import {
   adminHeaders,
   createAdminUser,
 } from "../../../../helpers/create-admin-user"
+import { Modules, ContainerRegistrationKeys } from "@medusajs/framework/utils"
 
 jest.setTimeout(60000)
 
@@ -234,10 +235,6 @@ medusaIntegrationTestRunner({
         let adminUser
 
         beforeEach(async () => {
-          const {
-            Modules,
-            ContainerRegistrationKeys,
-          } = require("@medusajs/framework/utils")
           const userModule = container.resolve(Modules.USER)
           const remoteLink = container.resolve(ContainerRegistrationKeys.LINK)
 
@@ -347,8 +344,8 @@ medusaIntegrationTestRunner({
 
           expect(response.status).toEqual(200)
 
-          expect(response.data.role_policies).toHaveLength(1)
-          expect(response.data.role_policies[0]).toMatchObject({
+          expect(response.data.policies).toHaveLength(1)
+          expect(response.data.policies[0]).toMatchObject({
             role_id: viewerRole.id,
             policy_id: policies[0].id,
           })

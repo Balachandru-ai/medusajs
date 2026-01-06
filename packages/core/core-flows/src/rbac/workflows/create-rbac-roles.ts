@@ -89,7 +89,7 @@ export const createRbacRolesWorkflow = createWorkflow(
             })
           })
         })
-        return { role_policies: allPolicies }
+        return { policies: allPolicies }
       }
     )
 

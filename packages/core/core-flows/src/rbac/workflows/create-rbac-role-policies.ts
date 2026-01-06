@@ -11,7 +11,7 @@ import { validateUserPermissionsStep } from "../steps/validate-user-permissions"
 export type CreateRbacRolePoliciesWorkflowInput = {
   actor_id?: string
   actor?: string
-  role_policies: {
+  policies: {
     role_id: string
     policy_id: string
   }[]
@@ -28,7 +28,7 @@ export const createRbacRolePoliciesWorkflow = createWorkflow(
       }
 
       const policyIds = new Set<string>()
-      input.role_policies.forEach((rp) => policyIds.add(rp.policy_id))
+      input.policies.forEach((rp) => policyIds.add(rp.policy_id))
 
       return {
         actor_id: input.actor_id,
@@ -44,7 +44,7 @@ export const createRbacRolePoliciesWorkflow = createWorkflow(
     })
 
     const rolePolicies = createRbacRolePoliciesStep({
-      role_policies: input.role_policies,
+      policies: input.policies,
     })
 
     return new WorkflowResponse(rolePolicies)

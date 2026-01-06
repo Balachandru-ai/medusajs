@@ -72,7 +72,7 @@ export const updateRbacRolesWorkflow = createWorkflow(
       { input, updatedRoles },
       ({ input, updatedRoles }) => {
         if (!isDefined(input.update.policy_ids)) {
-          return { role_policies: [] }
+          return { policies: [] }
         }
 
         const allPolicies: any[] = []
@@ -85,7 +85,7 @@ export const updateRbacRolesWorkflow = createWorkflow(
             })
           })
         })
-        return { role_policies: allPolicies }
+        return { policies: allPolicies }
       }
     )
 

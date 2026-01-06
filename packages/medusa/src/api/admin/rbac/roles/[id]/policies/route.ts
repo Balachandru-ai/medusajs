@@ -19,7 +19,7 @@ export const GET = async (
   const roleId = req.params.id
   const query = req.scope.resolve(ContainerRegistrationKeys.QUERY)
 
-  const { data: role_policies, metadata } = await query.graph({
+  const { data: policies, metadata } = await query.graph({
     entity: "rbac_role_policy",
     fields: req.queryConfig?.fields,
     filters: { ...req.filterableFields, role_id: roleId },
@@ -27,7 +27,7 @@ export const GET = async (
   })
 
   res.status(200).json({
-    role_policies,
+    policies,
     count: metadata?.count ?? 0,
     offset: metadata?.skip ?? 0,
     limit: metadata?.take ?? 0,
@@ -51,18 +51,18 @@ export const POST = async (
     input: {
       actor_id: req.auth_context.actor_id,
       actor: req.auth_context.actor_type,
-      role_policies: rolePolicies,
+      policies: rolePolicies,
     },
   })
 
   // Get the created role-policy association
-  const { data: role_policies } = await query.graph({
+  const { data } = await query.graph({
     entity: "rbac_role_policy",
     fields: req.queryConfig?.fields || listTransformQueryConfig.defaults,
     filters: { id: result[0].id },
   })
 
-  res.status(200).json({ role_policies })
+  res.status(200).json({ policies: data })
 }
 
 defineFileConfig({
