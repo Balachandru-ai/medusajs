@@ -456,7 +456,6 @@ function normalizeProjectConfig(
   } satisfies ConfigModule["projectConfig"]
 
   if (
-    isCloud &&
     !mergedCloudOptions.oauthDisabled &&
     mergedCloudOptions.oauthAuthorizeEndpoint &&
     mergedCloudOptions.oauthTokenEndpoint
