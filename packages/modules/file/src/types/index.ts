@@ -27,3 +27,10 @@ export type FileModuleOptions = Partial<ModuleServiceInitializeOptions> & {
     options?: Record<string, unknown>
   }
 }
+
+declare module "@medusajs/framework/types" {
+  interface ModuleOptions {
+    "@medusajs/file": FileModuleOptions
+    "@medusajs/medusa/file": FileModuleOptions
+  }
+}

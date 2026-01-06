@@ -31,3 +31,10 @@ export type LockingModuleOptions = Partial<ModuleServiceInitializeOptions> & {
     options?: Record<string, unknown>
   }[]
 }
+
+declare module "@medusajs/framework/types" {
+  interface ModuleOptions {
+    "@medusajs/locking": LockingModuleOptions
+    "@medusajs/medusa/locking": LockingModuleOptions
+  }
+}
