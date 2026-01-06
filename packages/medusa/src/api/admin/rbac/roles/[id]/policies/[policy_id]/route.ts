@@ -20,11 +20,11 @@ export const DELETE = async (
     filters: { role_id, policy_id },
   })
 
-  const rolePolicyId = rolePolicies[0].id
+  const rolePolicyId = rolePolicies[0]?.id
 
   await deleteRbacRolePoliciesWorkflow(req.scope).run({
     input: {
-      role_policy_ids: [rolePolicyId],
+      role_policy_ids: rolePolicyId ? [rolePolicyId] : [],
     },
   })
 

@@ -74,22 +74,23 @@ export default class RbacModuleService extends MedusaService({
     for (const registeredPolicy of registeredPolicies) {
       const existing = existingPoliciesMap.get(registeredPolicy.key)
 
+      const hasChanges =
+        existing &&
+        (existing.name !== registeredPolicy.name ||
+          existing.description !== registeredPolicy.description)
+
       if (!existing) {
         policiesToCreate.push(registeredPolicy)
       } else if (existing.deleted_at) {
         policiesToRestore.push(existing.id)
-        // Update in case name changed
-        if (existing.name !== registeredPolicy.name) {
+        if (hasChanges) {
           policiesToUpdate.push({
             id: existing.id,
             name: registeredPolicy.name,
+            description: registeredPolicy.description,
           })
         }
-      } else if (
-        existing.name !== registeredPolicy.name ||
-        existing.description !== registeredPolicy.description
-      ) {
-        // Existing policy with different name - update it
+      } else if (hasChanges) {
         policiesToUpdate.push({
           id: existing.id,
           name: registeredPolicy.name,
@@ -102,7 +103,6 @@ export default class RbacModuleService extends MedusaService({
       .filter((p) => !p.deleted_at && !registeredKeys.includes(p.key))
       .map((p) => p.id)
 
-    // Execute updates
     await promiseAll([
       policiesToRestore.length > 0 &&
         this.restoreRbacPolicies(policiesToRestore, {}, sharedContext),
