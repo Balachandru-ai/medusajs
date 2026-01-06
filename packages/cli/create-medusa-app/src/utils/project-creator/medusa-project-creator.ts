@@ -208,7 +208,6 @@ export class MedusaProjectCreator
     }
 
     this.spinner.stop()
-    console.log(e)
     logMessage({
       message: `An error occurred: ${e}`,
       type: "error",

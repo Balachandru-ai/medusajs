@@ -42,7 +42,7 @@ export default class PackageManager {
   private detectFromUserAgent(): PackageManagerType {
     const userAgent = process.env.npm_config_user_agent
 
-    if (userAgent?.includes("pnpm")) {
+    if (userAgent?.includes("pnpm") || userAgent?.includes("pnpx")) {
       return "pnpm"
     }
     if (userAgent?.includes("yarn")) {
@@ -136,7 +136,9 @@ export default class PackageManager {
     for (const file of filesToRemove) {
       const filePath = path.join(directory, file)
       if (existsSync(filePath)) {
-        rmSync(filePath)
+        rmSync(filePath, {
+          force: true
+        })
       }
     }
   }
@@ -157,7 +159,7 @@ export default class PackageManager {
       npm: "npm install",
     }
 
-    const command = commands[this.packageManager!]
+    const command = commands[this.packageManager || "npm"]
 
     await this.processManager.runProcess({
       process: async () => {

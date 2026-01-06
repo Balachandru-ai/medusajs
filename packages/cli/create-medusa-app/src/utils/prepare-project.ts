@@ -210,14 +210,14 @@ async function prepareProject({
     })
 
     // run migrations
-    const migrationExecResult = (await packageManager.runCommand(
+    const migrationExecResult = await packageManager.runCommand(
       "medusa db:migrate",
       npxOptions,
       {
         verbose,
         needOutput: true,
       }
-    )) as ExecuteResult
+    )
 
     if (client) {
       // check the migrations table is in the database

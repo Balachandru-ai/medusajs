@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import { program } from "commander"
+import { Option, program } from "commander"
 import create from "./commands/create.js"
 
 program
@@ -42,9 +42,21 @@ program
     "Show all logs of underlying commands. Useful for debugging.",
     false
   )
-  .option("--use-npm", "Use npm as the package manager")
-  .option("--use-pnpm", "Use pnpm as the package manager")
-  .option("--use-yarn", "Use yarn as the package manager")
+  .addOption(
+    new Option(
+      "--use-npm", "Use npm as the package manager"
+    ).conflicts(["usePnpm", "useYarn"])
+  )
+  .addOption(
+    new Option(
+      "--use-yarn", "Use yarn as the package manager"
+    ).conflicts(["useNpm", "usePnpm"])
+  )
+  .addOption(
+    new Option(
+      "--use-pnpm", "Use pnpm as the package manager"
+    ).conflicts(["useNpm", "useYarn"])
+  )
   .parse()
 
 void create(program.args, program.opts())
