@@ -5206,7 +5206,6 @@ __metadata:
     "@medusajs/admin-shared": 2.12.3
     "@medusajs/admin-vite-plugin": 2.12.3
     "@medusajs/icons": 2.12.3
-    "@medusajs/js-sdk": 2.12.3
     "@medusajs/types": 2.12.3
     "@medusajs/ui": "workspace:^"
     "@medusajs/ui-preset": 2.12.3
