@@ -99,9 +99,12 @@ export default class RbacModuleService extends MedusaService({
       .filter((p) => !p.deleted_at && !registeredKeys.includes(p.key))
       .map((p) => p.id)
 
+    // First restore any soft-deleted policies
+    if (policiesToRestore.length > 0) {
+      await this.restoreRbacPolicies(policiesToRestore, {}, sharedContext)
+    }
+
     await promiseAll([
-      policiesToRestore.length > 0 &&
-        this.restoreRbacPolicies(policiesToRestore, {}, sharedContext),
       policiesToCreate.length > 0 &&
         this.createRbacPolicies(policiesToCreate, sharedContext),
       policiesToUpdate.length > 0 &&
