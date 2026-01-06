@@ -22,8 +22,11 @@ packages/**/plugins/**/.medusa/
 .idea
 .turbo
 build/**
+# Ignore dist everywhere except for @medusajs/ui and @medusajs/icons
 dist/**
 **/dist
+!packages/design-system/ui/dist
+!packages/design-system/icons/dist
 **/stats
 .favorites.json
 .vscode

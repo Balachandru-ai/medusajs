@@ -1,6 +1,6 @@
 import Medusa from "@medusajs/js-sdk"
 
-export const backendUrl = __BACKEND_URL__ ?? "/"
+const backendUrl = import.meta.env.VITE_MEDUSA_BACKEND_URL || "/"
 const authType = __AUTH_TYPE__ ?? "session"
 const jwtTokenStorageKey = __JWT_TOKEN_STORAGE_KEY__ || undefined
 

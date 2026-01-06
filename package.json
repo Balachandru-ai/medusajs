@@ -165,6 +165,7 @@
   "dependencies": {
     "@changesets/changelog-github": "^0.4.8",
     "@changesets/cli": "^2.26.0",
+    "@medusajs/admin": "^7.1.18",
     "import-from": "^3.0.0"
   },
   "resolutions": {
