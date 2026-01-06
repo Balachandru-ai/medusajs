@@ -5,7 +5,6 @@ import {
   RemoteQueryFunction,
 } from "@medusajs/framework/types"
 import {
-  applyTranslations,
   ContainerRegistrationKeys,
   deduplicate,
   FeatureFlag,

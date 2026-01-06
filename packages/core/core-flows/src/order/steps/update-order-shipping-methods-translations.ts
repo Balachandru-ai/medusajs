@@ -1,5 +1,4 @@
 import {
-  applyTranslations,
   ContainerRegistrationKeys,
   FeatureFlag,
   Modules,
