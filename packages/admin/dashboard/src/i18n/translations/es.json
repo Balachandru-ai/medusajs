@@ -2458,7 +2458,7 @@
   "translations": {
     "domain": "Traducciones",
     "list": {
-      "metrics": "{{translated}} de {{total}} textos traducidos"
+      "metrics": "{{translated}} de {{total}} traducciones"
     },
     "actions": {
       "manage": "Gestionar traducciones",
