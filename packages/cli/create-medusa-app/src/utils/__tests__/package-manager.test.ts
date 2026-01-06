@@ -134,7 +134,8 @@ describe("PackageManager", () => {
         type: "warn",
         message: expect.stringContaining('"pnpm" is not available'),
       })
-      expect(mockLogMessage).toHaveBeenCalledWith({
+      // Detection message should not be logged in non-verbose mode
+      expect(mockLogMessage).not.toHaveBeenCalledWith({
         type: "info",
         message: expect.stringContaining('Using detected package manager "yarn"'),
       })
@@ -148,7 +149,8 @@ describe("PackageManager", () => {
       await pm.setPackageManager({})
 
       expect(pm.getPackageManager()).toBe("yarn")
-      expect(mockLogMessage).toHaveBeenCalledWith({
+      // Detection message should not be logged in non-verbose mode
+      expect(mockLogMessage).not.toHaveBeenCalledWith({
         type: "info",
         message: expect.stringContaining('Using detected package manager "yarn"'),
       })
@@ -159,6 +161,35 @@ describe("PackageManager", () => {
       process.env.npm_config_user_agent = "yarn/1.22.0"
 
       const pm = new PackageManager(processManager)
+      await pm.setPackageManager({})
+
+      expect(pm.getPackageManager()).toBe("npm")
+      // Fallback message should not be logged in non-verbose mode
+      expect(mockLogMessage).not.toHaveBeenCalledWith({
+        type: "info",
+        message: expect.stringContaining('Falling back to "npm"'),
+      })
+    })
+
+    it("should log detection messages in verbose mode", async () => {
+      mockExecute.mockResolvedValue({ stdout: "1.22.0", stderr: "" })
+      process.env.npm_config_user_agent = "yarn/1.22.0"
+
+      const pm = new PackageManager(processManager, { verbose: true })
+      await pm.setPackageManager({})
+
+      expect(pm.getPackageManager()).toBe("yarn")
+      expect(mockLogMessage).toHaveBeenCalledWith({
+        type: "info",
+        message: expect.stringContaining('Using detected package manager "yarn"'),
+      })
+    })
+
+    it("should log fallback messages in verbose mode", async () => {
+      mockExecute.mockRejectedValue(new Error("Command not found"))
+      process.env.npm_config_user_agent = "yarn/1.22.0"
+
+      const pm = new PackageManager(processManager, { verbose: true })
       await pm.setPackageManager({})
 
       expect(pm.getPackageManager()).toBe("npm")

@@ -103,19 +103,23 @@ export default class PackageManager {
 
         if (isDetectedAvailable) {
           this.packageManager = detected
-          logMessage({
-            type: "info",
-            message: `Using detected package manager "${detected}".`,
-          })
+          if (this.verbose) {
+            logMessage({
+              type: "info",
+              message: `Using detected package manager "${detected}".`,
+            })
+          }
           return
         }
 
         // Fallback to npm
         this.packageManager = "npm"
-        logMessage({
-          type: "info",
-          message: `Falling back to "npm" as the package manager.`,
-        })
+        if (this.verbose) {
+          logMessage({
+            type: "info",
+            message: `Falling back to "npm" as the package manager.`,
+          })
+        }
       },
       ignoreERESOLVE: true,
     })
