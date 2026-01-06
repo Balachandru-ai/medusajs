@@ -242,7 +242,7 @@ export class Query {
     const result = this.#unwrapRemoteQueryResponse(response)
 
     if (options?.locale) {
-      applyTranslations({
+      await applyTranslations({
         localeCode: options.locale,
         objects: result.data,
         container: this.container,
