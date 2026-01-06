@@ -320,6 +320,14 @@ export class Query {
       })
     }
 
+    if (options?.locale) {
+      await applyTranslations({
+        localeCode: options.locale,
+        objects: finalResultset.data,
+        container: this.container,
+      })
+    }
+
     return {
       data: finalResultset.data,
       metadata: indexResponse.metadata as RemoteQueryFunctionReturnPagination,

@@ -26,8 +26,8 @@ export const GET = async (
 
   res.json({
     collections,
-    count: metadata?.count ?? 0,
-    offset: metadata?.skip ?? 0,
-    limit: metadata?.take ?? 0,
+    count: metadata!.count,
+    offset: metadata!.skip,
+    limit: metadata!.take,
   })
 }

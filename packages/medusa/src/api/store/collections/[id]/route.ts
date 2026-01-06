@@ -3,7 +3,10 @@ import {
   MedusaResponse,
 } from "@medusajs/framework/http"
 import { HttpTypes } from "@medusajs/framework/types"
-import { ContainerRegistrationKeys } from "@medusajs/framework/utils"
+import {
+  ContainerRegistrationKeys,
+  MedusaError,
+} from "@medusajs/framework/utils"
 
 export const GET = async (
   req: AuthenticatedMedusaRequest<HttpTypes.SelectParams>,
@@ -11,7 +14,7 @@ export const GET = async (
 ) => {
   const query = req.scope.resolve(ContainerRegistrationKeys.QUERY)
 
-  const { data: collection } = await query.graph(
+  const { data: collections } = await query.graph(
     {
       entity: "product_collection",
       filters: { id: req.params.id },
@@ -22,5 +25,13 @@ export const GET = async (
     }
   )
 
-  res.status(200).json({ collection: collection[0] })
+  const collection = collections[0]
+  if (!collection) {
+    throw new MedusaError(
+      MedusaError.Types.NOT_FOUND,
+      `Collection with id: ${req.params.id} was not found`
+    )
+  }
+
+  res.status(200).json({ collection: collection })
 }
