@@ -9,7 +9,6 @@ import {
   FeatureFlag,
 } from "@medusajs/framework/utils"
 import RbacFeatureFlag from "../../../../../../feature-flags/rbac"
-import { listTransformQueryConfig } from "../../query-config"
 import { AdminAddRolePoliciesType } from "../../validators"
 
 export const GET = async (
