@@ -1,8 +1,7 @@
 import { MedusaResponse } from "@medusajs/framework/http"
-import { HttpTypes } from "@medusajs/framework/types"
+import { HttpTypes, QueryContextType } from "@medusajs/framework/types"
 import {
   ContainerRegistrationKeys,
-  isPresent,
   MedusaError,
   QueryContext,
 } from "@medusajs/framework/utils"
@@ -32,12 +31,11 @@ export const GET = async (
     ...req.filterableFields,
   }
 
-  if (isPresent(req.pricingContext)) {
-    filters["context"] ??= {}
-    filters["context"]["variants"] ??= {}
-    filters["context"]["variants"]["calculated_price"] ??= QueryContext(
-      req.pricingContext!
-    )
+  const context: QueryContextType = {}
+
+  if (req.pricingContext) {
+    context["variants"] ??= {}
+    context["variants"]["calculated_price"] ??= QueryContext(req.pricingContext)
   }
 
   const includesCategoriesField = req.queryConfig.fields.some((field) =>
@@ -49,10 +47,12 @@ export const GET = async (
   }
 
   const query = req.scope.resolve(ContainerRegistrationKeys.QUERY)
+
   const { data: products } = await query.graph(
     {
       entity: "product",
       filters,
+      context,
       fields: req.queryConfig.fields,
     },
     {
