@@ -108,6 +108,11 @@ export const ProductOptionsManageForm = ({
 
     const optionsToAdd: (string | { id: string; value_ids: string[] })[] = []
     const optionsToRemove: string[] = []
+    const optionsToUpdate: Array<{
+      product_option_id: string
+      add?: string[]
+      remove?: string[]
+    }> = []
 
     // Check for completely removed options
     for (const currentId of currentOptionIds) {
@@ -147,15 +152,20 @@ export const ProductOptionsManageForm = ({
           currentValueIds.some((id, index) => id !== newValueIds[index])
 
         if (valuesChanged) {
-          optionsToRemove.push(newId)
-          optionsToAdd.push(
-            data.option_values
-              ? {
-                  id: newId,
-                  value_ids: data.option_values[newId],
-                }
-              : newId
+          const valuesToAdd = newValueIds.filter(
+            (valueId) => !currentValueIds.includes(valueId)
           )
+          const valuesToRemove = currentValueIds.filter(
+            (valueId) => !newValueIds.includes(valueId)
+          )
+
+          if (valuesToAdd.length || valuesToRemove.length) {
+            optionsToUpdate.push({
+              product_option_id: newId,
+              add: valuesToAdd.length ? valuesToAdd : undefined,
+              remove: valuesToRemove.length ? valuesToRemove : undefined,
+            })
+          }
         }
       }
     }
@@ -164,6 +174,7 @@ export const ProductOptionsManageForm = ({
       {
         add: optionsToAdd,
         remove: optionsToRemove,
+        update: optionsToUpdate,
       },
       {
         onSuccess: ({ product }) => {

@@ -8,11 +8,9 @@ import {
 } from "@medusajs/framework/workflows-sdk"
 import { isString, ProductWorkflowEvents } from "@medusajs/framework/utils"
 
-import {
-  createProductOptionsStep,
-  linkProductOptionsToProductStep,
-} from "../steps"
 import { emitEventStep } from "../../common"
+import { createProductOptionsStep } from "../steps"
+import { setProductProductOptionsWorkflow } from "./set-product-product-options"
 
 /**
  * The data to manage product options of a product.
@@ -49,13 +47,30 @@ export type LinkProductOptionsToProductWorkflowInput = {
    * The product options to remove from the product.
    */
   remove?: string[]
+  /**
+   * The product option values to update for existing product options.
+   */
+  update?: Array<{
+    /**
+     * The ID of the product option to update values for.
+     */
+    product_option_id: string
+    /**
+     * The IDs of the product option values to add.
+     */
+    add?: string[]
+    /**
+     * The IDs of the product option values to remove.
+     */
+    remove?: string[]
+  }>
 }
 
 export const createAndLinkProductOptionsToProductWorkflowId =
   "create-and-link-product-options-to-product"
 /**
  * This workflow manages one or more product options of a product. It's used by the
- * [Manage Product Options](https://docs.medusajs.com/api/admin#products_postproductsidoptions).
+ * [Batch Product Product Options](https://docs.medusajs.com/api/admin#products_postproductsidoptionsbatch).
  * This workflow also creates non-existing product options before adding them to the product.
  *
  * You can also use this workflow within your customizations or your own custom workflows, allowing you
@@ -82,7 +97,14 @@ export const createAndLinkProductOptionsToProductWorkflowId =
  *         value_ids: ["optval_1", "optval_2"]
  *       }
  *     ],
- *     remove: ["opt_321"]
+ *     remove: ["opt_321"],
+ *     update: [
+ *       {
+ *         product_option_id: "opt_123",
+ *         add: ["optval_3"],
+ *         remove: ["optval_1"]
+ *       }
+ *     ]
  *   }
  * })
  *
@@ -161,10 +183,22 @@ export const createAndLinkProductOptionsToProductWorkflow = createWorkflow(
       }
     )
 
-    const productOptions = linkProductOptionsToProductStep({
-      product_id: input.product_id,
-      add: toAddOptions,
-      remove: input.remove,
+    const toRemoveOptions = transform(
+      { input },
+      ({ input }) => input.remove ?? []
+    )
+    const toUpdateOptions = transform(
+      { input },
+      ({ input }) => input.update ?? []
+    )
+
+    const productOptions = setProductProductOptionsWorkflow.runAsStep({
+      input: {
+        product_id: input.product_id,
+        add: toAddOptions,
+        remove: toRemoveOptions,
+        update: toUpdateOptions,
+      },
     })
 
     const eventData = transform(input, ({ product_id }) => ({ id: product_id }))

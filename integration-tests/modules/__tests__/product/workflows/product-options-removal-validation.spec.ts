@@ -74,7 +74,7 @@ medusaIntegrationTestRunner({
         })
       })
 
-      describe("addProductOptionToProduct with value_ids filter", () => {
+      describe("updateProductOptionValuesOnProduct", () => {
         it("should throw error when trying to remove ProductOptionValue used by variant", async () => {
           // Create product with option having multiple values
           const product = await productModule.createProducts({
@@ -89,7 +89,6 @@ medusaIntegrationTestRunner({
 
           const option = product.options[0]
           const valueS = option.values.find((v) => v.value === "S")!
-          const valueM = option.values.find((v) => v.value === "M")!
 
           // Create variant using value "S"
           await productModule.createProductVariants({
@@ -98,26 +97,21 @@ medusaIntegrationTestRunner({
             options: { Size: "S" },
           })
 
-          // Attempt to update option to exclude value "S" (keeping only M, L, XL)
-          const remainingValueIds = option.values
-            .filter((v) => v.value !== "S")
-            .map((v) => v.id)
-
           await expect(
-            productModule.addProductOptionToProduct({
+            productModule.updateProductOptionValuesOnProduct({
               product_id: product.id,
               product_option_id: option.id,
-              product_option_value_ids: remainingValueIds,
+              remove: [valueS.id],
             })
           ).rejects.toThrow(
             "Cannot unassign option values from product because the following variant(s) are using it"
           )
 
           const error = await productModule
-            .addProductOptionToProduct({
+            .updateProductOptionValuesOnProduct({
               product_id: product.id,
               product_option_id: option.id,
-              product_option_value_ids: remainingValueIds,
+              remove: [valueS.id],
             })
             .catch((error) => error)
           expect((error as MedusaError).message).toContain("Variant S")
@@ -135,18 +129,14 @@ medusaIntegrationTestRunner({
           })
 
           const option = product.options[0]
-          const valueRed = option.values.find((v) => v.value === "Red")!
-          const valueBlue = option.values.find((v) => v.value === "Blue")!
+          const valueGreen = option.values.find((v) => v.value === "Green")!
 
-          // Create variant using only "Red" and "Blue"
+          // Create variant using only "Red"
           await productModule.createProductVariants({
             product_id: product.id,
             title: "Variant Red",
             options: { Color: "Red" },
           })
-
-          // Remove "Green" value (not used by any variant) - should succeed
-          const valueIdsToKeep = [valueRed.id, valueBlue.id]
 
           // First verify all 3 values are linked before removal
           const productBefore = await productModule.retrieveProduct(
@@ -162,13 +152,13 @@ medusaIntegrationTestRunner({
           )
           expect(productBefore.options[0].values).toHaveLength(3)
 
-          await productModule.addProductOptionToProduct({
+          await productModule.updateProductOptionValuesOnProduct({
             product_id: product.id,
             product_option_id: option.id,
-            product_option_value_ids: valueIdsToKeep,
+            remove: [valueGreen.id],
           })
 
-          // Verify "Green" is removed - check product_options.values which is the source of truth
+          // Verify "Green" is removed
           const updatedProduct = await productModule.retrieveProduct(
             product.id,
             {

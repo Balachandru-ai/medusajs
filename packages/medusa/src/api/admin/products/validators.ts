@@ -109,6 +109,15 @@ export const AdminLinkProductOptionWithValues = z.object({
   value_ids: z.array(z.string()),
 })
 
+export type AdminUpdateProductOptionValuesType = z.infer<
+  typeof AdminUpdateProductOptionValues
+>
+export const AdminUpdateProductOptionValues = z.object({
+  product_option_id: z.string(),
+  add: z.array(z.string()).optional(),
+  remove: z.array(z.string()).optional(),
+})
+
 export type AdminLinkProductOptionsType = z.infer<
   typeof AdminLinkProductOptions
 >
@@ -123,6 +132,7 @@ export const AdminLinkProductOptions = z.object({
     )
     .optional(),
   remove: z.array(z.string()).optional(),
+  update: z.array(AdminUpdateProductOptionValues).optional(),
 })
 
 export type AdminUpdateProductOptionType = z.infer<typeof UpdateProductOption>
