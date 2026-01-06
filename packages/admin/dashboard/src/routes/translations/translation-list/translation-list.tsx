@@ -1,4 +1,12 @@
-import { Container, Heading, Text } from "@medusajs/ui"
+import {
+  Alert,
+  Button,
+  Container,
+  Heading,
+  IconButton,
+  InlineTip,
+  Text,
+} from "@medusajs/ui"
 import { TwoColumnPage } from "../../../components/layout/pages"
 import { useTranslation } from "react-i18next"
 import {
@@ -10,7 +18,9 @@ import { ActiveLocalesSection } from "./components/active-locales-section/active
 import { TranslationListSection } from "./components/translation-list-section/translation-list-section"
 import { TranslationsCompletionSection } from "./components/translations-completion-section/translations-completion-section"
 import { TwoColumnPageSkeleton } from "../../../components/common/skeleton"
-import { useMemo } from "react"
+import { useCallback, useMemo } from "react"
+import { CogSixTooth } from "@medusajs/icons"
+import { useNavigate } from "react-router-dom"
 
 export type TranslatableEntity = {
   label: string
@@ -22,6 +32,7 @@ export type TranslatableEntity = {
 
 export const TranslationList = () => {
   const { t } = useTranslation()
+  const navigate = useNavigate()
 
   const { store, isPending, isError, error } = useStore()
   const {
@@ -84,6 +95,10 @@ export const TranslationList = () => {
       })
   }, [translatable_fields, statistics])
 
+  const handleManageLocales = useCallback(() => {
+    navigate("/settings/translations/add-locales")
+  }, [navigate])
+
   const isReady =
     !!store &&
     !isPending &&
@@ -111,6 +126,25 @@ export const TranslationList = () => {
             {t("translations.subtitle")}
           </Text>
         </Container>
+
+        {!hasLocales && (
+          <Alert
+            variant="info"
+            className="bg-ui-bg-base flex items-center  px-6 py-4"
+          >
+            <div className="flex items-center justify-between gap-x-2">
+              <p>{t("translations.activeLocales.noLocalesTip")}.</p>
+              <Button
+                onClick={handleManageLocales}
+                size="small"
+                variant="secondary"
+              >
+                {t("translations.activeLocales.noLocalesTipConfigureAction")}
+              </Button>
+            </div>
+          </Alert>
+        )}
+
         <TranslationListSection
           entities={translatableEntities}
           hasLocales={hasLocales}
