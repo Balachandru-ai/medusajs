@@ -60,28 +60,32 @@ export const TranslationList = () => {
       return []
     }
 
-    return Object.entries(translatable_fields)
-      .filter(
-        ([entity]) =>
-          !["product_option", "product_option_value"].includes(entity)
-      )
-      .map(([entity, fields]) => {
-        const entityStatistics = statistics?.[entity] ?? {
-          translated: 0,
-          expected: 0,
-        }
+    return (
+      Object.entries(translatable_fields)
+        .filter(
+          ([entity]) =>
+            !["product_option", "product_option_value"].includes(entity)
+        )
+        .map(([entity, fields]) => {
+          const entityStatistics = statistics?.[entity] ?? {
+            translated: 0,
+            expected: 0,
+          }
 
-        return {
-          label: entity
-            .split("_")
-            .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-            .join(" "),
-          reference: entity,
-          translatableFields: fields,
-          translatedCount: entityStatistics.translated,
-          totalCount: entityStatistics.expected,
-        }
-      })
+          return {
+            label: entity
+              .split("_")
+              .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+              .join(" "),
+            reference: entity,
+            translatableFields: fields,
+            translatedCount: entityStatistics.translated,
+            totalCount: entityStatistics.expected,
+          }
+        })
+        // sort by label alphabetically
+        .sort((a, b) => a.label.localeCompare(b.label))
+    )
   }, [translatable_fields, statistics])
 
   const isReady =

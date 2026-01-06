@@ -2524,7 +2524,7 @@
     },
     "subtitle": "Manage translations of your data in Medusa",
     "list": {
-      "metrics": "{{translated}} of {{total}} fields translated"
+      "metrics": "{{translated}} of {{total}} translations"
     },
     "edit": {
       "successToast": "Translations updated successfully",
