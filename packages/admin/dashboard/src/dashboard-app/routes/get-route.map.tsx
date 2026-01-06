@@ -1879,6 +1879,10 @@ export function getRouteMap({
               lazy: () => import("../../routes/login"),
             },
             {
+              path: "/cloud/login",
+              lazy: () => import("../../routes/cloud/login"),
+            },
+            {
               path: "/reset-password",
               lazy: () => import("../../routes/reset-password"),
             },
