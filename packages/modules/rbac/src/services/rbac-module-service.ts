@@ -1,4 +1,9 @@
-import { Context, FindConfig } from "@medusajs/framework/types"
+import {
+  Context,
+  FilterableRbacRoleProps,
+  FindConfig,
+  RbacRoleDTO,
+} from "@medusajs/framework/types"
 import {
   InjectManager,
   MedusaContext,
@@ -6,6 +11,12 @@ import {
   Policy,
   promiseAll,
 } from "@medusajs/framework/utils"
+import {
+  CreateRbacRoleParentDTO,
+  IRbacModuleService,
+  RbacRoleParentDTO,
+  UpdateRbacRoleParentDTO,
+} from "@medusajs/types"
 import { RbacPolicy, RbacRole, RbacRoleParent, RbacRolePolicy } from "@models"
 import { RbacRepository } from "../repositories"
 
@@ -13,12 +24,15 @@ type InjectedDependencies = {
   rbacRepository: RbacRepository
 }
 
-export default class RbacModuleService extends MedusaService({
-  RbacRole,
-  RbacPolicy,
-  RbacRoleParent,
-  RbacRolePolicy,
-}) {
+export default class RbacModuleService
+  extends MedusaService({
+    RbacRole,
+    RbacPolicy,
+    RbacRoleParent,
+    RbacRolePolicy,
+  })
+  implements IRbacModuleService
+{
   protected readonly rbacRepository_: RbacRepository
 
   constructor({ rbacRepository }: InjectedDependencies) {
@@ -125,41 +139,13 @@ export default class RbacModuleService extends MedusaService({
   @InjectManager()
   // @ts-expect-error
   async listRbacRoles(
-    filters: any = {},
-    config: FindConfig<any> = {},
+    filters: FilterableRbacRoleProps = {},
+    config: FindConfig<RbacRoleDTO> = {},
     @MedusaContext() sharedContext: Context = {}
-  ): Promise<any[]> {
-    const roles = await super.listRbacRoles(filters, config, sharedContext)
-
-    const shouldIncludePolicies =
-      config.relations?.includes("policies") ||
-      config.select?.includes("policies")
-
-    if (shouldIncludePolicies && roles.length > 0) {
-      const roleIds = roles.map((role) => role.id)
-      const policiesByRole = await this.rbacRepository_.listPoliciesForRoles(
-        roleIds,
-        sharedContext
-      )
-
-      for (const role of roles) {
-        role.policies = policiesByRole.get(role.id) || []
-      }
-    }
-
-    return roles
-  }
-
-  @InjectManager()
-  // @ts-expect-error
-  async listAndCountRbacRoles(
-    filters: any = {},
-    config: FindConfig<any> = {},
-    @MedusaContext() sharedContext: Context = {}
-  ): Promise<[any[], number]> {
-    const [roles, count] = await super.listAndCountRbacRoles(
+  ): Promise<RbacRoleDTO[]> {
+    const roles = await super.listRbacRoles(
       filters,
-      config,
+      config as any,
       sharedContext
     )
 
@@ -179,15 +165,47 @@ export default class RbacModuleService extends MedusaService({
       }
     }
 
-    return [roles, count]
+    return roles as unknown as RbacRoleDTO[]
+  }
+
+  @InjectManager()
+  // @ts-expect-error
+  async listAndCountRbacRoles(
+    filters: FilterableRbacRoleProps = {},
+    config: FindConfig<RbacRoleDTO> = {},
+    @MedusaContext() sharedContext: Context = {}
+  ): Promise<[RbacRoleDTO[], number]> {
+    const [roles, count] = await super.listAndCountRbacRoles(
+      filters,
+      config as any,
+      sharedContext
+    )
+
+    const shouldIncludePolicies =
+      config.relations?.includes("policies") ||
+      config.select?.includes("policies")
+
+    if (shouldIncludePolicies && roles.length > 0) {
+      const roleIds = roles.map((role) => role.id)
+      const policiesByRole = await this.rbacRepository_.listPoliciesForRoles(
+        roleIds,
+        sharedContext
+      )
+
+      for (const role of roles) {
+        role.policies = policiesByRole.get(role.id) || []
+      }
+    }
+
+    return [roles as unknown as RbacRoleDTO[], count]
   }
 
   @InjectManager()
   // @ts-expect-error
   async createRbacRoleParents(
-    data: any[],
+    data: CreateRbacRoleParentDTO[],
     @MedusaContext() sharedContext: Context = {}
-  ): Promise<any[]> {
+  ): Promise<RbacRoleParentDTO[]> {
     for (const parent of data) {
       const { role_id, parent_id } = parent
 
@@ -216,9 +234,9 @@ export default class RbacModuleService extends MedusaService({
   @InjectManager()
   // @ts-expect-error
   async updateRbacRoleParents(
-    data: any[],
+    data: UpdateRbacRoleParentDTO[],
     @MedusaContext() sharedContext: Context = {}
-  ): Promise<any[]> {
+  ): Promise<RbacRoleParentDTO[]> {
     for (const parent of data) {
       const { role_id, parent_id } = parent
 
@@ -230,7 +248,7 @@ export default class RbacModuleService extends MedusaService({
         }
 
         const wouldCreateCycle = await this.rbacRepository_.checkForCycle(
-          role_id,
+          role_id!,
           parent_id,
           sharedContext
         )
