@@ -1,7 +1,6 @@
 import { MedusaResponse } from "@medusajs/framework/http"
 import { HttpTypes } from "@medusajs/framework/types"
 import {
-  applyTranslations,
   ContainerRegistrationKeys,
   isPresent,
   MedusaError,
@@ -10,7 +9,6 @@ import {
 import { wrapVariantsWithInventoryQuantityForSalesChannel } from "../../../utils/middlewares"
 import {
   filterOutInternalProductCategories,
-  refetchProduct,
   RequestWithContext,
   wrapProductsWithTaxPrices,
 } from "../helpers"

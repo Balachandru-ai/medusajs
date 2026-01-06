@@ -6,10 +6,7 @@ import {
   StoreProductCategoryListParams,
   StoreProductCategoryListResponse,
 } from "@medusajs/framework/types"
-import {
-  applyTranslations,
-  ContainerRegistrationKeys,
-} from "@medusajs/framework/utils"
+import { ContainerRegistrationKeys } from "@medusajs/framework/utils"
 
 export const GET = async (
   req: AuthenticatedMedusaRequest<StoreProductCategoryListParams>,
