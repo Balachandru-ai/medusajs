@@ -383,6 +383,7 @@
  *           type: boolean
  *           title: $exists
  *           description: Filter by whether a value for this parameter exists (not `null`).
+ *       title: created_at
  *   - name: updated_at
  *     in: query
  *     description: Filter by the category's update date.
@@ -614,6 +615,7 @@
  *           type: boolean
  *           title: $exists
  *           description: Filter by whether a value for this parameter exists (not `null`).
+ *       title: updated_at
  *   - name: $and
  *     in: query
  *     required: false

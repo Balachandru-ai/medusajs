@@ -183,6 +183,11 @@
  *     description: The cart's promotions.
  *     items:
  *       $ref: "#/components/schemas/StoreCartPromotion"
+ *   completed_at:
+ *     type: string
+ *     title: completed_at
+ *     description: The cart's completed at.
+ *     format: date-time
  * 
 */
 

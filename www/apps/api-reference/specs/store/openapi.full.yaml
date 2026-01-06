@@ -2917,6 +2917,7 @@ paths:
                 type: boolean
                 title: $exists
                 description: Filter by whether a value for this parameter exists (not `null`).
+            title: created_at
         - name: updated_at
           in: query
           description: Filter by the collection's update date.
@@ -3148,6 +3149,7 @@ paths:
                 type: boolean
                 title: $exists
                 description: Filter by whether a value for this parameter exists (not `null`).
+            title: updated_at
         - name: handle
           in: query
           required: false
@@ -6478,6 +6480,7 @@ paths:
                 type: boolean
                 title: $exists
                 description: Filter by whether a value for this parameter exists (not `null`).
+            title: created_at
         - name: updated_at
           in: query
           description: Filter by the category's update date.
@@ -6709,6 +6712,7 @@ paths:
                 type: boolean
                 title: $exists
                 description: Filter by whether a value for this parameter exists (not `null`).
+            title: updated_at
         - name: $and
           in: query
           required: false
@@ -7280,6 +7284,7 @@ paths:
                 type: boolean
                 title: $exists
                 description: Filter by whether a value for this parameter exists (not `null`).
+            title: created_at
         - name: updated_at
           in: query
           description: Filter by the tag's update date.
@@ -7511,6 +7516,7 @@ paths:
                 type: boolean
                 title: $exists
                 description: Filter by whether a value for this parameter exists (not `null`).
+            title: updated_at
         - name: with_deleted
           in: query
           description: Whether to include deleted records in the result.
@@ -7992,6 +7998,7 @@ paths:
                 type: boolean
                 title: $exists
                 description: Filter by whether a value for this parameter exists (not `null`).
+            title: created_at
         - name: updated_at
           in: query
           description: Filter by the type's update date.
@@ -8223,6 +8230,7 @@ paths:
                 type: boolean
                 title: $exists
                 description: Filter by whether a value for this parameter exists (not `null`).
+            title: updated_at
         - name: with_deleted
           in: query
           description: Whether to include deleted records in the result.
@@ -8774,6 +8782,7 @@ paths:
                 type: boolean
                 title: $exists
                 description: Filter by whether a value for this parameter exists (not `null`).
+            title: created_at
         - name: updated_at
           in: query
           description: Filter by the product's update date.
@@ -9005,6 +9014,7 @@ paths:
                 type: boolean
                 title: $exists
                 description: Filter by whether a value for this parameter exists (not `null`).
+            title: updated_at
         - name: region_id
           in: query
           description: The ID of the region the products are being viewed from. This is required if you're retrieving product variant prices with taxes.
@@ -20799,9 +20809,9 @@ components:
         - type
         - options
         - images
-        - length
         - title
         - status
+        - length
         - id
         - created_at
         - updated_at
@@ -24362,6 +24372,96 @@ components:
           format: date-time
           title: deleted_at
           description: The date that the translation was deleted.
+    AdminTranslationEntitiesResponse:
+      type: object
+      description: SUMMARY
+      x-schemaName: AdminTranslationEntitiesResponse
+      required:
+        - data
+        - count
+        - offset
+        - limit
+      properties:
+        data:
+          type: array
+          description: The translation's data.
+          items:
+            allOf:
+              - type: object
+                description: The datum's data.
+              - type: object
+                description: The datum's data.
+                required:
+                  - id
+                  - translations
+                properties:
+                  id:
+                    type: string
+                    title: id
+                    description: The datum's ID.
+                  translations:
+                    type: array
+                    description: The datum's translations.
+                    items:
+                      type: object
+                      description: The translation's translations.
+                      x-schemaName: AdminTranslation
+                      required:
+                        - id
+                        - reference_id
+                        - reference
+                        - locale_code
+                        - translations
+                        - created_at
+                        - updated_at
+                        - deleted_at
+                      properties:
+                        id:
+                          type: string
+                          title: id
+                          description: The translation's ID.
+                        reference_id:
+                          type: string
+                          title: reference_id
+                          description: The translation's reference id.
+                        reference:
+                          type: string
+                          title: reference
+                          description: The translation's reference.
+                        locale_code:
+                          type: string
+                          title: locale_code
+                          description: The translation's locale code.
+                        translations:
+                          type: object
+                          description: The translation's translations.
+                        created_at:
+                          type: string
+                          format: date-time
+                          title: created_at
+                          description: The translation's created at.
+                        updated_at:
+                          type: string
+                          format: date-time
+                          title: updated_at
+                          description: The translation's updated at.
+                        deleted_at:
+                          type: string
+                          format: date-time
+                          title: deleted_at
+                          description: The translation's deleted at.
+        count:
+          type: number
+          title: count
+          description: The translation's count.
+        offset:
+          type: number
+          title: offset
+          description: The translation's offset.
+        limit:
+          type: number
+          title: limit
+          description: The translation's limit.
     AdminTranslationSettingsResponse:
       type: object
       description: The translation settings' details.
@@ -32859,6 +32959,11 @@ components:
           description: The cart's promotions.
           items:
             $ref: '#/components/schemas/StoreCartPromotion'
+        completed_at:
+          type: string
+          title: completed_at
+          description: The cart's completed at.
+          format: date-time
     StoreCartAddPromotion:
       type: object
       description: The promotion's details.
@@ -41619,8 +41724,8 @@ components:
             $ref: '#/components/schemas/BaseProductImage'
       required:
         - options
-        - length
         - title
+        - length
         - id
         - created_at
         - updated_at

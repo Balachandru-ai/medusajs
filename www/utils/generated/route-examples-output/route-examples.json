@@ -980,6 +980,9 @@
   "GET /admin/translations/settings": {
     "js-sdk": "sdk.admin.translation.settings({\n  entity_type: \"product\"\n})\n.then(({ translatable_fields }) => {\n  console.log(translatable_fields)\n})"
   },
+  "GET /admin/translations/entities": {
+    "js-sdk": "sdk.admin.translation.entities({\n  type: \"product\"\n})\n.then(({ data, count, offset, limit }) => {\n  console.log(data)\n})"
+  },
   "GET /admin/translations/statistics": {
     "js-sdk": "sdk.admin.translation.statistics({\n  entity_type: \"product\"\n})\n.then(({ statistics }) => {\n  console.log(statistics)\n})"
   },

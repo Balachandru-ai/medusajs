@@ -427,6 +427,7 @@
  *           type: boolean
  *           title: $exists
  *           description: Filter by whether a value for this parameter exists (not `null`).
+ *       title: created_at
  *   - name: updated_at
  *     in: query
  *     description: Filter by the product's update date.
@@ -658,6 +659,7 @@
  *           type: boolean
  *           title: $exists
  *           description: Filter by whether a value for this parameter exists (not `null`).
+ *       title: updated_at
  *   - name: region_id
  *     in: query
  *     description: The ID of the region the products are being viewed from. This is required if you're retrieving product variant prices with taxes.
