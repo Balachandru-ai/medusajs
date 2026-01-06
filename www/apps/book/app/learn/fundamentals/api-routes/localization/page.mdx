@@ -176,12 +176,12 @@ The `req.locale` property contains the locale value from either the query parame
 
 ### Retrieve Localized Data with Query
 
-To retrieve data models with translated fields, pass the `locale` option to [Query](/learn/fundamentals/module-links/query) when querying your data.
+To retrieve data models with translated fields, pass the `locale` property in the second parameter object of [Query](/learn/fundamentals/module-links/query) when querying your data.
 
 For example, to retrieve products with translated names and descriptions:
 
 export const queryHighlights = [
-  ["10", "locale", "Pass the request locale to retrieve localized data"],
+  ["12", "locale", "Pass the request locale to retrieve localized data"],
 ]
 
 ```ts title="src/api/store/products/route.ts" highlights={queryHighlights}
@@ -190,13 +190,15 @@ import type { MedusaRequest, MedusaResponse } from "@medusajs/framework/http"
 export const GET = async (req: MedusaRequest, res: MedusaResponse) => {
   const query = req.scope.resolve("query")
 
-  const { data: products } = await query.graph({
-    entity: "product",
-    fields: ["id", "title", "description"],
-    options: {
-      locale: req.locale,
+  const { data: products } = await query.graph(
+    {
+      entity: "product",
+      fields: ["id", "title", "description"],
     },
-  })
+    {
+      locale: req.locale,
+    }
+  )
 
   res.json({ products })
 }
