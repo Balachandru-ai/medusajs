@@ -89,8 +89,7 @@ export const ProductOptionsManageForm = ({
   }
 
   const handleValueChange = (optionId: string, valueIds: string[]) => {
-    // Ensure at least one value is selected
-    if (valueIds.length === 0) {
+    if (!valueIds.length) {
       return
     }
 
