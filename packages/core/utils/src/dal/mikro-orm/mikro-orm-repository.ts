@@ -18,6 +18,7 @@ import {
   EntityProperty,
   EntitySchema,
   LoadStrategy,
+  MetadataStorage,
   FilterQuery as MikroFilterQuery,
   FindOptions as MikroOptions,
   ReferenceKind,
@@ -295,7 +296,8 @@ export function mikroOrmBaseRepositoryFactory<const T extends object>(
     entity = mikroOrmEntity
     tableName = (
       (mikroOrmEntity as unknown as EntitySchema).meta ??
-      (mikroOrmEntity as EntityClass<any>).prototype.__meta
+      (mikroOrmEntity as EntityClass<any>).prototype?.__meta ??
+      MetadataStorage.getMetadataFromDecorator(mikroOrmEntity)
     ).collection
 
     // @ts-ignore
