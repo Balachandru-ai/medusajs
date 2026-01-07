@@ -25,7 +25,6 @@ import {
   AdminGetProductParams,
   AdminGetProductsParams,
   AdminGetProductVariantParams,
-  AdminGetProductVariantsParams,
   AdminImportProducts,
   AdminLinkProductOptions,
   AdminUpdateProduct,
@@ -34,6 +33,7 @@ import {
   CreateProduct,
   CreateProductVariant,
 } from "./validators"
+import { AdminGetProductVariantsParams } from "../product-variants/validators"
 
 const upload = multer({ storage: multer.memoryStorage() })
 

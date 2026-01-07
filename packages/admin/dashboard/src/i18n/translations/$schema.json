@@ -9660,9 +9660,17 @@
             },
             "noLocalesTip": {
               "type": "string"
+            },
+            "noLocalesTipConfigureAction": {
+              "type": "string"
             }
           },
-          "required": ["heading", "subtitle", "noLocalesTip"],
+          "required": [
+            "heading",
+            "subtitle",
+            "noLocalesTip",
+            "noLocalesTipConfigureAction"
+          ],
           "additionalProperties": false
         },
         "completion": {
