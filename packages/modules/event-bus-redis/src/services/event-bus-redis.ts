@@ -123,7 +123,7 @@ export default class RedisEventBusService extends AbstractEventBusModuleService 
    * 1. Message-level options (eventData.options.priority)
    * 2. Emit-level options (options.priority)
    * 3. Module-level job options (this.jobOptions_.priority)
-   * 4. Internal flag default (options.internal ? LOWEST_PRIORITY : DEFAULT_PRIORITY)
+   * 4. Internal flag default (options.internal ? EventPriority.LOWEST : EventPriority.DEFAULT)
    */
   private buildEvents<T>(
     eventsData: Message<T>[],
