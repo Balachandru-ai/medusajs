@@ -1,3 +1,4 @@
+import { EventOptions } from "@medusajs/types"
 import { buildEventNamesFromEntityName } from "../event-bus"
 import { Modules } from "../modules-sdk"
 
@@ -37,4 +38,12 @@ export const FulfillmentEvents = {
    * @deprecated use `FulfillmentWorkflowEvents.DELIVERY_CREATED` instead
    */
   DELIVERY_CREATED: "delivery.created",
+} as const
+
+type FulfillmentEventValues =
+  (typeof FulfillmentEvents)[keyof typeof FulfillmentEvents]
+
+declare module "@medusajs/types" {
+  export interface EventBusEventsOptions
+    extends Record<FulfillmentEventValues, EventOptions | undefined> {}
 }

@@ -1,3 +1,5 @@
+import { EventOptions } from "@medusajs/types"
+
 /**
  * @category Cart
  * @customNamespace Cart
@@ -981,4 +983,32 @@ export const TranslationWorkflowEvents = {
    * ```
    */
   DELETED: "translation.deleted",
+}
+
+type AllWorkflowEventValues =
+  | (typeof CartWorkflowEvents)[keyof typeof CartWorkflowEvents]
+  | (typeof CustomerWorkflowEvents)[keyof typeof CustomerWorkflowEvents]
+  | (typeof OrderWorkflowEvents)[keyof typeof OrderWorkflowEvents]
+  | (typeof OrderEditWorkflowEvents)[keyof typeof OrderEditWorkflowEvents]
+  | (typeof UserWorkflowEvents)[keyof typeof UserWorkflowEvents]
+  | (typeof AuthWorkflowEvents)[keyof typeof AuthWorkflowEvents]
+  | (typeof SalesChannelWorkflowEvents)[keyof typeof SalesChannelWorkflowEvents]
+  | (typeof ProductCategoryWorkflowEvents)[keyof typeof ProductCategoryWorkflowEvents]
+  | (typeof ProductCollectionWorkflowEvents)[keyof typeof ProductCollectionWorkflowEvents]
+  | (typeof ProductVariantWorkflowEvents)[keyof typeof ProductVariantWorkflowEvents]
+  | (typeof ProductWorkflowEvents)[keyof typeof ProductWorkflowEvents]
+  | (typeof ProductTypeWorkflowEvents)[keyof typeof ProductTypeWorkflowEvents]
+  | (typeof ProductTagWorkflowEvents)[keyof typeof ProductTagWorkflowEvents]
+  | (typeof ProductOptionWorkflowEvents)[keyof typeof ProductOptionWorkflowEvents]
+  | (typeof InviteWorkflowEvents)[keyof typeof InviteWorkflowEvents]
+  | (typeof RegionWorkflowEvents)[keyof typeof RegionWorkflowEvents]
+  | (typeof FulfillmentWorkflowEvents)[keyof typeof FulfillmentWorkflowEvents]
+  | (typeof ShippingOptionTypeWorkflowEvents)[keyof typeof ShippingOptionTypeWorkflowEvents]
+  | (typeof ShippingOptionWorkflowEvents)[keyof typeof ShippingOptionWorkflowEvents]
+  | (typeof PaymentEvents)[keyof typeof PaymentEvents]
+  | (typeof TranslationWorkflowEvents)[keyof typeof TranslationWorkflowEvents]
+
+declare module "@medusajs/types" {
+  export interface EventBusEventsOptions
+    extends Record<AllWorkflowEventValues, EventOptions | undefined> {}
 }

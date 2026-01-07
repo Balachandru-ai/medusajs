@@ -1,3 +1,4 @@
+import { EventBusEventsOptions } from "@medusajs/framework/types"
 import {
   BulkJobOptions,
   Job,
@@ -68,4 +69,13 @@ export type EventBusRedisModuleOptions = {
    * @see https://api.docs.bullmq.io/interfaces/BaseJobOptions.html
    */
   jobOptions?: EmitOptions
+
+  eventOptions?: EventBusEventsOptions
+}
+
+declare module "@medusajs/types" {
+  interface ModuleOptions {
+    "@medusajs/event-bus-redis": EventBusRedisModuleOptions
+    "@medusajs/medusa/event-bus-redis": EventBusRedisModuleOptions
+  }
 }
