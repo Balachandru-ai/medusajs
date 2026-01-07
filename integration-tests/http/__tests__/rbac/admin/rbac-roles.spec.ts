@@ -1,9 +1,9 @@
+import { ContainerRegistrationKeys, Modules } from "@medusajs/framework/utils"
 import { medusaIntegrationTestRunner } from "@medusajs/test-utils"
 import {
   adminHeaders,
   createAdminUser,
 } from "../../../../helpers/create-admin-user"
-import { Modules, ContainerRegistrationKeys } from "@medusajs/framework/utils"
 
 jest.setTimeout(60000)
 

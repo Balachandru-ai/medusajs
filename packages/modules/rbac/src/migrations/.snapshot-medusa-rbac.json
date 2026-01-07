@@ -1,7 +1,5 @@
 {
-  "namespaces": [
-    "public"
-  ],
+  "namespaces": ["public"],
   "name": "public",
   "tables": [
     {
@@ -143,9 +141,7 @@
         },
         {
           "keyName": "rbac_policy_pkey",
-          "columnNames": [
-            "id"
-          ],
+          "columnNames": ["id"],
           "composite": false,
           "constraint": true,
           "primary": true,
@@ -250,9 +246,7 @@
         },
         {
           "keyName": "rbac_role_pkey",
-          "columnNames": [
-            "id"
-          ],
+          "columnNames": ["id"],
           "composite": false,
           "constraint": true,
           "primary": true,
@@ -375,9 +369,7 @@
         },
         {
           "keyName": "rbac_role_parent_pkey",
-          "columnNames": [
-            "id"
-          ],
+          "columnNames": ["id"],
           "composite": false,
           "constraint": true,
           "primary": true,
@@ -388,25 +380,17 @@
       "foreignKeys": {
         "rbac_role_parent_role_id_foreign": {
           "constraintName": "rbac_role_parent_role_id_foreign",
-          "columnNames": [
-            "role_id"
-          ],
+          "columnNames": ["role_id"],
           "localTableName": "public.rbac_role_parent",
-          "referencedColumnNames": [
-            "id"
-          ],
+          "referencedColumnNames": ["id"],
           "referencedTableName": "public.rbac_role",
           "updateRule": "cascade"
         },
         "rbac_role_parent_parent_id_foreign": {
           "constraintName": "rbac_role_parent_parent_id_foreign",
-          "columnNames": [
-            "parent_id"
-          ],
+          "columnNames": ["parent_id"],
           "localTableName": "public.rbac_role_parent",
-          "referencedColumnNames": [
-            "id"
-          ],
+          "referencedColumnNames": ["id"],
           "referencedTableName": "public.rbac_role",
           "updateRule": "cascade"
         }
@@ -525,9 +509,7 @@
         },
         {
           "keyName": "rbac_role_policy_pkey",
-          "columnNames": [
-            "id"
-          ],
+          "columnNames": ["id"],
           "composite": false,
           "constraint": true,
           "primary": true,
@@ -538,25 +520,17 @@
       "foreignKeys": {
         "rbac_role_policy_role_id_foreign": {
           "constraintName": "rbac_role_policy_role_id_foreign",
-          "columnNames": [
-            "role_id"
-          ],
+          "columnNames": ["role_id"],
           "localTableName": "public.rbac_role_policy",
-          "referencedColumnNames": [
-            "id"
-          ],
+          "referencedColumnNames": ["id"],
           "referencedTableName": "public.rbac_role",
           "updateRule": "cascade"
         },
         "rbac_role_policy_policy_id_foreign": {
           "constraintName": "rbac_role_policy_policy_id_foreign",
-          "columnNames": [
-            "policy_id"
-          ],
+          "columnNames": ["policy_id"],
           "localTableName": "public.rbac_role_policy",
-          "referencedColumnNames": [
-            "id"
-          ],
+          "referencedColumnNames": ["id"],
           "referencedTableName": "public.rbac_policy",
           "updateRule": "cascade"
         }
