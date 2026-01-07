@@ -65,7 +65,7 @@ export const CartWorkflowEvents = {
    * ```
    */
   CUSTOMER_TRANSFERRED: "cart.customer_transferred",
-}
+} as const
 
 /**
  * @category Customer
@@ -105,7 +105,7 @@ export const CustomerWorkflowEvents = {
    * ```
    */
   DELETED: "customer.deleted",
-}
+} as const
 
 /**
  * @category Order
@@ -261,7 +261,7 @@ export const OrderWorkflowEvents = {
    * ```
    */
   TRANSFER_REQUESTED: "order.transfer_requested",
-}
+} as const
 
 /**
  * @category Order Edit
@@ -310,7 +310,7 @@ export const OrderEditWorkflowEvents = {
    * ```
    */
   CANCELED: "order-edit.canceled",
-}
+} as const
 
 /**
  * @category User
@@ -350,7 +350,7 @@ export const UserWorkflowEvents = {
    * ```
    */
   DELETED: "user.deleted",
-}
+} as const
 
 /**
  * @category Auth
@@ -372,7 +372,7 @@ export const AuthWorkflowEvents = {
    * ```
    */
   PASSWORD_RESET: "auth.password_reset",
-}
+} as const
 
 /**
  * @category Sales Channel
@@ -412,7 +412,7 @@ export const SalesChannelWorkflowEvents = {
    * ```
    */
   DELETED: "sales-channel.deleted",
-}
+} as const
 
 /**
  * @category Product Category
@@ -452,7 +452,7 @@ export const ProductCategoryWorkflowEvents = {
    * ```
    */
   DELETED: "product-category.deleted",
-}
+} as const
 
 /**
  * @category Product Collection
@@ -492,7 +492,7 @@ export const ProductCollectionWorkflowEvents = {
    * ```
    */
   DELETED: "product-collection.deleted",
-}
+} as const
 
 /**
  * @category Product Variant
@@ -532,7 +532,7 @@ export const ProductVariantWorkflowEvents = {
    * ```
    */
   DELETED: "product-variant.deleted",
-}
+} as const
 
 /**
  * @category Product
@@ -572,7 +572,7 @@ export const ProductWorkflowEvents = {
    * ```
    */
   DELETED: "product.deleted",
-}
+} as const
 
 /**
  * @category Product Type
@@ -612,7 +612,7 @@ export const ProductTypeWorkflowEvents = {
    * ```
    */
   DELETED: "product-type.deleted",
-}
+} as const
 
 /**
  * @category Product Tag
@@ -652,7 +652,7 @@ export const ProductTagWorkflowEvents = {
    * ```
    */
   DELETED: "product-tag.deleted",
-}
+} as const
 
 /**
  * @category Product Option
@@ -692,7 +692,7 @@ export const ProductOptionWorkflowEvents = {
    * ```
    */
   DELETED: "product-option.deleted",
-}
+} as const
 
 /**
  * @category Invite
@@ -746,7 +746,7 @@ export const InviteWorkflowEvents = {
    * ```
    */
   RESENT: "invite.resent",
-}
+} as const
 
 /**
  * @category Region
@@ -786,7 +786,7 @@ export const RegionWorkflowEvents = {
    * ```
    */
   DELETED: "region.deleted",
-}
+} as const
 
 /**
  * @category Fulfillment
@@ -816,7 +816,7 @@ export const FulfillmentWorkflowEvents = {
    * ```
    */
   DELIVERY_CREATED: "delivery.created",
-}
+} as const
 
 /**
  * @category Shipping Option Type
@@ -862,7 +862,7 @@ export const ShippingOptionTypeWorkflowEvents = {
    * ```
    */
   DELETED: "shipping-option-type.deleted",
-}
+} as const
 
 /**
  * @category Shipping Option
@@ -908,7 +908,7 @@ export const ShippingOptionWorkflowEvents = {
    * ```
    */
   DELETED: "shipping-option.deleted",
-}
+} as const
 
 /**
  * @category Payment
@@ -937,7 +937,7 @@ export const PaymentEvents = {
    * ```
    */
   REFUNDED: "payment.refunded",
-}
+} as const
 
 /**
  * @category Translation
@@ -983,7 +983,7 @@ export const TranslationWorkflowEvents = {
    * ```
    */
   DELETED: "translation.deleted",
-}
+} as const
 
 declare module "@medusajs/types" {
   export interface EventBusEventsOptions {
