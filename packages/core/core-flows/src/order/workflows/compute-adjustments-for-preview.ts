@@ -1,5 +1,6 @@
 import {
   ComputeActionContext,
+  ComputeActionShippingLine,
   OrderChangeDTO,
   OrderDTO,
   PromotionDTO,
@@ -87,7 +88,7 @@ export const computeAdjustmentsForPreviewWorkflow = createWorkflow(
          */
         !!order.promotions.length && !!input.orderChange.carry_over_promotions
     ).then(() => {
-      const actionsToComputeItemsInput = transform(
+      const actionsToComputeContext = transform(
         { previewedOrder, order: input.order },
         ({ previewedOrder, order }) => {
           return {
@@ -97,6 +98,8 @@ export const computeAdjustmentsForPreviewWorkflow = createWorkflow(
               // Buy-Get promotions rely on the product ID, so we need to manually set it before refreshing adjustments
               product: { id: item.product_id },
             })),
+            shipping_methods:
+              previewedOrder.shipping_methods as unknown as ComputeActionShippingLine[],
           } as ComputeActionContext
         }
       )
@@ -108,7 +111,7 @@ export const computeAdjustmentsForPreviewWorkflow = createWorkflow(
       })
 
       const actions = getActionsToComputeFromPromotionsStep({
-        computeActionContext: actionsToComputeItemsInput,
+        computeActionContext: actionsToComputeContext,
         promotionCodesToApply: orderPromotions,
         options: {
           skip_usage_limit_checks: true,

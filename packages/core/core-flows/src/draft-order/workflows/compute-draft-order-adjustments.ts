@@ -8,6 +8,7 @@ import {
 } from "@medusajs/framework/workflows-sdk"
 import type {
   ComputeActionContext,
+  ComputeActionShippingLine,
   OrderChangeDTO,
   OrderDTO,
   PromotionDTO,
@@ -145,7 +146,7 @@ export const computeDraftOrderAdjustmentsWorkflow = createWorkflow(
           .filter((p) => p !== undefined)
       })
 
-      const actionsToComputeItemsInput = transform(
+      const actionsToComputeContext = transform(
         { previewedOrder, order },
         ({ previewedOrder, order }) => {
           return {
@@ -155,12 +156,14 @@ export const computeDraftOrderAdjustmentsWorkflow = createWorkflow(
               // Buy-Get promotions rely on the product ID, so we need to manually set it before refreshing adjustments
               product: { id: item.product_id },
             })),
+            shipping_methods:
+              previewedOrder.shipping_methods as unknown as ComputeActionShippingLine[],
           } as ComputeActionContext
         }
       )
 
       const actions = getActionsToComputeFromPromotionsStep({
-        computeActionContext: actionsToComputeItemsInput,
+        computeActionContext: actionsToComputeContext,
         promotionCodesToApply: orderPromotions,
       })
 
