@@ -42,17 +42,21 @@ export const removeProductOptionsFromProductStep = createStep(
       }
     }
 
-    const compensation = pairs.map((pair) => {
-      const key = `${pair.product_id}_${pair.product_option_id}`
-      if (!valueIdsByPairKey.has(key)) {
-        return pair
-      }
+    const compensation = pairs
+      .map((pair) => {
+        const key = `${pair.product_id}_${pair.product_option_id}`
+        const valueIds = valueIdsByPairKey.get(key)
+        // this PPO link doesn't exist we don't want to recreate it in compensation
+        if (!valueIds) {
+          return null
+        }
 
-      return {
-        ...pair,
-        product_option_value_ids: valueIdsByPairKey.get(key),
-      }
-    })
+        return {
+          ...pair,
+          product_option_value_ids: valueIds,
+        }
+      })
+      .filter((pair) => !!pair)
 
     await service.removeProductOptionFromProduct(pairs)
 
