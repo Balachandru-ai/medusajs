@@ -1,4 +1,6 @@
 import { model } from "@medusajs/framework/utils"
+import RbacRoleParent from "./rbac-role-parent"
+import RbacRolePolicy from "./rbac-role-policy"
 
 const RbacRole = model
   .define("rbac_role", {
@@ -6,6 +8,12 @@ const RbacRole = model
     name: model.text().searchable(),
     description: model.text().nullable(),
     metadata: model.json().nullable(),
+    policies: model.hasMany(() => RbacRolePolicy, {
+      mappedBy: "role",
+    }),
+    parents: model.hasMany(() => RbacRoleParent, {
+      mappedBy: "role",
+    }),
   })
   .indexes([
     {

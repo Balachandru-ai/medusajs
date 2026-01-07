@@ -3,7 +3,12 @@ import {
   AuthenticatedMedusaRequest,
   MedusaResponse,
 } from "@medusajs/framework/http"
-import { ContainerRegistrationKeys } from "@medusajs/framework/utils"
+import {
+  ContainerRegistrationKeys,
+  defineFileConfig,
+  FeatureFlag,
+} from "@medusajs/framework/utils"
+import RbacFeatureFlag from "../../../../feature-flags/rbac"
 import { AdminCreateRbacRoleType } from "./validators"
 
 export const GET = async (
@@ -34,7 +39,11 @@ export const POST = async (
   const input = [req.validatedBody]
 
   const { result } = await createRbacRolesWorkflow(req.scope).run({
-    input: { roles: input },
+    input: {
+      actor_id: req.auth_context.actor_id,
+      actor: req.auth_context.actor_type,
+      roles: input,
+    },
   })
 
   const query = req.scope.resolve(ContainerRegistrationKeys.QUERY)
@@ -48,3 +57,7 @@ export const POST = async (
 
   res.status(200).json({ role })
 }
+
+defineFileConfig({
+  isDisabled: () => !FeatureFlag.isFeatureEnabled(RbacFeatureFlag.key),
+})

@@ -1,21 +1,25 @@
 import {
-  WorkflowData,
-  WorkflowResponse,
   createWorkflow,
   transform,
+  when,
+  WorkflowData,
+  WorkflowResponse,
 } from "@medusajs/framework/workflows-sdk"
 import {
-  createRbacRoleInheritancesStep,
+  createRbacRoleParentsStep,
   createRbacRolePoliciesStep,
   createRbacRolesStep,
 } from "../steps"
+import { validateUserPermissionsStep } from "../steps/validate-user-permissions"
 
 export type CreateRbacRolesWorkflowInput = {
+  actor_id?: string
+  actor?: string
   roles: {
     name: string
     description?: string | null
     metadata?: Record<string, unknown> | null
-    inherited_role_ids?: string[]
+    parent_ids?: string[]
     policy_ids?: string[]
   }[]
 }
@@ -25,6 +29,24 @@ export const createRbacRolesWorkflowId = "create-rbac-roles"
 export const createRbacRolesWorkflow = createWorkflow(
   createRbacRolesWorkflowId,
   (input: WorkflowData<CreateRbacRolesWorkflowInput>) => {
+    const validationData = transform({ input }, ({ input }) => {
+      const allPolicyIds = new Set<string>()
+      input.roles.forEach((role) => {
+        role.policy_ids?.forEach((policyId) => allPolicyIds.add(policyId))
+      })
+      return {
+        actor_id: input.actor_id!,
+        actor: input.actor,
+        policy_ids: Array.from(allPolicyIds),
+      }
+    })
+
+    when({ validationData }, ({ validationData }) => {
+      return !!validationData?.actor_id && !!validationData?.policy_ids?.length
+    }).then(() => {
+      validateUserPermissionsStep(validationData)
+    })
+
     const roleData = transform({ input }, ({ input }) => ({
       roles: input.roles.map((r) => ({
         name: r.name,
@@ -35,22 +57,22 @@ export const createRbacRolesWorkflow = createWorkflow(
 
     const createdRoles = createRbacRolesStep(roleData)
 
-    const inheritanceData = transform(
+    const parentData = transform(
       { input, createdRoles },
       ({ input, createdRoles }) => {
-        const inheritances: any[] = []
+        const parents: any[] = []
 
         createdRoles.forEach((role, index) => {
-          const inheritedRoleIds = input.roles[index].inherited_role_ids || []
+          const inheritedRoleIds = input.roles[index].parent_ids || []
           inheritedRoleIds.forEach((inheritedRoleId) => {
-            inheritances.push({
+            parents.push({
               role_id: role.id,
-              inherited_role_id: inheritedRoleId,
+              parent_id: inheritedRoleId,
             })
           })
         })
 
-        return { role_inheritances: inheritances }
+        return { role_parents: parents }
       }
     )
 
@@ -63,15 +85,15 @@ export const createRbacRolesWorkflow = createWorkflow(
           policyIds.forEach((policy_id) => {
             allPolicies.push({
               role_id: role.id,
-              scope_id: policy_id,
+              policy_id: policy_id,
             })
           })
         })
-        return { role_policies: allPolicies }
+        return { policies: allPolicies }
       }
     )
 
-    createRbacRoleInheritancesStep(inheritanceData)
+    createRbacRoleParentsStep(parentData)
 
     createRbacRolePoliciesStep(policiesData)
 

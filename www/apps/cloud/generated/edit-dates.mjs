@@ -1,9 +1,9 @@
 export const generatedEditDates = {
   "app/page.mdx": "2025-10-13T10:56:37.352Z",
   "app/organization/page.mdx": "2025-06-12T14:43:20.772Z",
-  "app/projects/page.mdx": "2025-11-20T09:48:32.899Z",
+  "app/projects/page.mdx": "2026-01-06T10:52:09.224Z",
   "app/environments/page.mdx": "2025-10-15T15:25:09.940Z",
-  "app/deployments/page.mdx": "2025-10-17T14:40:07.793Z",
+  "app/deployments/page.mdx": "2026-01-06T10:50:49.029Z",
   "app/organizations/page.mdx": "2025-12-17T11:56:48.669Z",
   "app/notifications/page.mdx": "2025-10-15T15:25:33.672Z",
   "app/database/page.mdx": "2025-10-20T15:47:46.364Z",
@@ -11,10 +11,10 @@ export const generatedEditDates = {
   "app/s3/page.mdx": "2025-10-15T15:23:02.835Z",
   "app/loyalty-plugin/page.mdx": "2025-10-15T15:27:40.303Z",
   "app/logs/page.mdx": "2025-10-15T15:24:53.277Z",
-  "app/update-medusa/page.mdx": "2025-06-25T07:57:30.170Z",
+  "app/update-medusa/page.mdx": "2026-01-06T10:52:20.587Z",
   "app/connect-storefront/page.mdx": "2025-06-25T07:47:00.499Z",
   "app/environments/environment-variables/page.mdx": "2025-11-12T15:42:19.187Z",
-  "app/environments/long-lived/page.mdx": "2025-10-15T15:27:08.743Z",
+  "app/environments/long-lived/page.mdx": "2026-01-06T10:56:18.660Z",
   "app/environments/preview/page.mdx": "2025-11-03T12:50:29.841Z",
   "app/faq/page.mdx": "2025-10-08T14:43:21.930Z",
   "app/billing/page.mdx": "2025-12-17T12:39:37.397Z",
@@ -28,5 +28,6 @@ export const generatedEditDates = {
   "app/deployments/troubleshooting/page.mdx": "2025-10-17T14:44:22.894Z",
   "app/emails/page.mdx": "2025-11-26T11:07:58.083Z",
   "app/emails/react-email/page.mdx": "2025-11-12T15:41:56.365Z",
-  "app/user/page.mdx": "2025-12-17T12:03:18.968Z"
+  "app/user/page.mdx": "2025-12-17T12:03:18.968Z",
+  "app/deployments/access/page.mdx": "2026-01-06T10:56:01.868Z"
 }

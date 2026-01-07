@@ -2,30 +2,28 @@ import { Modules } from "@medusajs/framework/utils"
 import { StepResponse, createStep } from "@medusajs/framework/workflows-sdk"
 import { IRbacModuleService } from "@medusajs/types"
 
-export type CreateRbacRoleInheritanceDTO = {
+export type CreateRbacRoleParentDTO = {
   role_id: string
-  inherited_role_id: string
+  parent_id: string
   metadata?: Record<string, unknown> | null
 }
 
-export type CreateRbacRoleInheritancesStepInput = {
-  role_inheritances: CreateRbacRoleInheritanceDTO[]
+export type CreateRbacRoleParentsStepInput = {
+  role_parents: CreateRbacRoleParentDTO[]
 }
 
-export const createRbacRoleInheritancesStepId = "create-rbac-role-inheritances"
+export const createRbacRoleParentsStepId = "create-rbac-role-parents"
 
-export const createRbacRoleInheritancesStep = createStep(
-  createRbacRoleInheritancesStepId,
-  async (data: CreateRbacRoleInheritancesStepInput, { container }) => {
+export const createRbacRoleParentsStep = createStep(
+  createRbacRoleParentsStepId,
+  async (data: CreateRbacRoleParentsStepInput, { container }) => {
     const service = container.resolve<IRbacModuleService>(Modules.RBAC)
 
-    if (!data.role_inheritances || data.role_inheritances.length === 0) {
+    if (!data.role_parents?.length) {
       return new StepResponse([], [])
     }
 
-    const created = await service.createRbacRoleInheritances(
-      data.role_inheritances
-    )
+    const created = await service.createRbacRoleParents(data.role_parents)
 
     return new StepResponse(
       created,
@@ -38,6 +36,6 @@ export const createRbacRoleInheritancesStep = createStep(
     }
 
     const service = container.resolve<IRbacModuleService>(Modules.RBAC)
-    await service.deleteRbacRoleInheritances(createdIds)
+    await service.deleteRbacRoleParents(createdIds)
   }
 )

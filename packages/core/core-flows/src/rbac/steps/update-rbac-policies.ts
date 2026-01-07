@@ -26,9 +26,18 @@ export const updateRbacPoliciesStep = createStep(
       relations,
     })
 
+    // Normalize resource and operation to lowercase if present
+    const normalizedUpdate = { ...data.update }
+    if (normalizedUpdate.resource) {
+      normalizedUpdate.resource = normalizedUpdate.resource.toLowerCase()
+    }
+    if (normalizedUpdate.operation) {
+      normalizedUpdate.operation = normalizedUpdate.operation.toLowerCase()
+    }
+
     const updates = (prevData ?? []).map((p) => ({
       id: p.id,
-      ...data.update,
+      ...normalizedUpdate,
     })) as UpdateRbacPolicyDTO[]
 
     const updated = await service.updateRbacPolicies(updates)

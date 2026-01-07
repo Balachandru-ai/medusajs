@@ -23,7 +23,7 @@ export type UpdateRbacPolicyDTO = Partial<CreateRbacPolicyDTO> & {
 
 export type CreateRbacRolePolicyDTO = {
   role_id: string
-  scope_id: string
+  policy_id: string
   metadata?: Record<string, unknown> | null
 }
 
@@ -31,13 +31,12 @@ export type UpdateRbacRolePolicyDTO = Partial<CreateRbacRolePolicyDTO> & {
   id: string
 }
 
-export type CreateRbacRoleInheritanceDTO = {
+export type CreateRbacRoleParentDTO = {
   role_id: string
-  inherited_role_id: string
+  parent_id: string
   metadata?: Record<string, unknown> | null
 }
 
-export type UpdateRbacRoleInheritanceDTO =
-  Partial<CreateRbacRoleInheritanceDTO> & {
-    id: string
-  }
+export type UpdateRbacRoleParentDTO = Partial<CreateRbacRoleParentDTO> & {
+  id: string
+}

@@ -6,6 +6,8 @@ import {
 
 jest.setTimeout(60000)
 
+process.env.MEDUSA_FF_RBAC = "true"
+
 medusaIntegrationTestRunner({
   testSuite: ({ dbConnection, api, getContainer }) => {
     let container
@@ -13,6 +15,10 @@ medusaIntegrationTestRunner({
     beforeEach(async () => {
       container = getContainer()
       await createAdminUser(dbConnection, adminHeaders, container)
+    })
+
+    afterAll(async () => {
+      delete process.env.MEDUSA_FF_RBAC
     })
 
     describe("RBAC Policies - Admin API", () => {

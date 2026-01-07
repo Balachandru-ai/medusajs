@@ -6,7 +6,7 @@ const RbacRolePolicy = model
   .define("rbac_role_policy", {
     id: model.id({ prefix: "rlpl" }).primaryKey(),
     role: model.belongsTo(() => RbacRole),
-    scope: model.belongsTo(() => RbacPolicy),
+    policy: model.belongsTo(() => RbacPolicy),
     metadata: model.json().nullable(),
   })
   .indexes([
@@ -15,11 +15,11 @@ const RbacRolePolicy = model
       where: "deleted_at IS NULL",
     },
     {
-      on: ["scope_id"],
+      on: ["policy_id"],
       where: "deleted_at IS NULL",
     },
     {
-      on: ["role_id", "scope_id"],
+      on: ["role_id", "policy_id"],
       unique: true,
       where: "deleted_at IS NULL",
     },
