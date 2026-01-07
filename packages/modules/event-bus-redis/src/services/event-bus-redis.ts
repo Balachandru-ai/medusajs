@@ -154,7 +154,7 @@ export default class RedisEventBusService extends AbstractEventBusModuleService 
       }
 
       if (
-        finalOptions.priority &&
+        finalOptions.priority != undefined &&
         (finalOptions.priority < 1 ||
           finalOptions.priority > EventPriority.LOWEST)
       ) {
