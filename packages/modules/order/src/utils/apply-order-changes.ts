@@ -192,7 +192,8 @@ export async function applyChangesToOrder(
         calculated.order,
         itemsToUpsert,
         shippingMethodsToUpsert,
-        lineItemAdjustmentsToCreate
+        lineItemAdjustmentsToCreate,
+        shippingMethodAdjustmentsToCreate
       )
       decorateCartTotals(calculated.order)
     }
