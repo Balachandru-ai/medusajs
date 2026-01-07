@@ -985,30 +985,119 @@ export const TranslationWorkflowEvents = {
   DELETED: "translation.deleted",
 }
 
-type AllWorkflowEventValues =
-  | (typeof CartWorkflowEvents)[keyof typeof CartWorkflowEvents]
-  | (typeof CustomerWorkflowEvents)[keyof typeof CustomerWorkflowEvents]
-  | (typeof OrderWorkflowEvents)[keyof typeof OrderWorkflowEvents]
-  | (typeof OrderEditWorkflowEvents)[keyof typeof OrderEditWorkflowEvents]
-  | (typeof UserWorkflowEvents)[keyof typeof UserWorkflowEvents]
-  | (typeof AuthWorkflowEvents)[keyof typeof AuthWorkflowEvents]
-  | (typeof SalesChannelWorkflowEvents)[keyof typeof SalesChannelWorkflowEvents]
-  | (typeof ProductCategoryWorkflowEvents)[keyof typeof ProductCategoryWorkflowEvents]
-  | (typeof ProductCollectionWorkflowEvents)[keyof typeof ProductCollectionWorkflowEvents]
-  | (typeof ProductVariantWorkflowEvents)[keyof typeof ProductVariantWorkflowEvents]
-  | (typeof ProductWorkflowEvents)[keyof typeof ProductWorkflowEvents]
-  | (typeof ProductTypeWorkflowEvents)[keyof typeof ProductTypeWorkflowEvents]
-  | (typeof ProductTagWorkflowEvents)[keyof typeof ProductTagWorkflowEvents]
-  | (typeof ProductOptionWorkflowEvents)[keyof typeof ProductOptionWorkflowEvents]
-  | (typeof InviteWorkflowEvents)[keyof typeof InviteWorkflowEvents]
-  | (typeof RegionWorkflowEvents)[keyof typeof RegionWorkflowEvents]
-  | (typeof FulfillmentWorkflowEvents)[keyof typeof FulfillmentWorkflowEvents]
-  | (typeof ShippingOptionTypeWorkflowEvents)[keyof typeof ShippingOptionTypeWorkflowEvents]
-  | (typeof ShippingOptionWorkflowEvents)[keyof typeof ShippingOptionWorkflowEvents]
-  | (typeof PaymentEvents)[keyof typeof PaymentEvents]
-  | (typeof TranslationWorkflowEvents)[keyof typeof TranslationWorkflowEvents]
-
 declare module "@medusajs/types" {
-  export interface EventBusEventsOptions
-    extends Record<AllWorkflowEventValues, EventOptions | undefined> {}
+  export interface EventBusEventsOptions {
+    // Cart events
+    [CartWorkflowEvents.CREATED]?: EventOptions
+    [CartWorkflowEvents.UPDATED]?: EventOptions
+    [CartWorkflowEvents.CUSTOMER_UPDATED]?: EventOptions
+    [CartWorkflowEvents.REGION_UPDATED]?: EventOptions
+    [CartWorkflowEvents.CUSTOMER_TRANSFERRED]?: EventOptions
+
+    // Customer events
+    [CustomerWorkflowEvents.CREATED]?: EventOptions
+    [CustomerWorkflowEvents.UPDATED]?: EventOptions
+    [CustomerWorkflowEvents.DELETED]?: EventOptions
+
+    // Order events
+    [OrderWorkflowEvents.UPDATED]?: EventOptions
+    [OrderWorkflowEvents.PLACED]?: EventOptions
+    [OrderWorkflowEvents.CANCELED]?: EventOptions
+    [OrderWorkflowEvents.COMPLETED]?: EventOptions
+    [OrderWorkflowEvents.ARCHIVED]?: EventOptions
+    [OrderWorkflowEvents.FULFILLMENT_CREATED]?: EventOptions
+    [OrderWorkflowEvents.FULFILLMENT_CANCELED]?: EventOptions
+    [OrderWorkflowEvents.RETURN_REQUESTED]?: EventOptions
+    [OrderWorkflowEvents.RETURN_RECEIVED]?: EventOptions
+    [OrderWorkflowEvents.CLAIM_CREATED]?: EventOptions
+    [OrderWorkflowEvents.EXCHANGE_CREATED]?: EventOptions
+    [OrderWorkflowEvents.TRANSFER_REQUESTED]?: EventOptions
+
+    // Order Edit events
+    [OrderEditWorkflowEvents.REQUESTED]?: EventOptions
+    [OrderEditWorkflowEvents.CONFIRMED]?: EventOptions
+    [OrderEditWorkflowEvents.CANCELED]?: EventOptions
+
+    // User events
+    [UserWorkflowEvents.CREATED]?: EventOptions
+    [UserWorkflowEvents.UPDATED]?: EventOptions
+    [UserWorkflowEvents.DELETED]?: EventOptions
+
+    // Auth events
+    [AuthWorkflowEvents.PASSWORD_RESET]?: EventOptions
+
+    // Sales Channel events
+    [SalesChannelWorkflowEvents.CREATED]?: EventOptions
+    [SalesChannelWorkflowEvents.UPDATED]?: EventOptions
+    [SalesChannelWorkflowEvents.DELETED]?: EventOptions
+
+    // Product Category events
+    [ProductCategoryWorkflowEvents.CREATED]?: EventOptions
+    [ProductCategoryWorkflowEvents.UPDATED]?: EventOptions
+    [ProductCategoryWorkflowEvents.DELETED]?: EventOptions
+
+    // Product Collection events
+    [ProductCollectionWorkflowEvents.CREATED]?: EventOptions
+    [ProductCollectionWorkflowEvents.UPDATED]?: EventOptions
+    [ProductCollectionWorkflowEvents.DELETED]?: EventOptions
+
+    // Product Variant events
+    [ProductVariantWorkflowEvents.CREATED]?: EventOptions
+    [ProductVariantWorkflowEvents.UPDATED]?: EventOptions
+    [ProductVariantWorkflowEvents.DELETED]?: EventOptions
+
+    // Product events
+    [ProductWorkflowEvents.CREATED]?: EventOptions
+    [ProductWorkflowEvents.UPDATED]?: EventOptions
+    [ProductWorkflowEvents.DELETED]?: EventOptions
+
+    // Product Type events
+    [ProductTypeWorkflowEvents.CREATED]?: EventOptions
+    [ProductTypeWorkflowEvents.UPDATED]?: EventOptions
+    [ProductTypeWorkflowEvents.DELETED]?: EventOptions
+
+    // Product Tag events
+    [ProductTagWorkflowEvents.CREATED]?: EventOptions
+    [ProductTagWorkflowEvents.UPDATED]?: EventOptions
+    [ProductTagWorkflowEvents.DELETED]?: EventOptions
+
+    // Product Option events
+    [ProductOptionWorkflowEvents.CREATED]?: EventOptions
+    [ProductOptionWorkflowEvents.UPDATED]?: EventOptions
+    [ProductOptionWorkflowEvents.DELETED]?: EventOptions
+
+    // Invite events
+    [InviteWorkflowEvents.ACCEPTED]?: EventOptions
+    [InviteWorkflowEvents.CREATED]?: EventOptions
+    [InviteWorkflowEvents.DELETED]?: EventOptions
+    [InviteWorkflowEvents.RESENT]?: EventOptions
+
+    // Region events
+    [RegionWorkflowEvents.CREATED]?: EventOptions
+    [RegionWorkflowEvents.UPDATED]?: EventOptions
+    [RegionWorkflowEvents.DELETED]?: EventOptions
+
+    // Fulfillment events
+    [FulfillmentWorkflowEvents.SHIPMENT_CREATED]?: EventOptions
+    [FulfillmentWorkflowEvents.DELIVERY_CREATED]?: EventOptions
+
+    // Shipping Option Type events
+    [ShippingOptionTypeWorkflowEvents.CREATED]?: EventOptions
+    [ShippingOptionTypeWorkflowEvents.UPDATED]?: EventOptions
+    [ShippingOptionTypeWorkflowEvents.DELETED]?: EventOptions
+
+    // Shipping Option events
+    [ShippingOptionWorkflowEvents.CREATED]?: EventOptions
+    [ShippingOptionWorkflowEvents.UPDATED]?: EventOptions
+    [ShippingOptionWorkflowEvents.DELETED]?: EventOptions
+
+    // Payment events
+    [PaymentEvents.CAPTURED]?: EventOptions
+    [PaymentEvents.REFUNDED]?: EventOptions
+
+    // Translation events
+    [TranslationWorkflowEvents.CREATED]?: EventOptions
+    [TranslationWorkflowEvents.UPDATED]?: EventOptions
+    [TranslationWorkflowEvents.DELETED]?: EventOptions
+  }
 }

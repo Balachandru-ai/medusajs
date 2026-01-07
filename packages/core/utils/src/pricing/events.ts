@@ -15,9 +15,46 @@ export const PricingEvents = buildEventNamesFromEntityName(
   Modules.PRICING
 )
 
-type PricingEventValues = (typeof PricingEvents)[keyof typeof PricingEvents]
-
 declare module "@medusajs/types" {
-  export interface EventBusEventsOptions
-    extends Record<PricingEventValues, EventOptions | undefined> {}
+  export interface EventBusEventsOptions {
+    // Price List Rule events
+    [PricingEvents.PRICE_LIST_RULE_CREATED]?: EventOptions
+    [PricingEvents.PRICE_LIST_RULE_UPDATED]?: EventOptions
+    [PricingEvents.PRICE_LIST_RULE_DELETED]?: EventOptions
+    [PricingEvents.PRICE_LIST_RULE_RESTORED]?: EventOptions
+    [PricingEvents.PRICE_LIST_RULE_ATTACHED]?: EventOptions
+    [PricingEvents.PRICE_LIST_RULE_DETACHED]?: EventOptions
+
+    // Price List events
+    [PricingEvents.PRICE_LIST_CREATED]?: EventOptions
+    [PricingEvents.PRICE_LIST_UPDATED]?: EventOptions
+    [PricingEvents.PRICE_LIST_DELETED]?: EventOptions
+    [PricingEvents.PRICE_LIST_RESTORED]?: EventOptions
+    [PricingEvents.PRICE_LIST_ATTACHED]?: EventOptions
+    [PricingEvents.PRICE_LIST_DETACHED]?: EventOptions
+
+    // Price Rule events
+    [PricingEvents.PRICE_RULE_CREATED]?: EventOptions
+    [PricingEvents.PRICE_RULE_UPDATED]?: EventOptions
+    [PricingEvents.PRICE_RULE_DELETED]?: EventOptions
+    [PricingEvents.PRICE_RULE_RESTORED]?: EventOptions
+    [PricingEvents.PRICE_RULE_ATTACHED]?: EventOptions
+    [PricingEvents.PRICE_RULE_DETACHED]?: EventOptions
+
+    // Price Set events
+    [PricingEvents.PRICE_SET_CREATED]?: EventOptions
+    [PricingEvents.PRICE_SET_UPDATED]?: EventOptions
+    [PricingEvents.PRICE_SET_DELETED]?: EventOptions
+    [PricingEvents.PRICE_SET_RESTORED]?: EventOptions
+    [PricingEvents.PRICE_SET_ATTACHED]?: EventOptions
+    [PricingEvents.PRICE_SET_DETACHED]?: EventOptions
+
+    // Price events
+    [PricingEvents.PRICE_CREATED]?: EventOptions
+    [PricingEvents.PRICE_UPDATED]?: EventOptions
+    [PricingEvents.PRICE_DELETED]?: EventOptions
+    [PricingEvents.PRICE_RESTORED]?: EventOptions
+    [PricingEvents.PRICE_ATTACHED]?: EventOptions
+    [PricingEvents.PRICE_DETACHED]?: EventOptions
+  }
 }

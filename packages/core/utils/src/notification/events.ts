@@ -9,10 +9,14 @@ export const NotificationEvents = buildEventNamesFromEntityName(
   Modules.NOTIFICATION
 )
 
-type NotificationEventValues =
-  (typeof NotificationEvents)[keyof typeof NotificationEvents]
-
 declare module "@medusajs/types" {
-  export interface EventBusEventsOptions
-    extends Record<NotificationEventValues, EventOptions | undefined> {}
+  export interface EventBusEventsOptions {
+    // Notification events
+    [NotificationEvents.NOTIFICATION_CREATED]?: EventOptions
+    [NotificationEvents.NOTIFICATION_UPDATED]?: EventOptions
+    [NotificationEvents.NOTIFICATION_DELETED]?: EventOptions
+    [NotificationEvents.NOTIFICATION_RESTORED]?: EventOptions
+    [NotificationEvents.NOTIFICATION_ATTACHED]?: EventOptions
+    [NotificationEvents.NOTIFICATION_DETACHED]?: EventOptions
+  }
 }

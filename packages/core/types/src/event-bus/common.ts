@@ -18,7 +18,9 @@ export interface EventOptions {
  *
  * Modules augment this interface using declaration merging to register their event configurations.
  */
-export interface EventBusEventsOptions {}
+export interface EventBusEventsOptions {
+  [eventName: string]: EventOptions | undefined
+}
 
 export type Subscriber<TData = unknown> = (data: Event<TData>) => Promise<void>
 

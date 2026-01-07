@@ -9,9 +9,25 @@ export const UserEvents = {
   INVITE_TOKEN_GENERATED: `${Modules.USER}.user.invite.token_generated`,
 } as const
 
-type UserEventValues = (typeof UserEvents)[keyof typeof UserEvents]
-
 declare module "@medusajs/types" {
-  export interface EventBusEventsOptions
-    extends Record<UserEventValues, EventOptions | undefined> {}
+  export interface EventBusEventsOptions {
+    // User events
+    [UserEvents.USER_CREATED]?: EventOptions
+    [UserEvents.USER_UPDATED]?: EventOptions
+    [UserEvents.USER_DELETED]?: EventOptions
+    [UserEvents.USER_RESTORED]?: EventOptions
+    [UserEvents.USER_ATTACHED]?: EventOptions
+    [UserEvents.USER_DETACHED]?: EventOptions
+
+    // Invite events
+    [UserEvents.INVITE_CREATED]?: EventOptions
+    [UserEvents.INVITE_UPDATED]?: EventOptions
+    [UserEvents.INVITE_DELETED]?: EventOptions
+    [UserEvents.INVITE_RESTORED]?: EventOptions
+    [UserEvents.INVITE_ATTACHED]?: EventOptions
+    [UserEvents.INVITE_DETACHED]?: EventOptions
+
+    // Custom events
+    [UserEvents.INVITE_TOKEN_GENERATED]?: EventOptions
+  }
 }
