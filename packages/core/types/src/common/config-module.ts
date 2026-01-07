@@ -1139,34 +1139,30 @@ type ExternalModuleDeclarationOverride = ExternalModuleDeclaration & {
   disable?: boolean
 }
 
-/**
- * Generates a union of typed module configs for all known modules in the ModuleOptions registry.
- * This enables automatic type inference when using registered module resolve strings.
- * Note: `resolve` is required (not optional) to enable discriminated union narrowing.
- */
-type KnownModuleConfigs = {
-  [K in keyof ModuleOptions]: Partial<
-    Omit<InternalModuleDeclaration, "options"> & {
+type ModuleConfigForResolve<R extends string> = R extends keyof ModuleOptions
+  ? {
+      resolve: R
       key?: string
       disable?: boolean
-      options?: ModuleOptions[K]
-    }
-  > & {
-    resolve: K
-  }
-}[keyof ModuleOptions]
+      options?: ModuleOptions[R]
+    } & Partial<Omit<InternalModuleDeclaration, "options" | "resolve">>
+  : {
+      resolve?: string
+      key?: string
+      disable?: boolean
+      options?: object
+    } & Partial<Omit<InternalModuleDeclaration, "options" | "resolve">>
+
+/**
+ * Generates a union of typed module configs for all known modules in the ModuleOptions registry.
+ * This distributes over all keys in ModuleOptions to create specific config types for each.
+ */
+type KnownModuleConfigs = ModuleConfigForResolve<keyof ModuleOptions & string>
 
 /**
  * Generic module config for modules not registered in ModuleOptions.
  */
-type GenericModuleConfig = Partial<
-  Omit<InternalModuleDeclaration, "options"> & {
-    key?: string
-    disable?: boolean
-    resolve?: string
-    options?: object
-  }
->
+type GenericModuleConfig = ModuleConfigForResolve<string & {}>
 
 /**
  * Modules accepted by the defineConfig function.
