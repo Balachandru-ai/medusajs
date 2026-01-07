@@ -62,6 +62,9 @@ export type MiddlewareRoute = {
   bodyParser?: ParserConfig
   additionalDataValidator?: ZodRawShape
   middlewares?: MiddlewareFunction[]
+  policies?:
+    | { resource: string; operation: string }
+    | Array<{ resource: string; operation: string }>
 }
 
 export type MiddlewaresConfig = {
@@ -95,6 +98,9 @@ export type MiddlewareDescriptor = {
   matcher: string
   methods?: MiddlewareVerb | MiddlewareVerb[]
   handler: MiddlewareFunction
+  policies?:
+    | { resource: string; operation: string }
+    | Array<{ resource: string; operation: string }>
 }
 
 export type BodyParserConfigRoute = {
