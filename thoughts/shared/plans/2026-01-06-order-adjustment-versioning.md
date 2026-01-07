@@ -431,17 +431,17 @@ if (shippingMethodIds.length) {
 
 #### Automated Verification:
 
-- [ ] TypeScript compilation passes: `yarn workspace @medusajs/order build`
-- [ ] Unit tests pass: `yarn workspace @medusajs/order test`
-- [ ] Integration tests pass: `yarn test:integration:modules -- --testPathPattern=order`
+- [x] TypeScript compilation passes: `yarn workspace @medusajs/order build`
+- [x] Unit tests pass: `yarn workspace @medusajs/order test`
+- [x] Integration tests pass: `yarn test:integration:modules -- --testPathPattern=order`
 
 #### Manual Verification:
 
-- [ ] Create an order with line item and shipping method adjustments
-- [ ] Make an order change to increment version
-- [ ] Revert the order
-- [ ] Verify adjustments for the reverted version are soft-deleted
-- [ ] Verify adjustments for previous versions remain intact
+- [x] Create an order with line item and shipping method adjustments
+- [x] Make an order change to increment version
+- [x] Revert the order
+- [x] Verify adjustments for the reverted version are soft-deleted
+- [x] Verify adjustments for previous versions remain intact
 
 **Implementation Note**: The query uses `item_id` and `shipping_method_id` arrays extracted from the already-queried `orderItems` and `orderShippings`. This approach is efficient and leverages the existing queries in the revert method.
 
