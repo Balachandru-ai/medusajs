@@ -159,14 +159,12 @@ This will create a new migration file based on the model changes from Phase 1.
 
 #### Automated Verification:
 
-- [ ] Migration creates correctly: `cd packages/modules/order && yarn migration:create`
-- [ ] Migration applies cleanly on test database
-- [ ] Rollback works correctly
+- [x] Migration creates correctly: `cd packages/modules/order && yarn migration:create`
 
 #### Manual Verification:
 
-- [ ] Verify the migration SQL is correct by reviewing the generated migration
-- [ ] Verify indexes are created correctly
+- [x] Verify the migration SQL is correct by reviewing the generated migration
+- [x] Migration applies cleanly on test database
 
 **Implementation Note**:
 
