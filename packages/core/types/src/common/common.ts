@@ -1,3 +1,5 @@
+import { UNCOUNTABLE_WORDS } from "@medusajs/utils"
+
 /**
  * Prettify complex types to a flat object structure
  */
@@ -258,103 +260,7 @@ export interface NumericalComparisonOperator {
 /**
  * The keywords that does not have a plural form
  */
-type UncountableRules =
-  | "adulthood"
-  | "advice"
-  | "agenda"
-  | "aid"
-  | "aircraft"
-  | "alcohol"
-  | "ammo"
-  | "analytics"
-  | "anime"
-  | "athletics"
-  | "audio"
-  | "bison"
-  | "blood"
-  | "bream"
-  | "buffalo"
-  | "butter"
-  | "carp"
-  | "cash"
-  | "chassis"
-  | "chess"
-  | "clothing"
-  | "cod"
-  | "commerce"
-  | "cooperation"
-  | "corps"
-  | "debris"
-  | "diabetes"
-  | "digestion"
-  | "elk"
-  | "energy"
-  | "equipment"
-  | "excretion"
-  | "expertise"
-  | "firmware"
-  | "flounder"
-  | "fun"
-  | "gallows"
-  | "garbage"
-  | "graffiti"
-  | "hardware"
-  | "headquarters"
-  | "health"
-  | "herpes"
-  | "highjinks"
-  | "homework"
-  | "housework"
-  | "information"
-  | "jeans"
-  | "justice"
-  | "kudos"
-  | "labour"
-  | "literature"
-  | "machinery"
-  | "mackerel"
-  | "mail"
-  | "media"
-  | "mews"
-  | "moose"
-  | "music"
-  | "mud"
-  | "manga"
-  | "news"
-  | "only"
-  | "personnel"
-  | "pike"
-  | "plankton"
-  | "pliers"
-  | "police"
-  | "pollution"
-  | "premises"
-  | "rain"
-  | "research"
-  | "rice"
-  | "salmon"
-  | "scissors"
-  | "series"
-  | "sewage"
-  | "shambles"
-  | "shrimp"
-  | "software"
-  | "staff"
-  | "swine"
-  | "tennis"
-  | "traffic"
-  | "transportation"
-  | "trout"
-  | "tuna"
-  | "wealth"
-  | "welfare"
-  | "whiting"
-  | "wildebeest"
-  | "wildlife"
-  | "you"
-  | "deer"
-  | "sheep"
-  | "info"
+type UncountableRules = (typeof UNCOUNTABLE_WORDS)[number]
 
 type PluralizationSpecialRules = {
   person: "people"
@@ -366,12 +272,27 @@ type PluralizationSpecialRules = {
 }
 
 /**
+ * Helper type to check if a word ends with any uncountable word.
+ * This handles compound words ending with uncountable nouns, keeping them
+ * uncountable. For example:
+ * - "CountryCompanyInfo" -> "CountryCompanyInfo" (not "CountryCompanyInfoes")
+ * - "UserData" -> "UserData" (not "UserDatas")
+ * - "SocialMedia" -> "SocialMedia" (not "SocialMedias")
+ *
+ * @ignore
+ */
+type EndsWithUncountable<S extends string> =
+  Lowercase<S> extends `${string}${UncountableRules}` ? true : false
+
+/**
  * @ignore
  */
 export type Pluralize<Singular extends string> =
   Lowercase<Singular> extends keyof PluralizationSpecialRules
     ? PluralizationSpecialRules[Lowercase<Singular>]
     : Lowercase<Singular> extends UncountableRules
+    ? Singular
+    : EndsWithUncountable<Singular> extends true
     ? Singular
     : Singular extends `${string}ss`
     ? `${Singular}es`
