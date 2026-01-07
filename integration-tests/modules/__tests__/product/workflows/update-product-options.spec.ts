@@ -248,6 +248,94 @@ medusaIntegrationTestRunner({
               expect.arrayContaining(["S", "M"])
             )
           })
+
+          it("should not invert no-op updates when compensating", async () => {
+            const workflow = setProductProductOptionsWorkflow(appContainer)
+
+            workflow.appendAction("throw", setProductProductOptionsWorkflowId, {
+              invoke: async function failStep() {
+                throw new Error(`Fail`)
+              },
+            })
+
+            const product = await service.createProducts({
+              title: "Test Product",
+              shipping_profile_id: shippingProfile.id,
+              options: [
+                {
+                  title: "Size",
+                  values: ["S", "M", "L"],
+                },
+              ],
+            })
+
+            const option = product.options[0]
+            const valueToRemove = option.values?.find(
+              (value) => value.value === "L"
+            )
+            const valueToRemoveExisting = option.values?.find(
+              (value) => value.value === "S"
+            )
+            const valueToKeep = option.values?.find(
+              (value) => value.value === "M"
+            )
+
+            await service.updateProductOptionValuesOnProduct({
+              product_id: product.id,
+              product_option_id: option.id,
+              remove: [valueToRemove!.id],
+            })
+
+            const [productWithPartialValues] = await service.listProducts(
+              { id: [product.id] },
+              { relations: ["options.values"] }
+            )
+
+            const initialValues = productWithPartialValues.options[0].values.map(
+              (value) => value.value
+            )
+
+            expect(initialValues).toHaveLength(2)
+            expect(initialValues).toEqual(expect.arrayContaining(["S", "M"]))
+
+            const { errors } = await workflow.run({
+              input: {
+                product_id: product.id,
+                update: [
+                  {
+                    product_option_id: option.id,
+                    add: [valueToKeep!.id],
+                    remove: [valueToRemove!.id, valueToRemoveExisting!.id],
+                  },
+                ],
+              },
+              throwOnError: false,
+            })
+
+            expect(errors).toEqual([
+              {
+                action: "throw",
+                handlerType: "invoke",
+                error: expect.objectContaining({
+                  message: `Fail`,
+                }),
+              },
+            ])
+
+            const [compensatedProduct] = await service.listProducts(
+              { id: [product.id] },
+              { relations: ["options.values"] }
+            )
+
+            const compensatedValues = compensatedProduct.options[0].values.map(
+              (value) => value.value
+            )
+
+            expect(compensatedValues).toHaveLength(2)
+            expect(compensatedValues).toEqual(
+              expect.arrayContaining(["S", "M"])
+            )
+          })
         })
       })
     })

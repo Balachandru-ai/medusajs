@@ -1716,7 +1716,7 @@ export default class ProductModuleService
   ): Promise<void> {
     const updates = Array.isArray(data) ? data : [data]
     const effectiveUpdates = updates.filter(
-      (pair) => (pair.add?.length ?? 0) > 0 || (pair.remove?.length ?? 0) > 0
+      (pair) => pair.add?.length || pair.remove?.length
     )
 
     if (!effectiveUpdates.length) {
