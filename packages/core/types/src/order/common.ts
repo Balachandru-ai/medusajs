@@ -130,6 +130,11 @@ export interface OrderShippingMethodAdjustmentDTO
    * The ID of the associated shipping method.
    */
   shipping_method_id: string
+
+  /**
+   * The version of the adjustment.
+   */
+  version: number
 }
 
 /**
@@ -147,6 +152,11 @@ export interface OrderLineItemAdjustmentDTO extends OrderAdjustmentLineDTO {
    * The ID of the associated line item.
    */
   item_id: string
+
+  /**
+   * The version of the adjustment.
+   */
+  version: number
 }
 
 /**
