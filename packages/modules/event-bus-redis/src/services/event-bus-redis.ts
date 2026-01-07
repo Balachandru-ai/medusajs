@@ -388,8 +388,10 @@ export default class RedisEventBusService extends AbstractEventBusModuleService 
           `Retrying ${name} which has ${eventSubscribers.length} subscribers (${subscribersInCurrentAttempt.length} of them failed)`
         )
       } else {
+        const prioirityInfo =
+          opts.priority != undefined ? ` (priority: ${opts.priority})` : ""
         this.logger_.info(
-          `Processing ${name} (priority: ${opts.priority}) which has ${eventSubscribers.length} subscribers`
+          `Processing ${name}${prioirityInfo} which has ${eventSubscribers.length} subscribers`
         )
       }
     }
