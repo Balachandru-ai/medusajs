@@ -4013,7 +4013,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@medusajs/rbac@2.12.3, @medusajs/rbac@workspace:packages/modules/rbac":
+"@medusajs/rbac@workspace:packages/modules/rbac":
   version: 0.0.0-use.local
   resolution: "@medusajs/rbac@workspace:packages/modules/rbac"
   dependencies:
