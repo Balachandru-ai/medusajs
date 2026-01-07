@@ -17634,6 +17634,15 @@ const generatedgeneratedCommerceModulesSidebarSidebar = {
                       "loaded": true,
                       "isPathHref": true,
                       "type": "link",
+                      "path": "/references/translation/models/Settings",
+                      "title": "Settings",
+                      "description": "",
+                      "children": []
+                    },
+                    {
+                      "loaded": true,
+                      "isPathHref": true,
+                      "type": "link",
                       "path": "/references/translation/models/Translation",
                       "title": "Translation",
                       "description": "",
