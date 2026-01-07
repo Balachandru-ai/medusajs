@@ -25,8 +25,7 @@ async function updateIdsInBatches({
   tableName,
   idPrefix,
   pgConnection,
-}: UpdateIdsOptions): Promise<number> {
-  let updatedCount = 0
+}: UpdateIdsOptions): Promise<void> {
   const idPrefixPattern = `${idPrefix}_%`
 
   const { rows: countRows } = await pgConnection.raw<{ count: string }>(
@@ -34,12 +33,14 @@ async function updateIdsInBatches({
     [idPrefixPattern]
   )
   const totalRows = Number(countRows[0]?.count ?? 0)
+  const maxBatches = Math.ceil(totalRows / BATCH_SIZE)
+  let batchCount = 0
 
   if (!totalRows) {
-    return 0
+    return
   }
 
-  while (updatedCount < totalRows) {
+  while (batchCount < maxBatches) {
     const { rows } = await pgConnection.raw<{ id: string }>(
       `select id from "${tableName}" where id not like ? order by id limit ?`,
       [idPrefixPattern, BATCH_SIZE]
@@ -48,6 +49,8 @@ async function updateIdsInBatches({
     if (!rows.length) {
       break
     }
+
+    batchCount += 1
 
     const idMappings = rows.map((row) => ({
       oldId: row.id,
@@ -64,11 +67,7 @@ async function updateIdsInBatches({
         where t.id = v.old_id`,
       bindings
     )
-
-    updatedCount += idMappings.length
   }
-
-  return updatedCount
 }
 
 export default async function migrateProductOptionLinkIds({
