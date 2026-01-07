@@ -2562,6 +2562,7 @@ export default class OrderModuleService
       shippingMethodsToUpsert,
       calculatedOrders,
       lineItemAdjustmentsToCreate,
+      shippingMethodAdjustmentsToCreate,
     } = await applyChangesToOrder(
       [order],
       { [order.id]: sortedActions },
@@ -2575,6 +2576,7 @@ export default class OrderModuleService
       itemsToUpsert,
       shippingMethodsToUpsert,
       lineItemAdjustmentsToCreate, // this will add "virtual" adjustments for the preview version but no actual adjustments will be created in the DB
+      shippingMethodAdjustmentsToCreate,
       sharedContext
     )
 
@@ -2595,6 +2597,7 @@ export default class OrderModuleService
     itemsToUpsert,
     shippingMethodsToUpsert,
     lineItemAdjustmentsToCreate,
+    shippingMethodAdjustmentsToCreate,
     sharedContext: Context = {}
   ) {
     const addedItems = {}
@@ -2692,12 +2695,17 @@ export default class OrderModuleService
 
         const newItem = shippingMethodsToUpsert.find((d) => d.id === sm.id)!
 
+        const adjustments = shippingMethodAdjustmentsToCreate.filter(
+          (d) => d.shipping_method_id === sm.id
+        )
+
         sm.shipping_method_id = sm.id
         delete sm.id
 
         order.shipping_methods[idx] = {
           ...shippingMethod,
           actions,
+          adjustments: adjustments,
           detail: {
             ...sm,
             ...newItem,
@@ -3570,6 +3578,7 @@ export default class OrderModuleService
       orderToUpdate,
       creditLinesToUpsert,
       lineItemAdjustmentsToCreate,
+      shippingMethodAdjustmentsToCreate,
     } = await applyChangesToOrder(orders, actionsMap, {
       addActionReferenceToObject: true,
       includeTaxLinesAndAdjustmentsToPreview: async (...args) => {
@@ -3618,6 +3627,12 @@ export default class OrderModuleService
             // this is called when a new order version is confirmed so we only create a new set of adjustments for that version
             // there is no removal or upsert
             lineItemAdjustmentsToCreate,
+            sharedContext
+          )
+        : null,
+      shippingMethodAdjustmentsToCreate.length
+        ? this.orderShippingMethodAdjustmentService_.create(
+            shippingMethodAdjustmentsToCreate,
             sharedContext
           )
         : null,

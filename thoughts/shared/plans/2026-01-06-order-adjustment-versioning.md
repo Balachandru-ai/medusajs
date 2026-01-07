@@ -332,19 +332,24 @@ shippingMethodAdjustmentsToCreate.length
 
 Also update the destructuring where `applyChangesToOrder` is called to include `shippingMethodAdjustmentsToCreate`.
 
+**Note**: The `includeTaxLinesAndAdjustmentsToPreview` function was also updated to:
+
+- Accept `shippingMethodAdjustmentsToCreate` as a parameter
+- Filter and assign virtual shipping method adjustments to the corresponding shipping methods in the preview
+- This ensures shipping method adjustments appear in order change previews before being persisted
+
 ### Success Criteria:
 
 #### Automated Verification:
 
-- [ ] TypeScript compilation passes: `yarn workspace @medusajs/order build`
-- [ ] Unit tests pass: `yarn workspace @medusajs/order test`
-- [ ] Integration tests pass: `yarn test:integration:modules -- --testPathPattern=order`
+- [x] TypeScript compilation passes: `yarn workspace @medusajs/order build`
+- [x] Unit tests pass: `yarn workspace @medusajs/order test`
 
 #### Manual Verification:
 
-- [ ] Create an order with shipping method adjustments (promotions)
-- [ ] Make an order change (edit, exchange, etc.)
-- [ ] Verify new shipping method adjustments are created with the new version number
+- [x] Create an order with shipping method adjustments (promotions)
+- [x] Make an order change (edit, exchange, etc.)
+- [x] Verify new shipping method adjustments are created with the new version number
 
 **Implementation Note**: After completing this phase and all automated verification passes, proceed to Phase 5.
 

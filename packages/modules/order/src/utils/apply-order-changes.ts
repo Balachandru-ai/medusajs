@@ -1,5 +1,6 @@
 import {
   CreateOrderLineItemAdjustmentDTO,
+  CreateOrderShippingMethodAdjustmentDTO,
   InferEntityType,
   OrderChangeActionDTO,
   OrderDTO,
@@ -34,6 +35,8 @@ export async function applyChangesToOrder(
   const shippingMethodsToUpsert: InferEntityType<typeof OrderShippingMethod>[] =
     []
   const lineItemAdjustmentsToCreate: CreateOrderLineItemAdjustmentDTO[] = []
+  const shippingMethodAdjustmentsToCreate: CreateOrderShippingMethodAdjustmentDTO[] =
+    []
   const summariesToUpsert: any[] = []
   const orderToUpdate: any[] = []
 
@@ -167,6 +170,17 @@ export async function applyChangesToOrder(
         if (!hasShippingMethod) {
           shippingMethodsToUpsert.push(sm)
         }
+
+        shippingMethod_.adjustments?.forEach((adjustment) => {
+          shippingMethodAdjustmentsToCreate.push({
+            shipping_method_id: associatedMethodId,
+            version,
+            amount: adjustment.amount,
+            description: adjustment.description,
+            promotion_id: adjustment.promotion_id,
+            code: adjustment.code,
+          })
+        })
       }
 
       orderAttributes.version = version
@@ -212,6 +226,7 @@ export async function applyChangesToOrder(
 
   return {
     lineItemAdjustmentsToCreate,
+    shippingMethodAdjustmentsToCreate,
     itemsToUpsert,
     creditLinesToUpsert,
     shippingMethodsToUpsert,
