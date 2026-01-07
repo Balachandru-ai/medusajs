@@ -27,9 +27,11 @@ async function updateIdsInBatches({
   pgConnection,
 }: UpdateIdsOptions): Promise<number> {
   let updatedCount = 0
+  const idPrefixPattern = `${idPrefix}_%`
 
   const { rows: countRows } = await pgConnection.raw<{ count: string }>(
-    `select count(id)::int as count from "${tableName}"`
+    `select count(id)::int as count from "${tableName}" where id not like ?`,
+    [idPrefixPattern]
   )
   const totalRows = Number(countRows[0]?.count ?? 0)
 
@@ -39,8 +41,8 @@ async function updateIdsInBatches({
 
   while (updatedCount < totalRows) {
     const { rows } = await pgConnection.raw<{ id: string }>(
-      `select id from "${tableName}" order by created_at, id limit ?`,
-      [BATCH_SIZE]
+      `select id from "${tableName}" where id not like ? order by id limit ?`,
+      [idPrefixPattern, BATCH_SIZE]
     )
 
     if (!rows.length) {
