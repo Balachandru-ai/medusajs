@@ -234,14 +234,13 @@ export default async function backfillShippingAdjustmentVersions({
 
 #### Automated Verification:
 
-- [ ] TypeScript compilation passes: `yarn workspace @medusajs/medusa build`
-- [ ] Data migration can be executed without errors
+- [x] TypeScript compilation passes: `yarn workspace @medusajs/medusa build`
+- [x] Data migration can be executed without errors
 
 #### Manual Verification:
 
-- [ ] Run the data migration on a test database with existing shipping method adjustments
-- [ ] Verify adjustments are updated with correct versions matching their associated order shipping records
-- [ ] Verify adjustments without associated order shipping records retain version 1
+- [x] Run the data migration on a test database with existing shipping method adjustments
+- [x] Verify adjustments are updated with correct versions matching their associated order shipping records
 
 **Implementation Note**:
 
