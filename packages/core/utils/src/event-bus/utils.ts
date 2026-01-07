@@ -87,3 +87,11 @@ export function buildEventNamesFromEntityName<TNames extends string[]>(
 
   return events as ReturnType<TNames>
 }
+
+export const EventPriority = {
+  CRITICAL: 10,
+  HIGH: 50,
+  DEFAULT: 100,
+  LOW: 500,
+  LOWEST: 2_097_152,
+} as const

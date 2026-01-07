@@ -6,6 +6,7 @@ import {
 } from "@medusajs/framework/types"
 import {
   AbstractEventBusModuleService,
+  EventPriority,
   isPresent,
   promiseAll,
 } from "@medusajs/framework/utils"
@@ -38,9 +39,6 @@ type IORedisEventType<T = unknown> = {
   data: Omit<Event<T>, "name"> // See comment in `buildEvents` method
   opts: BulkJobOptions
 }
-
-const LOWEST_PRIORITY = 2_097_152
-const DEFAULT_PRIORITY = 100
 
 /**
  * Can keep track of multiple subscribers to different events and run the
@@ -113,6 +111,20 @@ export default class RedisEventBusService extends AbstractEventBusModuleService 
     },
   }
 
+  /**
+   * Build events for queue processing with priority handling.
+   *
+   * Priority levels (lower number = higher priority):
+   * - 10: Critical business events (e.g., order placed)
+   * - 100: Default priority for normal events (default)
+   * - 2,097,152: Lowest priority for internal events
+   *
+   * Priority override hierarchy (highest to lowest precedence):
+   * 1. Message-level options (eventData.options.priority)
+   * 2. Emit-level options (options.priority)
+   * 3. Module-level job options (this.jobOptions_.priority)
+   * 4. Internal flag default (options.internal ? LOWEST_PRIORITY : DEFAULT_PRIORITY)
+   */
   private buildEvents<T>(
     eventsData: Message<T>[],
     options: Options = {}
@@ -121,7 +133,7 @@ export default class RedisEventBusService extends AbstractEventBusModuleService 
       // default options
       removeOnComplete: true,
       attempts: 1,
-      priority: options.internal ? LOWEST_PRIORITY : DEFAULT_PRIORITY,
+      priority: options.internal ? EventPriority.LOWEST : EventPriority.DEFAULT,
       // global options
       ...this.jobOptions_,
       ...options,
@@ -136,6 +148,19 @@ export default class RedisEventBusService extends AbstractEventBusModuleService 
         metadata: eventData.metadata,
       }
 
+      if (
+        options.priority &&
+        (options.priority < 1 || options.priority > LOWEST_PRIORITY)
+      ) {
+        this.logger_.warn(
+          `Invalid priority value: ${options.priority} for event ${eventData.name}. Must be between 1 and ${LOWEST_PRIORITY}`
+        )
+        opts.priority = DEFAULT_PRIORITY
+        this.logger_.warn(
+          `Setting priority to default value: ${DEFAULT_PRIORITY} for event ${eventData.name}`
+        )
+      }
+
       return {
         data: event,
         name: eventData.name,
@@ -145,7 +170,7 @@ export default class RedisEventBusService extends AbstractEventBusModuleService 
           // options for a particular event
           ...eventData.options,
         },
-      } as any
+      } as IORedisEventType<T>
     })
   }
 
@@ -363,7 +388,7 @@ export default class RedisEventBusService extends AbstractEventBusModuleService 
         )
       } else {
         this.logger_.info(
-          `Processing ${name} which has ${eventSubscribers.length} subscribers`
+          `Processing ${name} (priority: ${opts.priority}) which has ${eventSubscribers.length} subscribers`
         )
       }
     }
