@@ -1,4 +1,4 @@
-import { EventBusEventsOptions } from "@medusajs/framework/types"
+import type { EventBusEventsOptions } from "@medusajs/types"
 import {
   BulkJobOptions,
   Job,

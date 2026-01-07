@@ -17,10 +17,9 @@ export interface EventOptions {
  * as part of the event bus module service module options.
  *
  * Modules augment this interface using declaration merging to register their event configurations.
+ * Custom events can be added via declaration merging in your project.
  */
-export interface EventBusEventsOptions {
-  [eventName: string]: EventOptions | undefined
-}
+export interface EventBusEventsOptions {}
 
 export type Subscriber<TData = unknown> = (data: Event<TData>) => Promise<void>
 

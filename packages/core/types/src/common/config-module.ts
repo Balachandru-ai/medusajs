@@ -1142,16 +1142,18 @@ type ExternalModuleDeclarationOverride = ExternalModuleDeclaration & {
 /**
  * Generates a union of typed module configs for all known modules in the ModuleOptions registry.
  * This enables automatic type inference when using registered module resolve strings.
+ * Note: `resolve` is required (not optional) to enable discriminated union narrowing.
  */
 type KnownModuleConfigs = {
   [K in keyof ModuleOptions]: Partial<
     Omit<InternalModuleDeclaration, "options"> & {
       key?: string
       disable?: boolean
-      resolve: K
       options?: ModuleOptions[K]
     }
-  >
+  > & {
+    resolve: K
+  }
 }[keyof ModuleOptions]
 
 /**
@@ -1162,7 +1164,7 @@ type GenericModuleConfig = Partial<
     key?: string
     disable?: boolean
     resolve?: string
-    options?: Record<string, unknown>
+    options?: object
   }
 >
 
@@ -1177,19 +1179,35 @@ export type InputConfigModules = (
 )[]
 
 /**
- * The configuration accepted by the "defineConfig" helper
+ * Base configuration type without modules
  */
-export type InputConfig = Partial<
+type InputConfigBase = Partial<
   Omit<ConfigModule, "admin" | "modules"> & {
     admin?: Partial<ConfigModule["admin"]>
-    modules:
-      | InputConfigModules
-      /**
-       * @deprecated use the array instead
-       */
-      | ConfigModule["modules"]
   }
 >
+
+/**
+ * Configuration with array-based modules (recommended)
+ */
+export type InputConfigWithArrayModules = InputConfigBase & {
+  modules?: InputConfigModules
+}
+
+/**
+ * Configuration with object-based modules (deprecated)
+ * @deprecated Use array-based modules instead
+ */
+export type InputConfigWithObjectModules = InputConfigBase & {
+  modules?: ConfigModule["modules"]
+}
+
+/**
+ * The configuration accepted by the "defineConfig" helper
+ */
+export type InputConfig =
+  | InputConfigWithArrayModules
+  | InputConfigWithObjectModules
 
 type PluginAdminDetails = {
   type: "local" | "package"
