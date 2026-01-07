@@ -4013,6 +4013,17 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@medusajs/rbac@workspace:packages/modules/rbac":
+  version: 0.0.0-use.local
+  resolution: "@medusajs/rbac@workspace:packages/modules/rbac"
+  dependencies:
+    "@medusajs/framework": 2.12.4
+    "@medusajs/test-utils": 2.12.4
+  peerDependencies:
+    "@medusajs/framework": 2.12.4
+  languageName: unknown
+  linkType: soft
+
 "@medusajs/region@2.12.4, @medusajs/region@workspace:^, @medusajs/region@workspace:packages/modules/region":
   version: 0.0.0-use.local
   resolution: "@medusajs/region@workspace:packages/modules/region"
