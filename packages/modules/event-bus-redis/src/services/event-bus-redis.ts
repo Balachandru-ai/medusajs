@@ -148,28 +148,29 @@ export default class RedisEventBusService extends AbstractEventBusModuleService 
         metadata: eventData.metadata,
       }
 
+      const finalOptions: IORedisEventType<T>["opts"] = {
+        ...opts,
+        ...eventData.options,
+      }
+
       if (
-        options.priority &&
-        (options.priority < 1 || options.priority > LOWEST_PRIORITY)
+        finalOptions.priority &&
+        (finalOptions.priority < 1 ||
+          finalOptions.priority > EventPriority.LOWEST)
       ) {
         this.logger_.warn(
-          `Invalid priority value: ${options.priority} for event ${eventData.name}. Must be between 1 and ${LOWEST_PRIORITY}`
+          `Invalid priority value: ${finalOptions.priority} for event ${eventData.name}. Must be between 1 and ${EventPriority.LOWEST}`
         )
-        opts.priority = DEFAULT_PRIORITY
+        finalOptions.priority = EventPriority.DEFAULT
         this.logger_.warn(
-          `Setting priority to default value: ${DEFAULT_PRIORITY} for event ${eventData.name}`
+          `Setting priority to default value: ${EventPriority.DEFAULT} for event ${eventData.name}`
         )
       }
 
       return {
         data: event,
         name: eventData.name,
-        opts: {
-          // options for event group
-          ...opts,
-          // options for a particular event
-          ...eventData.options,
-        },
+        opts: finalOptions,
       } as IORedisEventType<T>
     })
   }
