@@ -10,8 +10,23 @@ export const deleteRbacPoliciesStep = createStep(
   { name: deleteRbacPoliciesStepId, noCompensation: true },
   async (ids: DeleteRbacPoliciesStepInput, { container }) => {
     const service = container.resolve<IRbacModuleService>(Modules.RBAC)
-    await service.deleteRbacPolicies(ids)
-    return new StepResponse(void 0)
+
+    if (!ids?.length) {
+      return new StepResponse([] as any, [])
+    }
+
+    const deleted = await service.deleteRbacPolicies(ids)
+
+    return new StepResponse(deleted, ids)
   },
-  async () => {}
+  async (deletedPoliciesIds, { container }) => {
+    if (!deletedPoliciesIds?.length) {
+      return
+    }
+
+    const service = container.resolve<IRbacModuleService>(Modules.RBAC)
+
+    // Restore the soft-deleted roles during compensation
+    await service.restoreRbacPolicies(deletedPoliciesIds)
+  }
 )

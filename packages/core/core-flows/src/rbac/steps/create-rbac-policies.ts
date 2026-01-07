@@ -1,15 +1,6 @@
 import { Modules } from "@medusajs/framework/utils"
 import { StepResponse, createStep } from "@medusajs/framework/workflows-sdk"
-import { IRbacModuleService } from "@medusajs/types"
-
-export type CreateRbacPolicyDTO = {
-  key: string
-  resource: string
-  operation: string
-  name?: string | null
-  description?: string | null
-  metadata?: Record<string, unknown> | null
-}
+import { CreateRbacPolicyDTO, IRbacModuleService } from "@medusajs/types"
 
 export type CreateRbacPoliciesStepInput = {
   policies: CreateRbacPolicyDTO[]
@@ -22,7 +13,14 @@ export const createRbacPoliciesStep = createStep(
   async (data: CreateRbacPoliciesStepInput, { container }) => {
     const service = container.resolve<IRbacModuleService>(Modules.RBAC)
 
-    const created = await service.createRbacPolicies(data.policies)
+    // Normalize resource and operation to lowercase
+    const normalizedPolicies = data.policies.map((policy) => ({
+      ...policy,
+      resource: policy.resource.toLowerCase(),
+      operation: policy.operation.toLowerCase(),
+    }))
+
+    const created = await service.createRbacPolicies(normalizedPolicies)
 
     return new StepResponse(
       created,

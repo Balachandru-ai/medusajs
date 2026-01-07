@@ -111,6 +111,14 @@ export const generatedSidebars = [
                 "loaded": true,
                 "isPathHref": true,
                 "type": "link",
+                "title": "Access Deployment",
+                "path": "/deployments/access",
+                "children": []
+              },
+              {
+                "loaded": true,
+                "isPathHref": true,
+                "type": "link",
                 "title": "Troubleshooting",
                 "path": "/deployments/troubleshooting",
                 "children": []

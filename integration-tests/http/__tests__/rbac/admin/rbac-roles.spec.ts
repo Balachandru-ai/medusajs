@@ -1,3 +1,4 @@
+import { ContainerRegistrationKeys, Modules } from "@medusajs/framework/utils"
 import { medusaIntegrationTestRunner } from "@medusajs/test-utils"
 import {
   adminHeaders,
@@ -6,6 +7,8 @@ import {
 
 jest.setTimeout(60000)
 
+process.env.MEDUSA_FF_RBAC = "true"
+
 medusaIntegrationTestRunner({
   testSuite: ({ dbConnection, api, getContainer }) => {
     let container
@@ -13,6 +16,10 @@ medusaIntegrationTestRunner({
     beforeEach(async () => {
       container = getContainer()
       await createAdminUser(dbConnection, adminHeaders, container)
+    })
+
+    afterAll(async () => {
+      delete process.env.MEDUSA_FF_RBAC
     })
 
     describe("RBAC Roles - Admin API", () => {
@@ -225,8 +232,13 @@ medusaIntegrationTestRunner({
         let policies
         let viewerRole
         let editorRole
+        let adminUser
 
         beforeEach(async () => {
+          const userModule = container.resolve(Modules.USER)
+          const remoteLink = container.resolve(ContainerRegistrationKeys.LINK)
+
+          // Create policies
           const policy1 = await api.post(
             "/admin/rbac/policies",
             {
@@ -266,6 +278,40 @@ medusaIntegrationTestRunner({
             policy3.data.policy,
           ]
 
+          // Create an admin role with all policies
+          const adminRoleResponse = await api.post(
+            "/admin/rbac/roles",
+            {
+              name: "Admin Role",
+              description: "Has all permissions",
+            },
+            adminHeaders
+          )
+          const adminRole = adminRoleResponse.data.role
+
+          // Associate all policies with the admin role using the module directly
+          const rbacModule = container.resolve(Modules.RBAC)
+          await rbacModule.createRbacRolePolicies([
+            { role_id: adminRole.id, policy_id: policies[0].id },
+            { role_id: adminRole.id, policy_id: policies[1].id },
+            { role_id: adminRole.id, policy_id: policies[2].id },
+          ])
+
+          // Get the admin user
+          const users = await userModule.listUsers({ email: "admin@medusa.js" })
+          adminUser = users[0]
+
+          // Link the admin user to the admin role
+          await remoteLink.create({
+            [Modules.USER]: {
+              user_id: adminUser.id,
+            },
+            [Modules.RBAC]: {
+              rbac_role_id: adminRole.id,
+            },
+          })
+
+          // Create viewer and editor roles for the tests
           const viewer = await api.post(
             "/admin/rbac/roles",
             {
@@ -287,96 +333,91 @@ medusaIntegrationTestRunner({
           editorRole = editor.data.role
         })
 
-        it("should create role-policy associations", async () => {
+        it("should add policies to a role", async () => {
           const response = await api.post(
-            "/admin/rbac/role-policies",
+            `/admin/rbac/roles/${viewerRole.id}/policies`,
             {
-              role_id: viewerRole.id,
-              scope_id: policies[0].id,
+              policies: [policies[0].id],
             },
             adminHeaders
           )
 
           expect(response.status).toEqual(200)
-          expect(response.data.role_policy).toEqual(
-            expect.objectContaining({
-              role_id: viewerRole.id,
-              scope_id: policies[0].id,
-            })
-          )
+
+          expect(response.data.policies).toHaveLength(1)
+          expect(response.data.policies[0]).toMatchObject({
+            role_id: viewerRole.id,
+            policy_id: policies[0].id,
+          })
         })
 
         it("should list role-policies for a specific role", async () => {
+          // Add multiple policies to the role
           await api.post(
-            "/admin/rbac/role-policies",
+            `/admin/rbac/roles/${viewerRole.id}/policies`,
             {
-              role_id: viewerRole.id,
-              scope_id: policies[0].id,
+              policies: [policies[0].id, policies[1].id],
             },
             adminHeaders
           )
 
-          await api.post(
-            "/admin/rbac/role-policies",
-            {
-              role_id: viewerRole.id,
-              scope_id: policies[1].id,
-            },
-            adminHeaders
-          )
-
+          // List the role to get its policies
           const response = await api.get(
-            `/admin/rbac/role-policies?role_id=${viewerRole.id}`,
+            `/admin/rbac/roles/${viewerRole.id}/?fields=policies`,
             adminHeaders
           )
 
           expect(response.status).toEqual(200)
-          expect(response.data.count).toEqual(2)
-          expect(response.data.role_policies).toEqual(
+          expect(Array.isArray(response.data.role.policies)).toBe(true)
+          expect(response.data.role.policies).toHaveLength(2)
+          expect(response.data.role.policies).toEqual(
             expect.arrayContaining([
               expect.objectContaining({
-                role_id: viewerRole.id,
-                scope_id: policies[0].id,
+                id: policies[0].id,
               }),
               expect.objectContaining({
-                role_id: viewerRole.id,
-                scope_id: policies[1].id,
+                id: policies[1].id,
               }),
             ])
           )
         })
 
-        it("should delete a role-policy association", async () => {
-          const createResponse = await api.post(
-            "/admin/rbac/role-policies",
+        it("should remove a policy from a role", async () => {
+          // First add a policy to the role
+          await api.post(
+            `/admin/rbac/roles/${editorRole.id}/policies`,
             {
-              role_id: editorRole.id,
-              scope_id: policies[2].id,
+              policies: [policies[2].id],
             },
             adminHeaders
           )
 
-          const rolePolicyId = createResponse.data.role_policy.id
+          // Verify the policy was added
+          const initialResponse = await api.get(
+            `/admin/rbac/roles/${editorRole.id}?fields=policies`,
+            adminHeaders
+          )
+          expect(initialResponse.data.role.policies).toHaveLength(1)
 
+          // Remove the policy from the role
           const deleteResponse = await api.delete(
-            `/admin/rbac/role-policies/${rolePolicyId}`,
+            `/admin/rbac/roles/${editorRole.id}/policies/${policies[2].id}`,
             adminHeaders
           )
 
           expect(deleteResponse.status).toEqual(200)
           expect(deleteResponse.data).toEqual({
-            id: rolePolicyId,
+            id: expect.stringContaining("rlpl_"),
             object: "rbac_role_policy",
             deleted: true,
           })
 
-          const listResponse = await api.get(
-            `/admin/rbac/role-policies?role_id=${editorRole.id}`,
+          // Verify the policy was removed
+          const finalResponse = await api.get(
+            `/admin/rbac/roles/${editorRole.id}?fields=policies`,
             adminHeaders
           )
-          expect(
-            listResponse.data.role_policies.find((rp) => rp.id === rolePolicyId)
-          ).toBeUndefined()
+          expect(finalResponse.data.role.policies).toHaveLength(0)
         })
       })
     })

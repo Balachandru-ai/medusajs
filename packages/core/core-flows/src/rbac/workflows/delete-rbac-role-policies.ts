@@ -1,17 +1,23 @@
-import { WorkflowData, createWorkflow } from "@medusajs/framework/workflows-sdk"
+import {
+  WorkflowData,
+  WorkflowResponse,
+  createWorkflow,
+} from "@medusajs/framework/workflows-sdk"
 import { deleteRbacRolePoliciesStep } from "../steps"
 
 export type DeleteRbacRolePoliciesWorkflowInput = {
-  ids: string[]
+  role_policy_ids: string[]
 }
 
 export const deleteRbacRolePoliciesWorkflowId = "delete-rbac-role-policies"
 
 export const deleteRbacRolePoliciesWorkflow = createWorkflow(
   deleteRbacRolePoliciesWorkflowId,
-  (
-    input: WorkflowData<DeleteRbacRolePoliciesWorkflowInput>
-  ): WorkflowData<void> => {
-    deleteRbacRolePoliciesStep(input.ids)
+  (input: WorkflowData<DeleteRbacRolePoliciesWorkflowInput>) => {
+    const deletedRolePolicies = deleteRbacRolePoliciesStep(
+      input.role_policy_ids
+    )
+
+    return new WorkflowResponse(deletedRolePolicies)
   }
 )

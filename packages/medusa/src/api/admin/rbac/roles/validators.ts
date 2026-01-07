@@ -7,7 +7,11 @@ import {
 } from "../../../utils/validators"
 
 export type AdminGetRbacRoleParamsType = z.infer<typeof AdminGetRbacRoleParams>
-export const AdminGetRbacRoleParams = createSelectParams()
+export const AdminGetRbacRoleParams = createSelectParams().merge(
+  z.object({
+    policies: z.union([z.string(), z.array(z.string())]).optional(),
+  })
+)
 
 export const AdminGetRbacRolesParamsFields = z.object({
   q: z.string().optional(),
@@ -48,3 +52,9 @@ export const AdminUpdateRbacRole = z
     metadata: z.record(z.unknown()).nullish(),
   })
   .strict()
+
+export const AdminAddRolePoliciesType = z.object({
+  policies: z.array(z.string().min(1)).min(1),
+})
+
+export type AdminAddRolePoliciesType = z.infer<typeof AdminAddRolePoliciesType>

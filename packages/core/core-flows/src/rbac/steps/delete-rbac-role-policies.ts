@@ -10,8 +10,21 @@ export const deleteRbacRolePoliciesStep = createStep(
   { name: deleteRbacRolePoliciesStepId, noCompensation: true },
   async (ids: DeleteRbacRolePoliciesStepInput, { container }) => {
     const service = container.resolve<IRbacModuleService>(Modules.RBAC)
-    await service.deleteRbacRolePolicies(ids)
-    return new StepResponse(void 0)
+
+    if (!ids?.length) {
+      return new StepResponse([] as any, [])
+    }
+
+    const deleted = await service.deleteRbacRolePolicies(ids)
+
+    return new StepResponse(deleted, ids)
   },
-  async () => {}
+  async (deletedRolePolicyIds, { container }) => {
+    if (!deletedRolePolicyIds?.length) {
+      return
+    }
+
+    const service = container.resolve<IRbacModuleService>(Modules.RBAC)
+    await service.restoreRbacRolePolicies(deletedRolePolicyIds)
+  }
 )

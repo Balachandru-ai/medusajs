@@ -8,4 +8,3 @@ export * from "./update-rbac-policies"
 
 export * from "./create-rbac-role-policies"
 export * from "./delete-rbac-role-policies"
-export * from "./update-rbac-role-policies"
