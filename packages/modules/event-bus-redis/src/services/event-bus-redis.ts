@@ -1,11 +1,13 @@
 import {
   Event,
+  EventBusEventsOptions,
   InternalModuleDeclaration,
   Logger,
   Message,
 } from "@medusajs/framework/types"
 import {
   AbstractEventBusModuleService,
+  EventPriority,
   isPresent,
   promiseAll,
 } from "@medusajs/framework/utils"
@@ -52,6 +54,7 @@ export default class RedisEventBusService extends AbstractEventBusModuleService 
   protected readonly queueOptions_: Omit<QueueOptions, "connection">
   protected readonly workerOptions_: Omit<WorkerOptions, "connection">
   protected readonly jobOptions_: EmitOptions
+  private readonly eventOptions_: EventBusEventsOptions
 
   protected queue_: Queue
   protected bullWorker_: Worker
@@ -78,6 +81,10 @@ export default class RedisEventBusService extends AbstractEventBusModuleService 
     this.queueOptions_ = eventBusRedisQueueOptions ?? {}
     this.workerOptions_ = eventBusRedisWorkerOptions ?? {}
     this.jobOptions_ = eventBusRedisJobOptions ?? {}
+    this.eventOptions_ =
+      _moduleOptions.eventOptions ??
+      _moduleDeclaration.options?.eventOptions ??
+      {}
 
     this.queue_ = new Queue(this.queueName_, {
       prefix: `${this.constructor.name}`,
@@ -132,6 +139,29 @@ export default class RedisEventBusService extends AbstractEventBusModuleService 
         metadata: eventData.metadata,
       }
 
+      const finalOptions = {
+        ...opts,
+        ...eventData.options,
+      }
+
+      if (this.eventOptions_[eventData.name]?.priority) {
+        finalOptions.priority = this.eventOptions_[eventData.name].priority
+      }
+
+      if (
+        finalOptions.priority != undefined &&
+        (finalOptions.priority < 1 ||
+          finalOptions.priority > EventPriority.LOWEST)
+      ) {
+        this.logger_.warn(
+          `Invalid priority value: ${finalOptions.priority} for event ${eventData.name}. Must be between 1 and ${EventPriority.LOWEST}`
+        )
+        finalOptions.priority = EventPriority.DEFAULT
+        this.logger_.warn(
+          `Setting priority to default value: ${EventPriority.DEFAULT} for event ${eventData.name}`
+        )
+      }
+
       return {
         data: event,
         name: eventData.name,
@@ -139,7 +169,7 @@ export default class RedisEventBusService extends AbstractEventBusModuleService 
           // options for event group
           ...opts,
           // options for a particular event
-          ...eventData.options,
+          ...finalOptions,
         },
       } as any
     })
