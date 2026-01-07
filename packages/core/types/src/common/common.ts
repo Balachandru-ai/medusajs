@@ -1,5 +1,3 @@
-import { UNCOUNTABLE_WORDS } from "@medusajs/utils"
-
 /**
  * Prettify complex types to a flat object structure
  */
@@ -256,6 +254,112 @@ export interface NumericalComparisonOperator {
    */
   lte?: number
 }
+
+/**
+ * Shared source of truth for uncountable words.
+ *
+ * These words should remain uncountable even when used in compound words.
+ * For example: "CountryCompanyInfo" -> "CountryCompanyInfo" (not "CountryCompanyInfoes")
+ *
+ */
+export const UNCOUNTABLE_WORDS = [
+  "adulthood",
+  "advice",
+  "agenda",
+  "aid",
+  "aircraft",
+  "alcohol",
+  "ammo",
+  "analytics",
+  "anime",
+  "athletics",
+  "audio",
+  "bison",
+  "blood",
+  "bream",
+  "buffalo",
+  "butter",
+  "carp",
+  "cash",
+  "chassis",
+  "chess",
+  "clothing",
+  "cod",
+  "commerce",
+  "cooperation",
+  "corps",
+  "debris",
+  "diabetes",
+  "digestion",
+  "elk",
+  "energy",
+  "equipment",
+  "excretion",
+  "expertise",
+  "firmware",
+  "flounder",
+  "fun",
+  "gallows",
+  "garbage",
+  "graffiti",
+  "hardware",
+  "headquarters",
+  "health",
+  "herpes",
+  "highjinks",
+  "homework",
+  "housework",
+  "information",
+  "jeans",
+  "justice",
+  "kudos",
+  "labour",
+  "literature",
+  "machinery",
+  "mackerel",
+  "mail",
+  "media",
+  "mews",
+  "moose",
+  "music",
+  "mud",
+  "manga",
+  "news",
+  "only",
+  "personnel",
+  "pike",
+  "plankton",
+  "pliers",
+  "police",
+  "pollution",
+  "premises",
+  "rain",
+  "research",
+  "rice",
+  "salmon",
+  "scissors",
+  "series",
+  "sewage",
+  "shambles",
+  "shrimp",
+  "software",
+  "staff",
+  "swine",
+  "tennis",
+  "traffic",
+  "transportation",
+  "trout",
+  "tuna",
+  "wealth",
+  "welfare",
+  "whiting",
+  "wildebeest",
+  "wildlife",
+  "you",
+  "deer",
+  "sheep",
+  "info",
+] as const
 
 /**
  * The keywords that does not have a plural form

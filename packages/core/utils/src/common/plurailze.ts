@@ -1,5 +1,5 @@
 import pluralizeEN from "pluralize"
-import { UNCOUNTABLE_WORDS } from "./uncountable-words"
+import { UNCOUNTABLE_WORDS } from "@medusajs/types"
 
 /**
  * Configure pluralize library with uncountable rules from shared source of truth
