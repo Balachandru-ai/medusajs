@@ -39,6 +39,9 @@ type IORedisEventType<T = unknown> = {
   opts: BulkJobOptions
 }
 
+const LOWEST_PRIORITY = 2_097_152
+const DEFAULT_PRIORITY = 100
+
 /**
  * Can keep track of multiple subscribers to different events and run the
  * subscribers when events happen. Events will run asynchronously.
@@ -118,6 +121,7 @@ export default class RedisEventBusService extends AbstractEventBusModuleService 
       // default options
       removeOnComplete: true,
       attempts: 1,
+      priority: options.internal ? LOWEST_PRIORITY : DEFAULT_PRIORITY,
       // global options
       ...this.jobOptions_,
       ...options,

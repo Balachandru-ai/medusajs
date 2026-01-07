@@ -180,6 +180,9 @@ export const convertDraftOrderWorkflow = createWorkflow(
       emitEventStep({
         eventName: OrderWorkflowEvents.PLACED,
         data: { id: updatedOrder.id },
+        options: {
+          priority: 10,
+        },
       })
     )
 

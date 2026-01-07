@@ -598,6 +598,9 @@ export const completeCartWorkflow = createWorkflow(
         emitEventStep({
           eventName: OrderWorkflowEvents.PLACED,
           data: { id: createdOrder.id },
+          options: {
+            priority: 10,
+          },
         })
       )
 
