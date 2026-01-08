@@ -65,6 +65,7 @@ const defaultLocales = [
   { code: "ja-JP", name: "Japanese (Japan)" },
   { code: "ko-KR", name: "Korean (South Korea)" },
   { code: "ka-GE", name: "Georgian (Georgia)" },
+  { code: "mn-MN", name: "Mongolian (Mongolia)" },
 ]
 
 export default async ({ container }: LoaderOptions): Promise<void> => {
