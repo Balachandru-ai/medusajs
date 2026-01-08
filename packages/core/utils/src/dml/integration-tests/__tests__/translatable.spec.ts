@@ -21,7 +21,7 @@ describe("Translatable", () => {
       const translatables = DmlEntity.getTranslatableEntities()
 
       expect(translatables).toContainEqual({
-        type: "product_variant",
+        entity: "ProductVariant",
         fields: ["name"],
       })
     })
@@ -37,7 +37,7 @@ describe("Translatable", () => {
       const translatables = DmlEntity.getTranslatableEntities()
 
       expect(translatables).toContainEqual({
-        type: "product",
+        entity: "Product",
         fields: ["title", "description"],
       })
     })
@@ -62,15 +62,15 @@ describe("Translatable", () => {
       const translatables = DmlEntity.getTranslatableEntities()
 
       expect(translatables).toContainEqual({
-        type: "store",
+        entity: "Store",
         fields: ["name"],
       })
       expect(translatables).toContainEqual({
-        type: "product",
+        entity: "Product",
         fields: ["title"],
       })
       expect(translatables).toContainEqual({
-        type: "region",
+        entity: "Region",
         fields: ["name"],
       })
     })
@@ -90,11 +90,11 @@ describe("Translatable", () => {
       const translatables = DmlEntity.getTranslatableEntities()
 
       expect(translatables).toContainEqual({
-        type: "store",
+        entity: "Store",
         fields: ["name"],
       })
 
-      const currencyEntry = translatables.find((e) => e.type === "currency")
+      const currencyEntry = translatables.find((e) => e.entity === "Currency")
       expect(currencyEntry).toBeUndefined()
     })
 
@@ -109,12 +109,12 @@ describe("Translatable", () => {
       const translatables = DmlEntity.getTranslatableEntities()
 
       expect(translatables).toContainEqual({
-        type: "product",
+        entity: "Product",
         fields: ["title", "subtitle", "description"],
       })
     })
 
-    it("should use snake_case table name as type", () => {
+    it("should use PascalCase entity name", () => {
       model.define("product_category", {
         id: model.id().primaryKey(),
         name: model.text().translatable(),
@@ -123,12 +123,12 @@ describe("Translatable", () => {
       const translatables = DmlEntity.getTranslatableEntities()
 
       expect(translatables).toContainEqual({
-        type: "product_category",
+        entity: "ProductCategory",
         fields: ["name"],
       })
     })
 
-    it("should use tableName from config object", () => {
+    it("should use name from config object", () => {
       model.define(
         { name: "ProductCategory", tableName: "product_category" },
         {
@@ -140,7 +140,7 @@ describe("Translatable", () => {
       const translatables = DmlEntity.getTranslatableEntities()
 
       expect(translatables).toContainEqual({
-        type: "product_category",
+        entity: "ProductCategory",
         fields: ["name"],
       })
     })

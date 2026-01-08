@@ -10,13 +10,7 @@ import {
   PropertyType,
   QueryCondition,
 } from "@medusajs/types"
-import {
-  camelToSnakeCase,
-  isObject,
-  isString,
-  toCamelCase,
-  upperCaseFirst,
-} from "../common"
+import { isObject, isString, toCamelCase, upperCaseFirst } from "../common"
 import { transformIndexWhere } from "./helpers/entity-builder/build-indexes"
 import { DMLSchemaWithBigNumber } from "./helpers/entity-builder/create-big-number-properties"
 import { DMLSchemaDefaults } from "./helpers/entity-builder/create-default-properties"
@@ -29,9 +23,9 @@ const IsDmlEntity = Symbol.for("isDmlEntity")
  */
 export type TranslatableEntityEntry = {
   /**
-   * The entity name in snake_case (table name)
+   * The entity name (PascalCase)
    */
-  type: string
+  entity: string
   /**
    * The list of translatable property names
    */
@@ -48,7 +42,7 @@ export type TranslatableEntityEntry = {
  * import { DmlEntity } from "@medusajs/framework/utils"
  *
  * const translatables = DmlEntity.getTranslatableEntities()
- * // Returns: [{ type: "store", fields: ["name"] }]
+ * // Returns: [{ entity: "Store", fields: ["name"] }]
  */
 const TRANSLATABLE_ENTITIES: TranslatableEntityEntry[] = []
 
@@ -122,13 +116,13 @@ export class DmlEntity<
     this.name = name
     this.#tableName = tableName
 
-    this.#registerTranslatableFields(tableName, schema)
+    this.#registerTranslatableFields(name, schema)
   }
 
   /**
    * Collects translatable fields from the schema and registers them
    */
-  #registerTranslatableFields(tableName: string, schema: Schema): void {
+  #registerTranslatableFields(entityName: string, schema: Schema): void {
     const translatableFields: string[] = []
 
     for (const [fieldName, property] of Object.entries(schema)) {
@@ -138,11 +132,9 @@ export class DmlEntity<
       }
     }
 
-    const normalizedTableName = camelToSnakeCase(tableName)
-
     if (translatableFields.length) {
       const existing = TRANSLATABLE_ENTITIES.find(
-        (e) => e.type === normalizedTableName
+        (e) => e.entity === entityName
       )
 
       /**
@@ -155,7 +147,7 @@ export class DmlEntity<
         ]
       } else {
         TRANSLATABLE_ENTITIES.push({
-          type: normalizedTableName,
+          entity: entityName,
           fields: translatableFields,
         })
       }
@@ -175,14 +167,14 @@ export class DmlEntity<
 
   /**
    * Returns all registered translatable entities with their translatable fields.
-   * Each entry contains the entity type (table name in snake_case) and an array
+   * Each entry contains the entity name (PascalCase) and an array
    * of field names that are marked as translatable.
    *
    * @example
    * import { DmlEntity } from "@medusajs/framework/utils"
    *
    * const translatables = DmlEntity.getTranslatableEntities()
-   * // Returns: [{ type: "store", fields: ["name"] }]
+   * // Returns: [{ entity: "Store", fields: ["name"] }]
    *
    * @customNamespace Model Methods
    */
