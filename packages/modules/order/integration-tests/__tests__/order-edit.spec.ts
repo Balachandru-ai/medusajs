@@ -956,7 +956,8 @@ moduleIntegrationTestRunner<IOrderModuleService>({
 
         // Verify initial adjustments have version 1
         const initialAdjustments = await service.listOrderLineItemAdjustments({
-          item_id: createdOrder.items![0].id,
+          item_id: createdOrder.items?.find((item) => item.title === "Item 1")!
+            .id,
         })
 
         expect(initialAdjustments).toHaveLength(1)
