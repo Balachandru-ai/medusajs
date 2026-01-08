@@ -127,9 +127,9 @@ export class DmlEntity<
 
     for (const [fieldName, property] of Object.entries(schema)) {
       const parsed = (property as PropertyType<any>).parse?.(fieldName)
-      if (parsed && "fieldName" in parsed && parsed.translatable) {
-        translatableFields.push(fieldName)
-      }
+      if (!parsed || !("fieldName" in parsed) || !parsed.translatable) continue
+
+      translatableFields.push(fieldName)
     }
 
     if (translatableFields.length) {
@@ -148,7 +148,7 @@ export class DmlEntity<
       } else {
         TRANSLATABLE_ENTITIES.push({
           entity: entityName,
-          fields: translatableFields,
+          fields: [...new Set(translatableFields)],
         })
       }
     }
