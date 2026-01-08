@@ -90,6 +90,7 @@ export type LinkModuleBootstrapOptions = {
   moduleExports?: ModuleExports
   injectedDependencies?: Record<string, any>
   cwd?: string
+  migrationOnly?: boolean
 }
 
 export type RegisterModuleJoinerConfig =
@@ -652,6 +653,7 @@ class MedusaModule {
     moduleExports,
     injectedDependencies,
     cwd,
+    migrationOnly,
   }: LinkModuleBootstrapOptions): Promise<{
     [key: string]: unknown
   }> {
@@ -720,6 +722,7 @@ class MedusaModule {
       await moduleLoader({
         container,
         moduleResolutions,
+        migrationOnly,
         logger: logger_,
       })
     } catch (err) {
