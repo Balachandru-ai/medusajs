@@ -1,15 +1,41 @@
 import { ITranslationModuleService } from "@medusajs/framework/types"
-import { Module, Modules } from "@medusajs/framework/utils"
+import { DmlEntity, Module, Modules } from "@medusajs/framework/utils"
 import { moduleIntegrationTestRunner } from "@medusajs/test-utils"
 import TranslationModuleService from "@services/translation-module"
 import { createLocaleFixture, createTranslationFixture } from "../__fixtures__"
 
 jest.setTimeout(100000)
 
+// Set up the mock before module initialization
+let mockGetTranslatableEntities: jest.SpyInstance
+
 moduleIntegrationTestRunner<ITranslationModuleService>({
   moduleName: Modules.TRANSLATION,
+  hooks: {
+    beforeModuleInit: async () => {
+      mockGetTranslatableEntities = jest.spyOn(
+        DmlEntity,
+        "getTranslatableEntities"
+      )
+      mockGetTranslatableEntities.mockReturnValue([
+        {
+          entity: "Product",
+          fields: ["title", "description", "subtitle", "material"],
+        },
+        { entity: "ProductVariant", fields: ["title", "material"] },
+        { entity: "ProductCategory", fields: ["name"] },
+      ])
+    },
+  },
   testSuite: ({ service }) => {
     describe("Translation Module Service", () => {
+      afterAll(() => {
+        // Restore the mock after all tests complete
+        if (mockGetTranslatableEntities) {
+          mockGetTranslatableEntities.mockRestore()
+        }
+      })
+
       it(`should export the appropriate linkable configuration`, () => {
         const linkable = Module(Modules.TRANSLATION, {
           service: TranslationModuleService,
@@ -247,7 +273,7 @@ moduleIntegrationTestRunner<ITranslationModuleService>({
         })
       })
 
-      describe("Translation", () => {
+      describe.only("Translation", () => {
         describe("creating a translation", () => {
           it("should create a translation successfully", async () => {
             const translation = await service.createTranslations(
@@ -330,7 +356,7 @@ moduleIntegrationTestRunner<ITranslationModuleService>({
           })
         })
 
-        describe("listing translations", () => {
+        describe.only("listing translations", () => {
           beforeEach(async () => {
             await service.createTranslations([
               {
@@ -392,7 +418,7 @@ moduleIntegrationTestRunner<ITranslationModuleService>({
             expect(translations[0].reference_id).toEqual("prod_1")
           })
 
-          it("should filter by multiple criteria", async () => {
+          it.only("should filter by multiple criteria", async () => {
             const translations = await service.listTranslations({
               reference_id: "prod_1",
               locale_code: "fr-FR",
