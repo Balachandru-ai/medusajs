@@ -1,5 +1,6 @@
 import { BaseProperty } from "./base"
 import { PrimaryKeyModifier } from "./primary-key"
+import { TranslatableModifier } from "./translatable"
 
 /**
  * The TextProperty is used to define a textual property
@@ -56,5 +57,25 @@ export class TextProperty extends BaseProperty<string> {
     this.dataType.options.searchable = true
 
     return this
+  }
+
+  /**
+   * This method indicates that a text property is translatable.
+   * Translatable properties can have different values per locale.
+   *
+   * @example
+   * import { model } from "@medusajs/framework/utils"
+   *
+   * const Store = model.define("store", {
+   *   name: model.text().translatable(),
+   *   // ...
+   * })
+   *
+   * export default Store
+   *
+   * @customNamespace Property Configuration Methods
+   */
+  translatable() {
+    return new TranslatableModifier<string, this>(this)
   }
 }

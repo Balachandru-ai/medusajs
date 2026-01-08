@@ -78,6 +78,7 @@ export type PropertyMetadata = {
   defaultValue?: any
   nullable: boolean
   computed: boolean
+  translatable?: boolean
   dataType: {
     name: KnownDataTypes
     options?: Record<string, any>
