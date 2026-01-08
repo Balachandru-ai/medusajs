@@ -183,7 +183,7 @@ export interface FilterableTranslationSettingsProps
   /**
    * Filter translation settings by entity type.
    */
-  entity_type?: string | string[] | OperatorMap<string>
+  entity_type?: string | string[] | OperatorMap<string | string[]>
   /**
    * Filter translation settings by active status.
    */
