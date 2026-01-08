@@ -328,4 +328,58 @@ export class ProductRepository extends DALUtils.mikroOrmBaseRepositoryFactory(
 
     return !blockingOptions.length
   }
+
+  /**
+   * Returns exclusive option ids that are already assigned to another product.
+   *
+   * @param pairs - Array of { productId, optionId } pairs to check
+   * @param context - The context
+   */
+  async findExclusiveOptionAssignmentConflicts(
+    pairs: Array<{ productId: string; optionId: string }> = [],
+    context: Context = {}
+  ): Promise<string[]> {
+    if (!pairs.length) {
+      return []
+    }
+
+    const optionToProductIds = new Map<string, Set<string>>()
+
+    pairs.forEach((pair) => {
+      const productIds = optionToProductIds.get(pair.optionId) ?? new Set()
+      productIds.add(pair.productId)
+      optionToProductIds.set(pair.optionId, productIds)
+    })
+
+    // check if the request is trying to assign multiple product to an exclusive option
+    const conflictOptionIds = new Set(
+      [...optionToProductIds.entries()]
+        .filter(([, productIds]) => productIds.size > 1)
+        .map(([optionId]) => optionId)
+    )
+
+    const optionIds = [...optionToProductIds.keys()]
+
+    const manager = this.getActiveManager<SqlEntityManager>(context)
+    const connection = manager.getConnection()
+    const knex = connection.getKnex()
+
+    const existingLinks = await knex
+      .select("ppo.product_option_id", "ppo.product_id")
+      .from("product_product_option as ppo")
+      .innerJoin("product as p", "p.id", "ppo.product_id")
+      .innerJoin("product_option as po", "po.id", "ppo.product_option_id")
+      .whereIn("ppo.product_option_id", optionIds)
+      .where("po.is_exclusive", true)
+
+    existingLinks.forEach((row) => {
+      const allowedProductIds =
+        optionToProductIds.get(row.product_option_id) ?? new Set()
+      if (!allowedProductIds.has(row.product_id)) {
+        conflictOptionIds.add(row.product_option_id)
+      }
+    })
+
+    return optionIds.filter((optionId) => conflictOptionIds.has(optionId))
+  }
 }

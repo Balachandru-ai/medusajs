@@ -1523,6 +1523,24 @@ export default class ProductModuleService
       ),
     ])
 
+    const alreadyAssignedToOtherProducts =
+      await this.productRepository_.findExclusiveOptionAssignmentConflicts(
+        pairs.map((pair) => ({
+          productId: pair.product_id,
+          optionId: pair.product_option_id,
+        })),
+        sharedContext
+      )
+
+    if (alreadyAssignedToOtherProducts.length) {
+      throw new MedusaError(
+        MedusaError.Types.INVALID_DATA,
+        `Exclusive product options are already assigned to another product: ${alreadyAssignedToOtherProducts.join(
+          ", "
+        )}`
+      )
+    }
+
     const existingPPOMap = new Map<
       string,
       InferEntityType<typeof ProductProductOption>

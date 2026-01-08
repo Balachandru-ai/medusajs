@@ -172,6 +172,89 @@ medusaIntegrationTestRunner({
       })
 
       describe("setProductProductOptionsWorkflow", () => {
+        it("should fail to assign an already linked exclusive option to another product", async () => {
+          const workflow = setProductProductOptionsWorkflow(appContainer)
+
+          const product = await service.createProducts({
+            title: "Exclusive Product",
+            shipping_profile_id: shippingProfile.id,
+            options: [
+              {
+                title: "Size",
+                values: ["S", "M"],
+              },
+            ],
+          })
+
+          const otherProduct = await service.createProducts({
+            title: "Other Product",
+            shipping_profile_id: shippingProfile.id,
+          })
+
+          const option = product.options[0]
+          expect(option.is_exclusive).toBe(true)
+
+          const { errors } = await workflow.run({
+            input: {
+              product_id: otherProduct.id,
+              add: [option.id],
+            },
+            throwOnError: false,
+          })
+
+          expect(errors).toHaveLength(1)
+          expect(errors[0].error.message).toContain(
+            "Exclusive product options are already assigned to another product"
+          )
+
+          const [reloadedOtherProduct] = await service.listProducts(
+            { id: [otherProduct.id] },
+            { relations: ["options"] }
+          )
+          expect(reloadedOtherProduct.options ?? []).toHaveLength(0)
+        })
+
+        it("should fail when adding the same exclusive option to two products in a single call", async () => {
+          const productA = await service.createProducts({
+            title: "Product A",
+            shipping_profile_id: shippingProfile.id,
+          })
+
+          const productB = await service.createProducts({
+            title: "Product B",
+            shipping_profile_id: shippingProfile.id,
+          })
+
+          const option = await service.createProductOptions({
+            title: "Color",
+            is_exclusive: true,
+            values: ["Red"],
+          })
+
+          await expect(
+            service.addProductOptionToProduct([
+              {
+                product_id: productA.id,
+                product_option_id: option.id,
+              },
+              {
+                product_id: productB.id,
+                product_option_id: option.id,
+              },
+            ])
+          ).rejects.toThrow(
+            "Exclusive product options are already assigned to another product"
+          )
+
+          const products = await service.listProducts(
+            { id: [productA.id, productB.id] },
+            { relations: ["options"] }
+          )
+          products.forEach((product) => {
+            expect(product.options ?? []).toHaveLength(0)
+          })
+        })
+
         describe("compensation", () => {
           it("should restore only the linked option values after a failed removal", async () => {
             const workflow = setProductProductOptionsWorkflow(appContainer)
@@ -209,9 +292,10 @@ medusaIntegrationTestRunner({
               { relations: ["options.values"] }
             )
 
-            const initialValues = productWithPartialValues.options[0].values.map(
-              (value) => value.value
-            )
+            const initialValues =
+              productWithPartialValues.options[0].values.map(
+                (value) => value.value
+              )
 
             expect(initialValues).toHaveLength(2)
             expect(initialValues).toEqual(expect.arrayContaining(["S", "M"]))
@@ -291,9 +375,10 @@ medusaIntegrationTestRunner({
               { relations: ["options.values"] }
             )
 
-            const initialValues = productWithPartialValues.options[0].values.map(
-              (value) => value.value
-            )
+            const initialValues =
+              productWithPartialValues.options[0].values.map(
+                (value) => value.value
+              )
 
             expect(initialValues).toHaveLength(2)
             expect(initialValues).toEqual(expect.arrayContaining(["S", "M"]))
