@@ -865,4 +865,28 @@ export interface ITranslationModuleService extends IModuleService {
     config?: FindConfig<TranslationSettingsDTO>,
     sharedContext?: Context
   ): Promise<[TranslationSettingsDTO[], number]>
+
+  /**
+   * This method retrieves a translation setting by its ID.
+   *
+   * @param {string} id - The ID of the translation setting to retrieve.
+   * @param {FindConfig<TranslationSettingsDTO>} config - The configurations determining how the translation setting is retrieved. Its properties, such as `select` or `relations`, accept the
+   * attributes or relations associated with a translation settings.
+   * @param {Context} sharedContext - A context used to share resources, such as transaction manager, between the application and the module.
+   * @returns {Promise<TranslationSettingsDTO>} The retrieved translation setting.
+   *
+   * @example
+   * const translationSetting = await translationModuleService.retrieveTranslationSettings("ts_123")
+   * // Returns: {
+   * //   id: "ts_123",
+   * //   entity_type: "product",
+   * //   fields: ["title", "description"],
+   * //   is_active: true,
+   * // }
+   */
+  retrieveTranslationSettings(
+    id: string,
+    config?: FindConfig<TranslationSettingsDTO>,
+    sharedContext?: Context
+  ): Promise<TranslationSettingsDTO>
 }

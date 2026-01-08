@@ -21,6 +21,7 @@ import {
   MedusaError,
   MedusaService,
   normalizeLocale,
+  toSnakeCase,
 } from "@medusajs/framework/utils"
 import Locale from "@models/locale"
 import Translation from "@models/translation"
@@ -503,7 +504,7 @@ export default class TranslationModuleService
   protected async onApplicationStart_() {
     const translatableEntities = DmlEntity.getTranslatableEntities()
     const translatableEntitiesMap = new Map(
-      translatableEntities.map((entity) => [entity.entity, entity])
+      translatableEntities.map((entity) => [toSnakeCase(entity.entity), entity])
     )
 
     const currentTranslationSettings = await this.settingsService_.list()
@@ -524,7 +525,10 @@ export default class TranslationModuleService
         !translatableEntitiesMap.has(setting.entity_type) &&
         setting.is_active
       ) {
-        settingsToUpsert.push({ id: setting.id, is_active: false })
+        settingsToUpsert.push({
+          id: setting.id,
+          is_active: false,
+        })
       }
     }
 
