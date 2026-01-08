@@ -27,8 +27,8 @@ medusaIntegrationTestRunner({
               {
                 create: [
                   {
-                    entity_type: "my_entity",
-                    fields: ["title", "description"],
+                    entity_type: "product_variant",
+                    fields: ["title", "material"],
                     is_active: true,
                   },
                 ],
@@ -41,8 +41,8 @@ medusaIntegrationTestRunner({
             expect(response.data.created[0]).toEqual(
               expect.objectContaining({
                 id: expect.any(String),
-                entity_type: "my_entity",
-                fields: ["title", "description"],
+                entity_type: "product_variant",
+                fields: ["title", "material"],
                 is_active: true,
                 created_at: expect.any(String),
                 updated_at: expect.any(String),
@@ -56,18 +56,18 @@ medusaIntegrationTestRunner({
               {
                 create: [
                   {
-                    entity_type: "my_entity",
-                    fields: ["title", "description", "subtitle", "material"],
-                    is_active: true,
-                  },
-                  {
-                    entity_type: "my_second_entity",
+                    entity_type: "product_variant",
                     fields: ["title", "material"],
                     is_active: true,
                   },
                   {
-                    entity_type: "my_third_entity",
+                    entity_type: "product_category",
                     fields: ["name", "description"],
+                    is_active: true,
+                  },
+                  {
+                    entity_type: "product_collection",
+                    fields: ["title"],
                     is_active: false,
                   },
                 ],
@@ -80,18 +80,18 @@ medusaIntegrationTestRunner({
             expect(response.data.created).toEqual(
               expect.arrayContaining([
                 expect.objectContaining({
-                  entity_type: "my_entity",
-                  fields: ["title", "description", "subtitle", "material"],
-                  is_active: true,
-                }),
-                expect.objectContaining({
-                  entity_type: "my_second_entity",
+                  entity_type: "product_variant",
                   fields: ["title", "material"],
                   is_active: true,
                 }),
                 expect.objectContaining({
-                  entity_type: "my_third_entity",
+                  entity_type: "product_category",
                   fields: ["name", "description"],
+                  is_active: true,
+                }),
+                expect.objectContaining({
+                  entity_type: "product_collection",
+                  fields: ["title"],
                   is_active: false,
                 }),
               ])
@@ -106,7 +106,7 @@ medusaIntegrationTestRunner({
               {
                 create: [
                   {
-                    entity_type: "my_entity",
+                    entity_type: "product_variant",
                     fields: ["title"],
                     is_active: true,
                   },
@@ -123,8 +123,8 @@ medusaIntegrationTestRunner({
                 update: [
                   {
                     id: settingId,
-                    entity_type: "my_entity",
-                    fields: ["title", "description", "subtitle"],
+                    entity_type: "product_variant",
+                    fields: ["title", "material"],
                   },
                 ],
               },
@@ -136,8 +136,8 @@ medusaIntegrationTestRunner({
             expect(updateResponse.data.updated[0]).toEqual(
               expect.objectContaining({
                 id: settingId,
-                entity_type: "my_entity",
-                fields: ["title", "description", "subtitle"],
+                entity_type: "product_variant",
+                fields: ["title", "material"],
                 is_active: true,
               })
             )
@@ -149,13 +149,13 @@ medusaIntegrationTestRunner({
               {
                 create: [
                   {
-                    entity_type: "my_entity",
+                    entity_type: "product_variant",
                     fields: ["title"],
                     is_active: true,
                   },
                   {
-                    entity_type: "my_second_entity",
-                    fields: ["title"],
+                    entity_type: "product_category",
+                    fields: ["name"],
                     is_active: true,
                   },
                 ],
@@ -173,12 +173,12 @@ medusaIntegrationTestRunner({
                 update: [
                   {
                     id: settingId1,
-                    entity_type: "my_entity",
-                    fields: ["title", "description"],
+                    entity_type: "product_variant",
+                    fields: ["title", "material"],
                   },
                   {
                     id: settingId2,
-                    entity_type: "my_second_entity",
+                    entity_type: "product_category",
                     is_active: false,
                   },
                 ],
@@ -191,11 +191,11 @@ medusaIntegrationTestRunner({
             expect(updateResponse.data.updated).toEqual(
               expect.arrayContaining([
                 expect.objectContaining({
-                  entity_type: "my_entity",
-                  fields: ["title", "description"],
+                  entity_type: "product_variant",
+                  fields: ["title", "material"],
                 }),
                 expect.objectContaining({
-                  entity_type: "my_second_entity",
+                  entity_type: "product_category",
                   is_active: false,
                 }),
               ])
@@ -210,7 +210,7 @@ medusaIntegrationTestRunner({
               {
                 create: [
                   {
-                    entity_type: "my_entity",
+                    entity_type: "product_variant",
                     fields: ["title"],
                     is_active: true,
                   },
@@ -243,18 +243,18 @@ medusaIntegrationTestRunner({
               {
                 create: [
                   {
-                    entity_type: "my_entity",
+                    entity_type: "product_variant",
                     fields: ["title"],
                     is_active: true,
                   },
                   {
-                    entity_type: "my_second_entity",
-                    fields: ["title"],
-                    is_active: true,
-                  },
-                  {
-                    entity_type: "my_third_entity",
+                    entity_type: "product_category",
                     fields: ["name"],
+                    is_active: true,
+                  },
+                  {
+                    entity_type: "product_collection",
+                    fields: ["title"],
                     is_active: true,
                   },
                 ],
@@ -306,13 +306,13 @@ medusaIntegrationTestRunner({
               {
                 create: [
                   {
-                    entity_type: "my_entity",
+                    entity_type: "product_variant",
                     fields: ["title"],
                     is_active: true,
                   },
                   {
-                    entity_type: "my_second_entity",
-                    fields: ["title"],
+                    entity_type: "product_category",
+                    fields: ["name"],
                     is_active: true,
                   },
                 ],
@@ -329,15 +329,16 @@ medusaIntegrationTestRunner({
               {
                 create: [
                   {
-                    entity_type: "my_third_entity",
-                    fields: ["name", "description"],
+                    entity_type: "product_collection",
+                    fields: ["title"],
                     is_active: true,
                   },
                 ],
                 update: [
                   {
                     id: settingId1,
-                    fields: ["title", "description", "subtitle"],
+                    entity_type: "product_variant",
+                    fields: ["title", "material"],
                     is_active: false,
                   },
                 ],
@@ -353,8 +354,8 @@ medusaIntegrationTestRunner({
 
             expect(batchResponse.data.created[0]).toEqual(
               expect.objectContaining({
-                entity_type: "my_third_entity",
-                fields: ["name", "description"],
+                entity_type: "product_collection",
+                fields: ["title"],
                 is_active: true,
               })
             )
@@ -362,7 +363,7 @@ medusaIntegrationTestRunner({
             expect(batchResponse.data.updated[0]).toEqual(
               expect.objectContaining({
                 id: settingId1,
-                fields: ["title", "description", "subtitle"],
+                fields: ["title", "material"],
                 is_active: false,
               })
             )
@@ -383,6 +384,113 @@ medusaIntegrationTestRunner({
             expect(response.data.created).toEqual([])
             expect(response.data.updated).toEqual([])
             expect(response.data.deleted.ids).toEqual([])
+          })
+        })
+
+        describe("validation", () => {
+          it("should reject non-translatable entity types", async () => {
+            const error = await api
+              .post(
+                "/admin/translations/settings/batch",
+                {
+                  create: [
+                    {
+                      entity_type: "NonExistentEntity",
+                      fields: ["title"],
+                      is_active: true,
+                    },
+                  ],
+                },
+                adminHeaders
+              )
+              .catch((e) => e)
+
+            expect(error.response.status).toEqual(400)
+            expect(error.response.data.message).toContain(
+              "NonExistentEntity is not a translatable entity"
+            )
+          })
+
+          it("should reject invalid fields for translatable entities", async () => {
+            const error = await api
+              .post(
+                "/admin/translations/settings/batch",
+                {
+                  create: [
+                    {
+                      entity_type: "product_variant",
+                      fields: ["title", "invalid_field", "another_invalid"],
+                      is_active: true,
+                    },
+                  ],
+                },
+                adminHeaders
+              )
+              .catch((e) => e)
+
+            expect(error.response.status).toEqual(400)
+            expect(error.response.data.message).toContain("product_variant")
+            expect(error.response.data.message).toContain("invalid_field")
+            expect(error.response.data.message).toContain("another_invalid")
+          })
+
+          it("should reject multiple invalid settings in a single batch", async () => {
+            const error = await api
+              .post(
+                "/admin/translations/settings/batch",
+                {
+                  create: [
+                    {
+                      entity_type: "NonExistentEntity",
+                      fields: ["title"],
+                      is_active: true,
+                    },
+                    {
+                      entity_type: "product_variant",
+                      fields: ["title", "invalid_field"],
+                      is_active: true,
+                    },
+                  ],
+                },
+                adminHeaders
+              )
+              .catch((e) => e)
+
+            expect(error.response.status).toEqual(400)
+            expect(error.response.data.message).toContain(
+              "NonExistentEntity is not a translatable entity"
+            )
+            expect(error.response.data.message).toContain("product_variant")
+            expect(error.response.data.message).toContain("invalid_field")
+          })
+
+          it("should accept valid fields for translatable entities", async () => {
+            const response = await api.post(
+              "/admin/translations/settings/batch",
+              {
+                create: [
+                  {
+                    entity_type: "product_variant",
+                    fields: ["title", "material"],
+                    is_active: true,
+                  },
+                  {
+                    entity_type: "product_category",
+                    fields: ["name", "description"],
+                    is_active: true,
+                  },
+                  {
+                    entity_type: "product_collection",
+                    fields: ["title"],
+                    is_active: true,
+                  },
+                ],
+              },
+              adminHeaders
+            )
+
+            expect(response.status).toEqual(200)
+            expect(response.data.created).toHaveLength(3)
           })
         })
       })
