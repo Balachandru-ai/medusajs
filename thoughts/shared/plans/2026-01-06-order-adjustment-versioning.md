@@ -58,6 +58,8 @@ This plan implements versioning for `order_shipping_method_adjustment` (similar 
 1. `order_shipping_method_adjustment` table has a `version` column with default value 1
 2. When order changes are confirmed, shipping method adjustments are created with the new version number
 3. When reverting an order (`revertLastVersion`), both line item adjustments AND shipping method adjustments for the current version are soft-deleted
+4. A `SHIPPING_ADJUSTMENTS_REPLACE` change action type exists, mirroring the `ITEM_ADJUSTMENTS_REPLACE` pattern
+5. The `compute-adjustments-for-preview` workflow handles shipping method adjustments in addition to line item adjustments
 
 ### Verification
 
@@ -66,12 +68,10 @@ This plan implements versioning for `order_shipping_method_adjustment` (similar 
 - New adjustments are created with correct version during order change confirmation
 - Reverting an order deletes adjustments for the current version only
 - Previous version adjustments remain intact
+- Shipping method adjustments are computed and previewed during order changes when `carry_over_promotions` is enabled
 
 ## What We're NOT Doing
 
-- Adding a `SHIPPING_ADJUSTMENTS_REPLACE` change action type (would require significant workflow changes)
-- Modifying the `compute-adjustments-for-preview` workflow to handle shipping adjustments
-- Changing how shipping method adjustments are computed during order changes
 - Adding version field to GraphQL schema (keeping it internal like line item adjustment version)
 
 ## Implementation Approach
@@ -574,12 +574,352 @@ describe("Order Adjustment Versioning", () => {
 
 ---
 
+## Phase 8: Add SHIPPING_ADJUSTMENTS_REPLACE Action Type and Update Workflow
+
+### Overview
+
+Add the `SHIPPING_ADJUSTMENTS_REPLACE` change action type to handle shipping method adjustment replacement during order changes. This mirrors the existing `ITEM_ADJUSTMENTS_REPLACE` pattern and enables proper promotion recalculation for shipping methods when the `carry_over_promotions` flag is enabled.
+
+### Changes Required:
+
+#### 1. Add to ChangeActionType Enum
+
+**File**: `packages/core/utils/src/order/order-change-action.ts`
+**Changes**: Add `SHIPPING_ADJUSTMENTS_REPLACE` to the enum
+
+```typescript
+export enum ChangeActionType {
+  FULFILL_ITEM = "FULFILL_ITEM",
+  DELIVER_ITEM = "DELIVER_ITEM",
+  CANCEL_ITEM_FULFILLMENT = "CANCEL_ITEM_FULFILLMENT",
+  ITEM_ADD = "ITEM_ADD",
+  ITEM_REMOVE = "ITEM_REMOVE",
+  ITEM_UPDATE = "ITEM_UPDATE",
+  RECEIVE_DAMAGED_RETURN_ITEM = "RECEIVE_DAMAGED_RETURN_ITEM",
+  RECEIVE_RETURN_ITEM = "RECEIVE_RETURN_ITEM",
+  RETURN_ITEM = "RETURN_ITEM",
+  CANCEL_RETURN_ITEM = "CANCEL_RETURN_ITEM",
+  SHIPPING_ADD = "SHIPPING_ADD",
+  SHIPPING_REMOVE = "SHIPPING_REMOVE",
+  SHIPPING_UPDATE = "SHIPPING_UPDATE",
+  SHIP_ITEM = "SHIP_ITEM",
+  WRITE_OFF_ITEM = "WRITE_OFF_ITEM",
+  REINSTATE_ITEM = "REINSTATE_ITEM",
+  TRANSFER_CUSTOMER = "TRANSFER_CUSTOMER",
+  UPDATE_ORDER_PROPERTIES = "UPDATE_ORDER_PROPERTIES",
+  CREDIT_LINE_ADD = "CREDIT_LINE_ADD",
+  PROMOTION_ADD = "PROMOTION_ADD",
+  PROMOTION_REMOVE = "PROMOTION_REMOVE",
+  ITEM_ADJUSTMENTS_REPLACE = "ITEM_ADJUSTMENTS_REPLACE",
+  SHIPPING_ADJUSTMENTS_REPLACE = "SHIPPING_ADJUSTMENTS_REPLACE", // ADD THIS
+}
+```
+
+#### 2. Add to ChangeActionType Type Definition
+
+**File**: `packages/core/types/src/order/common.ts`
+**Changes**: Add `SHIPPING_ADJUSTMENTS_REPLACE` to the union type
+
+Around line 33, update the type:
+
+```typescript
+export type ChangeActionType =
+  | "CANCEL_RETURN_ITEM"
+  | "FULFILL_ITEM"
+  | "DELIVER_ITEM"
+  // ... other types ...
+  | "ITEM_ADJUSTMENTS_REPLACE"
+  | "SHIPPING_ADJUSTMENTS_REPLACE" // ADD THIS
+```
+
+#### 3. Create Action Handler
+
+**File**: `packages/modules/order/src/utils/actions/shipping-adjustments-replace.ts` (new file)
+**Changes**: Create handler mirroring `item-adjustments-replace.ts`
+
+```typescript
+import { ChangeActionType, MedusaError } from "@medusajs/framework/utils"
+import { OrderChangeProcessing } from "../calculate-order-change"
+import { setActionReference } from "../set-action-reference"
+
+OrderChangeProcessing.registerActionType(
+  ChangeActionType.SHIPPING_ADJUSTMENTS_REPLACE,
+  {
+    operation({ action, currentOrder, options }) {
+      let existing = currentOrder.shipping_methods.find(
+        (method) => method.id === action.details.reference_id
+      )
+
+      if (!existing) {
+        return
+      }
+
+      existing.adjustments = action.details.adjustments ?? []
+
+      setActionReference(existing, action, options)
+    },
+    validate({ action }) {
+      const refId = action.details?.reference_id
+
+      if (!action.details.adjustments) {
+        throw new MedusaError(
+          MedusaError.Types.INVALID_DATA,
+          `Adjustments of shipping method ${refId} must exist.`
+        )
+      }
+    },
+  }
+)
+```
+
+#### 4. Export Action Handler
+
+**File**: `packages/modules/order/src/utils/actions/index.ts`
+**Changes**: Add export for new action handler
+
+```typescript
+export * from "./cancel-item-fulfillment"
+export * from "./cancel-return"
+export * from "./change-shipping-address"
+export * from "./credit-line-add"
+export * from "./deliver-item"
+export * from "./fulfill-item"
+export * from "./item-add"
+export * from "./item-adjustments-replace"
+export * from "./item-remove"
+export * from "./item-update"
+export * from "./promotion-add"
+export * from "./promotion-remove"
+export * from "./receive-damaged-return-item"
+export * from "./receive-return-item"
+export * from "./reinstate-item"
+export * from "./return-item"
+export * from "./ship-item"
+export * from "./shipping-add"
+export * from "./shipping-adjustments-replace" // ADD THIS
+export * from "./shipping-remove"
+export * from "./shipping-update"
+export * from "./transfer-customer"
+export * from "./write-off-item"
+```
+
+#### 5. Update compute-adjustments-for-preview Workflow
+
+**File**: `packages/core/core-flows/src/order/workflows/compute-adjustments-for-preview.ts`
+**Changes**: Update the workflow to also create `SHIPPING_ADJUSTMENTS_REPLACE` actions
+
+```typescript
+import {
+  ComputeActionContext,
+  ComputeActionShippingLine,
+  OrderChangeDTO,
+  OrderDTO,
+  PromotionDTO,
+} from "@medusajs/framework/types"
+import { ChangeActionType } from "@medusajs/framework/utils"
+import {
+  createWorkflow,
+  transform,
+  when,
+  WorkflowData,
+} from "@medusajs/framework/workflows-sdk"
+import {
+  getActionsToComputeFromPromotionsStep,
+  prepareAdjustmentsFromPromotionActionsStep,
+} from "../../cart"
+import { previewOrderChangeStep } from "../steps/preview-order-change"
+import { createOrderChangeActionsWorkflow } from "./create-order-change-actions"
+import {
+  deleteOrderChangeActionsStep,
+  listOrderChangeActionsByTypeStep,
+} from "../steps"
+
+// ... type definitions unchanged ...
+
+export const computeAdjustmentsForPreviewWorkflow = createWorkflow(
+  computeAdjustmentsForPreviewWorkflowId,
+  function (input: WorkflowData<ComputeAdjustmentsForPreviewWorkflowInput>) {
+    const previewedOrder = previewOrderChangeStep(input.order.id)
+
+    when(
+      { order: input.order },
+      ({ order }) =>
+        !!order.promotions.length && !!input.orderChange.carry_over_promotions
+    ).then(() => {
+      const actionsToComputeContext = transform(
+        { previewedOrder, order: input.order },
+        ({ previewedOrder, order }) => {
+          return {
+            currency_code: order.currency_code,
+            items: previewedOrder.items.map((item) => ({
+              ...item,
+              product: { id: item.product_id },
+            })),
+            shipping_methods:
+              previewedOrder.shipping_methods as unknown as ComputeActionShippingLine[],
+          } as ComputeActionContext
+        }
+      )
+
+      const orderPromotions = transform({ order: input.order }, ({ order }) => {
+        return order.promotions
+          .map((p) => p.code)
+          .filter((p) => p !== undefined)
+      })
+
+      const actions = getActionsToComputeFromPromotionsStep({
+        computeActionContext: actionsToComputeContext,
+        promotionCodesToApply: orderPromotions,
+        options: {
+          skip_usage_limit_checks: true,
+        },
+      })
+
+      // UPDATE: Destructure both lineItemAdjustmentsToCreate AND shippingMethodAdjustmentsToCreate
+      const { lineItemAdjustmentsToCreate, shippingMethodAdjustmentsToCreate } =
+        prepareAdjustmentsFromPromotionActionsStep({ actions })
+
+      // UPDATE: Create actions for both item and shipping method adjustments
+      const orderChangeActionAdjustmentsInput = transform(
+        {
+          order: input.order,
+          previewedOrder,
+          orderChange: input.orderChange,
+          lineItemAdjustmentsToCreate,
+          shippingMethodAdjustmentsToCreate,
+        },
+        ({
+          order,
+          previewedOrder,
+          orderChange,
+          lineItemAdjustmentsToCreate,
+          shippingMethodAdjustmentsToCreate,
+        }) => {
+          // Create ITEM_ADJUSTMENTS_REPLACE actions for each item
+          const itemActions = previewedOrder.items.map((item) => {
+            const itemAdjustments = lineItemAdjustmentsToCreate.filter(
+              (adjustment) => adjustment.item_id === item.id
+            )
+
+            return {
+              order_change_id: orderChange.id,
+              order_id: order.id,
+              exchange_id: orderChange.exchange_id ?? undefined,
+              claim_id: orderChange.claim_id ?? undefined,
+              return_id: orderChange.return_id ?? undefined,
+              version: orderChange.version,
+              action: ChangeActionType.ITEM_ADJUSTMENTS_REPLACE,
+              details: {
+                reference_id: item.id,
+                adjustments: itemAdjustments,
+              },
+            }
+          })
+
+          // Create SHIPPING_ADJUSTMENTS_REPLACE actions for each shipping method
+          const shippingActions = previewedOrder.shipping_methods.map(
+            (shippingMethod) => {
+              const shippingAdjustments =
+                shippingMethodAdjustmentsToCreate.filter(
+                  (adjustment) =>
+                    adjustment.shipping_method_id === shippingMethod.id
+                )
+
+              return {
+                order_change_id: orderChange.id,
+                order_id: order.id,
+                exchange_id: orderChange.exchange_id ?? undefined,
+                claim_id: orderChange.claim_id ?? undefined,
+                return_id: orderChange.return_id ?? undefined,
+                version: orderChange.version,
+                action: ChangeActionType.SHIPPING_ADJUSTMENTS_REPLACE,
+                details: {
+                  reference_id: shippingMethod.id,
+                  adjustments: shippingAdjustments,
+                },
+              }
+            }
+          )
+
+          return [...itemActions, ...shippingActions]
+        }
+      )
+
+      createOrderChangeActionsWorkflow
+        .runAsStep({ input: orderChangeActionAdjustmentsInput })
+        .config({ name: "order-change-action-adjustments-input" })
+    })
+
+    // UPDATE: When carry_over_promotions is false, delete BOTH action types
+    when(
+      { order: previewedOrder },
+      ({ order }) => !order.order_change.carry_over_promotions
+    ).then(() => {
+      const itemActionIds = listOrderChangeActionsByTypeStep({
+        order_change_id: input.orderChange.id,
+        action_type: ChangeActionType.ITEM_ADJUSTMENTS_REPLACE,
+      })
+
+      deleteOrderChangeActionsStep({ ids: itemActionIds })
+    })
+
+    when(
+      { order: previewedOrder },
+      ({ order }) => !order.order_change.carry_over_promotions
+    ).then(() => {
+      const shippingActionIds = listOrderChangeActionsByTypeStep({
+        order_change_id: input.orderChange.id,
+        action_type: ChangeActionType.SHIPPING_ADJUSTMENTS_REPLACE,
+      })
+
+      deleteOrderChangeActionsStep({ ids: shippingActionIds })
+    })
+  }
+)
+```
+
+**Note**: The workflow now:
+
+1. Destructures `shippingMethodAdjustmentsToCreate` from `prepareAdjustmentsFromPromotionActionsStep` (already computed but not used before)
+2. Creates `SHIPPING_ADJUSTMENTS_REPLACE` actions for each shipping method in addition to item actions
+3. Deletes both `ITEM_ADJUSTMENTS_REPLACE` and `SHIPPING_ADJUSTMENTS_REPLACE` actions when `carry_over_promotions` is disabled
+
+### Success Criteria:
+
+#### Automated Verification:
+
+- [x] TypeScript compilation passes: `yarn workspace @medusajs/utils build`
+- [x] TypeScript compilation passes: `yarn workspace @medusajs/types build`
+- [x] TypeScript compilation passes: `yarn workspace @medusajs/order build`
+- [x] TypeScript compilation passes: `yarn workspace @medusajs/core-flows build`
+- [x] Unit tests pass: `yarn workspace @medusajs/order test`
+- [x] Integration tests pass: `yarn test:integration:http -- --testPathPattern=order-edit`
+
+#### Manual Verification:
+
+- [x] Create an order with both line item and shipping promotions
+- [x] Start an order edit with `carry_over_promotions: true`
+- [x] Add a new item to the order edit
+- [x] Preview the order change and verify shipping method adjustments are included
+- [x] Confirm the order change
+- [x] Verify shipping method adjustments are persisted with correct version
+- [x] Toggle `carry_over_promotions` to false and verify both adjustment types are removed from preview
+
+**Implementation Note**:
+
+- The `prepareAdjustmentsFromPromotionActionsStep` already computes `shippingMethodAdjustmentsToCreate` but it was not being used in the workflow
+- The action handler (`shipping-adjustments-replace.ts`) mirrors `item-adjustments-replace.ts` exactly, just operating on `shipping_methods` instead of `items`
+- The workflow update adds shipping method handling alongside the existing item handling, maintaining backwards compatibility
+
+---
+
 ## Testing Strategy
 
 ### Unit Tests
 
 - Model field validation for `version` on shipping method adjustment
 - Type checking for new DTO fields
+- Action handler validation for `SHIPPING_ADJUSTMENTS_REPLACE`
 
 ### Integration Tests
 
@@ -587,6 +927,8 @@ describe("Order Adjustment Versioning", () => {
 - Order change confirmation creates versioned adjustments
 - Order revert deletes current version adjustments
 - Multiple version changes maintain correct adjustment history
+- `SHIPPING_ADJUSTMENTS_REPLACE` action correctly replaces shipping method adjustments during order change processing
+- `carry_over_promotions` flag correctly includes/excludes shipping method adjustments in preview
 
 ### Manual Testing Steps
 
@@ -596,6 +938,8 @@ describe("Order Adjustment Versioning", () => {
 4. Revert the order edit
 5. Verify version 2 adjustments are soft-deleted
 6. Verify version 1 adjustments remain intact
+7. Test `carry_over_promotions: true` - verify shipping method adjustments appear in order change preview
+8. Test `carry_over_promotions: false` - verify shipping method adjustments are not carried over
 
 ## Performance Considerations
 
@@ -615,3 +959,7 @@ describe("Order Adjustment Versioning", () => {
 - Line item adjustment model: `packages/modules/order/src/models/line-item-adjustment.ts`
 - Order revert implementation: `packages/modules/order/src/services/order-module-service.ts:3203-3330`
 - Apply order changes utility: `packages/modules/order/src/utils/apply-order-changes.ts`
+- Item adjustments replace action handler: `packages/modules/order/src/utils/actions/item-adjustments-replace.ts`
+- ChangeActionType enum: `packages/core/utils/src/order/order-change-action.ts`
+- Compute adjustments for preview workflow: `packages/core/core-flows/src/order/workflows/compute-adjustments-for-preview.ts`
+- Prepare adjustments from promotion actions step: `packages/core/core-flows/src/cart/steps/prepare-adjustments-from-promotion-actions.ts`

@@ -118,7 +118,7 @@ export const computeAdjustmentsForPreviewWorkflow = createWorkflow(
         },
       })
 
-      const { lineItemAdjustmentsToCreate } =
+      const { lineItemAdjustmentsToCreate, shippingMethodAdjustmentsToCreate } =
         prepareAdjustmentsFromPromotionActionsStep({ actions })
 
       const orderChangeActionAdjustmentsInput = transform(
@@ -127,14 +127,16 @@ export const computeAdjustmentsForPreviewWorkflow = createWorkflow(
           previewedOrder,
           orderChange: input.orderChange,
           lineItemAdjustmentsToCreate,
+          shippingMethodAdjustmentsToCreate,
         },
         ({
           order,
           previewedOrder,
           orderChange,
           lineItemAdjustmentsToCreate,
+          shippingMethodAdjustmentsToCreate,
         }) => {
-          return previewedOrder.items.map((item) => {
+          const itemActions = previewedOrder.items.map((item) => {
             const itemAdjustments = lineItemAdjustmentsToCreate.filter(
               (adjustment) => adjustment.item_id === item.id
             )
@@ -153,6 +155,32 @@ export const computeAdjustmentsForPreviewWorkflow = createWorkflow(
               },
             }
           })
+
+          const shippingActions = previewedOrder.shipping_methods.map(
+            (shippingMethod) => {
+              const shippingAdjustments =
+                shippingMethodAdjustmentsToCreate.filter(
+                  (adjustment) =>
+                    adjustment.shipping_method_id === shippingMethod.id
+                )
+
+              return {
+                order_change_id: orderChange.id,
+                order_id: order.id,
+                exchange_id: orderChange.exchange_id ?? undefined,
+                claim_id: orderChange.claim_id ?? undefined,
+                return_id: orderChange.return_id ?? undefined,
+                version: orderChange.version,
+                action: ChangeActionType.SHIPPING_ADJUSTMENTS_REPLACE,
+                details: {
+                  reference_id: shippingMethod.id,
+                  adjustments: shippingAdjustments,
+                },
+              }
+            }
+          )
+
+          return [...itemActions, ...shippingActions]
         }
       )
 
@@ -165,12 +193,24 @@ export const computeAdjustmentsForPreviewWorkflow = createWorkflow(
       { order: previewedOrder },
       ({ order }) => !order.order_change.carry_over_promotions
     ).then(() => {
-      const actionIds = listOrderChangeActionsByTypeStep({
+      const itemActionIds = listOrderChangeActionsByTypeStep({
         order_change_id: input.orderChange.id,
         action_type: ChangeActionType.ITEM_ADJUSTMENTS_REPLACE,
-      })
+      }).config({ name: "list-item-adjustment-actions-for-deletion" })
 
-      deleteOrderChangeActionsStep({ ids: actionIds })
+      const shippingActionIds = listOrderChangeActionsByTypeStep({
+        order_change_id: input.orderChange.id,
+        action_type: ChangeActionType.SHIPPING_ADJUSTMENTS_REPLACE,
+      }).config({ name: "list-shipping-adjustment-actions-for-deletion" })
+
+      const allActionIds = transform(
+        { itemActionIds, shippingActionIds },
+        ({ itemActionIds, shippingActionIds }) => {
+          return [...itemActionIds, ...shippingActionIds]
+        }
+      )
+
+      deleteOrderChangeActionsStep({ ids: allActionIds })
     })
   }
 )

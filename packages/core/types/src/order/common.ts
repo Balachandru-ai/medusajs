@@ -31,6 +31,7 @@ export type ChangeActionType =
   | "PROMOTION_ADD"
   | "PROMOTION_REMOVE"
   | "ITEM_ADJUSTMENTS_REPLACE"
+  | "SHIPPING_ADJUSTMENTS_REPLACE"
 
 export type OrderChangeStatus =
   | "confirmed"
