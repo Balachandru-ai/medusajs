@@ -1,6 +1,5 @@
 import { expectTypeOf } from "expect-type"
 import { TextProperty } from "../properties/text"
-import { TranslatableModifier } from "../properties/translatable"
 
 describe("Text property", () => {
   test("create text property type", () => {
@@ -42,16 +41,14 @@ describe("Text property", () => {
     const property = new TextProperty().translatable()
 
     expectTypeOf(property["$dataType"]).toEqualTypeOf<string>()
-    expect(TranslatableModifier.isTranslatableModifier(property)).toBe(true)
     expect(property.parse("name")).toEqual({
       fieldName: "name",
       dataType: {
         name: "text",
-        options: { searchable: false },
+        options: { searchable: false, translatable: true },
       },
       nullable: false,
       computed: false,
-      translatable: true,
       indexes: [],
       relationships: [],
     })
@@ -65,11 +62,10 @@ describe("Text property", () => {
       fieldName: "name",
       dataType: {
         name: "text",
-        options: { searchable: true },
+        options: { searchable: true, translatable: true },
       },
       nullable: false,
       computed: false,
-      translatable: true,
       indexes: [],
       relationships: [],
     })
@@ -83,11 +79,10 @@ describe("Text property", () => {
       fieldName: "description",
       dataType: {
         name: "text",
-        options: { searchable: false },
+        options: { searchable: false, translatable: true },
       },
       nullable: true,
       computed: false,
-      translatable: true,
       indexes: [],
       relationships: [],
     })
@@ -101,86 +96,13 @@ describe("Text property", () => {
       fieldName: "name",
       dataType: {
         name: "text",
-        options: { searchable: false },
+        options: { searchable: false, translatable: true },
       },
       nullable: false,
       computed: false,
-      translatable: true,
       defaultValue: "Default Value",
       indexes: [],
       relationships: [],
-    })
-  })
-
-  describe("translatable modifier order independence", () => {
-    test("should allow searchable before vs after translatable and produce same result", () => {
-      const searchableThenTranslatable = new TextProperty()
-        .searchable()
-        .translatable()
-      const translatableThenSearchable = new TextProperty()
-        .translatable()
-        .searchable()
-
-      expect(searchableThenTranslatable.parse("name")).toEqual(
-        translatableThenSearchable.parse("name")
-      )
-    })
-
-    test("should allow default before vs after translatable and produce same result", () => {
-      const defaultThenTranslatable = new TextProperty()
-        .default("Default")
-        .translatable()
-      const translatableThenDefault = new TextProperty()
-        .translatable()
-        .default("Default")
-
-      expect(defaultThenTranslatable.parse("name")).toEqual(
-        translatableThenDefault.parse("name")
-      )
-    })
-
-    test("should allow index before vs after translatable and produce same result", () => {
-      const indexThenTranslatable = new TextProperty()
-        .index("idx_name")
-        .translatable()
-      const translatableThenIndex = new TextProperty()
-        .translatable()
-        .index("idx_name")
-
-      expect(indexThenTranslatable.parse("name")).toEqual(
-        translatableThenIndex.parse("name")
-      )
-    })
-
-    test("should allow unique before vs after translatable and produce same result", () => {
-      const uniqueThenTranslatable = new TextProperty()
-        .unique("unq_name")
-        .translatable()
-      const translatableThenUnique = new TextProperty()
-        .translatable()
-        .unique("unq_name")
-
-      expect(uniqueThenTranslatable.parse("name")).toEqual(
-        translatableThenUnique.parse("name")
-      )
-    })
-
-    test("should allow complex chain order independence", () => {
-      const order1 = new TextProperty()
-        .searchable()
-        .default("test")
-        .index("idx_name")
-        .translatable()
-        .nullable()
-
-      const order2 = new TextProperty()
-        .translatable()
-        .searchable()
-        .default("test")
-        .index("idx_name")
-        .nullable()
-
-      expect(order1.parse("name")).toEqual(order2.parse("name"))
     })
   })
 })

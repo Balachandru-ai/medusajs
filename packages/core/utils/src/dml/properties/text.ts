@@ -1,6 +1,5 @@
 import { BaseProperty } from "./base"
 import { PrimaryKeyModifier } from "./primary-key"
-import { TranslatableModifier } from "./translatable"
 
 /**
  * The TextProperty is used to define a textual property
@@ -11,6 +10,7 @@ export class TextProperty extends BaseProperty<string> {
     options: {
       prefix?: string
       searchable: boolean
+      translatable?: boolean
     }
   } = {
     name: "text",
@@ -76,6 +76,7 @@ export class TextProperty extends BaseProperty<string> {
    * @customNamespace Property Configuration Methods
    */
   translatable() {
-    return new TranslatableModifier<string, this>(this)
+    this.dataType.options.translatable = true
+    return this
   }
 }

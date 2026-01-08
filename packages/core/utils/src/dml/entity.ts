@@ -127,7 +127,7 @@ export class DmlEntity<
       }
 
       const parsed = (property as PropertyType<any>).parse(fieldName)
-      if (!("fieldName" in parsed) || !parsed.translatable) {
+      if (!("fieldName" in parsed) || !parsed.dataType?.options?.translatable) {
         continue
       }
 
