@@ -30,7 +30,7 @@ import { configManager } from "../config"
 import { MiddlewareFileLoader } from "./middleware-file-loader"
 import { applyLocale, authenticate, AuthType } from "./middlewares"
 import { createBodyParserMiddlewaresStack } from "./middlewares/bodyparser"
-import { wrapWithPermissionCheck } from "./middlewares/check-permissions"
+import { wrapWithPoliciesCheck } from "./middlewares/check-permissions"
 import { ensurePublishableApiKeyMiddleware } from "./middlewares/ensure-publishable-api-key"
 import { errorHandler } from "./middlewares/error-handler"
 import { RoutesFinder } from "./routes-finder"
@@ -155,13 +155,21 @@ export class ApiLoader {
     route: MiddlewareDescriptor | RouteDescriptor | RouteDescriptor
   ) {
     if ("isRoute" in route) {
+      let handlerToUse = route.handler
+      if (route.policies) {
+        handlerToUse = wrapWithPoliciesCheck(
+          route.handler,
+          route.policies
+        ) as RouteHandler
+      }
+
       this.#logger.debug(`registering route ${route.method} ${route.matcher}`)
       const handler = ApiLoader.traceRoute
-        ? ApiLoader.traceRoute(route.handler, {
+        ? ApiLoader.traceRoute(handlerToUse, {
             route: route.matcher,
             method: route.method,
           })
-        : route.handler
+        : handlerToUse
 
       this.#app[route.method.toLowerCase()](route.matcher, wrapHandler(handler))
 
@@ -174,7 +182,10 @@ export class ApiLoader {
       // Wrap with permission check if policies are defined
       let handlerToUse = route.handler
       if (route.policies) {
-        handlerToUse = wrapWithPermissionCheck(route.handler, route.policies)
+        handlerToUse = wrapWithPoliciesCheck(
+          route.handler,
+          route.policies
+        ) as MiddlewareFunction
       }
 
       const handler = ApiLoader.traceMiddleware
@@ -205,7 +216,10 @@ export class ApiLoader {
 
       let handlerToUse = route.handler
       if (route.policies) {
-        handlerToUse = wrapWithPermissionCheck(route.handler, route.policies)
+        handlerToUse = wrapWithPoliciesCheck(
+          route.handler,
+          route.policies
+        ) as MiddlewareFunction
       }
 
       const handler = ApiLoader.traceMiddleware

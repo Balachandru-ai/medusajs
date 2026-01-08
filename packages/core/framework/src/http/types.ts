@@ -22,6 +22,8 @@ export const HTTP_METHODS = [
   "HEAD",
 ] as const
 
+export const ROUTE_PROPERTIES = ["policies"]
+
 export type RouteVerb = (typeof HTTP_METHODS)[number]
 export type MiddlewareVerb = "USE" | "ALL" | RouteVerb
 
@@ -81,6 +83,9 @@ export type RouteDescriptor = {
   matcher: string
   method: RouteVerb
   handler: RouteHandler
+  policies?:
+    | { resource: string; operation: string }
+    | Array<{ resource: string; operation: string }>
   optedOutOfAuth: boolean
   isRoute: true
   routeType?: "admin" | "store" | "auth"

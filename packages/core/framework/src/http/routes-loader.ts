@@ -1,7 +1,12 @@
 import { dynamicImport, isFileSkipped, readDirRecursive } from "@medusajs/utils"
 import { join, parse, sep } from "path"
 import { logger } from "../logger"
-import { HTTP_METHODS, type RouteDescriptor, type RouteVerb } from "./types"
+import {
+  HTTP_METHODS,
+  ROUTE_PROPERTIES,
+  type RouteDescriptor,
+  type RouteVerb,
+} from "./types"
 
 /**
  * File name that is used to indicate that the file is a route file
@@ -127,11 +132,12 @@ export class RoutesLoader {
      */
     return Object.keys(routeExports)
       .filter((key) => {
-        if (typeof routeExports[key] !== "function") {
+        const isRouteProperty = ROUTE_PROPERTIES.includes(key)
+        if (typeof routeExports[key] !== "function" && !isRouteProperty) {
           return false
         }
 
-        if (!HTTP_METHODS.includes(key as RouteVerb)) {
+        if (!HTTP_METHODS.includes(key as RouteVerb) && !isRouteProperty) {
           logger.debug(
             `Skipping handler ${key} in ${absolutePath}. Invalid HTTP method: ${key}.`
           )
@@ -144,6 +150,7 @@ export class RoutesLoader {
         return {
           isRoute: true,
           matcher: routePath,
+          policies: routeExports.policies,
           method: key as RouteVerb,
           handler: routeExports[key],
           optedOutOfAuth: !shouldAuthenticate,
