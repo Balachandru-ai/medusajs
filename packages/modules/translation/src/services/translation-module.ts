@@ -2,6 +2,7 @@ import { raw } from "@medusajs/framework/mikro-orm/core"
 import {
   Context,
   CreateTranslationDTO,
+  CreateTranslationSettingsDTO,
   DAL,
   FilterableTranslationProps,
   FindConfig,
@@ -9,9 +10,11 @@ import {
   LocaleDTO,
   ModulesSdkTypes,
   TranslationTypes,
+  UpdateTranslationSettingsDTO,
 } from "@medusajs/framework/types"
 import { SqlEntityManager } from "@medusajs/framework/mikro-orm/postgresql"
 import {
+  DmlEntity,
   EmitEvents,
   InjectManager,
   MedusaContext,
@@ -23,7 +26,6 @@ import Locale from "@models/locale"
 import Translation from "@models/translation"
 import Settings from "@models/settings"
 import { computeTranslatedFieldCount } from "@utils/compute-translated-field-count"
-import { TRANSLATABLE_FIELDS_CONFIG_KEY } from "@utils/constants"
 import { filterTranslationFields } from "@utils/filter-translation-fields"
 
 type InjectedDependencies = {
@@ -33,7 +35,6 @@ type InjectedDependencies = {
   translationSettingsService: ModulesSdkTypes.IMedusaInternalService<
     typeof Settings
   >
-  [TRANSLATABLE_FIELDS_CONFIG_KEY]: Record<string, string[]>
 }
 
 export default class TranslationModuleService
@@ -491,5 +492,51 @@ export default class TranslationModuleService
     }
 
     return result
+  }
+
+  __hooks = {
+    onApplicationStart(this: TranslationModuleService) {
+      return this.onApplicationStart_()
+    },
+  }
+
+  protected async onApplicationStart_() {
+    const translatableEntities = DmlEntity.getTranslatableEntities()
+    const translatableEntitiesMap = new Map(
+      translatableEntities.map((entity) => [entity.entity, entity])
+    )
+
+    const currentTranslationSettings = await this.settingsService_.list()
+    const currentTranslationSettingsMap = new Map(
+      currentTranslationSettings.map((setting) => [
+        setting.entity_type,
+        setting,
+      ])
+    )
+
+    const settingsToUpsert: (
+      | CreateTranslationSettingsDTO
+      | UpdateTranslationSettingsDTO
+    )[] = []
+
+    for (const setting of currentTranslationSettings) {
+      if (
+        !translatableEntitiesMap.has(setting.entity_type) &&
+        setting.is_active
+      ) {
+        settingsToUpsert.push({ id: setting.id, is_active: false })
+      }
+    }
+
+    for (const entity of translatableEntities) {
+      if (!currentTranslationSettingsMap.has(entity.entity)) {
+        settingsToUpsert.push({
+          entity_type: entity.entity,
+          fields: entity.fields,
+        })
+      }
+    }
+
+    await this.settingsService_.upsert(settingsToUpsert)
   }
 }
