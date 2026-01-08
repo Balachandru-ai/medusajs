@@ -204,6 +204,7 @@ async function initializeLinks({
   linkModules,
   injectedDependencies,
   moduleExports,
+  migrationOnly = false,
 }) {
   try {
     let resources = moduleExports
@@ -220,7 +221,9 @@ async function initializeLinks({
     const linkResolution = await initialize(
       config,
       linkModules,
-      injectedDependencies
+      injectedDependencies,
+      undefined,
+      migrationOnly
     )
 
     return {
@@ -488,6 +491,7 @@ async function MedusaApp_({
     linkModules,
     injectedDependencies,
     moduleExports: isMedusaModule(linkModule) ? linkModule : undefined,
+    migrationOnly,
   })
 
   const loadedSchema = getLoadedSchema()
