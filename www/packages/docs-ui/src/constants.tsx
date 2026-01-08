@@ -510,4 +510,6 @@ export enum DocsTrackingEvents {
   SURVEY_API = "survey_api-ref",
   CODE_BLOCK_COPY = "code_block_copy",
   AI_ASSISTANT_START_CHAT = "ai_assistant_start_chat",
+  AI_ASSISTANT_CALLOUT_CLICK = "ai_assistant_callout_click",
+  SEARCH_CALLOUT_CLICK = "search_callout_click",
 }
