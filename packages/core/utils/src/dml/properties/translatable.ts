@@ -35,6 +35,25 @@ export class TranslatableModifier<T, Schema extends PropertyType<T>>
   }
 
   /**
+   * This method indicates that a translatable property is nullable.
+   *
+   * @example
+   * import { model } from "@medusajs/framework/utils"
+   *
+   * const Store = model.define("store", {
+   *   name: model.text().translatable().nullable(),
+   *   // ...
+   * })
+   *
+   * export default Store
+   *
+   * @customNamespace Property Configuration Methods
+   */
+  nullable() {
+    return new NullableModifier<T, this>(this)
+  }
+
+  /**
    * Returns the serialized metadata
    */
   parse(fieldName: string) {
