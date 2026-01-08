@@ -25,6 +25,8 @@ export interface BatchTranslationSettingsWorkflowInput {
 export const batchTranslationSettingsWorkflow = createWorkflow(
   batchTranslationSettingsWorkflowId,
   (input: BatchTranslationSettingsWorkflowInput) => {
+    // TODO: Include a validateTranslationSettingsStep here to make sure update/create entity_type belong
+    // to translatable entities, once DML PR is done
     const [created, updated, deleted] = parallelize(
       createTranslationSettingsStep(input.create),
       updateTranslationSettingsStep(input.update),
