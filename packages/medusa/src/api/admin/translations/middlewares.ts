@@ -5,6 +5,7 @@ import {
 } from "@medusajs/framework"
 import {
   AdminBatchTranslations,
+  AdminBatchTranslationSettings,
   AdminGetTranslationsParams,
   AdminTranslationEntitiesParams,
   AdminTranslationSettingsParams,
@@ -43,6 +44,11 @@ export const adminTranslationsRoutesMiddlewares: MiddlewareRoute[] = [
     middlewares: [
       validateAndTransformQuery(AdminTranslationSettingsParams, {}),
     ],
+  },
+  {
+    method: ["POST"],
+    matcher: "/admin/translations/settings/batch",
+    middlewares: [validateAndTransformBody(AdminBatchTranslationSettings)],
   },
   {
     method: ["GET"],
