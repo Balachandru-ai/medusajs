@@ -33,10 +33,8 @@ export type TranslatableEntityEntry = {
 }
 
 /**
- * Module-level storage for translatable entities
- * This is meant as a global storage for translatable entities.
- * It is used to collect translatable fields from entities and store them
- * in a global storage.
+ * Module-level storage for translatable entities using Map for O(1) lookups.
+ * Keys are entity names (PascalCase), values are Sets of field names.
  *
  * @example
  * import { DmlEntity } from "@medusajs/framework/utils"
@@ -44,7 +42,7 @@ export type TranslatableEntityEntry = {
  * const translatables = DmlEntity.getTranslatableEntities()
  * // Returns: [{ entity: "Store", fields: ["name"] }]
  */
-const TRANSLATABLE_ENTITIES: TranslatableEntityEntry[] = []
+const TRANSLATABLE_ENTITIES = new Map<string, Set<string>>()
 
 export type DMLEntitySchemaBuilder<Schema extends DMLSchema> =
   DMLSchemaWithBigNumber<Schema> & DMLSchemaDefaults & Schema
@@ -123,33 +121,22 @@ export class DmlEntity<
    * Collects translatable fields from the schema and registers them
    */
   #registerTranslatableFields(entityName: string, schema: Schema): void {
-    const translatableFields: string[] = []
-
     for (const [fieldName, property] of Object.entries(schema)) {
-      const parsed = (property as PropertyType<any>).parse?.(fieldName)
-      if (!parsed || !("fieldName" in parsed) || !parsed.translatable) continue
+      if (typeof (property as PropertyType<any>).parse !== "function") {
+        continue
+      }
 
-      translatableFields.push(fieldName)
-    }
+      const parsed = (property as PropertyType<any>).parse(fieldName)
+      if (!("fieldName" in parsed) || !parsed.translatable) {
+        continue
+      }
 
-    if (translatableFields.length) {
-      const existing = TRANSLATABLE_ENTITIES.find(
-        (e) => e.entity === entityName
-      )
-
-      /**
-       * If the entity is already registered, we merge the translatable fields
-       * with the existing ones. This should not happen, but we handle it just in case.
-       */
-      if (existing) {
-        existing.fields = [
-          ...new Set([...existing.fields, ...translatableFields]),
-        ]
+      // Get or create the Set for this entity
+      const existingFields = TRANSLATABLE_ENTITIES.get(entityName)
+      if (existingFields) {
+        existingFields.add(fieldName)
       } else {
-        TRANSLATABLE_ENTITIES.push({
-          entity: entityName,
-          fields: [...new Set(translatableFields)],
-        })
+        TRANSLATABLE_ENTITIES.set(entityName, new Set([fieldName]))
       }
     }
   }
@@ -179,7 +166,12 @@ export class DmlEntity<
    * @customNamespace Model Methods
    */
   static getTranslatableEntities(): TranslatableEntityEntry[] {
-    return [...TRANSLATABLE_ENTITIES]
+    return Array.from(TRANSLATABLE_ENTITIES.entries()).map(
+      ([entity, fields]) => ({
+        entity,
+        fields: Array.from(fields),
+      })
+    )
   }
 
   /**
@@ -187,7 +179,7 @@ export class DmlEntity<
    * This is primarily used for testing purposes.
    */
   static clearTranslatableEntities(): void {
-    TRANSLATABLE_ENTITIES.length = 0
+    TRANSLATABLE_ENTITIES.clear()
   }
 
   /**
