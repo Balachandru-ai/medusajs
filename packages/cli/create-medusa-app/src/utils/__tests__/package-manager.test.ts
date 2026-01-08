@@ -65,34 +65,44 @@ describe("PackageManager", () => {
   })
 
   describe("detectFromUserAgent", () => {
-    it("should detect pnpm from user agent", () => {
+    it("should detect pnpm from user agent with version", () => {
       process.env.npm_config_user_agent = "pnpm/8.0.0"
       const pm = new PackageManager(processManager)
-      expect(pm["detectFromUserAgent"]()).toBe("pnpm")
+      const result = pm["detectFromUserAgent"]()
+      expect(result.manager).toBe("pnpm")
+      expect(result.version).toBe("8.0.0")
     })
 
-    it("should detect pnpm from pnpx", () => {
+    it("should detect pnpm from pnpx with version", () => {
       process.env.npm_config_user_agent = "pnpx/8.0.0"
       const pm = new PackageManager(processManager)
-      expect(pm["detectFromUserAgent"]()).toBe("pnpm")
+      const result = pm["detectFromUserAgent"]()
+      expect(result.manager).toBe("pnpm")
+      expect(result.version).toBe("8.0.0")
     })
 
-    it("should detect yarn from user agent", () => {
+    it("should detect yarn from user agent with version", () => {
       process.env.npm_config_user_agent = "yarn/1.22.0"
       const pm = new PackageManager(processManager)
-      expect(pm["detectFromUserAgent"]()).toBe("yarn")
+      const result = pm["detectFromUserAgent"]()
+      expect(result.manager).toBe("yarn")
+      expect(result.version).toBe("1.22.0")
     })
 
     it("should default to npm for unknown user agent", () => {
       process.env.npm_config_user_agent = "some-unknown-manager/1.0.0"
       const pm = new PackageManager(processManager)
-      expect(pm["detectFromUserAgent"]()).toBe("npm")
+      const result = pm["detectFromUserAgent"]()
+      expect(result.manager).toBe("npm")
+      expect(result.version).toBeUndefined()
     })
 
     it("should default to npm when user agent is undefined", () => {
       delete process.env.npm_config_user_agent
       const pm = new PackageManager(processManager)
-      expect(pm["detectFromUserAgent"]()).toBe("npm")
+      const result = pm["detectFromUserAgent"]()
+      expect(result.manager).toBe("npm")
+      expect(result.version).toBeUndefined()
     })
   })
 
@@ -113,6 +123,7 @@ describe("PackageManager", () => {
       await pm.setPackageManager({})
 
       expect(pm.getPackageManager()).toBe("pnpm")
+      expect(await pm.getPackageManagerString()).toBe("pnpm@8.0.0")
       expect(mockExecute).toHaveBeenCalledWith(
         ["pnpm -v", {}],
         { verbose: false }
@@ -140,6 +151,7 @@ describe("PackageManager", () => {
       await pm.setPackageManager({})
 
       expect(pm.getPackageManager()).toBe("yarn")
+      expect(await pm.getPackageManagerString()).toBe("yarn@1.22.0")
       // Detection message should not be logged in non-verbose mode
       expect(mockLogMessage).not.toHaveBeenCalledWith({
         type: "info",
@@ -148,13 +160,17 @@ describe("PackageManager", () => {
     })
 
     it("should fallback to npm when detected package manager is not available", async () => {
-      mockExecute.mockRejectedValue(new Error("Command not found"))
+      mockExecute
+        .mockRejectedValueOnce(new Error("Command not found")) // yarn -v fails
+        .mockResolvedValueOnce({ stdout: "10.0.0", stderr: "" }) // npm -v succeeds
+
       process.env.npm_config_user_agent = "yarn/1.22.0"
 
       const pm = new PackageManager(processManager)
       await pm.setPackageManager({})
 
       expect(pm.getPackageManager()).toBe("npm")
+      expect(await pm.getPackageManagerString()).toBe("npm@10.0.0")
       // Fallback message should not be logged in non-verbose mode
       expect(mockLogMessage).not.toHaveBeenCalledWith({
         type: "info",
@@ -177,7 +193,10 @@ describe("PackageManager", () => {
     })
 
     it("should log fallback messages in verbose mode", async () => {
-      mockExecute.mockRejectedValue(new Error("Command not found"))
+      mockExecute
+        .mockRejectedValueOnce(new Error("Command not found")) // yarn -v fails
+        .mockResolvedValueOnce({ stdout: "10.0.0", stderr: "" }) // npm -v succeeds
+
       process.env.npm_config_user_agent = "yarn/1.22.0"
 
       const pm = new PackageManager(processManager, { verbose: true })
@@ -254,7 +273,7 @@ describe("PackageManager", () => {
 
   describe("installDependencies", () => {
     it("should set package manager before installing if not set", async () => {
-      mockExecute.mockResolvedValue({ stdout: "", stderr: "" })
+      mockExecute.mockResolvedValue({ stdout: "1.22.0", stderr: "" })
       process.env.npm_config_user_agent = "yarn/1.22.0"
 
       const pm = new PackageManager(processManager)
@@ -363,7 +382,7 @@ describe("PackageManager", () => {
 
   describe("runCommand", () => {
     it("should set package manager before running if not set", async () => {
-      mockExecute.mockResolvedValue({ stdout: "", stderr: "" })
+      mockExecute.mockResolvedValue({ stdout: "1.22.0", stderr: "" })
       process.env.npm_config_user_agent = "yarn/1.22.0"
 
       const pm = new PackageManager(processManager)
@@ -429,7 +448,7 @@ describe("PackageManager", () => {
 
   describe("runMedusaCommand", () => {
     it("should set package manager before running if not set", async () => {
-      mockExecute.mockResolvedValue({ stdout: "", stderr: "" })
+      mockExecute.mockResolvedValue({ stdout: "1.22.0", stderr: "" })
       process.env.npm_config_user_agent = "yarn/1.22.0"
 
       const pm = new PackageManager(processManager)
@@ -517,6 +536,46 @@ describe("PackageManager", () => {
       const pm = new PackageManager(processManager)
       pm["packageManager"] = "yarn"
       expect(pm.getPackageManager()).toBe("yarn")
+    })
+  })
+
+  describe("getPackageManagerString", () => {
+    it("should return undefined when version is not set", async () => {
+      const pm = new PackageManager(processManager)
+      pm["packageManager"] = "yarn"
+      expect(await pm.getPackageManagerString()).toBeUndefined()
+    })
+
+    it("should return packageManager@version format", async () => {
+      const pm = new PackageManager(processManager)
+      pm["packageManager"] = "yarn"
+      pm["packageManagerVersion"] = "4.9.0"
+      expect(await pm.getPackageManagerString()).toBe("yarn@4.9.0")
+    })
+
+    it("should work with pnpm", async () => {
+      const pm = new PackageManager(processManager)
+      pm["packageManager"] = "pnpm"
+      pm["packageManagerVersion"] = "8.15.0"
+      expect(await pm.getPackageManagerString()).toBe("pnpm@8.15.0")
+    })
+
+    it("should work with npm", async () => {
+      const pm = new PackageManager(processManager)
+      pm["packageManager"] = "npm"
+      pm["packageManagerVersion"] = "10.0.0"
+      expect(await pm.getPackageManagerString()).toBe("npm@10.0.0")
+    })
+
+    it("should call setPackageManager if package manager is not set", async () => {
+      mockExecute.mockResolvedValue({ stdout: "1.22.0", stderr: "" })
+      process.env.npm_config_user_agent = "yarn/1.22.0"
+
+      const pm = new PackageManager(processManager)
+      const result = await pm.getPackageManagerString()
+
+      expect(pm.getPackageManager()).toBe("yarn")
+      expect(result).toBe("yarn@1.22.0")
     })
   })
 })

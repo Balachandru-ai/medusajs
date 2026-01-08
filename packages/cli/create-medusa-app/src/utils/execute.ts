@@ -35,6 +35,12 @@ const execute = async (
       stdio: needOutput
         ? "pipe"
         : [process.stdin, process.stdout, process.stderr],
+      env: {
+        ...process.env,
+        // Disable corepack download prompt - automatically accept downloads
+        COREPACK_ENABLE_DOWNLOAD_PROMPT: "0",
+        ...(options.env || {}),
+      },
     })
 
     if (childProcess.error || childProcess.status !== 0) {
@@ -63,7 +69,16 @@ const execute = async (
       stderr: childProcess.stderr?.toString() || "",
     }
   } else {
-    const childProcess = await promiseExec(...(command as PromiseExecParams))
+    const [commandStr, options] = command as PromiseExecParams
+    const childProcess = await promiseExec(commandStr, {
+      ...options,
+      env: {
+        ...process.env,
+        // Disable corepack download prompt - automatically accept downloads
+        COREPACK_ENABLE_DOWNLOAD_PROMPT: "0",
+        ...(options?.env || {}),
+      },
+    })
 
     return {
       stdout: childProcess.stdout as string,

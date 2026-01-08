@@ -95,6 +95,12 @@ async function preparePlugin({
   // Update name
   packageJson.name = projectName
 
+  // Add packageManager field to ensure consistent version usage
+  const packageManagerString = await packageManager.getPackageManagerString()
+  if (packageManagerString) {
+    packageJson.packageManager = packageManagerString
+  }
+
   fs.writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2))
 
   factBoxOptions.interval = displayFactBox({
@@ -161,6 +167,12 @@ async function prepareProject({
 
   // Update name
   packageJson.name = projectName
+
+  // Add packageManager field to ensure consistent version usage
+  const packageManagerString = await packageManager.getPackageManagerString()
+  if (packageManagerString) {
+    packageJson.packageManager = packageManagerString
+  }
 
   // Update medusa dependencies versions
   if (version) {

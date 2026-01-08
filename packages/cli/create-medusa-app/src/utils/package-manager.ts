@@ -15,6 +15,7 @@ type PackageManagerOptions = {
 
 export default class PackageManager {
   protected packageManager?: PackageManagerType
+  protected packageManagerVersion?: string
   protected processManager: ProcessManager
   protected verbose
   protected chosenPackageManager?: PackageManagerType
@@ -39,23 +40,44 @@ export default class PackageManager {
     }
   }
 
-  private detectFromUserAgent(): PackageManagerType {
+  private detectFromUserAgent(): {
+    manager: PackageManagerType
+    version?: string
+  } {
     const userAgent = process.env.npm_config_user_agent
 
-    if (userAgent?.includes("pnpm") || userAgent?.includes("pnpx")) {
-      return "pnpm"
+    if (!userAgent) {
+      return { manager: "npm" }
     }
-    if (userAgent?.includes("yarn")) {
-      return "yarn"
+
+    // Extract package manager and version (e.g., "yarn/4.9.0" -> ["yarn", "4.9.0"])
+    const match = userAgent.match(/(pnpm|pnpx|yarn|npm)\/(\d+\.\d+\.\d+)/)
+    if (match) {
+      const [, manager, version] = match
+
+      // pnpx is an alias for pnpm
+      if (manager === "pnpx") {
+        return { manager: "pnpm", version }
+      }
+
+      return { manager: manager as PackageManagerType, version }
     }
-    // Default to npm if user agent exists but doesn't match known managers
-    return "npm"
+
+    // Fallback detection without version
+    if (userAgent.includes("pnpm") || userAgent.includes("pnpx")) {
+      return { manager: "pnpm" }
+    }
+    if (userAgent.includes("yarn")) {
+      return { manager: "yarn" }
+    }
+
+    return { manager: "npm" }
   }
 
-  private async isAvailable(
+  private async getVersion(
     pm: PackageManagerType,
     execOptions: Record<string, unknown>
-  ): Promise<boolean> {
+  ): Promise<string | undefined> {
     const commands: Record<PackageManagerType, string> = {
       yarn: "yarn -v",
       pnpm: "pnpm -v",
@@ -63,10 +85,12 @@ export default class PackageManager {
     }
 
     try {
-      await execute([commands[pm], execOptions], { verbose: false })
-      return true
+      const result = await execute([commands[pm], execOptions], {
+        verbose: false,
+      })
+      return result.stdout?.trim()
     } catch {
-      return false
+      return undefined
     }
   }
 
@@ -75,17 +99,21 @@ export default class PackageManager {
       return
     }
 
-    // check whether yarn is available
+    // check whether package manager is available and get version
     await this.processManager.runProcess({
       process: async () => {
         if (this.chosenPackageManager) {
-          const isAvailable = await this.isAvailable(
+          const version = await this.getVersion(
             this.chosenPackageManager,
             execOptions
           )
 
-          if (isAvailable) {
+          if (version) {
             this.packageManager = this.chosenPackageManager
+            // Store version if we don't have it from user agent
+            if (!this.packageManagerVersion) {
+              this.packageManagerVersion = version
+            }
             return
           }
 
@@ -96,17 +124,19 @@ export default class PackageManager {
         }
 
         const detected = this.detectFromUserAgent()
-        const isDetectedAvailable = await this.isAvailable(
-          detected,
+        const detectedVersion = await this.getVersion(
+          detected.manager,
           execOptions
         )
 
-        if (isDetectedAvailable) {
-          this.packageManager = detected
+        if (detectedVersion) {
+          this.packageManager = detected.manager
+          // Prefer version from getVersion over user agent
+          this.packageManagerVersion = detectedVersion
           if (this.verbose) {
             logMessage({
               type: "info",
-              message: `Using detected package manager "${detected}".`,
+              message: `Using detected package manager "${detected.manager}".`,
             })
           }
           return
@@ -114,6 +144,11 @@ export default class PackageManager {
 
         // Fallback to npm
         this.packageManager = "npm"
+        // Get npm version for fallback
+        const npmVersion = await this.getVersion("npm", execOptions)
+        if (npmVersion && !this.packageManagerVersion) {
+          this.packageManagerVersion = npmVersion
+        }
         if (this.verbose) {
           logMessage({
             type: "info",
@@ -141,7 +176,7 @@ export default class PackageManager {
       const filePath = path.join(directory, file)
       if (existsSync(filePath)) {
         rmSync(filePath, {
-          force: true
+          force: true,
         })
       }
     }
@@ -212,8 +247,7 @@ export default class PackageManager {
       npm: `npx medusa ${command}`,
     }
 
-    const commandStr =
-      formats[this.packageManager || "npm"]
+    const commandStr = formats[this.packageManager || "npm"]
 
     return await this.processManager.runProcess({
       process: async () => {
@@ -242,5 +276,15 @@ export default class PackageManager {
 
   getPackageManager(): PackageManagerType | undefined {
     return this.packageManager
+  }
+
+  async getPackageManagerString(): Promise<string | undefined> {
+    if (!this.packageManager) {
+      await this.setPackageManager({})
+    }
+    if (!this.packageManagerVersion) {
+      return undefined
+    }
+    return `${this.packageManager}@${this.packageManagerVersion}`
   }
 }

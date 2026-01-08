@@ -43,19 +43,22 @@ program
     false
   )
   .addOption(
-    new Option(
-      "--use-npm", "Use npm as the package manager"
-    ).conflicts(["usePnpm", "useYarn"])
+    new Option("--use-npm", "Use npm as the package manager").conflicts([
+      "usePnpm",
+      "useYarn",
+    ])
   )
   .addOption(
-    new Option(
-      "--use-yarn", "Use yarn as the package manager"
-    ).conflicts(["useNpm", "usePnpm"])
+    new Option("--use-yarn", "Use yarn as the package manager").conflicts([
+      "useNpm",
+      "usePnpm",
+    ])
   )
   .addOption(
-    new Option(
-      "--use-pnpm", "Use pnpm as the package manager"
-    ).conflicts(["useNpm", "useYarn"])
+    new Option("--use-pnpm", "Use pnpm as the package manager").conflicts([
+      "useNpm",
+      "useYarn",
+    ])
   )
   .parse()
 
