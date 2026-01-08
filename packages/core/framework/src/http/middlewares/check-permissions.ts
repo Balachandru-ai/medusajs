@@ -1,4 +1,5 @@
-import { dynamicImport, MedusaError } from "@medusajs/utils"
+import { MedusaError } from "@medusajs/utils"
+import { hasPermission } from "../../utils/has-permission"
 import type {
   AuthenticatedMedusaRequest,
   MedusaNextFunction,
@@ -36,10 +37,6 @@ async function checkPermissions(
       "User has no roles assigned"
     )
   }
-
-  // Dynamically import hasPermission from @medusajs/medusa package
-  const hasPermissionModule = await dynamicImport("@medusajs/medusa")
-  const { hasPermission } = hasPermissionModule
 
   const hasAccess = await hasPermission({
     roles: roleIds,
