@@ -50,7 +50,7 @@ export function wrapWithPermissionCheck(
       }
 
       // Dynamically import hasPermission from @medusajs/utils package
-      const hasPermissionModule = await dynamicImport("@medusajs/utils")
+      const hasPermissionModule = await dynamicImport("@medusajs/medusa")
       const { hasPermission } = hasPermissionModule
 
       const hasAccess = await hasPermission({
