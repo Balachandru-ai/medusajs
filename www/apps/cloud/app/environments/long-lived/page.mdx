@@ -74,9 +74,20 @@ After that, Medusa will automatically deploy the environment whenever you push a
 
 ### Create Medusa Admin User in Environment
 
-After the environment is deployed, you need to set the email and password for the environment's Medusa Admin user.
+After the environment is deployed, you can log in either with:
 
-To set the email and password for the admin user:
+1. Your Cloud account by clicking the "Log in with Medusa Cloud" button. A user will be created in the Medusa application with the same email as your Cloud account.
+2. The email and password you set using environment variables.
+
+<Note title="Can't find the Log in With Medusa Cloud Button?">
+
+Refer to the [Access Deployment](../../deployments/access/page.mdx#cant-find-the-log-in-with-medusa-cloud-button) guide for troubleshooting steps.
+
+</Note>
+
+You can set the initial admin user's email and password only once if they aren't already set in the environment. Updating these environment variables later won't change the existing admin user's credentials.
+
+To set the initial admin user's email and password:
 
 1. In the [project's dashboard](../../projects/page.mdx#open-project-dashboard), click on the environment you just created.
 2. In the environment's dashboard, click on the "Settings" tab.
@@ -97,9 +108,9 @@ Make sure to replace the values with your desired email and password.
 
 4. Click the "Save" button to save the environment variables.
 
-### Redeploy Environment
+#### Redeploy Environment
 
-After adding the environment variables, you need to redeploy the environment for the changes to take effect:
+If you added the initial admin user's email and password environment variables, you need to redeploy the environment for the changes to take effect:
 
 1. Go back to the environment's dashboard by clicking the "Overview" tab.
 2. Click on the "Redeploy" button to redeploy the environment with the new environment variables.
@@ -116,7 +127,7 @@ Then, wait for the deployment to finish. You can check its status in the "Deploy
 
 Once an environment is deployed, you can access it through its URL.
 
-Learn more about how to access an environment's deployment in the [Deployments](../../deployments/page.mdx#access-live-deployment) guide.
+Learn more about how to access an environment's deployment in the [Access Deployment](../../deployments/access/page.mdx) guide.
 
 ---
 
