@@ -317,12 +317,12 @@ export type MedusaAppOptions = {
    */
   loaderOnly?: boolean
   /**
-   * Only partially load modules to retrieve their joiner configs and run their loaders.
+   * Only partially load modules to retrieve their module joiner configs and run their loaders.
    * Useful for migrations.
    */
   migrationOnly?: boolean
   /**
-   * Only partially load modules to retrieve their joiner configs without running loaders.
+   * Only partially load modules to retrieve their module joiner configs without running loaders.
    * Useful for type generation.
    */
   schemaOnly?: boolean

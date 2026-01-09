@@ -305,6 +305,7 @@ export async function loadInternalModule(args: {
 
   if (schemaOnly) {
     // in schema only mode, we only need to register the service __joinerConfig function to be able to resolve it later
+    // For providers in schema-only mode, skip without registration
     return
   }
 
