@@ -46,6 +46,10 @@ export default class PackageManager {
   } {
     const userAgent = process.env.npm_config_user_agent
 
+    if (this.verbose) {
+      console.log(`[DEBUG] User agent: ${userAgent}`)
+    }
+
     if (!userAgent) {
       return { manager: "npm" }
     }
@@ -54,6 +58,10 @@ export default class PackageManager {
     const match = userAgent.match(/(pnpm|pnpx|yarn|npm)\/(\d+\.\d+\.\d+)/)
     if (match) {
       const [, manager, version] = match
+
+      if (this.verbose) {
+        console.log(`[DEBUG] Detected from user agent: ${manager}@${version}`)
+      }
 
       // pnpx is an alias for pnpm
       if (manager === "pnpx") {
@@ -88,8 +96,15 @@ export default class PackageManager {
       const result = await execute([commands[pm], execOptions], {
         verbose: false,
       })
-      return result.stdout?.trim()
+      const version = result.stdout?.trim()
+      if (this.verbose) {
+        console.log(`[DEBUG] getVersion(${pm}): ${version}`)
+      }
+      return version
     } catch {
+      if (this.verbose) {
+        console.log(`[DEBUG] getVersion(${pm}): failed`)
+      }
       return undefined
     }
   }
@@ -283,8 +298,17 @@ export default class PackageManager {
       await this.setPackageManager({})
     }
     if (!this.packageManagerVersion) {
+      if (this.verbose) {
+        console.log(
+          `[DEBUG] getPackageManagerString: no version (packageManager=${this.packageManager})`
+        )
+      }
       return undefined
     }
-    return `${this.packageManager}@${this.packageManagerVersion}`
+    const result = `${this.packageManager}@${this.packageManagerVersion}`
+    if (this.verbose) {
+      console.log(`[DEBUG] getPackageManagerString: ${result}`)
+    }
+    return result
   }
 }
