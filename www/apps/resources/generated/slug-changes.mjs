@@ -565,6 +565,11 @@ export const slugChanges = [
     "filePath": "/www/apps/resources/references/core_flows/Auth/Workflows_Auth/functions/core_flows.Auth.Workflows_Auth.generateResetPasswordTokenWorkflow/page.mdx"
   },
   {
+    "origSlug": "/references/core_flows/Auth/Workflows_Auth/functions/core_flows.Auth.Workflows_Auth.setAuthAppMetadataWorkflow",
+    "newSlug": "/references/medusa-workflows/setAuthAppMetadataWorkflow",
+    "filePath": "/www/apps/resources/references/core_flows/Auth/Workflows_Auth/functions/core_flows.Auth.Workflows_Auth.setAuthAppMetadataWorkflow/page.mdx"
+  },
+  {
     "origSlug": "/references/core_flows/Cart/Steps_Cart/functions/core_flows.Cart.Steps_Cart.addShippingMethodToCartStep",
     "newSlug": "/references/medusa-workflows/steps/addShippingMethodToCartStep",
     "filePath": "/www/apps/resources/references/core_flows/Cart/Steps_Cart/functions/core_flows.Cart.Steps_Cart.addShippingMethodToCartStep/page.mdx"
@@ -868,6 +873,11 @@ export const slugChanges = [
     "origSlug": "/references/core_flows/Common/Steps_Common/functions/core_flows.Common.Steps_Common.getTranslatedLineItemsStep",
     "newSlug": "/references/medusa-workflows/steps/getTranslatedLineItemsStep",
     "filePath": "/www/apps/resources/references/core_flows/Common/Steps_Common/functions/core_flows.Common.Steps_Common.getTranslatedLineItemsStep/page.mdx"
+  },
+  {
+    "origSlug": "/references/core_flows/Common/Steps_Common/functions/core_flows.Common.Steps_Common.getTranslatedShippingOptionsStep",
+    "newSlug": "/references/medusa-workflows/steps/getTranslatedShippingOptionsStep",
+    "filePath": "/www/apps/resources/references/core_flows/Common/Steps_Common/functions/core_flows.Common.Steps_Common.getTranslatedShippingOptionsStep/page.mdx"
   },
   {
     "origSlug": "/references/core_flows/Common/Steps_Common/functions/core_flows.Common.Steps_Common.removeRemoteLinkStep",
@@ -1763,6 +1773,11 @@ export const slugChanges = [
     "origSlug": "/references/core_flows/Order/Steps_Order/functions/core_flows.Order.Steps_Order.updateOrderShippingMethodsStep",
     "newSlug": "/references/medusa-workflows/steps/updateOrderShippingMethodsStep",
     "filePath": "/www/apps/resources/references/core_flows/Order/Steps_Order/functions/core_flows.Order.Steps_Order.updateOrderShippingMethodsStep/page.mdx"
+  },
+  {
+    "origSlug": "/references/core_flows/Order/Steps_Order/functions/core_flows.Order.Steps_Order.updateOrderShippingMethodsTranslationsStep",
+    "newSlug": "/references/medusa-workflows/steps/updateOrderShippingMethodsTranslationsStep",
+    "filePath": "/www/apps/resources/references/core_flows/Order/Steps_Order/functions/core_flows.Order.Steps_Order.updateOrderShippingMethodsTranslationsStep/page.mdx"
   },
   {
     "origSlug": "/references/core_flows/Order/Steps_Order/functions/core_flows.Order.Steps_Order.updateOrdersStep",
@@ -2938,6 +2953,11 @@ export const slugChanges = [
     "origSlug": "/references/core_flows/Product/Steps_Product/functions/core_flows.Product.Steps_Product.deleteProductsStep",
     "newSlug": "/references/medusa-workflows/steps/deleteProductsStep",
     "filePath": "/www/apps/resources/references/core_flows/Product/Steps_Product/functions/core_flows.Product.Steps_Product.deleteProductsStep/page.mdx"
+  },
+  {
+    "origSlug": "/references/core_flows/Product/Steps_Product/functions/core_flows.Product.Steps_Product.dismissProductVariantsInventoryStep",
+    "newSlug": "/references/medusa-workflows/steps/dismissProductVariantsInventoryStep",
+    "filePath": "/www/apps/resources/references/core_flows/Product/Steps_Product/functions/core_flows.Product.Steps_Product.dismissProductVariantsInventoryStep/page.mdx"
   },
   {
     "origSlug": "/references/core_flows/Product/Steps_Product/functions/core_flows.Product.Steps_Product.generateProductCsvStep",
@@ -4613,6 +4633,11 @@ export const slugChanges = [
     "origSlug": "/references/helper_steps/functions/helper_steps.getTranslatedLineItemsStep",
     "newSlug": "/references/helper-steps/getTranslatedLineItemsStep",
     "filePath": "/www/apps/resources/references/helper_steps/functions/helper_steps.getTranslatedLineItemsStep/page.mdx"
+  },
+  {
+    "origSlug": "/references/helper_steps/functions/helper_steps.getTranslatedShippingOptionsStep",
+    "newSlug": "/references/helper-steps/getTranslatedShippingOptionsStep",
+    "filePath": "/www/apps/resources/references/helper_steps/functions/helper_steps.getTranslatedShippingOptionsStep/page.mdx"
   },
   {
     "origSlug": "/references/helper_steps/functions/helper_steps.removeRemoteLinkStep",
@@ -7793,6 +7818,11 @@ export const slugChanges = [
     "origSlug": "/references/translation_models/variables/translation_models.Locale",
     "newSlug": "/references/translation/models/Locale",
     "filePath": "/www/apps/resources/references/translation_models/variables/translation_models.Locale/page.mdx"
+  },
+  {
+    "origSlug": "/references/translation_models/variables/translation_models.Settings",
+    "newSlug": "/references/translation/models/Settings",
+    "filePath": "/www/apps/resources/references/translation_models/variables/translation_models.Settings/page.mdx"
   },
   {
     "origSlug": "/references/translation_models/variables/translation_models.Translation",
