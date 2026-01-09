@@ -353,7 +353,7 @@ describe("PackageManager", () => {
       )
     })
 
-    it("should execute npm install when using npm", async () => {
+    it("should execute npm install then npm ci when using npm", async () => {
       mockExecute.mockResolvedValue({ stdout: "", stderr: "" })
 
       const pm = new PackageManager(processManager)
@@ -365,6 +365,34 @@ describe("PackageManager", () => {
         ["npm install", { cwd: "/test/path" }],
         { verbose: false }
       )
+      expect(mockExecute).toHaveBeenCalledWith(
+        ["npm ci", { cwd: "/test/path" }],
+        { verbose: false }
+      )
+      expect(mockExecute).toHaveBeenCalledTimes(2)
+    })
+
+    it("should re-run npm install if npm ci fails", async () => {
+      mockExecute
+        .mockResolvedValueOnce({ stdout: "", stderr: "" }) // npm install succeeds
+        .mockRejectedValueOnce(new Error("npm ci failed")) // npm ci fails
+        .mockResolvedValueOnce({ stdout: "", stderr: "" }) // npm install retry succeeds
+
+      const pm = new PackageManager(processManager)
+      pm["packageManager"] = "npm"
+
+      await pm.installDependencies({ cwd: "/test/path" })
+
+      expect(mockExecute).toHaveBeenCalledWith(
+        ["npm install", { cwd: "/test/path" }],
+        { verbose: false }
+      )
+      expect(mockExecute).toHaveBeenCalledWith(
+        ["npm ci", { cwd: "/test/path" }],
+        { verbose: false }
+      )
+      // Second npm install call
+      expect(mockExecute).toHaveBeenCalledTimes(3)
     })
 
     it("should respect verbose option", async () => {

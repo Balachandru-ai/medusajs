@@ -214,6 +214,26 @@ export default class PackageManager {
         await execute([command, execOptions], {
           verbose: this.verbose,
         })
+
+        // For npm, run npm ci after npm install to validate installation
+        if (this.packageManager === "npm") {
+          try {
+            await execute(["npm ci", execOptions], {
+              verbose: this.verbose,
+            })
+          } catch (error) {
+            // If npm ci fails, re-run npm install
+            if (this.verbose) {
+              logMessage({
+                type: "info",
+                message: "npm ci validation failed, re-running npm install...",
+              })
+            }
+            await execute(["npm install", execOptions], {
+              verbose: this.verbose,
+            })
+          }
+        }
       },
       ignoreERESOLVE: true,
     })
