@@ -45,6 +45,15 @@ type ModuleResource = {
   normalizedPath: string
 }
 
+type LoadInternalArgs = {
+  container: MedusaContainer
+  resolution: ModuleResolution
+  logger: Logger
+  migrationOnly?: boolean
+  schemaOnly?: boolean
+  loaderOnly?: boolean
+}
+
 type MigrationFunction = (
   options: LoaderOptions<any>,
   moduleDeclaration?: InternalModuleDeclaration
@@ -115,14 +124,7 @@ export async function resolveModuleExports({
 }
 
 async function loadInternalProvider(
-  args: {
-    container: MedusaContainer
-    resolution: ModuleResolution
-    logger: Logger
-    migrationOnly?: boolean
-    schemaOnly?: boolean
-    loaderOnly?: boolean
-  },
+  args: LoadInternalArgs,
   providers: ModuleProvider[]
 ): Promise<{ error?: Error } | void> {
   const { container, resolution, logger, migrationOnly, schemaOnly } = args
@@ -287,6 +289,9 @@ export async function loadInternalModule(args: {
     )?.options
   }
 
+  // Partial module load: register only __joinerConfig
+  // - migrationOnly: needed for migration planning + loader execution
+  // - schemaOnly: needed for GraphQL schema + type generation
   if ((schemaOnly || migrationOnly) && !loadingProviders) {
     const moduleService_ =
       moduleResources.moduleService ?? loadedModule_.service
