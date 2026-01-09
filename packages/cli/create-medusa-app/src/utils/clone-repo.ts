@@ -105,9 +105,6 @@ function deleteGitDirectory(projectDirectory: string) {
  */
 function deleteWithCommand(projectDirectory: string, dirName: string) {
   const dirPath = path.normalize(path.join(projectDirectory, dirName))
-  if (!dirPath.startsWith(projectDirectory)) {
-    throw new Error("Invalid directory path")
-  }
   if (!fs.existsSync(dirPath)) {
     return
   }
