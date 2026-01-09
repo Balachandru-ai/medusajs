@@ -34,7 +34,9 @@ function getSchemaShape(
     if (innerSchema instanceof ZodObject) {
       return innerSchema.shape
     }
-    return {}
+    throw new Error(
+      "Expected ZodPipe to contain a ZodObject. Schema extensions require the base schema to be a ZodObject."
+    )
   }
   return schema.shape
 }
