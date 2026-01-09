@@ -752,6 +752,162 @@ medusaIntegrationTestRunner({
       })
     })
 
+    describe("POST /draft-orders/:id/edit/promotions", () => {
+      let product
+      let promotion
+
+      beforeEach(async () => {
+        product = (
+          await api.post(
+            "/admin/products",
+            {
+              title: "Promo product",
+              status: ProductStatus.PUBLISHED,
+              sales_channels: [{ id: salesChannel.id }],
+              options: [{ title: "size", values: ["large", "small"] }],
+              variants: [
+                {
+                  title: "L shirt",
+                  options: { size: "large" },
+                  manage_inventory: false,
+                  prices: [
+                    {
+                      currency_code: "usd",
+                      amount: 1000,
+                    },
+                  ],
+                },
+                {
+                  title: "S shirt",
+                  options: { size: "small" },
+                  manage_inventory: false,
+                  prices: [
+                    {
+                      currency_code: "usd",
+                      amount: 1000,
+                    },
+                  ],
+                },
+              ],
+            },
+            adminHeaders
+          )
+        ).data.product
+
+        const promoCode = "recompute-test"
+
+        promotion = (
+          await api.post(
+            "/admin/promotions",
+            {
+              code: promoCode,
+              type: "standard",
+              status: "active",
+              application_method: {
+                type: "fixed",
+                target_type: "items",
+                allocation: "each",
+                currency_code: "usd",
+                value: 100,
+                max_quantity: 5,
+              },
+              is_automatic: false,
+              is_tax_inclusive: true,
+            },
+            adminHeaders
+          )
+        ).data.promotion
+      })
+
+      it("should recompute adjustments when adding items after promotions", async () => {
+        await api.post(
+          `/admin/draft-orders/${testDraftOrder.id}/edit`,
+          {},
+          adminHeaders
+        )
+
+        let response = await api.post(
+          `/admin/draft-orders/${testDraftOrder.id}/edit/items`,
+          {
+            items: [{ variant_id: product.variants[0].id, quantity: 1 }],
+          },
+          adminHeaders
+        )
+
+        let preview = response.data.draft_order_preview
+        let firstItem = preview.items.find(
+          (item) => item.variant_id === product.variants[0].id
+        )
+
+        expect(preview.discount_total).toBe(0)
+        expect(firstItem?.discount_total ?? 0).toBe(0)
+        expect(firstItem?.adjustments ?? []).toHaveLength(0)
+
+        response = await api.post(
+          `/admin/draft-orders/${testDraftOrder.id}/edit/promotions`,
+          {
+            promo_codes: [promotion.code],
+          },
+          adminHeaders
+        )
+
+        preview = response.data.draft_order_preview
+        firstItem = preview.items.find(
+          (item) => item.variant_id === product.variants[0].id
+        )
+
+        expect(preview.discount_total).toBe(100)
+        expect(firstItem?.discount_total).toBe(100)
+        expect(firstItem?.adjustments).toEqual(
+          expect.arrayContaining([
+            expect.objectContaining({
+              code: promotion.code,
+              amount: 100,
+              promotion_id: promotion.id,
+            }),
+          ])
+        )
+
+        response = await api.post(
+          `/admin/draft-orders/${testDraftOrder.id}/edit/items`,
+          {
+            items: [{ variant_id: product.variants[1].id, quantity: 1 }],
+          },
+          adminHeaders
+        )
+
+        preview = response.data.draft_order_preview
+        const itemsByVariant = new Map(
+          preview.items.map((item) => [item.variant_id, item])
+        )
+
+        const firstItemAfter = itemsByVariant.get(product.variants[0].id)
+        const secondItemAfter = itemsByVariant.get(product.variants[1].id)
+
+        expect(preview.discount_total).toBe(200)
+        expect(firstItemAfter?.discount_total).toBe(100)
+        expect(secondItemAfter?.discount_total).toBe(100)
+        expect(firstItemAfter?.adjustments).toEqual(
+          expect.arrayContaining([
+            expect.objectContaining({
+              code: promotion.code,
+              amount: 100,
+              promotion_id: promotion.id,
+            }),
+          ])
+        )
+        expect(secondItemAfter?.adjustments).toEqual(
+          expect.arrayContaining([
+            expect.objectContaining({
+              code: promotion.code,
+              amount: 100,
+              promotion_id: promotion.id,
+            }),
+          ])
+        )
+      })
+    })
+
     describe("DELETE /draft-orders/:id/shipping-options/methods/:method_id", () => {
       let product
       let edit
