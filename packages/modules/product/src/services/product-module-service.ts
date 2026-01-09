@@ -1838,37 +1838,6 @@ export default class ProductModuleService
     }
   }
 
-  @InjectManager()
-  // @ts-expect-error
-  async softDeleteProductProductOptions<
-    TReturnableLinkableKeys extends string = string
-  >(
-    primaryKeyValues: string | object | string[] | object[],
-    config?: SoftDeleteReturn<TReturnableLinkableKeys>,
-    @MedusaContext() sharedContext: Context = {}
-  ): Promise<Record<string, string[]> | void> {
-    return await this.softDeleteProductProductOptions_(
-      primaryKeyValues,
-      config,
-      sharedContext
-    )
-  }
-
-  @InjectTransactionManager()
-  protected async softDeleteProductProductOptions_<
-    TReturnableLinkableKeys extends string = string
-  >(
-    primaryKeyValues: string | object | string[] | object[],
-    config?: SoftDeleteReturn<TReturnableLinkableKeys>,
-    @MedusaContext() sharedContext: Context = {}
-  ): Promise<Record<string, string[]> | void> {
-    return await super.softDeleteProductProductOptions(
-      primaryKeyValues,
-      config,
-      sharedContext
-    )
-  }
-
   // @ts-expect-error
   createProductCollections(
     data: ProductTypes.CreateProductCollectionDTO[],
