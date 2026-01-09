@@ -70,13 +70,15 @@ const execute = async (
     }
   } else {
     const [commandStr, options] = command as PromiseExecParams
+    // Filter out spawn-specific options that aren't valid for exec
+    const { signal: _signal, ...execOptions } = options || {}
     const childProcess = await promiseExec(commandStr, {
-      ...options,
+      ...execOptions,
       env: {
         ...process.env,
         // Disable corepack download prompt - automatically accept downloads
         COREPACK_ENABLE_DOWNLOAD_PROMPT: "0",
-        ...(options?.env || {}),
+        ...(execOptions?.env || {}),
       },
     })
 
