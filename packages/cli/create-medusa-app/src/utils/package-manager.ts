@@ -27,16 +27,12 @@ export default class PackageManager {
     this.processManager = processManager
     this.verbose = options.verbose || false
 
-    switch (true) {
-      case options.useNpm:
-        this.chosenPackageManager = "npm"
-        break
-      case options.usePnpm:
-        this.chosenPackageManager = "pnpm"
-        break
-      case options.useYarn:
-        this.chosenPackageManager = "yarn"
-        break
+    if (options.useNpm) {
+      this.chosenPackageManager = "npm"
+    } else if (options.usePnpm) {
+      this.chosenPackageManager = "pnpm"
+    } else if (options.useYarn) {
+      this.chosenPackageManager = "yarn"
     }
   }
 
@@ -45,10 +41,6 @@ export default class PackageManager {
     version?: string
   } {
     const userAgent = process.env.npm_config_user_agent
-
-    if (this.verbose) {
-      console.log(`[DEBUG] User agent: ${userAgent}`)
-    }
 
     if (!userAgent) {
       return { manager: "npm" }
@@ -60,7 +52,10 @@ export default class PackageManager {
       const [, manager, version] = match
 
       if (this.verbose) {
-        console.log(`[DEBUG] Detected from user agent: ${manager}@${version}`)
+        logMessage({
+          type: "info",
+          message: `Detected from user agent: ${manager}@${version}`,
+        })
       }
 
       // pnpx is an alias for pnpm
@@ -98,12 +93,18 @@ export default class PackageManager {
       })
       const version = result.stdout?.trim()
       if (this.verbose) {
-        console.log(`[DEBUG] getVersion(${pm}): ${version}`)
+        logMessage({
+          type: "info",
+          message: `Detected ${pm} version: ${version}`,
+        })
       }
       return version
     } catch {
       if (this.verbose) {
-        console.log(`[DEBUG] getVersion(${pm}): failed`)
+        logMessage({
+          type: "info",
+          message: `Failed to get version for package manager: ${pm}`,
+        })
       }
       return undefined
     }
@@ -132,6 +133,7 @@ export default class PackageManager {
             return
           }
 
+          // Error logs exit the process, so command execution will stop here
           logMessage({
             type: "error",
             message: `The specified package manager "${this.chosenPackageManager}" is not available. Please install it or choose another package manager.`,
@@ -313,15 +315,19 @@ export default class PackageManager {
     }
     if (!this.packageManagerVersion) {
       if (this.verbose) {
-        console.log(
-          `[DEBUG] getPackageManagerString: no version (packageManager=${this.packageManager})`
-        )
+        logMessage({
+          type: "info",
+          message: `No version detected for package manager: ${this.packageManager}`,
+        })
       }
       return undefined
     }
     const result = `${this.packageManager}@${this.packageManagerVersion}`
     if (this.verbose) {
-      console.log(`[DEBUG] getPackageManagerString: ${result}`)
+      logMessage({
+        type: "info",
+        message: `Package manager string: ${result}`,
+      })
     }
     return result
   }
