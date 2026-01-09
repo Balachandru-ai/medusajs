@@ -1,0 +1,26 @@
+/**
+ * @schema AdminCreateRbacRole
+ * type: object
+ * description: SUMMARY
+ * x-schemaName: AdminCreateRbacRole
+ * required:
+ *   - name
+ * properties:
+ *   name:
+ *     type: string
+ *     title: name
+ *     description: The rbac's name.
+ *   metadata:
+ *     type: object
+ *     description: The rbac's metadata.
+ *   description:
+ *     type: string
+ *     title: description
+ *     description: The rbac's description.
+ *   parent_id:
+ *     type: string
+ *     title: parent_id
+ *     description: The rbac's parent id.
+ * 
+*/
+

@@ -1,0 +1,125 @@
+get:
+  operationId: GetRbacPoliciesId
+  summary: List Policies
+  description: >-
+    Retrieve a list of policies in a rbac. The policies can be filtered by
+    fields like FILTER FIELDS. The policies can also be paginated.
+  x-authenticated: true
+  parameters:
+    - name: id
+      in: path
+      description: The rbac's ID.
+      required: true
+      schema:
+        type: string
+  security:
+    - api_token: []
+    - cookie_auth: []
+    - jwt_token: []
+  x-codeSamples:
+    - lang: Shell
+      label: cURL
+      source:
+        $ref: ../code_samples/Shell/admin_rbac_policies_{id}/get.sh
+  tags:
+    - Rbac
+  responses:
+    '200':
+      description: OK
+    '400':
+      $ref: ../components/responses/400_error.yaml
+    '401':
+      $ref: ../components/responses/unauthorized.yaml
+    '404':
+      $ref: ../components/responses/not_found_error.yaml
+    '409':
+      $ref: ../components/responses/invalid_state_error.yaml
+    '422':
+      $ref: ../components/responses/invalid_request_error.yaml
+    '500':
+      $ref: ../components/responses/500_error.yaml
+post:
+  operationId: PostRbacPoliciesId
+  summary: Add Policy to Rbac
+  description: Add a Policy to a rbac
+  x-authenticated: true
+  parameters:
+    - name: id
+      in: path
+      description: The rbac's ID.
+      required: true
+      schema:
+        type: string
+  security:
+    - api_token: []
+    - cookie_auth: []
+    - jwt_token: []
+  requestBody:
+    content:
+      application/json:
+        schema:
+          $ref: ../components/schemas/AdminUpdateRbacPolicy.yaml
+  x-codeSamples:
+    - lang: Shell
+      label: cURL
+      source:
+        $ref: ../code_samples/Shell/admin_rbac_policies_{id}/post.sh
+  tags:
+    - Rbac
+  responses:
+    '200':
+      description: OK
+    '400':
+      $ref: ../components/responses/400_error.yaml
+    '401':
+      $ref: ../components/responses/unauthorized.yaml
+    '404':
+      $ref: ../components/responses/not_found_error.yaml
+    '409':
+      $ref: ../components/responses/invalid_state_error.yaml
+    '422':
+      $ref: ../components/responses/invalid_request_error.yaml
+    '500':
+      $ref: ../components/responses/500_error.yaml
+  x-workflow: updateRbacPoliciesWorkflow
+  x-events: []
+delete:
+  operationId: DeleteRbacPoliciesId
+  summary: Remove Policy from Rbac
+  description: Remove a Policy from a rbac.
+  x-authenticated: true
+  parameters:
+    - name: id
+      in: path
+      description: The rbac's ID.
+      required: true
+      schema:
+        type: string
+  security:
+    - api_token: []
+    - cookie_auth: []
+    - jwt_token: []
+  x-codeSamples:
+    - lang: Shell
+      label: cURL
+      source:
+        $ref: ../code_samples/Shell/admin_rbac_policies_{id}/delete.sh
+  tags:
+    - Rbac
+  responses:
+    '200':
+      description: OK
+    '400':
+      $ref: ../components/responses/400_error.yaml
+    '401':
+      $ref: ../components/responses/unauthorized.yaml
+    '404':
+      $ref: ../components/responses/not_found_error.yaml
+    '409':
+      $ref: ../components/responses/invalid_state_error.yaml
+    '422':
+      $ref: ../components/responses/invalid_request_error.yaml
+    '500':
+      $ref: ../components/responses/500_error.yaml
+  x-workflow: deleteRbacPoliciesWorkflow
+  x-events: []
