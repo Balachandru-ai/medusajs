@@ -72,8 +72,6 @@ const execute = async (
       ...options,
       env: {
         ...process.env,
-        // Disable corepack download prompt - automatically accept downloads
-        COREPACK_ENABLE_DOWNLOAD_PROMPT: "0",
         ...(options?.env || {}),
       },
     })
