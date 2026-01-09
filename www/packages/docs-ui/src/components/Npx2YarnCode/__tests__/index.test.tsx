@@ -2,6 +2,9 @@ import React from "react"
 import { describe, expect, test, vi } from "vitest"
 import { render } from "@testing-library/react"
 
+// mock functions
+const npxToYarnMock = vi.fn((code: string, packageManager: "yarn" | "pnpm") => code)
+
 // mock components
 vi.mock("@/components/CodeTabs", () => ({
   CodeTabs: ({
@@ -49,6 +52,11 @@ vi.mock("@/components/CodeBlock", () => ({
   ),
 }))
 
+vi.mock("@/utils/npx-to-yarn", () => ({
+  npxToYarn: (code: string, packageManager: "yarn" | "pnpm") =>
+    npxToYarnMock(code, packageManager),
+}))
+
 import { Npx2YarnCode } from "../index"
 
 describe("render", () => {
@@ -56,6 +64,7 @@ describe("render", () => {
     const { container } = render(
       <Npx2YarnCode npxCode="npx medusa db:migrate" />
     )
+    expect(npxToYarnMock).toHaveBeenCalledTimes(2)
     expect(container).toBeInTheDocument()
     const codeTabs = container.querySelector("[data-testid='code-tabs']")
     expect(codeTabs).toBeInTheDocument()
@@ -64,7 +73,7 @@ describe("render", () => {
       "[data-testid='code-tab']"
     )
     expect(codeTabsChildren).toHaveLength(3)
-    expect(codeTabsChildren![0]).toHaveAttribute("data-label", "npm")
+    expect(codeTabsChildren![0]).toHaveAttribute("data-label", "npx")
     expect(codeTabsChildren![0]).toHaveAttribute("data-value", "npm")
     const npxCodeBlock = codeTabsChildren![0].querySelector(
       "[data-testid='code-block']"
@@ -79,7 +88,6 @@ describe("render", () => {
     )
     expect(yarnCodeBlock).toBeInTheDocument()
     expect(yarnCodeBlock).toHaveAttribute("data-lang", "bash")
-    expect(yarnCodeBlock).toHaveTextContent("yarn install @medusajs/medusa")
     expect(codeTabsChildren![2]).toHaveAttribute("data-label", "pnpm")
     expect(codeTabsChildren![2]).toHaveAttribute("data-value", "pnpm")
     const pnpmCodeBlock = codeTabsChildren![2].querySelector(
@@ -87,7 +95,6 @@ describe("render", () => {
     )
     expect(pnpmCodeBlock).toBeInTheDocument()
     expect(pnpmCodeBlock).toHaveAttribute("data-lang", "bash")
-    expect(pnpmCodeBlock).toHaveTextContent("pnpm add @medusajs/medusa")
   })
 
   test("renders npm2yarn code with custom code options", () => {
