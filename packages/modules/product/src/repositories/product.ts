@@ -351,34 +351,44 @@ export class ProductRepository extends DALUtils.mikroOrmBaseRepositoryFactory(
       optionToProductIds.set(pair.optionId, productIds)
     })
 
-    // check if the request is trying to assign multiple product to an exclusive option
-    const conflictOptionIds = new Set(
-      [...optionToProductIds.entries()]
-        .filter(([, productIds]) => productIds.size > 1)
-        .map(([optionId]) => optionId)
-    )
-
     const optionIds = [...optionToProductIds.keys()]
 
     const manager = this.getActiveManager<SqlEntityManager>(context)
     const connection = manager.getConnection()
     const knex = connection.getKnex()
 
-    const existingLinks = await knex
-      .select("ppo.product_option_id", "ppo.product_id")
-      .from("product_product_option as ppo")
-      .innerJoin("product as p", "p.id", "ppo.product_id")
-      .innerJoin("product_option as po", "po.id", "ppo.product_option_id")
-      .whereIn("ppo.product_option_id", optionIds)
-      .where("po.is_exclusive", true)
+    const bindings: string[] = []
+    const valuesSql = pairs
+      .map((pair) => {
+        bindings.push(pair.productId, pair.optionId)
+        return "(?, ?)"
+      })
+      .join(", ")
 
-    existingLinks.forEach((row) => {
-      const allowedProductIds =
-        optionToProductIds.get(row.product_option_id) ?? new Set()
-      if (!allowedProductIds.has(row.product_id)) {
-        conflictOptionIds.add(row.product_option_id)
-      }
-    })
+    const { rows } = await knex.raw(
+      `
+      WITH pairs(product_id, option_id) AS (VALUES ${valuesSql}),
+      exclusive_pairs AS (
+        SELECT r.option_id, r.product_id
+        FROM pairs r
+        JOIN product_option po ON po.id = r.option_id
+        WHERE po.is_exclusive = true
+      )
+      SELECT DISTINCT ep.option_id
+      FROM exclusive_pairs ep
+      WHERE EXISTS (
+        SELECT 1 FROM exclusive_pairs ep2
+        WHERE ep2.option_id = ep.option_id AND ep2.product_id <> ep.product_id
+      )
+      OR EXISTS (
+        SELECT 1 FROM product_product_option ppo
+        WHERE ppo.product_option_id = ep.option_id AND ppo.product_id <> ep.product_id
+      )
+      `,
+      bindings
+    )
+
+    const conflictOptionIds = new Set<string>(rows.map((row) => row.option_id))
 
     return optionIds.filter((optionId) => conflictOptionIds.has(optionId))
   }

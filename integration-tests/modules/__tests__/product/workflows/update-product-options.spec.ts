@@ -255,6 +255,160 @@ medusaIntegrationTestRunner({
           })
         })
 
+        it("should allow assigning a mixed exclusive and non-exclusive option in a single call", async () => {
+          const productA = await service.createProducts({
+            title: "Product A",
+            shipping_profile_id: shippingProfile.id,
+          })
+
+          const productB = await service.createProducts({
+            title: "Product B",
+            shipping_profile_id: shippingProfile.id,
+          })
+
+          const exclusiveOption = await service.createProductOptions({
+            title: "Size",
+            is_exclusive: true,
+            values: ["S", "M"],
+          })
+
+          const globalOption = await service.createProductOptions({
+            title: "Color",
+            is_exclusive: false,
+            values: ["Red", "Blue"],
+          })
+
+          await service.addProductOptionToProduct([
+            {
+              product_id: productA.id,
+              product_option_id: exclusiveOption.id,
+            },
+            {
+              product_id: productA.id,
+              product_option_id: globalOption.id,
+            },
+            {
+              product_id: productB.id,
+              product_option_id: globalOption.id,
+            },
+          ])
+
+          const products = await service.listProducts(
+            { id: [productA.id, productB.id] },
+            { relations: ["options"] }
+          )
+
+          const productAOptions =
+            products.find((product) => product.id === productA.id)?.options ??
+            []
+          const productBOptions =
+            products.find((product) => product.id === productB.id)?.options ??
+            []
+
+          expect(productAOptions.map((option) => option.id)).toEqual(
+            expect.arrayContaining([exclusiveOption.id, globalOption.id])
+          )
+          expect(productBOptions.map((option) => option.id)).toEqual(
+            expect.arrayContaining([globalOption.id])
+          )
+          expect(productBOptions.map((option) => option.id)).not.toEqual(
+            expect.arrayContaining([exclusiveOption.id])
+          )
+        })
+
+        it("should allow assigning two non-exclusive options to multiple products in a single call", async () => {
+          const productA = await service.createProducts({
+            title: "Product A",
+            shipping_profile_id: shippingProfile.id,
+          })
+
+          const productB = await service.createProducts({
+            title: "Product B",
+            shipping_profile_id: shippingProfile.id,
+          })
+
+          const firstOption = await service.createProductOptions({
+            title: "Color",
+            is_exclusive: false,
+            values: ["Red", "Blue"],
+          })
+
+          const secondOption = await service.createProductOptions({
+            title: "Material",
+            is_exclusive: false,
+            values: ["Cotton", "Wool"],
+          })
+
+          await service.addProductOptionToProduct([
+            {
+              product_id: productA.id,
+              product_option_id: firstOption.id,
+            },
+            {
+              product_id: productA.id,
+              product_option_id: secondOption.id,
+            },
+            {
+              product_id: productB.id,
+              product_option_id: firstOption.id,
+            },
+            {
+              product_id: productB.id,
+              product_option_id: secondOption.id,
+            },
+          ])
+
+          const products = await service.listProducts(
+            { id: [productA.id, productB.id] },
+            { relations: ["options"] }
+          )
+
+          products.forEach((product) => {
+            expect(product.options ?? []).toHaveLength(2)
+            expect(product.options?.map((option) => option.id)).toEqual(
+              expect.arrayContaining([firstOption.id, secondOption.id])
+            )
+          })
+        })
+
+        it("should allow adding a non-exclusive option to another product after it is already linked", async () => {
+          const productA = await service.createProducts({
+            title: "Product A",
+            shipping_profile_id: shippingProfile.id,
+          })
+
+          const productB = await service.createProducts({
+            title: "Product B",
+            shipping_profile_id: shippingProfile.id,
+          })
+
+          const globalOption = await service.createProductOptions({
+            title: "Material",
+            is_exclusive: false,
+            values: ["Cotton", "Wool"],
+          })
+
+          await service.addProductOptionToProduct({
+            product_id: productA.id,
+            product_option_id: globalOption.id,
+          })
+
+          await service.addProductOptionToProduct({
+            product_id: productB.id,
+            product_option_id: globalOption.id,
+          })
+
+          const products = await service.listProducts(
+            { id: [productA.id, productB.id] },
+            { relations: ["options"] }
+          )
+
+          products.forEach((product) => {
+            expect(product.options).toHaveLength(1)
+            expect(product.options?.[0].id).toBe(globalOption.id)
+          })
+        })
+
         describe("compensation", () => {
           it("should restore only the linked option values after a failed removal", async () => {
             const workflow = setProductProductOptionsWorkflow(appContainer)
