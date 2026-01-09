@@ -916,6 +916,14 @@ export interface BaseOrderFilters
     | OrderStatus[]
     | OrderStatus
     | OperatorMap<OrderStatus | OrderStatus[]>
+  /**
+   * Filter by payment status(es).
+   */
+  payment_status?: PaymentStatus[] | PaymentStatus
+  /**
+   * Filter by fulfillment status(es).
+   */
+  fulfillment_status?: FulfillmentStatus[] | FulfillmentStatus
 }
 
 export interface BaseOrderChangesFilters

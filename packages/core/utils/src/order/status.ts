@@ -85,3 +85,91 @@ export enum ClaimReason {
   PRODUCTION_FAILURE = "production_failure",
   OTHER = "other",
 }
+
+/**
+ * @enum
+ *
+ * The order's payment status.
+ */
+export enum PaymentStatus {
+  /**
+   * The order is not paid.
+   */
+  NOT_PAID = "not_paid",
+  /**
+   * The order payment is awaiting.
+   */
+  AWAITING = "awaiting",
+  /**
+   * The order payment is captured.
+   */
+  CAPTURED = "captured",
+  /**
+   * The order payment is partially captured.
+   */
+  PARTIALLY_CAPTURED = "partially_captured",
+  /**
+   * The order payment is partially refunded.
+   */
+  PARTIALLY_REFUNDED = "partially_refunded",
+  /**
+   * The order payment is refunded.
+   */
+  REFUNDED = "refunded",
+  /**
+   * The order payment is canceled.
+   */
+  CANCELED = "canceled",
+  /**
+   * The order payment requires action.
+   */
+  REQUIRES_ACTION = "requires_action",
+  /**
+   * The order payment is authorized.
+   */
+  AUTHORIZED = "authorized",
+  /**
+   * The order payment is partially authorized.
+   */
+  PARTIALLY_AUTHORIZED = "partially_authorized",
+}
+
+/**
+ * @enum
+ *
+ * The order's fulfillment status.
+ */
+export enum FulfillmentStatus {
+  /**
+   * The order is not fulfilled.
+   */
+  NOT_FULFILLED = "not_fulfilled",
+  /**
+   * The order is partially fulfilled.
+   */
+  PARTIALLY_FULFILLED = "partially_fulfilled",
+  /**
+   * The order is fulfilled.
+   */
+  FULFILLED = "fulfilled",
+  /**
+   * The order is partially shipped.
+   */
+  PARTIALLY_SHIPPED = "partially_shipped",
+  /**
+   * The order is shipped.
+   */
+  SHIPPED = "shipped",
+  /**
+   * The order is delivered.
+   */
+  DELIVERED = "delivered",
+  /**
+   * The order is partially delivered.
+   */
+  PARTIALLY_DELIVERED = "partially_delivered",
+  /**
+   * The order fulfillment is canceled.
+   */
+  CANCELED = "canceled",
+}
