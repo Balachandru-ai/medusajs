@@ -1,5 +1,5 @@
 import { mkdir, writeFile } from "node:fs/promises"
-import { join } from "node:path"
+import path, { join } from "node:path"
 import outdent from "outdent"
 
 export async function writeStaticFiles(plugins?: string[]) {
@@ -17,8 +17,11 @@ export async function writeStaticFiles(plugins?: string[]) {
 }
 
 async function writeCSSFile(outDir: string) {
+  const dashboardPackageImport = require.resolve(
+    path.join("@medusajs/dashboard", "css")
+  )
   const css = outdent`
-    @import "@medusajs/dashboard/css";
+    @import "${dashboardPackageImport}";
 
     @tailwind base;
     @tailwind components;
@@ -33,8 +36,9 @@ function getPluginName(index: number) {
 }
 
 async function writeEntryFile(outDir: string, plugins?: string[]) {
+  const dashboardPackageImport = require.resolve("@medusajs/dashboard")
   const entry = outdent`
-    import App from "@medusajs/dashboard";
+    import App from "${dashboardPackageImport}";
     import React from "react";
     import ReactDOM from "react-dom/client";
     import "./index.css";
