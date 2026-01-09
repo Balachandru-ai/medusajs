@@ -262,6 +262,22 @@ export type MedusaCloudOptions = {
    * The endpoint of the Medusa Cloud email service.
    */
   emailsEndpoint?: string
+  /**
+   * The authorization endpoint of the Medusa Cloud OAuth service.
+   */
+  oauthAuthorizeEndpoint?: string
+  /**
+   * The token endpoint of the Medusa Cloud OAuth token service.
+   */
+  oauthTokenEndpoint?: string
+  /**
+   * The callback URL for the Medusa Cloud OAuth service. If not provided, it will be set to `${AdminOptions.backendUrl}/auth/user/cloud/callback`.
+   */
+  oauthCallbackUrl?: string
+  /**
+   * Whether the Medusa Cloud OAuth service is disabled.
+   */
+  oauthDisabled?: boolean
 }
 
 /**
