@@ -4,7 +4,7 @@ import path from "path"
 import { isAbortError } from "./create-abort-controller.js"
 import execute from "./execute.js"
 import logMessage from "./log-message.js"
-import { execSync } from "child_process"
+import { execFileSync } from "child_process"
 
 type CloneRepoOptions = {
   directoryName?: string
@@ -104,14 +104,17 @@ function deleteGitDirectory(projectDirectory: string) {
  * Useful for deleting directories when fs methods fail (e.g., with Yarn v3)
  */
 function deleteWithCommand(projectDirectory: string, dirName: string) {
-  const dirPath = path.join(projectDirectory, dirName)
+  const dirPath = path.normalize(path.join(projectDirectory, dirName))
+  if (!dirPath.startsWith(projectDirectory)) {
+    throw new Error("Invalid directory path")
+  }
   if (!fs.existsSync(dirPath)) {
     return
   }
 
-  const rmCommand =
-    process.platform === "win32"
-      ? `rmdir /s /q "${dirPath}"`
-      : `rm -rf "${dirPath}"`
-  execSync(rmCommand)
+  if (process.platform === "win32") {
+    execFileSync("cmd", ["/c", "rmdir", "/s", "/q", dirPath])
+  } else {
+    execFileSync("rm", ["-rf", dirPath])
+  }
 }
