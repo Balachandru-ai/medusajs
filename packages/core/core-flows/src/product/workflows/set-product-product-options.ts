@@ -6,6 +6,7 @@ import {
   transform,
   when,
 } from "@medusajs/framework/workflows-sdk"
+import { isString } from "@medusajs/framework/utils"
 import {
   addProductOptionsToProductStep,
   removeProductOptionsFromProductStep,
@@ -47,7 +48,7 @@ export const setProductProductOptionsWorkflow = createWorkflow(
       const options: ProductTypes.ProductOptionProductPair[] = []
 
       for (const option of input.add ?? []) {
-        if (typeof option === "string") {
+        if (isString(option)) {
           options.push({
             product_option_id: option,
             product_id: input.product_id,
