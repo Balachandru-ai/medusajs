@@ -4,6 +4,7 @@ import path from "path"
 import { isAbortError } from "./create-abort-controller.js"
 import execute from "./execute.js"
 import logMessage from "./log-message.js"
+import { execSync } from "child_process"
 
 type CloneRepoOptions = {
   directoryName?: string
@@ -80,13 +81,37 @@ export async function runCloneRepo({
 }
 
 function deleteGitDirectory(projectDirectory: string) {
-  fs.rmSync(path.join(projectDirectory, ".git"), {
-    recursive: true,
-    force: true,
-  })
+  try {
+    fs.rmSync(path.join(projectDirectory, ".git"), {
+      recursive: true,
+      force: true,
+    })
+  } catch (error) {
+    deleteWithCommand(projectDirectory, ".git")
+  }
 
-  fs.rmSync(path.join(projectDirectory, ".github"), {
-    recursive: true,
-    force: true,
-  })
+  try {
+    fs.rmSync(path.join(projectDirectory, ".github"), {
+      recursive: true,
+      force: true,
+    })
+  } catch (error) {
+    deleteWithCommand(projectDirectory, ".github")
+  }
+}
+
+/**
+ * Useful for deleting directories when fs methods fail (e.g., with Yarn v3)
+ */
+function deleteWithCommand(projectDirectory: string, dirName: string) {
+  const dirPath = path.join(projectDirectory, dirName)
+  if (!fs.existsSync(dirPath)) {
+    return
+  }
+
+  const rmCommand =
+    process.platform === "win32"
+      ? `rmdir /s /q "${dirPath}"`
+      : `rm -rf "${dirPath}"`
+  execSync(rmCommand)
 }
