@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest"
-import npxToYarn from "../npx-to-yarn.js"
+import { npxToYarn } from "../npx-to-yarn.js"
 
 describe("npxToYarn", () => {
   describe("yarn conversion", () => {

@@ -9,7 +9,7 @@
  * npxToYarn("npx medusa db:migrate", "yarn") // "yarn medusa db:migrate"
  * npxToYarn("npx medusa db:migrate", "pnpm") // "pnpm medusa db:migrate"
  */
-export default function npxToYarn(
+export function npxToYarn(
   npxCommand: string,
   packageManager: "yarn" | "pnpm"
 ): string {
