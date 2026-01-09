@@ -1,5 +1,5 @@
 import { MedusaError } from "@medusajs/utils"
-import { z } from "zod"
+import { z } from "@medusajs/deps/zod"
 import { zodValidator } from "../zod-helpers"
 
 describe("zodValidator", () => {
@@ -241,10 +241,9 @@ describe("zodValidator", () => {
 
     it("should handle async validation with refine", async () => {
       const schema = z.object({
-        email: z.string().refine(
-          async (val) => val.includes("@"),
-          { message: "Invalid email format" }
-        ),
+        email: z.string().refine(async (val) => val.includes("@"), {
+          message: "Invalid email format",
+        }),
       })
 
       await expect(

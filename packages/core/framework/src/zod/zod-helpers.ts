@@ -1,4 +1,4 @@
-import { z, ZodError } from "zod"
+import { z, ZodError } from "@medusajs/deps/zod"
 import { isObject, MedusaError } from "@medusajs/utils"
 
 /**
@@ -63,9 +63,12 @@ function isInvalidUnionIssue(issue: unknown): issue is InvalidUnionIssue {
  * Runtime guard for invalid_value issues (enums, literals).
  * Uses duck-typing to avoid relying on internal Zod types at runtime.
  */
-function isInvalidValueIssue(
-  issue: unknown
-): issue is { code: "invalid_value"; values?: unknown[]; path: PropertyKey[]; message: string } {
+function isInvalidValueIssue(issue: unknown): issue is {
+  code: "invalid_value"
+  values?: unknown[]
+  path: PropertyKey[]
+  message: string
+} {
   return (
     isObject(issue) &&
     "code" in issue &&
@@ -94,19 +97,19 @@ const formatPath = (issue: { path: PropertyKey[] }) => {
  * Used to distinguish between missing fields and wrong type values.
  * Safely traverses the body object using the issue path.
  */
-function getValueFromBody(issue: { path: PropertyKey[] }, body: unknown): unknown {
+function getValueFromBody(
+  issue: { path: PropertyKey[] },
+  body: unknown
+): unknown {
   if (!isObject(body)) {
     return undefined
   }
-  return issue.path.reduce<unknown>(
-    (acc, curr: PropertyKey) => {
-      if (!isObject(acc)) {
-        return undefined
-      }
-      return (acc as Record<PropertyKey, unknown>)[curr]
-    },
-    body
-  )
+  return issue.path.reduce<unknown>((acc, curr: PropertyKey) => {
+    if (!isObject(acc)) {
+      return undefined
+    }
+    return (acc as Record<PropertyKey, unknown>)[curr]
+  }, body)
 }
 
 const formatInvalidType = (issues: ZodIssue[], body?: unknown) => {
@@ -120,7 +123,8 @@ const formatInvalidType = (issues: ZodIssue[], body?: unknown) => {
   const expected = validIssues
     .map((i) => {
       // In Zod v4, check if value exists in body to distinguish wrong type vs missing
-      const receivedValue = body !== undefined ? getValueFromBody(i, body) : undefined
+      const receivedValue =
+        body !== undefined ? getValueFromBody(i, body) : undefined
       if (receivedValue !== undefined) {
         return i.expected
       }
@@ -137,7 +141,8 @@ const formatInvalidType = (issues: ZodIssue[], body?: unknown) => {
     return
   }
 
-  const received = body !== undefined ? getValueFromBody(firstIssue, body) : "unknown"
+  const received =
+    body !== undefined ? getValueFromBody(firstIssue, body) : "unknown"
 
   return `Expected type: '${expected.join(", ")}' for field '${formatPath(
     firstIssue
@@ -151,12 +156,14 @@ const formatRequiredField = (issues: ZodIssue[], body?: unknown) => {
     .find((i) => {
       if (isInvalidTypeIssue(i)) {
         // In Zod v4, check if value is undefined in body to detect missing fields
-        const valueInBody = body !== undefined ? getValueFromBody(i, body) : undefined
+        const valueInBody =
+          body !== undefined ? getValueFromBody(i, body) : undefined
         return valueInBody === undefined
       }
       // Also check invalid_value issues - if value is undefined in body
       if (isInvalidValueIssue(i)) {
-        const valueInBody = body !== undefined ? getValueFromBody(i, body) : undefined
+        const valueInBody =
+          body !== undefined ? getValueFromBody(i, body) : undefined
         return valueInBody === undefined
       }
       return false
@@ -169,7 +176,10 @@ const formatRequiredField = (issues: ZodIssue[], body?: unknown) => {
   return `Field '${formatPath(requiredIssue)}' is required`
 }
 
-const formatUnionError = (issue: unknown, body?: unknown): string | undefined => {
+const formatUnionError = (
+  issue: unknown,
+  body?: unknown
+): string | undefined => {
   // Use runtime guard to validate the issue structure
   if (!isInvalidUnionIssue(issue)) {
     return isObject(issue) && "message" in issue
@@ -201,7 +211,9 @@ const formatUnionError = (issue: unknown, body?: unknown): string | undefined =>
   }
 
   return (
-    formatInvalidType(issues, body) || formatRequiredField(issues, body) || issue.message
+    formatInvalidType(issues, body) ||
+    formatRequiredField(issues, body) ||
+    issue.message
   )
 }
 
