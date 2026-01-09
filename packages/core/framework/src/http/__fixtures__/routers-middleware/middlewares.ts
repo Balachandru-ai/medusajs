@@ -1,5 +1,5 @@
 import { raw } from "express"
-import { z } from "@medusajs/deps/zod"
+import { z } from "@medusajs/framework/zod"
 import { MedusaNextFunction, MedusaRequest, MedusaResponse } from "../../types"
 import { defineMiddlewares } from "../../utils/define-middlewares"
 import {
