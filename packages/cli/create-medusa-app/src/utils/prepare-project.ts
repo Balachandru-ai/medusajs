@@ -237,7 +237,7 @@ async function prepareProject({
       let errorOccurred = false
       try {
         const migrations = await client.query(
-          `SELECT * FROM "mikro_orm_migrations"`
+          `SELECT count(tablename) from pg_tables WHERE tablename = 'mikro_orm_migrations'`
         )
         errorOccurred = migrations.rowCount == 0
       } catch (e) {
