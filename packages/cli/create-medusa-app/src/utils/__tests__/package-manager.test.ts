@@ -224,7 +224,7 @@ describe("PackageManager", () => {
       expect(mockRmSync).not.toHaveBeenCalled()
     })
 
-    it("should remove yarn.lock and pnpm-lock.yaml when using npm", async () => {
+    it("should remove yarn.lock, pnpm-lock.yaml, and .yarn when using npm", async () => {
       const pm = new PackageManager(processManager)
       pm["packageManager"] = "npm"
       mockExistsSync.mockReturnValue(true)
@@ -233,8 +233,19 @@ describe("PackageManager", () => {
 
       expect(mockExistsSync).toHaveBeenCalledWith("/test/path/yarn.lock")
       expect(mockExistsSync).toHaveBeenCalledWith("/test/path/pnpm-lock.yaml")
-      expect(mockRmSync).toHaveBeenCalledWith("/test/path/yarn.lock", { force: true })
-      expect(mockRmSync).toHaveBeenCalledWith("/test/path/pnpm-lock.yaml", { force: true })
+      expect(mockExistsSync).toHaveBeenCalledWith("/test/path/.yarn")
+      expect(mockRmSync).toHaveBeenCalledWith("/test/path/yarn.lock", {
+        force: true,
+        recursive: true,
+      })
+      expect(mockRmSync).toHaveBeenCalledWith("/test/path/pnpm-lock.yaml", {
+        force: true,
+        recursive: true,
+      })
+      expect(mockRmSync).toHaveBeenCalledWith("/test/path/.yarn", {
+        force: true,
+        recursive: true,
+      })
     })
 
     it("should remove package-lock.json and pnpm-lock.yaml when using yarn", async () => {
@@ -246,11 +257,17 @@ describe("PackageManager", () => {
 
       expect(mockExistsSync).toHaveBeenCalledWith("/test/path/package-lock.json")
       expect(mockExistsSync).toHaveBeenCalledWith("/test/path/pnpm-lock.yaml")
-      expect(mockRmSync).toHaveBeenCalledWith("/test/path/package-lock.json", { force: true })
-      expect(mockRmSync).toHaveBeenCalledWith("/test/path/pnpm-lock.yaml", { force: true })
+      expect(mockRmSync).toHaveBeenCalledWith("/test/path/package-lock.json", {
+        force: true,
+        recursive: true,
+      })
+      expect(mockRmSync).toHaveBeenCalledWith("/test/path/pnpm-lock.yaml", {
+        force: true,
+        recursive: true,
+      })
     })
 
-    it("should remove yarn.lock and package-lock.json when using pnpm", async () => {
+    it("should remove yarn.lock, package-lock.json, and .yarn when using pnpm", async () => {
       const pm = new PackageManager(processManager)
       pm["packageManager"] = "pnpm"
       mockExistsSync.mockReturnValue(true)
@@ -259,8 +276,19 @@ describe("PackageManager", () => {
 
       expect(mockExistsSync).toHaveBeenCalledWith("/test/path/yarn.lock")
       expect(mockExistsSync).toHaveBeenCalledWith("/test/path/package-lock.json")
-      expect(mockRmSync).toHaveBeenCalledWith("/test/path/yarn.lock", { force: true })
-      expect(mockRmSync).toHaveBeenCalledWith("/test/path/package-lock.json", { force: true })
+      expect(mockExistsSync).toHaveBeenCalledWith("/test/path/.yarn")
+      expect(mockRmSync).toHaveBeenCalledWith("/test/path/yarn.lock", {
+        force: true,
+        recursive: true,
+      })
+      expect(mockRmSync).toHaveBeenCalledWith("/test/path/package-lock.json", {
+        force: true,
+        recursive: true,
+      })
+      expect(mockRmSync).toHaveBeenCalledWith("/test/path/.yarn", {
+        force: true,
+        recursive: true,
+      })
     })
 
     it("should not remove files that don't exist", async () => {

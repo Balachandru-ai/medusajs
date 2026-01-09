@@ -170,9 +170,9 @@ export default class PackageManager {
 
   async removeLockFiles(directory: string): Promise<void> {
     const lockFiles: Record<PackageManagerType, string[]> = {
-      npm: ["yarn.lock", "pnpm-lock.yaml"],
+      npm: ["yarn.lock", "pnpm-lock.yaml", ".yarn"],
       yarn: ["package-lock.json", "pnpm-lock.yaml"],
-      pnpm: ["yarn.lock", "package-lock.json"],
+      pnpm: ["yarn.lock", "package-lock.json", ".yarn"],
     }
 
     if (!this.packageManager) {
@@ -185,6 +185,7 @@ export default class PackageManager {
       if (existsSync(filePath)) {
         rmSync(filePath, {
           force: true,
+          recursive: true,
         })
       }
     }
