@@ -138,37 +138,30 @@ export default class PackageManager {
           })
         }
 
-        const detected = this.detectFromUserAgent()
-        const detectedVersion = await this.getVersion(
-          detected.manager,
-          execOptions
-        )
+        const detectedResult = this.detectFromUserAgent()
+        // fallback to npm if detection fails
+        this.packageManager = detectedResult.manager || "npm"
+        this.packageManagerVersion = detectedResult.version
+        if (!this.packageManagerVersion) {
+          // get version for the detected package manager (or npm fallback)
+          this.packageManagerVersion = await this.getVersion(
+            this.packageManager,
+            execOptions
+          )
 
-        if (detectedVersion) {
-          this.packageManager = detected.manager
-          // Prefer version from getVersion over user agent
-          this.packageManagerVersion = detectedVersion
           if (this.verbose) {
             logMessage({
               type: "info",
-              message: `Using detected package manager "${detected.manager}".`,
+              message: `Falling back to ${this.packageManager} as the package manager.`,
             })
           }
-          return
-        }
-
-        // Fallback to npm
-        this.packageManager = "npm"
-        // Get npm version for fallback
-        const npmVersion = await this.getVersion("npm", execOptions)
-        if (npmVersion && !this.packageManagerVersion) {
-          this.packageManagerVersion = npmVersion
-        }
-        if (this.verbose) {
-          logMessage({
-            type: "info",
-            message: `Falling back to "npm" as the package manager.`,
-          })
+        } else {
+          if (this.verbose) {
+            logMessage({
+              type: "info",
+              message: `Using detected package manager "${this.packageManager}".`,
+            })
+          }
         }
       },
       ignoreERESOLVE: true,

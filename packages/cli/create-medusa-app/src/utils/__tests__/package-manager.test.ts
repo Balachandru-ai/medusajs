@@ -144,7 +144,6 @@ describe("PackageManager", () => {
     })
 
     it("should detect from user agent when no package manager chosen", async () => {
-      mockExecute.mockResolvedValue({ stdout: "1.22.0", stderr: "" })
       process.env.npm_config_user_agent = "yarn/1.22.0"
 
       const pm = new PackageManager(processManager)
@@ -157,29 +156,31 @@ describe("PackageManager", () => {
         type: "info",
         message: expect.stringContaining('Using detected package manager "yarn"'),
       })
+      // Should not call getVersion since version is in user agent
+      expect(mockExecute).not.toHaveBeenCalled()
     })
 
-    it("should fallback to npm when detected package manager is not available", async () => {
-      mockExecute
-        .mockRejectedValueOnce(new Error("Command not found")) // yarn -v fails
-        .mockResolvedValueOnce({ stdout: "10.0.0", stderr: "" }) // npm -v succeeds
-
-      process.env.npm_config_user_agent = "yarn/1.22.0"
+    it("should use detected package manager even without version in user agent", async () => {
+      mockExecute.mockResolvedValue({ stdout: "1.22.0", stderr: "" })
+      process.env.npm_config_user_agent = "yarn"
 
       const pm = new PackageManager(processManager)
       await pm.setPackageManager({})
 
-      expect(pm.getPackageManager()).toBe("npm")
-      expect(await pm.getPackageManagerString()).toBe("npm@10.0.0")
+      expect(pm.getPackageManager()).toBe("yarn")
+      expect(await pm.getPackageManagerString()).toBe("yarn@1.22.0")
+      // Should call getVersion since version is not in user agent
+      expect(mockExecute).toHaveBeenCalledWith(["yarn -v", {}], {
+        verbose: false,
+      })
       // Fallback message should not be logged in non-verbose mode
       expect(mockLogMessage).not.toHaveBeenCalledWith({
         type: "info",
-        message: expect.stringContaining('Falling back to "npm"'),
+        message: expect.stringContaining("Falling back to"),
       })
     })
 
     it("should log detection messages in verbose mode", async () => {
-      mockExecute.mockResolvedValue({ stdout: "1.22.0", stderr: "" })
       process.env.npm_config_user_agent = "yarn/1.22.0"
 
       const pm = new PackageManager(processManager, { verbose: true })
@@ -190,22 +191,25 @@ describe("PackageManager", () => {
         type: "info",
         message: expect.stringContaining('Using detected package manager "yarn"'),
       })
+      // Should not call getVersion since version is in user agent
+      expect(mockExecute).not.toHaveBeenCalled()
     })
 
-    it("should log fallback messages in verbose mode", async () => {
-      mockExecute
-        .mockRejectedValueOnce(new Error("Command not found")) // yarn -v fails
-        .mockResolvedValueOnce({ stdout: "10.0.0", stderr: "" }) // npm -v succeeds
-
-      process.env.npm_config_user_agent = "yarn/1.22.0"
+    it("should log fallback messages in verbose mode when no version in user agent", async () => {
+      mockExecute.mockResolvedValue({ stdout: "1.22.0", stderr: "" })
+      process.env.npm_config_user_agent = "yarn"
 
       const pm = new PackageManager(processManager, { verbose: true })
       await pm.setPackageManager({})
 
-      expect(pm.getPackageManager()).toBe("npm")
+      expect(pm.getPackageManager()).toBe("yarn")
       expect(mockLogMessage).toHaveBeenCalledWith({
         type: "info",
-        message: expect.stringContaining('Falling back to "npm"'),
+        message: expect.stringContaining("Falling back to yarn"),
+      })
+      // Should call getVersion to get the version
+      expect(mockExecute).toHaveBeenCalledWith(["yarn -v", {}], {
+        verbose: false,
       })
     })
   })
@@ -273,7 +277,6 @@ describe("PackageManager", () => {
 
   describe("installDependencies", () => {
     it("should set package manager before installing if not set", async () => {
-      mockExecute.mockResolvedValue({ stdout: "1.22.0", stderr: "" })
       process.env.npm_config_user_agent = "yarn/1.22.0"
 
       const pm = new PackageManager(processManager)
@@ -382,7 +385,6 @@ describe("PackageManager", () => {
 
   describe("runCommand", () => {
     it("should set package manager before running if not set", async () => {
-      mockExecute.mockResolvedValue({ stdout: "1.22.0", stderr: "" })
       process.env.npm_config_user_agent = "yarn/1.22.0"
 
       const pm = new PackageManager(processManager)
@@ -448,7 +450,6 @@ describe("PackageManager", () => {
 
   describe("runMedusaCommand", () => {
     it("should set package manager before running if not set", async () => {
-      mockExecute.mockResolvedValue({ stdout: "1.22.0", stderr: "" })
       process.env.npm_config_user_agent = "yarn/1.22.0"
 
       const pm = new PackageManager(processManager)
@@ -568,7 +569,6 @@ describe("PackageManager", () => {
     })
 
     it("should call setPackageManager if package manager is not set", async () => {
-      mockExecute.mockResolvedValue({ stdout: "1.22.0", stderr: "" })
       process.env.npm_config_user_agent = "yarn/1.22.0"
 
       const pm = new PackageManager(processManager)
