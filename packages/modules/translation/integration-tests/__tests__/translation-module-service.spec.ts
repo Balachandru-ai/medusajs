@@ -31,9 +31,7 @@ moduleIntegrationTestRunner<ITranslationModuleService>({
     describe("Translation Module Service", () => {
       afterAll(() => {
         // Restore the mock after all tests complete
-        if (mockGetTranslatableEntities) {
-          mockGetTranslatableEntities.mockRestore()
-        }
+        mockGetTranslatableEntities.mockRestore()
       })
 
       it(`should export the appropriate linkable configuration`, () => {

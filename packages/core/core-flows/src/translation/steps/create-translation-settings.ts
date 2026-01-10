@@ -4,14 +4,18 @@ import { CreateTranslationSettingsDTO } from "@medusajs/types"
 
 export const createTranslationSettingsStepId = "create-translation-settings"
 
-export type CreateTranslationSettingsStepInput = CreateTranslationSettingsDTO[]
+export type CreateTranslationSettingsStepInput =
+  | CreateTranslationSettingsDTO
+  | CreateTranslationSettingsDTO[]
 
 export const createTranslationSettingsStep = createStep(
   createTranslationSettingsStepId,
   async (data: CreateTranslationSettingsStepInput, { container }) => {
     const service = container.resolve(Modules.TRANSLATION)
 
-    const created = await service.createTranslationSettings(data)
+    const normalizedInput = Array.isArray(data) ? data : [data]
+
+    const created = await service.createTranslationSettings(normalizedInput)
 
     return new StepResponse(
       created,

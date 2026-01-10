@@ -793,9 +793,30 @@ export interface ITranslationModuleService extends IModuleService {
    * ])
    */
   updateTranslationSettings(
-    input: UpdateTranslationSettingsDTO,
+    data: UpdateTranslationSettingsDTO,
     sharedContext?: Context
   ): Promise<TranslationSettingsDTO>
+
+  /**
+   * This method updates one or more existent translation settings.
+   * @param {UpdateTranslationSettingsDTO[]} data - The translation settings to update.
+   * @param {Context} sharedContext - A context used to share resources, such as transaction manager, between the application and the module.
+   * @returns {Promise<TranslationSettingsDTO[]>} The updated translation settings.
+   *
+   * @example
+   * const translationSettings = await translationModuleService.updateTranslationSettings([
+   *   {
+   *     id: "ts_123",
+   *     entity_type: "product_collection",
+   *     fields: ["title"],
+   *     is_active: true,
+   *   },
+   * ])
+   */
+  updateTranslationSettings(
+    data: UpdateTranslationSettingsDTO[],
+    sharedContext?: Context
+  ): Promise<TranslationSettingsDTO[]>
 
   /**
    * This method deletes one or more translation settings.
