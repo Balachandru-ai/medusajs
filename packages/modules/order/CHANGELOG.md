@@ -1,5 +1,45 @@
 # @medusajs/order
 
+## 2.12.5
+
+### Patch Changes
+
+- Updated dependencies [[`233ec261be200fac83002415aa7c0df082339a3f`](https://github.com/medusajs/medusa/commit/233ec261be200fac83002415aa7c0df082339a3f)]:
+  - @medusajs/framework@2.12.5
+
+## 2.12.4
+
+### Patch Changes
+
+- [#14405](https://github.com/medusajs/medusa/pull/14405) [`5f807ee657c81178f1bf04f695b20ebdb996762c`](https://github.com/medusajs/medusa/commit/5f807ee657c81178f1bf04f695b20ebdb996762c) Thanks [@olivermrbl](https://github.com/olivermrbl)! - chore: Ensure isolated order deletion
+
+- [#14351](https://github.com/medusajs/medusa/pull/14351) [`fb6a6b52fa36128d9a03f09ec168744ded881308`](https://github.com/medusajs/medusa/commit/fb6a6b52fa36128d9a03f09ec168744ded881308) Thanks [@adrien2p](https://github.com/adrien2p)! - fix(order): Prevent fetching all db adjustments when no items are pre…
+
+- Updated dependencies [[`181d5fa67122e4e5f38b91f6b716d35f2d08a204`](https://github.com/medusajs/medusa/commit/181d5fa67122e4e5f38b91f6b716d35f2d08a204), [`d347e369ce555064e24f2dc3cd93b9e4e73a006d`](https://github.com/medusajs/medusa/commit/d347e369ce555064e24f2dc3cd93b9e4e73a006d)]:
+  - @medusajs/framework@2.12.4
+
+## 2.12.3
+
+### Patch Changes
+
+- [#14267](https://github.com/medusajs/medusa/pull/14267) [`f13c23a4b709e31f9b2d42e98acc6e342c494403`](https://github.com/medusajs/medusa/commit/f13c23a4b709e31f9b2d42e98acc6e342c494403) Thanks [@adrien2p](https://github.com/adrien2p)! - feat(): Sync order translations
+
+- [#14315](https://github.com/medusajs/medusa/pull/14315) [`d813fc4ff91e98b475a4eae11780ddc00caf66a8`](https://github.com/medusajs/medusa/commit/d813fc4ff91e98b475a4eae11780ddc00caf66a8) Thanks [@adrien2p](https://github.com/adrien2p)! - chore(): Migration generator fix generated import
+
+- Updated dependencies [[`7b4dda5a179c78de5e099231ec407836db4c8dbd`](https://github.com/medusajs/medusa/commit/7b4dda5a179c78de5e099231ec407836db4c8dbd), [`8964a03fa1b9e6a4c443bf5b21d65d41a8441d29`](https://github.com/medusajs/medusa/commit/8964a03fa1b9e6a4c443bf5b21d65d41a8441d29), [`c8a7122ba918751b215dc0b19cf9b09b2c011ab8`](https://github.com/medusajs/medusa/commit/c8a7122ba918751b215dc0b19cf9b09b2c011ab8)]:
+  - @medusajs/framework@2.12.3
+
+## 2.12.2
+
+### Patch Changes
+
+- [#14221](https://github.com/medusajs/medusa/pull/14221) [`6176f93ac5ad403dd5fb733d6d22632747ccfca3`](https://github.com/medusajs/medusa/commit/6176f93ac5ad403dd5fb733d6d22632747ccfca3) Thanks [@fPolic](https://github.com/fPolic)! - fix(dashboard, order): summary pending diff calculation on preview
+
+- [#14268](https://github.com/medusajs/medusa/pull/14268) [`8bd1d22765edef3b3d2ff31c8f8935049d8b280a`](https://github.com/medusajs/medusa/commit/8bd1d22765edef3b3d2ff31c8f8935049d8b280a) Thanks [@NicolasGorga](https://github.com/NicolasGorga)! - chore(order): Remove unique index on item_id:version for order_item
+
+- Updated dependencies [[`9f7846ae0babbad39947a1f33d236bff8b5098d0`](https://github.com/medusajs/medusa/commit/9f7846ae0babbad39947a1f33d236bff8b5098d0), [`fe49b567d6d55ae224095c06c710d31d40887653`](https://github.com/medusajs/medusa/commit/fe49b567d6d55ae224095c06c710d31d40887653), [`6dc0b8bed84a330c1c24f4f1331f1ed078430a47`](https://github.com/medusajs/medusa/commit/6dc0b8bed84a330c1c24f4f1331f1ed078430a47), [`356283c359e5c30e0d31e6c6fd0fb8e16c025b78`](https://github.com/medusajs/medusa/commit/356283c359e5c30e0d31e6c6fd0fb8e16c025b78)]:
+  - @medusajs/framework@2.12.2
+
 ## 2.12.1
 
 ### Patch Changes

@@ -1,5 +1,55 @@
 # @medusajs/utils
 
+## 2.12.5
+
+### Patch Changes
+
+- [#14494](https://github.com/medusajs/medusa/pull/14494) [`08c55e703573f3c11532228d2c626f7b7f16228f`](https://github.com/medusajs/medusa/commit/08c55e703573f3c11532228d2c626f7b7f16228f) Thanks [@adrien2p](https://github.com/adrien2p)! - feat(DML): Add a new translatable property modifier applicable on text
+
+- Updated dependencies []:
+  - @medusajs/deps@2.12.5
+
+## 2.12.4
+
+### Patch Changes
+
+- [#14388](https://github.com/medusajs/medusa/pull/14388) [`bf4cc12545edc5bf249edc6ecec115c5f7a2b31f`](https://github.com/medusajs/medusa/commit/bf4cc12545edc5bf249edc6ecec115c5f7a2b31f) Thanks [@NicolasGorga](https://github.com/NicolasGorga)! - feat(core-flows,utils): Shipping options workflow events emission
+
+- [#14395](https://github.com/medusajs/medusa/pull/14395) [`001923da2bbebb3d42373f0f66e517830d9c0187`](https://github.com/medusajs/medusa/commit/001923da2bbebb3d42373f0f66e517830d9c0187) Thanks [@peterlgh7](https://github.com/peterlgh7)! - add Medusa Cloud auth provider
+
+- [#14417](https://github.com/medusajs/medusa/pull/14417) [`43305a562cfba914654da056b0a7e03c40849678`](https://github.com/medusajs/medusa/commit/43305a562cfba914654da056b0a7e03c40849678) Thanks [@riqwan](https://github.com/riqwan)! - feat(medusa,utils,core-flows): add reset password metdata
+
+- Updated dependencies []:
+  - @medusajs/deps@2.12.4
+
+## 2.12.3
+
+### Patch Changes
+
+- [#14225](https://github.com/medusajs/medusa/pull/14225) [`b3cb904e9bce3bfad649e500a9e1be0c9bff0e1a`](https://github.com/medusajs/medusa/commit/b3cb904e9bce3bfad649e500a9e1be0c9bff0e1a) Thanks [@carlos-r-l-rodrigues](https://github.com/carlos-r-l-rodrigues)! - chore(utils): currency epsilon
+
+- [#14315](https://github.com/medusajs/medusa/pull/14315) [`d813fc4ff91e98b475a4eae11780ddc00caf66a8`](https://github.com/medusajs/medusa/commit/d813fc4ff91e98b475a4eae11780ddc00caf66a8) Thanks [@adrien2p](https://github.com/adrien2p)! - chore(): Migration generator fix generated import
+
+- Updated dependencies []:
+  - @medusajs/deps@2.12.3
+
+## 2.12.2
+
+### Patch Changes
+
+- [#14237](https://github.com/medusajs/medusa/pull/14237) [`4dbf46f2cb64240092843ebfdef766ec5b2a7116`](https://github.com/medusajs/medusa/commit/4dbf46f2cb64240092843ebfdef766ec5b2a7116) Thanks [@NicolasGorga](https://github.com/NicolasGorga)! - fix(utils): avoid inflating refundable_total for tax inclusive pricing
+
+- [#14277](https://github.com/medusajs/medusa/pull/14277) [`a78f68fa46dceb8e201fe60e770bd9ea654390d8`](https://github.com/medusajs/medusa/commit/a78f68fa46dceb8e201fe60e770bd9ea654390d8) Thanks [@shahednasser](https://github.com/shahednasser)! - fix(utils,core-flows): add events constant for translations and use it in workflows
+
+- [#14074](https://github.com/medusajs/medusa/pull/14074) [`fe49b567d6d55ae224095c06c710d31d40887653`](https://github.com/medusajs/medusa/commit/fe49b567d6d55ae224095c06c710d31d40887653) Thanks [@adrien2p](https://github.com/adrien2p)! - chore: Backend HMR (expriemental)
+
+- [#14218](https://github.com/medusajs/medusa/pull/14218) [`b517137466726c15d5e31ab0c9f42aa57af90c4e`](https://github.com/medusajs/medusa/commit/b517137466726c15d5e31ab0c9f42aa57af90c4e) Thanks [@shahednasser](https://github.com/shahednasser)! - fix(utils): fix error when generating migrations for a module with existing snapshot
+
+- [#14190](https://github.com/medusajs/medusa/pull/14190) [`fd3965974dc0b750d377ff621387d34611760957`](https://github.com/medusajs/medusa/commit/fd3965974dc0b750d377ff621387d34611760957) Thanks [@adrien2p](https://github.com/adrien2p)! - feat(): Pluralized props for list readonly link
+
+- Updated dependencies []:
+  - @medusajs/deps@2.12.2
+
 ## 2.12.1
 
 ### Patch Changes

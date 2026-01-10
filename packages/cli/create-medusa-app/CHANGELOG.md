@@ -1,5 +1,41 @@
 # Change Log
 
+## 2.12.5
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @medusajs/deps@2.12.5
+  - @medusajs/telemetry@2.12.5
+
+## 2.12.4
+
+### Patch Changes
+
+- [#14462](https://github.com/medusajs/medusa/pull/14462) [`b300a9334584d5b373d6b1879d715e9ebd9050db`](https://github.com/medusajs/medusa/commit/b300a9334584d5b373d6b1879d715e9ebd9050db) Thanks [@shahednasser](https://github.com/shahednasser)! - fix(create-medusa-app): fix version option not working with Next.js storefront
+
+- Updated dependencies []:
+  - @medusajs/deps@2.12.4
+  - @medusajs/telemetry@2.12.4
+
+## 2.12.3
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @medusajs/deps@2.12.3
+  - @medusajs/telemetry@2.12.3
+
+## 2.12.2
+
+### Patch Changes
+
+- [#14254](https://github.com/medusajs/medusa/pull/14254) [`9bcfb990bf1d14f99859cf1247627bcc0d797136`](https://github.com/medusajs/medusa/commit/9bcfb990bf1d14f99859cf1247627bcc0d797136) Thanks [@adrien2p](https://github.com/adrien2p)! - chore(): Upgrade validator patched version
+
+- Updated dependencies []:
+  - @medusajs/deps@2.12.2
+  - @medusajs/telemetry@2.12.2
+
 ## 2.12.1
 
 ### Patch Changes

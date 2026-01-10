@@ -83,6 +83,7 @@ The code snippets in this section assume that your forked Medusa project and the
     "@medusajs/pricing": "file:../medusa/packages/modules/pricing",
     "@medusajs/product": "file:../medusa/packages/modules/product",
     "@medusajs/promotion": "file:../medusa/packages/modules/promotion",
+    "@medusajs/rbac": "file:../medusa/packages/modules/rbac",
     "@medusajs/region": "file:../medusa/packages/modules/region",
     "@medusajs/sales-channel": "file:../medusa/packages/modules/sales-channel",
     "@medusajs/stock-location": "file:../medusa/packages/modules/stock-location",
@@ -117,7 +118,8 @@ The code snippets in this section assume that your forked Medusa project and the
     "@medusajs/draft-order": "file:../medusa/packages/plugins/draft-order",
     "@medusajs/deps": "file:../medusa/packages/deps",
     "@medusajs/caching-redis": "file:../medusa/packages/modules/providers/caching-redis",
-    "@medusajs/caching": "file:../medusa/packages/modules/caching"
+    "@medusajs/caching": "file:../medusa/packages/modules/caching",
+    "@medusajs/translation": "file:../medusa/packages/modules/translation",
 }
 ```
 

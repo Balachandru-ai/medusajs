@@ -770,6 +770,11 @@ export interface CartDTO {
   currency_code: string
 
   /**
+   * The locale code of the cart.
+   */
+  locale?: string
+
+  /**
    * The associated shipping address.
    *
    * @expandable
