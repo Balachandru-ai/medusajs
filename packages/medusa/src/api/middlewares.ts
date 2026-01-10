@@ -47,11 +47,6 @@ import { columnRoutesMiddlewares } from "./admin/views/[entity]/columns/middlewa
 import { viewConfigurationRoutesMiddlewares } from "./admin/views/[entity]/configurations/middlewares"
 import { adminWorkflowsExecutionsMiddlewares } from "./admin/workflows-executions/middlewares"
 import { authRoutesMiddlewares } from "./auth/middlewares"
-
-import { adminIndexRoutesMiddlewares } from "./admin/index/middlewares"
-import { adminLocalesRoutesMiddlewares } from "./admin/locales/middlewares"
-import { adminShippingOptionTypeRoutesMiddlewares } from "./admin/shipping-option-types/middlewares"
-import { adminTranslationsRoutesMiddlewares } from "./admin/translations/middlewares"
 import { cloudRoutesMiddlewares } from "./cloud/middlewares"
 import { hooksRoutesMiddlewares } from "./hooks/middlewares"
 import { storeCartRoutesMiddlewares } from "./store/carts/middlewares"
@@ -80,9 +75,7 @@ export default defineMiddlewares([
   ...storeRoutesMiddlewares,
   {
     matcher: "/admin*",
-    middlewares: [
-        setSecretApiKeyContext,
-    ]
+    middlewares: [setSecretApiKeyContext],
   },
   ...adminCustomerGroupRoutesMiddlewares,
   ...adminCustomerRoutesMiddlewares,
