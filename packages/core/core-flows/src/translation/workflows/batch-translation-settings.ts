@@ -1,7 +1,6 @@
 import {
   createWorkflow,
   parallelize,
-  transform,
   WorkflowResponse,
 } from "@medusajs/framework/workflows-sdk"
 import {
@@ -31,8 +30,6 @@ export const batchTranslationSettingsWorkflow = createWorkflow(
       deleteTranslationSettingsStep(input.delete)
     )
 
-    return new WorkflowResponse(
-      transform({ created, updated, deleted }, (data) => data)
-    )
+    return new WorkflowResponse({ created, updated, deleted })
   }
 )
