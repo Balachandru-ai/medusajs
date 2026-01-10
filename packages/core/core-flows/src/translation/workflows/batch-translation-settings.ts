@@ -12,7 +12,6 @@ import {
   createTranslationSettingsStep,
   deleteTranslationSettingsStep,
   updateTranslationSettingsStep,
-  validateTranslationSettingsStep,
 } from "../steps"
 
 export const batchTranslationSettingsWorkflowId = "batch-translation-settings"
@@ -26,15 +25,6 @@ export interface BatchTranslationSettingsWorkflowInput {
 export const batchTranslationSettingsWorkflow = createWorkflow(
   batchTranslationSettingsWorkflowId,
   (input: BatchTranslationSettingsWorkflowInput) => {
-    const validateTranslationSettingsStepInput = transform(
-      { input },
-      ({ input }) => {
-        return [...input.create, ...input.update]
-      }
-    )
-
-    validateTranslationSettingsStep(validateTranslationSettingsStepInput)
-
     const [created, updated, deleted] = parallelize(
       createTranslationSettingsStep(input.create),
       updateTranslationSettingsStep(input.update),
