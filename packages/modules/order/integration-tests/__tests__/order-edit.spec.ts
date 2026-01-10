@@ -954,10 +954,13 @@ moduleIntegrationTestRunner<IOrderModuleService>({
 
         expect(createdOrder.version).toBe(1)
 
+        const itemWithAdjustments = createdOrder.items?.find(
+          (item) => item.title === "Item 1"
+        )!
+
         // Verify initial adjustments have version 1
         const initialAdjustments = await service.listOrderLineItemAdjustments({
-          item_id: createdOrder.items?.find((item) => item.title === "Item 1")!
-            .id,
+          item_id: itemWithAdjustments.id,
         })
 
         expect(initialAdjustments).toHaveLength(1)
@@ -974,12 +977,11 @@ moduleIntegrationTestRunner<IOrderModuleService>({
             {
               action: ChangeActionType.ITEM_ADD,
               reference: "order_line_item",
-              reference_id: createdOrder.items![0].id,
+              reference_id: itemWithAdjustments.id,
               amount:
-                createdOrder.items![0].unit_price *
-                createdOrder.items![0].quantity,
+                itemWithAdjustments.unit_price * itemWithAdjustments.quantity,
               details: {
-                reference_id: createdOrder.items![0].id,
+                reference_id: itemWithAdjustments.id,
                 quantity: 2,
               },
             },
@@ -997,7 +999,7 @@ moduleIntegrationTestRunner<IOrderModuleService>({
 
         // Verify new adjustments have version 2
         const allAdjustments = await service.listOrderLineItemAdjustments({
-          item_id: createdOrder.items![0].id,
+          item_id: itemWithAdjustments.id,
         })
 
         // Should have adjustments for both versions
@@ -1077,9 +1079,13 @@ moduleIntegrationTestRunner<IOrderModuleService>({
 
         expect(createdOrder.version).toBe(1)
 
+        const itemWithAdjustments = createdOrder.items?.find(
+          (item) => item.title === "Item 1"
+        )!
+
         // Verify initial adjustments
         const initialAdjustments = await service.listOrderLineItemAdjustments({
-          item_id: createdOrder.items![0].id,
+          item_id: itemWithAdjustments.id,
         })
 
         expect(initialAdjustments).toHaveLength(1)
@@ -1094,12 +1100,11 @@ moduleIntegrationTestRunner<IOrderModuleService>({
             {
               action: ChangeActionType.ITEM_ADD,
               reference: "order_line_item",
-              reference_id: createdOrder.items![0].id,
+              reference_id: itemWithAdjustments.id,
               amount:
-                createdOrder.items![0].unit_price *
-                createdOrder.items![0].quantity,
+                itemWithAdjustments.unit_price * itemWithAdjustments.quantity,
               details: {
-                reference_id: createdOrder.items![0].id,
+                reference_id: itemWithAdjustments.id,
                 quantity: 2,
               },
             },
@@ -1117,7 +1122,7 @@ moduleIntegrationTestRunner<IOrderModuleService>({
 
         const adjustmentsBeforeRevert =
           await service.listOrderLineItemAdjustments({
-            item_id: createdOrder.items![0].id,
+            item_id: itemWithAdjustments.id,
           })
 
         const v2AdjustmentsBeforeRevert = adjustmentsBeforeRevert.filter(
@@ -1135,7 +1140,7 @@ moduleIntegrationTestRunner<IOrderModuleService>({
         // Verify version 2 adjustments are soft-deleted (not returned in list)
         const adjustmentsAfterRevert =
           await service.listOrderLineItemAdjustments({
-            item_id: createdOrder.items![0].id,
+            item_id: itemWithAdjustments.id,
           })
 
         const v2AdjustmentsAfterRevert = adjustmentsAfterRevert.filter(
