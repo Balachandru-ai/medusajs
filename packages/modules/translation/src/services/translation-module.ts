@@ -14,11 +14,13 @@ import {
 } from "@medusajs/framework/types"
 import { SqlEntityManager } from "@medusajs/framework/mikro-orm/postgresql"
 import {
+  arrayDifference,
   DmlEntity,
   EmitEvents,
   InjectManager,
   MedusaContext,
   MedusaError,
+  MedusaErrorTypes,
   MedusaService,
   normalizeLocale,
   toSnakeCase,
@@ -380,6 +382,58 @@ export default class TranslationModuleService
   }
 
   @InjectManager()
+  @EmitEvents()
+  // @ts-expect-error
+  async createTranslationSettings(
+    data: CreateTranslationSettingsDTO[] | CreateTranslationSettingsDTO,
+    @MedusaContext() sharedContext: Context = {}
+  ): Promise<
+    | TranslationTypes.TranslationSettingsDTO
+    | TranslationTypes.TranslationSettingsDTO[]
+  > {
+    const dataArray = Array.isArray(data) ? data : [data]
+
+    await this.validateSettings_(dataArray, sharedContext)
+
+    const createdSettings = await this.settingsService_.create(
+      dataArray,
+      sharedContext
+    )
+
+    const serialized = await this.baseRepository_.serialize<
+      TranslationTypes.TranslationSettingsDTO[]
+    >(createdSettings)
+
+    return Array.isArray(data) ? serialized : serialized[0]
+  }
+
+  @InjectManager()
+  @EmitEvents()
+  // @ts-expect-error
+  async updateTranslationSettings(
+    data: UpdateTranslationSettingsDTO | UpdateTranslationSettingsDTO[],
+    @MedusaContext() sharedContext: Context = {}
+  ): Promise<
+    | TranslationTypes.TranslationSettingsDTO[]
+    | TranslationTypes.TranslationSettingsDTO
+  > {
+    const dataArray = Array.isArray(data) ? data : [data]
+
+    await this.validateSettings_(dataArray, sharedContext)
+
+    const updatedSettings = await this.settingsService_.update(
+      dataArray,
+      sharedContext
+    )
+
+    const serialized = await this.baseRepository_.serialize<
+      TranslationTypes.TranslationSettingsDTO[]
+    >(updatedSettings)
+
+    return Array.isArray(data) ? serialized : serialized[0]
+  }
+
+  @InjectManager()
   async getStatistics(
     input: TranslationTypes.TranslationStatisticsInput,
     @MedusaContext() sharedContext: Context = {}
@@ -493,6 +547,81 @@ export default class TranslationModuleService
     }
 
     return result
+  }
+
+  /**
+   * Validates the translation settings to create or update against the translatable entities and their translatable fields configuration.
+   * @param dataToValidate - The data to validate.
+   * @param sharedContext - A context used to share resources, such as transaction manager, between the application and the module.
+   */
+  @InjectManager()
+  protected async validateSettings_(
+    dataToValidate: (
+      | CreateTranslationSettingsDTO
+      | UpdateTranslationSettingsDTO
+    )[],
+    @MedusaContext() sharedContext: Context = {}
+  ) {
+    const translatableEntities = DmlEntity.getTranslatableEntities()
+    const translatableEntitiesMap = new Map(
+      translatableEntities.map((entity) => [toSnakeCase(entity.entity), entity])
+    )
+
+    const invalidSettings: {
+      entity_type: string
+      is_invalid_entity: boolean
+      invalidFields?: string[]
+    }[] = []
+
+    for (const item of dataToValidate) {
+      let itemEntityType = item.entity_type
+      if (!itemEntityType) {
+        const translationSetting = await this.retrieveTranslationSettings(
+          //@ts-expect-error - if no entity_type, we are on an update
+          item.id,
+          { select: ["entity_type"] },
+          sharedContext
+        )
+        itemEntityType = translationSetting.entity_type
+      }
+
+      const entity = translatableEntitiesMap.get(itemEntityType)
+
+      if (!entity) {
+        invalidSettings.push({
+          entity_type: itemEntityType,
+          is_invalid_entity: true,
+        })
+      } else {
+        const invalidFields = arrayDifference(item.fields ?? [], entity.fields)
+        if (invalidFields.length) {
+          invalidSettings.push({
+            entity_type: itemEntityType,
+            is_invalid_entity: false,
+            invalidFields,
+          })
+        }
+      }
+    }
+
+    if (invalidSettings.length) {
+      throw new MedusaError(
+        MedusaErrorTypes.INVALID_DATA,
+        "Invalid translation settings:\n" +
+          invalidSettings
+            .map(
+              (setting) =>
+                `- ${setting.entity_type} ${
+                  setting.is_invalid_entity
+                    ? "is not a translatable entity"
+                    : `doesn't have the following fields set as translatable: ${setting.invalidFields?.join(
+                        ", "
+                      )}`
+                }`
+            )
+            .join("\n")
+      )
+    }
   }
 
   __hooks = {
