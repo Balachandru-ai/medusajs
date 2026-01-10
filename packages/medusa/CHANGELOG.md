@@ -1,5 +1,65 @@
 # Change Log
 
+## 2.12.5
+
+### Patch Changes
+
+- [#14502](https://github.com/medusajs/medusa/pull/14502) [`233ec261be200fac83002415aa7c0df082339a3f`](https://github.com/medusajs/medusa/commit/233ec261be200fac83002415aa7c0df082339a3f) Thanks [@adrien2p](https://github.com/adrien2p)! - Fix/add schema only flag
+
+- Updated dependencies [[`bb599a26deed6d5b98e6ce6308c447dca5b90f10`](https://github.com/medusajs/medusa/commit/bb599a26deed6d5b98e6ce6308c447dca5b90f10), [`568742826fae7240b33e6cc7356a12c3715d05b1`](https://github.com/medusajs/medusa/commit/568742826fae7240b33e6cc7356a12c3715d05b1), [`233ec261be200fac83002415aa7c0df082339a3f`](https://github.com/medusajs/medusa/commit/233ec261be200fac83002415aa7c0df082339a3f)]:
+  - @medusajs/link-modules@2.12.5
+  - @medusajs/analytics@2.12.5
+  - @medusajs/auth@2.12.5
+  - @medusajs/cache-redis@2.12.5
+  - @medusajs/caching@2.12.5
+  - @medusajs/event-bus-redis@2.12.5
+  - @medusajs/file@2.12.5
+  - @medusajs/locking@2.12.5
+  - @medusajs/notification@2.12.5
+  - @medusajs/payment@2.12.5
+  - @medusajs/workflow-engine-redis@2.12.5
+  - @medusajs/framework@2.12.5
+  - @medusajs/admin-bundler@2.12.5
+  - @medusajs/draft-order@2.12.5
+  - @medusajs/core-flows@2.12.5
+  - @medusajs/api-key@2.12.5
+  - @medusajs/cache-inmemory@2.12.5
+  - @medusajs/cart@2.12.5
+  - @medusajs/currency@2.12.5
+  - @medusajs/customer@2.12.5
+  - @medusajs/event-bus-local@2.12.5
+  - @medusajs/fulfillment@2.12.5
+  - @medusajs/index@2.12.5
+  - @medusajs/inventory@2.12.5
+  - @medusajs/order@2.12.5
+  - @medusajs/pricing@2.12.5
+  - @medusajs/product@2.12.5
+  - @medusajs/promotion@2.12.5
+  - @medusajs/analytics-local@2.12.5
+  - @medusajs/analytics-posthog@2.12.5
+  - @medusajs/auth-emailpass@2.12.5
+  - @medusajs/auth-github@2.12.5
+  - @medusajs/auth-google@2.12.5
+  - @medusajs/caching-redis@2.12.5
+  - @medusajs/file-local@2.12.5
+  - @medusajs/file-s3@2.12.5
+  - @medusajs/fulfillment-manual@2.12.5
+  - @medusajs/locking-postgres@2.12.5
+  - @medusajs/locking-redis@2.12.5
+  - @medusajs/notification-local@2.12.5
+  - @medusajs/notification-sendgrid@2.12.5
+  - @medusajs/payment-stripe@2.12.5
+  - @medusajs/region@2.12.5
+  - @medusajs/sales-channel@2.12.5
+  - @medusajs/settings@2.12.5
+  - @medusajs/stock-location@2.12.5
+  - @medusajs/store@2.12.5
+  - @medusajs/tax@2.12.5
+  - @medusajs/translation@2.12.5
+  - @medusajs/user@2.12.5
+  - @medusajs/workflow-engine-inmemory@2.12.5
+  - @medusajs/telemetry@2.12.5
+
 ## 2.12.4
 
 ### Patch Changes
