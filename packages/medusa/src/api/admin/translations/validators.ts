@@ -4,7 +4,7 @@ import {
   createFindParams,
   createSelectParams,
 } from "../../utils/validators"
-import { z } from "zod"
+import { z } from "@medusajs/framework/zod"
 
 export const AdminGetTranslationParams = createSelectParams()
 

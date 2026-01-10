@@ -520,9 +520,17 @@ paths:
           application/json:
             schema:
               type: object
-              title: identifier
-              description: The customer's identifier for the selected auth provider. For example, for the `emailpass` auth provider, the value is the customer's email.
-              example: customer@gmail.com
+              description: The input data necessary to generate a reset password token.
+              required:
+                - identifier
+              properties:
+                identifier:
+                  type: string
+                  description: The customer's identifier for the selected auth provider. For example, for the `emailpass` auth provider, the value is the customer's email.
+                  example: customer@gmail.com
+                metadata:
+                  type: object
+                  description: Optional metadata to include with the reset password token generation request.
       x-codeSamples:
         - lang: JavaScript
           label: JS SDK
@@ -585,6 +593,7 @@ paths:
               entity_id, // The identifier of the user or customer. For example, an email address.
               actor_type, // The type of actor. For example, "customer", "user", or custom.
               token, // The generated token.
+              metadata, // Optional custom metadata passed from the request.
             }
             ```
           description: |-
@@ -858,7 +867,7 @@ paths:
             type: string
             externalDocs:
               url: https://docs.medusajs.com/api/store#publishable-api-key
-        - name: Content-Language
+        - name: x-medusa-locale
           in: header
           description: The locale in BCP 47 format to retrieve localized content.
           required: false
@@ -987,7 +996,7 @@ paths:
             type: string
             externalDocs:
               url: https://docs.medusajs.com/api/store#publishable-api-key
-        - name: Content-Language
+        - name: x-medusa-locale
           in: header
           description: The locale in BCP 47 format to retrieve localized content.
           required: false
@@ -1085,7 +1094,7 @@ paths:
             type: string
             externalDocs:
               url: https://docs.medusajs.com/api/store#publishable-api-key
-        - name: Content-Language
+        - name: x-medusa-locale
           in: header
           description: The locale in BCP 47 format to retrieve localized content.
           required: false
@@ -1230,7 +1239,7 @@ paths:
             type: string
             externalDocs:
               url: https://docs.medusajs.com/api/store#publishable-api-key
-        - name: Content-Language
+        - name: x-medusa-locale
           in: header
           description: The locale in BCP 47 format to retrieve localized content.
           required: false
@@ -1400,7 +1409,7 @@ paths:
             type: string
             externalDocs:
               url: https://docs.medusajs.com/api/store#publishable-api-key
-        - name: Content-Language
+        - name: x-medusa-locale
           in: header
           description: The locale in BCP 47 format to retrieve localized content.
           required: false
@@ -1685,7 +1694,7 @@ paths:
             type: string
             externalDocs:
               url: https://docs.medusajs.com/api/store#publishable-api-key
-        - name: Content-Language
+        - name: x-medusa-locale
           in: header
           description: The locale in BCP 47 format to retrieve localized content.
           required: false
@@ -1843,7 +1852,7 @@ paths:
             type: string
             externalDocs:
               url: https://docs.medusajs.com/api/store#publishable-api-key
-        - name: Content-Language
+        - name: x-medusa-locale
           in: header
           description: The locale in BCP 47 format to retrieve localized content.
           required: false
@@ -1997,7 +2006,7 @@ paths:
             type: string
             externalDocs:
               url: https://docs.medusajs.com/api/store#publishable-api-key
-        - name: Content-Language
+        - name: x-medusa-locale
           in: header
           description: The locale in BCP 47 format to retrieve localized content.
           required: false
@@ -2132,7 +2141,7 @@ paths:
             type: string
             externalDocs:
               url: https://docs.medusajs.com/api/store#publishable-api-key
-        - name: Content-Language
+        - name: x-medusa-locale
           in: header
           description: The locale in BCP 47 format to retrieve localized content.
           required: false
@@ -2225,7 +2234,7 @@ paths:
             type: string
             externalDocs:
               url: https://docs.medusajs.com/api/store#publishable-api-key
-        - name: Content-Language
+        - name: x-medusa-locale
           in: header
           description: The locale in BCP 47 format to retrieve localized content.
           required: false
@@ -2324,7 +2333,7 @@ paths:
             type: string
             externalDocs:
               url: https://docs.medusajs.com/api/store#publishable-api-key
-        - name: Content-Language
+        - name: x-medusa-locale
           in: header
           description: The locale in BCP 47 format to retrieve localized content.
           required: false
@@ -2547,7 +2556,7 @@ paths:
             type: string
             externalDocs:
               url: https://docs.medusajs.com/api/store#publishable-api-key
-        - name: Content-Language
+        - name: x-medusa-locale
           in: header
           description: The locale in BCP 47 format to retrieve localized content.
           required: false
@@ -2624,7 +2633,7 @@ paths:
             type: string
             externalDocs:
               url: https://docs.medusajs.com/api/store#publishable-api-key
-        - name: Content-Language
+        - name: x-medusa-locale
           in: header
           description: The locale in BCP 47 format to retrieve localized content.
           required: false
@@ -2917,6 +2926,7 @@ paths:
                 type: boolean
                 title: $exists
                 description: Filter by whether a value for this parameter exists (not `null`).
+            title: created_at
         - name: updated_at
           in: query
           description: Filter by the collection's update date.
@@ -3148,6 +3158,7 @@ paths:
                 type: boolean
                 title: $exists
                 description: Filter by whether a value for this parameter exists (not `null`).
+            title: updated_at
         - name: handle
           in: query
           required: false
@@ -3323,7 +3334,7 @@ paths:
             type: string
             externalDocs:
               url: https://docs.medusajs.com/api/store#publishable-api-key
-        - name: Content-Language
+        - name: x-medusa-locale
           in: header
           description: The locale in BCP 47 format to retrieve localized content.
           required: false
@@ -3416,7 +3427,7 @@ paths:
             type: string
             externalDocs:
               url: https://docs.medusajs.com/api/store#publishable-api-key
-        - name: Content-Language
+        - name: x-medusa-locale
           in: header
           description: The locale in BCP 47 format to retrieve localized content.
           required: false
@@ -3572,7 +3583,7 @@ paths:
             type: string
             externalDocs:
               url: https://docs.medusajs.com/api/store#publishable-api-key
-        - name: Content-Language
+        - name: x-medusa-locale
           in: header
           description: The locale in BCP 47 format to retrieve localized content.
           required: false
@@ -3647,7 +3658,7 @@ paths:
             type: string
             externalDocs:
               url: https://docs.medusajs.com/api/store#publishable-api-key
-        - name: Content-Language
+        - name: x-medusa-locale
           in: header
           description: The locale in BCP 47 format to retrieve localized content.
           required: false
@@ -3785,7 +3796,7 @@ paths:
             type: string
             externalDocs:
               url: https://docs.medusajs.com/api/store#publishable-api-key
-        - name: Content-Language
+        - name: x-medusa-locale
           in: header
           description: The locale in BCP 47 format to retrieve localized content.
           required: false
@@ -3885,7 +3896,7 @@ paths:
             type: string
             externalDocs:
               url: https://docs.medusajs.com/api/store#publishable-api-key
-        - name: Content-Language
+        - name: x-medusa-locale
           in: header
           description: The locale in BCP 47 format to retrieve localized content.
           required: false
@@ -4012,7 +4023,7 @@ paths:
             type: string
             externalDocs:
               url: https://docs.medusajs.com/api/store#publishable-api-key
-        - name: Content-Language
+        - name: x-medusa-locale
           in: header
           description: The locale in BCP 47 format to retrieve localized content.
           required: false
@@ -4204,7 +4215,7 @@ paths:
             type: string
             externalDocs:
               url: https://docs.medusajs.com/api/store#publishable-api-key
-        - name: Content-Language
+        - name: x-medusa-locale
           in: header
           description: The locale in BCP 47 format to retrieve localized content.
           required: false
@@ -4333,7 +4344,7 @@ paths:
             type: string
             externalDocs:
               url: https://docs.medusajs.com/api/store#publishable-api-key
-        - name: Content-Language
+        - name: x-medusa-locale
           in: header
           description: The locale in BCP 47 format to retrieve localized content.
           required: false
@@ -4442,7 +4453,7 @@ paths:
             type: string
             externalDocs:
               url: https://docs.medusajs.com/api/store#publishable-api-key
-        - name: Content-Language
+        - name: x-medusa-locale
           in: header
           description: The locale in BCP 47 format to retrieve localized content.
           required: false
@@ -4565,7 +4576,7 @@ paths:
             type: string
             externalDocs:
               url: https://docs.medusajs.com/api/store#publishable-api-key
-        - name: Content-Language
+        - name: x-medusa-locale
           in: header
           description: The locale in BCP 47 format to retrieve localized content.
           required: false
@@ -4830,7 +4841,7 @@ paths:
             type: string
             externalDocs:
               url: https://docs.medusajs.com/api/store#publishable-api-key
-        - name: Content-Language
+        - name: x-medusa-locale
           in: header
           description: The locale in BCP 47 format to retrieve localized content.
           required: false
@@ -4916,7 +4927,7 @@ paths:
             type: string
             externalDocs:
               url: https://docs.medusajs.com/api/store#publishable-api-key
-        - name: Content-Language
+        - name: x-medusa-locale
           in: header
           description: The locale in BCP 47 format to retrieve localized content.
           required: false
@@ -5154,7 +5165,7 @@ paths:
             type: string
             externalDocs:
               url: https://docs.medusajs.com/api/store#publishable-api-key
-        - name: Content-Language
+        - name: x-medusa-locale
           in: header
           description: The locale in BCP 47 format to retrieve localized content.
           required: false
@@ -5256,7 +5267,7 @@ paths:
             type: string
             externalDocs:
               url: https://docs.medusajs.com/api/store#publishable-api-key
-        - name: Content-Language
+        - name: x-medusa-locale
           in: header
           description: The locale in BCP 47 format to retrieve localized content.
           required: false
@@ -5378,7 +5389,7 @@ paths:
             type: string
             externalDocs:
               url: https://docs.medusajs.com/api/store#publishable-api-key
-        - name: Content-Language
+        - name: x-medusa-locale
           in: header
           description: The locale in BCP 47 format to retrieve localized content.
           required: false
@@ -5494,7 +5505,7 @@ paths:
             type: string
             externalDocs:
               url: https://docs.medusajs.com/api/store#publishable-api-key
-        - name: Content-Language
+        - name: x-medusa-locale
           in: header
           description: The locale in BCP 47 format to retrieve localized content.
           required: false
@@ -5616,7 +5627,7 @@ paths:
             type: string
             externalDocs:
               url: https://docs.medusajs.com/api/store#publishable-api-key
-        - name: Content-Language
+        - name: x-medusa-locale
           in: header
           description: The locale in BCP 47 format to retrieve localized content.
           required: false
@@ -5736,7 +5747,7 @@ paths:
             type: string
             externalDocs:
               url: https://docs.medusajs.com/api/store#publishable-api-key
-        - name: Content-Language
+        - name: x-medusa-locale
           in: header
           description: The locale in BCP 47 format to retrieve localized content.
           required: false
@@ -5862,7 +5873,7 @@ paths:
             type: string
             externalDocs:
               url: https://docs.medusajs.com/api/store#publishable-api-key
-        - name: Content-Language
+        - name: x-medusa-locale
           in: header
           description: The locale in BCP 47 format to retrieve localized content.
           required: false
@@ -5948,7 +5959,7 @@ paths:
             type: string
             externalDocs:
               url: https://docs.medusajs.com/api/store#publishable-api-key
-        - name: Content-Language
+        - name: x-medusa-locale
           in: header
           description: The locale in BCP 47 format to retrieve localized content.
           required: false
@@ -6119,7 +6130,7 @@ paths:
             type: string
             externalDocs:
               url: https://docs.medusajs.com/api/store#publishable-api-key
-        - name: Content-Language
+        - name: x-medusa-locale
           in: header
           description: The locale in BCP 47 format to retrieve localized content.
           required: false
@@ -6478,6 +6489,7 @@ paths:
                 type: boolean
                 title: $exists
                 description: Filter by whether a value for this parameter exists (not `null`).
+            title: created_at
         - name: updated_at
           in: query
           description: Filter by the category's update date.
@@ -6709,6 +6721,7 @@ paths:
                 type: boolean
                 title: $exists
                 description: Filter by whether a value for this parameter exists (not `null`).
+            title: updated_at
         - name: $and
           in: query
           required: false
@@ -6831,7 +6844,7 @@ paths:
             type: string
             externalDocs:
               url: https://docs.medusajs.com/api/store#publishable-api-key
-        - name: Content-Language
+        - name: x-medusa-locale
           in: header
           description: The locale in BCP 47 format to retrieve localized content.
           required: false
@@ -6940,7 +6953,7 @@ paths:
             type: string
             externalDocs:
               url: https://docs.medusajs.com/api/store#publishable-api-key
-        - name: Content-Language
+        - name: x-medusa-locale
           in: header
           description: The locale in BCP 47 format to retrieve localized content.
           required: false
@@ -7280,6 +7293,7 @@ paths:
                 type: boolean
                 title: $exists
                 description: Filter by whether a value for this parameter exists (not `null`).
+            title: created_at
         - name: updated_at
           in: query
           description: Filter by the tag's update date.
@@ -7511,6 +7525,7 @@ paths:
                 type: boolean
                 title: $exists
                 description: Filter by whether a value for this parameter exists (not `null`).
+            title: updated_at
         - name: with_deleted
           in: query
           description: Whether to include deleted records in the result.
@@ -7577,7 +7592,7 @@ paths:
             type: string
             externalDocs:
               url: https://docs.medusajs.com/api/store#publishable-api-key
-        - name: Content-Language
+        - name: x-medusa-locale
           in: header
           description: The locale in BCP 47 format to retrieve localized content.
           required: false
@@ -7652,7 +7667,7 @@ paths:
             type: string
             externalDocs:
               url: https://docs.medusajs.com/api/store#publishable-api-key
-        - name: Content-Language
+        - name: x-medusa-locale
           in: header
           description: The locale in BCP 47 format to retrieve localized content.
           required: false
@@ -7992,6 +8007,7 @@ paths:
                 type: boolean
                 title: $exists
                 description: Filter by whether a value for this parameter exists (not `null`).
+            title: created_at
         - name: updated_at
           in: query
           description: Filter by the type's update date.
@@ -8223,6 +8239,7 @@ paths:
                 type: boolean
                 title: $exists
                 description: Filter by whether a value for this parameter exists (not `null`).
+            title: updated_at
         - name: with_deleted
           in: query
           description: Whether to include deleted records in the result.
@@ -8289,7 +8306,7 @@ paths:
             type: string
             externalDocs:
               url: https://docs.medusajs.com/api/store#publishable-api-key
-        - name: Content-Language
+        - name: x-medusa-locale
           in: header
           description: The locale in BCP 47 format to retrieve localized content.
           required: false
@@ -8356,7 +8373,7 @@ paths:
       description: |
         Retrieve a list of products. The products can be filtered by fields such as `id`. The products can also be sorted or paginated.
 
-        You can retrieve the content of the products translated to a specific locale either by passing the `locale` query parameter or by setting the `Content-Language` header to the desired locale code in BCP 47 format. If you don't pass a locale, and your store has a default locale, the default locale will be used.
+        You can retrieve the content of the products translated to a specific locale either by passing the `locale` query parameter or by setting the `x-medusa-locale` header to the desired locale code in BCP 47 format. If you don't pass a locale, and your store has a default locale, the default locale will be used.
 
         With localization, the products' content like title and description will be in the specified locale if a translation is available,  and fallback to the original content otherwise. Learn more in the [Localization](#localization) section.
       x-authenticated: false
@@ -8372,7 +8389,7 @@ paths:
             type: string
             externalDocs:
               url: https://docs.medusajs.com/api/store#publishable-api-key
-        - name: Content-Language
+        - name: x-medusa-locale
           in: header
           description: The locale in BCP 47 format to retrieve localized content.
           required: false
@@ -8774,6 +8791,7 @@ paths:
                 type: boolean
                 title: $exists
                 description: Filter by whether a value for this parameter exists (not `null`).
+            title: created_at
         - name: updated_at
           in: query
           description: Filter by the product's update date.
@@ -9005,6 +9023,7 @@ paths:
                 type: boolean
                 title: $exists
                 description: Filter by whether a value for this parameter exists (not `null`).
+            title: updated_at
         - name: region_id
           in: query
           description: The ID of the region the products are being viewed from. This is required if you're retrieving product variant prices with taxes.
@@ -9190,7 +9209,7 @@ paths:
       description: |
         Retrieve a product by its ID. You can expand the product's relations or select the fields that should be returned.
 
-        You can retrieve the content of the product translated to a specific locale either by passing the `locale` query parameter or by setting the `Content-Language` header to the desired locale code in BCP 47 format. If you don't pass a locale, and your store has a default locale, the default locale will be used.
+        You can retrieve the content of the product translated to a specific locale either by passing the `locale` query parameter or by setting the `x-medusa-locale` header to the desired locale code in BCP 47 format. If you don't pass a locale, and your store has a default locale, the default locale will be used.
 
         With localization, the product's content like title and description will be in the specified locale if a translation is available,  and fallback to the original content otherwise. Learn more in the [Localization](#localization) section.
       x-authenticated: false
@@ -9212,7 +9231,7 @@ paths:
             type: string
             externalDocs:
               url: https://docs.medusajs.com/api/store#publishable-api-key
-        - name: Content-Language
+        - name: x-medusa-locale
           in: header
           description: The locale in BCP 47 format to retrieve localized content.
           required: false
@@ -9347,7 +9366,7 @@ paths:
             type: string
             externalDocs:
               url: https://docs.medusajs.com/api/store#publishable-api-key
-        - name: Content-Language
+        - name: x-medusa-locale
           in: header
           description: The locale in BCP 47 format to retrieve localized content.
           required: false
@@ -9581,7 +9600,7 @@ paths:
             type: string
             externalDocs:
               url: https://docs.medusajs.com/api/store#publishable-api-key
-        - name: Content-Language
+        - name: x-medusa-locale
           in: header
           description: The locale in BCP 47 format to retrieve localized content.
           required: false
@@ -9678,7 +9697,7 @@ paths:
             type: string
             externalDocs:
               url: https://docs.medusajs.com/api/store#publishable-api-key
-        - name: Content-Language
+        - name: x-medusa-locale
           in: header
           description: The locale in BCP 47 format to retrieve localized content.
           required: false
@@ -9821,7 +9840,7 @@ paths:
             type: string
             externalDocs:
               url: https://docs.medusajs.com/api/store#publishable-api-key
-        - name: Content-Language
+        - name: x-medusa-locale
           in: header
           description: The locale in BCP 47 format to retrieve localized content.
           required: false
@@ -9893,7 +9912,7 @@ paths:
             type: string
             externalDocs:
               url: https://docs.medusajs.com/api/store#publishable-api-key
-        - name: Content-Language
+        - name: x-medusa-locale
           in: header
           description: The locale in BCP 47 format to retrieve localized content.
           required: false
@@ -10007,7 +10026,7 @@ paths:
             type: string
             externalDocs:
               url: https://docs.medusajs.com/api/store#publishable-api-key
-        - name: Content-Language
+        - name: x-medusa-locale
           in: header
           description: The locale in BCP 47 format to retrieve localized content.
           required: false
@@ -10174,7 +10193,7 @@ paths:
             type: string
             externalDocs:
               url: https://docs.medusajs.com/api/store#publishable-api-key
-        - name: Content-Language
+        - name: x-medusa-locale
           in: header
           description: The locale in BCP 47 format to retrieve localized content.
           required: false
@@ -20799,9 +20818,9 @@ components:
         - type
         - options
         - images
-        - length
         - title
         - status
+        - length
         - id
         - created_at
         - updated_at
@@ -24362,6 +24381,48 @@ components:
           format: date-time
           title: deleted_at
           description: The date that the translation was deleted.
+    AdminTranslationEntitiesResponse:
+      type: object
+      description: The list of translatable entities.
+      x-schemaName: AdminTranslationEntitiesResponse
+      required:
+        - data
+        - count
+        - offset
+        - limit
+      properties:
+        data:
+          type: array
+          description: The list of translatable entities.
+          items:
+            allOf:
+              - type: object
+                description: The entity's data.
+                required:
+                  - id
+                  - translations
+                properties:
+                  id:
+                    type: string
+                    title: id
+                    description: The entity's ID.
+                  translations:
+                    type: array
+                    description: The entity's translations.
+                    items:
+                      $ref: '#/components/schemas/AdminTranslation'
+        count:
+          type: number
+          title: count
+          description: The total number of translatable entities.
+        offset:
+          type: number
+          title: offset
+          description: The number of items skipped before retrieving the returned items.
+        limit:
+          type: number
+          title: limit
+          description: The maximum number of items returned in the response.
     AdminTranslationSettingsResponse:
       type: object
       description: The translation settings' details.
@@ -32859,6 +32920,11 @@ components:
           description: The cart's promotions.
           items:
             $ref: '#/components/schemas/StoreCartPromotion'
+        completed_at:
+          type: string
+          title: completed_at
+          description: The date the cart was completed.
+          format: date-time
     StoreCartAddPromotion:
       type: object
       description: The promotion's details.
@@ -41619,8 +41685,8 @@ components:
             $ref: '#/components/schemas/BaseProductImage'
       required:
         - options
-        - length
         - title
+        - length
         - id
         - created_at
         - updated_at
