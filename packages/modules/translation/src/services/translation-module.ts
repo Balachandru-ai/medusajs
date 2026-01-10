@@ -94,7 +94,8 @@ export default class TranslationModuleService
       sharedContext
     )
     return settings.reduce((acc, setting) => {
-      acc[setting.entity_type] = setting.fields as unknown as string[]
+      acc[toSnakeCase(setting.entity_type)] =
+        setting.fields as unknown as string[]
       return acc
     }, {} as Record<string, string[]>)
   }
