@@ -194,6 +194,15 @@ const generatedgeneratedReferencesSidebarSidebar = {
                   "title": "generateResetPasswordTokenWorkflow",
                   "description": "Generate a reset password token for a user or customer.",
                   "children": []
+                },
+                {
+                  "loaded": true,
+                  "isPathHref": true,
+                  "type": "link",
+                  "path": "/references/medusa-workflows/setAuthAppMetadataWorkflow",
+                  "title": "setAuthAppMetadataWorkflow",
+                  "description": "",
+                  "children": []
                 }
               ]
             },
@@ -842,6 +851,15 @@ const generatedgeneratedReferencesSidebarSidebar = {
                   "type": "link",
                   "path": "/references/medusa-workflows/steps/getTranslatedLineItemsStep",
                   "title": "getTranslatedLineItemsStep",
+                  "description": "",
+                  "children": []
+                },
+                {
+                  "loaded": true,
+                  "isPathHref": true,
+                  "type": "link",
+                  "path": "/references/medusa-workflows/steps/getTranslatedShippingOptionsStep",
+                  "title": "getTranslatedShippingOptionsStep",
                   "description": "",
                   "children": []
                 },
@@ -3524,6 +3542,15 @@ const generatedgeneratedReferencesSidebarSidebar = {
                   "loaded": true,
                   "isPathHref": true,
                   "type": "link",
+                  "path": "/references/medusa-workflows/steps/updateOrderShippingMethodsTranslationsStep",
+                  "title": "updateOrderShippingMethodsTranslationsStep",
+                  "description": "",
+                  "children": []
+                },
+                {
+                  "loaded": true,
+                  "isPathHref": true,
+                  "type": "link",
                   "path": "/references/medusa-workflows/steps/updateOrdersStep",
                   "title": "updateOrdersStep",
                   "description": "",
@@ -5176,6 +5203,15 @@ const generatedgeneratedReferencesSidebarSidebar = {
                   "type": "link",
                   "path": "/references/medusa-workflows/steps/deleteProductsStep",
                   "title": "deleteProductsStep",
+                  "description": "",
+                  "children": []
+                },
+                {
+                  "loaded": true,
+                  "isPathHref": true,
+                  "type": "link",
+                  "path": "/references/medusa-workflows/steps/dismissProductVariantsInventoryStep",
+                  "title": "dismissProductVariantsInventoryStep",
                   "description": "",
                   "children": []
                 },
@@ -7329,6 +7365,15 @@ const generatedgeneratedReferencesSidebarSidebar = {
               "type": "link",
               "path": "/references/helper-steps/getTranslatedLineItemsStep",
               "title": "getTranslatedLineItemsStep",
+              "description": "",
+              "children": []
+            },
+            {
+              "loaded": true,
+              "isPathHref": true,
+              "type": "link",
+              "path": "/references/helper-steps/getTranslatedShippingOptionsStep",
+              "title": "getTranslatedShippingOptionsStep",
               "description": "",
               "children": []
             },
