@@ -46,6 +46,9 @@ export function setFindMethods<T>(klass: Constructor<T>, entity: any) {
 
       if (strategy === LoadStrategy.JOINED) {
         config.options.populate.push("order.shipping_methods")
+        config.options.populate.push(
+          "order.shipping_methods.shipping_method.adjustments"
+        )
         config.options.populate.push("order.summary")
         config.options.populate.push("shipping_methods")
       }
