@@ -271,7 +271,7 @@ moduleIntegrationTestRunner<ITranslationModuleService>({
         })
       })
 
-      describe.only("Translation", () => {
+      describe("Translation", () => {
         describe("creating a translation", () => {
           it("should create a translation successfully", async () => {
             const translation = await service.createTranslations(
@@ -354,7 +354,7 @@ moduleIntegrationTestRunner<ITranslationModuleService>({
           })
         })
 
-        describe.only("listing translations", () => {
+        describe("listing translations", () => {
           beforeEach(async () => {
             await service.createTranslations([
               {
@@ -416,7 +416,7 @@ moduleIntegrationTestRunner<ITranslationModuleService>({
             expect(translations[0].reference_id).toEqual("prod_1")
           })
 
-          it.only("should filter by multiple criteria", async () => {
+          it("should filter by multiple criteria", async () => {
             const translations = await service.listTranslations({
               reference_id: "prod_1",
               locale_code: "fr-FR",
