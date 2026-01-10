@@ -737,10 +737,28 @@ export interface ITranslationModuleService extends IModuleService {
   ): Promise<Record<string, string[]>>
 
   /**
-   * This method creates one or more translation settings.
+   * This method creates a translation setting.
    *
-   * @param {CreateTranslationSettingsDTO[]} input - The translation settings to create.
+   * @param {CreateTranslationSettingsDTO} data - The translation setting to be created.
    * @param {Context} sharedContext - A context used to share resources, such as transaction manager, between the application and the module.
+   * @returns {Promise<TranslationSettingsDTO>} The created translation setting.
+   *
+   * @example
+   * const translationSetting = await translationModuleService.createTranslationSettings({
+   *     entity_type: "product",
+   *     fields: ["title", "description"],
+   *     is_active: true,
+   *   })
+   */
+  createTranslationSettings(
+    data: CreateTranslationSettingsDTO,
+    sharedContext?: Context
+  ): Promise<TranslationSettingsDTO>
+
+  /**
+   *
+   * @param data - The translation settings to be created.
+   * @param sharedContext - A context used to share resources, such as transaction manager, between the application and the module.
    * @returns {Promise<TranslationSettingsDTO[]>} The created translation settings.
    *
    * @example
@@ -751,26 +769,18 @@ export interface ITranslationModuleService extends IModuleService {
    *     is_active: true,
    *   },
    * ])
-   * // Returns: [
-   * //   {
-   * //     id: "ts_123",
-   * //     entity_type: "product",
-   * //     fields: ["title", "description"],
-   * //     is_active: true,
-   * //   },
-   * // ]
    */
   createTranslationSettings(
-    input: CreateTranslationSettingsDTO[],
+    data: CreateTranslationSettingsDTO[],
     sharedContext?: Context
   ): Promise<TranslationSettingsDTO[]>
 
   /**
-   * This method updates one or more translation settings.
-   *
-   * @param {UpdateTranslationSettingsDTO[]} input - The translation settings to update.
+   * This method updates an existent translation setting. The ID should be included in the data object.
+  }
+   * @param {UpdateTranslationSettingsDTO} data - The attributes to update in the translation setting (including id).
    * @param {Context} sharedContext - A context used to share resources, such as transaction manager, between the application and the module.
-   * @returns {Promise<TranslationSettingsDTO[]>} The updated translation settings.
+   * @returns {Promise<TranslationSettingsDTO>} The updated translation setting.
    *
    * @example
    * const translationSettings = await translationModuleService.updateTranslationSettings([
@@ -783,9 +793,9 @@ export interface ITranslationModuleService extends IModuleService {
    * ])
    */
   updateTranslationSettings(
-    input: UpdateTranslationSettingsDTO[],
+    input: UpdateTranslationSettingsDTO,
     sharedContext?: Context
-  ): Promise<TranslationSettingsDTO[]>
+  ): Promise<TranslationSettingsDTO>
 
   /**
    * This method deletes one or more translation settings.
