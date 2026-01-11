@@ -1153,9 +1153,9 @@ export class Product {
   }
 
   /**
-   * This method links product options to a product. It allows adding new options
-   * or removing existing ones. It sends a request to the
-   * [Link Product Options](https://docs.medusajs.com/api/admin#products_postproductsidoptions)
+   * This method links product options to a product. It allows adding new options,
+   * removing existing ones, or updating option values. It sends a request to the
+   * [Batch Product Product Options](https://docs.medusajs.com/api/admin#products_postproductsidoptionsbatch)
    * API route.
    * 
    * @since 2.13.0
@@ -1189,7 +1189,7 @@ export class Product {
     headers?: ClientHeaders
   ) {
     return await this.client.fetch<HttpTypes.AdminProductResponse>(
-      `/admin/products/${productId}/options`,
+      `/admin/products/${productId}/options/batch`,
       {
         method: "POST",
         headers,

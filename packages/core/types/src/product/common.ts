@@ -1822,3 +1822,30 @@ export type ProductOptionProductPair = {
    */
   product_option_value_ids?: string[]
 }
+
+/**
+ * @interface
+ *
+ * The details to update option values linked to a product's option.
+ */
+export type ProductOptionProductValueUpdate = {
+  /**
+   * The product option's ID.
+   */
+  product_option_id: string
+
+  /**
+   * The product's ID.
+   */
+  product_id: string
+
+  /**
+   * The IDs of specific option values to add to the product option.
+   */
+  add?: string[]
+
+  /**
+   * The IDs of specific option values to remove from the product option.
+   */
+  remove?: string[]
+}

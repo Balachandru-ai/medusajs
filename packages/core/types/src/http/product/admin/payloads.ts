@@ -713,10 +713,25 @@ export interface AdminLinkProductOptionWithValues {
   value_ids: string[]
 }
 
+export interface AdminUpdateProductOptionValues {
+  /**
+   * The ID of the product option to update values for.
+   */
+  product_option_id: string
+  /**
+   * The IDs of specific option values to add.
+   */
+  add?: string[]
+  /**
+   * The IDs of specific option values to remove.
+   */
+  remove?: string[]
+}
+
 export interface AdminLinkProductOptions {
   /**
    * The list of options to add to the product. You can pass either:
-   * 
+   *
    * 1. The ID of an existing product option as a string.
    * 2. An object with `id` and `value_ids` to add an existing product option with specific values. This
    * is useful when you want to associate only specific option values of an option to the product.
@@ -727,4 +742,8 @@ export interface AdminLinkProductOptions {
    * The list of options to remove from the product.
    */
   remove?: string[]
+  /**
+   * The list of product option value updates for existing product options.
+   */
+  update?: AdminUpdateProductOptionValues[]
 }

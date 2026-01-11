@@ -328,4 +328,68 @@ export class ProductRepository extends DALUtils.mikroOrmBaseRepositoryFactory(
 
     return !blockingOptions.length
   }
+
+  /**
+   * Returns exclusive option ids that are already assigned to another product.
+   *
+   * @param pairs - Array of { productId, optionId } pairs to check
+   * @param context - The context
+   */
+  async findExclusiveOptionAssignmentConflicts(
+    pairs: Array<{ productId: string; optionId: string }> = [],
+    context: Context = {}
+  ): Promise<string[]> {
+    if (!pairs.length) {
+      return []
+    }
+
+    const optionToProductIds = new Map<string, Set<string>>()
+
+    pairs.forEach((pair) => {
+      const productIds = optionToProductIds.get(pair.optionId) ?? new Set()
+      productIds.add(pair.productId)
+      optionToProductIds.set(pair.optionId, productIds)
+    })
+
+    const optionIds = [...optionToProductIds.keys()]
+
+    const manager = this.getActiveManager<SqlEntityManager>(context)
+    const connection = manager.getConnection()
+    const knex = connection.getKnex()
+
+    const bindings: string[] = []
+    const valuesSql = pairs
+      .map((pair) => {
+        bindings.push(pair.productId, pair.optionId)
+        return "(?, ?)"
+      })
+      .join(", ")
+
+    const { rows } = await knex.raw(
+      `
+      WITH pairs(product_id, option_id) AS (VALUES ${valuesSql}),
+      exclusive_pairs AS (
+        SELECT r.option_id, r.product_id
+        FROM pairs r
+        JOIN product_option po ON po.id = r.option_id
+        WHERE po.is_exclusive = true
+      )
+      SELECT DISTINCT ep.option_id
+      FROM exclusive_pairs ep
+      WHERE EXISTS (
+        SELECT 1 FROM exclusive_pairs ep2
+        WHERE ep2.option_id = ep.option_id AND ep2.product_id <> ep.product_id
+      )
+      OR EXISTS (
+        SELECT 1 FROM product_product_option ppo
+        WHERE ppo.product_option_id = ep.option_id AND ppo.product_id <> ep.product_id
+      )
+      `,
+      bindings
+    )
+
+    const conflictOptionIds = new Set<string>(rows.map((row) => row.option_id))
+
+    return optionIds.filter((optionId) => conflictOptionIds.has(optionId))
+  }
 }
