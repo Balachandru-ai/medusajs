@@ -1,6 +1,6 @@
 import { dynamicImport, FileSystem, isFileSkipped } from "@medusajs/utils"
 import { join } from "path"
-import zod from "zod"
+import { z } from "@medusajs/deps/zod"
 
 import { logger } from "../logger"
 import {
@@ -120,7 +120,7 @@ export class MiddlewareFileLoader {
             matcher: matcher,
             methods,
             schema: route.additionalDataValidator,
-            validator: zod.object(route.additionalDataValidator).nullish(),
+            validator: z.object(route.additionalDataValidator).nullish(),
           })
         }
 

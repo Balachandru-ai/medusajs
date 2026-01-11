@@ -45,7 +45,8 @@
     "./opentelemetry/resources": "./dist/deps/opentelemetry-resources.js",
     "./opentelemetry/api": "./dist/deps/opentelemetry-api.js",
     "./awilix": "./dist/deps/awilix.js",
-    "./pg": "./dist/deps/pg.js"
+    "./pg": "./dist/deps/pg.js",
+    "./zod": "./dist/deps/zod.js"
   },
   "engines": {
     "node": ">=20"
@@ -92,7 +93,6 @@
     "morgan": "^1.9.1",
     "path-to-regexp": "^8.2.0",
     "tsconfig-paths": "^4.2.0",
-    "zod": "3.25.76",
     "zod-validation-error": "3.5.1"
   },
   "peerDependencies": {

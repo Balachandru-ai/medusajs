@@ -30,8 +30,7 @@
   },
   "dependencies": {
     "csv-parse": "^5.6.0",
-    "json-2-csv": "^5.5.4",
-    "zod": "3.25.76"
+    "json-2-csv": "^5.5.4"
   },
   "peerDependencies": {
     "@medusajs/framework": "2.12.5"
