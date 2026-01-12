@@ -588,6 +588,11 @@ export const sidebars = [
         children: [
           {
             type: "link",
+            title: "pnpm",
+            path: "/learn/configurations/pnpm",
+          },
+          {
+            type: "link",
             title: "Environment Variables",
             path: "/learn/fundamentals/environment-variables",
           },
@@ -751,6 +756,11 @@ export const sidebars = [
                 type: "link",
                 title: "Replace Imports (v2.11.0+)",
                 path: "/learn/codemods/replace-imports",
+              },
+              {
+                type: "link",
+                title: "Replace Zod Imports (v2.12.6+)",
+                path: "/learn/codemods/replace-zod-imports",
               },
             ],
           },

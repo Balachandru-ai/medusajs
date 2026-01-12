@@ -30,6 +30,7 @@ export type CodeBlockMetaFields = {
   hasTabs?: boolean
   npm2yarn?: boolean
   npx2yarn?: boolean
+  npx2yarnExec?: boolean
   highlights?: string[][]
   apiTesting?: boolean
   testApiMethod?: ApiMethod

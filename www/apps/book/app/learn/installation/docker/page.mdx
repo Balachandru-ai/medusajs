@@ -164,7 +164,7 @@ Ensure that the `start.sh` file uses LF line endings instead of CRLF. Git on Win
 
 # Run migrations and start server
 echo "Running database migrations..."
-npx medusa db:migrate
+yarn medusa db:migrate
 
 echo "Seeding database..."
 yarn seed || echo "Seeding failed, continuing..."
@@ -470,9 +470,22 @@ You can now access the Medusa server at `http://localhost:9000` and the Medusa A
 
 To create an admin user, run the following command:
 
+<CodeTabs group="npm2yarn">
+  <CodeTab value="npm" label="npm">
+
 ```bash
 docker compose run --rm medusa npx medusa user -e admin@example.com -p supersecret
 ```
+
+  </CodeTab>
+  <CodeTab value="yarn" label="yarn">
+
+```bash
+docker compose run --rm medusa yarn medusa user -e admin@example.com -p supersecret
+```
+
+  </CodeTab>
+</CodeTabs>
 
 Make sure to replace `admin@example.com` and `supersecret` with your desired email and password.
 
