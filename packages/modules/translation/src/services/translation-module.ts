@@ -82,6 +82,55 @@ export default class TranslationModuleService
     this.settingsService_ = translationSettingsService
   }
 
+  __hooks = {
+    onApplicationStart: async () => {
+      return this.onApplicationStart_()
+    },
+  }
+
+  protected async onApplicationStart_() {
+    const translatableEntities = DmlEntity.getTranslatableEntities()
+    const translatableEntitiesSet = new Set(
+      translatableEntities.map((entity) => toSnakeCase(entity.entity))
+    )
+
+    const currentTranslationSettings = await this.settingsService_.list()
+    const currentTranslationSettingsSet = new Set(
+      currentTranslationSettings.map((setting) => setting.entity_type)
+    )
+
+    const settingsToUpsert: (
+      | CreateTranslationSettingsDTO
+      | UpdateTranslationSettingsDTO
+    )[] = []
+
+    for (const setting of currentTranslationSettings) {
+      if (
+        !translatableEntitiesSet.has(setting.entity_type) &&
+        setting.is_active
+      ) {
+        settingsToUpsert.push({
+          id: setting.id,
+          is_active: false,
+        })
+      }
+    }
+
+    for (const entity of translatableEntities) {
+      const snakeCaseEntityType = toSnakeCase(entity.entity)
+      const hasCurrentSettings =
+        currentTranslationSettingsSet.has(snakeCaseEntityType)
+      if (!hasCurrentSettings) {
+        settingsToUpsert.push({
+          entity_type: snakeCaseEntityType,
+          fields: entity.fields,
+        })
+      }
+    }
+
+    await this.settingsService_.upsert(settingsToUpsert)
+  }
+
   @InjectManager()
   async getTranslatableFields(
     entityType?: string,
@@ -396,16 +445,8 @@ export default class TranslationModuleService
 
     await this.validateSettings_(dataArray, sharedContext)
 
-    const createdSettings = await this.settingsService_.create(
-      dataArray,
-      sharedContext
-    )
-
-    const serialized = await this.baseRepository_.serialize<
-      TranslationTypes.TranslationSettingsDTO[]
-    >(createdSettings)
-
-    return Array.isArray(data) ? serialized : serialized[0]
+    // @ts-expect-error TS can't match union type to overloads
+    return await super.createTranslationSettings(data, sharedContext)
   }
 
   @InjectManager()
@@ -422,16 +463,8 @@ export default class TranslationModuleService
 
     await this.validateSettings_(dataArray, sharedContext)
 
-    const updatedSettings = await this.settingsService_.update(
-      dataArray,
-      sharedContext
-    )
-
-    const serialized = await this.baseRepository_.serialize<
-      TranslationTypes.TranslationSettingsDTO[]
-    >(updatedSettings)
-
-    return Array.isArray(data) ? serialized : serialized[0]
+    // @ts-expect-error TS can't match union type to overloads
+    return await super.updateTranslationSettings(data, sharedContext)
   }
 
   @InjectManager()
@@ -623,54 +656,5 @@ export default class TranslationModuleService
             .join("\n")
       )
     }
-  }
-
-  __hooks = {
-    onApplicationStart: async () => {
-      return this.onApplicationStart_()
-    },
-  }
-
-  protected async onApplicationStart_() {
-    const translatableEntities = DmlEntity.getTranslatableEntities()
-    const translatableEntitiesSet = new Set(
-      translatableEntities.map((entity) => toSnakeCase(entity.entity))
-    )
-
-    const currentTranslationSettings = await this.settingsService_.list()
-    const currentTranslationSettingsSet = new Set(
-      currentTranslationSettings.map((setting) => setting.entity_type)
-    )
-
-    const settingsToUpsert: (
-      | CreateTranslationSettingsDTO
-      | UpdateTranslationSettingsDTO
-    )[] = []
-
-    for (const setting of currentTranslationSettings) {
-      if (
-        !translatableEntitiesSet.has(setting.entity_type) &&
-        setting.is_active
-      ) {
-        settingsToUpsert.push({
-          id: setting.id,
-          is_active: false,
-        })
-      }
-    }
-
-    for (const entity of translatableEntities) {
-      const snakeCaseEntityType = toSnakeCase(entity.entity)
-      const hasCurrentSettings =
-        currentTranslationSettingsSet.has(snakeCaseEntityType)
-      if (!hasCurrentSettings) {
-        settingsToUpsert.push({
-          entity_type: snakeCaseEntityType,
-          fields: entity.fields,
-        })
-      }
-    }
-
-    await this.settingsService_.upsert(settingsToUpsert)
   }
 }
