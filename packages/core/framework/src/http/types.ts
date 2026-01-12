@@ -7,6 +7,7 @@ import {
   RequestQueryFields,
 } from "@medusajs/types"
 import { MedusaContainer } from "../container"
+import { PolicyAction } from "./middlewares/check-permissions"
 import { RestrictedFields } from "./utils/restricted-fields"
 
 /**
@@ -223,6 +224,7 @@ export interface AuthenticatedMedusaRequest<
 > extends MedusaRequest<Body, QueryFields> {
   auth_context: AuthContext
   publishable_key_context?: PublishableKeyContext
+  policies?: PolicyAction | PolicyAction[]
 }
 
 export interface MedusaStoreRequest<
@@ -231,6 +233,7 @@ export interface MedusaStoreRequest<
 > extends MedusaRequest<Body, QueryFields> {
   auth_context?: AuthContext
   publishable_key_context: PublishableKeyContext
+  policies?: PolicyAction | PolicyAction[]
 }
 
 export type MedusaResponse<Body = unknown> = Response<Body>
