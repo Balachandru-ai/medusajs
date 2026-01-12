@@ -626,15 +626,15 @@ export default class TranslationModuleService
   }
 
   __hooks = {
-    onApplicationStart(this: TranslationModuleService) {
+    onApplicationStart: async () => {
       return this.onApplicationStart_()
     },
   }
 
   protected async onApplicationStart_() {
     const translatableEntities = DmlEntity.getTranslatableEntities()
-    const translatableEntitiesMap = new Map(
-      translatableEntities.map((entity) => [toSnakeCase(entity.entity), entity])
+    const translatableEntitiesSet = new Set(
+      translatableEntities.map((entity) => toSnakeCase(entity.entity))
     )
 
     const currentTranslationSettings = await this.settingsService_.list()
@@ -652,7 +652,7 @@ export default class TranslationModuleService
 
     for (const setting of currentTranslationSettings) {
       if (
-        !translatableEntitiesMap.has(setting.entity_type) &&
+        !translatableEntitiesSet.has(setting.entity_type) &&
         setting.is_active
       ) {
         settingsToUpsert.push({
@@ -663,9 +663,12 @@ export default class TranslationModuleService
     }
 
     for (const entity of translatableEntities) {
-      if (!currentTranslationSettingsMap.has(entity.entity)) {
+      const snakeCaseEntityType = toSnakeCase(entity.entity)
+      const currentSettings =
+        currentTranslationSettingsMap.get(snakeCaseEntityType)
+      if (!currentSettings) {
         settingsToUpsert.push({
-          entity_type: entity.entity,
+          entity_type: snakeCaseEntityType,
           fields: entity.fields,
         })
       }

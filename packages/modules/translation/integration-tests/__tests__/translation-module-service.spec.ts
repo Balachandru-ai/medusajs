@@ -29,6 +29,9 @@ moduleIntegrationTestRunner<ITranslationModuleService>({
   },
   testSuite: ({ service }) => {
     describe("Translation Module Service", () => {
+      beforeEach(async () => {
+        await service.__hooks?.onApplicationStart?.().catch(() => {})
+      })
       afterAll(() => {
         // Restore the mock after all tests complete
         mockGetTranslatableEntities.mockRestore()
