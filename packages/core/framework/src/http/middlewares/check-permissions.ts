@@ -5,7 +5,6 @@ import type {
   MedusaNextFunction,
   MedusaResponse,
   MiddlewareFunction,
-  RouteHandler,
 } from "../types"
 
 export type PolicyAction = {
@@ -65,9 +64,9 @@ async function checkPermissions(
  * @returns Wrapped middleware or route function that checks permissions first
  */
 export function wrapWithPoliciesCheck(
-  handler: MiddlewareFunction | RouteHandler,
+  handler: MiddlewareFunction,
   policies: PolicyAction | PolicyAction[]
-): MiddlewareFunction | RouteHandler {
+): MiddlewareFunction {
   return async (
     req: AuthenticatedMedusaRequest,
     res: MedusaResponse,

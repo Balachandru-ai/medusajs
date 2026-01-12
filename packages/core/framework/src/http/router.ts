@@ -174,10 +174,7 @@ export class ApiLoader {
       // Wrap with permission check if policies are defined
       let handlerToUse = route.handler
       if (route.policies) {
-        handlerToUse = wrapWithPoliciesCheck(
-          route.handler,
-          route.policies
-        ) as MiddlewareFunction
+        handlerToUse = wrapWithPoliciesCheck(route.handler, route.policies)
       }
 
       const handler = ApiLoader.traceMiddleware
@@ -208,10 +205,7 @@ export class ApiLoader {
 
       let handlerToUse = route.handler
       if (route.policies) {
-        handlerToUse = wrapWithPoliciesCheck(
-          route.handler,
-          route.policies
-        ) as MiddlewareFunction
+        handlerToUse = wrapWithPoliciesCheck(route.handler, route.policies)
       }
 
       const handler = ApiLoader.traceMiddleware
