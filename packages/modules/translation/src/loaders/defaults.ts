@@ -39,6 +39,7 @@ const defaultLocales = [
   { code: "nb-NO", name: "Norwegian Bokmål (Norway)" },
   { code: "fi-FI", name: "Finnish (Finland)" },
   { code: "pl-PL", name: "Polish (Poland)" },
+  { code: "lt-LT", name: "Lithuanian (Lithuania)" },
   { code: "cs-CZ", name: "Czech (Czech Republic)" },
   { code: "sk-SK", name: "Slovak (Slovakia)" },
   { code: "hu-HU", name: "Hungarian (Hungary)" },
