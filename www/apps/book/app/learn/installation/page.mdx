@@ -43,20 +43,26 @@ While this is the recommended way to create a Medusa application, you can altern
 
 To create a Medusa application, use the `create-medusa-app` command:
 
+<Note title="Tip">
+
+Considering using `yarn` or `pnpm` as your package manager for quicker installations and better performance. `npm` installations are generally slower.
+
+</Note>
+
 <CodeTabs group="npm2yarn">
-  <CodeTab label="pnpm" value="pnpm">
-
-```bash
-pnpm dlx create-medusa-app@latest my-medusa-store
-# npx create-medusa-app@latest my-medusa-store --use-pnpm
-```
-
-  </CodeTab>
   <CodeTab label="yarn" value="yarn">
 
 ```bash
 yarn dlx create-medusa-app@latest my-medusa-store
 # npx create-medusa-app@latest my-medusa-store --use-yarn
+```
+
+  </CodeTab>
+  <CodeTab label="pnpm" value="pnpm">
+
+```bash
+pnpm dlx create-medusa-app@latest my-medusa-store
+# npx create-medusa-app@latest my-medusa-store --use-pnpm
 ```
 
   </CodeTab>
