@@ -1100,7 +1100,7 @@ describe("defineConfig", function () {
                 },
               ],
             },
-            "resolve": "@medusajs/caching",
+            "resolve": "@medusajs/medusa/caching",
           },
           "cart": {
             "resolve": "@medusajs/medusa/cart",
@@ -1324,7 +1324,7 @@ describe("defineConfig", function () {
                 },
               ],
             },
-            "resolve": "@medusajs/caching",
+            "resolve": "@medusajs/medusa/caching",
           },
           "cart": {
             "resolve": "@medusajs/medusa/cart",
@@ -1564,7 +1564,7 @@ describe("defineConfig", function () {
                 },
               ],
             },
-            "resolve": "@medusajs/caching",
+            "resolve": "@medusajs/medusa/caching",
           },
           "cart": {
             "resolve": "@medusajs/medusa/cart",
