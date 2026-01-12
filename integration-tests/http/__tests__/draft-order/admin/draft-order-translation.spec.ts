@@ -30,6 +30,9 @@ medusaIntegrationTestRunner({
         await setupTaxStructure(appContainer.resolve(Modules.TAX))
         await createAdminUser(dbConnection, adminHeaders, appContainer)
 
+        const translationModule = appContainer.resolve(Modules.TRANSLATION)
+        await translationModule.__hooks?.onApplicationStart?.().catch(() => {})
+
         salesChannel = (
           await api.post(
             "/admin/sales-channels",
