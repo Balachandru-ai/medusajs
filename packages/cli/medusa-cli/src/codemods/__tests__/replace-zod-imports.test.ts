@@ -86,14 +86,36 @@ describe("replace-zod-imports codemod", () => {
   })
 
   describe("namespace import transformations", () => {
-    it("should transform namespace imports to named imports", async () => {
+    it("should transform namespace imports with identifier z", async () => {
       const testFile = path.join(tempDir, "test4.ts")
       fs.writeFileSync(testFile, `import * as z from "zod"`)
 
       await replaceZodImports.run({ dryRun: false })
 
       const result = fs.readFileSync(testFile, "utf8")
-      expect(result).toBe(`import { z } from "@medusajs/framework/zod"`)
+      expect(result).toBe(`import { z as z } from "@medusajs/framework/zod"`)
+    })
+
+    it("should transform namespace imports with custom identifier", async () => {
+      const testFile = path.join(tempDir, "test4b.ts")
+      fs.writeFileSync(testFile, `import * as validator from "zod"`)
+
+      await replaceZodImports.run({ dryRun: false })
+
+      const result = fs.readFileSync(testFile, "utf8")
+      expect(result).toBe(
+        `import { z as validator } from "@medusajs/framework/zod"`
+      )
+    })
+
+    it("should transform namespace imports with zod identifier", async () => {
+      const testFile = path.join(tempDir, "test4c.ts")
+      fs.writeFileSync(testFile, `import * as zod from "zod"`)
+
+      await replaceZodImports.run({ dryRun: false })
+
+      const result = fs.readFileSync(testFile, "utf8")
+      expect(result).toBe(`import { z as zod } from "@medusajs/framework/zod"`)
     })
   })
 

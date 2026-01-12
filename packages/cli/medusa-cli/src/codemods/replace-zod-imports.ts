@@ -1,7 +1,7 @@
-import { execSync } from "child_process"
 import fs from "fs"
 import reporter from "../reporter/index"
 import type { Codemod, CodemodOptions, CodemodResult } from "./types"
+import { glob } from "glob"
 
 const CODEMOD: Codemod = {
   name: "replace-zod-imports",
@@ -24,10 +24,10 @@ const REPLACEMENTS = [
     pattern: /import\s+z\s+from\s+['"]zod['"]/g,
     replacement: `import { z } from "@medusajs/framework/zod"`,
   },
-  // Namespace import: import * as z from "zod" -> import { z } from "@medusajs/framework/zod"
+  // Namespace import with other identifier: import * as something from "zod" -> import { z as something } from "@medusajs/framework/zod"
   {
-    pattern: /import\s+\*\s+as\s+z\s+from\s+['"]zod['"]/g,
-    replacement: `import { z } from "@medusajs/framework/zod"`,
+    pattern: /import\s+\*\s+as\s+(\w+)\s+from\s+['"]zod['"]/g,
+    replacement: `import { z as $1 } from "@medusajs/framework/zod"`,
   },
   // Named/type imports: import { z } from "zod" or import type { ZodSchema } from "zod"
   {
@@ -51,20 +51,21 @@ async function replaceZodImports(
 ): Promise<CodemodResult> {
   const { dryRun = false } = options
   const targetFiles = await getTargetFiles()
+  const numberOfFiles = Object.keys(targetFiles).length
 
-  if (targetFiles.length === 0) {
+  if (numberOfFiles === 0) {
     reporter.info("  No files found with zod imports")
     return { filesScanned: 0, filesModified: 0, errors: 0 }
   }
 
-  reporter.info(`  Found ${targetFiles.length} files to process`)
+  reporter.info(`  Found ${numberOfFiles} files to process`)
 
   let filesModified = 0
   let errors = 0
 
-  for (const filePath of targetFiles) {
+  for (const [filePath, content] of Object.entries(targetFiles)) {
     try {
-      if (processFile(filePath, dryRun)) {
+      if (processFile(filePath, content, dryRun)) {
         filesModified++
       }
     } catch (error) {
@@ -73,15 +74,18 @@ async function replaceZodImports(
     }
   }
 
-  return { filesScanned: targetFiles.length, filesModified, errors }
+  return { filesScanned: numberOfFiles, filesModified, errors }
 }
 
 /**
  * Process a single file and replace zod imports
  * @returns true if the file was modified, false otherwise
  */
-function processFile(filePath: string, dryRun: boolean): boolean {
-  const content = fs.readFileSync(filePath, "utf8")
+function processFile(
+  filePath: string,
+  content: string,
+  dryRun: boolean
+): boolean {
   let modifiedContent = content
 
   for (const { pattern, replacement } of REPLACEMENTS) {
@@ -106,21 +110,25 @@ function processFile(filePath: string, dryRun: boolean): boolean {
  * Find all TypeScript/JavaScript files that contain zod imports
  * @returns Array of file paths with zod imports
  */
-async function getTargetFiles(): Promise<string[]> {
+async function getTargetFiles(): Promise<Record<string, string>> {
   try {
     // Find TypeScript/JavaScript files, excluding build artifacts, dependencies, and src/admin
-    const findCommand = `find . -path "*/src/admin" -prune -o -name node_modules -prune -o -name .git -prune -o -name dist -prune -o -name build -prune -o -name coverage -prune -o -name .medusa -prune -o -name "*.ts" -print -o -name "*.js" -print -o -name "*.tsx" -print -o -name "*.jsx" -print`
-
-    const files = execSync(findCommand, {
-      encoding: "utf8",
-      maxBuffer: 50 * 1024 * 1024,
+    const files = await glob("**/*.{ts,js,tsx,jsx}", {
+      ignore: [
+        "**/node_modules/**",
+        "**/.git/**",
+        "**/dist/**",
+        "**/build/**",
+        "**/coverage/**",
+        "**/.medusa/**",
+        "**/src/admin/**",
+      ],
+      nodir: true,
     })
-      .split("\n")
-      .filter((line) => line.trim())
 
     reporter.info(` Scanning ${files.length} files for zod imports...`)
 
-    const targetFiles: string[] = []
+    const targetFiles: Record<string, string> = {}
     let processedCount = 0
 
     for (const file of files) {
@@ -128,7 +136,7 @@ async function getTargetFiles(): Promise<string[]> {
         const content = fs.readFileSync(file, "utf8")
 
         if (ZOD_IMPORT_PATTERN.test(content)) {
-          targetFiles.push(file.startsWith("./") ? file.slice(2) : file)
+          targetFiles[file] = content
         }
 
         processedCount++
@@ -152,6 +160,6 @@ async function getTargetFiles(): Promise<string[]> {
     return targetFiles
   } catch (error) {
     reporter.error(`Error finding target files: ${error.message}`)
-    return []
+    return {}
   }
 }
