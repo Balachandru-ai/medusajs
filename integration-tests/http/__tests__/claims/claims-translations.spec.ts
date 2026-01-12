@@ -41,6 +41,8 @@ medusaIntegrationTestRunner({
 
     beforeEach(async () => {
       appContainer = getContainer()
+      const translationModule = appContainer.resolve(Modules.TRANSLATION)
+      await translationModule.__hooks?.onApplicationStart?.().catch(() => {})
       await createAdminUser(dbConnection, adminHeaders, appContainer)
 
       const taxStructure = await setupTaxStructure(
