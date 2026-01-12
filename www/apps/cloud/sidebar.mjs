@@ -45,6 +45,13 @@ export const sidebar = [
             type: "link",
             title: "Projects",
             path: "/projects",
+            children: [
+              {
+                type: "link",
+                title: "Prerequisites",
+                path: "/projects/prerequisites",
+              },
+            ],
           },
           {
             type: "link",
@@ -97,6 +104,11 @@ export const sidebar = [
         title: "Resources",
         initialOpen: true,
         children: [
+          {
+            type: "link",
+            title: "Storefront",
+            path: "/storefront",
+          },
           {
             type: "link",
             title: "Database",

@@ -7,6 +7,7 @@ import {
 import { InlineCode, InlineCodeProps } from "@/components/InlineCode"
 import { MermaidDiagram } from "@/components/MermaidDiagram"
 import { Npm2YarnCode } from "../Npm2YarnCode"
+import { Npx2YarnCode } from "../Npx2YarnCode"
 
 export type CodeMdxProps = {
   className?: string
@@ -39,6 +40,8 @@ export const CodeMdx = ({
   if (match) {
     if (rest.npm2yarn) {
       return <Npm2YarnCode npmCode={codeContent} {...rest} />
+    } else if (rest.npx2yarn) {
+      return <Npx2YarnCode npxCode={codeContent} {...rest} />
     } else if (match[1] === "mermaid") {
       return <MermaidDiagram diagramContent={codeContent} />
     }
