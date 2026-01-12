@@ -1,5 +1,5 @@
 import type { NextFunction, Request, Response } from "express"
-import type { ZodNullable, ZodObject, ZodOptional, ZodRawShape } from "zod"
+import type { ZodNullable, ZodObject, ZodOptional, ZodRawShape } from "@medusajs/deps/zod"
 
 import {
   FindConfig,
