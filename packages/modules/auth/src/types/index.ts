@@ -46,3 +46,10 @@ export interface MedusaCloudAuthProviderOptions {
   callback_url: string
   disabled: boolean
 }
+
+declare module "@medusajs/types" {
+  interface ModuleOptions {
+    "@medusajs/auth": AuthModuleOptions
+    "@medusajs/medusa/auth": AuthModuleOptions
+  }
+}
