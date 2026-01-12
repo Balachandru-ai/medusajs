@@ -1,4 +1,4 @@
-import { Prerequisites } from "docs-ui"
+import { Prerequisites, CodeTab, CodeTabs } from "docs-ui"
 
 export const metadata = {
   title: `${pageNumber} Install Medusa`,
@@ -43,9 +43,31 @@ While this is the recommended way to create a Medusa application, you can altern
 
 To create a Medusa application, use the `create-medusa-app` command:
 
-```bash npx2yarnExec
+<CodeTabs group="npm2yarn">
+  <CodeTab label="pnpm" value="pnpm">
+
+```bash
+pnpm dlx create-medusa-app@latest my-medusa-store
+# npx create-medusa-app@latest my-medusa-store --use-pnpm
+```
+
+  </CodeTab>
+  <CodeTab label="yarn" value="yarn">
+
+```bash
+yarn dlx create-medusa-app@latest my-medusa-store
+# npx create-medusa-app@latest my-medusa-store --use-yarn
+```
+
+  </CodeTab>
+  <CodeTab label="npm" value="npm">
+
+```bash
 npx create-medusa-app@latest my-medusa-store
 ```
+
+  </CodeTab>
+</CodeTabs>
 
 Where `my-medusa-store` is the name of the project's directory and PostgreSQL database created for the project. When you run the command, you'll be asked whether you want to install the Next.js Starter Storefront.
 
