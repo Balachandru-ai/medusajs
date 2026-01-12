@@ -638,11 +638,8 @@ export default class TranslationModuleService
     )
 
     const currentTranslationSettings = await this.settingsService_.list()
-    const currentTranslationSettingsMap = new Map(
-      currentTranslationSettings.map((setting) => [
-        setting.entity_type,
-        setting,
-      ])
+    const currentTranslationSettingsSet = new Set(
+      currentTranslationSettings.map((setting) => setting.entity_type)
     )
 
     const settingsToUpsert: (
@@ -664,9 +661,9 @@ export default class TranslationModuleService
 
     for (const entity of translatableEntities) {
       const snakeCaseEntityType = toSnakeCase(entity.entity)
-      const currentSettings =
-        currentTranslationSettingsMap.get(snakeCaseEntityType)
-      if (!currentSettings) {
+      const hasCurrentSettings =
+        currentTranslationSettingsSet.has(snakeCaseEntityType)
+      if (!hasCurrentSettings) {
         settingsToUpsert.push({
           entity_type: snakeCaseEntityType,
           fields: entity.fields,
