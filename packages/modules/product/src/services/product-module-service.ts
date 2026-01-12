@@ -64,11 +64,7 @@ import {
   UpdateTypeInput,
   VariantImageInputArray,
 } from "../types"
-import {
-  computeOptionLinkChanges,
-  computeSetDifference,
-  eventBuilders,
-} from "../utils"
+import { computeOptionLinkChanges, eventBuilders } from "../utils"
 import { joinerConfig } from "./../joiner-config"
 import { buildOptionValueFilterQuery } from "../utils/build-option-value-filter-query"
 
@@ -1502,87 +1498,59 @@ export default class ProductModuleService
     @MedusaContext() sharedContext: Context = {}
   ): Promise<{ id: string } | { id: string }[]> {
     const pairs = Array.isArray(data) ? data : [data]
+    if (Array.isArray(data) && !data.length) {
+      return []
+    }
 
     const uniqueOptionIds = [...new Set(pairs.map((p) => p.product_option_id))]
 
-    const [existingProductOptions, options] = await promiseAll([
-      this.productProductOptionService_.list(
-        {
-          $or: pairs.map((pair) => ({
-            product_id: pair.product_id,
-            product_option_id: pair.product_option_id,
-          })),
-        },
-        { relations: ["values"] },
-        sharedContext
-      ),
+    const [options, assignmentConflicts] = await promiseAll([
       this.productOptionService_.list(
         { id: uniqueOptionIds },
         { relations: ["values"] },
         sharedContext
       ),
-    ])
-
-    const alreadyAssignedToOtherProducts =
-      await this.productRepository_.findExclusiveOptionAssignmentConflicts(
+      this.productRepository_.canAssignProductOptionToProduct(
         pairs.map((pair) => ({
           productId: pair.product_id,
           optionId: pair.product_option_id,
         })),
         sharedContext
-      )
+      ),
+    ])
 
-    if (alreadyAssignedToOtherProducts.length) {
+    if (assignmentConflicts.alreadyLinkedOptionIds.length) {
       throw new MedusaError(
         MedusaError.Types.INVALID_DATA,
-        `Exclusive product options are already assigned to another product: ${alreadyAssignedToOtherProducts.join(
+        `Product options are already linked to products: ${assignmentConflicts.alreadyLinkedOptionIds.join(
           ", "
         )}`
       )
     }
 
-    const existingPPOMap = new Map<
-      string,
-      InferEntityType<typeof ProductProductOption>
-    >()
-    for (const ppo of existingProductOptions) {
-      const key = `${ppo.product_id}_${ppo.product_option_id}`
-      existingPPOMap.set(key, ppo)
+    if (assignmentConflicts.exclusiveOptionIds.length) {
+      throw new MedusaError(
+        MedusaError.Types.INVALID_DATA,
+        `Product options are already assigned to another product: ${assignmentConflicts.exclusiveOptionIds.join(
+          ", "
+        )}`
+      )
     }
 
     const optionValuesMap = new Map(
       options.map((opt) => [opt.id, opt.values || []])
     )
 
-    const pairChanges = pairs.map((pair) => {
-      const key = `${pair.product_id}_${pair.product_option_id}`
-      const allValues = optionValuesMap.get(pair.product_option_id) || []
-      const valueIds =
-        pair.product_option_value_ids ?? allValues.map((v) => v.id)
-      const existingValues = existingPPOMap.get(key)?.values ?? []
-      const diff = computeSetDifference(existingValues, valueIds)
-
-      return {
-        key,
-        pair,
-        toAdd: diff.toAdd,
-      }
-    })
-
     const pposToCreate: Array<{
       product_id: string
       product_option_id: string
     }> = []
-    const seenKeys = new Set<string>()
 
-    for (const { key, pair } of pairChanges) {
-      if (!existingPPOMap.has(key) && !seenKeys.has(key)) {
-        seenKeys.add(key)
-        pposToCreate.push({
-          product_id: pair.product_id,
-          product_option_id: pair.product_option_id,
-        })
-      }
+    for (const pair of pairs) {
+      pposToCreate.push({
+        product_id: pair.product_id,
+        product_option_id: pair.product_option_id,
+      })
     }
 
     const createdPPOs = pposToCreate.length
@@ -1593,10 +1561,6 @@ export default class ProductModuleService
       : []
 
     const ppoIdByKey = new Map<string, string>()
-    for (const ppo of existingProductOptions) {
-      const key = `${ppo.product_id}_${ppo.product_option_id}`
-      ppoIdByKey.set(key, ppo.id)
-    }
     for (const ppo of createdPPOs) {
       const key = `${ppo.product_id}_${ppo.product_option_id}`
       ppoIdByKey.set(key, ppo.id)
@@ -1606,13 +1570,18 @@ export default class ProductModuleService
       product_product_option_id: string
       product_option_value_id: string
     }> = []
-    for (const { key, toAdd } of pairChanges) {
+    for (const pair of pairs) {
+      const key = `${pair.product_id}_${pair.product_option_id}`
       const productProductOptionId = ppoIdByKey.get(key)
       if (!productProductOptionId) {
         continue
       }
 
-      for (const valueId of toAdd) {
+      const allValues = optionValuesMap.get(pair.product_option_id) || []
+      const valueIds =
+        pair.product_option_value_ids ?? allValues.map((v) => v.id)
+
+      for (const valueId of valueIds) {
         ppovToCreate.push({
           product_product_option_id: productProductOptionId,
           product_option_value_id: valueId,

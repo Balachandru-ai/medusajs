@@ -330,17 +330,46 @@ export class ProductRepository extends DALUtils.mikroOrmBaseRepositoryFactory(
   }
 
   /**
-   * Returns exclusive option ids that are already assigned to another product.
+   * Checks whether product options can be assigned to products.
+   *
+   * Returns conflicting option ids if:
+   *    - the option is already assigned to that product
+   *    - the option is exclusive and is assigned to another product
+   *    - the input has duplicate assignments for the same product and option
    *
    * @param pairs - Array of { productId, optionId } pairs to check
    * @param context - The context
+   * @throws if the input contains duplicate product/option assignments
    */
-  async findExclusiveOptionAssignmentConflicts(
+  async canAssignProductOptionToProduct(
     pairs: Array<{ productId: string; optionId: string }> = [],
     context: Context = {}
-  ): Promise<string[]> {
+  ): Promise<{
+    exclusiveOptionIds: string[]
+    alreadyLinkedOptionIds: string[]
+  }> {
     if (!pairs.length) {
-      return []
+      return { exclusiveOptionIds: [], alreadyLinkedOptionIds: [] }
+    }
+
+    const pairKeys = new Set<string>()
+    const duplicateKeys: string[] = []
+    for (const pair of pairs) {
+      const key = `${pair.productId}_${pair.optionId}`
+      if (pairKeys.has(key)) {
+        duplicateKeys.push(key)
+      } else {
+        pairKeys.add(key)
+      }
+    }
+
+    if (duplicateKeys.length) {
+      throw new MedusaError(
+        MedusaError.Types.INVALID_DATA,
+        `Duplicate product option assignments are not allowed; remove duplicate pairs: ${duplicateKeys.join(
+          ", "
+        )}`
+      )
     }
 
     const optionToProductIds = new Map<string, Set<string>>()
@@ -357,39 +386,48 @@ export class ProductRepository extends DALUtils.mikroOrmBaseRepositoryFactory(
     const connection = manager.getConnection()
     const knex = connection.getKnex()
 
-    const bindings: string[] = []
-    const valuesSql = pairs
-      .map((pair) => {
-        bindings.push(pair.productId, pair.optionId)
-        return "(?, ?)"
-      })
-      .join(", ")
+    const pairPlaceholders = pairs.map(() => "(?, ?)").join(", ")
+    const pairBindings = pairs.flatMap((p) => [p.productId, p.optionId])
 
-    const { rows } = await knex.raw(
-      `
-      WITH pairs(product_id, option_id) AS (VALUES ${valuesSql}),
-      exclusive_pairs AS (
-        SELECT r.option_id, r.product_id
-        FROM pairs r
-        JOIN product_option po ON po.id = r.option_id
-        WHERE po.is_exclusive = true
-      )
-      SELECT DISTINCT ep.option_id
-      FROM exclusive_pairs ep
-      WHERE EXISTS (
-        SELECT 1 FROM exclusive_pairs ep2
-        WHERE ep2.option_id = ep.option_id AND ep2.product_id <> ep.product_id
-      )
-      OR EXISTS (
-        SELECT 1 FROM product_product_option ppo
-        WHERE ppo.product_option_id = ep.option_id AND ppo.product_id <> ep.product_id
-      )
-      `,
-      bindings
+    const { rows: alreadyLinkedRows } = await knex.raw(
+      `SELECT DISTINCT product_option_id as option_id
+       FROM product_product_option
+       WHERE (product_id, product_option_id) IN (${pairPlaceholders})`,
+      pairBindings
     )
 
-    const conflictOptionIds = new Set<string>(rows.map((row) => row.option_id))
+    const alreadyLinkedOptionIds = alreadyLinkedRows.map(
+      (row: { option_id: string }) => row.option_id
+    )
 
-    return optionIds.filter((optionId) => conflictOptionIds.has(optionId))
+    const { rows: exclusiveConflictRows } = await knex.raw(
+      `WITH input_pairs(product_id, option_id) AS (VALUES ${pairPlaceholders})
+       SELECT DISTINCT po.id as option_id
+       FROM product_option po
+       WHERE po.is_exclusive = true
+         AND po.id IN (SELECT option_id FROM input_pairs)
+         AND (
+           (SELECT COUNT(DISTINCT ip.product_id) FROM input_pairs ip WHERE ip.option_id = po.id) > 1
+           OR EXISTS (
+             SELECT 1 FROM product_product_option ppo
+             WHERE ppo.product_option_id = po.id
+               AND ppo.product_id NOT IN (SELECT ip.product_id FROM input_pairs ip WHERE ip.option_id = po.id)
+           )
+         )`,
+      pairBindings
+    )
+
+    const exclusiveOptionIds = exclusiveConflictRows.map(
+      (row: { option_id: string }) => row.option_id
+    )
+
+    return {
+      exclusiveOptionIds: optionIds.filter((id) =>
+        exclusiveOptionIds.includes(id)
+      ),
+      alreadyLinkedOptionIds: optionIds.filter((id) =>
+        alreadyLinkedOptionIds.includes(id)
+      ),
+    }
   }
 }

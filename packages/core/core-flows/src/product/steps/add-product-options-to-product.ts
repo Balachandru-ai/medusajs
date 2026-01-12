@@ -11,11 +11,6 @@ import { StepResponse, createStep } from "@medusajs/framework/workflows-sdk"
 export type AddProductOptionsToProductStepInput =
   ProductTypes.ProductOptionProductPair[]
 
-type AddProductOptionsToProductCompensation = {
-  removePairs: ProductTypes.ProductOptionProductPair[]
-  removeValueUpdates: ProductTypes.ProductOptionProductValueUpdate[]
-}
-
 export const addProductOptionsToProductStepId = "add-product-options-to-product"
 /**
  * This step adds product options to products.
@@ -24,50 +19,22 @@ export const addProductOptionsToProductStep = createStep(
   addProductOptionsToProductStepId,
   async (pairs: AddProductOptionsToProductStepInput, { container }) => {
     if (!pairs.length) {
-      return new StepResponse(void 0, {
-        removePairs: [],
-        removeValueUpdates: [],
-      })
+      return new StepResponse(void 0, [])
     }
 
     const service = container.resolve<IProductModuleService>(Modules.PRODUCT)
 
     await service.addProductOptionToProduct(pairs)
 
-    const removePairs = pairs.filter(
-      (pair) => !pair.product_option_value_ids
-    )
-    const removeValueUpdates = pairs
-      .filter((pair) => pair.product_option_value_ids?.length)
-      .map((pair) => ({
-        product_id: pair.product_id,
-        product_option_id: pair.product_option_id,
-        remove: pair.product_option_value_ids,
-      }))
-
-    return new StepResponse(void 0, {
-      removePairs,
-      removeValueUpdates,
-    })
+    return new StepResponse(void 0, pairs)
   },
-  async (
-    compensation: AddProductOptionsToProductCompensation | void,
-    { container }
-  ) => {
-    if (!compensation) {
+  async (pairs: AddProductOptionsToProductStepInput | void, { container }) => {
+    if (!pairs?.length) {
       return
     }
 
     const service = container.resolve<IProductModuleService>(Modules.PRODUCT)
 
-    if (compensation.removePairs.length) {
-      await service.removeProductOptionFromProduct(compensation.removePairs)
-    }
-
-    if (compensation.removeValueUpdates.length) {
-      await service.updateProductOptionValuesOnProduct(
-        compensation.removeValueUpdates
-      )
-    }
+    await service.removeProductOptionFromProduct(pairs)
   }
 )

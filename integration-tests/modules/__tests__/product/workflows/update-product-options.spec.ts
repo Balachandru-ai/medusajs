@@ -204,7 +204,7 @@ medusaIntegrationTestRunner({
 
           expect(errors).toHaveLength(1)
           expect(errors[0].error.message).toContain(
-            "Exclusive product options are already assigned to another product"
+            "Product options are already assigned to another product"
           )
 
           const [reloadedOtherProduct] = await service.listProducts(
@@ -243,7 +243,7 @@ medusaIntegrationTestRunner({
               },
             ])
           ).rejects.toThrow(
-            "Exclusive product options are already assigned to another product"
+            "Product options are already assigned to another product"
           )
 
           const products = await service.listProducts(
@@ -253,6 +253,38 @@ medusaIntegrationTestRunner({
           products.forEach((product) => {
             expect(product.options ?? []).toHaveLength(0)
           })
+        })
+
+        it("should fail when adding duplicate option pairs in a single call", async () => {
+          const product = await service.createProducts({
+            title: "Product A",
+            shipping_profile_id: shippingProfile.id,
+          })
+
+          const option = await service.createProductOptions({
+            title: "Color",
+            is_exclusive: false,
+            values: ["Red", "Blue"],
+          })
+
+          await expect(
+            service.addProductOptionToProduct([
+              {
+                product_id: product.id,
+                product_option_id: option.id,
+              },
+              {
+                product_id: product.id,
+                product_option_id: option.id,
+              },
+            ])
+          ).rejects.toThrow("Duplicate product option assignments are not allowed")
+
+          const [reloadedProduct] = await service.listProducts(
+            { id: [product.id] },
+            { relations: ["options"] }
+          )
+          expect(reloadedProduct.options ?? []).toHaveLength(0)
         })
 
         it("should allow assigning a mixed exclusive and non-exclusive option in a single call", async () => {
@@ -407,6 +439,64 @@ medusaIntegrationTestRunner({
             expect(product.options).toHaveLength(1)
             expect(product.options?.[0].id).toBe(globalOption.id)
           })
+        })
+
+        it("should add an option link with the provided value ids", async () => {
+          const product = await service.createProducts({
+            title: "Product A",
+            shipping_profile_id: shippingProfile.id,
+          })
+
+          const option = await service.createProductOptions({
+            title: "Material",
+            is_exclusive: false,
+            values: ["Cotton", "Wool", "Linen"],
+          })
+
+          const valueToLink = option.values.find(
+            (value) => value.value === "Cotton"
+          )!
+
+          await service.addProductOptionToProduct({
+            product_id: product.id,
+            product_option_id: option.id,
+            product_option_value_ids: [valueToLink.id],
+          })
+
+          const [reloadedProduct] = await service.listProducts(
+            { id: [product.id] },
+            { relations: ["options.values"] }
+          )
+
+          const linkedValues = reloadedProduct.options[0].values.map(
+            (value) => value.value
+          )
+
+          expect(linkedValues).toHaveLength(1)
+          expect(linkedValues).toEqual(expect.arrayContaining(["Cotton"]))
+        })
+
+        it("should throw when adding an already linked option", async () => {
+          const product = await service.createProducts({
+            title: "Product A",
+            shipping_profile_id: shippingProfile.id,
+            options: [
+              {
+                title: "Size",
+                values: ["S", "M", "L"],
+              },
+            ],
+          })
+
+          const option = product.options[0]
+
+          await expect(
+            service.addProductOptionToProduct({
+              product_id: product.id,
+              product_option_id: option.id,
+              product_option_value_ids: [option.values[0].id],
+            })
+          ).rejects.toThrow("Product options are already linked to products")
         })
 
         describe("compensation", () => {
