@@ -6939,5 +6939,6 @@ export const generatedEditDates = {
   "app/commerce-modules/translation/custom-data-models/page.mdx": "2026-01-06T15:54:25.801Z",
   "app/commerce-modules/order/custom-display-id/page.mdx": "2026-01-12T12:16:58.730Z",
   "app/how-to-tutorials/tutorials/phone-auth/page.mdx": "2026-01-12T12:21:50.204Z",
-  "app/infrastructure-modules/caching/guides/memcached/page.mdx": "2026-01-12T12:26:46.307Z"
+  "app/infrastructure-modules/caching/guides/memcached/page.mdx": "2026-01-12T12:26:46.307Z",
+  "app/medusa-cli/commands/codemod/page.mdx": "2026-01-12T14:48:24.052Z"
 }

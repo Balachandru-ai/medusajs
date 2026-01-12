@@ -1064,6 +1064,10 @@ export const filesMap = [
     "pathname": "/medusa-cli/commands/build"
   },
   {
+    "filePath": "/www/apps/resources/app/medusa-cli/commands/codemod/page.mdx",
+    "pathname": "/medusa-cli/commands/codemod"
+  },
+  {
     "filePath": "/www/apps/resources/app/medusa-cli/commands/db/page.mdx",
     "pathname": "/medusa-cli/commands/db"
   },
