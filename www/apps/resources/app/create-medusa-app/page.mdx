@@ -38,6 +38,8 @@ The `create-medusa-app` CLI tool simplifies the process of creating a new Medusa
 npx create-medusa-app@latest [project-name]
 ```
 
+The command will use the package manager you run it with to create a new Medusa project in a directory named after the provided `project-name`.
+
 ### Arguments
 
 <Table>
@@ -237,6 +239,57 @@ npx create-medusa-app@latest [project-name]
       <Table.Cell>
       
         The latest version of Medusa at the time of running the command.
+
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+
+        `--use-npm`
+
+      </Table.Cell>
+      <Table.Cell>
+
+        Uses `npm` as the package manager to create the project, regardless of the package manager used to run the command.
+
+      </Table.Cell>
+      <Table.Cell>
+      
+        The package manager used to run the command.
+
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+
+        `--use-yarn`
+
+      </Table.Cell>
+      <Table.Cell>
+
+        Uses `yarn` as the package manager to create the project, regardless of the package manager used to run the command.
+
+      </Table.Cell>
+      <Table.Cell>
+      
+        The package manager used to run the command.
+
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+
+        `--use-pnpm`
+
+      </Table.Cell>
+      <Table.Cell>
+
+        Uses `pnpm` as the package manager to create the project, regardless of the package manager used to run the command.
+
+      </Table.Cell>
+      <Table.Cell>
+      
+        The package manager used to run the command.
 
       </Table.Cell>
     </Table.Row>
