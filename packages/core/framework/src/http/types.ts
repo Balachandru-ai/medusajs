@@ -1,5 +1,10 @@
+import type {
+  ZodNullable,
+  ZodObject,
+  ZodOptional,
+  ZodRawShape,
+} from "@medusajs/deps/zod"
 import type { NextFunction, Request, Response } from "express"
-import type { ZodNullable, ZodObject, ZodOptional, ZodRawShape } from "@medusajs/deps/zod"
 
 import {
   FindConfig,
@@ -22,8 +27,6 @@ export const HTTP_METHODS = [
   "OPTIONS",
   "HEAD",
 ] as const
-
-export const ROUTE_PROPERTIES = ["policies"]
 
 export type RouteVerb = (typeof HTTP_METHODS)[number]
 export type MiddlewareVerb = "USE" | "ALL" | RouteVerb

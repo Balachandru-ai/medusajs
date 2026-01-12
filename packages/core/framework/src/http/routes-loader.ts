@@ -1,12 +1,7 @@
 import { dynamicImport, isFileSkipped, readDirRecursive } from "@medusajs/utils"
 import { join, parse, sep } from "path"
 import { logger } from "../logger"
-import {
-  HTTP_METHODS,
-  ROUTE_PROPERTIES,
-  type RouteDescriptor,
-  type RouteVerb,
-} from "./types"
+import { HTTP_METHODS, type RouteDescriptor, type RouteVerb } from "./types"
 
 /**
  * File name that is used to indicate that the file is a route file
@@ -132,8 +127,7 @@ export class RoutesLoader {
      */
     return Object.keys(routeExports)
       .filter((key) => {
-        const isRouteProperty = ROUTE_PROPERTIES.includes(key)
-        if (typeof routeExports[key] !== "function" || isRouteProperty) {
+        if (typeof routeExports[key] !== "function") {
           return false
         }
 
@@ -147,22 +141,9 @@ export class RoutesLoader {
         return true
       })
       .map((key) => {
-        let routerPolicies = routeExports.policies
-        if (routerPolicies && !Array.isArray(routerPolicies)) {
-          // check if there are policies defined for this specific http method
-          if (
-            !("resource" in routerPolicies && "operation" in routerPolicies)
-          ) {
-            if (key in routerPolicies) {
-              routerPolicies = routerPolicies[key]
-            }
-          }
-        }
-
         return {
           isRoute: true,
           matcher: routePath,
-          policies: routerPolicies,
           method: key as RouteVerb,
           handler: routeExports[key],
           optedOutOfAuth: !shouldAuthenticate,

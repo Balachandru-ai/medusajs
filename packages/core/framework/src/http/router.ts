@@ -155,21 +155,13 @@ export class ApiLoader {
     route: MiddlewareDescriptor | RouteDescriptor | RouteDescriptor
   ) {
     if ("isRoute" in route) {
-      let handlerToUse = route.handler
-      if (route.policies) {
-        handlerToUse = wrapWithPoliciesCheck(
-          route.handler,
-          route.policies
-        ) as RouteHandler
-      }
-
       this.#logger.debug(`registering route ${route.method} ${route.matcher}`)
       const handler = ApiLoader.traceRoute
-        ? ApiLoader.traceRoute(handlerToUse, {
+        ? ApiLoader.traceRoute(route.handler, {
             route: route.matcher,
             method: route.method,
           })
-        : handlerToUse
+        : route.handler
 
       this.#app[route.method.toLowerCase()](route.matcher, wrapHandler(handler))
 
