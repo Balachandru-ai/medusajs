@@ -74,7 +74,8 @@ export function wrapWithPoliciesCheck(
     next: MedusaNextFunction
   ) => {
     try {
-      req.policies = policies
+      req.policies ??= []
+      req.policies.push(...(Array.isArray(policies) ? policies : [policies]))
 
       await checkPermissions(policies, req)
       return handler(req, res, next)

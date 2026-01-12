@@ -224,7 +224,7 @@ export interface AuthenticatedMedusaRequest<
 > extends MedusaRequest<Body, QueryFields> {
   auth_context: AuthContext
   publishable_key_context?: PublishableKeyContext
-  policies?: PolicyAction | PolicyAction[]
+  policies?: PolicyAction[]
 }
 
 export interface MedusaStoreRequest<

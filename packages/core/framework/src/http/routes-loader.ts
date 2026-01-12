@@ -133,11 +133,11 @@ export class RoutesLoader {
     return Object.keys(routeExports)
       .filter((key) => {
         const isRouteProperty = ROUTE_PROPERTIES.includes(key)
-        if (typeof routeExports[key] !== "function" && !isRouteProperty) {
+        if (typeof routeExports[key] !== "function" || isRouteProperty) {
           return false
         }
 
-        if (!HTTP_METHODS.includes(key as RouteVerb) && !isRouteProperty) {
+        if (!HTTP_METHODS.includes(key as RouteVerb)) {
           logger.debug(
             `Skipping handler ${key} in ${absolutePath}. Invalid HTTP method: ${key}.`
           )
@@ -147,10 +147,22 @@ export class RoutesLoader {
         return true
       })
       .map((key) => {
+        let routerPolicies = routeExports.policies
+        if (routerPolicies && !Array.isArray(routerPolicies)) {
+          // check if there are policies defined for this specific http method
+          if (
+            !("resource" in routerPolicies && "operation" in routerPolicies)
+          ) {
+            if (key in routerPolicies) {
+              routerPolicies = routerPolicies[key]
+            }
+          }
+        }
+
         return {
           isRoute: true,
           matcher: routePath,
-          policies: routeExports.policies,
+          policies: routerPolicies,
           method: key as RouteVerb,
           handler: routeExports[key],
           optedOutOfAuth: !shouldAuthenticate,
