@@ -1,4 +1,4 @@
-import { useMemo } from "react"
+import { useEffect, useMemo } from "react"
 import { UseFormReturn, useWatch } from "react-hook-form"
 import { useTranslation } from "react-i18next"
 
@@ -31,6 +31,18 @@ export const CreateProductOptionOrganize = ({
     name: "value_ranks",
   })
 
+  const handleChange = (newItems: ValueItem[]) => {
+    const newRanks: Record<string, number> = {}
+    newItems.forEach((item, index) => {
+      newRanks[item.value] = index + 1
+    })
+
+    form.setValue("value_ranks", newRanks, {
+      shouldDirty: true,
+      shouldTouch: true,
+    })
+  }
+
   const items = useMemo<ValueItem[]>(() => {
     if (!values || values.length === 0) {
       return []
@@ -45,17 +57,9 @@ export const CreateProductOptionOrganize = ({
       .sort((a, b) => a.rank - b.rank)
   }, [values, valueRanks])
 
-  const handleChange = (newItems: ValueItem[]) => {
-    const newRanks: Record<string, number> = {}
-    newItems.forEach((item, index) => {
-      newRanks[item.value] = index + 1
-    })
-
-    form.setValue("value_ranks", newRanks, {
-      shouldDirty: true,
-      shouldTouch: true,
-    })
-  }
+  useEffect(() => {
+    handleChange(items)
+  }, [items.length])
 
   if (!values || values.length === 0) {
     return null
@@ -64,7 +68,7 @@ export const CreateProductOptionOrganize = ({
   return (
     <div className="px-16">
       <div className="mx-auto flex w-full max-w-[720px] flex-col gap-y-8 ">
-        <div className="border-ui-border-base flex flex-col gap-y-2 rounded-xl border">
+        <div className="border-ui-border-base flex flex-col gap-y-2 overflow-hidden rounded-xl border">
           <div className="border-b-base bg-ui-bg-component border-b p-2">
             <Text size="small" leading="compact" weight="plus">
               {t("productOptions.create.tabs.organize")}

@@ -6,9 +6,9 @@ import {
 } from "@medusajs/ui"
 import { useTranslation } from "react-i18next"
 import { keepPreviousData } from "@tanstack/react-query"
-import { useCallback, useMemo } from "react"
+import { useCallback, useEffect, useMemo, useRef } from "react"
 import { HttpTypes } from "@medusajs/types"
-import { useNavigate } from "react-router-dom"
+import { useNavigate, useSearchParams } from "react-router-dom"
 import { PencilSquare, Trash } from "@medusajs/icons"
 
 import {
@@ -21,9 +21,28 @@ import { useProductOptionTableQuery } from "../../../../../hooks/table/query/use
 import { DataTable } from "../../../../../components/data-table"
 
 const PAGE_SIZE = 20
+const DEFAULT_IS_EXCLUSIVE_FILTER = JSON.stringify("false")
 
 export const ProductOptionListTable = () => {
   const { t } = useTranslation()
+  const [urlSearchParams, setUrlSearchParams] = useSearchParams()
+  const hasSetDefaultFilter = useRef(false)
+
+  useEffect(() => {
+    if (hasSetDefaultFilter.current) {
+      return
+    }
+
+    hasSetDefaultFilter.current = true
+
+    if (urlSearchParams.has("is_exclusive")) {
+      return
+    }
+
+    const nextParams = new URLSearchParams(urlSearchParams)
+    nextParams.set("is_exclusive", DEFAULT_IS_EXCLUSIVE_FILTER)
+    setUrlSearchParams(nextParams, { replace: true })
+  }, [urlSearchParams, setUrlSearchParams])
 
   const { searchParams } = useProductOptionTableQuery({
     pageSize: PAGE_SIZE,
@@ -32,6 +51,7 @@ export const ProductOptionListTable = () => {
   const { product_options, count, isError, error, isLoading } =
     useProductOptions(searchParams, {
       placeholderData: keepPreviousData,
+      enabled: hasSetDefaultFilter.current,
     })
 
   const filters = useProductOptionTableFilters()
@@ -46,7 +66,8 @@ export const ProductOptionListTable = () => {
       <DataTable
         data={product_options}
         columns={columns}
-        filters={filters}
+        filters={filters} // show filter bar ...
+        enableFilterMenu={false} // hide filter with search bar so we don't render duplicates
         rowCount={count}
         pageSize={PAGE_SIZE}
         getRowId={(row) => row.id}

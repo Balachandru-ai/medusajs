@@ -116,6 +116,9 @@
         "store": {
           "type": "string"
         },
+        "rank": {
+          "type": "string"
+        },
         "details": {
           "type": "string"
         },
@@ -229,6 +232,7 @@
         "remaining",
         "admin",
         "store",
+        "rank",
         "details",
         "items_one",
         "items_other",

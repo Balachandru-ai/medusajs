@@ -37,6 +37,7 @@
     "remaining": "Left",
     "admin": "Admin",
     "store": "Store",
+    "rank": "Rank",
     "details": "Details",
     "items_one": "{{count}} item",
     "items_other": "{{count}} items",
