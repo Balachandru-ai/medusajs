@@ -100,15 +100,14 @@ export function buildEventNamesFromEntityName<
   return events as ReturnType<TNames, TPrefix>
 }
 
-// TODO: Comment temporarely and we will re enable it in the near future #14478
-// export const EventPriority = {
-//   CRITICAL: 10,
-//   HIGH: 50,
-//   DEFAULT: 100,
-//   LOW: 500,
-//   /**
-//    * Lowest priority value supported by BullMQ (2^21)
-//    * Internal events use this priority to ensure they don't block critical business events
-//    */
-//   LOWEST: 2_097_152,
-// } as const
+export const EventPriority = {
+  CRITICAL: 10,
+  HIGH: 50,
+  DEFAULT: 100,
+  LOW: 500,
+  /**
+   * Lowest priority value supported by BullMQ (2^21)
+   * Internal events use this priority to ensure they don't block critical business events
+   */
+  LOWEST: 2_097_152,
+} as const

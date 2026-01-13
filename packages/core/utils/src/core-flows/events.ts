@@ -1,4 +1,5 @@
-import { EventOptions } from "@medusajs/types"
+// TODO: Comment temporarely and we will re enable it in the near future #14478
+// import { EventOptions } from "@medusajs/types"
 
 /**
  * @category Cart
@@ -985,119 +986,120 @@ export const TranslationWorkflowEvents = {
   DELETED: "translation.deleted",
 } as const
 
-declare module "@medusajs/types" {
-  export interface EventBusEventsOptions {
-    // Cart events
-    [CartWorkflowEvents.CREATED]?: EventOptions
-    [CartWorkflowEvents.UPDATED]?: EventOptions
-    [CartWorkflowEvents.CUSTOMER_UPDATED]?: EventOptions
-    [CartWorkflowEvents.REGION_UPDATED]?: EventOptions
-    [CartWorkflowEvents.CUSTOMER_TRANSFERRED]?: EventOptions
+// TODO: Comment temporarely and we will re enable it in the near future #14478
+// declare module "@medusajs/types" {
+//   export interface EventBusEventsOptions {
+//     // Cart events
+//     [CartWorkflowEvents.CREATED]?: EventOptions
+//     [CartWorkflowEvents.UPDATED]?: EventOptions
+//     [CartWorkflowEvents.CUSTOMER_UPDATED]?: EventOptions
+//     [CartWorkflowEvents.REGION_UPDATED]?: EventOptions
+//     [CartWorkflowEvents.CUSTOMER_TRANSFERRED]?: EventOptions
 
-    // Customer events
-    [CustomerWorkflowEvents.CREATED]?: EventOptions
-    [CustomerWorkflowEvents.UPDATED]?: EventOptions
-    [CustomerWorkflowEvents.DELETED]?: EventOptions
+//     // Customer events
+//     [CustomerWorkflowEvents.CREATED]?: EventOptions
+//     [CustomerWorkflowEvents.UPDATED]?: EventOptions
+//     [CustomerWorkflowEvents.DELETED]?: EventOptions
 
-    // Order events
-    [OrderWorkflowEvents.UPDATED]?: EventOptions
-    [OrderWorkflowEvents.PLACED]?: EventOptions
-    [OrderWorkflowEvents.CANCELED]?: EventOptions
-    [OrderWorkflowEvents.COMPLETED]?: EventOptions
-    [OrderWorkflowEvents.ARCHIVED]?: EventOptions
-    [OrderWorkflowEvents.FULFILLMENT_CREATED]?: EventOptions
-    [OrderWorkflowEvents.FULFILLMENT_CANCELED]?: EventOptions
-    [OrderWorkflowEvents.RETURN_REQUESTED]?: EventOptions
-    [OrderWorkflowEvents.RETURN_RECEIVED]?: EventOptions
-    [OrderWorkflowEvents.CLAIM_CREATED]?: EventOptions
-    [OrderWorkflowEvents.EXCHANGE_CREATED]?: EventOptions
-    [OrderWorkflowEvents.TRANSFER_REQUESTED]?: EventOptions
+//     // Order events
+//     [OrderWorkflowEvents.UPDATED]?: EventOptions
+//     [OrderWorkflowEvents.PLACED]?: EventOptions
+//     [OrderWorkflowEvents.CANCELED]?: EventOptions
+//     [OrderWorkflowEvents.COMPLETED]?: EventOptions
+//     [OrderWorkflowEvents.ARCHIVED]?: EventOptions
+//     [OrderWorkflowEvents.FULFILLMENT_CREATED]?: EventOptions
+//     [OrderWorkflowEvents.FULFILLMENT_CANCELED]?: EventOptions
+//     [OrderWorkflowEvents.RETURN_REQUESTED]?: EventOptions
+//     [OrderWorkflowEvents.RETURN_RECEIVED]?: EventOptions
+//     [OrderWorkflowEvents.CLAIM_CREATED]?: EventOptions
+//     [OrderWorkflowEvents.EXCHANGE_CREATED]?: EventOptions
+//     [OrderWorkflowEvents.TRANSFER_REQUESTED]?: EventOptions
 
-    // Order Edit events
-    [OrderEditWorkflowEvents.REQUESTED]?: EventOptions
-    [OrderEditWorkflowEvents.CONFIRMED]?: EventOptions
-    [OrderEditWorkflowEvents.CANCELED]?: EventOptions
+//     // Order Edit events
+//     [OrderEditWorkflowEvents.REQUESTED]?: EventOptions
+//     [OrderEditWorkflowEvents.CONFIRMED]?: EventOptions
+//     [OrderEditWorkflowEvents.CANCELED]?: EventOptions
 
-    // User events
-    [UserWorkflowEvents.CREATED]?: EventOptions
-    [UserWorkflowEvents.UPDATED]?: EventOptions
-    [UserWorkflowEvents.DELETED]?: EventOptions
+//     // User events
+//     [UserWorkflowEvents.CREATED]?: EventOptions
+//     [UserWorkflowEvents.UPDATED]?: EventOptions
+//     [UserWorkflowEvents.DELETED]?: EventOptions
 
-    // Auth events
-    [AuthWorkflowEvents.PASSWORD_RESET]?: EventOptions
+//     // Auth events
+//     [AuthWorkflowEvents.PASSWORD_RESET]?: EventOptions
 
-    // Sales Channel events
-    [SalesChannelWorkflowEvents.CREATED]?: EventOptions
-    [SalesChannelWorkflowEvents.UPDATED]?: EventOptions
-    [SalesChannelWorkflowEvents.DELETED]?: EventOptions
+//     // Sales Channel events
+//     [SalesChannelWorkflowEvents.CREATED]?: EventOptions
+//     [SalesChannelWorkflowEvents.UPDATED]?: EventOptions
+//     [SalesChannelWorkflowEvents.DELETED]?: EventOptions
 
-    // Product Category events
-    [ProductCategoryWorkflowEvents.CREATED]?: EventOptions
-    [ProductCategoryWorkflowEvents.UPDATED]?: EventOptions
-    [ProductCategoryWorkflowEvents.DELETED]?: EventOptions
+//     // Product Category events
+//     [ProductCategoryWorkflowEvents.CREATED]?: EventOptions
+//     [ProductCategoryWorkflowEvents.UPDATED]?: EventOptions
+//     [ProductCategoryWorkflowEvents.DELETED]?: EventOptions
 
-    // Product Collection events
-    [ProductCollectionWorkflowEvents.CREATED]?: EventOptions
-    [ProductCollectionWorkflowEvents.UPDATED]?: EventOptions
-    [ProductCollectionWorkflowEvents.DELETED]?: EventOptions
+//     // Product Collection events
+//     [ProductCollectionWorkflowEvents.CREATED]?: EventOptions
+//     [ProductCollectionWorkflowEvents.UPDATED]?: EventOptions
+//     [ProductCollectionWorkflowEvents.DELETED]?: EventOptions
 
-    // Product Variant events
-    [ProductVariantWorkflowEvents.CREATED]?: EventOptions
-    [ProductVariantWorkflowEvents.UPDATED]?: EventOptions
-    [ProductVariantWorkflowEvents.DELETED]?: EventOptions
+//     // Product Variant events
+//     [ProductVariantWorkflowEvents.CREATED]?: EventOptions
+//     [ProductVariantWorkflowEvents.UPDATED]?: EventOptions
+//     [ProductVariantWorkflowEvents.DELETED]?: EventOptions
 
-    // Product events
-    [ProductWorkflowEvents.CREATED]?: EventOptions
-    [ProductWorkflowEvents.UPDATED]?: EventOptions
-    [ProductWorkflowEvents.DELETED]?: EventOptions
+//     // Product events
+//     [ProductWorkflowEvents.CREATED]?: EventOptions
+//     [ProductWorkflowEvents.UPDATED]?: EventOptions
+//     [ProductWorkflowEvents.DELETED]?: EventOptions
 
-    // Product Type events
-    [ProductTypeWorkflowEvents.CREATED]?: EventOptions
-    [ProductTypeWorkflowEvents.UPDATED]?: EventOptions
-    [ProductTypeWorkflowEvents.DELETED]?: EventOptions
+//     // Product Type events
+//     [ProductTypeWorkflowEvents.CREATED]?: EventOptions
+//     [ProductTypeWorkflowEvents.UPDATED]?: EventOptions
+//     [ProductTypeWorkflowEvents.DELETED]?: EventOptions
 
-    // Product Tag events
-    [ProductTagWorkflowEvents.CREATED]?: EventOptions
-    [ProductTagWorkflowEvents.UPDATED]?: EventOptions
-    [ProductTagWorkflowEvents.DELETED]?: EventOptions
+//     // Product Tag events
+//     [ProductTagWorkflowEvents.CREATED]?: EventOptions
+//     [ProductTagWorkflowEvents.UPDATED]?: EventOptions
+//     [ProductTagWorkflowEvents.DELETED]?: EventOptions
 
-    // Product Option events
-    [ProductOptionWorkflowEvents.CREATED]?: EventOptions
-    [ProductOptionWorkflowEvents.UPDATED]?: EventOptions
-    [ProductOptionWorkflowEvents.DELETED]?: EventOptions
+//     // Product Option events
+//     [ProductOptionWorkflowEvents.CREATED]?: EventOptions
+//     [ProductOptionWorkflowEvents.UPDATED]?: EventOptions
+//     [ProductOptionWorkflowEvents.DELETED]?: EventOptions
 
-    // Invite events
-    [InviteWorkflowEvents.ACCEPTED]?: EventOptions
-    [InviteWorkflowEvents.CREATED]?: EventOptions
-    [InviteWorkflowEvents.DELETED]?: EventOptions
-    [InviteWorkflowEvents.RESENT]?: EventOptions
+//     // Invite events
+//     [InviteWorkflowEvents.ACCEPTED]?: EventOptions
+//     [InviteWorkflowEvents.CREATED]?: EventOptions
+//     [InviteWorkflowEvents.DELETED]?: EventOptions
+//     [InviteWorkflowEvents.RESENT]?: EventOptions
 
-    // Region events
-    [RegionWorkflowEvents.CREATED]?: EventOptions
-    [RegionWorkflowEvents.UPDATED]?: EventOptions
-    [RegionWorkflowEvents.DELETED]?: EventOptions
+//     // Region events
+//     [RegionWorkflowEvents.CREATED]?: EventOptions
+//     [RegionWorkflowEvents.UPDATED]?: EventOptions
+//     [RegionWorkflowEvents.DELETED]?: EventOptions
 
-    // Fulfillment events
-    [FulfillmentWorkflowEvents.SHIPMENT_CREATED]?: EventOptions
-    [FulfillmentWorkflowEvents.DELIVERY_CREATED]?: EventOptions
+//     // Fulfillment events
+//     [FulfillmentWorkflowEvents.SHIPMENT_CREATED]?: EventOptions
+//     [FulfillmentWorkflowEvents.DELIVERY_CREATED]?: EventOptions
 
-    // Shipping Option Type events
-    [ShippingOptionTypeWorkflowEvents.CREATED]?: EventOptions
-    [ShippingOptionTypeWorkflowEvents.UPDATED]?: EventOptions
-    [ShippingOptionTypeWorkflowEvents.DELETED]?: EventOptions
+//     // Shipping Option Type events
+//     [ShippingOptionTypeWorkflowEvents.CREATED]?: EventOptions
+//     [ShippingOptionTypeWorkflowEvents.UPDATED]?: EventOptions
+//     [ShippingOptionTypeWorkflowEvents.DELETED]?: EventOptions
 
-    // Shipping Option events
-    [ShippingOptionWorkflowEvents.CREATED]?: EventOptions
-    [ShippingOptionWorkflowEvents.UPDATED]?: EventOptions
-    [ShippingOptionWorkflowEvents.DELETED]?: EventOptions
+//     // Shipping Option events
+//     [ShippingOptionWorkflowEvents.CREATED]?: EventOptions
+//     [ShippingOptionWorkflowEvents.UPDATED]?: EventOptions
+//     [ShippingOptionWorkflowEvents.DELETED]?: EventOptions
 
-    // Payment events
-    [PaymentEvents.CAPTURED]?: EventOptions
-    [PaymentEvents.REFUNDED]?: EventOptions
+//     // Payment events
+//     [PaymentEvents.CAPTURED]?: EventOptions
+//     [PaymentEvents.REFUNDED]?: EventOptions
 
-    // Translation events
-    [TranslationWorkflowEvents.CREATED]?: EventOptions
-    [TranslationWorkflowEvents.UPDATED]?: EventOptions
-    [TranslationWorkflowEvents.DELETED]?: EventOptions
-  }
-}
+//     // Translation events
+//     [TranslationWorkflowEvents.CREATED]?: EventOptions
+//     [TranslationWorkflowEvents.UPDATED]?: EventOptions
+//     [TranslationWorkflowEvents.DELETED]?: EventOptions
+//   }
+// }

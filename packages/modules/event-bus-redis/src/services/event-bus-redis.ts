@@ -1,6 +1,7 @@
 import {
   Event,
-  EventBusEventsOptions,
+  // TODO: Comment temporarely and we will re enable it in the near future #14478
+  // EventBusEventsOptions,
   InternalModuleDeclaration,
   Logger,
   Message,
@@ -54,7 +55,8 @@ export default class RedisEventBusService extends AbstractEventBusModuleService 
   protected readonly queueOptions_: Omit<QueueOptions, "connection">
   protected readonly workerOptions_: Omit<WorkerOptions, "connection">
   protected readonly jobOptions_: EmitOptions
-  private readonly eventOptions_: EventBusEventsOptions
+  // TODO: Comment temporarely and we will re enable it in the near future #14478
+  // private readonly eventOptions_: EventBusEventsOptions
 
   protected queue_: Queue
   protected bullWorker_: Worker
@@ -81,10 +83,11 @@ export default class RedisEventBusService extends AbstractEventBusModuleService 
     this.queueOptions_ = eventBusRedisQueueOptions ?? {}
     this.workerOptions_ = eventBusRedisWorkerOptions ?? {}
     this.jobOptions_ = eventBusRedisJobOptions ?? {}
-    this.eventOptions_ =
-      _moduleOptions.eventOptions ??
-      _moduleDeclaration.options?.eventOptions ??
-      {}
+    // TODO: Comment temporarely and we will re enable it in the near future #14478
+    // this.eventOptions_ =
+    //   _moduleOptions.eventOptions ??
+    //   _moduleDeclaration.options?.eventOptions ??
+    //   {}
 
     this.queue_ = new Queue(this.queueName_, {
       prefix: `${this.constructor.name}`,
@@ -159,9 +162,10 @@ export default class RedisEventBusService extends AbstractEventBusModuleService 
         ...eventData.options,
       }
 
-      if (this.eventOptions_[eventData.name]?.priority) {
-        finalOptions.priority = this.eventOptions_[eventData.name].priority
-      }
+      // TODO: Comment temporarely and we will re enable it in the near future #14478
+      // finalOptions.priority =
+      //   eventData.options?.priority ??
+      //   this.eventOptions_[eventData.name]?.priority
 
       if (
         finalOptions.priority != undefined &&

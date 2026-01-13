@@ -3506,6 +3506,26 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@medusajs/deps@npm:2.12.4":
+  version: 2.12.4
+  resolution: "@medusajs/deps@npm:2.12.4"
+  dependencies:
+    "@mikro-orm/cli": 6.4.16
+    "@mikro-orm/core": 6.4.16
+    "@mikro-orm/knex": 6.4.16
+    "@mikro-orm/migrations": 6.4.16
+    "@mikro-orm/postgresql": 6.4.16
+    "@opentelemetry/api": ^1.9.0
+    "@opentelemetry/instrumentation-pg": ^0.52.0
+    "@opentelemetry/resources": ^2.0.0
+    "@opentelemetry/sdk-node": ^0.200.0
+    "@opentelemetry/sdk-trace-node": ^2.0.0
+    awilix: ^8.0.1
+    pg: ^8.16.3
+  checksum: e3fe196c70dce2216d9f77564622f2b531c875964cfb135390b86d47df8d9b03e06a84d67c2917840e8b246c26f3655c52a5d8ddb46c8d498377fa5341a6d459
+  languageName: node
+  linkType: hard
+
 "@medusajs/draft-order@2.12.5, @medusajs/draft-order@workspace:packages/plugins/draft-order":
   version: 0.0.0-use.local
   resolution: "@medusajs/draft-order@workspace:packages/plugins/draft-order"
@@ -3574,13 +3594,9 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@medusajs/event-bus-redis@workspace:packages/modules/event-bus-redis"
   dependencies:
-<<<<<<< HEAD
-    "@medusajs/framework": 2.12.4
+    "@medusajs/framework": 2.12.5
     "@medusajs/types": 2.12.4
     "@medusajs/utils": 2.12.4
-=======
-    "@medusajs/framework": 2.12.5
->>>>>>> develop
     bullmq: 5.13.0
     ioredis: ^5.4.1
   peerDependencies:
@@ -4181,6 +4197,23 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@medusajs/types@npm:2.12.4":
+  version: 2.12.4
+  resolution: "@medusajs/types@npm:2.12.4"
+  dependencies:
+    bignumber.js: ^9.1.2
+  peerDependencies:
+    ioredis: ^5.4.1
+    vite: ^5.4.21
+  peerDependenciesMeta:
+    ioredis:
+      optional: true
+    vite:
+      optional: true
+  checksum: c576984dd30a013d68cc7539380bd97a8444d7f83fda1124c435efcdb811c1bcfc4a67fe6d93056520144e7afaf839ec0039dafd79336f5a569c6b57638ad7a8
+  languageName: node
+  linkType: hard
+
 "@medusajs/ui-preset@2.12.5, @medusajs/ui-preset@workspace:packages/design-system/ui-preset":
   version: 0.0.0-use.local
   resolution: "@medusajs/ui-preset@workspace:packages/design-system/ui-preset"
@@ -4261,6 +4294,31 @@ __metadata:
     express: ^4.21.0
   languageName: unknown
   linkType: soft
+
+"@medusajs/utils@npm:2.12.4":
+  version: 2.12.4
+  resolution: "@medusajs/utils@npm:2.12.4"
+  dependencies:
+    "@graphql-codegen/core": ^4.0.2
+    "@graphql-codegen/typescript": ^4.0.9
+    "@graphql-tools/merge": ^9.0.7
+    "@graphql-tools/schema": ^10.0.6
+    "@medusajs/deps": 2.12.4
+    "@types/pluralize": ^0.0.33
+    bignumber.js: ^9.1.2
+    dotenv: ^16.4.5
+    dotenv-expand: ^11.0.6
+    graphql: ^16.9.0
+    jsonwebtoken: ^9.0.2
+    pg-connection-string: ^2.7.0
+    pluralize: ^8.0.0
+    ulid: ^2.3.0
+    zod: 3.25.76
+  peerDependencies:
+    express: ^4.21.0
+  checksum: eeaf28d330fdad2578ed041b7539021d05dab8bdc450db984186fb6f2d0dd4236695066332461a8f487a85069e990687b060d709664a8b22ec2718f35baa5a42
+  languageName: node
+  linkType: hard
 
 "@medusajs/workflow-engine-inmemory@2.12.5, @medusajs/workflow-engine-inmemory@workspace:*, @medusajs/workflow-engine-inmemory@workspace:packages/modules/workflow-engine-inmemory":
   version: 0.0.0-use.local
