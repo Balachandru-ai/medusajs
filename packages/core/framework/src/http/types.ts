@@ -1,5 +1,5 @@
 import type { NextFunction, Request, Response } from "express"
-import type { ZodNullable, ZodObject, ZodOptional, ZodRawShape } from "zod"
+import type { ZodNullable, ZodObject, ZodOptional, ZodRawShape } from "@medusajs/deps/zod"
 
 import {
   FindConfig,
@@ -187,7 +187,7 @@ export interface MedusaRequest<
   /**
    * The locale for the current request, resolved from:
    * 1. Query parameter `?locale=`
-   * 2. Content-Language header
+   * 2. x-medusa-locale header
    * 3. Store's default locale
    */
   locale?: string
@@ -198,6 +198,7 @@ export interface AuthContext {
   actor_type: string
   auth_identity_id: string
   app_metadata: Record<string, unknown>
+  user_metadata: Record<string, unknown>
 }
 
 export interface PublishableKeyContext {
