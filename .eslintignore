@@ -39,6 +39,7 @@ packages/*
 !packages/modules/providers/locking-postgres
 !packages/modules/providers/locking-redis
 !packages/modules/index
+!packages/modules/event
 !packages/core/framework
 
 

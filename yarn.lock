@@ -3582,6 +3582,29 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@medusajs/event-redis@2.12.5, @medusajs/event-redis@workspace:packages/modules/providers/event-redis":
+  version: 0.0.0-use.local
+  resolution: "@medusajs/event-redis@workspace:packages/modules/providers/event-redis"
+  dependencies:
+    "@medusajs/framework": 2.12.5
+    bullmq: 5.13.0
+    ioredis: ^5.4.1
+  peerDependencies:
+    "@medusajs/framework": 2.12.5
+  languageName: unknown
+  linkType: soft
+
+"@medusajs/event@2.12.5, @medusajs/event@workspace:packages/modules/event":
+  version: 0.0.0-use.local
+  resolution: "@medusajs/event@workspace:packages/modules/event"
+  dependencies:
+    "@medusajs/framework": 2.12.5
+    "@medusajs/test-utils": 2.12.5
+  peerDependencies:
+    "@medusajs/framework": 2.12.5
+  languageName: unknown
+  linkType: soft
+
 "@medusajs/file-local@2.12.5, @medusajs/file-local@workspace:packages/modules/providers/file-local":
   version: 0.0.0-use.local
   resolution: "@medusajs/file-local@workspace:packages/modules/providers/file-local"
@@ -3816,8 +3839,10 @@ __metadata:
     "@medusajs/currency": 2.12.5
     "@medusajs/customer": 2.12.5
     "@medusajs/draft-order": 2.12.5
+    "@medusajs/event": 2.12.5
     "@medusajs/event-bus-local": 2.12.5
     "@medusajs/event-bus-redis": 2.12.5
+    "@medusajs/event-redis": 2.12.5
     "@medusajs/file": 2.12.5
     "@medusajs/file-local": 2.12.5
     "@medusajs/file-s3": 2.12.5

@@ -39,7 +39,7 @@ describe("defineConfig", function () {
             "resolve": "@medusajs/medusa/customer",
           },
           "event_bus": {
-            "resolve": "@medusajs/medusa/event-bus-local",
+            "resolve": "@medusajs/medusa/event",
           },
           "file": {
             "options": {
@@ -212,7 +212,7 @@ describe("defineConfig", function () {
             "resolve": "@medusajs/medusa/customer",
           },
           "event_bus": {
-            "resolve": "@medusajs/medusa/event-bus-local",
+            "resolve": "@medusajs/medusa/event",
           },
           "file": {
             "options": {
@@ -393,7 +393,7 @@ describe("defineConfig", function () {
             "resolve": "@medusajs/medusa/customer",
           },
           "event_bus": {
-            "resolve": "@medusajs/medusa/event-bus-local",
+            "resolve": "@medusajs/medusa/event",
           },
           "file": {
             "options": {
@@ -575,7 +575,7 @@ describe("defineConfig", function () {
             "resolve": "@medusajs/medusa/customer",
           },
           "event_bus": {
-            "resolve": "@medusajs/medusa/event-bus-local",
+            "resolve": "@medusajs/medusa/event",
           },
           "file": {
             "options": {
@@ -745,7 +745,7 @@ describe("defineConfig", function () {
             "resolve": "@medusajs/medusa/customer",
           },
           "event_bus": {
-            "resolve": "@medusajs/medusa/event-bus-local",
+            "resolve": "@medusajs/medusa/event",
           },
           "file": {
             "options": {
@@ -918,7 +918,7 @@ describe("defineConfig", function () {
             "resolve": "@medusajs/medusa/customer",
           },
           "event_bus": {
-            "resolve": "@medusajs/medusa/event-bus-local",
+            "resolve": "@medusajs/medusa/event",
           },
           "file": {
             "options": {
@@ -1113,12 +1113,21 @@ describe("defineConfig", function () {
           },
           "event_bus": {
             "options": {
-              "redisUrl": "redis://localhost:6379",
-              "workerOptions": {
-                "concurrency": 3,
-              },
+              "providers": [
+                {
+                  "id": "redis",
+                  "is_default": true,
+                  "options": {
+                    "redisUrl": "redis://localhost:6379",
+                    "workerOptions": {
+                      "concurrency": 3,
+                    },
+                  },
+                  "resolve": "@medusajs/medusa/event-redis",
+                },
+              ],
             },
-            "resolve": "@medusajs/medusa/event-bus-redis",
+            "resolve": "@medusajs/medusa/event",
           },
           "file": {
             "options": {
@@ -1340,12 +1349,21 @@ describe("defineConfig", function () {
           },
           "event_bus": {
             "options": {
-              "redisUrl": "redis://localhost:6379",
-              "workerOptions": {
-                "concurrency": 3,
-              },
+              "providers": [
+                {
+                  "id": "redis",
+                  "is_default": true,
+                  "options": {
+                    "redisUrl": "redis://localhost:6379",
+                    "workerOptions": {
+                      "concurrency": 3,
+                    },
+                  },
+                  "resolve": "@medusajs/medusa/event-redis",
+                },
+              ],
             },
-            "resolve": "@medusajs/medusa/event-bus-redis",
+            "resolve": "@medusajs/medusa/event",
           },
           "file": {
             "options": {
@@ -1583,12 +1601,21 @@ describe("defineConfig", function () {
           },
           "event_bus": {
             "options": {
-              "redisUrl": "redis://localhost:6379",
-              "workerOptions": {
-                "concurrency": 3,
-              },
+              "providers": [
+                {
+                  "id": "redis",
+                  "is_default": true,
+                  "options": {
+                    "redisUrl": "redis://localhost:6379",
+                    "workerOptions": {
+                      "concurrency": 3,
+                    },
+                  },
+                  "resolve": "@medusajs/medusa/event-redis",
+                },
+              ],
             },
-            "resolve": "@medusajs/medusa/event-bus-redis",
+            "resolve": "@medusajs/medusa/event",
           },
           "file": {
             "options": {
@@ -1886,7 +1913,7 @@ describe("defineConfig", function () {
             "resolve": "@medusajs/medusa/customer",
           },
           "event_bus": {
-            "resolve": "@medusajs/medusa/event-bus-local",
+            "resolve": "@medusajs/medusa/event",
           },
           "file": {
             "options": {
@@ -2080,7 +2107,7 @@ describe("defineConfig", function () {
             "resolve": "@medusajs/medusa/customer",
           },
           "event_bus": {
-            "resolve": "@medusajs/medusa/event-bus-local",
+            "resolve": "@medusajs/medusa/event",
           },
           "file": {
             "options": {
@@ -2292,7 +2319,7 @@ describe("defineConfig", function () {
             "resolve": "@medusajs/medusa/customer",
           },
           "event_bus": {
-            "resolve": "@medusajs/medusa/event-bus-local",
+            "resolve": "@medusajs/medusa/event",
           },
           "file": {
             "options": {
@@ -2513,7 +2540,7 @@ describe("defineConfig", function () {
             "resolve": "@medusajs/medusa/customer",
           },
           "event_bus": {
-            "resolve": "@medusajs/medusa/event-bus-local",
+            "resolve": "@medusajs/medusa/event",
           },
           "file": {
             "options": {
