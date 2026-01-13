@@ -125,6 +125,7 @@ export const getVariantsAndItemsWithPrices = createWorkflow(
               context: {
                 ...baseContext,
                 quantity: item.quantity,
+                is_custom_price: !!item.unit_price,
               },
             }
           })
