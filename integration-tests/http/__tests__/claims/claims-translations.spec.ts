@@ -32,6 +32,8 @@ medusaIntegrationTestRunner({
 
     beforeEach(async () => {
       const container = getContainer()
+      const translationModule = container.resolve(Modules.TRANSLATION)
+      await translationModule.__hooks?.onApplicationStart?.().catch(() => {})
       await createAdminUser(dbConnection, adminHeaders, container)
 
       customer = (
