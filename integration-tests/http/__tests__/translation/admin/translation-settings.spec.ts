@@ -1,5 +1,5 @@
 import { medusaIntegrationTestRunner } from "@medusajs/test-utils"
-import { Modules } from "@medusajs/utils"
+import { DmlEntity, Modules } from "@medusajs/utils"
 import {
   adminHeaders,
   createAdminUser,
@@ -12,16 +12,40 @@ process.env.MEDUSA_FF_TRANSLATION = "true"
 medusaIntegrationTestRunner({
   testSuite: ({ dbConnection, getContainer, api }) => {
     describe("Admin Translation Settings Batch API", () => {
+      let mockGetTranslatableEntities: jest.SpyInstance
+
       beforeEach(async () => {
+        mockGetTranslatableEntities = jest.spyOn(
+          DmlEntity,
+          "getTranslatableEntities"
+        )
+        mockGetTranslatableEntities.mockReturnValue([
+          { entity: "ProductVariant", fields: ["title", "material"] },
+          { entity: "ProductCategory", fields: ["name", "description"] },
+          { entity: "ProductCollection", fields: ["title"] },
+        ])
         await createAdminUser(dbConnection, adminHeaders, getContainer())
 
         const appContainer = getContainer()
-        const translationModule = appContainer.resolve(Modules.TRANSLATION)
-        await translationModule.__hooks?.onApplicationStart?.().catch(() => {})
+
+        const translationModuleService = appContainer.resolve(
+          Modules.TRANSLATION
+        )
+        await translationModuleService.__hooks
+          ?.onApplicationStart?.()
+          .catch(() => {})
+
+        // Delete all translation settings to be able to test the create operation
+        const settings =
+          await translationModuleService.listTranslationSettings()
+        await translationModuleService.deleteTranslationSettings(
+          settings.map((s) => s.id)
+        )
       })
 
       afterAll(async () => {
         delete process.env.MEDUSA_FF_TRANSLATION
+        mockGetTranslatableEntities.mockRestore()
       })
 
       describe("POST /admin/translations/settings/batch", () => {
