@@ -1,5 +1,14 @@
 # @medusajs/auth
 
+## 2.12.5
+
+### Patch Changes
+
+- [#14465](https://github.com/medusajs/medusa/pull/14465) [`568742826fae7240b33e6cc7356a12c3715d05b1`](https://github.com/medusajs/medusa/commit/568742826fae7240b33e6cc7356a12c3715d05b1) Thanks [@adrien2p](https://github.com/adrien2p)! - feat(): Add modules options autocomplete to medusa config
+
+- Updated dependencies [[`233ec261be200fac83002415aa7c0df082339a3f`](https://github.com/medusajs/medusa/commit/233ec261be200fac83002415aa7c0df082339a3f)]:
+  - @medusajs/framework@2.12.5
+
 ## 2.12.4
 
 ### Patch Changes
