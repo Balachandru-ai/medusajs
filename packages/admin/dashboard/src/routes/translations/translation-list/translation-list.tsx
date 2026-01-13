@@ -12,6 +12,7 @@ import {
 import { ActiveLocalesSection } from "./components/active-locales-section/active-locales-section"
 import { TranslationListSection } from "./components/translation-list-section/translation-list-section"
 import { TranslationsCompletionSection } from "./components/translations-completion-section/translations-completion-section"
+import { ListCheckbox } from "@medusajs/icons"
 
 export type TranslatableEntity = {
   label: string
@@ -94,6 +95,10 @@ export const TranslationList = () => {
     navigate("/settings/translations/add-locales")
   }, [navigate])
 
+  const handleManageEntities = useCallback(() => {
+    navigate("/settings/translations/settings")
+  }, [navigate])
+
   const isReady =
     !!store &&
     !isPending &&
@@ -115,11 +120,23 @@ export const TranslationList = () => {
       }}
     >
       <TwoColumnPage.Main>
-        <Container className="flex flex-col px-6 py-4">
-          <Heading>Manage {t("translations.domain")}</Heading>
-          <Text className="text-ui-fg-subtle" size="small">
-            {t("translations.subtitle")}
-          </Text>
+        <Container className="flex items-center justify-between px-6 py-4">
+          <div className="flex flex-col">
+            <Heading>Manage {t("translations.domain")}</Heading>
+            <Text className="text-ui-fg-subtle" size="small">
+              {t("translations.subtitle")}
+            </Text>
+          </div>
+          <Button
+            size="small"
+            variant="secondary"
+            onClick={handleManageEntities}
+          >
+            <ListCheckbox />
+            <Text className="txt-compact-small-plus text-ui-fg-base">
+              {t("translations.actions.manageEntities")}
+            </Text>
+          </Button>
         </Container>
 
         {!hasLocales && (

@@ -2462,6 +2462,7 @@
     },
     "actions": {
       "manage": "Gestionar traducciones",
+      "manageEntities": "Gestionar entidades",
       "manageLocales": "Gestionar idiomas"
     },
     "title": "Traducción de dominios",

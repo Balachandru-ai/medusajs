@@ -9394,11 +9394,14 @@
             "manageLocales": {
               "type": "string"
             },
+            "manageEntities": {
+              "type": "string"
+            },
             "manage": {
               "type": "string"
             }
           },
-          "required": ["manageLocales", "manage"]
+          "required": ["manageLocales", "manageEntities", "manage"]
         },
         "edit": {
           "type": "object",

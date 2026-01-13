@@ -2520,6 +2520,7 @@
     "domain": "Translations",
     "actions": {
       "manage": "Manage translations",
+      "manageEntities": "Manage entities",
       "manageLocales": "Manage locales"
     },
     "subtitle": "Manage translations of your data in Medusa",
