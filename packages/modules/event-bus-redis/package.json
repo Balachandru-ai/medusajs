@@ -24,8 +24,8 @@
   "license": "MIT",
   "devDependencies": {
     "@medusajs/framework": "2.12.5",
-    "@medusajs/types": "2.12.4",
-    "@medusajs/utils": "2.12.4"
+    "@medusajs/types": "2.12.5",
+    "@medusajs/utils": "2.12.5"
   },
   "scripts": {
     "watch": "yarn run -T tsc --build --watch",
