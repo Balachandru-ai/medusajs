@@ -27,16 +27,11 @@ export const getTranslatedTaxLinesStep = createStep(
       })
     }
 
-    const translatedItemTaxLines = await applyTranslationsToTaxLines(
-      itemTaxLines,
-      locale,
-      container
-    )
-    const translatedShippingTaxLines = await applyTranslationsToTaxLines(
-      shippingTaxLines,
-      locale,
-      container
-    )
+    const [translatedItemTaxLines, translatedShippingTaxLines] =
+      await Promise.all([
+        applyTranslationsToTaxLines(itemTaxLines, locale, container),
+        applyTranslationsToTaxLines(shippingTaxLines, locale, container),
+      ])
 
     return new StepResponse({
       itemTaxLines: translatedItemTaxLines,
