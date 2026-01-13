@@ -74,7 +74,7 @@
  *     label: cURL
  *     source: |-
  *       curl -X POST '{backend_url}/admin/products/{id}/variants' \
- *       -H 'Authorization: Bearer {access_token}' \
+ *       -H 'Authorization: Bearer {jwt_token}' \
  *       -H 'Content-Type: application/json' \
  *       --data-raw '{
  *         "title": "{value}",
@@ -106,9 +106,9 @@
  *   - name: product-variant.created
  *     payload: |-
  *       ```ts
- *       [{
+ *       {
  *         id, // The ID of the product variant
- *       }]
+ *       }
  *       ```
  *     description: Emitted when product variants are created.
  *     deprecated: false

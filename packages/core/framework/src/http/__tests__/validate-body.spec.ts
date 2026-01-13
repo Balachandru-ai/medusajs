@@ -1,12 +1,12 @@
-import zod from "zod"
 import { MedusaError } from "@medusajs/utils"
-import { validateAndTransformBody } from "../utils/validate-body"
+import { z, ZodNullable, ZodObject, ZodOptional } from "@medusajs/deps/zod"
 import { MedusaRequest, MedusaResponse } from "../types"
+import { validateAndTransformBody } from "../utils/validate-body"
 
 const createLinkBody = () => {
-  return zod.object({
-    add: zod.array(zod.string()).optional(),
-    remove: zod.array(zod.string()).optional(),
+  return z.object({
+    add: z.array(z.string()).optional(),
+    remove: z.array(z.string()).optional(),
   })
 }
 
@@ -26,14 +26,14 @@ describe("validateAndTransformBody", () => {
     const mockResponse = {} as MedusaResponse
     const nextFunction = jest.fn()
 
-    mockRequest.additionalDataValidator = zod
+    mockRequest.additionalDataValidator = z
       .object({
-        brand_id: zod.number(),
+        brand_id: z.number(),
       })
       .nullish()
 
     const validatorFactory = (
-      schema?: Zod.ZodOptional<Zod.ZodNullable<Zod.ZodObject<any, any>>>
+      schema?: ZodOptional<ZodNullable<ZodObject<any, any>>>
     ) => {
       return schema
         ? createLinkBody().extend({
@@ -62,14 +62,14 @@ describe("validateAndTransformBody", () => {
     const mockResponse = {} as MedusaResponse
     const nextFunction = jest.fn()
 
-    mockRequest.additionalDataValidator = zod
+    mockRequest.additionalDataValidator = z
       .object({
-        brand_id: zod.number(),
+        brand_id: z.number(),
       })
       .nullish()
 
     const validatorFactory = (
-      schema?: Zod.ZodOptional<Zod.ZodNullable<Zod.ZodObject<any, any>>>
+      schema?: ZodOptional<ZodNullable<ZodObject<any, any>>>
     ) => {
       return schema
         ? createLinkBody().extend({
@@ -95,14 +95,14 @@ describe("validateAndTransformBody", () => {
     const mockResponse = {} as MedusaResponse
     const nextFunction = jest.fn()
 
-    mockRequest.additionalDataValidator = zod
+    mockRequest.additionalDataValidator = z
       .object({
-        brand_id: zod.number().optional(),
+        brand_id: z.number().optional(),
       })
       .nullish()
 
     const validatorFactory = (
-      schema?: Zod.ZodOptional<Zod.ZodNullable<Zod.ZodObject<any, any>>>
+      schema?: ZodOptional<ZodNullable<ZodObject<any, any>>>
     ) => {
       return schema
         ? createLinkBody().extend({

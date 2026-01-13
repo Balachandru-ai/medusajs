@@ -20,6 +20,9 @@ swap:
   "Next.js starter storefront": "Next.js Starter Storefront"
   "Next.js storefront": "Next.js Starter Storefront"
   "Next.js Storefront": "Next.js Starter Storefront"
+  '(?:[\w\d\s'']+) Medusa Cloud': "$1 Cloud"
+  " cloud ": " Cloud "
+  "flex usage": "Flex Usage"
 exceptions:
   - 'storefront framework'
   - 'Storefront Framework'
@@ -34,3 +37,6 @@ exceptions:
   - 'frontend''s framework'
   - 'Frontend''s Framework'
   - 'Frontend''s framework'
+  - 'your framework'
+  - 'Log in with Medusa Cloud'
+  - 'different framework'

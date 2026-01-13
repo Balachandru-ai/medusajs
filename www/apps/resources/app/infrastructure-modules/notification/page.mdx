@@ -8,6 +8,12 @@ export const metadata = {
 
 In this document, you'll learn about the Notification Module and its providers.
 
+<Note title="Looking for managed email service?">
+
+Cloud offers [Medusa Emails](!cloud!/emails), a managed email service that allows you to send transactional emails with zero configuration. It is built on top of the Notification Module and provides an easy way to manage email notifications in your Cloud projects with insights and deliverability features.
+
+</Note>
+
 ## What is the Notification Module?
 
 The Notification Module exposes the functionalities to send a notification to a customer or user. For example, sending an order confirmation email. Medusa uses the Notification Module in its core commerce features for notification operations, and you an use it in your custom features as well.
@@ -86,8 +92,41 @@ Medusa provides other Notification Modules that actually send notifications, suc
         variant: "green",
         children: "For Production"
       }
+    },
+    {
+      title: "Mailchimp",
+      href: "/integrations/guides/mailchimp",
+      badge: {
+        variant: "blue",
+        children: "Tutorial",
+      }
+    },
+    {
+      title: "Resend",
+      href: "/integrations/guides/resend",
+      badge: {
+        variant: "blue",
+        children: "Tutorial",
+      }
+    },
+    {
+      title: "Slack",
+      href: "/integrations/guides/slack",
+      badge: {
+        variant: "blue",
+        children: "Tutorial",
+      }
+    },
+    {
+      title: "Twilio SMS",
+      href: "/how-to-tutorials/tutorials/phone-auth#step-3-integrate-twilio-sms",
+      badge: {
+        variant: "blue",
+        children: "Tutorial",
+      }
     }
   ]}
+  itemsPerRow={2}
 />
 
 ---

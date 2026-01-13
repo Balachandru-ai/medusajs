@@ -39,6 +39,7 @@ The `defineConfig` utility accepts an object having the following properties:
 - [modules](#module-configurations-modules): Configurations related to registered modules.
 - [plugins](#plugin-configurations-plugins): Configurations related to registered plugins.
 - [featureFlags](#feature-flags-featureFlags): Configurations to manage enabled beta features in the Medusa application.
+- [logger](#custom-logger-logger): Override the default logger.
 
 ### Using Environment Variables
 
@@ -69,6 +70,87 @@ module.exports = defineConfig({
 ## Project Configurations (`projectConfig`)
 
 The `projectConfig` object contains essential configurations related to the Medusa application, such as database and CORS configurations.
+
+### cookieOptions
+
+<Note>
+
+This option is available since Medusa [v2.8.5](https://github.com/medusajs/medusa/releases/tag/v2.8.5).
+
+</Note>
+
+The `projectConfig.cookieOptions` configuration defines cookie options to be passed to `express-session` when creating the session cookie. This configuration is useful when simulating a production environment locally, where you may need to set options like `secure` or `sameSite`. Learn more in the [Build chapter](../../build/page.mdx#authentication-locally-in-production-build).
+
+#### Example
+
+```ts title="medusa-config.ts"
+module.exports = defineConfig({
+  projectConfig: {
+    cookieOptions: {
+      sameSite: "lax",
+    },
+    // ...
+  },
+  // ...
+})
+```
+
+#### Properties
+
+Aside from the following options, you can pass any property that the [express-session's cookie option accepts](https://www.npmjs.com/package/express-session).
+
+<TypeList
+  types={[
+    {
+      name: "secure",
+      type: "`boolean`",
+      description: `Whether the cookie should only be sent over HTTPS. This is useful in production environments where you want to ensure that cookies are only sent over secure connections.`,
+      defaultValue: `false in development, true in production`
+    },
+    {
+      name: "sameSite",
+      type: "`lax` | `strict` | `none`",
+      description: `Controls the SameSite attribute of the cookie.`,
+      defaultValue: `"none" in production. In development, this attribute is not set.`
+    },
+    {
+      name: "maxAge",
+      type: "`number`",
+      description: "The maximum age of the cookie in milliseconds set in the `Set-Cookie` header.",
+      defaultValue: "Either the `sessionOptions.ttl` option, or `10` hours."
+    },
+    {
+      name: "httpOnly",
+      type: "`boolean`",
+      description: "Whether to set the `HttpOnly Set-Cookie` attribute.",
+      defaultValue: `true`
+    },
+    {
+      name: "priority",
+      type: "`low` \| `medium` \| `high`",
+      description: "The value of the [Priority Set-Cookie attribute](https://tools.ietf.org/html/draft-west-cookie-priority-00#section-4.1)",
+      defaultValue: `medium`
+    },
+    {
+      name: "domain",
+      type: "`string`",
+      description: "The value of the `Domain Set-Cookie` attribute. By default, no domain is set, and most clients will consider the cookie to apply to the current domain only."
+    },
+    {
+      name: "path",
+      type: "`string`",
+      description: "The value of the `Path Set-Cookie` attribute",
+      defaultValue: `/`
+    },
+    {
+      name: "signed",
+      type: "`boolean`",
+      description: "Whether to sign the cookie.",
+      defaultValue: `true`
+    }
+  ]}
+  openedLevel={1}
+/>
 
 ### databaseDriverOptions
 
@@ -207,23 +289,6 @@ module.exports = defineConfig({
 })
 ```
 
-### databaseSchema
-
-The `projectConfig.databaseSchema` configuration specifies the PostgreSQL database schema to connect to, which is `public` by default. Use this configuration only if you want to connect to a different schema.
-
-#### Example
-
-```ts title="medusa-config.ts"
-module.exports = defineConfig({
-  projectConfig: {
-    databaseSchema: process.env.DATABASE_SCHEMA ||
-      "custom",
-    // ...
-  },
-  // ...
-})
-```
-
 ### databaseUrl
 
 The `projectConfig.databaseUrl` configuration specifies the PostgreSQL connection URL of the database to connect to. Its format is:
@@ -272,6 +337,69 @@ module.exports = defineConfig({
 
 The `http` configures the application's http-specific settings, such as the JWT secret, CORS configurations, and more.
 
+#### http.jwtOptions
+
+The `projectConfig.http.jwtOptions` configuration specifies options for the JWT token when using asymmetric signing private/public key. These options will be used for validation if `jwtVerifyOptions` is not provided.
+
+This configuration accepts an object with the same properties as the [jsonwebtoken sign options](https://www.npmjs.com/package/jsonwebtoken#jwtsignpayload-secretorprivatekey-options-callback).
+
+<Note>
+
+Learn more in the [Asymmetric Encryption chapter](./asymmetric-encryption/page.mdx).
+
+</Note>
+
+#### Example
+
+```ts title="medusa-config.ts"
+module.exports = defineConfig({
+  projectConfig: {
+    http: {
+      jwtOptions: {
+        algorithm: "RS256",
+        expiresIn: "1h",
+        issuer: "medusa",
+        keyid: "medusa",
+      },
+    },
+    // ...
+  },
+  // ...
+})
+```
+
+#### http.jwtPublicKey
+
+The `projectConfig.http.jwtPublicKey` configuration specifies the public key used to verify the JWT token in combination with the JWT secret and the JWT options. This is only used when the JWT secret is a secret key for asymmetric validation.
+
+It accepts one of the following values:
+
+- A string containing the public key in PEM format.
+- A `Buffer` containing the public key in PEM format.
+- An object containing the following properties:
+  - `key`: A string or `Buffer` containing the public key in PEM format.
+  - `passphrase`: A string containing the passphrase for the public key, if applicable.
+
+<Note>
+
+Learn more in the [Asymmetric Encryption chapter](./asymmetric-encryption/page.mdx).
+
+</Note>
+
+#### Example
+
+```ts title="medusa-config.ts"
+module.exports = defineConfig({
+  projectConfig: {
+    http: {
+      jwtPublicKey: process.env.JWT_PUBLIC_KEY,
+    },
+    // ...
+  },
+  // ...
+})
+```
+
 #### http.jwtSecret
 
 The `projectConfig.http.jwtSecret` configuration is a random string used to create authentication tokens in the HTTP layer. This configuration is not required in development, but must be set in production.
@@ -285,6 +413,35 @@ module.exports = defineConfig({
   projectConfig: {
     http: {
       jwtSecret: process.env.JWT_SECRET || "supersecret",
+    },
+    // ...
+  },
+  // ...
+})
+```
+
+#### http.jwtVerifyOptions
+
+The `projectConfig.http.jwtVerifyOptions` configuration specifies options for the JWT token when using asymmetric validation private/public key.
+
+This configuration accepts the same options as the [jsonwebtoken verify options](https://www.npmjs.com/package/jsonwebtoken#jwtverifytoken-secretorpublickey-options-callback).
+
+<Note>
+
+Learn more in the [Asymmetric Encryption chapter](./asymmetric-encryption/page.mdx).
+
+</Note>
+
+#### Example
+
+```ts title="medusa-config.ts"
+module.exports = defineConfig({
+  projectConfig: {
+    http: {
+      jwtVerifyOptions: {
+        algorithms: ["RS256"],
+        issuer: "medusa",
+      },
     },
     // ...
   },
@@ -636,7 +793,7 @@ The value of this configuration is prepended to `sess:`. For example, if you set
 
 <Note>
 
-This configuration is not used for modules that also connect to Redis, such as the [Redis Cache Module](!resources!/infrastructure-modules/cache/redis).
+This configuration is not used for modules that also connect to Redis, such as the [Redis Caching Module Provider](!resources!/infrastructure-modules/caching/providers/redis).
 
 </Note>
 
@@ -654,9 +811,9 @@ module.exports = defineConfig({
 
 ### redisUrl
 
-The `projectConfig.redisUrl` configuration specifies the connection URL to Redis to store the Medusa server session. When specified, the Medusa server uses Redis to store the session data. Otherwie, the session data is stored in-memory.
+The `projectConfig.redisUrl` configuration specifies the connection URL to Redis to store the Medusa server session. When specified, the Medusa server uses Redis to store the session data. Otherwise, the session data is stored in-memory.
 
-This configuration is not used for modules that also connect to Redis, such as the [Redis Cache Module](!resources!/infrastructure-modules/cache/redis). You'll have to configure the Redis connection for those modules separately.
+This configuration is not used for modules that also connect to Redis, such as the [Redis Caching Module Provider](!resources!/infrastructure-modules/caching/providers/redis). You'll have to configure the Redis connection for those modules separately.
 
 <Note>
 
@@ -699,7 +856,7 @@ The `projectConfig.sessionOptions` configuration defines additional options to p
 
 <Note>
 
-This configuration is not used for modules that also connect to Redis, such as the [Redis Cache Module](!resources!/infrastructure-modules/cache/redis).
+This configuration is not used for modules that also connect to Redis, such as the [Redis Caching Module Provider](!resources!/infrastructure-modules/caching/providers/redis).
 
 </Note>
 
@@ -775,7 +932,7 @@ The value for this configuration can be one of the following:
 ```ts title="medusa-config.ts"
 module.exports = defineConfig({
   projectConfig: {
-    workerMode: process.env.WORKER_MODE || "shared",
+    workerMode: process.env.WORKER_MODE as "shared" | "worker" | "server" || "shared",
     // ...
   },
   // ...
@@ -879,8 +1036,9 @@ For example, if you're using a third-party library that isn't ESM-compatible, ad
 ```ts title="medusa-config.ts"
 module.exports = defineConfig({
   admin: {
-    vite: () => {
+    vite: (config) => {
       return {
+        ...config,
         optimizeDeps: {
           include: ["qs"],
         },
@@ -1038,17 +1196,7 @@ module.exports = {
 
 The `featureFlags` configuration allows you to manage enabled beta features in the Medusa application.
 
-Some features in the Medusa application are guarded by a feature flag. This ensures constant shipping of new features while maintaining the engine’s stability. You can enable or disable these features using the `featureFlags` configuration.
-
-The `featureFlags`'s value is an object whose keys are the names of the feature flags, and their values a boolean indicating whether the feature flag is enabled.
-
-<Note type="warning">
-
-Only enable feature flags in testing or development environments. Enabling a feature flag may introduce breaking changes or unexpected behavior.
-
-</Note>
-
-You can find available feature flags and their key name [here](https://github.com/medusajs/medusa/tree/develop/packages/medusa/src/loaders/feature-flags).
+Learn more in the [Feature Flags](../../debugging-and-testing/feature-flags/page.mdx) chapter.
 
 ### Example
 
@@ -1062,8 +1210,23 @@ module.exports = defineConfig({
 })
 ```
 
-After enabling a feature flag, make sure to run migrations, as the feature may introduce database changes:
+---
 
-```bash
-npx medusa db:migrate
+## Custom Logger (`logger`)
+
+The `logger` configuration allows you to override the default [Logger](../../debugging-and-testing/logging/page.mdx) used in the Medusa application with your custom implementation.
+
+Learn more about creating a custom logger in the [Override Logger](../../debugging-and-testing/logging/custom-logger/page.mdx) chapter.
+
+The `logger` configuration accepts an instance of a class that extends the `Logger` interface.
+
+### Example
+
+```ts title="medusa-config.ts"
+import { logger } from "./src/logger/my-logger"
+
+module.exports = defineConfig({
+  // ...
+  logger,
+})
 ```

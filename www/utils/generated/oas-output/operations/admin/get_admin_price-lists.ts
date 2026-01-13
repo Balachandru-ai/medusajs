@@ -186,6 +186,7 @@
  *           type: boolean
  *           title: $exists
  *           description: Filter by whether a value for this parameter exists (not `null`).
+ *       title: starts_at
  *   - name: ends_at
  *     in: query
  *     description: Filter by the price list's end date.
@@ -305,6 +306,7 @@
  *           type: boolean
  *           title: $exists
  *           description: Filter by whether a value for this parameter exists (not `null`).
+ *       title: ends_at
  *   - name: status
  *     in: query
  *     description: Filter by the price list's status.
@@ -349,6 +351,14 @@
  *       items:
  *         type: object
  *       title: $or
+ *   - name: with_deleted
+ *     in: query
+ *     description: Whether to include deleted records in the result.
+ *     required: false
+ *     schema:
+ *       type: boolean
+ *       title: with_deleted
+ *       description: Whether to include deleted records in the result.
  * security:
  *   - api_token: []
  *   - cookie_auth: []
@@ -375,7 +385,7 @@
  *     label: cURL
  *     source: |-
  *       curl '{backend_url}/admin/price-lists' \
- *       -H 'Authorization: Bearer {access_token}'
+ *       -H 'Authorization: Bearer {jwt_token}'
  * tags:
  *   - Price Lists
  * responses:

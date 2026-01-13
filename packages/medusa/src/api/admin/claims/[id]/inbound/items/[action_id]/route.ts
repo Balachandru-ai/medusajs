@@ -62,15 +62,17 @@ export const POST = async (
 }
 
 export const DELETE = async (
-  req: AuthenticatedMedusaRequest,
+  req: AuthenticatedMedusaRequest<{}, HttpTypes.SelectParams>,
   res: MedusaResponse<HttpTypes.AdminClaimReturnPreviewResponse>
 ) => {
   const { id, action_id } = req.params
 
-  const claim = await refetchEntity("order_claim", id, req.scope, [
-    "id",
-    "return_id",
-  ])
+  const claim = await refetchEntity({
+    entity: "order_claim",
+    idOrFilter: id,
+    scope: req.scope,
+    fields: ["id", "return_id"],
+  })
 
   const { result: orderPreview } = await removeItemReturnActionWorkflow(
     req.scope
@@ -81,15 +83,15 @@ export const DELETE = async (
     },
   })
 
-  const orderReturn = await refetchEntity(
-    "return",
-    {
+  const orderReturn = await refetchEntity({
+    entity: "return",
+    idOrFilter: {
       ...req.filterableFields,
       id,
     },
-    req.scope,
-    defaultAdminDetailsReturnFields
-  )
+    scope: req.scope,
+    fields: defaultAdminDetailsReturnFields,
+  })
 
   res.json({
     order_preview: orderPreview as unknown as HttpTypes.AdminOrderPreview,

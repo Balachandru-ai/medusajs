@@ -30,8 +30,14 @@ export type Parameter = {
   type: string
   optional?: boolean
   defaultValue?: string
+  example?: string
   description?: string
   featureFlag?: string
   expandable: boolean
   children?: Parameter[]
+  since?: string
+  deprecated?: {
+    is_deprecated: boolean
+    description?: string
+  }
 }

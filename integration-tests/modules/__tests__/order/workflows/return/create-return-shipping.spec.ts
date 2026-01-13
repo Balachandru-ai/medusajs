@@ -5,18 +5,18 @@ import {
   requestItemReturnWorkflow,
   updateRequestItemReturnWorkflow,
 } from "@medusajs/core-flows"
+import { medusaIntegrationTestRunner } from "@medusajs/test-utils"
 import { IFulfillmentModuleService, OrderDTO, ReturnDTO } from "@medusajs/types"
 import {
   ContainerRegistrationKeys,
   Modules,
   remoteQueryObjectFromString,
 } from "@medusajs/utils"
-import { medusaIntegrationTestRunner } from "@medusajs/test-utils"
 import { createOrderFixture, prepareDataFixtures } from "../__fixtures__"
 jest.setTimeout(50000)
 
 medusaIntegrationTestRunner({
-  env: { MEDUSA_FF_MEDUSA_V2: true },
+  env: {},
   testSuite: ({ getContainer }) => {
     let container
 
@@ -175,8 +175,6 @@ medusaIntegrationTestRunner({
               ],
             },
           })
-
-          console.log(result.items[0].actions)
 
           let updatedShippingMethod = result.shipping_methods?.find(
             (sm) => sm.shipping_option_id === shippingOptionId

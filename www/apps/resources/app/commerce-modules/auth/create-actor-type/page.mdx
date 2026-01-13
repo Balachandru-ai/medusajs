@@ -51,7 +51,7 @@ Start by creating a workflow that does two things:
 For example, create the file `src/workflows/create-manager.ts`. with the following content:
 
 export const workflowHighlights = [
-  ["21", "createManagerStep", "Thi step creates a manager."],
+  ["21", "createManagerStep", "This step creates a manager."],
   ["38", "createManagerWorkflow", "The workflow used to create a manager and set its auth identity's actor type."],
   ["45", "setAuthAppMetadataStep", "Set the actor type of the manager's associated auth identity."],
   ["47", '"manager"', "The actor type of the manager."]
@@ -177,7 +177,7 @@ export async function POST(
 
 Since the manager must be associated with an `AuthIdentity` record, the request is expected to be authenticated, even if the manager isn’t created yet. This can be achieved by:
 
-1. Obtaining a token usng the [/auth route](../authentication-route/page.mdx).
+1. Obtaining a token using the [/auth route](../authentication-route/page.mdx).
 2. Passing the token in the bearer header of the request to this route.
 
 In the API route, you create the manager using the workflow from the previous section and return it in the response.

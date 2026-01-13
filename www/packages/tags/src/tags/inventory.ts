@@ -60,8 +60,8 @@ export const inventory = [
     "path": "https://docs.medusajs.com/resources/references/medusa-workflows/addDraftOrderItemsWorkflow"
   },
   {
-    "title": "confirmDraftOrderEditWorkflow",
-    "path": "https://docs.medusajs.com/resources/references/medusa-workflows/confirmDraftOrderEditWorkflow"
+    "title": "convertDraftOrderWorkflow",
+    "path": "https://docs.medusajs.com/resources/references/medusa-workflows/convertDraftOrderWorkflow"
   },
   {
     "title": "adjustInventoryLevelsStep",
@@ -170,10 +170,6 @@ export const inventory = [
   {
     "title": "orderExchangeAddNewItemWorkflow",
     "path": "https://docs.medusajs.com/resources/references/medusa-workflows/orderExchangeAddNewItemWorkflow"
-  },
-  {
-    "title": "processPaymentWorkflow",
-    "path": "https://docs.medusajs.com/resources/references/medusa-workflows/processPaymentWorkflow"
   },
   {
     "title": "batchProductVariantsWorkflow",

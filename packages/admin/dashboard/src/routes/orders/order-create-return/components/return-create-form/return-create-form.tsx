@@ -94,7 +94,13 @@ export const ReturnCreateForm = ({
    */
   const { setIsOpen } = useStackedModal()
   const [isShippingPriceEdit, setIsShippingPriceEdit] = useState(false)
-  const [customShippingAmount, setCustomShippingAmount] = useState(0)
+  const [customShippingAmount, setCustomShippingAmount] = useState<{
+    value: string
+    float: number | null
+  }>({
+    value: "0",
+    float: 0,
+  })
   const [inventoryMap, setInventoryMap] = useState<
     Record<string, InventoryLevelDTO[]>
   >({})
@@ -396,6 +402,16 @@ export const ReturnCreateForm = ({
     return method?.total || 0
   }, [preview.shipping_methods])
 
+  /**
+   * For estimated difference show pending difference and subtract the total of inbound items (assume all items will be returned correctly)
+   * We don't include inbound total in the pending difference because it will be considered returned when the receive flow is completed
+   */
+  const estimatedDifference =
+    preview.summary.pending_difference -
+    previewItems.reduce((acc, item) => {
+      return acc + item.total
+    }, 0)
+
   return (
     <RouteFocusModal.Form
       form={form}
@@ -671,10 +687,7 @@ export const ReturnCreateForm = ({
                         if (actionId) {
                           updateReturnShipping({
                             actionId,
-                            custom_amount:
-                              typeof customShippingAmount === "string"
-                                ? null
-                                : customShippingAmount,
+                            custom_amount: customShippingAmount.float,
                           })
                         }
                         setIsShippingPriceEdit(false)
@@ -684,10 +697,13 @@ export const ReturnCreateForm = ({
                           .symbol_native
                       }
                       code={order.currency_code}
-                      onValueChange={(value) =>
-                        setCustomShippingAmount(value ? parseFloat(value) : "")
+                      onValueChange={(value, name, values) =>
+                        setCustomShippingAmount({
+                          value: values?.value ?? "",
+                          float: values?.float ?? null,
+                        })
                       }
-                      value={customShippingAmount}
+                      value={customShippingAmount.value}
                       disabled={showPlaceholder}
                     />
                   ) : (
@@ -701,10 +717,7 @@ export const ReturnCreateForm = ({
                   {t("orders.returns.estDifference")}
                 </span>
                 <span className="txt-small font-medium">
-                  {getStylizedAmount(
-                    preview.summary.pending_difference,
-                    order.currency_code
-                  )}
+                  {getStylizedAmount(estimatedDifference, order.currency_code)}
                 </span>
               </div>
             </div>
@@ -720,7 +733,8 @@ export const ReturnCreateForm = ({
                       <div className="flex items-center">
                         <Form.Control className="mr-4 self-start">
                           <Switch
-                            className="mt-[2px]"
+                            dir="ltr"
+                            className="mt-[2px] rtl:rotate-180"
                             checked={!!value}
                             onCheckedChange={onChange}
                             {...field}

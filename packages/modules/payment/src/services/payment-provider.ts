@@ -5,6 +5,8 @@ import {
   CancelPaymentOutput,
   CapturePaymentInput,
   CapturePaymentOutput,
+  RetrieveAccountHolderInput,
+  RetrieveAccountHolderOutput,
   CreateAccountHolderInput,
   CreateAccountHolderOutput,
   DAL,
@@ -60,6 +62,10 @@ export default class PaymentProviderService extends ModulesSdkUtils.MedusaIntern
         const errMessage = `
 Unable to retrieve the payment provider with id: ${providerId}
 Please make sure that the provider is registered in the container and it is configured correctly in your project configuration file.`
+
+        // Log full error for debugging
+        this.#logger.error(`AwilixResolutionError: ${err.message}`, err)
+
         throw new Error(errMessage)
       }
 
@@ -134,6 +140,21 @@ Please make sure that the provider is registered in the container and it is conf
   ): Promise<RefundPaymentOutput> {
     const provider = this.retrieveProvider(providerId)
     return await provider.refundPayment(input)
+  }
+
+  async retrieveAccountHolder(
+    providerId: string,
+    input: RetrieveAccountHolderInput
+  ): Promise<RetrieveAccountHolderOutput> {
+    const provider = this.retrieveProvider(providerId)
+    if (!provider.retrieveAccountHolder) {
+      this.#logger.warn(
+        `Provider ${providerId} does not support retrieving account holders`
+      )
+      return {} as unknown as RetrieveAccountHolderOutput
+    }
+
+    return await provider.retrieveAccountHolder(input)
   }
 
   async createAccountHolder(

@@ -8,7 +8,7 @@ products:
     - product
 ---
 
-import { EllipsisVertical, TaxExclusive, TaxInclusive, ArrowUpRightOnBox } from "@medusajs/icons"
+import { EllipsisVertical, TaxExclusive, TaxInclusive, ArrowUpRightOnBox, EllipsisHorizontal } from "@medusajs/icons"
 
 export const metadata = {
   title: `Manage Product Variants in Medusa Admin`,
@@ -28,7 +28,7 @@ To view the variants of a product:
 
 If you click on a variant, you can see its details in a separate page.
 
-![Product Variant Details](https://res.cloudinary.com/dza7lstvk/image/upload/v1739813067/User%20Guide/Screenshot_2025-02-17_at_7.24.04_PM_deaj7w.png)
+![Product Variant Details](https://res.cloudinary.com/dza7lstvk/image/upload/v1761822756/User%20Guide/CleanShot_2025-10-30_at_13.12.06_2x_epfvqc.png)
 
 ---
 
@@ -44,7 +44,7 @@ You can create a variant to be multi-part or a bundle, as explained in [this gui
 
 </Note>
 
-1. Click the "Create" button at the top right of the Variants section.
+1. Click the "Create" button in the Variants section's header.
 2. In the form that opens, there are two steps:
     1. Details step:
         - Enter the variant's title and optionally SKU.
@@ -75,7 +75,7 @@ Tax-inclusive pricing is configured in the [currency's](../../settings/store/pag
 To edit a product variant's general details:
 
 1. Go to its product's details page.
-2. In the Variants section, click on the <InlineIcon Icon={EllipsisVertical} alt="three-dots" /> at the variant's right.
+2. In the Variants section, click on the <InlineIcon Icon={EllipsisVertical} alt="three-dots" /> in its row.
 3. Choose "Edit" from the dropdown.
 4. In the side window that opens:
     - You can edit the variant's title, materials, option values (such as color or size), SKU, EAN, UPC, and barcode.
@@ -86,12 +86,34 @@ To edit a product variant's general details:
 
 ---
 
+## Manage Product Variant's Translations
+
+<Note>
+
+Locales are available from [Medusa v2.12.3](https://github.com/medusajs/medusa/releases/tag/v2.12.3). If you don't see the translation management in your Medusa Admin, request your technical team to [upgrade your Medusa application](!docs!/learn/update).
+
+</Note>
+
+Product variants can be translated to locales (languages) [supported by your store](../../settings/store/page.mdx#manage-store-locales). You can either manage translations [in bulk](../../settings/translations/page.mdx), or manage translations for an individual product variant from its details page.
+
+To manage translations for the product:
+
+1. Go to its product's details page.
+2. In the Variants section, click on the <InlineIcon Icon={EllipsisVertical} alt="three-dots" /> in its row.
+3. Click on the <InlineIcon Icon={EllipsisHorizontal} alt="three-dots" /> icon in the first section's header.
+4. Choose "Manage translations" from the dropdown.
+5. In the [bulk editor](../../tips/bulk-editor/page.mdx) that opens, you can view and edit translations for the product's title and material in each locale supported by your store.
+    - To edit text with multi-line support, double click the respective cell to open a larger text area.
+6. Once you're done editing, click the Save button to apply the changes.
+
+---
+
 ## Edit Product Variant Prices
 
 To edit the prices of product variants:
 
 1. Go to its product's details page.
-2. Click on the <InlineIcon Icon={EllipsisVertical} alt="three-dots" /> at the top right of the section.
+2. Click on the <InlineIcon Icon={EllipsisVertical} alt="three-dots" /> in the section's header.
 3. Choose "Edit Prices" from the dropdown.
 4. In the [bulk editor](../../tips/bulk-editor/page.mdx), you can edit the price of each variant for the currencies and regions in your store.
 5. Once you're done, click the "Save" button.
@@ -116,10 +138,46 @@ There are many ways to manage the inventory of a product variant. From the produ
 To manage the inventory of a product's variants:
 
 1. Go to its product's details page.
-2. Click on the <InlineIcon Icon={EllipsisVertical} alt="three-dots" /> at the top right of the section.
+2. Click on the <InlineIcon Icon={EllipsisVertical} alt="three-dots" /> in the section's header.
 3. Choose "Edit stock levels" from the dropdown.
 4. In the bulk editor, the rows are the inventory item(s) of each product variant, and the columns are inventory-related fields to edit, such as SKU and quantity in each stock location.
 5. Once you're done, click the "Save" button.
+
+---
+
+## Manage Product Variant Media
+
+<Note>
+
+Product variant media is available from [Medusa Admin v2.11.2](https://github.com/medusajs/medusa/releases/tag/v2.11.2). If you don't see the Media section in the product variant's page, request your technical team to [upgrade your Medusa application](!docs!/learn/update).
+
+</Note>
+
+A product variant can have images specific to it. These are selected from the product's media. Associating images with variants is useful to show customers the correct images when they select a specific variant on the storefront.
+
+You can view and manage a variant's images in the Media section of its details page, or you can manage images for multiple variants from the [product's details page](../edit/page.mdx#associate-images-with-variants).
+
+To manage the images of a product variant:
+
+1. Go to its product's details page.
+2. In the Variants section, click on a variant to go to its details page.
+3. In the Media, click on the <InlineIcon Icon={EllipsisVertical} alt="three-dots" /> in the section's header.
+4. Choose "Edit images" from the dropdown.
+5. In the form that opens:
+    - To select images for the variant, click on the image in the right section.
+    - To remove an image from the variant:
+        - Hover over the image to remove in the left section, and click its checkbox.
+        - Press <Kbd>R</Kbd> or click the "Remove Selected" button at the bottom of the page.
+    - To make an image the thumbnail:
+        - Hover over the image in the left section, and click the <InlineIcon Icon={ArrowUpRightOnBox} alt="arrow" /> icon.
+        - Press <Kbd>T</Kbd> or click the "Make Thumbnail" button at the bottom of the page.
+6. Once you're done, click the "Save" button.
+
+<Note>
+
+If you want to upload a new image, [add it to the product's media](../edit/page.mdx#manage-product-media) first.
+
+</Note>
 
 ---
 
@@ -131,14 +189,14 @@ To manage the metadata of a product variant:
 
 1. Go to its product's details page.
 2. In the Variants section, click on a variant to go to its details page.
-3. Click on the <InlineIcon Icon={ArrowUpRightOnBox} alt="arrow" /> at the right of the section.
+3. Click on the <InlineIcon Icon={ArrowUpRightOnBox} alt="arrow" /> in the section's header.
 4. In the side window that opens:
     - Manage the key-value pairs in the table.
     - To add a new row of key-value pairs before or after a row:
-        - Hover over the row and click the <InlineIcon Icon={EllipsisVertical} alt="three-dots" /> icon at its right.
+        - Hover over the row and click the <InlineIcon Icon={EllipsisVertical} alt="three-dots" /> icon at its end.
         - Choose "Insert row above" or "Insert row below" from the dropdown.
     - To delete a row of key-value pairs:
-        - Hover over the row and click the <InlineIcon Icon={EllipsisVertical} alt="three-dots" /> icon at its right.
+        - Hover over the row and click the <InlineIcon Icon={EllipsisVertical} alt="three-dots" /> icon at its end.
         - Choose "Delete row" from the dropdown.
 5. Once you're done, click the Save button.
 
@@ -163,6 +221,6 @@ Deleting a product variant is irreversible.
 To delete a product variant:
 
 1. Go to its product's details page.
-2. In the Variants section, click on the <InlineIcon Icon={EllipsisVertical} alt="three-dots" /> at the variant's right.
+2. In the Variants section, click on the <InlineIcon Icon={EllipsisVertical} alt="three-dots" /> in its row.
 3. Choose "Delete" from the dropdown.
 4. Confirm the action by clicking the "Delete" button in the pop-up.

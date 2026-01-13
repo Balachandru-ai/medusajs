@@ -1,58 +1,29 @@
 import {
   AdditionalData,
+  ConfirmVariantInventoryWorkflowInputDTO,
+  CreateOrderLineItemDTO,
   OrderLineItemDTO,
   OrderWorkflow,
 } from "@medusajs/framework/types"
-import { isDefined, MedusaError } from "@medusajs/framework/utils"
+import { deduplicate } from "@medusajs/framework/utils"
 import {
   createHook,
   createWorkflow,
   parallelize,
   transform,
-  when,
   WorkflowData,
   WorkflowResponse,
 } from "@medusajs/framework/workflows-sdk"
 import { findOneOrAnyRegionStep } from "../../cart/steps/find-one-or-any-region"
 import { findOrCreateCustomerStep } from "../../cart/steps/find-or-create-customer"
 import { findSalesChannelStep } from "../../cart/steps/find-sales-channel"
-import { validateLineItemPricesStep } from "../../cart/steps/validate-line-item-prices"
-import { validateVariantPricesStep } from "../../cart/steps/validate-variant-prices"
-import {
-  prepareLineItemData,
-  PrepareLineItemDataInput,
-} from "../../cart/utils/prepare-line-item-data"
+import { requiredVariantFieldsForInventoryConfirmation } from "../../cart/utils/prepare-confirm-inventory-input"
+import { pricingContextResult } from "../../cart/utils/schemas"
 import { confirmVariantInventoryWorkflow } from "../../cart/workflows/confirm-variant-inventory"
-import { useRemoteQueryStep } from "../../common"
+import { getVariantsAndItemsWithPrices } from "../../cart/workflows/get-variants-and-items-with-prices"
+import { getTranslatedLineItemsStep, useQueryGraphStep } from "../../common"
 import { createOrderLineItemsStep } from "../steps"
 import { productVariantsFields } from "../utils/fields"
-import { pricingContextResult } from "../../cart/utils/schemas"
-
-function prepareLineItems(data) {
-  const items = (data.input.items ?? []).map((item) => {
-    const variant = data.variants?.find((v) => v.id === item.variant_id)!
-
-    const input: PrepareLineItemDataInput = {
-      item,
-      variant: variant,
-      unitPrice: item.unit_price,
-      isTaxInclusive:
-        item.is_tax_inclusive ??
-        variant?.calculated_price?.is_calculated_price_tax_inclusive,
-      isCustomPrice: isDefined(item?.unit_price),
-      taxLines: item.tax_lines || [],
-      adjustments: item.adjustments || [],
-    }
-
-    if (variant && !input.unitPrice) {
-      input.unitPrice = variant.calculated_price?.calculated_amount
-    }
-
-    return prepareLineItemData(input)
-  })
-
-  return items
-}
 
 /**
  * The created order line items.
@@ -84,11 +55,11 @@ export const addOrderLineItemsWorkflowId = "order-add-line-items"
  * @summary
  *
  * Add line items to an order.
- * 
+ *
  * @property hooks.setPricingContext - This hook is executed after the order is retrieved and before the line items are created. You can consume this hook to return any custom context useful for the prices retrieval of the variants to be added to the order.
- * 
+ *
  * For example, assuming you have the following custom pricing rule:
- * 
+ *
  * ```json
  * {
  *   "attribute": "location_id",
@@ -96,13 +67,13 @@ export const addOrderLineItemsWorkflowId = "order-add-line-items"
  *   "value": "sloc_123",
  * }
  * ```
- * 
+ *
  * You can consume the `setPricingContext` hook to add the `location_id` context to the prices calculation:
- * 
+ *
  * ```ts
  * import { addOrderLineItemsWorkflow } from "@medusajs/medusa/core-flows";
  * import { StepResponse } from "@medusajs/workflows-sdk";
- * 
+ *
  * addOrderLineItemsWorkflow.hooks.setPricingContext((
  *   { order, variantIds, region, customerData, additional_data }, { container }
  * ) => {
@@ -111,13 +82,13 @@ export const addOrderLineItemsWorkflowId = "order-add-line-items"
  *   });
  * });
  * ```
- * 
+ *
  * The variants' prices will now be retrieved using the context you return.
- * 
+ *
  * :::note
- * 
+ *
  * Learn more about prices calculation context in the [Prices Calculation](https://docs.medusajs.com/resources/commerce-modules/pricing/price-calculation) documentation.
- * 
+ *
  * :::
  */
 export const addOrderLineItemsWorkflow = createWorkflow(
@@ -127,8 +98,9 @@ export const addOrderLineItemsWorkflow = createWorkflow(
       OrderWorkflow.OrderAddLineItemWorkflowInput & AdditionalData
     >
   ) => {
-    const order = useRemoteQueryStep({
-      entry_point: "orders",
+    const { data: order } = useQueryGraphStep({
+      entity: "order",
+      filters: { id: input.order_id },
       fields: [
         "id",
         "sales_channel_id",
@@ -136,10 +108,9 @@ export const addOrderLineItemsWorkflow = createWorkflow(
         "customer_id",
         "email",
         "currency_code",
+        "locale",
       ],
-      variables: { id: input.order_id },
-      list: false,
-      throw_if_key_not_found: true,
+      options: { throwIfKeyNotFound: true, isList: false },
     }).config({ name: "order-query" })
 
     const variantIds = transform({ input }, (data) => {
@@ -176,54 +147,45 @@ export const addOrderLineItemsWorkflow = createWorkflow(
     )
     const setPricingContextResult = setPricingContext.getResult()
 
-    const pricingContext = transform(
-      { input, region, customerData, order, setPricingContextResult },
-      (data) => {
-        if (!data.region) {
-          throw new MedusaError(MedusaError.Types.NOT_FOUND, "Region not found")
-        }
-
-        return {
-          ...(data.setPricingContextResult ? data.setPricingContextResult : {}),
-          currency_code: data.order.currency_code ?? data.region.currency_code,
-          region_id: data.region.id,
-          customer_id: data.customerData.customer?.id,
-        }
-      }
-    )
-
-    const variants = when({ variantIds }, ({ variantIds }) => {
-      return !!variantIds.length
-    }).then(() => {
-      return useRemoteQueryStep({
-        entry_point: "variants",
-        fields: productVariantsFields,
-        variables: {
+    const { variants, lineItems } = getVariantsAndItemsWithPrices.runAsStep({
+      input: {
+        cart: order,
+        items: input.items,
+        setPricingContextResult: setPricingContextResult!,
+        variants: {
           id: variantIds,
-          calculated_price: {
-            context: pricingContext,
-          },
+          fields: deduplicate([
+            ...productVariantsFields,
+            ...requiredVariantFieldsForInventoryConfirmation,
+          ]),
         },
-      })
+      },
     })
-
-    validateVariantPricesStep({ variants })
 
     confirmVariantInventoryWorkflow.runAsStep({
       input: {
         sales_channel_id: salesChannel.id,
-        variants,
+        variants:
+          variants as unknown as ConfirmVariantInventoryWorkflowInputDTO["variants"],
         items: input.items!,
       },
     })
 
-    const lineItems = transform({ input, variants }, prepareLineItems)
+    const items = transform({ lineItems }, (data) => {
+      return data.lineItems.map((item) => {
+        return item.data as CreateOrderLineItemDTO
+      })
+    })
 
-    validateLineItemPricesStep({ items: lineItems })
+    const translatedItems = getTranslatedLineItemsStep({
+      items,
+      variants,
+      locale: order.locale,
+    })
 
     return new WorkflowResponse(
       createOrderLineItemsStep({
-        items: lineItems,
+        items: translatedItems,
       }) satisfies OrderAddLineItemWorkflowOutput,
       {
         hooks: [setPricingContext] as const,

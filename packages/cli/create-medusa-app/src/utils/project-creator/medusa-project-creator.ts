@@ -75,31 +75,28 @@ export class MedusaProjectCreator
       title: "Setting up project...",
     })
 
-    try {
-      await runCloneRepo({
-        projectName: this.projectPath,
-        repoUrl: this.options.repoUrl ?? "",
+    await runCloneRepo({
+      projectName: this.projectPath,
+      repoUrl: this.options.repoUrl ?? "",
+      abortController: this.abortController,
+      spinner: this.spinner,
+      verbose: this.options.verbose,
+    })
+
+    this.factBoxOptions.interval = displayFactBox({
+      ...this.factBoxOptions,
+      message: "Created project directory",
+    })
+
+    if (installNextjs) {
+      this.nextjsDirectory = await installNextjsStarter({
+        directoryName: this.projectPath,
         abortController: this.abortController,
-        spinner: this.spinner,
+        factBoxOptions: this.factBoxOptions,
         verbose: this.options.verbose,
+        packageManager: this.packageManager,
+        version: this.options.version,
       })
-
-      this.factBoxOptions.interval = displayFactBox({
-        ...this.factBoxOptions,
-        message: "Created project directory",
-      })
-
-      if (installNextjs) {
-        this.nextjsDirectory = await installNextjsStarter({
-          directoryName: this.projectPath,
-          abortController: this.abortController,
-          factBoxOptions: this.factBoxOptions,
-          verbose: this.options.verbose,
-          processManager: this.processManager,
-        })
-      }
-    } catch (e) {
-      throw e
     }
   }
 
@@ -153,6 +150,8 @@ export class MedusaProjectCreator
         nextjsDirectory: this.nextjsDirectory,
         client: this.client,
         verbose: this.options.verbose,
+        packageManager: this.packageManager,
+        version: this.options.version,
       })
     } finally {
       await this.client?.end()
@@ -174,6 +173,7 @@ export class MedusaProjectCreator
     startMedusa({
       directory: this.projectPath,
       abortController: this.abortController,
+      packageManager: this.packageManager,
     })
 
     if (this.nextjsDirectory) {
@@ -181,6 +181,7 @@ export class MedusaProjectCreator
         directory: this.nextjsDirectory,
         abortController: this.abortController,
         verbose: this.options.verbose,
+        packageManager: this.packageManager,
       })
     }
 
@@ -192,40 +193,44 @@ export class MedusaProjectCreator
   private async openBrowser(): Promise<void> {
     await waitOn({
       resources: ["http://localhost:9000/health"],
-    }).then(async () => {
+    }).then(async () =>
       open(
         this.inviteToken
           ? `http://localhost:9000/app/invite?token=${this.inviteToken}&first_run=true`
           : "http://localhost:9000/app"
       )
-    })
+    )
   }
 
-  private handleError(e: any): void {
+  private handleError(e: Error): void {
     if (isAbortError(e)) {
       process.exit()
     }
+
+    const showStack = e.message.includes("npm") || e.message.includes("yarn")
 
     this.spinner.stop()
     logMessage({
       message: `An error occurred: ${e}`,
       type: "error",
+      stack: showStack ? e.stack?.replace(e.toString(), "") : "",
     })
   }
 
   protected showSuccessMessage(): void {
+    const commandStr = this.packageManager.getCommandStr(`dev`)
     logMessage({
       message: boxen(
         chalk.green(
           `Change to the \`${
             this.projectName
-          }\` directory to explore your Medusa project.${EOL}${EOL}Start your Medusa application again with the following command:${EOL}${EOL}yarn dev${EOL}${EOL}${
+          }\` directory to explore your Medusa project.${EOL}${EOL}Start your Medusa application again with the following command:${EOL}${EOL}${commandStr}${EOL}${EOL}${
             this.inviteToken
               ? `After you start the Medusa application, you can create an admin user with the URL http://localhost:9000/app/invite?token=${this.inviteToken}&first_run=true${EOL}${EOL}`
               : ""
           }${
             this.nextjsDirectory?.length
-              ? `The Next.js Starter Storefront was installed in the \`${this.nextjsDirectory}\` directory. Change to that directory and start it with the following command:${EOL}${EOL}npm run dev${EOL}${EOL}`
+              ? `The Next.js Starter Storefront was installed in the \`${this.nextjsDirectory}\` directory. Change to that directory and start it with the following command:${EOL}${EOL}${commandStr}${EOL}${EOL}`
               : ""
           }Check out the Medusa documentation to start your development:${EOL}${EOL}https://docs.medusajs.com/${EOL}${EOL}Star us on GitHub if you like what we're building:${EOL}${EOL}https://github.com/medusajs/medusa/stargazers`
         ),

@@ -111,11 +111,11 @@ In addition, Resend allows you to send emails from the address `onboarding@resen
 1. Go to Domains from the sidebar.
 2. Click on Add Domain.
 
-![Click on Domains in the sidebar then on the Add Domain button in the middle of the page.](https://res.cloudinary.com/dza7lstvk/image/upload/v1732523238/Medusa%20Resources/Screenshot_2024-11-25_at_10.18.11_AM_pmqgtv.png)
+![Resend dashboard interface showing the Domains section in the left sidebar navigation and the prominent "Add Domain" button in the main content area, which initiates the process of configuring a custom domain for email sending through the Resend service](https://res.cloudinary.com/dza7lstvk/image/upload/v1732523238/Medusa%20Resources/Screenshot_2024-11-25_at_10.18.11_AM_pmqgtv.png)
 
 3\. In the form that opens, enter your domain name and select a region close to your users, then click Add.
 
-![A pop-up window with Domain and Region fields.](https://res.cloudinary.com/dza7lstvk/image/upload/v1732523280/Medusa%20Resources/Screenshot_2024-11-25_at_10.18.52_AM_sw2pr4.png)
+![Domain configuration modal in Resend showing form fields for entering the custom domain name and selecting the appropriate geographical region for optimal email delivery performance, with an "Add" button to confirm the domain setup](https://res.cloudinary.com/dza7lstvk/image/upload/v1732523280/Medusa%20Resources/Screenshot_2024-11-25_at_10.18.52_AM_sw2pr4.png)
 
 4\. In the domain's details page that opens, you'll find DNS records to add to your DNS provider. After you add them, click on Verify DNS Records. You can start sending emails from your custom domain once it's verified.
 
@@ -1199,14 +1199,15 @@ You'll now create the workflow that uses the `sendNotificationStep` to send the 
 Create the file `src/workflows/send-order-confirmation.ts` with the following content:
 
 export const workflowHighlights = [
-  ["12", "sendOrderConfirmationWorkflow", "Create the workflow that sends an order confirmation email."],
+  ["13", "sendOrderConfirmationWorkflow", "Create the workflow that sends an order confirmation email."],
   ["16", "useQueryGraphStep", "Retrieve the order's details."],
-  ["44", "sendNotificationStep", "Send the order confirmation email."]
+  ["48", "sendNotificationStep", "Send the order confirmation email."]
 ]
 
 ```ts title="src/workflows/send-order-confirmation.ts" highlights={workflowHighlights}
 import { 
   createWorkflow, 
+  when,
   WorkflowResponse,
 } from "@medusajs/framework/workflows-sdk"
 import { useQueryGraphStep } from "@medusajs/medusa/core-flows"
@@ -1219,7 +1220,6 @@ type WorkflowInput = {
 export const sendOrderConfirmationWorkflow = createWorkflow(
   "send-order-confirmation",
   ({ id }: WorkflowInput) => {
-    // @ts-ignore
     const { data: orders } = useQueryGraphStep({
       entity: "order",
       fields: [
@@ -1245,18 +1245,26 @@ export const sendOrderConfirmationWorkflow = createWorkflow(
       filters: {
         id,
       },
+      options: {
+        throwIfKeyNotFound: true,
+      },
     })
     
-    const notification = sendNotificationStep([{
-      to: orders[0].email,
-      channel: "email",
-      template: "order-placed",
-      data: {
-        order: orders[0],
-      },
-    }])
+    const notification = when({ orders }, (data) => !!data.orders[0].email)
+    .then(() => {
+      return sendNotificationStep([{
+        to: orders[0].email!,
+        channel: "email",
+        template: "order-placed",
+        data: {
+          order: orders[0],
+        },
+      }])
+    })
 
-    return new WorkflowResponse(notification)
+    return new WorkflowResponse({
+      notification,
+    })
   }
 )
 ```
@@ -1266,7 +1274,7 @@ You create a workflow using `createWorkflow` from the Workflows SDK. It accepts 
 It accepts as a second parameter a constructor function, which is the workflow's implementation. The workflow has the following steps:
 
 1. `useQueryGraphStep`, which is a step implemented by Medusa that uses [Query](!docs!/learn/fundamentals/module-links/query), a tool that allows you to retrieve data across modules. You use it to retrieve the order's details.
-2. `sendNotificationStep` which is the step you implemented. You pass it an array with one object, which is the notification's details having following properties:
+2. Ensure that the order has an email address by using `when-then`. If so, you send the notification using the `sendNotificationStep` you implemented earlier. You pass it an object with the following properties:
     - `to`: The address to send the email to. You pass the customer's email that is stored in the order.
     - `channel`: The channel to send the notification through, which is `email`. Since you specified `email` in the Resend Module Provider's `channel` option, the Notification Module will delegate the sending to the Resend Module Provider's service.
     - `template`: The email's template type. You retrieve the template content in the `ResendNotificationProviderService`'s `send` method based on the template specified here.
@@ -1274,7 +1282,7 @@ It accepts as a second parameter a constructor function, which is the workflow's
 
 <Note title="Tip">
 
-A workflow's constructor function has some constraints in implementation. Learn more about them in [this documentation](!docs!/learn/fundamentals/workflows/constructor-constraints).
+`when` allows you to perform steps based on a condition during execution. Learn more in the [Conditions in Workflows](!docs!/learn/fundamentals/workflows/conditions) documentation.
 
 </Note>
 
@@ -1326,7 +1334,7 @@ A subscriber file exports:
 - An asynchronous function that's executed whenever the associated event is emitted, which is the `order.placed` event.
 - A configuration object with an `event` property indicating the event the subscriber is listening to.
 
-The subscriber function accepts the event's details as a first paramter which has a `data` property that holds the data payload of the event. For example, Medusa emits the `order.placed` event with the order's ID in the data payload. The function also accepts as a second parameter the [Medusa container](!docs!/learn/fundamentals/medusa-container).
+The subscriber function accepts the event's details as a first parameter which has a `data` property that holds the data payload of the event. For example, Medusa emits the `order.placed` event with the order's ID in the data payload. The function also accepts as a second parameter the [Medusa container](!docs!/learn/fundamentals/medusa-container).
 
 In the function, you execute the `sendOrderConfirmationWorkflow` by invoking it, passing it the `container`, then using its `run` method. The `run` method accepts an object having an `input` property, which is the input to pass to the workflow. You pass the ID of the placed order as received in the event's data payload.
 
@@ -1391,6 +1399,15 @@ If you check the inbox of the email address you specified in the shipping addres
 ## Next Steps
 
 You've now integrated Medusa with Resend. You can add more templates for other emails, such as customer registration confirmation, user invites, and more. Check out the [Events Reference](/references/events) for a list of all events that the Medusa application emits.
+
+### More Resend Email Templates
+
+Find more email templates to use with the Resend Module Provider in the following guides:
+
+- [Send Invite User Email](../../../commerce-modules/user/invite-user-subscriber/page.mdx).
+- [Send Reset Password Email](../../../commerce-modules/auth/reset-password/page.mdx).
+
+### Learn More About Medusa
 
 If you're new to Medusa, check out the [main documentation](!docs!/learn), where you'll get a more in-depth learning of all the concepts you've used in this guide and more.
 

@@ -11,6 +11,9 @@ import { IWorkflowEngineService } from "@medusajs/framework/types"
 import { Modules, TransactionHandlerType } from "@medusajs/framework/utils"
 import { StepResponse } from "@medusajs/framework/workflows-sdk"
 
+/**
+ * @deprecated use `POST /admin/products/imports/:transaction_id/confirm` instead.
+ */
 export const POST = async (
   req: AuthenticatedMedusaRequest,
   res: MedusaResponse

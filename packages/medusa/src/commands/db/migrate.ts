@@ -1,18 +1,18 @@
-import { MEDUSA_CLI_PATH, MedusaAppLoader } from "@medusajs/framework"
+import { MEDUSA_CLI_PATH, MedusaAppLoader, Migrator } from "@medusajs/framework"
 import { LinkLoader } from "@medusajs/framework/links"
-import { logger } from "@medusajs/framework/logger"
 import {
   ContainerRegistrationKeys,
   getResolvedPlugins,
+  isDefined,
   mergePluginModules,
 } from "@medusajs/framework/utils"
-import { join } from "path"
-
+import { Logger, MedusaContainer } from "@medusajs/types"
 import { fork } from "child_process"
-import path from "path"
+import path, { join } from "path"
 import { initializeContainer } from "../../loaders"
-import { ensureDbExists } from "../utils"
+import { ensureDbExists, isPgstreamEnabled } from "../utils"
 import { syncLinks } from "./sync-links"
+
 const TERMINAL_SIZE = process.stdout.columns
 
 const cliPath = path.resolve(MEDUSA_CLI_PATH, "..", "..", "cli.js")
@@ -27,18 +27,36 @@ export async function migrate({
   skipScripts,
   executeAllLinks,
   executeSafeLinks,
+  allOrNothing,
+  concurrency,
+  logger,
+  container,
 }: {
   directory: string
   skipLinks: boolean
   skipScripts: boolean
   executeAllLinks: boolean
   executeSafeLinks: boolean
+  allOrNothing?: boolean
+  concurrency?: number
+  logger: Logger
+  container: MedusaContainer
 }): Promise<boolean> {
   /**
    * Setup
    */
-  const container = await initializeContainer(directory)
+
   await ensureDbExists(container)
+
+  // If pgstream is enabled, force concurrency to 1
+  const pgstreamEnabled = await isPgstreamEnabled(container)
+  if (pgstreamEnabled) {
+    concurrency = 1
+  }
+
+  if (isDefined(concurrency)) {
+    process.env.DB_MIGRATION_CONCURRENCY = String(concurrency)
+  }
 
   const medusaAppLoader = new MedusaAppLoader()
   const configModule = container.resolve(
@@ -51,26 +69,34 @@ export async function migrate({
   const linksSourcePaths = plugins.map((plugin) =>
     join(plugin.resolve, "links")
   )
-  await new LinkLoader(linksSourcePaths).load()
+  await new LinkLoader(linksSourcePaths, logger).load()
 
   /**
    * Run migrations
    */
   logger.info("Running migrations...")
+
+  const migrator = new Migrator({ container })
+  await migrator.ensureMigrationsTable()
+
   await medusaAppLoader.runModulesMigrations({
     action: "run",
+    allOrNothing,
   })
-  console.log(new Array(TERMINAL_SIZE).join("-"))
+  logger.log(new Array(TERMINAL_SIZE).join("-"))
   logger.info("Migrations completed")
 
   /**
    * Sync links
    */
   if (!skipLinks) {
-    console.log(new Array(TERMINAL_SIZE).join("-"))
+    logger.log(new Array(TERMINAL_SIZE).join("-"))
     await syncLinks(medusaAppLoader, {
       executeAll: executeAllLinks,
       executeSafe: executeSafeLinks,
+      directory,
+      container,
+      concurrency,
     })
   }
 
@@ -78,7 +104,7 @@ export async function migrate({
     /**
      * Run migration scripts
      */
-    console.log(new Array(TERMINAL_SIZE).join("-"))
+    logger.log(new Array(TERMINAL_SIZE).join("-"))
     const childProcess = fork(cliPath, ["db:migrate:scripts"], {
       cwd: directory,
       env: process.env,
@@ -103,7 +129,13 @@ const main = async function ({
   skipScripts,
   executeAllLinks,
   executeSafeLinks,
+  concurrency,
+  allOrNothing,
 }) {
+  process.env.MEDUSA_WORKER_MODE = "server"
+  const container = await initializeContainer(directory)
+  const logger = container.resolve(ContainerRegistrationKeys.LOGGER)
+
   try {
     const migrated = await migrate({
       directory,
@@ -111,6 +143,10 @@ const main = async function ({
       skipScripts,
       executeAllLinks,
       executeSafeLinks,
+      concurrency,
+      allOrNothing,
+      logger,
+      container,
     })
     process.exit(migrated ? 0 : 1)
   } catch (error) {

@@ -48,6 +48,12 @@ export type TransactionStepsDefinition = {
   maxRetries?: number
 
   /**
+   * If true, the step will be retried automatically in case of a temporary failure.
+   * The default is true.
+   */
+  autoRetry?: boolean
+
+  /**
    * The interval (in seconds) between retry attempts after a temporary failure.
    * The default is to retry immediately.
    */
@@ -57,6 +63,11 @@ export type TransactionStepsDefinition = {
    * The interval (in seconds) to retry a step even if its status is "TransactionStepStatus.WAITING".
    */
   retryIntervalAwaiting?: number
+
+  /**
+   * The maximum number of times to retry a step even if its status is "TransactionStepStatus.WAITING".
+   */
+  maxAwaitingRetries?: number
 
   /**
    * The maximum amount of time (in seconds) to wait for this step to complete.
@@ -103,6 +114,12 @@ export type TransactionStepsDefinition = {
    * Defines the next step(s) to execute after this step. Can be a single step or an array of steps.
    */
   next?: TransactionStepsDefinition | TransactionStepsDefinition[]
+
+  /**
+   * @private
+   * Whether we need to store checkpoint at this step.
+   */
+  store?: boolean
 
   // TODO: add metadata field for customizations
 }
@@ -252,6 +269,9 @@ export type StepFeatures = {
   hasAsyncSteps: boolean
   hasStepTimeouts: boolean
   hasRetriesTimeout: boolean
+  parallelSteps?: number
+  stepId?: string
+  _v?: number
 }
 
 export type TransactionOptions = TransactionModelOptions & StepFeatures
@@ -265,6 +285,7 @@ export type TransactionFlow = {
   metadata?: {
     eventGroupId?: string
     parentIdempotencyKey?: string
+    cancelingFromParentStep?: boolean
     sourcePath?: string
     preventReleaseEvents?: boolean
     parentStepIdempotencyKey?: string
@@ -279,8 +300,10 @@ export type TransactionFlow = {
   timedOutAt: number | null
   startedAt?: number
   cancelledAt?: number
+  temporaryFailedAt?: number | null
   state: TransactionState
   steps: {
     [key: string]: TransactionStep
   }
+  _v: number
 }

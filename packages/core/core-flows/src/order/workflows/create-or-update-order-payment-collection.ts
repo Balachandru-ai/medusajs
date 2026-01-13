@@ -1,4 +1,4 @@
-import { PaymentCollectionDTO } from "@medusajs/framework/types"
+import type { PaymentCollectionDTO } from "@medusajs/framework/types"
 import {
   MathBN,
   MedusaError,
@@ -11,10 +11,10 @@ import {
   WorkflowData,
   WorkflowResponse,
 } from "@medusajs/framework/workflows-sdk"
-import { useRemoteQueryStep } from "../../common"
+import { useQueryGraphStep } from "../../common"
 import { updatePaymentCollectionStep } from "../../payment-collection"
-import { createOrderPaymentCollectionWorkflow } from "./create-order-payment-collection"
 import { cancelPaymentCollectionWorkflow } from "../../payment-collection/workflows/cancel-payment-collection"
+import { createOrderPaymentCollectionWorkflow } from "./create-order-payment-collection"
 
 /**
  * The details of the order payment collection to create or update.
@@ -63,18 +63,17 @@ export const createOrUpdateOrderPaymentCollectionWorkflow = createWorkflow(
       amount?: number
     }>
   ) => {
-    const order = useRemoteQueryStep({
-      entry_point: "order",
-      fields: ["id", "summary", "currency_code", "region_id"],
-      variables: { id: input.order_id },
-      throw_if_key_not_found: true,
-      list: false,
+    const { data: order } = useQueryGraphStep({
+      entity: "order",
+      fields: ["id", "summary", "total", "currency_code", "region_id"],
+      filters: { id: input.order_id },
+      options: { throwIfKeyNotFound: true, isList: false },
     })
 
-    const orderPaymentCollections = useRemoteQueryStep({
-      entry_point: "order_payment_collection",
+    const { data: orderPaymentCollections } = useQueryGraphStep({
+      entity: "order_payment_collection",
       fields: ["payment_collection_id"],
-      variables: { order_id: order.id },
+      filters: { order_id: order.id },
     }).config({ name: "order-payment-collection-query" })
 
     const orderPaymentCollectionIds = transform(
@@ -83,23 +82,21 @@ export const createOrUpdateOrderPaymentCollectionWorkflow = createWorkflow(
         orderPaymentCollections.map((opc) => opc.payment_collection_id)
     )
 
-    const existingPaymentCollection = useRemoteQueryStep({
-      entry_point: "payment_collection",
+    const { data: existingPaymentCollection } = useQueryGraphStep({
+      entity: "payment_collection",
       fields: ["id", "status"],
-      variables: {
-        filters: {
-          id: orderPaymentCollectionIds,
-          status: [
-            // To update the collection amoun
-            PaymentCollectionStatus.NOT_PAID,
-            PaymentCollectionStatus.AWAITING,
-            // To cancel the authorized payments and create a new collection
-            PaymentCollectionStatus.AUTHORIZED,
-            PaymentCollectionStatus.PARTIALLY_AUTHORIZED,
-          ],
-        },
+      filters: {
+        id: orderPaymentCollectionIds,
+        status: [
+          // To update the collection amoun
+          PaymentCollectionStatus.NOT_PAID,
+          PaymentCollectionStatus.AWAITING,
+          // To cancel the authorized payments and create a new collection
+          PaymentCollectionStatus.AUTHORIZED,
+          PaymentCollectionStatus.PARTIALLY_AUTHORIZED,
+        ],
       },
-      list: false,
+      options: { isList: false },
     }).config({ name: "payment-collection-query" })
 
     const shouldRecreate = transform(
@@ -132,7 +129,7 @@ export const createOrUpdateOrderPaymentCollectionWorkflow = createWorkflow(
         return (
           !!existingPaymentCollection?.id &&
           !shouldRecreate &&
-          MathBN.gt(amountPending, 0)
+          MathBN.gte(amountPending, 0)
         )
       }
     ).then(() => {

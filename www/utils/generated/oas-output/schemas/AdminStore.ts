@@ -7,6 +7,7 @@
  *   - id
  *   - name
  *   - supported_currencies
+ *   - supported_locales
  *   - default_sales_channel_id
  *   - default_region_id
  *   - default_location_id
@@ -42,6 +43,9 @@
  *   metadata:
  *     type: object
  *     description: The store's metadata, can hold custom key-value pairs.
+ *     externalDocs:
+ *       url: https://docs.medusajs.com/api/admin#manage-metadata
+ *       description: Learn how to manage metadata
  *   created_at:
  *     type: string
  *     format: date-time
@@ -52,6 +56,11 @@
  *     format: date-time
  *     title: updated_at
  *     description: The date the store was updated.
+ *   supported_locales:
+ *     type: array
+ *     description: The store's supported locales.
+ *     items:
+ *       $ref: "#/components/schemas/AdminStoreLocale"
  * 
 */
 

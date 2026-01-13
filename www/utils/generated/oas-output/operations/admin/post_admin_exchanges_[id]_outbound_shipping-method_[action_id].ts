@@ -41,7 +41,7 @@
  *   content:
  *     application/json:
  *       schema:
- *         $ref: "#/components/schemas/AdminPostExchangesShippingActionReqSchema"
+ *         $ref: "#/components/schemas/AdminExchangeUpdateOutboundShipping"
  * x-codeSamples:
  *   - lang: JavaScript
  *     label: JS SDK
@@ -70,7 +70,7 @@
  *     label: cURL
  *     source: |-
  *       curl -X POST '{backend_url}/admin/exchanges/{id}/outbound/shipping-method/{action_id}' \
- *       -H 'Authorization: Bearer {access_token}'
+ *       -H 'Authorization: Bearer {jwt_token}'
  * tags:
  *   - Exchanges
  * responses:

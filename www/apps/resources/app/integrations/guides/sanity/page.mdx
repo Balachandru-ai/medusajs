@@ -574,7 +574,7 @@ Where:
 
     - Enter a name for the API token, choose "Editor" for the permissions, then click Save.
 
-![In the Token form, enter the name and choose "Editor" for permisions.](https://res.cloudinary.com/dza7lstvk/image/upload/v1732091811/Medusa%20Resources/Screenshot_2024-11-20_at_10.36.25_AM_nqxa5y.png)
+![In the Token form, enter the name and choose "Editor" for permissions.](https://res.cloudinary.com/dza7lstvk/image/upload/v1732091811/Medusa%20Resources/Screenshot_2024-11-20_at_10.36.25_AM_nqxa5y.png)
 
 - `SANITY_PROJECT_ID`: The ID of the project, which you can find at the top section of your Sanity project's dashboard.
 
@@ -674,10 +674,16 @@ The syncing workflow will have a single step that syncs products provided as an 
 
 So, to implement that step, create the file `src/workflows/sanity-sync-products/steps/sync.ts` with the following content:
 
+<Note>
+
+If you get a type error on resolving the Sanity Module, run the Medusa application once with the `npm run dev` or `yarn dev` command to generate the necessary type definitions, as explained in the [Automatically Generated Types guide](!docs!/learn/fundamentals/generated-types).
+
+</Note>
+
 export const syncStepHighlights = [
-  ["13", "createStep", "Create a step."],
-  ["15", "container", "The Medusa container to resolve resources."],
-  ["36", "graph", "Retrieve a paginated list of products with their sanity document."]
+  ["14", "createStep", "Create a step."],
+  ["16", "container", "The Medusa container to resolve resources."],
+  ["37", "graph", "Retrieve a paginated list of products with their sanity document."]
 ]
 
 ```ts title="src/workflows/sanity-sync-products/steps/sync.ts" highlights={syncStepHighlights}
@@ -722,7 +728,6 @@ export const syncStep = createStep(
         fields: [
           "id",
           "title",
-          // @ts-ignore
           "sanity_product.*",
         ],
         filters,
@@ -776,7 +781,7 @@ while (hasMore) {
       products.map(async (prod) => {
         const after = await sanityModule.upsertSyncDocument(
           "product", 
-          prod as ProductDTO
+          prod as unknown as ProductDTO
         )
 
         upsertMap.push({
@@ -1200,7 +1205,7 @@ Now that you're managing a product's content in Sanity, you want to show that co
 A product's details are retrieved in the file `src/app/[countryCode]/(main)/products/[handle]/page.tsx`. So, replace the `ProductPage` function with the following:
 
 export const sanityContentHighlights = [
-  ["19", "sanity", "Get the product's content from Sanity."]
+  ["24", "sanity", "Get the product's content from Sanity."]
 ]
 
 ```tsx title="src/app/[countryCode]/(main)/products/[handle]/page.tsx" badgeLabel="Storefront" badgeColor="blue" highlights={sanityContentHighlights}
@@ -1811,7 +1816,7 @@ export const useSanitySyncs = (
 
 The `useTriggerSanitySync` hook creates a mutation that, when executed, sends a request to the trigger sync API route you created earlier to sync all products.
 
-The `useSanitySyncs` hook sends a request to the retrieve sync executions API route that you created earlier to retrieve the workflow's exections.
+The `useSanitySyncs` hook sends a request to the retrieve sync executions API route that you created earlier to retrieve the workflow's executions.
 
 Finally, to create the UI route, create the file `src/admin/routes/sanity/page.tsx` with the following content:
 

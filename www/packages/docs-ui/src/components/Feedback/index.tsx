@@ -1,26 +1,23 @@
 "use client"
 
-import React, { useMemo, useRef, useState } from "react"
+import React, { useEffect, useMemo, useRef, useState } from "react"
 // @ts-expect-error can't install the types package because it doesn't support React v19
 import { CSSTransition, SwitchTransition } from "react-transition-group"
-import { Solutions } from "./Solutions"
+import { Solutions } from "@/components/Feedback/Solutions"
 import { ExtraData, useAnalytics } from "@/providers/Analytics"
 import clsx from "clsx"
-import {
-  Button,
-  TextArea,
-  Label,
-  Details,
-  InputText,
-  DottedSeparator,
-} from "@/components"
+import { Button } from "@/components/Button"
+import { TextArea } from "@/components/TextArea"
+import { Label } from "@/components/Label"
+import { DottedSeparator } from "@/components/DottedSeparator"
+import { RadioItem } from "@/components/RadioItem"
 import { ChatBubbleLeftRight, ThumbDown, ThumbUp } from "@medusajs/icons"
 import Link from "next/link"
-import { useSiteConfig } from "../../providers"
+import { useSiteConfig } from "@/providers/SiteConfig"
+import { RadioGroup } from "@medusajs/ui"
 
 export type FeedbackProps = {
   event: string
-  pathName: string
   reportLink?: string
   question?: string
   positiveBtn?: string
@@ -33,26 +30,40 @@ export type FeedbackProps = {
   className?: string
   extraData?: ExtraData
   vertical?: boolean
-  showLongForm?: boolean
   showDottedSeparator?: boolean
 } & React.HTMLAttributes<HTMLDivElement>
 
+const feedbackOptions = {
+  positive: [
+    "Easy to understand",
+    "Accurate code and text",
+    "Exactly what I was looking for",
+    "Ease of use",
+    "Other",
+  ],
+  negative: [
+    "Difficult to understand",
+    "Inaccurate code or text",
+    "Didn't find what I was looking for",
+    "Trouble using the documentation",
+    "Other",
+  ],
+}
+
 export const Feedback = ({
   event,
-  pathName,
   reportLink: initReportLink,
   question = "Was this page helpful?",
   positiveBtn = "It was helpful",
   negativeBtn = "It wasn't helpful",
-  positiveQuestion = "What was most helpful?",
-  negativeQuestion = "What can we improve?",
+  positiveQuestion = "What did you like?",
+  negativeQuestion = "What was the problem?",
   submitBtn = "Submit",
   submitMessage = "Thank you for helping improve our documentation!",
   showPossibleSolutions = true,
   className = "",
   extraData = {},
   vertical = false,
-  showLongForm = false,
   showDottedSeparator = true,
 }: FeedbackProps) => {
   const {
@@ -69,59 +80,45 @@ export const Feedback = ({
   const inlineMessageRef = useRef<HTMLDivElement>(null)
   const [positiveFeedback, setPositiveFeedback] = useState(false)
   const [message, setMessage] = useState("")
-  const [steps, setSteps] = useState("")
-  const [medusaVersion, setMedusaVersion] = useState("")
-  const [errorFix, setErrorFix] = useState("")
-  const [contactInfo, setContactInfo] = useState("")
+  const [feedbackOption, setFeedbackOption] = useState("")
   const nodeRef = submittedFeedback
     ? inlineMessageRef
     : showForm
       ? inlineQuestionRef
       : inlineFeedbackRef
-  const { loaded, track } = useAnalytics()
+  const { track } = useAnalytics()
 
-  function handleFeedback(e: React.MouseEvent<HTMLButtonElement, MouseEvent>) {
-    if (!loaded) {
-      return
-    }
-    const feedback = (e.target as Element).classList.contains("positive")
+  function handleFeedback(feedback: boolean) {
     setPositiveFeedback(feedback)
     setShowForm(true)
-    submitFeedback(e, feedback)
+    submitFeedback(feedback)
   }
 
-  function submitFeedback(
-    e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
-    feedback = false
-  ) {
+  function submitFeedback(feedback = false) {
     if (showForm) {
       setLoading(true)
     }
-    track(
-      event,
-      {
-        url: pathName,
-        label: document.title,
-        feedback:
-          (feedback !== null && feedback) ||
-          (feedback === null && positiveFeedback)
-            ? "yes"
-            : "no",
-        message: message?.length ? message : null,
-        os: window.navigator.userAgent,
-        steps,
-        medusaVersion,
-        errorFix,
-        contactInfo,
-        ...extraData,
+    track({
+      event: {
+        event,
+        options: {
+          feedback:
+            (feedback !== null && feedback) ||
+            (feedback === null && positiveFeedback)
+              ? "yes"
+              : "no",
+          message: message?.length ? message : null,
+          feedbackOption,
+          ...extraData,
+        },
+        callback: function () {
+          if (showForm) {
+            setLoading(false)
+            resetForm()
+          }
+        },
       },
-      function () {
-        if (showForm) {
-          setLoading(false)
-          resetForm()
-        }
-      }
-    )
+    })
   }
 
   function resetForm() {
@@ -129,10 +126,17 @@ export const Feedback = ({
     setSubmittedFeedback(true)
   }
 
+  useEffect(() => {
+    setFeedbackOption("Other")
+  }, [positiveFeedback])
+
   return (
     <div className={clsx(className)}>
       {showDottedSeparator && (
-        <DottedSeparator wrapperClassName="!px-0 !my-docs_2" />
+        <DottedSeparator
+          wrapperClassName="!px-0 !my-docs_2"
+          data-testid="dotted-separator"
+        />
       )}
       <SwitchTransition mode="out-in">
         <CSSTransition
@@ -162,8 +166,12 @@ export const Feedback = ({
                   vertical && "flex-col justify-center"
                 )}
                 ref={inlineFeedbackRef}
+                data-testid="feedback-form"
               >
-                <Label className={"text-compact-small text-medusa-fg-base"}>
+                <Label
+                  className={"text-compact-small text-medusa-fg-base"}
+                  data-testid="question-label"
+                >
                   {question}
                 </Label>
                 <div
@@ -173,12 +181,13 @@ export const Feedback = ({
                   )}
                 >
                   <Button
-                    onClick={handleFeedback}
+                    onClick={() => handleFeedback(true)}
                     className={clsx(
                       "positive gap-[6px] !justify-start md:!justify-center",
                       "!px-docs_0.5 !py-docs_0.25 text-left md:text-center"
                     )}
                     variant="transparent-clear"
+                    data-testid="positive-button"
                   >
                     <ThumbUp className="text-medusa-fg-subtle" />
                     <span className="text-medusa-fg-base text-compact-small-plus flex-1">
@@ -186,12 +195,13 @@ export const Feedback = ({
                     </span>
                   </Button>
                   <Button
-                    onClick={handleFeedback}
+                    onClick={() => handleFeedback(false)}
                     className={clsx(
                       "gap-[6px] !justify-start md:!justify-center",
                       "!px-docs_0.5 !py-docs_0.25 text-left md:text-center"
                     )}
                     variant="transparent-clear"
+                    data-testid="negative-button"
                   >
                     <ThumbDown className="text-medusa-fg-subtle" />
                     <span className="text-medusa-fg-base text-compact-small-plus flex-1">
@@ -207,6 +217,7 @@ export const Feedback = ({
                         "!justify-start md:!justify-center",
                         "text-left md:text-center"
                       )}
+                      data-testid="report-issue-button"
                     >
                       <ChatBubbleLeftRight className="text-medusa-fg-subtle" />
                       <span className="text-medusa-fg-base text-compact-small-plus flex-1">
@@ -223,75 +234,47 @@ export const Feedback = ({
             )}
             {showForm && !submittedFeedback && (
               <div className="flex flex-col gap-docs_1" ref={inlineQuestionRef}>
-                <Label>
+                <Label data-testid="submit-question-label">
                   {positiveFeedback ? positiveQuestion : negativeQuestion}
                 </Label>
+                <RadioGroup className="gap-docs_0.5">
+                  {feedbackOptions[
+                    positiveFeedback ? "positive" : "negative"
+                  ].map((option) => (
+                    <div
+                      className="flex items-center gap-x-docs_0.5 cursor-pointer group"
+                      key={option}
+                      tabIndex={-1}
+                      onClick={() => setFeedbackOption(option)}
+                    >
+                      <RadioItem
+                        checked={feedbackOption === option}
+                        value={option}
+                        onChange={() => setFeedbackOption(option)}
+                        className={clsx(
+                          feedbackOption !== option &&
+                            "group-hover:bg-medusa-bg-component-hover"
+                        )}
+                        data-testid="feedback-option"
+                      />
+                      <Label className="text-medusa-fg-base text-compact-small-plus">
+                        {option}
+                      </Label>
+                    </div>
+                  ))}
+                </RadioGroup>
                 <TextArea
                   rows={4}
                   value={message}
                   onChange={(e) => setMessage(e.target.value)}
+                  placeholder="Please provide as many details as possible to help us improve the documentation."
                 />
-                {showLongForm && !positiveFeedback && (
-                  <Details summaryContent="More Details" className="mt-docs_1">
-                    <div className="flex flex-col gap-docs_0.5">
-                      <div className="flex flex-col gap-docs_0.5">
-                        <Label>
-                          Can you provide the exact steps you took before
-                          receiving the error? For example, the commands you
-                          ran.
-                        </Label>
-                        <TextArea
-                          rows={4}
-                          value={steps}
-                          onChange={(e) => setSteps(e.target.value)}
-                          placeholder="1. I ran npm dev..."
-                        />
-                      </div>
-                      <div className="flex flex-col gap-docs_0.5">
-                        <Label>
-                          If applicable, what version of Medusa are you using?
-                          If a plugin is related to the error, please provide a
-                          version of that as well.
-                        </Label>
-                        <TextArea
-                          rows={4}
-                          value={medusaVersion}
-                          onChange={(e) => setMedusaVersion(e.target.value)}
-                          placeholder="@medusajs/medusa: vX"
-                        />
-                      </div>
-                      <div className="flex flex-col gap-docs_0.5">
-                        <Label>
-                          Were you able to fix the error? If so, what steps did
-                          you follow?
-                        </Label>
-                        <TextArea
-                          rows={4}
-                          value={errorFix}
-                          onChange={(e) => setErrorFix(e.target.value)}
-                          placeholder="@medusajs/medusa: vX"
-                        />
-                      </div>
-                      <div className="flex flex-col gap-docs_0.5">
-                        <Label>
-                          Can you provide your email or discord username? This
-                          would allow us to contact you for further info or
-                          assist you with your issue.
-                        </Label>
-                        <InputText
-                          value={contactInfo}
-                          onChange={(e) => setContactInfo(e.target.value)}
-                          placeholder="user@example.com"
-                        />
-                      </div>
-                    </div>
-                  </Details>
-                )}
                 <Button
-                  onClick={submitFeedback}
+                  onClick={() => submitFeedback(positiveFeedback)}
                   disabled={loading}
                   className="w-fit"
                   variant="secondary"
+                  data-testid="submit-button"
                 >
                   {submitBtn}
                 </Button>
@@ -302,6 +285,7 @@ export const Feedback = ({
                 <div
                   className="text-compact-large-plus flex flex-col"
                   ref={inlineMessageRef}
+                  data-testid="submitted-message"
                 >
                   <span>{submitMessage}</span>
                   {showPossibleSolutions && (

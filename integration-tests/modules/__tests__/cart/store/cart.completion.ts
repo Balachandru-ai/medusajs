@@ -1,17 +1,21 @@
 import {
   addToCartWorkflow,
+  beginOrderEditOrderWorkflow,
   completeCartWorkflow,
+  confirmOrderEditRequestWorkflow,
   createCartWorkflow,
   createPaymentCollectionForCartWorkflow,
   createPaymentSessionsWorkflow,
   getOrderDetailWorkflow,
   listShippingOptionsForCartWorkflow,
+  orderEditAddNewItemWorkflow,
   processPaymentWorkflow,
 } from "@medusajs/core-flows"
 import { medusaIntegrationTestRunner } from "@medusajs/test-utils"
 import {
   ICartModuleService,
   ICustomerModuleService,
+  IEventBusModuleService,
   IFulfillmentModuleService,
   IInventoryService,
   IPaymentModuleService,
@@ -20,10 +24,13 @@ import {
   IRegionModuleService,
   ISalesChannelModuleService,
   IStockLocationService,
+  Message,
 } from "@medusajs/types"
 import {
   ContainerRegistrationKeys,
   Modules,
+  PaymentCollectionStatus,
+  ProductStatus,
   remoteQueryObjectFromString,
 } from "@medusajs/utils"
 import {
@@ -37,7 +44,7 @@ import { createAuthenticatedCustomer } from "../../../helpers/create-authenticat
 
 jest.setTimeout(200000)
 
-const env = { MEDUSA_FF_MEDUSA_V2: true }
+const env = {}
 
 medusaIntegrationTestRunner({
   env,
@@ -60,6 +67,7 @@ medusaIntegrationTestRunner({
       let defaultRegion
       let customer, storeHeadersWithCustomer
       let setPricingContextHook: any
+      let eventBus: IEventBusModuleService
 
       beforeAll(async () => {
         appContainer = getContainer()
@@ -70,6 +78,7 @@ medusaIntegrationTestRunner({
         productModule = appContainer.resolve(Modules.PRODUCT)
         pricingModule = appContainer.resolve(Modules.PRICING)
         paymentModule = appContainer.resolve(Modules.PAYMENT)
+        eventBus = appContainer.resolve(Modules.EVENT_BUS)
         fulfillmentModule = appContainer.resolve(Modules.FULFILLMENT)
         inventoryModule = appContainer.resolve(Modules.INVENTORY)
         stockLocationModule = appContainer.resolve(Modules.STOCK_LOCATION)
@@ -312,6 +321,7 @@ medusaIntegrationTestRunner({
           const [product] = await productModule.createProducts([
             {
               title: "Test product",
+              status: ProductStatus.PUBLISHED,
               variants: [
                 {
                   title: "Test variant",
@@ -468,6 +478,7 @@ medusaIntegrationTestRunner({
           const [product] = await productModule.createProducts([
             {
               title: "Test product",
+              status: ProductStatus.PUBLISHED,
               variants: [
                 {
                   title: "Test variant",
@@ -601,6 +612,7 @@ medusaIntegrationTestRunner({
           const [product] = await productModule.createProducts([
             {
               title: "Test product",
+              status: ProductStatus.PUBLISHED,
               variants: [
                 {
                   title: "Test variant",
@@ -709,12 +721,10 @@ medusaIntegrationTestRunner({
 
           validateHook = undefined
 
-          const paymentSessionQuery = await query.graph({
+          const paymentCollectionQuery = await query.graph({
             entity: "payment_collection",
-            variables: {
-              filters: {
-                id: paymentSession.payment_collection_id,
-              },
+            filters: {
+              id: paymentSession.payment_collection_id,
             },
             fields: [
               "*",
@@ -726,7 +736,7 @@ medusaIntegrationTestRunner({
           })
 
           // expects the payment to be refunded and a new payment session to be created
-          expect(paymentSessionQuery.data[0].payments[0]).toEqual(
+          expect(paymentCollectionQuery.data[0].payments[0]).toEqual(
             expect.objectContaining({
               amount: 3000,
               payment_session_id: paymentSession.id,
@@ -743,10 +753,15 @@ medusaIntegrationTestRunner({
               ],
             })
           )
-          expect(paymentSessionQuery.data[0].payment_sessions[0].id).not.toBe(
-            paymentSession.id
-          )
+
+          const sessions = paymentCollectionQuery.data[0].payment_sessions
+          expect(sessions).toHaveLength(1)
+
+          expect(sessions[0].id).toBeDefined()
+          expect(sessions[0].id).not.toBe(paymentSession.id)
+          expect(sessions[0].status).toBe("pending")
         })
+
         it("should complete cart when payment webhook and storefront are called in simultaneously", async () => {
           const salesChannel = await scModuleService.createSalesChannels({
             name: "Webshop",
@@ -759,6 +774,7 @@ medusaIntegrationTestRunner({
           const [product] = await productModule.createProducts([
             {
               title: "Test product",
+              status: ProductStatus.PUBLISHED,
               variants: [
                 {
                   title: "Test variant",
@@ -862,6 +878,8 @@ medusaIntegrationTestRunner({
             }),
           ])
 
+          await new Promise((resolve) => setTimeout(resolve, 100))
+
           const { result: fullOrder } = await getOrderDetailWorkflow(
             appContainer
           ).run({
@@ -875,6 +893,323 @@ medusaIntegrationTestRunner({
           expect(fullOrder.payment_collections[0].authorized_amount).toBe(3000)
           expect(fullOrder.payment_collections[0].captured_amount).toBe(3000)
           expect(fullOrder.payment_collections[0].status).toBe("completed")
+        })
+
+        it("should clear events when complete cart fails after emitting events", async () => {
+          const salesChannel = await scModuleService.createSalesChannels({
+            name: "Webshop",
+          })
+
+          const location = await stockLocationModule.createStockLocations({
+            name: "Warehouse",
+          })
+
+          const region = await regionModuleService.createRegions({
+            name: "US",
+            currency_code: "usd",
+          })
+
+          let cart = await cartModuleService.createCarts({
+            currency_code: "usd",
+            sales_channel_id: salesChannel.id,
+            region_id: region.id,
+          })
+
+          await remoteLink.create([
+            {
+              [Modules.SALES_CHANNEL]: {
+                sales_channel_id: salesChannel.id,
+              },
+              [Modules.STOCK_LOCATION]: {
+                stock_location_id: location.id,
+              },
+            },
+          ])
+
+          cart = await cartModuleService.retrieveCart(cart.id, {
+            select: ["id", "region_id", "currency_code", "sales_channel_id"],
+          })
+
+          await addToCartWorkflow(appContainer).run({
+            input: {
+              items: [
+                {
+                  title: "Test item",
+                  subtitle: "Test subtitle",
+                  thumbnail: "some-url",
+                  requires_shipping: false,
+                  is_discountable: false,
+                  is_tax_inclusive: false,
+                  unit_price: 3000,
+                  metadata: {
+                    foo: "bar",
+                  },
+                  quantity: 1,
+                },
+                {
+                  title: "zero price item",
+                  subtitle: "zero price item",
+                  thumbnail: "some-url",
+                  requires_shipping: false,
+                  is_discountable: false,
+                  is_tax_inclusive: false,
+                  unit_price: 0,
+                  quantity: 1,
+                },
+              ],
+              cart_id: cart.id,
+            },
+          })
+
+          cart = await cartModuleService.retrieveCart(cart.id, {
+            relations: ["items"],
+          })
+
+          await createPaymentCollectionForCartWorkflow(appContainer).run({
+            input: {
+              cart_id: cart.id,
+            },
+          })
+
+          const [paymentCollection] =
+            await paymentModule.listPaymentCollections({})
+
+          await createPaymentSessionsWorkflow(appContainer).run({
+            input: {
+              payment_collection_id: paymentCollection.id,
+              provider_id: "pp_system_default",
+              context: {},
+              data: {},
+            },
+          })
+
+          let grouppedEventBefore: Message[] = []
+          let eventGroupId!: string
+
+          /**
+           * Register order.placed listener to trigger the event group
+           * registration and be able to check the event group during
+           * the workflow execution against it after compensation
+           */
+
+          eventBus.subscribe("order.placed", async () => {
+            // noop
+          })
+
+          const workflow = completeCartWorkflow(appContainer)
+
+          workflow.addAction("throw", {
+            invoke: async function failStep({ context }) {
+              eventGroupId = context!.eventGroupId!
+              grouppedEventBefore = (
+                (eventBus as any).groupedEventsMap_ as Map<string, any>
+              ).get(context!.eventGroupId!)
+
+              throw new Error(
+                `Failed to do something before ending complete cart workflow`
+              )
+            },
+          })
+
+          const { errors } = await workflow.run({
+            input: {
+              id: cart.id,
+            },
+            throwOnError: false,
+          })
+
+          const grouppedEventAfter =
+            ((eventBus as any).groupedEventsMap_ as Map<string, any>).get(
+              eventGroupId
+            ) ?? []
+
+          expect(grouppedEventBefore).toHaveLength(17)
+          expect(grouppedEventAfter).toHaveLength(0) // events have been compensated
+
+          expect(errors[0].error.message).toBe(
+            "Failed to do something before ending complete cart workflow"
+          )
+        })
+
+        it("should avoid completing cart when order already exists", async () => {
+          const salesChannel = await scModuleService.createSalesChannels({
+            name: "Webshop",
+          })
+
+          const location = await stockLocationModule.createStockLocations({
+            name: "Warehouse",
+          })
+
+          const [product] = await productModule.createProducts([
+            {
+              title: "Test product",
+              status: ProductStatus.PUBLISHED,
+              variants: [
+                {
+                  title: "Test variant",
+                  manage_inventory: false,
+                },
+              ],
+            },
+          ])
+
+          const priceSet = await pricingModule.createPriceSets({
+            prices: [
+              {
+                amount: 3000,
+                currency_code: "usd",
+              },
+            ],
+          })
+
+          await pricingModule.createPricePreferences({
+            attribute: "currency_code",
+            value: "usd",
+            has_tax_inclusive: true,
+          })
+
+          await remoteLink.create([
+            {
+              [Modules.PRODUCT]: {
+                variant_id: product.variants[0].id,
+              },
+              [Modules.PRICING]: {
+                price_set_id: priceSet.id,
+              },
+            },
+            {
+              [Modules.SALES_CHANNEL]: {
+                sales_channel_id: salesChannel.id,
+              },
+              [Modules.STOCK_LOCATION]: {
+                stock_location_id: location.id,
+              },
+            },
+          ])
+
+          // create cart
+          const cart = await cartModuleService.createCarts({
+            currency_code: "usd",
+            sales_channel_id: salesChannel.id,
+          })
+
+          await addToCartWorkflow(appContainer).run({
+            input: {
+              items: [
+                {
+                  variant_id: product.variants[0].id,
+                  quantity: 1,
+                  requires_shipping: false,
+                },
+              ],
+              cart_id: cart.id,
+            },
+          })
+
+          await createPaymentCollectionForCartWorkflow(appContainer).run({
+            input: {
+              cart_id: cart.id,
+            },
+          })
+
+          const [payCol] = await remoteQuery(
+            remoteQueryObjectFromString({
+              entryPoint: "cart_payment_collection",
+              variables: { filters: { cart_id: cart.id } },
+              fields: ["payment_collection_id"],
+            })
+          )
+
+          await createPaymentSessionsWorkflow(appContainer).run({
+            input: {
+              payment_collection_id: payCol.payment_collection_id,
+              provider_id: "pp_system_default",
+              context: {},
+              data: {},
+            },
+          })
+
+          const {
+            result: { id: orderId },
+          } = await completeCartWorkflow(appContainer).run({
+            input: {
+              id: cart.id,
+            },
+          })
+
+          await beginOrderEditOrderWorkflow(appContainer).run({
+            input: {
+              order_id: orderId,
+            },
+          })
+          await orderEditAddNewItemWorkflow(appContainer).run({
+            input: {
+              order_id: orderId,
+              items: [
+                {
+                  variant_id: product.variants[0].id,
+                  quantity: 1,
+                },
+              ],
+            },
+          })
+          await confirmOrderEditRequestWorkflow(appContainer).run({
+            input: { order_id: orderId },
+          })
+
+          const orderPaymentCollections = await remoteQuery(
+            remoteQueryObjectFromString({
+              entryPoint: "order_payment_collection",
+              variables: { filters: { order_id: orderId } },
+              fields: ["payment_collection_id"],
+            })
+          )
+
+          const [pendingPaymentCollection] = await remoteQuery(
+            remoteQueryObjectFromString({
+              entryPoint: "payment_collection",
+              variables: {
+                filters: {
+                  id: orderPaymentCollections.map(
+                    (orderPayCol) => orderPayCol.payment_collection_id
+                  ),
+                  status: PaymentCollectionStatus.NOT_PAID,
+                },
+              },
+              fields: ["id"],
+            })
+          )
+
+          const { result: paymentSession } =
+            await createPaymentSessionsWorkflow(appContainer).run({
+              input: {
+                payment_collection_id: pendingPaymentCollection.id,
+                provider_id: "pp_system_default",
+                context: {},
+                data: {},
+              },
+            })
+
+          let completeCartCalled = false
+          const workflow = processPaymentWorkflow(appContainer)
+
+          workflow.addAction("track-complete-cart-step", {
+            invoke: async function trackStep({ invoke }) {
+              completeCartCalled = !!invoke["complete-cart-after-payment-step"]
+            },
+          })
+
+          await workflow.run({
+            input: {
+              action: "captured",
+              data: {
+                session_id: paymentSession.id,
+                amount: 3000,
+              },
+            },
+          })
+
+          expect(completeCartCalled).toBe(false)
         })
       })
     })

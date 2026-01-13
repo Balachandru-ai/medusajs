@@ -43,6 +43,14 @@ const generatedgeneratedTroubleshootingSidebarSidebar = {
           "path": "/troubleshooting/general-errors",
           "title": "General Errors",
           "children": []
+        },
+        {
+          "loaded": true,
+          "isPathHref": true,
+          "type": "link",
+          "path": "/troubleshooting/pnpm",
+          "title": "pnpm Errors",
+          "children": []
         }
       ]
     },
@@ -137,7 +145,7 @@ const generatedgeneratedTroubleshootingSidebarSidebar = {
               "isPathHref": true,
               "type": "link",
               "path": "/troubleshooting/query/filter-linked",
-              "title": "Not Exising Property",
+              "title": "Not Existing Property",
               "children": []
             },
             {
@@ -149,6 +157,22 @@ const generatedgeneratedTroubleshootingSidebarSidebar = {
               "children": []
             }
           ]
+        },
+        {
+          "loaded": true,
+          "isPathHref": true,
+          "type": "link",
+          "path": "/troubleshooting/scheduled-job-not-running",
+          "title": "Scheduled Job Not Running",
+          "children": []
+        },
+        {
+          "loaded": true,
+          "isPathHref": true,
+          "type": "link",
+          "path": "/troubleshooting/subscribers/not-working",
+          "title": "Subscribers Not Working",
+          "children": []
         },
         {
           "loaded": true,
@@ -223,6 +247,14 @@ const generatedgeneratedTroubleshootingSidebarSidebar = {
           "path": "/troubleshooting/s3",
           "title": "S3 Module Provider Errors",
           "children": []
+        },
+        {
+          "loaded": true,
+          "isPathHref": true,
+          "type": "link",
+          "path": "/troubleshooting/payment",
+          "title": "Payment Provider Errors",
+          "children": []
         }
       ]
     },
@@ -277,7 +309,7 @@ const generatedgeneratedTroubleshootingSidebarSidebar = {
               "isPathHref": true,
               "type": "link",
               "path": "/troubleshooting/nextjs-starter-rewrites",
-              "title": "Cloud Run Error",
+              "title": "Google Cloud Run Error",
               "children": []
             }
           ]

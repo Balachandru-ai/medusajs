@@ -32,23 +32,7 @@
  *   content:
  *     application/json:
  *       schema:
- *         type: object
- *         description: The promotions to add or remove from the campaign.
- *         properties:
- *           add:
- *             type: array
- *             description: The promotions to add to the campaign.
- *             items:
- *               type: string
- *               title: add
- *               description: A promotion's ID.
- *           remove:
- *             type: array
- *             description: The promotions to remove from the campaign.
- *             items:
- *               type: string
- *               title: remove
- *               description: A promotion's ID.
+ *         $ref: "#/components/schemas/AdminBatchLink"
  * x-codeSamples:
  *   - lang: JavaScript
  *     label: JS SDK
@@ -74,7 +58,7 @@
  *     label: cURL
  *     source: |-
  *       curl -X POST '{backend_url}/admin/campaigns/{id}/promotions' \
- *       -H 'Authorization: Bearer {access_token}'
+ *       -H 'Authorization: Bearer {jwt_token}'
  * tags:
  *   - Campaigns
  * responses:

@@ -80,7 +80,7 @@ export interface FindConfig<Entity> {
 
   /**
    * An array of strings, each being relation names of the entity to retrieve in the result.
-   * 
+   *
    * You can only retrieve data models defined in the same module. To retrieve linked data models
    * from other modules, use [Query](https://docs.medusajs.com/learn/fundamentals/module-links/query) instead.
    */
@@ -150,6 +150,11 @@ export type RequestQueryFields = {
    * The field to sort the data by. By default, the sort order is ascending. To change the order to descending, prefix the field name with `-`.
    */
   order?: string
+
+  /**
+   * Whether to include deleted records in the result.
+   */
+  with_deleted?: boolean
 }
 
 /**

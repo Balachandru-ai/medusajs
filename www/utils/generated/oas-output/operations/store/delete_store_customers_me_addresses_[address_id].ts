@@ -6,7 +6,7 @@
  * description: Remove an address of the logged-in customer.
  * x-authenticated: true
  * externalDocs:
- *   url: https://docs.medusajs.com/v2/resources/storefront-development/customers/addresses#delete-customer-address
+ *   url: https://docs.medusajs.com/resources/storefront-development/customers/addresses#delete-customer-address
  *   description: "Storefront guide: How to delete a customer's address."
  * parameters:
  *   - name: address_id
@@ -23,6 +23,16 @@
  *       type: string
  *       externalDocs:
  *         url: https://docs.medusajs.com/api/store#publishable-api-key
+ *   - name: x-medusa-locale
+ *     in: header
+ *     description: The locale in BCP 47 format to retrieve localized content.
+ *     required: false
+ *     schema:
+ *       type: string
+ *       example: en-US
+ *       externalDocs:
+ *         url: https://docs.medusajs.com/resources/commerce-modules/translation/storefront
+ *         description: Learn more in the Serve Translations in Storefront guide.
  *   - name: fields
  *     in: query
  *     description: Comma-separated fields that should be included in the returned data. if a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default
@@ -37,6 +47,16 @@
  *         Links](https://docs.medusajs.com/learn/fundamentals/api-routes/retrieve-custom-links) documentation.
  *       externalDocs:
  *         url: "#select-fields-and-relations"
+ *   - name: locale
+ *     in: query
+ *     description: The locale in BCP 47 format to retrieve localized content.
+ *     required: false
+ *     schema:
+ *       type: string
+ *       example: en-US
+ *       externalDocs:
+ *         url: https://docs.medusajs.com/resources/commerce-modules/translation/storefront
+ *         description: Learn more in the Serve Translations in Storefront guide.
  * security:
  *   - cookie_auth: []
  *   - jwt_token: []
@@ -58,6 +78,7 @@
  *         publishableKey: process.env.NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY,
  *       })
  * 
+ *       // TODO must be authenticated as the customer to delete their address
  *       sdk.store.customer.deleteAddress("caddr_123")
  *       .then(({ deleted, parent: customer }) => {
  *         console.log(customer)
@@ -66,8 +87,8 @@
  *     label: cURL
  *     source: |-
  *       curl -X DELETE '{backend_url}/store/customers/me/addresses/{address_id}' \
- *       -H 'x-publishable-api-key: {your_publishable_api_key}' \
- *       -H 'Authorization: Bearer {access_token}'
+ *       -H 'Authorization: Bearer {jwt_token}' \
+ *       -H 'x-publishable-api-key: {your_publishable_api_key}'
  * tags:
  *   - Customers
  * responses:

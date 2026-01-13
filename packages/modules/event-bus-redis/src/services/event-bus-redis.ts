@@ -6,16 +6,32 @@ import {
 } from "@medusajs/framework/types"
 import {
   AbstractEventBusModuleService,
+  EventPriority,
   isPresent,
   promiseAll,
 } from "@medusajs/framework/utils"
-import { BulkJobOptions, Queue, Worker } from "bullmq"
+import {
+  BulkJobOptions,
+  Queue,
+  QueueOptions,
+  Worker,
+  WorkerOptions,
+} from "bullmq"
 import { Redis } from "ioredis"
-import { BullJob, EventBusRedisModuleOptions, Options } from "../types"
+import {
+  BullJob,
+  EmitOptions,
+  EventBusRedisModuleOptions,
+  Options,
+} from "../types"
 
 type InjectedDependencies = {
   logger: Logger
   eventBusRedisConnection: Redis
+  eventBusRedisQueueName: string
+  eventBusRedisQueueOptions: Omit<QueueOptions, "connection">
+  eventBusRedisWorkerOptions: Omit<WorkerOptions, "connection">
+  eventBusRedisJobOptions: EmitOptions
 }
 
 type IORedisEventType<T = unknown> = {
@@ -31,46 +47,53 @@ type IORedisEventType<T = unknown> = {
 // eslint-disable-next-line max-len
 export default class RedisEventBusService extends AbstractEventBusModuleService {
   protected readonly logger_: Logger
-  protected readonly moduleOptions_: EventBusRedisModuleOptions
-  // eslint-disable-next-line max-len
-  protected readonly moduleDeclaration_: InternalModuleDeclaration
   protected readonly eventBusRedisConnection_: Redis
+
+  protected readonly queueName_: string
+  protected readonly queueOptions_: Omit<QueueOptions, "connection">
+  protected readonly workerOptions_: Omit<WorkerOptions, "connection">
+  protected readonly jobOptions_: EmitOptions
 
   protected queue_: Queue
   protected bullWorker_: Worker
 
   constructor(
-    { logger, eventBusRedisConnection }: InjectedDependencies,
-    moduleOptions: EventBusRedisModuleOptions = {},
-    moduleDeclaration: InternalModuleDeclaration
+    {
+      logger,
+      eventBusRedisConnection,
+      eventBusRedisQueueName,
+      eventBusRedisQueueOptions,
+      eventBusRedisWorkerOptions,
+      eventBusRedisJobOptions,
+    }: InjectedDependencies,
+    _moduleOptions: EventBusRedisModuleOptions = {},
+    _moduleDeclaration: InternalModuleDeclaration
   ) {
     // @ts-ignore
-    // eslint-disable-next-line prefer-rest-params
     super(...arguments)
 
     this.eventBusRedisConnection_ = eventBusRedisConnection
-
-    this.moduleOptions_ = moduleOptions
     this.logger_ = logger
 
-    this.queue_ = new Queue(moduleOptions.queueName ?? `events-queue`, {
+    this.queueName_ = eventBusRedisQueueName ?? "events-queue"
+    this.queueOptions_ = eventBusRedisQueueOptions ?? {}
+    this.workerOptions_ = eventBusRedisWorkerOptions ?? {}
+    this.jobOptions_ = eventBusRedisJobOptions ?? {}
+
+    this.queue_ = new Queue(this.queueName_, {
       prefix: `${this.constructor.name}`,
-      ...(moduleOptions.queueOptions ?? {}),
+      ...this.queueOptions_,
       connection: eventBusRedisConnection,
     })
 
     // Register our worker to handle emit calls
     if (this.isWorkerMode) {
-      this.bullWorker_ = new Worker(
-        moduleOptions.queueName ?? "events-queue",
-        this.worker_,
-        {
-          prefix: `${this.constructor.name}`,
-          ...(moduleOptions.workerOptions ?? {}),
-          connection: eventBusRedisConnection,
-          autorun: false,
-        }
-      )
+      this.bullWorker_ = new Worker(this.queueName_, this.worker_, {
+        prefix: `${this.constructor.name}`,
+        ...this.workerOptions_,
+        connection: eventBusRedisConnection,
+        autorun: false,
+      })
     }
   }
 
@@ -88,6 +111,20 @@ export default class RedisEventBusService extends AbstractEventBusModuleService 
     },
   }
 
+  /**
+   * Build events for queue processing with priority handling.
+   *
+   * Priority levels (lower number = higher priority):
+   * - 10: Critical business events (e.g., order placed)
+   * - 100: Default priority for normal events (default)
+   * - 2,097,152: Lowest priority for internal events
+   *
+   * Priority override hierarchy (highest to lowest precedence):
+   * 1. Message-level options (eventData.options.priority)
+   * 2. Emit-level options (options.priority)
+   * 3. Module-level job options (this.jobOptions_.priority)
+   * 4. Internal flag default (options.internal ? EventPriority.LOWEST : EventPriority.DEFAULT)
+   */
   private buildEvents<T>(
     eventsData: Message<T>[],
     options: Options = {}
@@ -96,8 +133,9 @@ export default class RedisEventBusService extends AbstractEventBusModuleService 
       // default options
       removeOnComplete: true,
       attempts: 1,
+      priority: options.internal ? EventPriority.LOWEST : EventPriority.DEFAULT,
       // global options
-      ...(this.moduleOptions_.jobOptions ?? {}),
+      ...this.jobOptions_,
       ...options,
     }
 
@@ -110,16 +148,30 @@ export default class RedisEventBusService extends AbstractEventBusModuleService 
         metadata: eventData.metadata,
       }
 
+      const finalOptions: IORedisEventType<T>["opts"] = {
+        ...opts,
+        ...eventData.options,
+      }
+
+      if (
+        finalOptions.priority != undefined &&
+        (finalOptions.priority < 1 ||
+          finalOptions.priority > EventPriority.LOWEST)
+      ) {
+        this.logger_.warn(
+          `Invalid priority value: ${finalOptions.priority} for event ${eventData.name}. Must be between 1 and ${EventPriority.LOWEST}`
+        )
+        finalOptions.priority = EventPriority.DEFAULT
+        this.logger_.warn(
+          `Setting priority to default value: ${EventPriority.DEFAULT} for event ${eventData.name}`
+        )
+      }
+
       return {
         data: event,
         name: eventData.name,
-        opts: {
-          // options for event group
-          ...opts,
-          // options for a particular event
-          ...eventData.options,
-        },
-      } as any
+        opts: finalOptions,
+      } as IORedisEventType<T>
     })
   }
 
@@ -158,9 +210,21 @@ export default class RedisEventBusService extends AbstractEventBusModuleService 
     const promises: Promise<unknown>[] = []
 
     if (eventsToEmit.length) {
-      const emitData = this.buildEvents(eventsToEmit, options)
+      eventsToEmit.map((eventData) =>
+        this.callInterceptors(eventData, { isGrouped: false })
+      )
 
-      promises.push(this.queue_.addBulk(emitData))
+      const eventsWithSubscribers = eventsToEmit.filter((eventData) => {
+        const eventSubscribers =
+          this.eventToSubscribersMap.get(eventData.name) || []
+        const wildcardSubscribers = this.eventToSubscribersMap.get("*") || []
+        return eventSubscribers.length || wildcardSubscribers.length
+      })
+
+      if (eventsWithSubscribers.length) {
+        const emitData = this.buildEvents(eventsWithSubscribers, options)
+        promises.push(this.queue_.addBulk(emitData))
+      }
     }
 
     for (const [groupId, events] of groupEventsMap.entries()) {
@@ -213,13 +277,74 @@ export default class RedisEventBusService extends AbstractEventBusModuleService 
   async releaseGroupedEvents(eventGroupId: string) {
     const groupedEvents = await this.getGroupedEvents(eventGroupId)
 
-    await this.queue_.addBulk(groupedEvents)
+    // Call interceptors before emitting grouped events
+    // Extract the original messages from the job data structure
+    groupedEvents.map((jobData) => {
+      const message = {
+        name: jobData.name,
+        data: jobData.data,
+        metadata: jobData.data.metadata,
+      }
+      this.callInterceptors(message as any, {
+        isGrouped: true,
+        eventGroupId,
+      })
+    })
+
+    const eventsWithSubscribers = groupedEvents.filter((jobData) => {
+      const eventSubscribers =
+        this.eventToSubscribersMap.get(jobData.name) || []
+      const wildcardSubscribers = this.eventToSubscribersMap.get("*") || []
+      return eventSubscribers.length || wildcardSubscribers.length
+    })
+
+    if (eventsWithSubscribers.length) {
+      await this.queue_.addBulk(eventsWithSubscribers)
+    }
 
     await this.clearGroupedEvents(eventGroupId)
   }
 
-  async clearGroupedEvents(eventGroupId: string) {
+  async clearGroupedEvents(
+    eventGroupId: string,
+    {
+      eventNames,
+    }: {
+      eventNames?: string[]
+    } = {}
+  ) {
     if (!eventGroupId) {
+      return
+    }
+
+    if (eventNames?.length) {
+      /**
+       * If any event names are provided, we keep all events except the ones that match the event
+       * names. which allow to partially clear an event group.
+       */
+
+      const eventsToKeep = await this.eventBusRedisConnection_
+        .lrange(`staging:${eventGroupId}`, 0, -1)
+        .then((result) => {
+          return result
+            .map((jsonString) => JSON.parse(jsonString))
+            .filter((event) => !eventNames.includes(event.name))
+        })
+
+      // Create a pipeline
+      const pipeline = this.eventBusRedisConnection_.pipeline()
+
+      // Empty the current list
+      pipeline.del(`staging:${eventGroupId}`)
+
+      // Add the remaining events to the list
+      pipeline.rpush(
+        `staging:${eventGroupId}`,
+        ...eventsToKeep.map((event) => JSON.stringify(event))
+      )
+
+      await pipeline.exec()
+
       return
     }
 
@@ -263,8 +388,10 @@ export default class RedisEventBusService extends AbstractEventBusModuleService 
           `Retrying ${name} which has ${eventSubscribers.length} subscribers (${subscribersInCurrentAttempt.length} of them failed)`
         )
       } else {
+        const prioirityInfo =
+          opts.priority != undefined ? ` (priority: ${opts.priority})` : ""
         this.logger_.info(
-          `Processing ${name} which has ${eventSubscribers.length} subscribers`
+          `Processing ${name}${prioirityInfo} which has ${eventSubscribers.length} subscribers`
         )
       }
     }

@@ -12,6 +12,14 @@ export interface AdminUpdateOrder {
    */
   billing_address?: OrderAddress
   /**
+   * The order's locale code. Items in the 
+   * order will be translated to the given locale,
+   * if translations are available.
+   * 
+   * @since 2.12.3
+   */
+  locale?: string | null
+  /**
    * The order's metadata.
    */
   metadata?: Record<string, unknown> | null
@@ -100,8 +108,17 @@ export interface AdminCancelOrderFulfillment {
 }
 
 export interface AdminRequestOrderTransfer {
+  /**
+   * The ID of the customer to transfer the order to.
+   */
   customer_id: string
+  /**
+   * An internal note viewed by admins only.
+   */
   internal_note?: string
+  /**
+   * A description for the transfer request.
+   */
   description?: string
 }
 
@@ -160,4 +177,30 @@ export interface OrderAddress {
    * Holds custom data in key-value pairs.
    */
   metadata?: Record<string, unknown> | null
+}
+
+export interface AdminCreateOrderCreditLine {
+  /**
+   * The amount of the credit line.
+   */
+  amount: number
+  /**
+   * The name of the table this credit line is associated with.
+   */
+  reference: string
+  /**
+   * The ID of the reference entity in the reference table.
+   */
+  reference_id: string
+  /**
+   * Key-value pairs of custom data.
+   */
+  metadata?: Record<string, unknown> | null
+}
+
+export interface AdminUpdateOrderChange {
+  /**
+   * Whether to carry over promotions to outbound exchange items.
+   */
+  carry_over_promotions?: boolean
 }

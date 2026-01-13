@@ -44,3 +44,5 @@ post:
       $ref: ../components/responses/invalid_request_error.yaml
     '500':
       $ref: ../components/responses/500_error.yaml
+  deprecated: true
+  x-deprecated_message: use `POST /admin/products/imports/:transaction_id/confirm` instead.

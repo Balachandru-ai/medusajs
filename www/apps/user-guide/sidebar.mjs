@@ -66,6 +66,28 @@ export const sidebar = [
             title: "Manage Claims",
             path: "/orders/claims",
           },
+          {
+            type: "link",
+            title: "Draft Orders",
+            path: "/orders/draft-orders",
+            children: [
+              {
+                type: "link",
+                title: "Create Draft Order",
+                path: "/orders/draft-orders/create",
+              },
+              {
+                type: "link",
+                title: "Manage Draft Order",
+                path: "/orders/draft-orders/manage",
+              },
+            ],
+          },
+          {
+            type: "link",
+            title: "Export Orders",
+            path: "/orders/export",
+          },
         ],
       },
       {
@@ -258,6 +280,11 @@ export const sidebar = [
           },
           {
             type: "link",
+            title: "Refund Reasons",
+            path: "/settings/refund-reasons",
+          },
+          {
+            type: "link",
             title: "Sales Channels",
             path: "/settings/sales-channels",
           },
@@ -283,10 +310,20 @@ export const sidebar = [
               },
               {
                 type: "link",
-                title: "Manage Shipping Profiles",
+                title: "Shipping Profiles",
                 path: "/settings/locations-and-shipping/shipping-profiles",
               },
+              {
+                type: "link",
+                title: "Shipping Option Types",
+                path: "/settings/locations-and-shipping/shipping-option-types",
+              },
             ],
+          },
+          {
+            type: "link",
+            title: "Translations",
+            path: "/settings/translations",
           },
           {
             type: "link",

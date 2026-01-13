@@ -605,6 +605,22 @@ medusaIntegrationTestRunner({
           'Invalid column name(s) "Product field"'
         )
       })
+
+      it("should handle error when the source file does not exists", async () => {
+        const { body, meta } = getUploadReq({
+          name: "test.csv",
+          key: "test.csv",
+          size: 0,
+        })
+
+        const batchJobRes = await api
+          .post("/admin/products/imports", body, meta)
+          .catch((e) => e)
+
+        expect(batchJobRes.response.data.message).toEqual(
+          "An unknown error occurred."
+        )
+      })
     })
   },
 })

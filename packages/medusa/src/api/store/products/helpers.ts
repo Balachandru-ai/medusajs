@@ -1,31 +1,40 @@
-import { MedusaStoreRequest, refetchEntity } from "@medusajs/framework/http"
+import { refetchEntity } from "@medusajs/framework/http"
 import {
   HttpTypes,
   ItemTaxLineDTO,
   MedusaContainer,
   TaxableItemDTO,
-  TaxCalculationContext,
 } from "@medusajs/framework/types"
 import { calculateAmountsWithTax, Modules } from "@medusajs/framework/utils"
+import { StoreRequestWithContext } from "../types"
 
 export type RequestWithContext<
   Body,
   QueryFields = Record<string, unknown>
-> = MedusaStoreRequest<Body, QueryFields> & {
-  taxContext: {
-    taxLineContext?: TaxCalculationContext
-    taxInclusivityContext?: {
-      automaticTaxes: boolean
-    }
-  }
-}
+> = StoreRequestWithContext<Body, QueryFields>
 
 export const refetchProduct = async (
   idOrFilter: string | object,
   scope: MedusaContainer,
   fields: string[]
 ) => {
-  return await refetchEntity("product", idOrFilter, scope, fields)
+  return await refetchEntity({ entity: "product", idOrFilter, scope, fields })
+}
+
+export const filterOutInternalProductCategories = (
+  products: HttpTypes.StoreProduct[]
+) => {
+  return products.forEach((product: HttpTypes.StoreProduct) => {
+    if (!product.categories) {
+      return
+    }
+
+    product.categories = product.categories.filter(
+      (category) =>
+        !(category as HttpTypes.StoreProductCategory & { is_internal: boolean })
+          .is_internal
+    )
+  })
 }
 
 export const wrapProductsWithTaxPrices = async <T>(

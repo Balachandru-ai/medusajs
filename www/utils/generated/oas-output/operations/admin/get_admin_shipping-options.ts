@@ -242,6 +242,7 @@
  *           type: boolean
  *           title: $exists
  *           description: Filter by whether a value for this parameter exists (not `null`).
+ *       title: created_at
  *   - name: updated_at
  *     in: query
  *     description: Filter by a shipping option's update date.
@@ -361,6 +362,7 @@
  *           type: boolean
  *           title: $exists
  *           description: Filter by whether a value for this parameter exists (not `null`).
+ *       title: updated_at
  *   - name: deleted_at
  *     in: query
  *     description: Filter by a shipping option's deletion date.
@@ -480,6 +482,7 @@
  *           type: boolean
  *           title: $exists
  *           description: Filter by whether a value for this parameter exists (not `null`).
+ *       title: deleted_at
  *   - name: stock_location_id
  *     in: query
  *     required: false
@@ -510,6 +513,14 @@
  *       type: boolean
  *       title: admin_only
  *       description: Filter by whether the shipping option is used by admin users only.
+ *   - name: with_deleted
+ *     in: query
+ *     description: Whether to include deleted records in the result.
+ *     required: false
+ *     schema:
+ *       type: boolean
+ *       title: with_deleted
+ *       description: Whether to include deleted records in the result.
  * security:
  *   - api_token: []
  *   - cookie_auth: []
@@ -536,7 +547,7 @@
  *     label: cURL
  *     source: |-
  *       curl '{backend_url}/admin/shipping-options' \
- *       -H 'Authorization: Bearer {access_token}'
+ *       -H 'Authorization: Bearer {jwt_token}'
  * tags:
  *   - Shipping Options
  * responses:

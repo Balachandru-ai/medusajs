@@ -151,7 +151,9 @@
           "nullable": false,
           "enumItems": [
             "spend",
-            "usage"
+            "usage",
+            "use_by_attribute",
+            "spend_by_attribute"
           ],
           "mappedType": "enum"
         },
@@ -190,6 +192,15 @@
           "autoincrement": false,
           "primary": false,
           "nullable": false,
+          "mappedType": "text"
+        },
+        "attribute": {
+          "name": "attribute",
+          "type": "text",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
           "mappedType": "text"
         },
         "raw_limit": {
@@ -313,6 +324,146 @@
           "nullable": false,
           "mappedType": "text"
         },
+        "attribute_value": {
+          "name": "attribute_value",
+          "type": "text",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "mappedType": "text"
+        },
+        "used": {
+          "name": "used",
+          "type": "numeric",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "default": "0",
+          "mappedType": "decimal"
+        },
+        "budget_id": {
+          "name": "budget_id",
+          "type": "text",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "mappedType": "text"
+        },
+        "raw_used": {
+          "name": "raw_used",
+          "type": "jsonb",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "mappedType": "json"
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamptz",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "length": 6,
+          "default": "now()",
+          "mappedType": "datetime"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamptz",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "length": 6,
+          "default": "now()",
+          "mappedType": "datetime"
+        },
+        "deleted_at": {
+          "name": "deleted_at",
+          "type": "timestamptz",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "length": 6,
+          "mappedType": "datetime"
+        }
+      },
+      "name": "promotion_campaign_budget_usage",
+      "schema": "public",
+      "indexes": [
+        {
+          "keyName": "IDX_promotion_campaign_budget_usage_budget_id",
+          "columnNames": [],
+          "composite": false,
+          "constraint": false,
+          "primary": false,
+          "unique": false,
+          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_promotion_campaign_budget_usage_budget_id\" ON \"promotion_campaign_budget_usage\" (budget_id) WHERE deleted_at IS NULL"
+        },
+        {
+          "keyName": "IDX_promotion_campaign_budget_usage_deleted_at",
+          "columnNames": [],
+          "composite": false,
+          "constraint": false,
+          "primary": false,
+          "unique": false,
+          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_promotion_campaign_budget_usage_deleted_at\" ON \"promotion_campaign_budget_usage\" (deleted_at) WHERE deleted_at IS NULL"
+        },
+        {
+          "keyName": "IDX_promotion_campaign_budget_usage_attribute_value_budget_id_unique",
+          "columnNames": [],
+          "composite": false,
+          "constraint": false,
+          "primary": false,
+          "unique": false,
+          "expression": "CREATE UNIQUE INDEX IF NOT EXISTS \"IDX_promotion_campaign_budget_usage_attribute_value_budget_id_unique\" ON \"promotion_campaign_budget_usage\" (attribute_value, budget_id) WHERE deleted_at IS NULL"
+        },
+        {
+          "keyName": "promotion_campaign_budget_usage_pkey",
+          "columnNames": [
+            "id"
+          ],
+          "composite": false,
+          "constraint": true,
+          "primary": true,
+          "unique": true
+        }
+      ],
+      "checks": [],
+      "foreignKeys": {
+        "promotion_campaign_budget_usage_budget_id_foreign": {
+          "constraintName": "promotion_campaign_budget_usage_budget_id_foreign",
+          "columnNames": [
+            "budget_id"
+          ],
+          "localTableName": "public.promotion_campaign_budget_usage",
+          "referencedColumnNames": [
+            "id"
+          ],
+          "referencedTableName": "public.promotion_campaign_budget",
+          "deleteRule": "cascade",
+          "updateRule": "cascade"
+        }
+      },
+      "nativeEnums": {}
+    },
+    {
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "mappedType": "text"
+        },
         "code": {
           "name": "code",
           "type": "text",
@@ -331,6 +482,35 @@
           "nullable": false,
           "default": "false",
           "mappedType": "boolean"
+        },
+        "is_tax_inclusive": {
+          "name": "is_tax_inclusive",
+          "type": "boolean",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "default": "false",
+          "mappedType": "boolean"
+        },
+        "limit": {
+          "name": "limit",
+          "type": "integer",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "mappedType": "integer"
+        },
+        "used": {
+          "name": "used",
+          "type": "integer",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "default": "0",
+          "mappedType": "integer"
         },
         "type": {
           "name": "type",
@@ -368,6 +548,15 @@
           "primary": false,
           "nullable": true,
           "mappedType": "text"
+        },
+        "metadata": {
+          "name": "metadata",
+          "type": "jsonb",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "mappedType": "json"
         },
         "created_at": {
           "name": "created_at",
@@ -449,6 +638,15 @@
           "primary": false,
           "unique": false,
           "expression": "CREATE UNIQUE INDEX IF NOT EXISTS \"IDX_unique_promotion_code\" ON \"promotion\" (code) WHERE deleted_at IS NULL"
+        },
+        {
+          "keyName": "IDX_promotion_is_automatic",
+          "columnNames": [],
+          "composite": false,
+          "constraint": false,
+          "primary": false,
+          "unique": false,
+          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_promotion_is_automatic\" ON \"promotion\" (is_automatic) WHERE deleted_at IS NULL"
         },
         {
           "keyName": "promotion_pkey",
@@ -571,7 +769,8 @@
           "nullable": true,
           "enumItems": [
             "each",
-            "across"
+            "across",
+            "once"
           ],
           "mappedType": "enum"
         },
@@ -821,6 +1020,24 @@
           "primary": false,
           "unique": false,
           "expression": "CREATE INDEX IF NOT EXISTS \"IDX_promotion_rule_deleted_at\" ON \"promotion_rule\" (deleted_at) WHERE deleted_at IS NULL"
+        },
+        {
+          "keyName": "IDX_promotion_rule_attribute_operator",
+          "columnNames": [],
+          "composite": false,
+          "constraint": false,
+          "primary": false,
+          "unique": false,
+          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_promotion_rule_attribute_operator\" ON \"promotion_rule\" (attribute, operator) WHERE deleted_at IS NULL"
+        },
+        {
+          "keyName": "IDX_promotion_rule_attribute_operator_id",
+          "columnNames": [],
+          "composite": false,
+          "constraint": false,
+          "primary": false,
+          "unique": false,
+          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_promotion_rule_attribute_operator_id\" ON \"promotion_rule\" (operator, attribute, id) WHERE deleted_at IS NULL"
         },
         {
           "keyName": "promotion_rule_pkey",
@@ -1120,6 +1337,24 @@
           "primary": false,
           "unique": false,
           "expression": "CREATE INDEX IF NOT EXISTS \"IDX_promotion_rule_value_deleted_at\" ON \"promotion_rule_value\" (deleted_at) WHERE deleted_at IS NULL"
+        },
+        {
+          "keyName": "IDX_promotion_rule_value_rule_id_value",
+          "columnNames": [],
+          "composite": false,
+          "constraint": false,
+          "primary": false,
+          "unique": false,
+          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_promotion_rule_value_rule_id_value\" ON \"promotion_rule_value\" (promotion_rule_id, value) WHERE deleted_at IS NULL"
+        },
+        {
+          "keyName": "IDX_promotion_rule_value_value",
+          "columnNames": [],
+          "composite": false,
+          "constraint": false,
+          "primary": false,
+          "unique": false,
+          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_promotion_rule_value_value\" ON \"promotion_rule_value\" (value) WHERE deleted_at IS NULL"
         },
         {
           "keyName": "promotion_rule_value_pkey",

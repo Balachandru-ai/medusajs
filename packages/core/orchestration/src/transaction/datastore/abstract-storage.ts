@@ -21,13 +21,12 @@ export interface IDistributedTransactionStorage {
     key: string,
     options?: TransactionOptions & { isCancelling?: boolean }
   ): Promise<TransactionCheckpoint | undefined>
-  list(): Promise<TransactionCheckpoint[]>
   save(
     key: string,
     data: TransactionCheckpoint,
     ttl?: number,
     options?: TransactionOptions
-  ): Promise<void>
+  ): Promise<TransactionCheckpoint>
   scheduleRetry(
     transaction: DistributedTransactionType,
     step: TransactionStep,
@@ -56,6 +55,7 @@ export interface IDistributedTransactionStorage {
     transaction: DistributedTransactionType,
     step: TransactionStep
   ): Promise<void>
+  clearExpiredExecutions(): Promise<void>
 }
 
 export abstract class DistributedSchedulerStorage
@@ -92,15 +92,11 @@ export abstract class DistributedTransactionStorage
     throw new Error("Method 'get' not implemented.")
   }
 
-  async list(): Promise<TransactionCheckpoint[]> {
-    throw new Error("Method 'list' not implemented.")
-  }
-
   async save(
     key: string,
     data: TransactionCheckpoint,
     ttl?: number
-  ): Promise<void> {
+  ): Promise<TransactionCheckpoint> {
     throw new Error("Method 'save' not implemented.")
   }
 
@@ -148,5 +144,9 @@ export abstract class DistributedTransactionStorage
     step: TransactionStep
   ): Promise<void> {
     throw new Error("Method 'clearStepTimeout' not implemented.")
+  }
+
+  async clearExpiredExecutions(): Promise<void> {
+    throw new Error("Method 'clearExpiredExecutions' not implemented.")
   }
 }

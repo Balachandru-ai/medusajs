@@ -1,8 +1,4 @@
-import {
-  ChangeActionType,
-  OrderChangeStatus,
-  PromotionActions,
-} from "@medusajs/framework/utils"
+import { ChangeActionType, OrderChangeStatus } from "@medusajs/framework/utils"
 import {
   createWorkflow,
   transform,
@@ -10,7 +6,11 @@ import {
   WorkflowData,
   WorkflowResponse,
 } from "@medusajs/framework/workflows-sdk"
-import { BigNumberInput, OrderChangeDTO, OrderDTO } from "@medusajs/types"
+import {
+  BigNumberInput,
+  OrderChangeDTO,
+  OrderDTO,
+} from "@medusajs/framework/types"
 import { useRemoteQueryStep } from "../../common"
 import {
   createOrderChangeActionsWorkflow,
@@ -20,7 +20,8 @@ import {
 import { updateDraftOrderShippingMethodStep } from "../steps/update-draft-order-shipping-metod"
 import { validateDraftOrderChangeStep } from "../steps/validate-draft-order-change"
 import { draftOrderFieldsForRefreshSteps } from "../utils/fields"
-import { refreshDraftOrderAdjustmentsWorkflow } from "./refresh-draft-order-adjustments"
+import { acquireLockStep, releaseLockStep } from "../../locking"
+import { computeDraftOrderAdjustmentsWorkflow } from "./compute-draft-order-adjustments"
 
 export const updateDraftOrderShippingMethodWorkflowId =
   "update-draft-order-shipping-method"
@@ -56,10 +57,10 @@ export interface UpdateDraftOrderShippingMethodWorkflowInput {
 /**
  * This workflow updates an existing shipping method in a draft order edit. It's used by the
  * [Update Shipping Method in Draft Order Edit Admin API Route](https://docs.medusajs.com/api/admin#draft-orders_postdraftordersideditshippingmethodsmethodmethod_id).
- * 
+ *
  * You can use this workflow within your customizations or your own custom workflows, allowing you to wrap custom logic around
  * updating an existing shipping method in a draft order edit.
- * 
+ *
  * @example
  * const { result } = await updateDraftOrderShippingMethodWorkflow(container)
  * .run({
@@ -71,14 +72,20 @@ export interface UpdateDraftOrderShippingMethodWorkflowInput {
  *     }
  *   }
  * })
- * 
+ *
  * @summary
- * 
+ *
  * Update an existing shipping method in a draft order edit.
  */
 export const updateDraftOrderShippingMethodWorkflow = createWorkflow(
   updateDraftOrderShippingMethodWorkflowId,
   function (input: WorkflowData<UpdateDraftOrderShippingMethodWorkflowInput>) {
+    acquireLockStep({
+      key: input.order_id,
+      timeout: 2,
+      ttl: 10,
+    })
+
     const order: OrderDTO = useRemoteQueryStep({
       entry_point: "orders",
       fields: ["id", "status", "is_draft_order"],
@@ -123,29 +130,19 @@ export const updateDraftOrderShippingMethodWorkflow = createWorkflow(
       throw_if_key_not_found: true,
     }).config({ name: "refetched-order-query" })
 
-    const appliedPromoCodes = transform(refetchedOrder, (refetchedOrder) => {
-      const promotionLink = (refetchedOrder as any).promotion_link
-
-      if (!promotionLink) {
-        return []
-      }
-
-      if (Array.isArray(promotionLink)) {
-        return promotionLink.map((promo) => promo.promotion.code)
-      }
-
-      return [promotionLink.promotion.code]
-    })
+    const appliedPromoCodes = transform(
+      refetchedOrder,
+      (refetchedOrder) =>
+        refetchedOrder.promotions?.map((promotion) => promotion.code) ?? []
+    )
 
     when(
       appliedPromoCodes,
       (appliedPromoCodes) => appliedPromoCodes.length > 0
     ).then(() => {
-      refreshDraftOrderAdjustmentsWorkflow.runAsStep({
+      computeDraftOrderAdjustmentsWorkflow.runAsStep({
         input: {
-          order: refetchedOrder,
-          promo_codes: appliedPromoCodes,
-          action: PromotionActions.REPLACE,
+          order_id: input.order_id,
         },
       })
     })
@@ -173,6 +170,10 @@ export const updateDraftOrderShippingMethodWorkflow = createWorkflow(
 
     createOrderChangeActionsWorkflow.runAsStep({
       input: [orderChangeActionInput as any],
+    })
+
+    releaseLockStep({
+      key: input.order_id,
     })
 
     return new WorkflowResponse(previewOrderChangeStep(input.order_id))

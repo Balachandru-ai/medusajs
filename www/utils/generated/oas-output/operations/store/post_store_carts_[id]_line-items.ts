@@ -5,7 +5,7 @@
  * x-sidebar-summary: Add Line Item
  * description: Add a product variant as a line item in the cart.
  * externalDocs:
- *   url: https://docs.medusajs.com/v2/resources/storefront-development/cart/manage-items#add-product-variant-to-cart
+ *   url: https://docs.medusajs.com/resources/storefront-development/cart/manage-items#add-product-variant-to-cart
  *   description: "Storefront guide: How to add a product variant to the cart."
  * x-authenticated: false
  * parameters:
@@ -23,6 +23,16 @@
  *       type: string
  *       externalDocs:
  *         url: https://docs.medusajs.com/api/store#publishable-api-key
+ *   - name: x-medusa-locale
+ *     in: header
+ *     description: The locale in BCP 47 format to retrieve localized content.
+ *     required: false
+ *     schema:
+ *       type: string
+ *       example: en-US
+ *       externalDocs:
+ *         url: https://docs.medusajs.com/resources/commerce-modules/translation/storefront
+ *         description: Learn more in the Serve Translations in Storefront guide.
  *   - name: fields
  *     in: query
  *     description: Comma-separated fields that should be included in the returned data. if a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default
@@ -35,11 +45,45 @@
  *         fields. without prefix it will replace the entire default fields.
  *       externalDocs:
  *         url: "#select-fields-and-relations"
+ *   - name: locale
+ *     in: query
+ *     description: The locale in BCP 47 format to retrieve localized content.
+ *     required: false
+ *     schema:
+ *       type: string
+ *       example: en-US
+ *       externalDocs:
+ *         url: https://docs.medusajs.com/resources/commerce-modules/translation/storefront
+ *         description: Learn more in the Serve Translations in Storefront guide.
  * requestBody:
  *   content:
  *     application/json:
  *       schema:
- *         $ref: "#/components/schemas/StoreAddCartLineItem"
+ *         allOf:
+ *           - type: object
+ *             description: The details of the line item to add.
+ *             required:
+ *               - variant_id
+ *               - quantity
+ *             properties:
+ *               variant_id:
+ *                 type: string
+ *                 title: variant_id
+ *                 description: The ID of the product variant to add as a line item.
+ *               quantity:
+ *                 type: number
+ *                 title: quantity
+ *                 description: The item's quantity.
+ *               metadata:
+ *                 type: object
+ *                 description: The item's metadata, can hold custom key-value pairs.
+ *           - type: object
+ *             description: The details of the line item to add.
+ *             properties:
+ *               additional_data:
+ *                 type: object
+ *                 description: Pass additional custom data to the API route. This data is passed to the underlying workflow under the `additional_data` parameter.
+ *         description: The details of the line item to add.
  * x-codeSamples:
  *   - lang: JavaScript
  *     label: JS SDK

@@ -1,4 +1,4 @@
-import { NotificationContent } from "./common"
+import { Attachment, NotificationContent } from "./common"
 
 /**
  * @interface
@@ -12,17 +12,25 @@ export interface CreateNotificationDTO {
    */
   to: string
   /**
+   * The sender of the notification. It can be email, phone number, or username, depending on the channel.
+   */
+  from?: string | null
+  /**
    * The channel through which the notification is sent, such as `email` or `sms`.
    */
   channel: string
   /**
    * The template name in the provider's system.
    */
-  template: string
+  template?: string | null
   /**
    * The data that gets passed over to the provider for rendering the notification.
    */
   data?: Record<string, unknown> | null
+  /**
+   * Additional data specific to the provider or channel. For example, cc and bcc for emails.
+   */
+  provider_data?: Record<string, unknown> | null
   /**
    * The content that gets passed over to the provider.
    */
@@ -52,4 +60,8 @@ export interface CreateNotificationDTO {
    * An idempotency key that ensures the same notification is not sent multiple times.
    */
   idempotency_key?: string | null
+  /**
+   * Optional attachments for the notification.
+   */
+  attachments?: Attachment[] | null
 }

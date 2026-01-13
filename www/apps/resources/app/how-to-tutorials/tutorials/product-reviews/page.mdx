@@ -399,6 +399,12 @@ The `useQueryGraphStep` step is provided by Medusa in its `@medusajs/medusa/core
 
 In the second step of the workflow, you create the review. To create a step, create the file `src/workflows/steps/create-review.ts` with the following content:
 
+<Note>
+
+If you get a type error on resolving the Product Review Module, run the Medusa application once with the `npm run dev` or `yarn dev` command to generate the necessary type definitions, as explained in the [Automatically Generated Types guide](!docs!/learn/fundamentals/generated-types).
+
+</Note>
+
 export const createReviewHighlights = [
   ["22", "reviewModuleService", "Resolve the Review Module's service"],
   ["26", "createReviews", "Create the review"],
@@ -505,7 +511,6 @@ export const createReviewWorkflow = createWorkflow(
   "create-review",
   (input: CreateReviewInput) => {
     // Check product exists
-    // @ts-ignore
     useQueryGraphStep({
       entity: "product",
       fields: ["id"],
@@ -520,7 +525,6 @@ export const createReviewWorkflow = createWorkflow(
     // Create the review
     const review = createReviewStep(input)
 
-    // @ts-ignore
     return new WorkflowResponse({
       review,
     })
@@ -1480,7 +1484,7 @@ In `src/modules/product-review/service.ts`, add the following methods to the `Pr
 import { InjectManager, MedusaService, MedusaContext } from "@medusajs/framework/utils"
 import Review from "./models/review"
 import { Context } from "@medusajs/framework/types"
-import { EntityManager } from "@mikro-orm/knex"
+import { EntityManager } from "@medusajs/framework/mikro-orm/knex"
 
 class ProductReviewModuleService extends MedusaService({
   Review,
@@ -1522,8 +1526,8 @@ export const GetStoreReviewsHighlights = [
   ["10", "GetStoreReviewsSchema", "Define the query parameters schema."],
   ["12", "GET", "Expose a GET API route."],
   ["26", "query.graph", "Retrieve reviews with pagination."],
-  ["31", "status", "Only retrieve approved reviews."],
-  ["41", "average_rating", "Retrieve the average rating of the product."],
+  ["30", "status", "Only retrieve approved reviews."],
+  ["40", "average_rating", "Retrieve the average rating of the product."],
 ]
 
 ```ts title="src/api/store/products/[id]/reviews/route.ts" highlights={GetStoreReviewsHighlights} collapsibleLines="1-9" expandButtonLabel="Show Imports"
@@ -1556,7 +1560,6 @@ export const GET = async (
     entity: "review",
     filters: {
       product_id: id,
-      // @ts-ignore
       status: "approved",
     },
     ...req.queryConfig,
@@ -1586,7 +1589,7 @@ Finally, you return the reviews with pagination fields and the average rating of
 
 ### Apply Query Configurations Middleware
 
-The last step is to add a middleware that validates the query parameters passed to the request, and sets the default Query configuations.
+The last step is to add a middleware that validates the query parameters passed to the request, and sets the default Query configurations.
 
 In `src/api/middlewares.ts`, add a new middleware:
 

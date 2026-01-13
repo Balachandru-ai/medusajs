@@ -11,22 +11,23 @@ import {
   MedusaResponse,
   refetchEntities,
 } from "@medusajs/framework/http"
-import {
-  AdminProductCategoryParamsType,
-  AdminUpdateProductCategoryType,
-} from "../validators"
 import { MedusaError } from "@medusajs/framework/utils"
 
 export const GET = async (
-  req: AuthenticatedMedusaRequest<AdminProductCategoryParamsType>,
+  req: AuthenticatedMedusaRequest<
+    HttpTypes.AdminProductCategoryListParams
+  >,
   res: MedusaResponse<AdminProductCategoryResponse>
 ) => {
-  const [category] = await refetchEntities(
-    "product_category",
-    { id: req.params.id, ...req.filterableFields },
-    req.scope,
-    req.queryConfig.fields
-  )
+  const {
+    data: [category],
+  } = await refetchEntities({
+    entity: "product_category",
+    idOrFilter: { id: req.params.id, ...req.filterableFields },
+    scope: req.scope,
+    fields: req.queryConfig.fields,
+    pagination: req.queryConfig.pagination,
+  })
 
   if (!category) {
     throw new MedusaError(
@@ -39,7 +40,10 @@ export const GET = async (
 }
 
 export const POST = async (
-  req: AuthenticatedMedusaRequest<AdminUpdateProductCategoryType>,
+  req: AuthenticatedMedusaRequest<
+    HttpTypes.AdminUpdateProductCategory,
+    HttpTypes.AdminProductCategoryParams
+  >,
   res: MedusaResponse<AdminProductCategoryResponse>
 ) => {
   const { id } = req.params
@@ -48,12 +52,15 @@ export const POST = async (
     input: { selector: { id }, update: req.validatedBody },
   })
 
-  const [category] = await refetchEntities(
-    "product_category",
-    { id, ...req.filterableFields },
-    req.scope,
-    req.queryConfig.fields
-  )
+  const {
+    data: [category],
+  } = await refetchEntities({
+    entity: "product_category",
+    idOrFilter: { id, ...req.filterableFields },
+    scope: req.scope,
+    fields: req.queryConfig.fields,
+    pagination: req.queryConfig.pagination,
+  })
 
   res.status(200).json({ product_category: category })
 }

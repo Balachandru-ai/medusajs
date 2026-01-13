@@ -33,7 +33,7 @@ import { setupTaxStructure } from "../../fixtures"
 
 jest.setTimeout(100000)
 
-const env = { MEDUSA_FF_MEDUSA_V2: true }
+const env = {}
 const adminHeaders = { headers: { "x-medusa-access-token": "test_token" } }
 
 medusaIntegrationTestRunner({
@@ -109,6 +109,7 @@ medusaIntegrationTestRunner({
           const [product] = await productModule.createProducts([
             {
               title: "Test product",
+              status: ProductStatus.PUBLISHED,
               variants: [
                 {
                   manage_inventory: false,
@@ -215,6 +216,7 @@ medusaIntegrationTestRunner({
           const [product] = await productModule.createProducts([
             {
               title: "Test product default tax",
+              status: ProductStatus.PUBLISHED,
               variants: [
                 { title: "Test variant default tax", manage_inventory: false },
               ],
@@ -714,6 +716,122 @@ medusaIntegrationTestRunner({
             name: "US",
             currency_code: "usd",
           })
+        })
+
+        it("handle line item quantity edge cases", async () => {
+          const shippingProfile =
+            await fulfillmentModule.createShippingProfiles({
+              name: "Test",
+              type: "default",
+            })
+
+          const product = (
+            await api.post(
+              `/admin/products`,
+              {
+                ...productData,
+                shipping_profile_id: shippingProfile.id,
+              },
+              adminHeaders
+            )
+          ).data.product
+
+          // cannot create a cart with a negative item quantity
+          const errorRes = await api
+            .post(
+              `/store/carts`,
+              {
+                email: "tony@stark.com",
+                currency_code: region.currency_code,
+                region_id: region.id,
+                items: [
+                  {
+                    variant_id: product.variants[0].id,
+                    quantity: -2,
+                  },
+                ],
+              },
+              storeHeaders
+            )
+            .catch((e) => e)
+
+          expect(errorRes.response.status).toEqual(400)
+          expect(errorRes.response.data).toEqual({
+            message:
+              "Invalid request: Value for field 'items, 0, quantity' too small, expected at least: '0'",
+            type: "invalid_data",
+          })
+
+          const cart = (
+            await api.post(
+              `/store/carts`,
+              {
+                email: "tony@stark.com",
+                currency_code: region.currency_code,
+                region_id: region.id,
+                items: [
+                  {
+                    variant_id: product.variants[0].id,
+                    quantity: 5,
+                  },
+                ],
+              },
+              storeHeaders
+            )
+          ).data.cart
+
+          // cannot add a negative quantity item to the cart
+          let response = await api
+            .post(
+              `/store/carts/${cart.id}/line-items`,
+              {
+                variant_id: product.variants[1].id,
+                quantity: -2,
+              },
+              storeHeaders
+            )
+            .catch((e) => e)
+
+          expect(response.response.status).toEqual(400)
+          expect(response.response.data).toEqual({
+            message:
+              "Invalid request: Value for field 'quantity' too small, expected at least: '0'",
+            type: "invalid_data",
+          })
+
+          // cannot update a negative quantity item on the cart
+          response = await api
+            .post(
+              `/store/carts/${cart.id}/line-items/${cart.items[0].id}`,
+              {
+                quantity: -1,
+              },
+              storeHeaders
+            )
+            .catch((e) => e)
+
+          expect(response.response.status).toEqual(400)
+          expect(response.response.data).toEqual({
+            message:
+              "Invalid request: Value for field 'quantity' too small, expected at least: '0'",
+            type: "invalid_data",
+          })
+
+          // should remove the item from the cart when quantity is 0
+          const cartResponse = await api.post(
+            `/store/carts/${cart.id}/line-items/${cart.items[0].id}`,
+            {
+              quantity: 0,
+            },
+            storeHeaders
+          )
+
+          expect(cartResponse.status).toEqual(200)
+          expect(cartResponse.data.cart).toEqual(
+            expect.objectContaining({
+              items: expect.arrayContaining([]),
+            })
+          )
         })
 
         it("adding an existing variant should update or create line item depending on metadata", async () => {
@@ -1218,6 +1336,7 @@ medusaIntegrationTestRunner({
               "/admin/products",
               {
                 title: "Test fixture",
+                status: ProductStatus.PUBLISHED,
                 options: [
                   { title: "size", values: ["large", "small"] },
                   { title: "color", values: ["green"] },
@@ -1302,7 +1421,7 @@ medusaIntegrationTestRunner({
                   max_quantity: 1,
                   target_rules: [
                     {
-                      attribute: "product_id",
+                      attribute: "items.product_id",
                       operator: "eq",
                       values: [product.id],
                     },
@@ -1730,6 +1849,157 @@ medusaIntegrationTestRunner({
           })
         })
 
+        it("should update the cart email from one guest account to another", async () => {
+          const guestsMainEmail = "guest.main@acme.com"
+          const guestsSecondaryEmail = "guest.secondary@acme.com"
+
+          const [guestMain, guestSecondary] =
+            await customerModule.createCustomers([
+              {
+                email: guestsMainEmail,
+                has_account: false,
+              },
+              {
+                email: guestsSecondaryEmail,
+                has_account: false,
+              },
+            ])
+
+          const cart = (
+            await api.post(
+              `/store/carts`,
+              {
+                currency_code: "usd",
+                email: guestsSecondaryEmail,
+                shipping_address: {
+                  address_1: "test address 1",
+                  address_2: "test address 2",
+                  city: "ny",
+                  country_code: "us",
+                  province: "ny",
+                  postal_code: "94016",
+                },
+                sales_channel_id: salesChannel.id,
+              },
+              storeHeaders
+            )
+          ).data.cart
+
+          expect(cart.customer.id).toBe(guestSecondary.id)
+
+          // update the cart without providing an email
+          await api.post(
+            `/store/carts/${cart.id}`,
+            {
+              metadata: {
+                test: "test updated",
+              },
+            },
+            storeHeaders
+          )
+
+          let currentCart = await api.get(
+            `/store/carts/${cart.id}`,
+            storeHeaders
+          )
+          let currentCartCustomer = currentCart.data.cart.customer
+
+          expect(currentCartCustomer.id).toEqual(guestSecondary.id)
+          expect(currentCartCustomer.email).toEqual(guestSecondary.email)
+          expect(currentCart.data.cart.metadata).toEqual({
+            test: "test updated",
+          })
+
+          // update the cart providing an email
+          await api.post(
+            `/store/carts/${cart.id}`,
+            {
+              email: guestsMainEmail,
+              metadata: {
+                test: "test updated 2, new customer",
+              },
+            },
+            storeHeaders
+          )
+
+          currentCart = await api.get(`/store/carts/${cart.id}`, storeHeaders)
+
+          expect(currentCart.data.cart.customer.id).toEqual(guestMain.id)
+          expect(currentCart.data.cart.email).toEqual(guestMain.email)
+          expect(currentCart.data.cart.metadata).toEqual({
+            test: "test updated 2, new customer",
+          })
+        })
+
+        it("should persist customer on cart if updated with the same email", async () => {
+          const guestsMainEmail = "guest.main@acme.com"
+
+          const cart = (
+            await api.post(
+              `/store/carts`,
+              {
+                currency_code: "usd",
+                email: guestsMainEmail,
+                shipping_address: {
+                  address_1: "test address 1",
+                  address_2: "test address 2",
+                  city: "ny",
+                  country_code: "us",
+                  province: "ny",
+                  postal_code: "94016",
+                },
+                sales_channel_id: salesChannel.id,
+              },
+              storeHeaders
+            )
+          ).data.cart
+
+          const guestMain = cart.customer
+
+          // update the cart providing an email
+          await api.post(
+            `/store/carts/${cart.id}`,
+            {
+              email: guestsMainEmail, // update with the same mail
+              metadata: {
+                test: "test updated 2, same customer",
+              },
+            },
+            storeHeaders
+          )
+
+          let currentCart = await api.get(
+            `/store/carts/${cart.id}`,
+            storeHeaders
+          )
+
+          expect(currentCart.data.cart.customer.id).toEqual(guestMain.id)
+          expect(currentCart.data.cart.email).toEqual(guestMain.email)
+          expect(currentCart.data.cart.metadata).toEqual({
+            test: "test updated 2, same customer",
+          })
+
+          // update the cart providing an email
+          await api.post(
+            `/store/carts/${cart.id}`,
+            {
+              email: guestsMainEmail, // update with the same mail
+              metadata: {
+                test: "test updated 3, same customer",
+              },
+            },
+            storeHeaders
+          )
+
+          currentCart = await api.get(`/store/carts/${cart.id}`, storeHeaders)
+
+          expect(currentCart.data.cart.customer.id).toEqual(guestMain.id)
+          expect(currentCart.data.cart.email).toEqual(guestMain.email)
+          expect(currentCart.data.cart.metadata).toEqual({
+            test: "test updated 3, same customer",
+          })
+        })
+
         it("should keep the same customer when updating the customer cart and update Cart's email if provided", async () => {
           // create a customer
           const mainEmail = "jhon.doe@acme.com"
@@ -1898,8 +2168,8 @@ medusaIntegrationTestRunner({
           authorizePaymentSessionSpy.mockImplementation(
             (id, context, sharedContext) => {
               throw new MedusaError(
-                MedusaError.Types.INVALID_DATA,
-                `Throw a random error`
+                MedusaError.Types.PAYMENT_AUTHORIZATION_ERROR,
+                `Payment authorization failed`
               )
             }
           )

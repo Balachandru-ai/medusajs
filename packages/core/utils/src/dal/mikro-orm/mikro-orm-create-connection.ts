@@ -1,10 +1,14 @@
+import { Filter as MikroORMFilter } from "@medusajs/deps/mikro-orm/core"
+import { TSMigrationGenerator } from "@medusajs/deps/mikro-orm/migrations"
 import { ModuleServiceInitializeOptions } from "@medusajs/types"
-import { Filter as MikroORMFilter } from "@mikro-orm/core"
-import { TSMigrationGenerator } from "@mikro-orm/migrations"
-import { isString } from "../../common"
+import { isString, retryExecution, stringifyCircular } from "../../common"
 import { normalizeMigrationSQL } from "../utils"
+import { CustomDBMigrator } from "./custom-db-migrator"
 
 type FilterDef = Parameters<typeof MikroORMFilter>[0]
+
+const expectedMigrationsImportStatement =
+  'import { Migration } from "@medusajs/framework/mikro-orm/migrations"'
 
 export class CustomTsMigrationGenerator extends TSMigrationGenerator {
   // TODO: temporary fix to drop unique constraint before creating unique index
@@ -40,7 +44,17 @@ export class CustomTsMigrationGenerator extends TSMigrationGenerator {
       diff.up.unshift(sql)
     }
 
-    return super.generateMigrationFile(className, diff)
+    let migrationFileContent = super.generateMigrationFile(className, diff)
+    migrationFileContent = migrationFileContent
+      .replace(
+        'import { Migration } from "@mikro-orm/migrations"',
+        expectedMigrationsImportStatement
+      )
+      .replace(
+        "import { Migration } from '@mikro-orm/migrations'",
+        expectedMigrationsImportStatement
+      )
+    return migrationFileContent
   }
 
   createStatement(sql: string, padLeft: number): string {
@@ -82,39 +96,76 @@ export async function mikroOrmCreateConnection(
     schema = database.connection.context?.client?.config?.searchPath
   }
 
-  const { MikroORM, defineConfig } = await import("@mikro-orm/postgresql")
-  return await MikroORM.init(
-    defineConfig({
-      discovery: { disableDynamicFileAccess: true, warnWhenNoEntities: false },
-      entities,
-      debug: database.debug ?? process.env.NODE_ENV?.startsWith("dev") ?? false,
-      baseDir: process.cwd(),
-      clientUrl,
-      schema,
-      driverOptions,
-      tsNode: process.env.APP_ENV === "development",
-      filters: database.filters ?? {},
-      assign: {
-        convertCustomTypes: true,
+  const { MikroORM, defineConfig } = await import(
+    "@medusajs/deps/mikro-orm/postgresql"
+  )
+  const mikroOrmConfig = defineConfig({
+    discovery: { disableDynamicFileAccess: true, warnWhenNoEntities: false },
+    entities,
+    debug: database.debug ?? process.env.NODE_ENV?.startsWith("dev") ?? false,
+    baseDir: process.cwd(),
+    clientUrl,
+    schema,
+    driverOptions,
+    tsNode: process.env.APP_ENV === "development",
+    filters: database.filters ?? {},
+    useBatchInserts: true,
+    useBatchUpdates: true,
+    implicitTransactions: false,
+    ignoreUndefinedInQuery: true,
+    batchSize: 100,
+    metadataCache: {
+      enabled: true,
+    },
+    assign: {
+      convertCustomTypes: true,
+    },
+    migrations: {
+      disableForeignKeys: false,
+      path: pathToMigrations,
+      snapshotName: database.snapshotName,
+      generator: CustomTsMigrationGenerator,
+      silent: !(
+        database.debug ??
+        process.env.NODE_ENV?.startsWith("dev") ??
+        false
+      ),
+    },
+    extensions: [CustomDBMigrator],
+    // We don't want to do any DB checks when establishing the connection. This happens once when creating the pg_connection, and it can happen again explicitly if necessary.
+    connect: false,
+    ensureDatabase: false,
+    schemaGenerator: {
+      disableForeignKeys: false,
+    },
+    pool: {
+      min: 2,
+      ...database.pool,
+    },
+  })
+
+  const maxRetries = process.env.__MEDUSA_DB_CONNECTION_MAX_RETRIES
+    ? parseInt(process.env.__MEDUSA_DB_CONNECTION_MAX_RETRIES)
+    : 5
+
+  const retryDelay = process.env.__MEDUSA_DB_CONNECTION_RETRY_DELAY
+    ? parseInt(process.env.__MEDUSA_DB_CONNECTION_RETRY_DELAY)
+    : 1000
+
+  return await retryExecution(
+    async () => {
+      return await MikroORM.init(mikroOrmConfig)
+    },
+    {
+      maxRetries,
+      retryDelay,
+      onRetry: (error) => {
+        console.warn(
+          `MikroORM failed to connect to the database. Retrying...\n${stringifyCircular(
+            error
+          )}`
+        )
       },
-      migrations: {
-        disableForeignKeys: false,
-        path: pathToMigrations,
-        snapshotName: database.snapshotName,
-        generator: CustomTsMigrationGenerator,
-        silent: !(
-          database.debug ??
-          process.env.NODE_ENV?.startsWith("dev") ??
-          false
-        ),
-      },
-      schemaGenerator: {
-        disableForeignKeys: false,
-      },
-      pool: {
-        min: 2,
-        ...database.pool,
-      },
-    })
+    }
   )
 }

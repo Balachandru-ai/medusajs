@@ -1,4 +1,10 @@
-import { z, ZodEffects, ZodNullable, ZodObject, ZodOptional } from "zod"
+import { 
+  z,
+  type ZodEffects,
+  type ZodNullable,
+  type ZodObject,
+  type ZodOptional
+} from "@medusajs/framework/zod"
 
 /**
  * Wraps the original schema to a function to accept and merge
@@ -92,6 +98,12 @@ export const createFindParams = ({
       order: order
         ? z.string().optional().default(order)
         : z.string().optional(),
+      with_deleted: z.preprocess((val) => {
+        if (val && typeof val === "string") {
+          return val === "true" ? true : val === "false" ? false : val
+        }
+        return val
+      }, z.boolean().optional()),
     })
   )
 }

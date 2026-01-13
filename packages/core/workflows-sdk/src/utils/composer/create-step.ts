@@ -4,7 +4,13 @@ import {
   WorkflowStepHandler,
   WorkflowStepHandlerArguments,
 } from "@medusajs/orchestration"
-import { isDefined, isString, OrchestrationUtils } from "@medusajs/utils"
+import {
+  getCallerFilePath,
+  isDefined,
+  isString,
+  OrchestrationUtils,
+  registerDevServerResource,
+} from "@medusajs/utils"
 import { ulid } from "ulid"
 import { resolveValue, StepResponse } from "./helpers"
 import { createStepHandler } from "./helpers/create-step-handler"
@@ -101,6 +107,38 @@ export interface ApplyStepOptions<
  * @param invokeFn
  * @param compensateFn
  */
+// Factory function to create and configure handlers
+function createAndConfigureHandler<
+  TInvokeInput,
+  TStepInput extends {
+    [K in keyof TInvokeInput]: WorkflowData<TInvokeInput[K]>
+  },
+  TInvokeResultOutput,
+  TInvokeResultCompensateInput
+>(
+  context: CreateWorkflowComposerContext,
+  stepName: string,
+  config: TransactionStepsDefinition,
+  input: TStepInput | undefined,
+  invokeFn: InvokeFn<
+    TInvokeInput,
+    TInvokeResultOutput,
+    TInvokeResultCompensateInput
+  >,
+  compensateFn?: CompensateFn<TInvokeResultCompensateInput>
+) {
+  const handler = createStepHandler.bind(context)({
+    stepName,
+    input,
+    invokeFn,
+    compensateFn,
+  })
+
+  wrapAsyncHandler(config, handler)
+
+  return handler
+}
+
 export function applyStep<
   TInvokeInput,
   TStepInput extends {
@@ -127,14 +165,20 @@ export function applyStep<
       )
     }
 
-    const handler = createStepHandler.bind(this)({
-      stepName,
-      input,
-      invokeFn,
-      compensateFn,
+    registerDevServerResource({
+      id: stepName,
+      type: "step",
+      workflowId: this.workflowId!,
     })
 
-    wrapAsyncHandler(stepConfig, handler)
+    const handler = createAndConfigureHandler(
+      this,
+      stepName,
+      stepConfig,
+      input,
+      invokeFn,
+      compensateFn
+    )
 
     stepConfig.uuid = ulid()
     stepConfig.noCompensation = !compensateFn
@@ -143,9 +187,9 @@ export function applyStep<
 
     this.isAsync ||= !!(stepConfig.async || stepConfig.compensateAsync)
 
-    if (!this.handlers.has(stepName)) {
-      this.handlers.set(stepName, handler)
-    }
+    this.overriddenHandler.set(stepName, this.handlers.get(stepName)!)
+
+    this.handlers.set(stepName, handler)
 
     const ret = {
       __type: OrchestrationUtils.SymbolWorkflowStep,
@@ -177,16 +221,19 @@ export function applyStep<
         newConfig.nested ||= newConfig.async
       }
 
-      delete localConfig.name
+      delete newConfig.name
 
-      const handler = createStepHandler.bind(this)({
-        stepName: newStepName,
+      const handler = createAndConfigureHandler(
+        this,
+        newStepName,
+        newConfig,
         input,
         invokeFn,
-        compensateFn,
-      })
+        compensateFn
+      )
 
-      wrapAsyncHandler(newConfig, handler)
+      this.handlers.set(stepName, this.overriddenHandler.get(stepName)!)
+      this.overriddenHandler.delete(stepName)
 
       this.handlers.set(newStepName, handler)
 
@@ -316,7 +363,10 @@ export function wrapConditionalStep(
 ) {
   const originalInvoke = handle.invoke
   handle.invoke = async (stepArguments: WorkflowStepHandlerArguments) => {
-    const args = await resolveValue(input, stepArguments)
+    let args = resolveValue(input, stepArguments)
+    if (args instanceof Promise) {
+      args = await args
+    }
 
     const canContinue = await condition(args, stepArguments)
 
@@ -451,6 +501,13 @@ export function createStep<
 
   returnFn.__type = OrchestrationUtils.SymbolWorkflowStepBind
   returnFn.__step__ = stepName
+
+  const sourcePath = getCallerFilePath() as string
+  registerDevServerResource({
+    id: stepName,
+    type: "step",
+    sourcePath,
+  })
 
   return returnFn
 }

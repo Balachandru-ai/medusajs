@@ -37,7 +37,7 @@
  *     label: cURL
  *     source: |-
  *       curl -X POST '{backend_url}/admin/order-edits/{id}/request' \
- *       -H 'Authorization: Bearer {access_token}'
+ *       -H 'Authorization: Bearer {jwt_token}'
  * tags:
  *   - Order Edits
  * responses:
@@ -71,7 +71,7 @@
  *       ```
  *     description: Emitted when an order edit is requested.
  *     deprecated: false
- *     version: 2.8.0
+ *     since: 2.8.0
  * 
 */
 

@@ -32,7 +32,7 @@
  *   content:
  *     application/json:
  *       schema:
- *         $ref: "#/components/schemas/AdminPostReturnsReceiveItemsReqSchema"
+ *         $ref: "#/components/schemas/AdminReceiveItems"
  * x-codeSamples:
  *   - lang: JavaScript
  *     label: JS SDK
@@ -59,7 +59,7 @@
  *     label: cURL
  *     source: |-
  *       curl -X POST '{backend_url}/admin/returns/{id}/receive-items' \
- *       -H 'Authorization: Bearer {access_token}'
+ *       -H 'Authorization: Bearer {jwt_token}'
  * tags:
  *   - Returns
  * responses:

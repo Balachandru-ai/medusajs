@@ -69,7 +69,7 @@
  *     label: cURL
  *     source: |-
  *       curl -X POST '{backend_url}/admin/products/{id}/options' \
- *       -H 'Authorization: Bearer {access_token}' \
+ *       -H 'Authorization: Bearer {jwt_token}' \
  *       -H 'Content-Type: application/json' \
  *       --data-raw '{
  *         "title": "{value}",
@@ -103,9 +103,9 @@
  *   - name: product-option.created
  *     payload: |-
  *       ```ts
- *       [{
+ *       {
  *         id, // The ID of the product option
- *       }]
+ *       }
  *       ```
  *     description: Emitted when product options are created.
  *     deprecated: false

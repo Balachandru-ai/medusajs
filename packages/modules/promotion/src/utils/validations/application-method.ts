@@ -21,10 +21,12 @@ export const allowedAllocationTargetTypes: string[] = [
 export const allowedAllocationTypes: string[] = [
   ApplicationMethodAllocation.ACROSS,
   ApplicationMethodAllocation.EACH,
+  ApplicationMethodAllocation.ONCE,
 ]
 
 export const allowedAllocationForQuantity: string[] = [
   ApplicationMethodAllocation.EACH,
+  ApplicationMethodAllocation.ONCE,
 ]
 
 export function validateApplicationMethodAttributes(
@@ -66,6 +68,27 @@ export function validateApplicationMethodAttributes(
       throw new MedusaError(
         MedusaError.Types.INVALID_DATA,
         `buy_rules_min_quantity is a required field for Promotion type of ${PromotionType.BUYGET}`
+      )
+    }
+
+    if (!isPresent(maxQuantity)) {
+      throw new MedusaError(
+        MedusaError.Types.INVALID_DATA,
+        `application_method.max_quantity is a required field for Promotion type of ${PromotionType.BUYGET}`
+      )
+    }
+
+    if (!isPresent(applyToQuantity)) {
+      throw new MedusaError(
+        MedusaError.Types.INVALID_DATA,
+        `application_method.apply_to_quantity is a required field for Promotion type of ${PromotionType.BUYGET}`
+      )
+    }
+
+    if (MathBN.lt(maxQuantity!, applyToQuantity!)) {
+      throw new MedusaError(
+        MedusaError.Types.INVALID_DATA,
+        `max_quantity (${maxQuantity}) must be greater than or equal to apply_to_quantity (${applyToQuantity}) for BUYGET promotions.`
       )
     }
   }
@@ -135,6 +158,16 @@ export function validateApplicationMethodAttributes(
       `application_method.max_quantity is required when application_method.allocation is '${allowedAllocationForQuantity.join(
         " OR "
       )}'`
+    )
+  }
+
+  if (
+    allocation === ApplicationMethodAllocation.ONCE &&
+    targetType === ApplicationMethodTargetType.ORDER
+  ) {
+    throw new MedusaError(
+      MedusaError.Types.INVALID_DATA,
+      `application_method.allocation 'once' is not compatible with target_type 'order'`
     )
   }
 }

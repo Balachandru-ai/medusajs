@@ -35,6 +35,10 @@ properties:
           type: string
           title: url
           description: The image's URL.
+        id:
+          type: string
+          title: id
+          description: The image's ID.
   thumbnail:
     type: string
     title: thumbnail
@@ -147,6 +151,9 @@ properties:
   metadata:
     type: object
     description: The product's metadata, can hold custom key-value pairs.
+    externalDocs:
+      url: https://docs.medusajs.com/api/admin#manage-metadata
+      description: Learn how to manage metadata
   external_id:
     type: string
     title: external_id

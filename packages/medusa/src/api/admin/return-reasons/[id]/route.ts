@@ -15,15 +15,15 @@ import {
 } from "@medusajs/framework/http"
 
 export const GET = async (
-  req: AuthenticatedMedusaRequest,
+  req: AuthenticatedMedusaRequest<HttpTypes.AdminReturnReasonParams>,
   res: MedusaResponse<AdminReturnReasonResponse>
 ) => {
-  const return_reason = await refetchEntity(
-    "return_reason",
-    req.params.id,
-    req.scope,
-    req.queryConfig.fields
-  )
+  const return_reason = await refetchEntity({
+    entity: "return_reason",
+    idOrFilter: req.params.id,
+    scope: req.scope,
+    fields: req.queryConfig.fields,
+  })
 
   if (!return_reason) {
     throw new MedusaError(
@@ -36,7 +36,10 @@ export const GET = async (
 }
 
 export const POST = async (
-  req: AuthenticatedMedusaRequest<HttpTypes.AdminUpdateReturnReason>,
+  req: AuthenticatedMedusaRequest<
+    HttpTypes.AdminUpdateReturnReason,
+    HttpTypes.AdminReturnReasonParams
+  >,
   res: MedusaResponse<AdminReturnReasonResponse>
 ) => {
   const workflow = updateReturnReasonsWorkflow(req.scope)

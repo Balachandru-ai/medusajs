@@ -193,6 +193,10 @@ export interface ProductVariantDTO {
    */
   manage_inventory: boolean
   /**
+   * The thumbnail of the product variant form the product images.
+   */
+  thumbnail: string | null
+  /**
    * Whether the product variant's requires shipping.
    */
   requires_shipping: boolean
@@ -234,6 +238,12 @@ export interface ProductVariantDTO {
    * @expandable
    */
   options: ProductOptionValueDTO[]
+  /**
+   * The associated product images.
+   *
+   * @expandable
+   */
+  images: ProductImageDTO[]
   /**
    * Holds custom data in key-value pairs.
    */
@@ -688,27 +698,30 @@ export interface FilterableProductProps
   /**
    * The status to filter products by
    */
-  status?: ProductStatus | ProductStatus[]
+  status?:
+    | ProductStatus
+    | ProductStatus[]
+    | OperatorMap<ProductStatus | ProductStatus[]>
   /**
    * The titles to filter products by.
    */
-  title?: string | string[]
+  title?: string | string[] | OperatorMap<string | string[]>
   /**
    * The handles to filter products by.
    */
-  handle?: string | string[]
+  handle?: string | string[] | OperatorMap<string | string[]>
   /**
    * The skus to filter products by.
    */
-  sku?: string | string[]
+  sku?: string | string[] | OperatorMap<string | string[]>
   /**
    * The IDs to filter products by.
    */
-  id?: string | string[]
+  id?: string | string[] | OperatorMap<string | string[]>
   /**
    * The external IDs to filter products by.
    */
-  external_id?: string | string[]
+  external_id?: string | string[] | OperatorMap<string | string[]>
   /**
    * Filters only or excluding gift card products
    */
@@ -736,27 +749,27 @@ export interface FilterableProductProps
   /**
    * Filter a product by the ID of the associated type
    */
-  type_id?: string | string[]
+  type_id?: string | string[] | OperatorMap<string | string[]>
   /**
    * Filter a product by the IDs of their associated categories.
    */
-  categories?: { id: OperatorMap<string> } | { id: OperatorMap<string[]> }
+  categories?: { id: string | string[] | OperatorMap<string | string[]> }
   /**
    * Filters a product by the IDs of their associated collections.
    */
-  collection_id?: string | string[] | OperatorMap<string>
+  collection_id?: string | string[] | OperatorMap<string | string[]>
   /**
    * Filters a product based on when it was created
    */
-  created_at?: OperatorMap<string>
+  created_at?: string | OperatorMap<string>
   /**
    * Filters a product based on when it was updated
    */
-  updated_at?: OperatorMap<string>
+  updated_at?: string | OperatorMap<string>
   /**
    * Filters soft-deleted products based on the date they were deleted at.
    */
-  deleted_at?: OperatorMap<string>
+  deleted_at?: string | OperatorMap<string>
 }
 
 /**
@@ -858,6 +871,10 @@ export interface FilterableProductOptionValueProps
    * The values to filter product option values by.
    */
   value?: string | string[]
+  /**
+   * The Product Option IDs to filter product option values by.
+   */
+  option_id?: string | string[]
 }
 
 /**
@@ -1395,6 +1412,10 @@ export interface UpdateProductVariantDTO {
    * The UPC of the product variant.
    */
   upc?: string | null
+  /**
+   * The thumbnail of the product variant.
+   */
+  thumbnail?: string | null
   /**
    * Whether the product variant can be ordered when it's out of stock.
    */

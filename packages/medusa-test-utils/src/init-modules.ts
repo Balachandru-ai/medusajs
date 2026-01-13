@@ -1,3 +1,4 @@
+import { logger } from "@medusajs/framework/logger"
 import {
   ExternalModuleDeclaration,
   InternalModuleDeclaration,
@@ -8,7 +9,6 @@ import {
   createPgConnection,
   promiseAll,
 } from "@medusajs/framework/utils"
-import { logger } from "@medusajs/framework/logger"
 
 export interface InitModulesOptions {
   injectedDependencies?: Record<string, unknown>
@@ -24,6 +24,7 @@ export interface InitModulesOptions {
   }
   joinerConfig?: ModuleJoinerConfig[]
   preventConnectionDestroyWarning?: boolean
+  cwd?: string
 }
 
 export async function initModules({
@@ -32,6 +33,7 @@ export async function initModules({
   modulesConfig,
   joinerConfig,
   preventConnectionDestroyWarning = false,
+  cwd,
 }: InitModulesOptions) {
   const moduleSdkImports = require("@medusajs/framework/modules-sdk")
 
@@ -55,19 +57,19 @@ export async function initModules({
     modulesConfig,
     servicesConfig: joinerConfig,
     injectedDependencies,
+    cwd,
   })
 
   await medusaApp.onApplicationStart()
 
   async function shutdown() {
-    if (shouldDestroyConnectionAutomatically) {
-      await medusaApp.onApplicationPrepareShutdown()
+    const promises: Promise<void>[] = []
 
-      await promiseAll([
-        (sharedPgConnection as any).context?.destroy(),
-        (sharedPgConnection as any).destroy(),
-        medusaApp.onApplicationShutdown(),
-      ])
+    if (shouldDestroyConnectionAutomatically) {
+      promises.push((sharedPgConnection as any).context?.destroy())
+      promises.push((sharedPgConnection as any).destroy())
+      promises.push(medusaApp.onApplicationPrepareShutdown())
+      promises.push(medusaApp.onApplicationShutdown())
     } else {
       if (!preventConnectionDestroyWarning) {
         logger.info(
@@ -75,6 +77,8 @@ export async function initModules({
         )
       }
     }
+
+    await promiseAll(promises)
     moduleSdkImports.MedusaModule.clearInstances()
   }
 

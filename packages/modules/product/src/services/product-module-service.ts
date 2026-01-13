@@ -20,11 +20,13 @@ import {
   ProductTag,
   ProductType,
   ProductVariant,
+  ProductVariantProductImage,
 } from "@models"
 import { ProductCategoryService } from "@services"
 
 import {
   arrayDifference,
+  createMedusaMikroOrmEventSubscriber,
   EmitEvents,
   generateEntityId,
   InjectManager,
@@ -37,11 +39,14 @@ import {
   MedusaContext,
   MedusaError,
   MedusaService,
+  MessageAggregator,
   Modules,
+  partitionArray,
   ProductStatus,
   removeUndefined,
   toHandle,
 } from "@medusajs/framework/utils"
+import { EntityManager } from "@mikro-orm/core"
 import { ProductRepository } from "../repositories"
 import {
   UpdateCategoryInput,
@@ -51,8 +56,9 @@ import {
   UpdateProductVariantInput,
   UpdateTagInput,
   UpdateTypeInput,
+  VariantImageInputArray,
 } from "../types"
-import { eventBuilders } from "../utils"
+import { eventBuilders } from "../utils/events"
 import { joinerConfig } from "./../joiner-config"
 
 type InjectedDependencies = {
@@ -68,6 +74,7 @@ type InjectedDependencies = {
   productTypeService: ModulesSdkTypes.IMedusaInternalService<any>
   productOptionService: ModulesSdkTypes.IMedusaInternalService<any>
   productOptionValueService: ModulesSdkTypes.IMedusaInternalService<any>
+  productVariantProductImageService: ModulesSdkTypes.IMedusaInternalService<any>
   [Modules.EVENT_BUS]?: IEventBusModuleService
 }
 
@@ -140,6 +147,9 @@ export default class ProductModuleService
   protected readonly productOptionValueService_: ModulesSdkTypes.IMedusaInternalService<
     InferEntityType<typeof ProductOptionValue>
   >
+  protected readonly productVariantProductImageService_: ModulesSdkTypes.IMedusaInternalService<
+    InferEntityType<typeof ProductVariantProductImage>
+  >
   protected readonly eventBusModuleService_?: IEventBusModuleService
 
   constructor(
@@ -155,6 +165,7 @@ export default class ProductModuleService
       productTypeService,
       productOptionService,
       productOptionValueService,
+      productVariantProductImageService,
       [Modules.EVENT_BUS]: eventBusModuleService,
     }: InjectedDependencies,
     protected readonly moduleDeclaration: InternalModuleDeclaration
@@ -174,6 +185,7 @@ export default class ProductModuleService
     this.productTypeService_ = productTypeService
     this.productOptionService_ = productOptionService
     this.productOptionValueService_ = productOptionValueService
+    this.productVariantProductImageService_ = productVariantProductImageService
     this.eventBusModuleService_ = eventBusModuleService
   }
 
@@ -188,11 +200,29 @@ export default class ProductModuleService
     config?: FindConfig<ProductTypes.ProductDTO>,
     @MedusaContext() sharedContext?: Context
   ): Promise<ProductTypes.ProductDTO> {
+    const relationsSet = new Set(config?.relations ?? [])
+    const shouldLoadVariantImages = relationsSet.has("variants.images")
+    if (shouldLoadVariantImages) {
+      relationsSet.add("variants")
+      relationsSet.add("images")
+    }
+
     const product = await this.productService_.retrieve(
       productId,
-      this.getProductFindConfig_(config),
+      this.getProductFindConfig_({
+        ...config,
+        relations: Array.from(relationsSet),
+      }),
       sharedContext
     )
+
+    if (shouldLoadVariantImages && product.variants && product.images) {
+      await this.buildVariantImagesFromProduct(
+        product.variants,
+        product.images,
+        sharedContext
+      )
+    }
 
     return this.baseRepository_.serialize<ProductTypes.ProductDTO>(product)
   }
@@ -204,11 +234,33 @@ export default class ProductModuleService
     config?: FindConfig<ProductTypes.ProductDTO>,
     sharedContext?: Context
   ): Promise<ProductTypes.ProductDTO[]> {
+    const relationsSet = new Set(config?.relations ?? [])
+    const shouldLoadVariantImages = relationsSet.has("variants.images")
+    if (shouldLoadVariantImages) {
+      relationsSet.add("variants")
+      relationsSet.add("images")
+    }
+
     const products = await this.productService_.list(
       filters,
-      this.getProductFindConfig_(config),
+      this.getProductFindConfig_({
+        ...config,
+        relations: Array.from(relationsSet),
+      }),
       sharedContext
     )
+
+    if (shouldLoadVariantImages) {
+      for (const product of products) {
+        if (product.variants && product.images) {
+          await this.buildVariantImagesFromProduct(
+            product.variants,
+            product.images,
+            sharedContext
+          )
+        }
+      }
+    }
 
     return this.baseRepository_.serialize<ProductTypes.ProductDTO[]>(products)
   }
@@ -220,11 +272,38 @@ export default class ProductModuleService
     config?: FindConfig<ProductTypes.ProductDTO>,
     sharedContext?: Context
   ): Promise<[ProductTypes.ProductDTO[], number]> {
+    const shouldLoadVariantImages =
+      config?.relations?.includes("variants.images")
+
+    // Ensure we load necessary relations
+    const relations = [...(config?.relations || [])]
+    if (shouldLoadVariantImages) {
+      if (!relations.includes("variants")) {
+        relations.push("variants")
+      }
+      if (!relations.includes("images")) {
+        relations.push("images")
+      }
+    }
+
     const [products, count] = await this.productService_.listAndCount(
       filters,
-      this.getProductFindConfig_(config),
+      this.getProductFindConfig_({ ...config, relations }),
       sharedContext
     )
+
+    if (shouldLoadVariantImages) {
+      for (const product of products) {
+        if (product.variants && product.images) {
+          await this.buildVariantImagesFromProduct(
+            product.variants,
+            product.images,
+            sharedContext
+          )
+        }
+      }
+    }
+
     const serializedProducts = await this.baseRepository_.serialize<
       ProductTypes.ProductDTO[]
     >(products)
@@ -330,11 +409,6 @@ export default class ProductModuleService
       sharedContext
     )
 
-    eventBuilders.createdProductVariant({
-      data: createdVariants,
-      sharedContext,
-    })
-
     return createdVariants
   }
 
@@ -365,11 +439,11 @@ export default class ProductModuleService
       (variant): variant is ProductTypes.CreateProductVariantDTO => !variant.id
     )
 
-    let created: InferEntityType<typeof ProductVariant>[] = []
+    let created: ProductTypes.ProductVariantDTO[] = []
     let updated: InferEntityType<typeof ProductVariant>[] = []
 
     if (forCreate.length) {
-      created = await this.createVariants_(forCreate, sharedContext)
+      created = await this.createProductVariants(forCreate, sharedContext)
     }
     if (forUpdate.length) {
       updated = await this.updateVariants_(forUpdate, sharedContext)
@@ -492,7 +566,7 @@ export default class ProductModuleService
       )
     }
 
-    const { entities: productVariants, performedActions } =
+    const { entities: productVariants } =
       await this.productVariantService_.upsertWithReplace(
         productVariantsWithOptions,
         {
@@ -500,19 +574,6 @@ export default class ProductModuleService
         },
         sharedContext
       )
-
-    eventBuilders.createdProductVariant({
-      data: performedActions.created[ProductVariant.name] ?? [],
-      sharedContext,
-    })
-    eventBuilders.updatedProductVariant({
-      data: performedActions.updated[ProductVariant.name] ?? [],
-      sharedContext,
-    })
-    eventBuilders.deletedProductVariant({
-      data: performedActions.deleted[ProductVariant.name] ?? [],
-      sharedContext,
-    })
 
     return productVariants
   }
@@ -543,11 +604,6 @@ export default class ProductModuleService
       ProductTypes.ProductTagDTO[]
     >(tags)
 
-    eventBuilders.createdProductTag({
-      data: createdTags,
-      sharedContext,
-    })
-
     return Array.isArray(data) ? createdTags : createdTags[0]
   }
 
@@ -560,12 +616,26 @@ export default class ProductModuleService
     sharedContext?: Context
   ): Promise<ProductTypes.ProductTagDTO>
 
-  @InjectTransactionManager()
+  @InjectManager()
   @EmitEvents()
   async upsertProductTags(
     data: ProductTypes.UpsertProductTagDTO[] | ProductTypes.UpsertProductTagDTO,
     @MedusaContext() sharedContext: Context = {}
   ): Promise<ProductTypes.ProductTagDTO[] | ProductTypes.ProductTagDTO> {
+    const tags = await this.upsertProductTags_(data, sharedContext)
+
+    const allTags = await this.baseRepository_.serialize<
+      ProductTypes.ProductTagDTO[] | ProductTypes.ProductTagDTO
+    >(Array.isArray(data) ? tags : tags[0])
+
+    return allTags
+  }
+
+  @InjectTransactionManager()
+  protected async upsertProductTags_(
+    data: ProductTypes.UpsertProductTagDTO[] | ProductTypes.UpsertProductTagDTO,
+    @MedusaContext() sharedContext: Context = {}
+  ): Promise<InferEntityType<typeof ProductTag>[]> {
     const input = Array.isArray(data) ? data : [data]
     const forUpdate = input.filter((tag): tag is UpdateTagInput => !!tag.id)
     const forCreate = input.filter(
@@ -577,25 +647,12 @@ export default class ProductModuleService
 
     if (forCreate.length) {
       created = await this.productTagService_.create(forCreate, sharedContext)
-      eventBuilders.createdProductTag({
-        data: created,
-        sharedContext,
-      })
     }
     if (forUpdate.length) {
       updated = await this.productTagService_.update(forUpdate, sharedContext)
-      eventBuilders.updatedProductTag({
-        data: updated,
-        sharedContext,
-      })
     }
 
-    const result = [...created, ...updated]
-    const allTags = await this.baseRepository_.serialize<
-      ProductTypes.ProductTagDTO[] | ProductTypes.ProductTagDTO
-    >(result)
-
-    return Array.isArray(data) ? allTags : allTags[0]
+    return [...created, ...updated]
   }
 
   // @ts-expect-error
@@ -646,11 +703,6 @@ export default class ProductModuleService
       ProductTypes.ProductTagDTO[]
     >(tags)
 
-    eventBuilders.updatedProductTag({
-      data: updatedTags,
-      sharedContext,
-    })
-
     return isString(idOrSelector) ? updatedTags[0] : updatedTags
   }
 
@@ -666,6 +718,7 @@ export default class ProductModuleService
   ): Promise<ProductTypes.ProductTypeDTO>
 
   @InjectManager()
+  @EmitEvents()
   // @ts-expect-error
   async createProductTypes(
     data:
@@ -693,13 +746,30 @@ export default class ProductModuleService
     sharedContext?: Context
   ): Promise<ProductTypes.ProductTypeDTO>
 
-  @InjectTransactionManager()
+  @InjectManager()
+  @EmitEvents()
   async upsertProductTypes(
     data:
       | ProductTypes.UpsertProductTypeDTO[]
       | ProductTypes.UpsertProductTypeDTO,
     @MedusaContext() sharedContext: Context = {}
   ): Promise<ProductTypes.ProductTypeDTO[] | ProductTypes.ProductTypeDTO> {
+    const types = await this.upsertProductTypes_(data, sharedContext)
+
+    const result = await this.baseRepository_.serialize<
+      ProductTypes.ProductTypeDTO[] | ProductTypes.ProductTypeDTO
+    >(types)
+
+    return Array.isArray(data) ? result : result[0]
+  }
+
+  @InjectTransactionManager()
+  protected async upsertProductTypes_(
+    data:
+      | ProductTypes.UpsertProductTypeDTO
+      | ProductTypes.UpsertProductTypeDTO[],
+    sharedContext?: Context
+  ): Promise<InferEntityType<typeof ProductType>[]> {
     const input = Array.isArray(data) ? data : [data]
     const forUpdate = input.filter((type): type is UpdateTypeInput => !!type.id)
     const forCreate = input.filter(
@@ -716,12 +786,7 @@ export default class ProductModuleService
       updated = await this.productTypeService_.update(forUpdate, sharedContext)
     }
 
-    const result = [...created, ...updated]
-    const allTypes = await this.baseRepository_.serialize<
-      ProductTypes.ProductTypeDTO[] | ProductTypes.ProductTypeDTO
-    >(result)
-
-    return Array.isArray(data) ? allTypes : allTypes[0]
+    return [...created, ...updated]
   }
 
   // @ts-expect-error
@@ -738,6 +803,7 @@ export default class ProductModuleService
   ): Promise<ProductTypes.ProductTypeDTO[]>
 
   @InjectManager()
+  @EmitEvents()
   // @ts-expect-error
   async updateProductTypes(
     idOrSelector: string | ProductTypes.FilterableProductTypeProps,
@@ -786,6 +852,7 @@ export default class ProductModuleService
   ): Promise<ProductTypes.ProductOptionDTO>
 
   @InjectManager()
+  @EmitEvents()
   // @ts-expect-error
   async createProductOptions(
     data:
@@ -841,6 +908,7 @@ export default class ProductModuleService
   ): Promise<ProductTypes.ProductOptionDTO>
 
   @InjectTransactionManager()
+  @EmitEvents()
   async upsertProductOptions(
     data:
       | ProductTypes.UpsertProductOptionDTO[]
@@ -887,6 +955,7 @@ export default class ProductModuleService
   ): Promise<ProductTypes.ProductOptionDTO[]>
 
   @InjectManager()
+  @EmitEvents()
   // @ts-expect-error
   async updateProductOptions(
     idOrSelector: string | ProductTypes.FilterableProductOptionProps,
@@ -1022,11 +1091,6 @@ export default class ProductModuleService
       ProductTypes.ProductCollectionDTO[]
     >(collections)
 
-    eventBuilders.createdProductCollection({
-      data: collections,
-      sharedContext,
-    })
-
     return Array.isArray(data) ? createdCollections : createdCollections[0]
   }
 
@@ -1060,7 +1124,7 @@ export default class ProductModuleService
     sharedContext?: Context
   ): Promise<ProductTypes.ProductCollectionDTO>
 
-  @InjectTransactionManager()
+  @InjectManager()
   @EmitEvents()
   async upsertProductCollections(
     data:
@@ -1070,6 +1134,24 @@ export default class ProductModuleService
   ): Promise<
     ProductTypes.ProductCollectionDTO[] | ProductTypes.ProductCollectionDTO
   > {
+    const collections = await this.upsertCollections_(data, sharedContext)
+
+    const serializedCollections = await this.baseRepository_.serialize<
+      ProductTypes.ProductCollectionDTO[]
+    >(collections)
+
+    return Array.isArray(data)
+      ? serializedCollections
+      : serializedCollections[0]
+  }
+
+  @InjectTransactionManager()
+  protected async upsertCollections_(
+    data:
+      | ProductTypes.UpsertProductCollectionDTO[]
+      | ProductTypes.UpsertProductCollectionDTO,
+    @MedusaContext() sharedContext: Context = {}
+  ): Promise<InferEntityType<typeof ProductCollection>[]> {
     const input = Array.isArray(data) ? data : [data]
     const forUpdate = input.filter(
       (collection): collection is UpdateCollectionInput => !!collection.id
@@ -1090,26 +1172,7 @@ export default class ProductModuleService
       updated = await this.updateCollections_(forUpdate, sharedContext)
     }
 
-    const result = [...created, ...updated]
-    const allCollections = await this.baseRepository_.serialize<
-      ProductTypes.ProductCollectionDTO[] | ProductTypes.ProductCollectionDTO
-    >(result)
-
-    if (created.length) {
-      eventBuilders.createdProductCollection({
-        data: created,
-        sharedContext,
-      })
-    }
-
-    if (updated.length) {
-      eventBuilders.updatedProductCollection({
-        data: updated,
-        sharedContext,
-      })
-    }
-
-    return Array.isArray(data) ? allCollections : allCollections[0]
+    return [...created, ...updated]
   }
 
   // @ts-expect-error
@@ -1164,11 +1227,6 @@ export default class ProductModuleService
     const updatedCollections = await this.baseRepository_.serialize<
       ProductTypes.ProductCollectionDTO[]
     >(collections)
-
-    eventBuilders.updatedProductCollection({
-      data: updatedCollections,
-      sharedContext,
-    })
 
     return isString(idOrSelector) ? updatedCollections[0] : updatedCollections
   }
@@ -1282,6 +1340,7 @@ export default class ProductModuleService
       ProductTypes.ProductCategoryDTO[]
     >(categories)
 
+    // TODO: Same as the update categories, for some reason I cant get the tree repository update
     eventBuilders.createdProductCategory({
       data: createdCategories,
       sharedContext,
@@ -1299,7 +1358,7 @@ export default class ProductModuleService
     sharedContext?: Context
   ): Promise<ProductTypes.ProductCategoryDTO>
 
-  @InjectTransactionManager()
+  @InjectManager()
   @EmitEvents()
   async upsertProductCategories(
     data:
@@ -1309,11 +1368,27 @@ export default class ProductModuleService
   ): Promise<
     ProductTypes.ProductCategoryDTO[] | ProductTypes.ProductCategoryDTO
   > {
+    const categories = await this.upsertProductCategories_(data, sharedContext)
+
+    const serializedCategories = await this.baseRepository_.serialize<
+      ProductTypes.ProductCategoryDTO[]
+    >(categories)
+
+    return Array.isArray(data) ? serializedCategories : serializedCategories[0]
+  }
+
+  @InjectTransactionManager()
+  protected async upsertProductCategories_(
+    data:
+      | ProductTypes.UpsertProductCategoryDTO[]
+      | ProductTypes.UpsertProductCategoryDTO,
+    @MedusaContext() sharedContext: Context = {}
+  ): Promise<InferEntityType<typeof ProductCategory>[]> {
     const input = Array.isArray(data) ? data : [data]
     const forUpdate = input.filter(
       (category): category is UpdateCategoryInput => !!category.id
     )
-    const forCreate = input.filter(
+    let forCreate = input.filter(
       (category): category is ProductTypes.CreateProductCategoryDTO =>
         !category.id
     )
@@ -1322,6 +1397,11 @@ export default class ProductModuleService
     let updated: InferEntityType<typeof ProductCategory>[] = []
 
     if (forCreate.length) {
+      forCreate = forCreate.map((productCategory) => {
+        productCategory.handle ??= kebabCase(productCategory.name)
+        return productCategory
+      })
+
       created = await this.productCategoryService_.create(
         forCreate,
         sharedContext
@@ -1334,25 +1414,22 @@ export default class ProductModuleService
       )
     }
 
-    const createdCategories = await this.baseRepository_.serialize<
-      ProductTypes.ProductCategoryDTO[]
-    >(created)
-    const updatedCategories = await this.baseRepository_.serialize<
-      ProductTypes.ProductCategoryDTO[]
-    >(updated)
+    // TODO: Same as the update categories, for some reason I cant get the tree repository update
+    // event. I ll need to investigate this
+    if (created.length) {
+      eventBuilders.createdProductCategory({
+        data: created,
+        sharedContext,
+      })
+    }
+    if (updated.length) {
+      eventBuilders.updatedProductCategory({
+        data: updated,
+        sharedContext,
+      })
+    }
 
-    eventBuilders.createdProductCategory({
-      data: createdCategories,
-      sharedContext,
-    })
-
-    eventBuilders.updatedProductCategory({
-      data: updatedCategories,
-      sharedContext,
-    })
-
-    const result = [...createdCategories, ...updatedCategories]
-    return Array.isArray(data) ? result : result[0]
+    return [...created, ...updated]
   }
 
   // @ts-expect-error
@@ -1376,8 +1453,36 @@ export default class ProductModuleService
     data: ProductTypes.UpdateProductCategoryDTO,
     @MedusaContext() sharedContext: Context = {}
   ): Promise<
-    ProductTypes.ProductCategoryDTO[] | ProductTypes.ProductCategoryDTO
+    ProductTypes.ProductCategoryDTO | ProductTypes.ProductCategoryDTO[]
   > {
+    const categories = await this.updateProductCategories_(
+      idOrSelector,
+      data,
+      sharedContext
+    )
+
+    const serializedCategories = await this.baseRepository_.serialize<
+      ProductTypes.ProductCategoryDTO[]
+    >(categories)
+
+    // TODO: for some reason I cant get the tree repository update
+    // event. I ll need to investigate this
+    eventBuilders.updatedProductCategory({
+      data: serializedCategories,
+      sharedContext,
+    })
+
+    return isString(idOrSelector)
+      ? serializedCategories[0]
+      : serializedCategories
+  }
+
+  @InjectTransactionManager()
+  protected async updateProductCategories_(
+    idOrSelector: string | ProductTypes.FilterableProductTypeProps,
+    data: ProductTypes.UpdateProductCategoryDTO,
+    @MedusaContext() sharedContext: Context = {}
+  ): Promise<InferEntityType<typeof ProductCategory>[]> {
     let normalizedInput: UpdateCategoryInput[] = []
     if (isString(idOrSelector)) {
       // Check if the type exists in the first place
@@ -1405,16 +1510,7 @@ export default class ProductModuleService
       sharedContext
     )
 
-    const updatedCategories = await this.baseRepository_.serialize<
-      ProductTypes.ProductCategoryDTO[]
-    >(categories)
-
-    eventBuilders.updatedProductCategory({
-      data: updatedCategories,
-      sharedContext,
-    })
-
-    return isString(idOrSelector) ? updatedCategories[0] : updatedCategories
+    return categories
   }
 
   //@ts-expect-error
@@ -1442,11 +1538,6 @@ export default class ProductModuleService
       ProductTypes.ProductDTO[]
     >(products)
 
-    eventBuilders.createdProduct({
-      data: createdProducts,
-      sharedContext,
-    })
-
     return Array.isArray(data) ? createdProducts : createdProducts[0]
   }
 
@@ -1473,11 +1564,11 @@ export default class ProductModuleService
       (product): product is ProductTypes.CreateProductDTO => !product.id
     )
 
-    let created: InferEntityType<typeof Product>[] = []
+    let created: ProductTypes.ProductDTO[] = []
     let updated: InferEntityType<typeof Product>[] = []
 
     if (forCreate.length) {
-      created = await this.createProducts_(forCreate, sharedContext)
+      created = await this.createProducts(forCreate, sharedContext)
     }
     if (forUpdate.length) {
       updated = await this.updateProducts_(forUpdate, sharedContext)
@@ -1487,20 +1578,6 @@ export default class ProductModuleService
     const allProducts = await this.baseRepository_.serialize<
       ProductTypes.ProductDTO[] | ProductTypes.ProductDTO
     >(result)
-
-    if (created.length) {
-      eventBuilders.createdProduct({
-        data: created,
-        sharedContext,
-      })
-    }
-
-    if (updated.length) {
-      eventBuilders.updatedProduct({
-        data: updated,
-        sharedContext,
-      })
-    }
 
     return Array.isArray(data) ? allProducts : allProducts[0]
   }
@@ -1550,11 +1627,6 @@ export default class ProductModuleService
     const updatedProducts = await this.baseRepository_.serialize<
       ProductTypes.ProductDTO[]
     >(products)
-
-    eventBuilders.updatedProduct({
-      data: updatedProducts,
-      sharedContext,
-    })
 
     return isString(idOrSelector) ? updatedProducts[0] : updatedProducts
   }
@@ -1656,20 +1728,50 @@ export default class ProductModuleService
     data: UpdateProductInput[],
     @MedusaContext() sharedContext: Context = {}
   ): Promise<InferEntityType<typeof Product>[]> {
+    // We have to do that manually because this method is bypassing the product service and goes
+    // directly to the custom product repository
+    const manager = (sharedContext.transactionManager ??
+      sharedContext.manager) as EntityManager
+    const subscriber = createMedusaMikroOrmEventSubscriber(
+      ["updateProducts_"],
+      this as unknown as ReturnType<typeof MedusaService<any>>
+    )
+
+    if (manager && subscriber) {
+      manager
+        .getEventManager()
+        .registerSubscriber(new subscriber(sharedContext))
+    }
+
+    const productIds = data.map((d) => d.id).filter(Boolean)
+
+    const originalProducts = await this.productService_.list(
+      {
+        id: productIds,
+      },
+      {
+        relations: ["options", "options.values", "tags"],
+        take: productIds.length,
+      },
+      sharedContext
+    )
+
     const normalizedProducts = await this.normalizeUpdateProductInput(
       data,
-      sharedContext
+      originalProducts
     )
 
     for (const product of normalizedProducts) {
       this.validateProductUpdatePayload(product)
     }
 
-    return this.productRepository_.deepUpdate(
+    const updatedProducts = await this.productRepository_.deepUpdate(
       normalizedProducts,
       ProductModuleService.validateVariantOptions,
       sharedContext
     )
+
+    return updatedProducts
   }
 
   // @ts-expect-error
@@ -1684,14 +1786,22 @@ export default class ProductModuleService
     data: ProductTypes.UpdateProductOptionValueDTO,
     sharedContext?: Context
   ): Promise<ProductTypes.ProductOptionValueDTO[]>
+
+  @InjectManager()
+  @EmitEvents()
   // @ts-expect-error
   async updateProductOptionValues(
     idOrSelector: string | FilterableProductOptionValueProps,
     data: ProductTypes.UpdateProductOptionValueDTO,
-    sharedContext: Context = {}
+    @MedusaContext() sharedContext: Context = {}
   ): Promise<
     ProductTypes.ProductOptionValueDTO | ProductTypes.ProductOptionValueDTO[]
   > {
+    // TODO: There is a missmatch in the API which lead to function with different number of
+    // arguments. Therefore, applying the MedusaContext() decorator to the function will not work
+    // because the context arg index will differ from method to method.
+    sharedContext.messageAggregator ??= new MessageAggregator()
+
     let normalizedInput: ({
       id: string
     } & ProductTypes.UpdateProductOptionValueDTO)[] = []
@@ -1717,7 +1827,7 @@ export default class ProductModuleService
       }))
     }
 
-    const productOptionValues = await super.updateProductOptionValues(
+    const productOptionValues = await this.updateProductOptionValues_(
       normalizedInput,
       sharedContext
     )
@@ -1726,14 +1836,43 @@ export default class ProductModuleService
       ProductTypes.ProductOptionValueDTO[]
     >(productOptionValues)
 
-    eventBuilders.updatedProductOptionValue({
-      data: updatedProductOptionValues,
-      sharedContext: sharedContext,
-    })
+    // TODO: Because of the wrong method override, we have to compensate to prevent breaking
+    // changes right now
+    const groupedEvents = sharedContext.messageAggregator!.getMessages()
+    if (
+      Object.values(groupedEvents).flat().length > 0 &&
+      this.eventBusModuleService_
+    ) {
+      const promises: Promise<void>[] = []
+      for (const group of Object.keys(groupedEvents)) {
+        promises.push(
+          this.eventBusModuleService_!.emit(groupedEvents[group], {
+            internal: true,
+          })
+        )
+      }
+
+      await Promise.all(promises)
+
+      sharedContext.messageAggregator.clearMessages()
+    }
 
     return isString(idOrSelector)
       ? updatedProductOptionValues[0]
       : updatedProductOptionValues
+  }
+
+  @InjectTransactionManager()
+  protected async updateProductOptionValues_(
+    normalizedInput: ({
+      id: string
+    } & ProductTypes.UpdateProductOptionValueDTO)[],
+    @MedusaContext() sharedContext: Context = {}
+  ): Promise<InferEntityType<typeof ProductOptionValue>[]> {
+    return await this.productOptionValueService_.update(
+      normalizedInput,
+      sharedContext
+    )
   }
 
   /**
@@ -1804,8 +1943,7 @@ export default class ProductModuleService
     const products_ = Array.isArray(products) ? products : [products]
 
     const normalizedProducts = (await this.normalizeUpdateProductInput(
-      products_ as UpdateProductInput[],
-      sharedContext
+      products_ as UpdateProductInput[]
     )) as ProductTypes.CreateProductDTO[]
 
     for (const productData of normalizedProducts) {
@@ -1819,6 +1957,21 @@ export default class ProductModuleService
 
       if (!productData.thumbnail && productData.images?.length) {
         productData.thumbnail = productData.images[0].url
+      }
+
+      // TODO: these props are typed as number, the model expect a string, the API expect number etc
+      // There is some inconsistency here, we should fix it
+      if ("weight" in productData) {
+        productData.weight = productData.weight?.toString() as any
+      }
+      if ("length" in productData) {
+        productData.length = productData.length?.toString() as any
+      }
+      if ("height" in productData) {
+        productData.height = productData.height?.toString() as any
+      }
+      if ("width" in productData) {
+        productData.width = productData.width?.toString() as any
       }
 
       if (productData.images?.length) {
@@ -1838,6 +1991,12 @@ export default class ProductModuleService
     ) as TOutput
   }
 
+  /**
+   * Normalizes the input for the update product input
+   * @param products - The products to normalize
+   * @param originalProducts - The original products to use for the normalization (must include options and option values relations)
+   * @returns The normalized products
+   */
   protected async normalizeUpdateProductInput<
     T extends UpdateProductInput | UpdateProductInput[],
     TOutput = T extends UpdateProductInput[]
@@ -1845,7 +2004,7 @@ export default class ProductModuleService
       : UpdateProductInput
   >(
     products: T,
-    @MedusaContext() sharedContext: Context = {}
+    originalProducts?: InferEntityType<typeof Product>[]
   ): Promise<TOutput> {
     const products_ = Array.isArray(products) ? products : [products]
     const productsIds = products_.map((p) => p.id).filter(Boolean)
@@ -1853,11 +2012,13 @@ export default class ProductModuleService
     let dbOptions: InferEntityType<typeof ProductOption>[] = []
 
     if (productsIds.length) {
-      dbOptions = await this.productOptionService_.list(
-        { product_id: productsIds },
-        { relations: ["values"] },
-        sharedContext
-      )
+      // Re map options to handle non serialized data as well
+      dbOptions =
+        originalProducts
+          ?.flatMap((originalProduct) =>
+            originalProduct.options.map((option) => option)
+          )
+          .filter(Boolean) ?? []
     }
 
     const normalizedProducts: UpdateProductInput[] = []
@@ -1871,7 +2032,9 @@ export default class ProductModuleService
       if (productData.options?.length) {
         ;(productData as any).options = productData.options?.map((option) => {
           const dbOption = dbOptions.find(
-            (o) => o.title === option.title && o.product_id === productData.id
+            (o) =>
+              (o.title === option.title || o.id === option.id) &&
+              o.product_id === productData.id
           )
           return {
             title: option.title,
@@ -2100,6 +2263,313 @@ export default class ProductModuleService
             MedusaError.Types.INVALID_DATA,
             `Variant "${variant.title}" has same combination of option values as "${compareVariant.title}".`
           )
+        }
+      }
+    }
+  }
+
+  @InjectManager()
+  // @ts-ignore
+  async listProductVariants(
+    filters?: ProductTypes.FilterableProductVariantProps,
+    config?: FindConfig<ProductTypes.ProductVariantDTO>,
+    @MedusaContext() sharedContext: Context = {}
+  ): Promise<ProductTypes.ProductVariantDTO[]> {
+    const shouldLoadImages = config?.relations?.includes("images")
+
+    const relations = [...(config?.relations || [])]
+    if (shouldLoadImages) {
+      relations.push("product.images")
+    }
+
+    const variants = await this.productVariantService_.list(
+      filters,
+      {
+        ...config,
+        relations,
+      },
+      sharedContext
+    )
+
+    if (shouldLoadImages) {
+      // Get variant images for all variants
+      const variantImagesMap = await this.getVariantImages(
+        variants,
+        sharedContext
+      )
+
+      for (const variant of variants) {
+        variant.images = variantImagesMap.get(variant.id) || []
+      }
+    }
+
+    return this.baseRepository_.serialize<ProductTypes.ProductVariantDTO[]>(
+      variants
+    )
+  }
+
+  @InjectManager()
+  // @ts-ignore
+  async listAndCountProductVariants(
+    filters?: ProductTypes.FilterableProductVariantProps,
+    config?: FindConfig<ProductTypes.ProductVariantDTO>,
+    @MedusaContext() sharedContext: Context = {}
+  ): Promise<[ProductTypes.ProductVariantDTO[], number]> {
+    const shouldLoadImages = config?.relations?.includes("images")
+
+    const relations = [...(config?.relations || [])]
+    if (shouldLoadImages) {
+      relations.push("product.images")
+    }
+
+    const [variants, count] = await this.productVariantService_.listAndCount(
+      filters,
+      {
+        ...config,
+        relations,
+      },
+      sharedContext
+    )
+
+    if (shouldLoadImages) {
+      // Get variant images for all variants
+      const variantImagesMap = await this.getVariantImages(
+        variants,
+        sharedContext
+      )
+
+      for (const variant of variants) {
+        variant.images = variantImagesMap.get(variant.id) || []
+      }
+    }
+
+    const serializedVariants = await this.baseRepository_.serialize<
+      ProductTypes.ProductVariantDTO[]
+    >(variants)
+    return [serializedVariants, count]
+  }
+
+  @InjectManager()
+  // @ts-ignore
+  async retrieveProductVariant(
+    id: string,
+    config?: FindConfig<any>,
+    @MedusaContext() sharedContext: Context = {}
+  ): Promise<any> {
+    const shouldLoadImages = config?.relations?.includes("images")
+
+    const relations = [...(config?.relations || [])]
+    if (shouldLoadImages) {
+      relations.push("images", "product", "product.images")
+    }
+
+    const variant = await this.productVariantService_.retrieve(
+      id,
+      {
+        ...config,
+        relations,
+      },
+      sharedContext
+    )
+
+    if (shouldLoadImages) {
+      const variantImages = await this.getVariantImages(
+        [variant],
+        sharedContext
+      )
+      variant.images = variantImages.get(id) || []
+    }
+
+    return this.baseRepository_.serialize(variant)
+  }
+
+  @InjectManager()
+  async addImageToVariant(
+    data: VariantImageInputArray,
+    @MedusaContext() sharedContext: Context = {}
+  ): Promise<{ id: string }[]> {
+    const productVariantProductImage = await this.addImageToVariant_(
+      data,
+      sharedContext
+    )
+
+    return productVariantProductImage as { id: string }[]
+  }
+
+  @InjectTransactionManager()
+  protected async addImageToVariant_(
+    data: VariantImageInputArray,
+    @MedusaContext() sharedContext: Context = {}
+  ): Promise<{ id: string } | { id: string }[]> {
+    // TODO: consider validation that image and variant are on the same product
+
+    const productVariantProductImage =
+      await this.productVariantProductImageService_.create(data, sharedContext)
+
+    return (
+      productVariantProductImage as unknown as InferEntityType<
+        typeof ProductVariantProductImage
+      >[]
+    ).map((vi) => ({ id: vi.id }))
+  }
+
+  @InjectManager()
+  async removeImageFromVariant(
+    data: VariantImageInputArray,
+    @MedusaContext() sharedContext: Context = {}
+  ): Promise<void> {
+    await this.removeImageFromVariant_(data, sharedContext)
+  }
+
+  @InjectTransactionManager()
+  protected async removeImageFromVariant_(
+    data: VariantImageInputArray,
+    @MedusaContext() sharedContext: Context = {}
+  ): Promise<void> {
+    const pairs = Array.isArray(data) ? data : [data]
+    const productVariantProductImages =
+      await this.productVariantProductImageService_.list({
+        $or: pairs,
+      })
+
+    await this.productVariantProductImageService_.delete(
+      productVariantProductImages.map((p) => p.id as string),
+      sharedContext
+    )
+  }
+
+  @InjectManager()
+  private async getVariantImages(
+    variants: Pick<
+      InferEntityType<typeof ProductVariant>,
+      "id" | "product_id"
+    >[],
+    context: Context = {}
+  ): Promise<Map<string, InferEntityType<typeof ProductImage>[]>> {
+    if (variants.length === 0) {
+      return new Map()
+    }
+
+    // Create lookup maps for efficient processing
+    const uniqueProductIds = new Set<string>()
+
+    // Build lookup maps
+    for (const variant of variants) {
+      if (variant.product_id) {
+        uniqueProductIds.add(variant.product_id)
+      }
+    }
+
+    const allProductImages = (await this.listProductImages(
+      { product_id: Array.from(uniqueProductIds) },
+      {
+        relations: ["variants"],
+      },
+      context
+    )) as (ProductTypes.ProductImageDTO & {
+      product_id: string
+      variants: InferEntityType<typeof ProductVariant>[]
+    })[]
+
+    // all product images
+    const imagesByProductId = new Map<string, typeof allProductImages>()
+    // variant specific images
+    const variantSpecificImageIds = new Map<string, Set<string>>()
+
+    // Single pass to build both lookup maps
+    for (const img of allProductImages) {
+      // Group by product_id
+      if (!imagesByProductId.has(img.product_id)) {
+        imagesByProductId.set(img.product_id, [])
+      }
+      imagesByProductId.get(img.product_id)!.push(img)
+
+      // Track variant-specific images
+      if (img.variants.length > 0) {
+        for (const variant of img.variants) {
+          if (!variantSpecificImageIds.has(variant.id)) {
+            variantSpecificImageIds.set(variant.id, new Set())
+          }
+          variantSpecificImageIds.get(variant.id)!.add(img.id || "")
+        }
+      }
+    }
+
+    const result = new Map<string, InferEntityType<typeof ProductImage>[]>()
+
+    for (const variant of variants) {
+      const productId = variant.product_id!
+
+      const productImages = imagesByProductId.get(productId) || []
+      const specificImageIds =
+        variantSpecificImageIds.get(variant.id) || new Set()
+
+      const variantImages = productImages.filter((img) => {
+        // general product image
+        if (!img.variants.length) {
+          return true
+        }
+        // Check if this image is specifically associated with this variant
+        return specificImageIds.has(img.id || "")
+      })
+
+      result.set(
+        variant.id,
+        variantImages as InferEntityType<typeof ProductImage>[]
+      )
+    }
+
+    return result
+  }
+
+  private async buildVariantImagesFromProduct(
+    variants: InferEntityType<typeof ProductVariant>[],
+    productImages: InferEntityType<typeof ProductImage>[],
+    sharedContext: Context = {}
+  ): Promise<void> {
+    // Create a clean map of images without problematic collections
+    const imagesMap = new Map<string, InferEntityType<typeof ProductImage>>()
+    for (const img of productImages) {
+      imagesMap.set(img.id, img)
+    }
+
+    const variantIds = variants.map((v) => v.id)
+    const variantImageRelations =
+      await this.productVariantProductImageService_.list(
+        { variant_id: variantIds },
+        { select: ["variant_id", "image_id"] },
+        sharedContext
+      )
+
+    const variantIdImageIdsMap = new Map<string, string[]>()
+    const imageIdVariantIdsMap = new Map<string, string[]>()
+
+    // build both lookup
+    for (const relation of variantImageRelations) {
+      if (!variantIdImageIdsMap.has(relation.variant_id)) {
+        variantIdImageIdsMap.set(relation.variant_id, [])
+      }
+      variantIdImageIdsMap.get(relation.variant_id)!.push(relation.image_id)
+
+      if (!imageIdVariantIdsMap.has(relation.image_id)) {
+        imageIdVariantIdsMap.set(relation.image_id, [])
+      }
+      imageIdVariantIdsMap.get(relation.image_id)!.push(relation.variant_id)
+    }
+
+    const [generalImages, variantImages] = partitionArray(
+      productImages,
+      (img) => !imageIdVariantIdsMap.has(img.id) // if image doesn't have any variants, it is a general image
+    )
+
+    for (const variant of variants) {
+      const variantImageIds = variantIdImageIdsMap.get(variant.id) || []
+
+      variant.images = [...generalImages]
+
+      for (const image of variantImages) {
+        if (variantImageIds.includes(image.id)) {
+          variant.images.push(image)
         }
       }
     }

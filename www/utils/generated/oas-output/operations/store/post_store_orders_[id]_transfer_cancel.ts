@@ -20,6 +20,16 @@
  *       type: string
  *       externalDocs:
  *         url: https://docs.medusajs.com/api/store#publishable-api-key
+ *   - name: x-medusa-locale
+ *     in: header
+ *     description: The locale in BCP 47 format to retrieve localized content.
+ *     required: false
+ *     schema:
+ *       type: string
+ *       example: en-US
+ *       externalDocs:
+ *         url: https://docs.medusajs.com/resources/commerce-modules/translation/storefront
+ *         description: Learn more in the Serve Translations in Storefront guide.
  *   - name: fields
  *     in: query
  *     description: |-
@@ -34,6 +44,16 @@
  *         fields. Without prefix it will replace the entire default fields.
  *       externalDocs:
  *         url: "#select-fields-and-relations"
+ *   - name: locale
+ *     in: query
+ *     description: The locale in BCP 47 format to retrieve localized content.
+ *     required: false
+ *     schema:
+ *       type: string
+ *       example: en-US
+ *       externalDocs:
+ *         url: https://docs.medusajs.com/resources/commerce-modules/translation/storefront
+ *         description: Learn more in the Serve Translations in Storefront guide.
  * x-codeSamples:
  *   - lang: JavaScript
  *     label: JS SDK
@@ -52,6 +72,7 @@
  *         publishableKey: process.env.NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY,
  *       })
  * 
+ *       // TODO must be authenticated as the customer to cancel the order transfer
  *       sdk.store.order.cancelTransfer(
  *         "order_123",
  *         {},
@@ -66,6 +87,7 @@
  *     label: cURL
  *     source: |-
  *       curl -X POST '{backend_url}/store/orders/{id}/transfer/cancel' \
+ *       -H 'Authorization: Bearer {jwt_token}' \
  *       -H 'x-publishable-api-key: {your_publishable_api_key}'
  * tags:
  *   - Orders

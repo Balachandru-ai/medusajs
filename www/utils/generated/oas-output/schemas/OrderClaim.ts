@@ -58,13 +58,16 @@
  *     type: array
  *     description: The claim's transactions.
  *     externalDocs:
- *       url: https://docs.medusajs.com/v2/resources/commerce-modules/order/transactions
+ *       url: https://docs.medusajs.com/resources/commerce-modules/order/transactions
  *       description: Learn more about transactions of orders and associated models.
  *     items:
  *       $ref: "#/components/schemas/OrderTransaction"
  *   metadata:
  *     type: object
  *     description: The claim's metadata, used to store custom key-value pairs.
+ *     externalDocs:
+ *       url: https://docs.medusajs.com/api/store#manage-metadata
+ *       description: Learn how to manage metadata
  *   created_at:
  *     type: string
  *     format: date-time

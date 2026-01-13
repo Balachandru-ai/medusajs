@@ -12,24 +12,7 @@
  *     type: array
  *     description: The store's supported currencies.
  *     items:
- *       type: object
- *       description: A store currency.
- *       required:
- *         - currency_code
- *       properties:
- *         currency_code:
- *           type: string
- *           title: currency_code
- *           description: The currency's code.
- *           example: usd
- *         is_default:
- *           type: boolean
- *           title: is_default
- *           description: Whether the currency is the default in the store.
- *         is_tax_inclusive:
- *           type: boolean
- *           title: is_tax_inclusive
- *           description: Whether prices using this currency are tax inclusive.
+ *       $ref: "#/components/schemas/AdminUpdateStoreSupportedCurrency"
  *   default_sales_channel_id:
  *     type: string
  *     title: default_sales_channel_id
@@ -45,6 +28,14 @@
  *   metadata:
  *     type: object
  *     description: The store's metadata, can hold custom key-value pairs.
+ *     externalDocs:
+ *       url: https://docs.medusajs.com/api/admin#manage-metadata
+ *       description: Learn how to manage metadata
+ *   supported_locales:
+ *     type: array
+ *     description: The store's supported locales.
+ *     items:
+ *       $ref: "#/components/schemas/AdminUpdateStoreSupportedLocale"
  * 
 */
 

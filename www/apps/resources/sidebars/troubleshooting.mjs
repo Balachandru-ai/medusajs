@@ -28,6 +28,11 @@ export const troubleshootingSidebar = [
         path: "/troubleshooting/general-errors",
         title: "General Errors",
       },
+      {
+        type: "link",
+        path: "/troubleshooting/pnpm",
+        title: "pnpm Errors",
+      },
     ],
   },
   {
@@ -90,7 +95,7 @@ export const troubleshootingSidebar = [
           {
             type: "link",
             path: "/troubleshooting/query/filter-linked",
-            title: "Not Exising Property",
+            title: "Not Existing Property",
           },
           {
             type: "link",
@@ -98,6 +103,16 @@ export const troubleshootingSidebar = [
             title: "service.list Error",
           },
         ],
+      },
+      {
+        type: "link",
+        path: "/troubleshooting/scheduled-job-not-running",
+        title: "Scheduled Job Not Running",
+      },
+      {
+        type: "link",
+        path: "/troubleshooting/subscribers/not-working",
+        title: "Subscribers Not Working",
       },
       {
         type: "link",
@@ -149,6 +164,11 @@ export const troubleshootingSidebar = [
         path: "/troubleshooting/s3",
         title: "S3 Module Provider Errors",
       },
+      {
+        type: "link",
+        path: "/troubleshooting/payment",
+        title: "Payment Provider Errors",
+      },
     ],
   },
   {
@@ -185,7 +205,7 @@ export const troubleshootingSidebar = [
           {
             type: "link",
             path: "/troubleshooting/nextjs-starter-rewrites",
-            title: "Cloud Run Error",
+            title: "Google Cloud Run Error",
           },
         ],
       },

@@ -1,4 +1,4 @@
-import { logger } from "@medusajs/framework/logger"
+import { logger } from "@medusajs/framework"
 import { FileSystem } from "@medusajs/framework/utils"
 import { join } from "path"
 import main from "../../generate"

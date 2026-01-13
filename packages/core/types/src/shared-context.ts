@@ -55,6 +55,11 @@ export type Context<TManager = unknown> = {
   transactionId?: string
 
   /**
+   * A string indicating the ID of the current run.
+   */
+  runId?: string
+
+  /**
    * An instance of a message aggregator, which is used to aggregate messages to be emitted at a later point.
    */
   messageAggregator?: IMessageAggregator
@@ -83,4 +88,10 @@ export type Context<TManager = unknown> = {
    * A boolean value indicating whether the current workflow execution is being cancelled.
    */
   isCancelling?: boolean
+
+  /**
+   * Weither or not a sub workflow cancellation is being triggered from a parent step.
+   * If true, the parent step will not be triggered by the sub workflow.
+   */
+  cancelingFromParentStep?: boolean
 }

@@ -1,4 +1,5 @@
 import {
+  ConfigModule,
   Constructor,
   IModuleService,
   InternalModuleDeclaration,
@@ -16,9 +17,12 @@ import {
   ContainerRegistrationKeys,
   createMedusaContainer,
   defineJoinerConfig,
+  discoverAndRegisterFeatureFlags,
   DmlEntity,
   dynamicImport,
+  FeatureFlag,
   getProviderRegistrationKey,
+  isFileSkipped,
   isString,
   MedusaModuleProviderType,
   MedusaModuleType,
@@ -27,7 +31,7 @@ import {
   stringifyCircular,
   toMikroOrmEntities,
 } from "@medusajs/utils"
-import { asFunction, asValue } from "awilix"
+import { asFunction, asValue } from "@medusajs/deps/awilix"
 import { statSync } from "fs"
 import { readdir } from "fs/promises"
 import { dirname, join, resolve } from "path"
@@ -41,7 +45,24 @@ type ModuleResource = {
   normalizedPath: string
 }
 
+type LoadInternalArgs = {
+  container: MedusaContainer
+  resolution: ModuleResolution
+  logger: Logger
+  migrationOnly?: boolean
+  schemaOnly?: boolean
+  loaderOnly?: boolean
+}
+
 type MigrationFunction = (
+  options: LoaderOptions<any>,
+  moduleDeclaration?: InternalModuleDeclaration
+) => Promise<{ name: string; path: string }[]>
+type RevertMigrationFunction = (
+  options: LoaderOptions<any> & { migrationNames?: string[] },
+  moduleDeclaration?: InternalModuleDeclaration
+) => Promise<void>
+type GenerateMigrationFunction = (
   options: LoaderOptions<any>,
   moduleDeclaration?: InternalModuleDeclaration
 ) => Promise<void>
@@ -103,16 +124,10 @@ export async function resolveModuleExports({
 }
 
 async function loadInternalProvider(
-  args: {
-    container: MedusaContainer
-    resolution: ModuleResolution
-    logger: Logger
-    migrationOnly?: boolean
-    loaderOnly?: boolean
-  },
+  args: LoadInternalArgs,
   providers: ModuleProvider[]
 ): Promise<{ error?: Error } | void> {
-  const { container, resolution, logger, migrationOnly } = args
+  const { container, resolution, logger, migrationOnly, schemaOnly } = args
 
   const errors: { error?: Error }[] = []
   for (const provider of providers) {
@@ -142,6 +157,7 @@ async function loadInternalProvider(
       },
       logger,
       migrationOnly,
+      schemaOnly,
       loadingProviders: true,
     })
 
@@ -169,6 +185,7 @@ export async function loadInternalModule(args: {
   migrationOnly?: boolean
   loaderOnly?: boolean
   loadingProviders?: boolean
+  schemaOnly?: boolean
 }): Promise<{ error?: Error } | void> {
   const {
     container,
@@ -177,6 +194,7 @@ export async function loadInternalModule(args: {
     migrationOnly,
     loaderOnly,
     loadingProviders,
+    schemaOnly,
   } = args
 
   const keyName = !loaderOnly
@@ -193,6 +211,7 @@ export async function loadInternalModule(args: {
 
   if (loadedModule.discoveryPath) {
     moduleResources = await loadResources({
+      container,
       moduleResolution: resolution,
       discoveryPath: loadedModule.discoveryPath,
       logger,
@@ -226,7 +245,8 @@ export async function loadInternalModule(args: {
     ContainerRegistrationKeys.CONFIG_MODULE,
     ContainerRegistrationKeys.LOGGER,
     ContainerRegistrationKeys.PG_CONNECTION,
-    Modules.EVENT_BUS
+    Modules.EVENT_BUS,
+    Modules.CACHING
   )
 
   for (const dependency of dependencies) {
@@ -269,7 +289,10 @@ export async function loadInternalModule(args: {
     )?.options
   }
 
-  if (migrationOnly && !loadingProviders) {
+  // Partial module load: register only __joinerConfig
+  // - migrationOnly: needed for migration planning + loader execution
+  // - schemaOnly: needed for GraphQL schema + type generation
+  if ((schemaOnly || migrationOnly) && !loadingProviders) {
     const moduleService_ =
       moduleResources.moduleService ?? loadedModule_.service
 
@@ -282,6 +305,12 @@ export async function loadInternalModule(args: {
       [keyName]: asValue(moduleService),
     })
 
+    return
+  }
+
+  if (schemaOnly) {
+    // in schema only mode, we only need to register the service __joinerConfig function to be able to resolve it later
+    // For providers in schema-only mode, skip without registration
     return
   }
 
@@ -379,12 +408,13 @@ export async function loadInternalModule(args: {
 }
 
 export async function loadModuleMigrations(
+  container: MedusaContainer,
   resolution: ModuleResolution,
   moduleExports?: ModuleExports
 ): Promise<{
   runMigrations?: MigrationFunction
-  revertMigration?: MigrationFunction
-  generateMigration?: MigrationFunction
+  revertMigration?: RevertMigrationFunction
+  generateMigration?: GenerateMigrationFunction
 }> {
   const runMigrationsFn: ((...args) => Promise<any>)[] = []
   const revertMigrationFn: ((...args) => Promise<any>)[] = []
@@ -449,6 +479,7 @@ export async function loadModuleMigrations(
 
       if (!runMigrationsCustom || !revertMigrationCustom) {
         const moduleResources = await loadResources({
+          container,
           moduleResolution: resolution,
           discoveryPath: loadedModule.discoveryPath,
           loadedModuleLoaders: loadedModule?.loaders,
@@ -480,9 +511,12 @@ export async function loadModuleMigrations(
     }
 
     const runMigrations = async (...args) => {
+      let result: { name: string; path: string }[] = []
       for (const migration of runMigrationsFn.filter(Boolean)) {
-        await migration.apply(migration, args)
+        const res = await migration.apply(migration, args)
+        result.push(...res)
       }
+      return result
     }
     const revertMigration = async (...args) => {
       for (const migration of revertMigrationFn.filter(Boolean)) {
@@ -536,17 +570,21 @@ async function importAllFromDir(path: string) {
 
   return (
     await Promise.all(filesToLoad.map((filePath) => dynamicImport(filePath)))
-  ).flatMap((value) => {
-    return Object.values(value)
-  })
+  )
+    .filter((value) => !isFileSkipped(value))
+    .flatMap((value) => {
+      return Object.values(value)
+    })
 }
 
 export async function loadResources({
+  container,
   moduleResolution,
   discoveryPath,
   logger,
   loadedModuleLoaders,
 }: {
+  container: MedusaContainer
   moduleResolution: ModuleResolution
   discoveryPath: string
   logger?: Logger
@@ -566,8 +604,29 @@ export async function loadResources({
       return []
     }
 
+    const flagDir = resolve(normalizedPath)
+
+    const configModule = container.resolve(
+      ContainerRegistrationKeys.CONFIG_MODULE,
+      {
+        allowUnregistered: true,
+      }
+    ) as ConfigModule
+
+    await discoverAndRegisterFeatureFlags({
+      flagDir,
+      projectConfigFlags: configModule?.featureFlags ?? {},
+      router: FeatureFlag,
+      logger,
+      maxDepth: 1,
+    })
+
     const [moduleService, services, models, repositories] = await Promise.all([
       dynamicImport(modulePath).then((moduleExports) => {
+        if (isFileSkipped(moduleExports)) {
+          return
+        }
+
         const mod = moduleExports.default ?? moduleExports
         return mod.service
       }),

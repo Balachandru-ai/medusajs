@@ -21,6 +21,17 @@ get:
         type: string
         externalDocs:
           url: https://docs.medusajs.com/api/store#publishable-api-key
+    - name: x-medusa-locale
+      in: header
+      description: The locale in BCP 47 format to retrieve localized content.
+      required: false
+      schema:
+        type: string
+        example: en-US
+        externalDocs:
+          url: >-
+            https://docs.medusajs.com/resources/commerce-modules/translation/storefront
+          description: Learn more in the Serve Translations in Storefront guide.
     - name: fields
       in: query
       description: >-
@@ -47,6 +58,17 @@ get:
           documentation.
         externalDocs:
           url: '#select-fields-and-relations'
+    - name: locale
+      in: query
+      description: The locale in BCP 47 format to retrieve localized content.
+      required: false
+      schema:
+        type: string
+        example: en-US
+        externalDocs:
+          url: >-
+            https://docs.medusajs.com/resources/commerce-modules/translation/storefront
+          description: Learn more in the Serve Translations in Storefront guide.
   security:
     - cookie_auth: []
     - jwt_token: []
@@ -88,7 +110,7 @@ post:
   description: Update the logged-in customer's address.
   externalDocs:
     url: >-
-      https://docs.medusajs.com/v2/resources/storefront-development/customers/addresses#edit-an-address
+      https://docs.medusajs.com/resources/storefront-development/customers/addresses#edit-an-address
     description: 'Storefront guide: How to update an address of the logged-in customer.'
   x-authenticated: true
   parameters:
@@ -106,6 +128,17 @@ post:
         type: string
         externalDocs:
           url: https://docs.medusajs.com/api/store#publishable-api-key
+    - name: x-medusa-locale
+      in: header
+      description: The locale in BCP 47 format to retrieve localized content.
+      required: false
+      schema:
+        type: string
+        example: en-US
+        externalDocs:
+          url: >-
+            https://docs.medusajs.com/resources/commerce-modules/translation/storefront
+          description: Learn more in the Serve Translations in Storefront guide.
     - name: fields
       in: query
       description: >-
@@ -132,6 +165,17 @@ post:
           documentation.
         externalDocs:
           url: '#select-fields-and-relations'
+    - name: locale
+      in: query
+      description: The locale in BCP 47 format to retrieve localized content.
+      required: false
+      schema:
+        type: string
+        example: en-US
+        externalDocs:
+          url: >-
+            https://docs.medusajs.com/resources/commerce-modules/translation/storefront
+          description: Learn more in the Serve Translations in Storefront guide.
   security:
     - cookie_auth: []
     - jwt_token: []
@@ -139,72 +183,7 @@ post:
     content:
       application/json:
         schema:
-          type: object
-          description: The properties to update in the address.
-          properties:
-            first_name:
-              type: string
-              title: first_name
-              description: The customer's first name.
-            last_name:
-              type: string
-              title: last_name
-              description: The customer's last name.
-            phone:
-              type: string
-              title: phone
-              description: The customer's phone.
-            company:
-              type: string
-              title: company
-              description: The address's company.
-            address_1:
-              type: string
-              title: address_1
-              description: The address's first line.
-            address_2:
-              type: string
-              title: address_2
-              description: The address's second line.
-            city:
-              type: string
-              title: city
-              description: The address's city.
-            country_code:
-              type: string
-              title: country_code
-              description: The address's country code.
-            province:
-              type: string
-              title: province
-              description: The address's ISO 3166-2 province code. Must be lower-case.
-              example: us-ca
-              externalDocs:
-                url: https://en.wikipedia.org/wiki/ISO_3166-2
-                description: Learn more about ISO 3166-2
-            postal_code:
-              type: string
-              title: postal_code
-              description: The address's postal code.
-            address_name:
-              type: string
-              title: address_name
-              description: The address's name.
-            is_default_shipping:
-              type: boolean
-              title: is_default_shipping
-              description: >-
-                Whether the address is used by default for shipping during
-                checkout.
-            is_default_billing:
-              type: boolean
-              title: is_default_billing
-              description: >-
-                Whether the address is used by default for billing during
-                checkout.
-            metadata:
-              type: object
-              description: Holds custom key-value pairs.
+          $ref: ../components/schemas/StoreUpdateCustomerAddress.yaml
   x-codeSamples:
     - lang: JavaScript
       label: JS SDK
@@ -247,7 +226,7 @@ delete:
   x-authenticated: true
   externalDocs:
     url: >-
-      https://docs.medusajs.com/v2/resources/storefront-development/customers/addresses#delete-customer-address
+      https://docs.medusajs.com/resources/storefront-development/customers/addresses#delete-customer-address
     description: 'Storefront guide: How to delete a customer''s address.'
   parameters:
     - name: address_id
@@ -264,6 +243,17 @@ delete:
         type: string
         externalDocs:
           url: https://docs.medusajs.com/api/store#publishable-api-key
+    - name: x-medusa-locale
+      in: header
+      description: The locale in BCP 47 format to retrieve localized content.
+      required: false
+      schema:
+        type: string
+        example: en-US
+        externalDocs:
+          url: >-
+            https://docs.medusajs.com/resources/commerce-modules/translation/storefront
+          description: Learn more in the Serve Translations in Storefront guide.
     - name: fields
       in: query
       description: >-
@@ -290,6 +280,17 @@ delete:
           documentation.
         externalDocs:
           url: '#select-fields-and-relations'
+    - name: locale
+      in: query
+      description: The locale in BCP 47 format to retrieve localized content.
+      required: false
+      schema:
+        type: string
+        example: en-US
+        externalDocs:
+          url: >-
+            https://docs.medusajs.com/resources/commerce-modules/translation/storefront
+          description: Learn more in the Serve Translations in Storefront guide.
   security:
     - cookie_auth: []
     - jwt_token: []

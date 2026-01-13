@@ -3,7 +3,6 @@ import {
   ChangeActionType,
   MathBN,
   OrderChangeStatus,
-  PromotionActions,
 } from "@medusajs/framework/utils"
 import {
   createWorkflow,
@@ -17,7 +16,7 @@ import {
   OrderDTO,
   OrderPreviewDTO,
   OrderWorkflow,
-} from "@medusajs/types"
+} from "@medusajs/framework/types"
 import { useRemoteQueryStep } from "../../common"
 import {
   createOrderChangeActionsWorkflow,
@@ -26,17 +25,18 @@ import {
 import { getDraftOrderPromotionContextStep } from "../steps/get-draft-order-promotion-context"
 import { validateDraftOrderChangeStep } from "../steps/validate-draft-order-change"
 import { draftOrderFieldsForRefreshSteps } from "../utils/fields"
-import { refreshDraftOrderAdjustmentsWorkflow } from "./refresh-draft-order-adjustments"
+import { acquireLockStep, releaseLockStep } from "../../locking"
+import { computeDraftOrderAdjustmentsWorkflow } from "./compute-draft-order-adjustments"
 
 export const updateDraftOrderItemWorkflowId = "update-draft-order-item"
 
 /**
  * This workflow updates an item in a draft order edit. It's used by the
  * [Update Item in Draft Order Edit Admin API Route](https://docs.medusajs.com/api/admin#draft-orders_postdraftordersidedititemsitemitem_id).
- * 
+ *
  * You can use this workflow within your customizations or your own custom workflows, allowing you to wrap custom logic around
  * updating an item in a draft order edit.
- * 
+ *
  * @example
  * const { result } = await updateDraftOrderItemWorkflow(container)
  * .run({
@@ -45,9 +45,9 @@ export const updateDraftOrderItemWorkflowId = "update-draft-order-item"
  *     items: [{ id: "orli_123", quantity: 2 }],
  *   }
  * })
- * 
+ *
  * @summary
- * 
+ *
  * Update an item in a draft order edit.
  */
 export const updateDraftOrderItemWorkflow = createWorkflow(
@@ -55,6 +55,12 @@ export const updateDraftOrderItemWorkflow = createWorkflow(
   function (
     input: WorkflowData<OrderWorkflow.OrderEditUpdateItemQuantityWorkflowInput>
   ): WorkflowResponse<OrderPreviewDTO> {
+    acquireLockStep({
+      key: input.order_id,
+      timeout: 2,
+      ttl: 10,
+    })
+
     const order: OrderDTO = useRemoteQueryStep({
       entry_point: "orders",
       fields: draftOrderFieldsForRefreshSteps,
@@ -65,7 +71,7 @@ export const updateDraftOrderItemWorkflow = createWorkflow(
 
     const orderChange: OrderChangeDTO = useRemoteQueryStep({
       entry_point: "order_change",
-      fields: ["id", "status"],
+      fields: ["id", "status", "version"],
       variables: {
         filters: {
           order_id: input.order_id,
@@ -115,32 +121,26 @@ export const updateDraftOrderItemWorkflow = createWorkflow(
       order,
     })
 
-    const appliedPromoCodes: string[] = transform(context, (context) => {
-      const promotionLink = (context as any).promotion_link
-
-      if (!promotionLink) {
-        return []
-      }
-
-      if (Array.isArray(promotionLink)) {
-        return promotionLink.map((promo) => promo.promotion.code)
-      }
-
-      return [promotionLink.promotion.code]
-    })
+    const appliedPromoCodes: string[] = transform(
+      context,
+      (context) =>
+        (context as any).promotions?.map((promotion) => promotion.code) ?? []
+    )
 
     // If any the order has any promo codes, then we need to refresh the adjustments.
     when(
       appliedPromoCodes,
       (appliedPromoCodes) => appliedPromoCodes.length > 0
     ).then(() => {
-      refreshDraftOrderAdjustmentsWorkflow.runAsStep({
+      computeDraftOrderAdjustmentsWorkflow.runAsStep({
         input: {
-          order: context,
-          promo_codes: appliedPromoCodes,
-          action: PromotionActions.REPLACE,
+          order_id: input.order_id,
         },
       })
+    })
+
+    releaseLockStep({
+      key: input.order_id,
     })
 
     return new WorkflowResponse(previewOrderChangeStep(input.order_id))

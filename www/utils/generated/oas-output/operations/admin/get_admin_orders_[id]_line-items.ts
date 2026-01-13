@@ -53,20 +53,6 @@
  *             type: string
  *             title: item_id
  *             description: The item id's details.
- *   - name: order_id
- *     in: query
- *     required: false
- *     schema:
- *       oneOf:
- *         - type: string
- *           title: order_id
- *           description: The order's order id.
- *         - type: array
- *           description: The order's order id.
- *           items:
- *             type: string
- *             title: order_id
- *             description: The order id's details.
  *   - name: version
  *     in: query
  *     required: false
@@ -81,36 +67,6 @@
  *             type: number
  *             title: version
  *             description: The version's details.
- *   - name: limit
- *     in: query
- *     description: Limit the number of items returned in the list.
- *     required: false
- *     schema:
- *       type: number
- *       title: limit
- *       description: Limit the number of items returned in the list.
- *       externalDocs:
- *         url: "#pagination"
- *   - name: offset
- *     in: query
- *     description: The number of items to skip when retrieving a list.
- *     required: false
- *     schema:
- *       type: number
- *       title: offset
- *       description: The number of items to skip when retrieving a list.
- *       externalDocs:
- *         url: "#pagination"
- *   - name: order
- *     in: query
- *     description: The field to sort the data by. By default, the sort order is ascending. To change the order to descending, prefix the field name with `-`.
- *     required: false
- *     schema:
- *       type: string
- *       title: order
- *       description: The field to sort the data by. By default, the sort order is ascending. To change the order to descending, prefix the field name with `-`.
- *       externalDocs:
- *         url: "#pagination"
  * security:
  *   - api_token: []
  *   - cookie_auth: []
@@ -137,7 +93,7 @@
  *     label: cURL
  *     source: |-
  *       curl '{backend_url}/admin/orders/{id}/line-items' \
- *       -H 'Authorization: Bearer {access_token}'
+ *       -H 'Authorization: Bearer {jwt_token}'
  * tags:
  *   - Orders
  * responses:

@@ -1,21 +1,25 @@
-import { updateCartPromotionsWorkflow } from "@medusajs/core-flows"
-import { PromotionActions } from "@medusajs/framework/utils"
+import { updateCartPromotionsWorkflowId } from "@medusajs/core-flows"
 import { MedusaRequest, MedusaResponse } from "@medusajs/framework/http"
-import { refetchCart } from "../../helpers"
 import { HttpTypes } from "@medusajs/framework/types"
+import { Modules, PromotionActions } from "@medusajs/framework/utils"
+import { refetchCart } from "../../helpers"
 
 export const POST = async (
-  req: MedusaRequest<HttpTypes.StoreCartAddPromotion>,
+  req: MedusaRequest<HttpTypes.StoreCartAddPromotion, HttpTypes.SelectParams>,
   res: MedusaResponse<HttpTypes.StoreCartResponse>
 ) => {
-  const workflow = updateCartPromotionsWorkflow(req.scope)
+  const we = req.scope.resolve(Modules.WORKFLOW_ENGINE)
   const payload = req.validatedBody
 
-  await workflow.run({
+  await we.run(updateCartPromotionsWorkflowId, {
     input: {
       promo_codes: payload.promo_codes,
       cart_id: req.params.id,
-      action: PromotionActions.ADD,
+      action:
+        payload.promo_codes.length > 0
+          ? PromotionActions.ADD
+          : PromotionActions.REPLACE,
+      force_refresh_payment_collection: true,
     },
   })
 
@@ -29,19 +33,23 @@ export const POST = async (
 }
 
 export const DELETE = async (
-  req: MedusaRequest<HttpTypes.StoreCartRemovePromotion>,
+  req: MedusaRequest<
+    HttpTypes.StoreCartRemovePromotion,
+    HttpTypes.SelectParams
+  >,
   res: MedusaResponse<{
     cart: HttpTypes.StoreCart
   }>
 ) => {
-  const workflow = updateCartPromotionsWorkflow(req.scope)
+  const we = req.scope.resolve(Modules.WORKFLOW_ENGINE)
   const payload = req.validatedBody
 
-  await workflow.run({
+  await we.run(updateCartPromotionsWorkflowId, {
     input: {
       promo_codes: payload.promo_codes,
       cart_id: req.params.id,
       action: PromotionActions.REMOVE,
+      force_refresh_payment_collection: true,
     },
   })
 

@@ -141,6 +141,17 @@ decorators:
         - Order
       AdminProductVariantInventoryItemLink:
         - AdminProductVariant
+      AdminGiftCardInvitation:
+        - AdminGiftCard
+      AdminTransactionGroup:
+        - AdminStoreCreditAccount
+      StoreGiftCard:
+        - StoreGiftCardInvitation
+      StoreTransactionGroup:
+        - StoreStoreCreditAccount
+      AdminProductImage:
+        - AdminProduct
+        - AdminProductVariant
 theme:
   openapi:
     theme:

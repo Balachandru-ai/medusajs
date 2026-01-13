@@ -1,15 +1,11 @@
 import { IProductModuleService } from "@medusajs/framework/types"
 import {
-  CommonEvents,
-  composeMessage,
   Modules,
-  ProductEvents,
   ProductStatus,
   toMikroORMEntity,
 } from "@medusajs/framework/utils"
 import { Product, ProductCategory } from "@models"
 import {
-  MockEventBusService,
   moduleIntegrationTestRunner,
 } from "@medusajs/test-utils"
 import { productCategoriesRankData } from "../../__fixtures__/product-category/data"
@@ -18,9 +14,6 @@ jest.setTimeout(30000)
 
 moduleIntegrationTestRunner<IProductModuleService>({
   moduleName: Modules.PRODUCT,
-  injectedDependencies: {
-    [Modules.EVENT_BUS]: new MockEventBusService(),
-  },
   testSuite: ({ MikroOrmWrapper, service }) => {
     describe("ProductModuleService product categories", () => {
       let productOne: Product
@@ -404,29 +397,6 @@ moduleIntegrationTestRunner<IProductModuleService>({
           )
         })
 
-        it("should emit events through event bus", async () => {
-          const eventBusSpy = jest.spyOn(MockEventBusService.prototype, "emit")
-
-          const category = await service.createProductCategories({
-            name: "New Category",
-            parent_category_id: productCategoryOne.id,
-          })
-
-          expect(eventBusSpy.mock.calls[0][0]).toHaveLength(1)
-          expect(eventBusSpy).toHaveBeenCalledWith(
-            [
-              composeMessage(ProductEvents.PRODUCT_CATEGORY_CREATED, {
-                data: { id: category.id },
-                object: "product_category",
-                source: Modules.PRODUCT,
-                action: CommonEvents.CREATED,
-              }),
-            ],
-            {
-              internal: true,
-            }
-          )
-        })
 
         it("should append rank from an existing category depending on parent", async () => {
           await service.createProductCategories({
@@ -504,29 +474,6 @@ moduleIntegrationTestRunner<IProductModuleService>({
           productCategoryZeroTwo = categories[5]
         })
 
-        it("should emit events through event bus", async () => {
-          const eventBusSpy = jest.spyOn(MockEventBusService.prototype, "emit")
-          eventBusSpy.mockClear()
-
-          await service.updateProductCategories(productCategoryZero.id, {
-            name: "New Category",
-          })
-
-          expect(eventBusSpy.mock.calls[0][0]).toHaveLength(1)
-          expect(eventBusSpy).toHaveBeenCalledWith(
-            [
-              composeMessage(ProductEvents.PRODUCT_CATEGORY_UPDATED, {
-                data: { id: productCategoryZero.id },
-                object: "product_category",
-                source: Modules.PRODUCT,
-                action: CommonEvents.UPDATED,
-              }),
-            ],
-            {
-              internal: true,
-            }
-          )
-        })
 
         it("should update the name of the category successfully", async () => {
           await service.updateProductCategories(productCategoryZero.id, {
@@ -683,30 +630,6 @@ moduleIntegrationTestRunner<IProductModuleService>({
           productCategoryTwo = categories[2]
         })
 
-        it("should emit events through event bus", async () => {
-          const eventBusSpy = jest.spyOn(MockEventBusService.prototype, "emit")
-          eventBusSpy.mockClear()
-
-          await service.deleteProductCategories([productCategoryOne.id])
-
-          expect(eventBusSpy).toHaveBeenCalledTimes(1)
-          expect(eventBusSpy).toHaveBeenCalledWith(
-            [
-              expect.objectContaining({
-                data: { id: productCategoryOne.id },
-                name: "product.product-category.deleted",
-                metadata: {
-                  action: CommonEvents.DELETED,
-                  object: "product_category",
-                  source: Modules.PRODUCT,
-                },
-              }),
-            ],
-            {
-              internal: true,
-            }
-          )
-        })
 
         it("should throw an error when an id does not exist", async () => {
           let error

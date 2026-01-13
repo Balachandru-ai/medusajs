@@ -9,7 +9,11 @@ import {
   WorkflowData,
   WorkflowResponse,
 } from "@medusajs/framework/workflows-sdk"
-import { OrderChangeDTO, OrderDTO, PromotionDTO } from "@medusajs/types"
+import {
+  OrderChangeDTO,
+  OrderDTO,
+  PromotionDTO,
+} from "@medusajs/framework/types"
 import { useRemoteQueryStep } from "../../common"
 import {
   createOrderChangeActionsWorkflow,
@@ -17,8 +21,10 @@ import {
 } from "../../order"
 import { validateDraftOrderChangeStep } from "../steps/validate-draft-order-change"
 import { validatePromoCodesToAddStep } from "../steps/validate-promo-codes-to-add"
+import { updateDraftOrderPromotionsStep } from "../steps/update-draft-order-promotions"
+import { computeDraftOrderAdjustmentsWorkflow } from "./compute-draft-order-adjustments"
 import { draftOrderFieldsForRefreshSteps } from "../utils/fields"
-import { refreshDraftOrderAdjustmentsWorkflow } from "./refresh-draft-order-adjustments"
+import { acquireLockStep, releaseLockStep } from "../../locking"
 
 export const addDraftOrderPromotionWorkflowId = "add-draft-order-promotion"
 
@@ -39,10 +45,10 @@ export interface AddDraftOrderPromotionWorkflowInput {
 /**
  * This workflow adds promotions to a draft order. It's used by the
  * [Add Promotion to Draft Order Admin API Route](https://docs.medusajs.com/api/admin#draft-orders_postdraftordersideditpromotions).
- * 
+ *
  * You can use this workflow within your customizations or your own custom workflows, allowing you to wrap custom logic around adding promotions to
  * a draft order.
- * 
+ *
  * @example
  * const { result } = await addDraftOrderPromotionWorkflow(container)
  * .run({
@@ -51,14 +57,20 @@ export interface AddDraftOrderPromotionWorkflowInput {
  *     promo_codes: ["PROMO_CODE_1", "PROMO_CODE_2"]
  *   }
  * })
- * 
+ *
  * @summary
- * 
+ *
  * Add promotions to a draft order.
  */
 export const addDraftOrderPromotionWorkflow = createWorkflow(
   addDraftOrderPromotionWorkflowId,
   function (input: WorkflowData<AddDraftOrderPromotionWorkflowInput>) {
+    acquireLockStep({
+      key: input.order_id,
+      timeout: 2,
+      ttl: 10,
+    })
+
     const order: OrderDTO = useRemoteQueryStep({
       entry_point: "orders",
       fields: draftOrderFieldsForRefreshSteps,
@@ -71,7 +83,7 @@ export const addDraftOrderPromotionWorkflow = createWorkflow(
 
     const orderChange: OrderChangeDTO = useRemoteQueryStep({
       entry_point: "order_change",
-      fields: ["id", "status"],
+      fields: ["id", "status", "version"],
       variables: {
         filters: {
           order_id: input.order_id,
@@ -99,11 +111,15 @@ export const addDraftOrderPromotionWorkflow = createWorkflow(
       promotions,
     })
 
-    refreshDraftOrderAdjustmentsWorkflow.runAsStep({
+    updateDraftOrderPromotionsStep({
+      id: input.order_id,
+      promo_codes: input.promo_codes,
+      action: PromotionActions.ADD,
+    })
+
+    computeDraftOrderAdjustmentsWorkflow.runAsStep({
       input: {
-        order,
-        promo_codes: input.promo_codes,
-        action: PromotionActions.ADD,
+        order_id: input.order_id,
       },
     })
 
@@ -125,6 +141,10 @@ export const addDraftOrderPromotionWorkflow = createWorkflow(
 
     createOrderChangeActionsWorkflow.runAsStep({
       input: orderChangeActionInput,
+    })
+
+    releaseLockStep({
+      key: input.order_id,
     })
 
     return new WorkflowResponse(previewOrderChangeStep(input.order_id))

@@ -1,17 +1,22 @@
-import {
-  featureFlagRouter,
-  validateAndTransformQuery,
-} from "@medusajs/framework"
+import { validateAndTransformQuery } from "@medusajs/framework"
 import {
   applyDefaultFilters,
   applyParamsAsFilters,
   authenticate,
   clearFiltersByKey,
   maybeApplyLinkFilter,
+  MedusaNextFunction,
+  MedusaRequest,
+  MedusaResponse,
   MiddlewareRoute,
 } from "@medusajs/framework/http"
-import { isPresent, ProductStatus } from "@medusajs/framework/utils"
-import IndexEngineFeatureFlag from "../../../loaders/feature-flags/index-engine"
+import {
+  ContainerRegistrationKeys,
+  FeatureFlag,
+  isPresent,
+  ProductStatus,
+} from "@medusajs/framework/utils"
+import IndexEngineFeatureFlag from "../../../feature-flags/index-engine"
 import {
   filterByValidSalesChannels,
   normalizeDataForContext,
@@ -20,6 +25,42 @@ import {
 } from "../../utils/middlewares"
 import * as QueryConfig from "./query-config"
 import { StoreGetProductsParams } from "./validators"
+
+async function applyMaybeLinkFilterIfNecessary(
+  req: MedusaRequest,
+  res: MedusaResponse,
+  next: MedusaNextFunction
+) {
+  const canUseIndex = !(
+    isPresent(req.filterableFields.tags) ||
+    isPresent(req.filterableFields.categories)
+  )
+  if (FeatureFlag.isFeatureEnabled(IndexEngineFeatureFlag.key) && canUseIndex) {
+    return next()
+  }
+
+  const query = req.scope.resolve(ContainerRegistrationKeys.QUERY)
+  const salesChannelsQueryRes = await query.graph({
+    entity: "sales_channels",
+    fields: ["id"],
+    pagination: {
+      skip: 0,
+      take: 1,
+    },
+  })
+
+  const salesChannelCount = salesChannelsQueryRes.metadata?.count ?? 0
+  if (!(salesChannelCount > 1)) {
+    delete req.filterableFields.sales_channel_id
+    return next()
+  }
+
+  return maybeApplyLinkFilter({
+    entryPoint: "product_sales_channel",
+    resourceId: "product_id",
+    filterableField: "sales_channel_id",
+  })(req, res, next)
+}
 
 export const storeProductRoutesMiddlewares: MiddlewareRoute[] = [
   {
@@ -34,24 +75,7 @@ export const storeProductRoutesMiddlewares: MiddlewareRoute[] = [
         QueryConfig.listProductQueryConfig
       ),
       filterByValidSalesChannels(),
-      (req, res, next) => {
-        const canUseIndex = !(
-          isPresent(req.filterableFields.tags) ||
-          isPresent(req.filterableFields.categories)
-        )
-        if (
-          featureFlagRouter.isFeatureEnabled(IndexEngineFeatureFlag.key) &&
-          canUseIndex
-        ) {
-          return next()
-        }
-
-        return maybeApplyLinkFilter({
-          entryPoint: "product_sales_channel",
-          resourceId: "product_id",
-          filterableField: "sales_channel_id",
-        })(req, res, next)
-      },
+      applyMaybeLinkFilterIfNecessary,
       applyDefaultFilters({
         status: ProductStatus.PUBLISHED,
         // TODO: the type here seems off and the implementation does not take into account $and and $or possible filters. Might be worth re working (original type used here was StoreGetProductsParamsType)
@@ -92,13 +116,6 @@ export const storeProductRoutesMiddlewares: MiddlewareRoute[] = [
       }),
       applyDefaultFilters({
         status: ProductStatus.PUBLISHED,
-        categories: (_filters, fields: string[]) => {
-          if (!fields.some((field) => field.startsWith("categories"))) {
-            return
-          }
-
-          return { is_internal: false, is_active: true }
-        },
       }),
       normalizeDataForContext(),
       setPricingContext(),

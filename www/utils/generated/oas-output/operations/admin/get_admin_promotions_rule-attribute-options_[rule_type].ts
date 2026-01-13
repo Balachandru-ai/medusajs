@@ -29,7 +29,6 @@
  *     required: false
  *     schema:
  *       type: string
- *       title: promotion_type
  *       description: The promotion type to retrieve rules for.
  *       enum:
  *         - standard
@@ -40,11 +39,21 @@
  *     required: false
  *     schema:
  *       type: string
- *       title: application_method_type
  *       description: The application method type to retrieve rules for.
  *       enum:
  *         - fixed
  *         - percentage
+ *   - name: application_method_target_type
+ *     in: query
+ *     description: The application method target type to retrieve rules for.
+ *     required: false
+ *     schema:
+ *       type: string
+ *       description: The application method target type to retrieve rules for.
+ *       enum:
+ *         - items
+ *         - shipping_methods
+ *         - order
  * security:
  *   - api_token: []
  *   - cookie_auth: []
@@ -71,7 +80,7 @@
  *     label: cURL
  *     source: |-
  *       curl '{backend_url}/admin/promotions/rule-attribute-options/{rule_type}' \
- *       -H 'Authorization: Bearer {access_token}'
+ *       -H 'Authorization: Bearer {jwt_token}'
  * tags:
  *   - Promotions
  * responses:

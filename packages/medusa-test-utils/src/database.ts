@@ -1,32 +1,37 @@
+import { logger } from "@medusajs/framework/logger"
+import { CustomDBMigrator } from "@medusajs/framework/utils"
+
 import {
   defineConfig,
   MikroORM,
   Options,
   SqlEntityManager,
-} from "@mikro-orm/postgresql"
+} from "@medusajs/framework/mikro-orm/postgresql"
 import { createDatabase, dropDatabase } from "pg-god"
-import { logger } from "@medusajs/framework/logger"
 import { execOrTimeout } from "./medusa-test-runner-utils"
 
 const DB_HOST = process.env.DB_HOST ?? "localhost"
 const DB_USERNAME = process.env.DB_USERNAME ?? ""
 const DB_PASSWORD = process.env.DB_PASSWORD ?? ""
+const DB_PORT = process.env.DB_PORT ?? "5432"
 
 const pgGodCredentials = {
   user: DB_USERNAME,
   password: DB_PASSWORD,
   host: DB_HOST,
+  port: parseInt(DB_PORT),
 }
 
 export function getDatabaseURL(dbName?: string): string {
   const DB_HOST = process.env.DB_HOST ?? "localhost"
   const DB_USERNAME = process.env.DB_USERNAME ?? "postgres"
   const DB_PASSWORD = process.env.DB_PASSWORD ?? ""
+  const DB_PORT = process.env.DB_PORT ?? "5432"
   const DB_NAME = dbName ?? process.env.DB_TEMP_NAME
 
   return `postgres://${DB_USERNAME}${
     DB_PASSWORD ? `:${DB_PASSWORD}` : ""
-  }@${DB_HOST}/${DB_NAME}`
+  }@${DB_HOST}:${DB_PORT}/${DB_NAME}`
 }
 
 export function getMikroOrmConfig({
@@ -54,6 +59,7 @@ export function getMikroOrmConfig({
       pathTs: pathToMigrations,
       silent: true,
     },
+    extensions: [CustomDBMigrator],
   })
 }
 
@@ -222,7 +228,6 @@ export const dbTestUtilFactory = (): any => ({
       const runRawQuery = this.pgConnection_.raw.bind(this.pgConnection_)
       schema ??= "public"
 
-      await runRawQuery(`SET session_replication_role = 'replica';`)
       const { rows: tableNames } = await runRawQuery(`SELECT table_name
                                               FROM information_schema.tables
                                               WHERE table_schema = '${schema}';`)
@@ -230,6 +235,9 @@ export const dbTestUtilFactory = (): any => ({
       const skipIndexPartitionPrefix = "cat_"
       const mainPartitionTables = ["index_data", "index_relation"]
       let hasIndexTables = false
+
+      const tablesToTruncate: string[] = []
+      const allTablesToVerify: string[] = []
 
       for (const { table_name } of tableNames) {
         if (mainPartitionTables.includes(table_name)) {
@@ -240,18 +248,61 @@ export const dbTestUtilFactory = (): any => ({
           table_name.startsWith(skipIndexPartitionPrefix) ||
           mainPartitionTables.includes(table_name)
         ) {
+          allTablesToVerify.push(table_name)
           continue
         }
 
-        await runRawQuery(`DELETE FROM ${schema}."${table_name}";`)
+        tablesToTruncate.push(`${schema}."${table_name}"`)
+        allTablesToVerify.push(table_name)
       }
 
-      if (hasIndexTables) {
-        await runRawQuery(`TRUNCATE TABLE ${schema}.index_data;`)
-        await runRawQuery(`TRUNCATE TABLE ${schema}.index_relation;`)
+      const allTablesToTruncase = [
+        ...tablesToTruncate,
+        ...(hasIndexTables ? mainPartitionTables : []),
+      ].join(", ")
+
+      if (allTablesToTruncase) {
+        await runRawQuery(`TRUNCATE ${allTablesToTruncase};`)
       }
 
-      await runRawQuery(`SET session_replication_role = 'origin';`)
+      const verifyEmpty = async (maxRetries = 5) => {
+        for (let retry = 0; retry < maxRetries; retry++) {
+          const countQueries = allTablesToVerify.map(
+            (tableName) =>
+              `SELECT '${tableName}' as table_name, COUNT(*) as count FROM ${schema}."${tableName}"`
+          )
+
+          const { rows: counts } = await runRawQuery(
+            countQueries.join(" UNION ALL ")
+          )
+
+          const nonEmptyTables = counts.filter(
+            (row: { table_name: string; count: string }) =>
+              parseInt(row.count) > 0
+          )
+
+          if (nonEmptyTables.length === 0) {
+            return true
+          }
+
+          if (retry < maxRetries - 1) {
+            await new Promise((resolve) => setTimeout(resolve, 100))
+          } else {
+            const tableList = nonEmptyTables
+              .map(
+                (t: { table_name: string; count: string }) =>
+                  `${t.table_name}(${t.count})`
+              )
+              .join(", ")
+            logger.warn(
+              `Some tables still contain data after truncate: ${tableList}`
+            )
+          }
+        }
+        return false
+      }
+
+      await verifyEmpty()
     } catch (error) {
       logger.error("Error during database teardown:", error)
       throw error

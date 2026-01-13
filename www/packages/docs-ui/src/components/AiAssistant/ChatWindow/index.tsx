@@ -1,31 +1,39 @@
 "use client"
 
 import clsx from "clsx"
-import React, { useCallback, useEffect, useRef, useState } from "react"
-import { useAiAssistant, useIsBrowser } from "../../../providers"
+import React, {
+  Fragment,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from "react"
+import { useAiAssistant } from "../../../providers/AiAssistant"
+import { useIsBrowser } from "../../../providers/BrowserProvider"
 import { AiAssistantChatWindowHeader } from "./Header"
-import { useAiAssistantChat } from "../../../providers/AiAssistant/Chat"
 import { AiAssistantSuggestions } from "../Suggestions"
 import { AiAssistantThreadItem } from "../ThreadItem"
 import { AiAssistantChatWindowInput } from "./Input"
-import { useAiAssistantChatNavigation, useKeyboardShortcut } from "../../.."
+import { useKeyboardShortcut } from "../../../hooks/use-keyboard-shortcut"
 import { AiAssistantChatWindowFooter } from "./Footer"
+import { useChat } from "@kapaai/react-sdk"
+import { AiAssistantChatWindowCallout } from "./Callout"
 
 const DEFAULT_HEIGHT = "calc(100% - 8px)"
 
 export const AiAssistantChatWindow = () => {
-  const { chatOpened, setChatOpened, chatType: type } = useAiAssistant()
+  const {
+    chatOpened,
+    setChatOpened,
+    chatType: type,
+    inputRef,
+    contentRef,
+    loading,
+  } = useAiAssistant()
+  const { conversation, error } = useChat()
   const [height, setHeight] = useState(DEFAULT_HEIGHT)
   const [showFade, setShowFade] = useState(false)
   const { isBrowser } = useIsBrowser()
-  const {
-    inputRef,
-    thread,
-    getThreadItems: getChatThreadItems,
-    answer,
-    loading,
-    contentRef,
-  } = useAiAssistantChat()
   const chatWindowRef = useRef<HTMLDivElement | null>(null)
 
   useEffect(() => {
@@ -39,21 +47,29 @@ export const AiAssistantChatWindow = () => {
   }, [chatOpened])
 
   const getThreadItems = useCallback(() => {
-    const sortedThread = getChatThreadItems()
-
-    return sortedThread.map((item, index) => (
-      <AiAssistantThreadItem item={item} key={index} />
+    return conversation.map((item, index) => (
+      <Fragment key={index}>
+        <AiAssistantThreadItem
+          item={{
+            type: "question",
+            content: item.question,
+            sources: item.sources,
+            question_id: item.id,
+            isGenerationAborted: item.isGenerationAborted,
+          }}
+        />
+        <AiAssistantThreadItem
+          item={{
+            type: "answer",
+            content: item.answer,
+            sources: item.sources,
+            question_id: item.id,
+            isGenerationAborted: item.isGenerationAborted,
+          }}
+        />
+      </Fragment>
     ))
-  }, [getChatThreadItems])
-
-  useAiAssistantChatNavigation({
-    getChatWindowElm: () => chatWindowRef.current as HTMLElement | null,
-    getInputElm: () => inputRef.current as HTMLTextAreaElement | null,
-    focusInput: () =>
-      inputRef.current?.focus({
-        preventScroll: true,
-      }),
-  })
+  }, [conversation])
 
   useKeyboardShortcut({
     metakey: false,
@@ -75,7 +91,8 @@ export const AiAssistantChatWindow = () => {
     }
     setShowFade(
       !loading &&
-        parentElm.offsetHeight + parentElm.scrollTop < parentElm.scrollHeight
+        parentElm.offsetHeight + parentElm.scrollTop <
+          parentElm.scrollHeight - 1
     )
   }
 
@@ -168,14 +185,13 @@ export const AiAssistantChatWindow = () => {
             )}
           >
             <div ref={contentRef}>
-              {!thread.length && <AiAssistantSuggestions />}
+              {!conversation.length && <AiAssistantSuggestions />}
               {getThreadItems()}
-              {(answer.length || loading) && (
+              {error?.length && (
                 <AiAssistantThreadItem
                   item={{
-                    type: "answer",
-                    content: answer,
-                    order: 0,
+                    type: "error",
+                    content: error,
                   }}
                 />
               )}
@@ -189,7 +205,8 @@ export const AiAssistantChatWindow = () => {
             )}
           ></span>
         </div>
-        <AiAssistantChatWindowInput />
+        <AiAssistantChatWindowCallout />
+        <AiAssistantChatWindowInput chatWindowRef={chatWindowRef} />
         <AiAssistantChatWindowFooter />
       </div>
     </>

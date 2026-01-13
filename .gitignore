@@ -13,6 +13,8 @@ packages/**/.yarn/*
 integration-tests/**/.yarn/*
 www/**/.yarn/*
 
+packages/**/plugins/**/.medusa/
+
 .DS_Store
 
 .eslintcache
@@ -30,3 +32,6 @@ dist/**
 
 # Cache File
 /packages/**/.cache
+
+.cursorignore
+**/.medusa

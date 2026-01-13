@@ -25,6 +25,7 @@ import {
   UpdateTaxRegionDTO,
   UpsertTaxRateDTO,
 } from "./mutations"
+import { ITaxProvider } from "./provider"
 
 /**
  * The main service interface for the Tax Module.
@@ -585,7 +586,7 @@ export interface ITaxModuleService extends IModuleService {
   /**
    * This method retrieves a paginated list of tax providers based on optional filters and configuration.
    * 
-   * @version 2.8.0
+   * @since 2.8.0
    *
    * @param {FilterableTaxProviderProps} filters - The filters to apply on the retrieved tax providers.
    * @param {FindConfig<TaxProviderDTO>} config - The configurations determining how the tax provider is retrieved. Its properties, such as `select` or `relations`, accept the
@@ -915,4 +916,17 @@ export interface ITaxModuleService extends IModuleService {
     config?: RestoreReturn<TReturnableLinkableKeys>,
     sharedContext?: Context
   ): Promise<Record<string, string[]> | void>
+
+  /**
+   * This method returns the service of a Tax Module Provider by its ID. A Tax Module Provider's ID is of the format
+   * `tp_{identifier}_{id}`, where `identifier` is the static `identifier` property defined in the provider's service,
+   * and `id` is the ID set in `medusa-config.ts` when registering the provider.
+   *
+   * @returns {ITaxProvider} An instance of the Tax Module Provider's service.
+   *
+   * @example
+   * const avalaraProvider = taxModuleService.getProvider("tp_avalara_avalara")
+   * // TODO: perform custom actions with the provider
+   */
+  getProvider(providerId: string): ITaxProvider
 }

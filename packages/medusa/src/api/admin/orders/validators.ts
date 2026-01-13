@@ -1,4 +1,4 @@
-import { z } from "zod"
+import { z } from "@medusajs/framework/zod"
 import { AddressPayload } from "../../utils/common-validators"
 import {
   createFindParams,
@@ -9,12 +9,12 @@ import {
 
 export const AdminGetOrdersOrderParams = createSelectParams().merge(
   z.object({
-    id: z.union([z.string(), z.array(z.string())]).optional(),
-    status: z.union([z.string(), z.array(z.string())]).optional(),
-    version: z.number().optional(),
-    created_at: createOperatorMap().optional(),
-    updated_at: createOperatorMap().optional(),
-    deleted_at: createOperatorMap().optional(),
+    version: z.preprocess((val) => {
+      if (val && typeof val === "string") {
+        return parseInt(val)
+      }
+      return val
+    }, z.number().optional()),
   })
 )
 
@@ -31,7 +31,13 @@ export const AdminGetOrdersOrderItemsParams = createSelectParams().merge(
 )
 
 export type AdminGetOrdersOrderItemsParamsType = z.infer<
-  typeof AdminGetOrdersOrderParams
+  typeof AdminGetOrdersOrderItemsParams
+>
+
+export const AdminGetOrderShippingOptionList = z.object({})
+
+export type AdminGetOrderShippingOptionListType = z.infer<
+  typeof AdminGetOrderShippingOptionList
 >
 
 /**
@@ -142,6 +148,7 @@ export const AdminUpdateOrder = z.object({
   email: z.string().optional(),
   shipping_address: AddressPayload.optional(),
   billing_address: AddressPayload.optional(),
+  locale: z.string().nullish(),
   metadata: z.record(z.unknown()).nullish(),
 })
 

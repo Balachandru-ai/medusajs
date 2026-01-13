@@ -1,41 +1,58 @@
 "use client"
 
-import React, { useCallback } from "react"
-import { Badge, Button, InputText, Kbd, Tooltip, Link } from "@/components"
-import { useSearch } from "@/providers"
+import React, { Fragment, useCallback, useState } from "react"
+import { Badge } from "../../Badge"
+import { Button } from "../../Button"
+import { InputText } from "../../Input/Text"
+import { Kbd } from "../../Kbd"
+import { Tooltip } from "../../Tooltip"
+import { Link } from "../../Link"
+import { useAiAssistant } from "@/providers/AiAssistant"
+import { useSearch } from "@/providers/Search"
 import { ArrowUturnLeft } from "@medusajs/icons"
 import clsx from "clsx"
 import { AiAssistantThreadItem } from "../ThreadItem"
 import { AiAssistantSuggestions } from "../Suggestions"
-import { useAiAssistantChat } from "../../../providers/AiAssistant/Chat"
-import { useSearchNavigation } from "../../.."
+import { useSearchNavigation } from "../../../hooks/use-search-navigation"
+import { useChat } from "@kapaai/react-sdk"
 
 export const AiAssistantSearchWindow = () => {
-  const {
-    handleSubmit,
-    getThreadItems: getChatThreadItems,
-    question,
-    setQuestion,
-    inputRef,
-    contentRef,
-    loading,
-    thread,
-    answer,
-  } = useAiAssistantChat()
+  const { conversation, submitQuery, error } = useChat()
+  const { inputRef, contentRef, loading } = useAiAssistant()
+  const [question, setQuestion] = useState("")
   const { setCommand } = useSearch()
 
   const getThreadItems = useCallback(() => {
-    const sortedThread = getChatThreadItems()
-
-    return sortedThread.map((item, index) => (
-      <AiAssistantThreadItem item={item} key={index} />
+    return conversation.map((item, index) => (
+      <Fragment key={index}>
+        <AiAssistantThreadItem
+          item={{
+            type: "question",
+            content: item.question,
+            sources: item.sources,
+            question_id: item.id,
+          }}
+        />
+        <AiAssistantThreadItem
+          item={{
+            type: "answer",
+            content: item.answer,
+            sources: item.sources,
+            question_id: item.id,
+          }}
+        />
+      </Fragment>
     ))
-  }, [getChatThreadItems])
+  }, [conversation])
 
   useSearchNavigation({
     getInputElm: () => inputRef.current as HTMLInputElement | null,
     focusInput: () => inputRef.current?.focus(),
-    handleSubmit,
+    handleSubmit: () => {
+      if (question.length > 0) {
+        submitQuery(question)
+      }
+    },
   })
 
   return (
@@ -101,14 +118,15 @@ export const AiAssistantSearchWindow = () => {
       </div>
       <div className="h-[calc(100%-95px)] lg:max-h-[calc(100%-140px)] lg:min-h-[calc(100%-140px)] overflow-auto">
         <div ref={contentRef}>
-          {!thread.length && <AiAssistantSuggestions className="mx-docs_0.5" />}
+          {!conversation.length && (
+            <AiAssistantSuggestions className="mx-docs_0.5" />
+          )}
           {getThreadItems()}
-          {(answer.length || loading) && (
+          {error?.length && (
             <AiAssistantThreadItem
               item={{
-                type: "answer",
-                content: answer,
-                order: 0,
+                type: "error",
+                content: error,
               }}
             />
           )}
@@ -123,7 +141,7 @@ export const AiAssistantSearchWindow = () => {
       >
         <div className="flex items-center gap-docs_0.75">
           <div className="flex items-center gap-docs_0.5">
-            {thread.length === 0 && (
+            {conversation.length === 0 && (
               <>
                 <span
                   className={clsx(
@@ -153,7 +171,7 @@ export const AiAssistantSearchWindow = () => {
                 </span>
               </>
             )}
-            {thread.length > 0 && (
+            {conversation.length > 0 && (
               <span
                 className={clsx("text-medusa-fg-muted", "text-compact-x-small")}
               >

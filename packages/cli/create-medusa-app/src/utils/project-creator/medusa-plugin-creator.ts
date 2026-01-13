@@ -3,7 +3,6 @@ import boxen from "boxen"
 import chalk from "chalk"
 import { emojify } from "node-emoji"
 import { EOL } from "os"
-import slugifyType from "slugify"
 import { runCloneRepo } from "../clone-repo.js"
 import { isAbortError } from "../create-abort-controller.js"
 import { displayFactBox } from "../facts.js"
@@ -72,6 +71,7 @@ export class PluginProjectCreator
       processManager: this.processManager,
       abortController: this.abortController,
       verbose: this.options.verbose,
+      packageManager: this.packageManager,
     })
   }
 
@@ -91,7 +91,7 @@ export class PluginProjectCreator
     logMessage({
       message: boxen(
         chalk.green(
-          `Change to the \`${this.projectName}\` directory to explore your Medusa plugin.${EOL}${EOL}Check out the Medusa plugin documentation to start your development:${EOL}${EOL}https://docs.medusajs.com/${EOL}${EOL}Star us on GitHub if you like what we're building:${EOL}${EOL}https://github.com/medusajs/medusa/stargazers`
+          `Change to the \`${this.projectName}\` directory to explore your Medusa plugin.${EOL}${EOL}Check out the Medusa plugin documentation to start your development:${EOL}${EOL}https://docs.medusajs.com/learn/fundamentals/plugins${EOL}${EOL}Star us on GitHub if you like what we're building:${EOL}${EOL}https://github.com/medusajs/medusa/stargazers`
         ),
         {
           titleAlignment: "center",

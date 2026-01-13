@@ -303,6 +303,15 @@ const generatedgeneratedToolsSidebarSidebar = {
                   "loaded": true,
                   "isPathHref": true,
                   "type": "link",
+                  "path": "/references/js-sdk/store/locale",
+                  "title": "locale",
+                  "description": "",
+                  "children": []
+                },
+                {
+                  "loaded": true,
+                  "isPathHref": true,
+                  "type": "link",
                   "path": "/references/js-sdk/store/order",
                   "title": "order",
                   "description": "",
@@ -458,6 +467,15 @@ const generatedgeneratedToolsSidebarSidebar = {
                   "type": "link",
                   "path": "/references/js-sdk/admin/invite",
                   "title": "invite",
+                  "description": "",
+                  "children": []
+                },
+                {
+                  "loaded": true,
+                  "isPathHref": true,
+                  "type": "link",
+                  "path": "/references/js-sdk/admin/locale",
+                  "title": "locale",
                   "description": "",
                   "children": []
                 },
@@ -663,6 +681,15 @@ const generatedgeneratedToolsSidebarSidebar = {
                   "loaded": true,
                   "isPathHref": true,
                   "type": "link",
+                  "path": "/references/js-sdk/admin/shippingOptionType",
+                  "title": "shippingOptionType",
+                  "description": "",
+                  "children": []
+                },
+                {
+                  "loaded": true,
+                  "isPathHref": true,
+                  "type": "link",
                   "path": "/references/js-sdk/admin/shippingProfile",
                   "title": "shippingProfile",
                   "description": "",
@@ -717,6 +744,15 @@ const generatedgeneratedToolsSidebarSidebar = {
                   "loaded": true,
                   "isPathHref": true,
                   "type": "link",
+                  "path": "/references/js-sdk/admin/translation",
+                  "title": "translation",
+                  "description": "",
+                  "children": []
+                },
+                {
+                  "loaded": true,
+                  "isPathHref": true,
+                  "type": "link",
                   "path": "/references/js-sdk/admin/upload",
                   "title": "upload",
                   "description": "",
@@ -728,6 +764,15 @@ const generatedgeneratedToolsSidebarSidebar = {
                   "type": "link",
                   "path": "/references/js-sdk/admin/user",
                   "title": "user",
+                  "description": "",
+                  "children": []
+                },
+                {
+                  "loaded": true,
+                  "isPathHref": true,
+                  "type": "link",
+                  "path": "/references/js-sdk/admin/views",
+                  "title": "views",
                   "description": "",
                   "children": []
                 },
@@ -780,16 +825,16 @@ const generatedgeneratedToolsSidebarSidebar = {
                   "loaded": true,
                   "isPathHref": true,
                   "type": "link",
-                  "path": "/nextjs-starter/guides/customize-stripe",
-                  "title": "Customize Stripe Integration",
+                  "path": "/nextjs-starter/guides/revalidate-cache",
+                  "title": "Revalidate Cache",
                   "children": []
                 },
                 {
                   "loaded": true,
                   "isPathHref": true,
                   "type": "link",
-                  "path": "/nextjs-starter/guides/revalidate-cache",
-                  "title": "Revalidate Cache",
+                  "path": "/nextjs-starter/guides/remove-country-code",
+                  "title": "Remove Country Code from URLs",
                   "children": []
                 }
               ]
@@ -807,8 +852,96 @@ const generatedgeneratedToolsSidebarSidebar = {
                   "loaded": true,
                   "isPathHref": true,
                   "type": "ref",
+                  "title": "Add Gift Message",
+                  "path": "https://docs.medusajs.com/resources/how-to-tutorials/tutorials/gift-message",
+                  "children": []
+                },
+                {
+                  "loaded": true,
+                  "isPathHref": true,
+                  "type": "link",
+                  "path": "/nextjs-starter/guides/storefront-returns",
+                  "title": "Create Order Returns",
+                  "children": []
+                },
+                {
+                  "loaded": true,
+                  "isPathHref": true,
+                  "type": "ref",
+                  "title": "Customer Tiers",
+                  "path": "https://docs.medusajs.com/resources/how-to-tutorials/tutorials/customer-tiers",
+                  "children": []
+                },
+                {
+                  "loaded": true,
+                  "isPathHref": true,
+                  "type": "ref",
+                  "title": "First-Purchase Discount",
+                  "path": "https://docs.medusajs.com/resources/how-to-tutorials/tutorials/first-purchase-discounts",
+                  "children": []
+                },
+                {
+                  "loaded": true,
+                  "isPathHref": true,
+                  "type": "ref",
+                  "title": "Generate Invoices",
+                  "path": "https://docs.medusajs.com/resources/how-to-tutorials/tutorials/invoice-generator",
+                  "children": []
+                },
+                {
+                  "loaded": true,
+                  "isPathHref": true,
+                  "type": "ref",
+                  "title": "Implement Pre-Orders",
+                  "path": "https://docs.medusajs.com/resources/how-to-tutorials/tutorials/preorder",
+                  "children": []
+                },
+                {
+                  "loaded": true,
+                  "isPathHref": true,
+                  "type": "ref",
+                  "title": "Implement Product Builder",
+                  "path": "https://docs.medusajs.com/resources/how-to-tutorials/tutorials/product-builder",
+                  "children": []
+                },
+                {
+                  "loaded": true,
+                  "isPathHref": true,
+                  "type": "ref",
+                  "title": "Implement Product Rentals",
+                  "path": "https://docs.medusajs.com/resources/how-to-tutorials/tutorials/product-rentals",
+                  "children": []
+                },
+                {
+                  "loaded": true,
+                  "isPathHref": true,
+                  "type": "ref",
+                  "title": "Megamenu and Category Banner",
+                  "path": "https://docs.medusajs.com/resources/how-to-tutorials/tutorials/category-images",
+                  "children": []
+                },
+                {
+                  "loaded": true,
+                  "isPathHref": true,
+                  "type": "ref",
                   "title": "Saved Payment Methods",
                   "path": "https://docs.medusajs.com/resources/how-to-tutorials/tutorials/saved-payment-methods",
+                  "children": []
+                },
+                {
+                  "loaded": true,
+                  "isPathHref": true,
+                  "type": "ref",
+                  "title": "Ticket Booking Storefront",
+                  "path": "https://docs.medusajs.com/resources/recipes/ticket-booking/example/storefront",
+                  "children": []
+                },
+                {
+                  "loaded": true,
+                  "isPathHref": true,
+                  "type": "link",
+                  "path": "/nextjs-starter/guides/customize-stripe",
+                  "title": "Use Stripe's Payment Element",
                   "children": []
                 }
               ]

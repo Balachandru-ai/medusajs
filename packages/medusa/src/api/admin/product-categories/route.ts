@@ -10,13 +10,13 @@ export const GET = async (
   req: AuthenticatedMedusaRequest<HttpTypes.AdminProductCategoryListParams>,
   res: MedusaResponse<HttpTypes.AdminProductCategoryListResponse>
 ) => {
-  const { rows: product_categories, metadata } = await refetchEntities(
-    "product_category",
-    req.filterableFields,
-    req.scope,
-    req.queryConfig.fields,
-    req.queryConfig.pagination
-  )
+  const { data: product_categories, metadata } = await refetchEntities({
+    entity: "product_category",
+    idOrFilter: req.filterableFields,
+    scope: req.scope,
+    fields: req.queryConfig.fields,
+    pagination: req.queryConfig.pagination,
+  })
 
   res.json({
     product_categories,
@@ -27,19 +27,25 @@ export const GET = async (
 }
 
 export const POST = async (
-  req: AuthenticatedMedusaRequest<HttpTypes.AdminCreateProductCategory>,
+  req: AuthenticatedMedusaRequest<
+    HttpTypes.AdminCreateProductCategory,
+    HttpTypes.AdminProductCategoryParams
+  >,
   res: MedusaResponse<HttpTypes.AdminProductCategoryResponse>
 ) => {
   const { result } = await createProductCategoriesWorkflow(req.scope).run({
     input: { product_categories: [req.validatedBody] },
   })
 
-  const [category] = await refetchEntities(
-    "product_category",
-    { id: result[0].id, ...req.filterableFields },
-    req.scope,
-    req.queryConfig.fields
-  )
+  const {
+    data: [category],
+  } = await refetchEntities({
+    entity: "product_category",
+    idOrFilter: { id: result[0].id, ...req.filterableFields },
+    scope: req.scope,
+    fields: req.queryConfig.fields,
+    pagination: req.queryConfig.pagination,
+  })
 
   res.status(200).json({ product_category: category })
 }

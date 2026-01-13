@@ -102,16 +102,7 @@ post:
     content:
       application/json:
         schema:
-          type: object
-          description: The properties to update in the product type.
-          properties:
-            value:
-              type: string
-              title: value
-              description: The product type's value.
-            metadata:
-              type: object
-              description: The product type's metadata. Can hold custom key-value pairs.
+          $ref: ../components/schemas/AdminUpdateProductType.yaml
   x-codeSamples:
     - lang: JavaScript
       label: JS SDK
@@ -147,9 +138,9 @@ post:
     - name: product-type.updated
       payload: |-
         ```ts
-        [{
+        {
           id, // The ID of the product type
-        }]
+        }
         ```
       description: Emitted when product types are updated.
       deprecated: false
@@ -204,9 +195,9 @@ delete:
     - name: product-type.deleted
       payload: |-
         ```ts
-        [{
+        {
           id, // The ID of the product type
-        }]
+        }
         ```
       description: Emitted when product types are deleted.
       deprecated: false

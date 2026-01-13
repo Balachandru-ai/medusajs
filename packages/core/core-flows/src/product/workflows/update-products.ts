@@ -27,6 +27,7 @@ import {
   useRemoteQueryStep,
 } from "../../common"
 import { upsertVariantPricesWorkflow } from "./upsert-variant-prices"
+import { dismissProductVariantsInventoryStep } from "../steps/dismiss-product-variants-inventory"
 
 /**
  * Update products that match a specified selector, along with custom data that's passed to the workflow's hooks.
@@ -343,12 +344,12 @@ export const updateProductsWorkflowId = "update-products"
  * allows you to update custom data models linked to the products.
  *
  * You can also use this workflow within your customizations or your own custom workflows, allowing you to wrap custom logic around product update.
- * 
+ *
  * :::note
- * 
- * Learn more about adding rules to the product variant's prices in the Pricing Module's 
+ *
+ * Learn more about adding rules to the product variant's prices in the Pricing Module's
  * [Price Rules](https://docs.medusajs.com/resources/commerce-modules/pricing/price-rules) documentation.
- * 
+ *
  * :::
  *
  * @example
@@ -443,6 +444,35 @@ export const updateProductsWorkflow = createWorkflow(
 
     const toUpdateInput = transform({ input }, prepareUpdateProductInput)
     const updatedProducts = updateProductsStep(toUpdateInput)
+
+    const variantsToDismissInventory = transform(
+      { input, updatedProducts },
+      (data) => {
+        const variantIds: string[] = []
+
+        if ("products" in data.input) {
+          for (const product of data.input.products) {
+            for (const variant of product.variants ?? []) {
+              if (variant.id && variant.manage_inventory === false) {
+                variantIds.push(variant.id)
+              }
+            }
+          }
+        } else if (data.input.update?.variants?.length) {
+          for (const variant of data.input.update.variants) {
+            if (variant.id && variant.manage_inventory === false) {
+              variantIds.push(variant.id)
+            }
+          }
+        }
+
+        return variantIds
+      }
+    )
+
+    dismissProductVariantsInventoryStep({
+      variantIds: variantsToDismissInventory,
+    })
 
     const salesChannelLinks = transform(
       { input, updatedProducts },

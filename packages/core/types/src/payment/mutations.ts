@@ -1,5 +1,5 @@
 import { BigNumberInput } from "../totals"
-import { PaymentCollectionStatus } from "./common"
+import { PaymentCollectionStatus, PaymentSessionStatus } from "./common"
 import {
   PaymentAccountHolderDTO,
   PaymentCustomerDTO,
@@ -151,6 +151,11 @@ export interface CreateCaptureDTO {
    * a user's ID.
    */
   captured_by?: string
+
+  /**
+   * Whether the capture was automatically captured.
+   */
+  is_captured?: boolean
 }
 
 /**
@@ -212,6 +217,11 @@ export interface CreatePaymentSessionDTO {
    * Necessary context data for the associated payment provider.
    */
   context?: PaymentProviderContext
+
+  /**
+   * Holds custom data in key-value pairs.
+   */
+  metadata?: Record<string, unknown>
 }
 
 /**
@@ -239,9 +249,19 @@ export interface UpdatePaymentSessionDTO {
   amount: BigNumberInput
 
   /**
+   * The status of the payment session.
+   */
+  status?: PaymentSessionStatus
+
+  /**
    * Necessary context data for the associated payment provider.
    */
   context?: PaymentProviderContext
+
+  /**
+   * Holds custom data in key-value pairs.
+   */
+  metadata?: Record<string, unknown>
 }
 
 /**
@@ -341,6 +361,10 @@ export interface CreateRefundReasonDTO {
    * The label of the refund reason
    */
   label: string
+  /**
+   * The code of the refund reason
+   */
+  code: string
   /**
    * The description of the refund reason
    */

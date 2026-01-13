@@ -31,7 +31,7 @@
  *   content:
  *     application/json:
  *       schema:
- *         $ref: "#/components/schemas/AdminPostReturnsReturnReqSchema"
+ *         $ref: "#/components/schemas/AdminUpdateReturnRequest"
  * x-codeSamples:
  *   - lang: JavaScript
  *     label: JS SDK
@@ -56,7 +56,7 @@
  *     label: cURL
  *     source: |-
  *       curl -X POST '{backend_url}/admin/returns/{id}' \
- *       -H 'Authorization: Bearer {access_token}' \
+ *       -H 'Authorization: Bearer {jwt_token}' \
  *       -H 'Content-Type: application/json' \
  *       --data-raw '{
  *         "metadata": {}

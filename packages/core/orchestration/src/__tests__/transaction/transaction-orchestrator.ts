@@ -1,4 +1,8 @@
-import { TransactionStepState, TransactionStepStatus } from "@medusajs/utils"
+import {
+  MedusaError,
+  TransactionStepState,
+  TransactionStepStatus,
+} from "@medusajs/utils"
 import { setTimeout } from "timers/promises"
 import {
   DistributedTransaction,
@@ -203,7 +207,6 @@ describe("Transaction Orchestrator", () => {
         },
         {
           action: "three",
-          async: true,
           maxRetries: 0,
           next: {
             action: "five",
@@ -224,23 +227,13 @@ describe("Transaction Orchestrator", () => {
 
     await strategy.resume(transaction)
 
-    expect(transaction.getErrors()).toHaveLength(2)
+    expect(transaction.getErrors()).toHaveLength(1)
     expect(transaction.getErrors()).toEqual([
       {
         action: "three",
-        error: {
+        error: expect.objectContaining({
           message: "Step 3 failed",
           name: "Error",
-          stack: expect.any(String),
-        },
-        handlerType: "invoke",
-      },
-      {
-        action: "three",
-        error: expect.objectContaining({
-          message: expect.stringContaining(
-            "Converting circular structure to JSON"
-          ),
           stack: expect.any(String),
         }),
         handlerType: "invoke",
@@ -644,6 +637,116 @@ describe("Transaction Orchestrator", () => {
     )
   })
 
+  it("Should not retry steps X times automatically when flag 'autoRetry' is set to false and then compensate steps afterward", async () => {
+    const mocks = {
+      one: jest.fn().mockImplementation((payload) => {
+        return payload
+      }),
+      compensateOne: jest.fn().mockImplementation((payload) => {
+        return payload
+      }),
+      two: jest.fn().mockImplementation((payload) => {
+        throw new Error()
+      }),
+      compensateTwo: jest.fn().mockImplementation((payload) => {
+        return payload
+      }),
+    }
+
+    async function handler(
+      actionId: string,
+      functionHandlerType: TransactionHandlerType,
+      payload: TransactionPayload
+    ) {
+      const command = {
+        firstMethod: {
+          [TransactionHandlerType.INVOKE]: () => {
+            mocks.one(payload)
+          },
+          [TransactionHandlerType.COMPENSATE]: () => {
+            mocks.compensateOne(payload)
+          },
+        },
+        secondMethod: {
+          [TransactionHandlerType.INVOKE]: () => {
+            mocks.two(payload)
+          },
+          [TransactionHandlerType.COMPENSATE]: () => {
+            mocks.compensateTwo(payload)
+          },
+        },
+      }
+
+      return command[actionId][functionHandlerType](payload)
+    }
+
+    const flow: TransactionStepsDefinition = {
+      next: {
+        action: "firstMethod",
+        maxRetries: 3,
+        autoRetry: false,
+        next: {
+          action: "secondMethod",
+          maxRetries: 3,
+          autoRetry: false,
+        },
+      },
+    }
+
+    const strategy = new TransactionOrchestrator({
+      id: "transaction-name",
+      definition: flow,
+    })
+
+    const transaction = await strategy.beginTransaction({
+      transactionId: "transaction_id_123",
+      handler,
+    })
+
+    await strategy.resume(transaction)
+
+    expect(transaction.transactionId).toBe("transaction_id_123")
+
+    expect(mocks.one).toHaveBeenCalledTimes(1)
+    expect(mocks.two).toHaveBeenCalledTimes(1)
+
+    await strategy.resume(transaction)
+
+    expect(mocks.one).toHaveBeenCalledTimes(1)
+    expect(mocks.two).toHaveBeenCalledTimes(2)
+
+    await strategy.resume(transaction)
+
+    expect(mocks.one).toHaveBeenCalledTimes(1)
+    expect(mocks.two).toHaveBeenCalledTimes(3)
+
+    await strategy.resume(transaction)
+
+    expect(mocks.one).toHaveBeenCalledTimes(1)
+    expect(mocks.two).toHaveBeenCalledTimes(4)
+
+    expect(transaction.getState()).toBe(TransactionState.REVERTED)
+    expect(mocks.compensateOne).toHaveBeenCalledTimes(1)
+
+    expect(mocks.two).nthCalledWith(
+      1,
+      expect.objectContaining({
+        metadata: expect.objectContaining({
+          attempt: 1,
+        }),
+      })
+    )
+
+    expect(mocks.two).nthCalledWith(
+      4,
+      expect.objectContaining({
+        metadata: expect.objectContaining({
+          attempt: 4,
+        }),
+      })
+    )
+  })
+
   it("Should fail a transaction if any step fails after retrying X time to compensate it", async () => {
     const mocks = {
       one: jest.fn().mockImplementation((payload) => {
@@ -688,6 +791,136 @@ describe("Transaction Orchestrator", () => {
 
     expect(mocks.one).toHaveBeenCalledTimes(2)
     expect(transaction.getState()).toBe(TransactionState.FAILED)
+  })
+
+  it("Should handle multiple types of errors", async () => {
+    const errorTypes = [
+      new Error("Regular error object"),
+      new MedusaError(MedusaError.Types.NOT_FOUND, "Not found error"),
+      { message: "Custom error object" },
+      "String error",
+      123,
+      {},
+      null,
+      [1, 2, "b"],
+      new Date(),
+    ]
+    async function handler(
+      actionId: string,
+      functionHandlerType: TransactionHandlerType,
+      payload: TransactionPayload
+    ) {
+      const command = {
+        [actionId]: {
+          [TransactionHandlerType.INVOKE]: () => {
+            throw errorTypes[+actionId.slice(-1) - 1]
+          },
+        },
+      }
+
+      return command[actionId][functionHandlerType](payload)
+    }
+
+    const flow: TransactionStepsDefinition = {
+      next: Array.from({ length: errorTypes.length }, (_, i) => ({
+        action: `a${i + 1}`,
+        maxRetries: 0,
+        noCompensation: true,
+      })),
+    }
+
+    const strategy = new TransactionOrchestrator({
+      id: "transaction-name",
+      definition: flow,
+    })
+
+    const transaction = await strategy.beginTransaction({
+      transactionId: "transaction_id_123",
+      handler,
+    })
+
+    await strategy.resume(transaction)
+
+    expect(transaction.getErrors()).toEqual([
+      {
+        action: "a1",
+        handlerType: "invoke",
+        error: {
+          message: "Regular error object",
+          name: "Error",
+          stack: expect.stringContaining("transaction-name -> a1 (invoke)"),
+        },
+      },
+      {
+        action: "a2",
+        handlerType: "invoke",
+        error: {
+          message: "Not found error",
+          name: "Error",
+          stack: expect.stringContaining("transaction-name -> a2 (invoke)"),
+          type: "not_found",
+          __isMedusaError: true,
+          code: undefined,
+          date: expect.any(Date),
+        },
+      },
+      {
+        action: "a3",
+        handlerType: "invoke",
+        error: {
+          message: "Custom error object",
+          stack: expect.stringContaining("transaction-name -> a3 (invoke)"),
+        },
+      },
+      {
+        action: "a4",
+        handlerType: "invoke",
+        error: {
+          message: '"String error"',
+          stack: expect.stringContaining("transaction-name -> a4 (invoke)"),
+        },
+      },
+      {
+        action: "a5",
+        handlerType: "invoke",
+        error: {
+          message: "123",
+          stack: expect.stringContaining("transaction-name -> a5 (invoke)"),
+        },
+      },
+      {
+        action: "a6",
+        handlerType: "invoke",
+        error: {
+          message: "{}",
+          stack: expect.stringContaining("transaction-name -> a6 (invoke)"),
+        },
+      },
+      {
+        action: "a7",
+        handlerType: "invoke",
+        error: {
+          message: "null",
+          stack: expect.stringContaining("transaction-name -> a7 (invoke)"),
+        },
+      },
+      {
+        action: "a8",
+        handlerType: "invoke",
+        error: {
+          message: '[1,2,"b"]',
+          stack: expect.stringContaining("transaction-name -> a8 (invoke)"),
+        },
+      },
+      {
+        action: "a9",
+        handlerType: "invoke",
+        error: {
+          message: expect.any(String),
+          stack: expect.stringContaining("transaction-name -> a9 (invoke)"),
+        },
+      },
+    ])
   })
 
   it("Should complete a transaction if a failing step has the flag 'continueOnPermanentFailure' set to true", async () => {
@@ -808,6 +1041,8 @@ describe("Transaction Orchestrator", () => {
 
     await strategy.resume(transaction)
 
+    await new Promise((resolve) => process.nextTick(resolve))
+
     expect(mocks.one).toHaveBeenCalledTimes(1)
     expect(mocks.two).toHaveBeenCalledTimes(0)
     expect(transaction.getState()).toBe(TransactionState.INVOKING)
@@ -904,6 +1139,8 @@ describe("Transaction Orchestrator", () => {
 
     await strategy.resume(transaction)
 
+    await new Promise((resolve) => process.nextTick(resolve))
+
     expect(mocks.one).toHaveBeenCalledTimes(1)
     expect(mocks.compensateOne).toHaveBeenCalledTimes(0)
     expect(mocks.two).toHaveBeenCalledTimes(0)
@@ -926,6 +1163,8 @@ describe("Transaction Orchestrator", () => {
       handler,
       transaction,
     })
+
+    await new Promise((resolve) => process.nextTick(resolve))
 
     expect(resumedTransaction.getState()).toBe(TransactionState.COMPENSATING)
     expect(mocks.compensateOne).toHaveBeenCalledTimes(1)
@@ -1019,6 +1258,7 @@ describe("Transaction Orchestrator", () => {
     })
 
     await strategy.resume(transaction)
+    await new Promise((resolve) => process.nextTick(resolve))
 
     expect(mocks.one).toHaveBeenCalledTimes(1)
     expect(mocks.compensateOne).toHaveBeenCalledTimes(1)
@@ -1091,6 +1331,7 @@ describe("Transaction Orchestrator", () => {
     })
 
     await strategy.resume(transaction)
+    await new Promise((resolve) => process.nextTick(resolve))
 
     expect(transaction.getState()).toBe(TransactionState.DONE)
     expect(mocks.one).toHaveBeenCalledTimes(1)

@@ -1,19 +1,19 @@
 "use client"
 
 import { useCallback, useEffect, useMemo } from "react"
-import { useAiAssistant } from "@/providers"
+import { useAiAssistant } from "@/providers/AiAssistant"
 import { findNextSibling, findPrevSibling } from "@/utils"
 import {
   useKeyboardShortcut,
   type useKeyboardShortcutOptions,
 } from "../use-keyboard-shortcut"
-import { useAiAssistantChat } from "../../providers/AiAssistant/Chat"
 
 export type UseAiAssistantChatNavigationProps = {
   getChatWindowElm: () => HTMLElement | null
   getInputElm: () => HTMLTextAreaElement | null
   focusInput: () => void
   keyboardProps?: Partial<useKeyboardShortcutOptions>
+  question: string
 }
 
 export const useAiAssistantChatNavigation = ({
@@ -21,10 +21,10 @@ export const useAiAssistantChatNavigation = ({
   focusInput,
   keyboardProps,
   getChatWindowElm,
+  question,
 }: UseAiAssistantChatNavigationProps) => {
   const shortcutKeys = useMemo(() => ["ArrowUp", "ArrowDown", "Enter"], [])
   const { chatOpened } = useAiAssistant()
-  const { question } = useAiAssistantChat()
 
   const handleKeyAction = (e: KeyboardEvent) => {
     const chatElm = getChatWindowElm()

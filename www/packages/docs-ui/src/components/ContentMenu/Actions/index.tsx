@@ -1,12 +1,13 @@
 "use client"
 
 import Link from "next/link"
-import React from "react"
+import React, { useMemo } from "react"
 import { MarkdownIcon } from "../../Icons/Markdown"
-import { useAiAssistant, useSiteConfig } from "../../../providers"
+import { useSiteConfig } from "@/providers/SiteConfig"
+import { useAiAssistant } from "@/providers/AiAssistant"
 import { usePathname } from "next/navigation"
 import { BroomSparkle } from "@medusajs/icons"
-import { useAiAssistantChat } from "../../../providers/AiAssistant/Chat"
+import { useChat } from "@kapaai/react-sdk"
 
 export const ContentMenuActions = () => {
   const {
@@ -14,14 +15,18 @@ export const ContentMenuActions = () => {
   } = useSiteConfig()
   const pathname = usePathname()
   const { setChatOpened } = useAiAssistant()
-  const { setQuestion, loading } = useAiAssistantChat()
+  const { isGeneratingAnswer, isPreparingAnswer, submitQuery } = useChat()
+  const loading = useMemo(
+    () => isGeneratingAnswer || isPreparingAnswer,
+    [isGeneratingAnswer, isPreparingAnswer]
+  )
   const pageUrl = `${baseUrl}${basePath}${pathname}`
 
   const handleAiAssistantClick = () => {
     if (loading) {
       return
     }
-    setQuestion(`Explain the page ${pageUrl}`)
+    submitQuery(`Explain the page ${pageUrl}`)
     setChatOpened(true)
   }
 
@@ -30,6 +35,7 @@ export const ContentMenuActions = () => {
       <Link
         className="flex items-center gap-docs_0.5 text-medusa-fg-subtle text-x-small-plus hover:text-medusa-fg-base"
         href={`${pageUrl}/index.html.md`}
+        data-testid="markdown-link"
       >
         <MarkdownIcon width={15} height={15} />
         View as Markdown
@@ -37,6 +43,7 @@ export const ContentMenuActions = () => {
       <button
         className="appearance-none p-0 flex items-center gap-docs_0.5 text-medusa-fg-subtle text-x-small-plus hover:text-medusa-fg-base"
         onClick={handleAiAssistantClick}
+        data-testid="ai-assistant-button"
       >
         <BroomSparkle width={15} height={15} />
         Explain with AI Assistant

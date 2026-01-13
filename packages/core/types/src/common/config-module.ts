@@ -1,12 +1,33 @@
+import type { Secret, SignOptions, VerifyOptions } from "jsonwebtoken"
 import {
   ExternalModuleDeclaration,
   InternalModuleDeclaration,
 } from "../modules-sdk"
 
 import type { RedisOptions } from "ioredis"
+
 import { ConnectionOptions } from "node:tls"
 // @ts-ignore
 import type { InlineConfig } from "vite"
+import type { Logger } from "../logger"
+
+/**
+ * Registry for module options types. Modules can augment this interface
+ * using declaration merging to provide typed options in defineConfig.
+ *
+ * @example
+ * ```ts
+ * // In @medusajs/translation module:
+ * declare module "@medusajs/types" {
+ *   interface ModuleOptions {
+ *     "@medusajs/translation": {
+ *       entities?: { type: string; fields: string[] }[]
+ *     }
+ *   }
+ * }
+ * ```
+ */
+export interface ModuleOptions {}
 
 /**
  * @interface
@@ -171,6 +192,22 @@ export type SessionOptions = {
 /**
  * @interface
  *
+ * Options to pass to `express-session`.
+ */
+export type CookieOptions = Record<string, any> & {
+  secure?: boolean
+  sameSite?: "lax" | "strict" | "none"
+  maxAge?: number
+  httpOnly?: boolean
+  priority?: "low" | "medium" | "high"
+  domain?: string
+  path?: string
+  signed?: boolean
+}
+
+/**
+ * @interface
+ *
  * HTTP compression configurations.
  */
 export type HttpCompressionOptions = {
@@ -193,6 +230,54 @@ export type HttpCompressionOptions = {
    * [bytes](https://www.npmjs.com/package/bytes) module. The default value is `1024`.
    */
   threshold?: number | string
+}
+
+/**
+ * @interface
+ *
+ * Medusa Cloud configurations.
+ */
+export type MedusaCloudOptions = {
+  /**
+   * The environment handle of the Medusa Cloud environment.
+   */
+  environmentHandle?: string
+  /**
+   * The sandbox handle of the Medusa Cloud sandbox.
+   */
+  sandboxHandle?: string
+  /**
+   * The API key used to access Medusa Cloud services.
+   */
+  apiKey?: string
+  /**
+   * The webhook secret used to verify webhooks.
+   */
+  webhookSecret?: string
+  /**
+   * The endpoint of the Medusa Cloud payment service.
+   */
+  paymentsEndpoint?: string
+  /**
+   * The endpoint of the Medusa Cloud email service.
+   */
+  emailsEndpoint?: string
+  /**
+   * The authorization endpoint of the Medusa Cloud OAuth service.
+   */
+  oauthAuthorizeEndpoint?: string
+  /**
+   * The token endpoint of the Medusa Cloud OAuth token service.
+   */
+  oauthTokenEndpoint?: string
+  /**
+   * The callback URL for the Medusa Cloud OAuth service. If not provided, it will be set to `${AdminOptions.backendUrl}/auth/user/cloud/callback`.
+   */
+  oauthCallbackUrl?: string
+  /**
+   * Whether the Medusa Cloud OAuth service is disabled.
+   */
+  oauthDisabled?: boolean
 }
 
 /**
@@ -412,6 +497,8 @@ export type ProjectConfigOptions = {
    */
   sessionOptions?: SessionOptions
 
+  cookieOptions?: CookieOptions
+
   /**
    * Configure the number of staged jobs that are polled from the database. Default is `1000`.
    *
@@ -505,7 +592,70 @@ export type ProjectConfigOptions = {
      * })
      * ```
      */
-    jwtSecret?: string
+    jwtSecret?: Secret
+
+    /**
+     * The public key used to verify the JWT token in combination with the JWT secret and the JWT options.
+     * Only used when the JWT secret is a secret key for asymetric validation.
+     *
+     * @example
+     * ```js title="medusa-config.ts"
+     * module.exports = defineConfig({
+     *   projectConfig: {
+     *     http: {
+     *       jwtPublicKey: "public-key"
+     *     }
+     *     // ...
+     *   },
+     *   // ...
+     * })
+     * ```
+     */
+    jwtPublicKey?: Secret
+
+    /**
+     * Options for the JWT token when using asymetric signing private/public key. Will be used for validation if `jwtVerifyOptions` is not provided.
+     *
+     * @example
+     * ```js title="medusa-config.ts"
+     * module.exports = defineConfig({
+     *   projectConfig: {
+     *     http: {
+     *       jwtOptions: {
+     *         algorithm: "RS256",
+     *         expiresIn: "1h",
+     *         issuer: "medusa",
+     *         keyid: "medusa",
+     *       }
+     *     }
+     *     // ...
+     *   },
+     *   // ...
+     * })
+     * ```
+     */
+    jwtOptions?: SignOptions
+
+    /**
+     * Options for the JWT token when using asymetric validation private/public key.
+     *
+     * @example
+     * ```js title="medusa-config.ts"
+     * module.exports = defineConfig({
+     *   projectConfig: {
+     *     http: {
+     *       jwtVerifyOptions: {
+     *         // ...
+     *       }
+     *     }
+     *     // ...
+     *   },
+     *   // ...
+     * })
+     * ```
+     */
+    jwtVerifyOptions?: VerifyOptions
+
     /**
      * The expiration time for the JWT token. Its format is based off the [ms package](https://github.com/vercel/ms).
      *
@@ -782,6 +932,12 @@ export type ProjectConfigOptions = {
       /*admin?: string[]*/
     }
   }
+
+  /**
+   * This property holds configurations for running in Medusa Cloud.
+   * It gets automatically populated in the cloud, and is not needed outside of it.
+   */
+  cloud?: MedusaCloudOptions
 }
 
 /**
@@ -837,7 +993,7 @@ export type ProjectConfigOptions = {
  */
 export type ConfigModule = {
   /**
-   * This property holds essential configurations related to the Medusa application, such as database and CORS configurations.
+   * This property holds essential configurations related to the Medusa application, such as database, CORS configurations and Logger.
    */
   projectConfig: ProjectConfigOptions
 
@@ -945,7 +1101,7 @@ export type ConfigModule = {
    *
    * The `featureFlags`'s value is an object. Its properties are the names of the feature flags, and their value is a boolean indicating whether the feature flag is enabled.
    *
-   * You can find available feature flags and their key name [here](https://github.com/medusajs/medusa/tree/develop/packages/medusa/src/loaders/feature-flags).
+   * You can find available feature flags and their key name [here](https://github.com/medusajs/medusa/tree/develop/packages/medusa/src/feature-flags).
    *
    * @example
    * ```ts title="medusa-config.ts"
@@ -965,17 +1121,11 @@ export type ConfigModule = {
    * :::
    */
   featureFlags: Record<string, boolean | string | Record<string, boolean>>
-}
 
-type InternalModuleDeclarationOverride = InternalModuleDeclaration & {
   /**
-   * Optional key to be used to identify the module, if not provided, it will be inferred from the module joiner config service name.
+   * The Logger instance to be used by the application.
    */
-  key?: string
-  /**
-   * By default, modules are enabled, if provided as true, this will disable the module entirely.
-   */
-  disable?: boolean
+  logger?: Logger
 }
 
 type ExternalModuleDeclarationOverride = ExternalModuleDeclaration & {
@@ -990,11 +1140,41 @@ type ExternalModuleDeclarationOverride = ExternalModuleDeclaration & {
 }
 
 /**
- * Modules accepted by the defineConfig function
+ * Generates a union of typed module configs for all known modules in the ModuleOptions registry.
+ * This enables automatic type inference when using registered module resolve strings.
  */
-export type InputConfigModules = Partial<
-  InternalModuleDeclarationOverride | ExternalModuleDeclarationOverride
->[]
+type KnownModuleConfigs = {
+  [K in keyof ModuleOptions]: Partial<
+    Omit<InternalModuleDeclaration, "options"> & {
+      key?: string
+      disable?: boolean
+      resolve: K
+      options?: ModuleOptions[K]
+    }
+  >
+}[keyof ModuleOptions]
+
+/**
+ * Generic module config for modules not registered in ModuleOptions.
+ */
+type GenericModuleConfig = Partial<
+  Omit<InternalModuleDeclaration, "options"> & {
+    key?: string
+    disable?: boolean
+    resolve?: string
+    options?: Record<string, unknown>
+  }
+>
+
+/**
+ * Modules accepted by the defineConfig function.
+ * Automatically infers options type for known modules registered in ModuleOptions.
+ */
+export type InputConfigModules = (
+  | KnownModuleConfigs
+  | GenericModuleConfig
+  | ExternalModuleDeclarationOverride
+)[]
 
 /**
  * The configuration accepted by the "defineConfig" helper

@@ -45,7 +45,7 @@ Find tips to use lists effectively in [this guide](../../tips/lists/page.mdx).
 To create a campaign:
 
 1. Go to Promotions -> Campaigns from the sidebar.
-2. Click on the Create button at the top right.
+2. Click on the Create button in the main section's header.
 3. In the form that opens:
     - Enter the campaign's name and identifier in their respective fields.
     - Optionally add a description in the Description field.
@@ -53,15 +53,25 @@ To create a campaign:
     - Optionally set an end date in the "End date" field. Promotions in this campaign are expired after this date.
     - You can set a campaign budget of the following types:
         - **Usage**: How many times the promotions in the campaign can be used. Once the number of times exceed the limit, the campaign and its promotions expire.
-        - **Spend**: The total amount that can be discounted by the promotions in the campaign. Once the total amount discounted exceeds the limit, the campaign and its promotions expire. This is not applicable to "Buy X Get Y" promotions.
+        - **Spend**: The total amount that can be discounted by the promotions in the campaign. Once the total amount discounted exceeds the limit, the campaign and its promotions expire. This is not applicable to "Buy X Get Y" or "Free Shipping" promotions.
     - If you chose the **Spend** type, select the currency of the limit in the "Currency" field.
         - When adding promotions to the campaign later, promotions that discount a fixed amount can only be added if the currency matches the campaign budget's currency.
-    - In the Limit field, you can set a campaign budget limit based on the type you chose.
+    - In the **Limit** field, you can set a campaign budget limit based on the type you chose.
         - If you chose **Usage**, enter the number of times the promotions in the campaign can be used.
         - If you chose **Spend**, enter the total amount that can be discounted by the promotions in the campaign.
+    - If you chose the **Usage** type, you can optionally set the **Limit usage per** field to apply the limitation for each customer or email.
+        - If you don't select any condition, the limit is applied globally. For example, if the limit is set to 5, the promotions in the campaign can be used a total of 5 times.
+        - If you select "Customer", the limit is applied for each customer based on their unique identifier. For example, if the limit is set to 5, each customer can use the promotions in the campaign 5 times.
+        - If you select "Customer Email", the limit is applied for each customer based on their email address. For example, if the limit is set to 5, each unique email address can use the promotions in the campaign 5 times.
 4. Once you're done, click the Create button.
 
-![Create Campaign Form](https://res.cloudinary.com/dza7lstvk/image/upload/v1739953632/User%20Guide/Screenshot_2025-02-19_at_10.27.00_AM_u4w38d.png)
+<Note>
+
+The **Limit usage per** field is available from [Medusa Admin v2.11.0](https://github.com/medusajs/medusa/releases/tag/v2.11.0). If you don't see it, request your technical team to [upgrade your Medusa application](!docs!/learn/update).
+
+</Note>
+
+![Create Campaign Form](https://res.cloudinary.com/dza7lstvk/image/upload/v1760349967/User%20Guide/CleanShot_2025-10-13_at_13.05.33_2x_xq5ec5.png)
 
 ---
 
@@ -78,7 +88,7 @@ This opens the campaign's details page.
 
 ### Campaign Statuses
 
-At the top right of the first section, you can see the campaign's status. The status can be one of the following:
+In the first section's header, you can see the campaign's status. The status can be one of the following:
 
 <Table>
   <Table.Header>
@@ -110,7 +120,7 @@ At the top right of the first section, you can see the campaign's status. The st
 To edit the details of a campaign:
 
 1. Go to the campaign's details page.
-2. Click the <InlineIcon Icon={EllipsisHorizontal} alt="three-dots" /> icon at the top right of the first section.
+2. Click the <InlineIcon Icon={EllipsisHorizontal} alt="three-dots" /> icon in the first section's header.
 3. Choose Edit from the dropdown.
 4. In the side window that opens, you can edit the campaign's name, description, identifier, and start and end dates.
 5. Once you're done, click the Save button.
@@ -124,12 +134,29 @@ To edit the details of a campaign:
 To edit a campaign's budget usage or spending limit:
 
 1. Go to the campaign's details page.
-2. Click the <InlineIcon Icon={EllipsisHorizontal} alt="three-dots" /> icon at the top right of the "Budget Limit" section.
+2. Click the <InlineIcon Icon={EllipsisHorizontal} alt="three-dots" /> icon in the "Budget Limit" section's header.
 3. Choose Edit from the dropdown.
 4. In the side window that opens, you can edit the budget limit.
 5. Once you're done, click the Save button.
 
 ![Edit Campaign Budget Limit](https://res.cloudinary.com/dza7lstvk/image/upload/v1739955041/User%20Guide/Screenshot_2025-02-19_at_10.50.32_AM_wsvwko.png)
+
+---
+
+## Information that Can't be Edited in Campaign
+
+After creating a campaign, you can't edit the following information:
+
+1. The campaign's budget type (usage or spend).
+2. The campaign's budget currency (if the type is spend).
+3. The campaign's budget "limit usage per" condition (customer or customer email).
+
+If you need to change any of this information, you should either:
+
+1. [Delete the campaign](#delete-campaign).
+2. Expire the campaign by [setting an end date in the past](#edit-campaign-details).
+
+Then, create a new campaign with the correct information and [add promotions to it](#manage-promotions-of-campaign).
 
 ---
 
@@ -148,7 +175,7 @@ You can only add promotions that don't belong to another campaign.
 </Note>
 
 1. Go to the campaign's details page.
-2. Click on the Add button at the top right of the "Promotions" section.
+2. Click on the Add button in the "Promotions" section's header.
 3. In the list that opens, check the promotions you want to add to the campaign.
 4. Once you're done, click the Save button.
 
@@ -178,6 +205,6 @@ Deleting a campaign is irreversible. Deleting a campaign doesn't delete its prom
 To delete a campaign:
 
 1. Go to the campaign's details page.
-2. Click the <InlineIcon Icon={EllipsisHorizontal} alt="three-dots" /> icon at the top right of the first section.
+2. Click the <InlineIcon Icon={EllipsisHorizontal} alt="three-dots" /> icon in the first section's header.
 3. Choose Delete from the dropdown.
 4. Confirm deleting the campaign by clicking the "Delete" button in the pop-up.

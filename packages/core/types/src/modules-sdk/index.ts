@@ -196,6 +196,7 @@ export type ModuleJoinerConfig = Omit<
    * GraphQL schema for the all module's available entities and fields
    */
   schema?: string
+  idPrefixToEntityName?: Record<string, string>
   relationships?: ModuleJoinerRelationship[]
   extends?: {
     serviceName: string
@@ -266,10 +267,11 @@ export type ModuleExports<T = Constructor<any>> = {
   runMigrations?(
     options: LoaderOptions<any>,
     moduleDeclaration?: InternalModuleDeclaration
-  ): Promise<void>
+  ): Promise<{ name: string; path: string }[]>
   revertMigration?(
     options: LoaderOptions<any>,
-    moduleDeclaration?: InternalModuleDeclaration
+    moduleDeclaration?: InternalModuleDeclaration,
+    migrationNames?: string[]
   ): Promise<void>
   generateMigration?(
     options: LoaderOptions<any>,

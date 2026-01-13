@@ -42,7 +42,11 @@ import { TaxRate } from "./tax-rate"
 import { TaxRegion } from "./tax-region"
 import { Upload } from "./upload"
 import { User } from "./user"
+import { Views } from "./views"
 import { WorkflowExecution } from "./workflow-execution"
+import { ShippingOptionType } from "./shipping-option-type"
+import { Locale } from "./locale"
+import { Translation } from "./translation"
 
 export class Admin {
   /**
@@ -116,6 +120,10 @@ export class Admin {
   /**
    * @tags fulfillment
    */
+  public shippingOptionType: ShippingOptionType
+  /**
+   * @tags fulfillment
+   */
   public shippingProfile: ShippingProfile
   /**
    * @tags inventory
@@ -174,6 +182,11 @@ export class Admin {
    */
   public currency: Currency
   /**
+   * @tags locale
+   * @since 2.12.3
+   */
+  public locale: Locale
+  /**
    * @tags payment
    */
   public payment: Payment
@@ -214,6 +227,10 @@ export class Admin {
    */
   public taxProvider: TaxProvider
   /**
+   * @tags translations
+   */
+  public translation: Translation
+  /**
    * @tags promotion
    */
   public campaign: Campaign
@@ -221,6 +238,11 @@ export class Admin {
    * @tags plugin
    */
   public plugin: Plugin
+  /**
+   * @tags views
+   * @featureFlag view_configurations
+   */
+  public views: Views
 
   constructor(client: Client) {
     this.invite = new Invite(client)
@@ -240,6 +262,7 @@ export class Admin {
     this.fulfillment = new Fulfillment(client)
     this.fulfillmentProvider = new FulfillmentProvider(client)
     this.shippingOption = new ShippingOption(client)
+    this.shippingOptionType = new ShippingOptionType(client)
     this.shippingProfile = new ShippingProfile(client)
     this.inventoryItem = new InventoryItem(client)
     this.notification = new Notification(client)
@@ -250,9 +273,11 @@ export class Admin {
     this.claim = new Claim(client)
     this.taxRate = new TaxRate(client)
     this.taxRegion = new TaxRegion(client)
+    this.translation = new Translation(client)
     this.store = new Store(client)
     this.productTag = new ProductTag(client)
     this.user = new User(client)
+    this.locale = new Locale(client)
     this.currency = new Currency(client)
     this.payment = new Payment(client)
     this.productVariant = new ProductVariant(client)
@@ -267,5 +292,6 @@ export class Admin {
     this.campaign = new Campaign(client)
     this.plugin = new Plugin(client)
     this.taxProvider = new TaxProvider(client)
+    this.views = new Views(client)
   }
 }

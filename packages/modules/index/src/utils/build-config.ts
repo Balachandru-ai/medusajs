@@ -845,7 +845,11 @@ function processEntity(
           ]
           intermediateEntityObjectRepresentationRef.moduleConfig =
             intermediateEntityModule
-          intermediateEntityObjectRepresentationRef.fields = ["id"]
+          if (
+            !intermediateEntityObjectRepresentationRef.fields.includes("id")
+          ) {
+            intermediateEntityObjectRepresentationRef.fields.push("id")
+          }
 
           /**
            * We push the parent id only between intermediate entities but not between intermediate and link
@@ -1180,11 +1184,16 @@ function buildSchemaFromFilterableLinks(
       return
     }
 
-    const isEnum =
-      fieldRef.type?.astNode?.kind === GraphQLUtils.Kind.ENUM_TYPE_DEFINITION
-    const fieldType = isEnum ? "String" : fieldRef.type.toString()
+    const fieldType = fieldRef.type.toString()
     const isArray = fieldType.startsWith("[")
-    const currentType = fieldType.replace(/\[|\]|\!/g, "")
+    let currentType = fieldType.replace(/\[|\]|\!/g, "")
+    const isEnum =
+      fieldRef.type?.ofType?.astNode?.kind ===
+      GraphQLUtils.Kind.ENUM_TYPE_DEFINITION
+
+    if (isEnum) {
+      currentType = "String"
+    }
 
     return isArray ? `[${currentType}]` : currentType
   }
@@ -1206,7 +1215,12 @@ function buildSchemaFromFilterableLinks(
         })
         .join("\n")
 
-      return `type ${entity} ${events} {
+      return `
+      type ${entity} ${events} {
+        id: ID!
+      }
+        
+      extend type ${entity} {
 ${fieldDefinitions}
 }`
     })
@@ -1253,7 +1267,10 @@ export function buildSchemaObjectRepresentation(schema: string): {
   } as IndexTypes.SchemaObjectRepresentation
 
   Object.entries(entitiesMap).forEach(([entityName, entityMapValue]) => {
-    if (!entityMapValue.astNode) {
+    if (
+      !entityMapValue.astNode ||
+      entityMapValue.astNode.kind === GraphQLUtils.Kind.SCALAR_TYPE_DEFINITION
+    ) {
       return
     }
 

@@ -88,7 +88,7 @@ class DefaultKindGenerator<T extends ts.Node = ts.Node> {
    * @returns {boolean} Whether this generator can be used with the specified node.
    */
   isAllowed(node: ts.Node): node is T {
-    return this.allowedKinds.includes(node.kind)
+    return !this.isIgnored(node) && this.allowedKinds.includes(node.kind)
   }
 
   /**
@@ -600,20 +600,30 @@ class DefaultKindGenerator<T extends ts.Node = ts.Node> {
    * Retrieve information from the tags of a node.
    *
    * @param node - The node to retrieve the information from.
-   * @returns An object containing the deprecated and version tags, if available.
+   * @returns An object containing the deprecated and since tags, if available.
    */
   getInformationFromTags(node: ts.Node): {
     deprecatedTag: ts.JSDocTag | undefined
-    versionTag: ts.JSDocTag | undefined
+    sinceTag: ts.JSDocTag | undefined
     featureFlagTag: ts.JSDocTag | undefined
+    summary: string | undefined
+    example: ts.JSDocTag | undefined
   } {
     const nodeComments = ts.getJSDocCommentsAndTags(node)
     let deprecatedTag: ts.JSDocTag | undefined
-    let versionTag: ts.JSDocTag | undefined
+    let sinceTag: ts.JSDocTag | undefined
     let featureFlagTag: ts.JSDocTag | undefined
+    let summary: string | undefined
+    let example: ts.JSDocTag | undefined
 
     nodeComments.forEach((comment) => {
       if (!("tags" in comment)) {
+        if (ts.isJSDoc(comment) && comment.comment) {
+          summary =
+            typeof comment.comment === "string"
+              ? comment.comment
+              : comment.comment.map((part) => part.text).join(" ")
+        }
         return
       }
 
@@ -622,21 +632,51 @@ class DefaultKindGenerator<T extends ts.Node = ts.Node> {
           deprecatedTag = tag
         }
 
-        if (tag.tagName.getText() === "version") {
-          versionTag = tag
+        if (tag.tagName.getText() === "since") {
+          sinceTag = tag
         }
 
         if (tag.tagName.getText() === "featureFlag") {
           featureFlagTag = tag
+        }
+
+        if (tag.tagName.getText() === "example") {
+          example = tag
         }
       })
     })
 
     return {
       deprecatedTag,
-      versionTag,
+      sinceTag,
       featureFlagTag,
+      summary,
+      example,
     }
+  }
+
+  formatJSDocTag(tag: ts.JSDocTag | undefined): string | undefined {
+    if (!tag) {
+      return undefined
+    }
+
+    if (typeof tag.comment === "string") {
+      return tag.comment
+    }
+
+    return tag.comment?.map((part) => part.text).join(" ")
+  }
+
+  /**
+   * Check if a node is ignored.
+   *
+   * @param node - The node to check.
+   * @returns Whether the node is ignored.
+   */
+  isIgnored(node: ts.Node): boolean {
+    return ts
+      .getJSDocTags(node)
+      .some((tag) => tag.tagName.getText() === "ignore")
   }
 }
 

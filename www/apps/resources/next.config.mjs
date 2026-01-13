@@ -4,6 +4,7 @@ import {
   prerequisitesLinkFixerPlugin,
   recmaInjectMdxDataPlugin,
   typeListLinkFixerPlugin,
+  validateHighlightsPlugin,
   workflowDiagramLinkFixerPlugin,
 } from "remark-rehype-plugins"
 
@@ -33,7 +34,6 @@ const withMDX = mdx({
             },
             ui: {
               projectPath: path.resolve("..", "ui"),
-              contentPath: "src/content/docs",
             },
             "user-guide": {
               projectPath: path.resolve("..", "user-guide"),
@@ -42,10 +42,14 @@ const withMDX = mdx({
               projectPath: path.resolve("..", "api-reference"),
               skipSlugValidation: true,
             },
+            cloud: {
+              projectPath: path.resolve("..", "cloud"),
+            },
           },
         },
       ],
       ...mdxPluginOptions.options.rehypePlugins,
+      [validateHighlightsPlugin, { verbose: false }],
       [localLinksRehypePlugin],
       [typeListLinkFixerPlugin],
       [
@@ -242,6 +246,36 @@ const nextConfig = {
         destination: "/references/user/events",
         permanent: true,
       },
+      {
+        source: "/storefront-development/cart",
+        destination: "/storefront-development/cart/create",
+        permanent: true,
+      },
+      {
+        source: "/storefront-development/customer",
+        destination: "/storefront-development/customer/register",
+        permanent: true,
+      },
+      {
+        source: "/storefront-development/products/categories",
+        destination: "/storefront-development/products/categories/list",
+        permanent: true,
+      },
+      {
+        source: "/storefront-development/products/collections",
+        destination: "/storefront-development/products/collections/list",
+        permanent: true,
+      },
+      {
+        source: "/storefront-development/products",
+        destination: "/storefront-development/products/list",
+        permanent: true,
+      },
+      {
+        source: "/deployment/medusa-application/railway",
+        destination: `${process.env.NEXT_PUBLIC_BASE_URL}/cloud/comparison`,
+        permanent: true,
+      },
     ])
   },
   outputFileTracingExcludes: {
@@ -253,6 +287,27 @@ const nextConfig = {
   },
   experimental: {
     optimizePackageImports: ["@medusajs/icons", "@medusajs/ui", "elkjs"],
+  },
+  rewrites: async () => {
+    return {
+      beforeFiles: [
+        {
+          source: "/:path*/index.html.md",
+          destination: "/md-content/:path*",
+        },
+        {
+          source: "/:path*",
+          has: [
+            {
+              type: "header",
+              key: "Accept",
+              value: ".*(text/markdown|text/plain).*",
+            },
+          ],
+          destination: "/md-content/:path*",
+        },
+      ],
+    }
   },
 }
 

@@ -1,12 +1,16 @@
-import { isPresent, MedusaError } from "@medusajs/framework/utils"
 import { MedusaResponse } from "@medusajs/framework/http"
+import { HttpTypes, QueryContextType } from "@medusajs/framework/types"
+import {
+  ContainerRegistrationKeys,
+  MedusaError,
+  QueryContext,
+} from "@medusajs/framework/utils"
 import { wrapVariantsWithInventoryQuantityForSalesChannel } from "../../../utils/middlewares"
 import {
-  refetchProduct,
+  filterOutInternalProductCategories,
   RequestWithContext,
   wrapProductsWithTaxPrices,
 } from "../helpers"
-import { HttpTypes } from "@medusajs/framework/types"
 
 export const GET = async (
   req: RequestWithContext<HttpTypes.StoreProductParams>,
@@ -27,17 +31,35 @@ export const GET = async (
     ...req.filterableFields,
   }
 
-  if (isPresent(req.pricingContext)) {
-    filters["context"] = {
-      "variants.calculated_price": { context: req.pricingContext },
-    }
+  const context: QueryContextType = {}
+
+  if (req.pricingContext) {
+    context["variants"] ??= {}
+    context["variants"]["calculated_price"] ??= QueryContext(req.pricingContext)
   }
 
-  const product = await refetchProduct(
-    filters,
-    req.scope,
-    req.queryConfig.fields
+  const includesCategoriesField = req.queryConfig.fields.some((field) =>
+    field.startsWith("categories")
   )
+
+  if (!req.queryConfig.fields.includes("categories.is_internal")) {
+    req.queryConfig.fields.push("categories.is_internal")
+  }
+
+  const query = req.scope.resolve(ContainerRegistrationKeys.QUERY)
+
+  const { data: products } = await query.graph(
+    {
+      entity: "product",
+      filters,
+      context,
+      fields: req.queryConfig.fields,
+    },
+    {
+      locale: req.locale,
+    }
+  )
+  const product = products[0]
 
   if (!product) {
     throw new MedusaError(
@@ -51,6 +73,10 @@ export const GET = async (
       req,
       product.variants || []
     )
+  }
+
+  if (includesCategoriesField) {
+    filterOutInternalProductCategories([product])
   }
 
   await wrapProductsWithTaxPrices(req, [product])

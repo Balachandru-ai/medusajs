@@ -87,10 +87,16 @@ export const ClaimCreateForm = ({
     useState(false)
 
   const [customInboundShippingAmount, setCustomInboundShippingAmount] =
-    useState<number | string>(0)
+    useState<{ value: string; float: number | null }>({
+      value: "0",
+      float: 0,
+    })
 
   const [customOutboundShippingAmount, setCustomOutboundShippingAmount] =
-    useState<number | string>(0)
+    useState<{ value: string; float: number | null }>({
+      value: "0",
+      float: 0,
+    })
 
   const [inventoryMap, setInventoryMap] = useState<
     Record<string, InventoryLevelDTO[]>
@@ -263,13 +269,23 @@ export const ClaimCreateForm = ({
 
   useEffect(() => {
     if (inboundShipping) {
-      setCustomInboundShippingAmount(inboundShipping.total)
+      setCustomInboundShippingAmount({
+        value: inboundShipping.total.toFixed(
+          currencies[order.currency_code.toUpperCase()].decimal_digits
+        ),
+        float: inboundShipping.total,
+      })
     }
   }, [inboundShipping])
 
   useEffect(() => {
     if (outboundShipping) {
-      setCustomOutboundShippingAmount(outboundShipping.total)
+      setCustomOutboundShippingAmount({
+        value: outboundShipping.total.toFixed(
+          currencies[order.currency_code.toUpperCase()].decimal_digits
+        ),
+        float: outboundShipping.total,
+      })
     }
   }, [outboundShipping])
 
@@ -519,6 +535,7 @@ export const ClaimCreateForm = ({
       ).variants
 
       variants.forEach((variant) => {
+        // TODO: fix this for inventory kits
         ret[variant.id] = variant.inventory?.[0]?.location_levels || []
       })
 
@@ -551,10 +568,29 @@ export const ClaimCreateForm = ({
     }
   }, [])
 
+  /**
+   * For estimated difference show pending difference and subtract the total of inbound items (assume all items will be returned correctly)
+   * We don't include inbound total in the pending difference because it will be considered returned when the receive flow is completed
+   */
+  const estimatedDifference =
+    preview.summary.pending_difference -
+    inboundPreviewItems.reduce((acc, item) => {
+      return acc + item.total
+    }, 0)
+
   const inboundShippingTotal = useMemo(() => {
     const method = preview.shipping_methods.find(
       (sm) =>
         !!sm.actions?.find((a) => a.action === "SHIPPING_ADD" && !!a.return_id)
+    )
+
+    return (method?.total as number) || 0
+  }, [preview.shipping_methods])
+
+  const outboundShippingTotal = useMemo(() => {
+    const method = preview.shipping_methods.find(
+      (sm) =>
+        !!sm.actions?.find((a) => a.action === "SHIPPING_ADD" && !a.return_id)
     )
 
     return (method?.total as number) || 0
@@ -866,10 +902,7 @@ export const ClaimCreateForm = ({
                           }
                         })
 
-                        const customPrice =
-                          customInboundShippingAmount === ""
-                            ? null
-                            : parseFloat(customInboundShippingAmount)
+                        const customPrice = customInboundShippingAmount.float
 
                         if (actionId) {
                           updateInboundShipping(
@@ -891,8 +924,13 @@ export const ClaimCreateForm = ({
                           .symbol_native
                       }
                       code={order.currency_code}
-                      onValueChange={setCustomInboundShippingAmount}
-                      value={customInboundShippingAmount}
+                      onValueChange={(value, _name, values) => {
+                        setCustomInboundShippingAmount({
+                          value: values?.value ?? "",
+                          float: values?.float ?? null,
+                        })
+                      }}
+                      value={customInboundShippingAmount.value}
                       disabled={showInboundItemsPlaceholder}
                     />
                   ) : (
@@ -937,10 +975,7 @@ export const ClaimCreateForm = ({
                           }
                         })
 
-                        const customPrice =
-                          customOutboundShippingAmount === ""
-                            ? null
-                            : parseFloat(customOutboundShippingAmount)
+                        const customPrice = customOutboundShippingAmount.float
 
                         if (actionId) {
                           updateOutboundShipping(
@@ -962,13 +997,18 @@ export const ClaimCreateForm = ({
                           .symbol_native
                       }
                       code={order.currency_code}
-                      onValueChange={setCustomOutboundShippingAmount}
-                      value={customOutboundShippingAmount}
+                      onValueChange={(value, _name, values) => {
+                        setCustomOutboundShippingAmount({
+                          value: values?.value ?? "",
+                          float: values?.float ?? null,
+                        })
+                      }}
+                      value={customOutboundShippingAmount.value}
                       disabled={showOutboundItemsPlaceholder}
                     />
                   ) : (
                     getStylizedAmount(
-                      outboundShipping?.amount ?? 0,
+                      outboundShippingTotal,
                       order.currency_code
                     )
                   )}
@@ -980,10 +1020,7 @@ export const ClaimCreateForm = ({
                   {t("orders.claims.refundAmount")}
                 </span>
                 <span className="txt-small font-medium">
-                  {getStylizedAmount(
-                    preview.summary.pending_difference,
-                    order.currency_code
-                  )}
+                  {getStylizedAmount(estimatedDifference, order.currency_code)}
                 </span>
               </div>
             </div>
@@ -998,7 +1035,8 @@ export const ClaimCreateForm = ({
                       <div className="flex items-center">
                         <Form.Control className="mr-4 self-start">
                           <Switch
-                            className="mt-[2px]"
+                            dir="ltr"
+                            className="mt-[2px] rtl:rotate-180"
                             checked={!!value}
                             onCheckedChange={onChange}
                             {...field}

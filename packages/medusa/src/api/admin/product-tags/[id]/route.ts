@@ -7,38 +7,38 @@ import {
   MedusaResponse,
   refetchEntity,
 } from "@medusajs/framework/http"
-
-import {
-  AdminGetProductTagParamsType,
-  AdminUpdateProductTagType,
-} from "../validators"
 import { HttpTypes } from "@medusajs/framework/types"
 import { MedusaError } from "@medusajs/framework/utils"
 
 export const GET = async (
-  req: AuthenticatedMedusaRequest<AdminGetProductTagParamsType>,
+  req: AuthenticatedMedusaRequest<
+    HttpTypes.AdminProductTagParams
+  >,
   res: MedusaResponse<HttpTypes.AdminProductTagResponse>
 ) => {
-  const productTag = await refetchEntity(
-    "product_tag",
-    req.params.id,
-    req.scope,
-    req.queryConfig.fields
-  )
+  const productTag = await refetchEntity({
+    entity: "product_tag",
+    idOrFilter: req.params.id,
+    scope: req.scope,
+    fields: req.queryConfig.fields,
+  })
 
   res.status(200).json({ product_tag: productTag })
 }
 
 export const POST = async (
-  req: AuthenticatedMedusaRequest<AdminUpdateProductTagType>,
+  req: AuthenticatedMedusaRequest<
+    HttpTypes.AdminUpdateProductTag,
+    HttpTypes.AdminProductTagParams
+  >,
   res: MedusaResponse<HttpTypes.AdminProductTagResponse>
 ) => {
-  const existingProductTag = await refetchEntity(
-    "product_tag",
-    req.params.id,
-    req.scope,
-    ["id"]
-  )
+  const existingProductTag = await refetchEntity({
+    entity: "product_tag",
+    idOrFilter: req.params.id,
+    scope: req.scope,
+    fields: ["id"],
+  })
 
   if (!existingProductTag) {
     throw new MedusaError(
@@ -54,12 +54,12 @@ export const POST = async (
     },
   })
 
-  const productTag = await refetchEntity(
-    "product_tag",
-    result[0].id,
-    req.scope,
-    req.queryConfig.fields
-  )
+  const productTag = await refetchEntity({
+    entity: "product_tag",
+    idOrFilter: result[0].id,
+    scope: req.scope,
+    fields: req.queryConfig.fields,
+  })
 
   res.status(200).json({ product_tag: productTag })
 }

@@ -18,17 +18,18 @@ import {
   OrderWorkflowEvents,
 } from "@medusajs/framework/utils"
 import {
-  WorkflowData,
-  WorkflowResponse,
   createHook,
   createStep,
   createWorkflow,
   parallelize,
   transform,
+  WorkflowData,
+  WorkflowResponse,
 } from "@medusajs/framework/workflows-sdk"
 import {
   createRemoteLinkStep,
   emitEventStep,
+  useQueryGraphStep,
   useRemoteQueryStep,
 } from "../../common"
 import { createFulfillmentWorkflow } from "../../fulfillment"
@@ -296,7 +297,8 @@ function prepareInventoryUpdate({
 
     if (!reservations?.length) {
       if (item.variant?.manage_inventory) {
-        throw new Error(
+        throw new MedusaError(
+          MedusaError.Types.INVALID_DATA,
           `No stock reservation found for item ${item.id} - ${item.title} (${item.variant_title})`
         )
       }
@@ -306,13 +308,6 @@ function prepareInventoryUpdate({
     const inputQuantity = inputItemsMap[item.id]?.quantity ?? item.quantity
 
     reservations.forEach((reservation) => {
-      if (MathBN.gt(inputQuantity, reservation.quantity)) {
-        throw new MedusaError(
-          MedusaError.Types.INVALID_DATA,
-          `Quantity to fulfill exceeds the reserved quantity for the item: ${item.id}`
-        )
-      }
-
       const iItem = orderItem?.variant?.inventory_items.find(
         (ii) => ii.inventory.id === reservation.inventory_item_id
       )
@@ -326,6 +321,13 @@ function prepareInventoryUpdate({
         reservation.quantity,
         adjustemntQuantity
       )
+
+      if (MathBN.lt(remainingReservationQuantity, 0)) {
+        throw new MedusaError(
+          MedusaError.Types.INVALID_DATA,
+          `Quantity to fulfill exceeds the reserved quantity for the item: ${item.id}`
+        )
+      }
 
       inventoryAdjustment.push({
         inventory_item_id: reservation.inventory_item_id,
@@ -392,11 +394,13 @@ export const createOrderFulfillmentWorkflowId = "create-order-fulfillment"
 export const createOrderFulfillmentWorkflow = createWorkflow(
   createOrderFulfillmentWorkflowId,
   (input: WorkflowData<CreateOrderFulfillmentWorkflowInput>) => {
-    const order: OrderDTO = useRemoteQueryStep({
-      entry_point: "orders",
+    const { data: order } = useQueryGraphStep({
+      entity: "order",
+      filters: { id: input.order_id },
       fields: [
         "id",
         "display_id",
+        "custom_display_id",
         "status",
         "customer_id",
         "customer.*",
@@ -426,6 +430,7 @@ export const createOrderFulfillmentWorkflow = createWorkflow(
         "items.variant.product.mid_code",
         "items.variant.product.material",
         "items.tax_lines.rate",
+        "metadata",
         "subtotal",
         "discount_total",
         "tax_total",
@@ -441,11 +446,10 @@ export const createOrderFulfillmentWorkflow = createWorkflow(
         "shipping_methods.id",
         "shipping_methods.shipping_option_id",
         "shipping_methods.data",
+        "shipping_methods.amount",
       ],
-      variables: { id: input.order_id },
-      list: false,
-      throw_if_key_not_found: true,
-    })
+      options: { throwIfKeyNotFound: true, isList: false },
+    }).config({ name: "get-order" })
 
     createFulfillmentValidateOrder({ order, inputItems: input.items })
 

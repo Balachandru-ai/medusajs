@@ -37,7 +37,7 @@
  *     label: cURL
  *     source: |-
  *       curl -X POST '{backend_url}/admin/products/import/{transaction_id}/confirm' \
- *       -H 'Authorization: Bearer {access_token}'
+ *       -H 'Authorization: Bearer {jwt_token}'
  * tags:
  *   - Products
  * responses:
@@ -55,6 +55,8 @@
  *     $ref: "#/components/responses/invalid_request_error"
  *   "500":
  *     $ref: "#/components/responses/500_error"
+ * deprecated: true
+ * x-deprecated_message: use `POST /admin/products/imports/:transaction_id/confirm` instead.
  * 
 */
 

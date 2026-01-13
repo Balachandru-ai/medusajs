@@ -1,8 +1,7 @@
 import { BaseEntity, QueryConfig, RequestQueryFields } from "@medusajs/types"
 import { MedusaError, removeUndefinedProperties } from "@medusajs/utils"
 import { NextFunction } from "express"
-import { omit } from "lodash"
-import { z } from "zod"
+import { z } from "@medusajs/deps/zod"
 
 import { zodValidator } from "../../zod/zod-helpers"
 import { MedusaRequest, MedusaResponse } from "../types"
@@ -50,8 +49,8 @@ const normalizeQuery = (req: MedusaRequest) => {
  * @param obj
  */
 const getFilterableFields = <T extends RequestQueryFields>(obj: T): T => {
-  const result = omit(obj, ["limit", "offset", "fields", "order"]) as T
-  return removeUndefinedProperties(result)
+  const { limit, offset, fields, order, ...result } = obj
+  return removeUndefinedProperties(result) as T
 }
 
 export function validateAndTransformQuery<TEntity extends BaseEntity>(
@@ -77,18 +76,25 @@ export function validateAndTransformQuery<TEntity extends BaseEntity>(
       }
 
       delete req.allowed
-      const query = normalizeQuery(req)
+      const query = normalizeQuery(req) as Record<string, any>
 
       const validated = await zodValidator(zodSchema, query)
+
       const cnf = queryConfig.isList
-        ? prepareListQuery(validated, { ...queryConfig, allowed, restricted })
+        ? prepareListQuery(validated, {
+            ...queryConfig,
+            allowed,
+            restricted,
+            isList: true,
+          })
         : prepareRetrieveQuery(validated, {
             ...queryConfig,
             allowed,
             restricted,
           })
 
-      req.validatedQuery = validated
+      const { with_deleted, ...validatedQueryFilters } = validated
+      req.validatedQuery = validatedQueryFilters
       req.filterableFields = getFilterableFields(req.validatedQuery)
       req.queryConfig = cnf.remoteQueryConfig as any
       req.remoteQueryConfig = req.queryConfig

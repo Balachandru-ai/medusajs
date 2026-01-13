@@ -5,7 +5,7 @@
  * x-sidebar-summary: Update Address
  * description: Update the logged-in customer's address.
  * externalDocs:
- *   url: https://docs.medusajs.com/v2/resources/storefront-development/customers/addresses#edit-an-address
+ *   url: https://docs.medusajs.com/resources/storefront-development/customers/addresses#edit-an-address
  *   description: "Storefront guide: How to update an address of the logged-in customer."
  * x-authenticated: true
  * parameters:
@@ -23,6 +23,16 @@
  *       type: string
  *       externalDocs:
  *         url: https://docs.medusajs.com/api/store#publishable-api-key
+ *   - name: x-medusa-locale
+ *     in: header
+ *     description: The locale in BCP 47 format to retrieve localized content.
+ *     required: false
+ *     schema:
+ *       type: string
+ *       example: en-US
+ *       externalDocs:
+ *         url: https://docs.medusajs.com/resources/commerce-modules/translation/storefront
+ *         description: Learn more in the Serve Translations in Storefront guide.
  *   - name: fields
  *     in: query
  *     description: Comma-separated fields that should be included in the returned data. if a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default
@@ -37,6 +47,16 @@
  *         Links](https://docs.medusajs.com/learn/fundamentals/api-routes/retrieve-custom-links) documentation.
  *       externalDocs:
  *         url: "#select-fields-and-relations"
+ *   - name: locale
+ *     in: query
+ *     description: The locale in BCP 47 format to retrieve localized content.
+ *     required: false
+ *     schema:
+ *       type: string
+ *       example: en-US
+ *       externalDocs:
+ *         url: https://docs.medusajs.com/resources/commerce-modules/translation/storefront
+ *         description: Learn more in the Serve Translations in Storefront guide.
  * security:
  *   - cookie_auth: []
  *   - jwt_token: []
@@ -44,68 +64,7 @@
  *   content:
  *     application/json:
  *       schema:
- *         type: object
- *         description: The properties to update in the address.
- *         properties:
- *           first_name:
- *             type: string
- *             title: first_name
- *             description: The customer's first name.
- *           last_name:
- *             type: string
- *             title: last_name
- *             description: The customer's last name.
- *           phone:
- *             type: string
- *             title: phone
- *             description: The customer's phone.
- *           company:
- *             type: string
- *             title: company
- *             description: The address's company.
- *           address_1:
- *             type: string
- *             title: address_1
- *             description: The address's first line.
- *           address_2:
- *             type: string
- *             title: address_2
- *             description: The address's second line.
- *           city:
- *             type: string
- *             title: city
- *             description: The address's city.
- *           country_code:
- *             type: string
- *             title: country_code
- *             description: The address's country code.
- *           province:
- *             type: string
- *             title: province
- *             description: The address's ISO 3166-2 province code. Must be lower-case.
- *             example: us-ca
- *             externalDocs:
- *               url: https://en.wikipedia.org/wiki/ISO_3166-2
- *               description: Learn more about ISO 3166-2
- *           postal_code:
- *             type: string
- *             title: postal_code
- *             description: The address's postal code.
- *           address_name:
- *             type: string
- *             title: address_name
- *             description: The address's name.
- *           is_default_shipping:
- *             type: boolean
- *             title: is_default_shipping
- *             description: Whether the address is used by default for shipping during checkout.
- *           is_default_billing:
- *             type: boolean
- *             title: is_default_billing
- *             description: Whether the address is used by default for billing during checkout.
- *           metadata:
- *             type: object
- *             description: Holds custom key-value pairs.
+ *         $ref: "#/components/schemas/StoreUpdateCustomerAddress"
  * x-codeSamples:
  *   - lang: JavaScript
  *     label: JS SDK
@@ -124,6 +83,7 @@
  *         publishableKey: process.env.NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY,
  *       })
  * 
+ *       // TODO must be authenticated as the customer to update their address
  *       sdk.store.customer.updateAddress(
  *         "caddr_123",
  *         {
@@ -137,7 +97,7 @@
  *     label: cURL
  *     source: |-
  *       curl -X POST '{backend_url}/store/customers/me/addresses/{address_id}' \
- *       -H 'Authorization: Bearer {access_token}' \
+ *       -H 'Authorization: Bearer {jwt_token}' \
  *       -H 'Content-Type: application/json' \
  *       -H 'x-publishable-api-key: {your_publishable_api_key}' \
  *       --data-raw '{

@@ -1,5 +1,9 @@
 export const cart = [
   {
+    "title": "Retrieve Cart Totals using Query",
+    "path": "https://docs.medusajs.com/resources/commerce-modules/cart/cart-totals"
+  },
+  {
     "title": "Extend Cart",
     "path": "https://docs.medusajs.com/resources/commerce-modules/cart/extend"
   },
@@ -14,6 +18,18 @@ export const cart = [
   {
     "title": "Send Abandoned Cart Notification",
     "path": "https://docs.medusajs.com/resources/how-to-tutorials/tutorials/abandoned-cart"
+  },
+  {
+    "title": "Agentic Commerce",
+    "path": "https://docs.medusajs.com/resources/how-to-tutorials/tutorials/agentic-commerce"
+  },
+  {
+    "title": "Implement First-Purchase Discount",
+    "path": "https://docs.medusajs.com/resources/how-to-tutorials/tutorials/first-purchase-discounts"
+  },
+  {
+    "title": "Add Gift Message",
+    "path": "https://docs.medusajs.com/resources/how-to-tutorials/tutorials/gift-message"
   },
   {
     "title": "Implement Loyalty Points",
@@ -34,6 +50,10 @@ export const cart = [
   {
     "title": "Manage Cart's Items in Storefront",
     "path": "https://docs.medusajs.com/resources/storefront-development/cart/manage-items"
+  },
+  {
+    "title": "Manage Cart Promotions in Storefront",
+    "path": "https://docs.medusajs.com/resources/storefront-development/cart/manage-promotions"
   },
   {
     "title": "Retrieve Cart in Storefront",
@@ -74,6 +94,10 @@ export const cart = [
   {
     "title": "Implement Express Checkout with Medusa",
     "path": "https://docs.medusajs.com/resources/storefront-development/guides/express-checkout"
+  },
+  {
+    "title": "Implement Mobile App with React Native, Expo, and Medusa",
+    "path": "https://docs.medusajs.com/resources/storefront-development/guides/react-native-expo"
   },
   {
     "title": "addShippingMethodToCartStep",
@@ -182,10 +206,6 @@ export const cart = [
   {
     "title": "deleteLineItemsWorkflow",
     "path": "https://docs.medusajs.com/resources/references/medusa-workflows/deleteLineItemsWorkflow"
-  },
-  {
-    "title": "processPaymentWorkflow",
-    "path": "https://docs.medusajs.com/resources/references/medusa-workflows/processPaymentWorkflow"
   },
   {
     "title": "cart",

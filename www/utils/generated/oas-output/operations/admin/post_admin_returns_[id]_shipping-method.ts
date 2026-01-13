@@ -32,7 +32,7 @@
  *   content:
  *     application/json:
  *       schema:
- *         $ref: "#/components/schemas/AdminPostReturnsShippingReqSchema"
+ *         $ref: "#/components/schemas/AdminAddReturnShipping"
  * x-codeSamples:
  *   - lang: JavaScript
  *     label: JS SDK
@@ -57,7 +57,7 @@
  *     label: cURL
  *     source: |-
  *       curl -X POST '{backend_url}/admin/returns/{id}/shipping-method' \
- *       -H 'Authorization: Bearer {access_token}' \
+ *       -H 'Authorization: Bearer {jwt_token}' \
  *       -H 'Content-Type: application/json' \
  *       --data-raw '{
  *         "shipping_option_id": "{value}"

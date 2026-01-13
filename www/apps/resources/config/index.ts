@@ -7,6 +7,8 @@ const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"
 export const config: DocsConfig = {
   ...globalConfig,
   titleSuffix: "Medusa Documentation",
+  description:
+    "Explore Medusa's recipes, Commerce and Infrastructure modules, API and SDK references, storefront guides, how-to guides, tutorials, and more.",
   baseUrl,
   basePath: process.env.NEXT_PUBLIC_BASE_PATH,
   sidebars: [],
@@ -26,8 +28,8 @@ export const config: DocsConfig = {
   version: {
     ...globalConfig.version,
     bannerImage: {
-      light: basePathUrl("/images/get-started-card.png"),
-      dark: basePathUrl("/images/get-started-card-dark.png"),
+      light: basePathUrl("/images/release.png"),
+      dark: basePathUrl("/images/release-dark.png"),
     },
   },
 }

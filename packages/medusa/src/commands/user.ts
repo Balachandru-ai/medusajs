@@ -1,7 +1,6 @@
-import { logger } from "@medusajs/framework/logger"
-import { Modules } from "@medusajs/framework/utils"
-import express from "express"
+import { ContainerRegistrationKeys, Modules } from "@medusajs/framework/utils"
 import { track } from "@medusajs/telemetry"
+import express from "express"
 import loaders from "../loaders"
 
 export default async function ({
@@ -15,16 +14,14 @@ export default async function ({
   track("CLI_USER", { with_id: !!id })
   const app = express()
   try {
-    /**
-     * Enabling worker mode to prevent discovering/loading
-     * of API routes from the starter kit
-     */
-    process.env.MEDUSA_WORKER_MODE = "worker"
+    process.env.MEDUSA_WORKER_MODE = "server"
 
     const { container } = await loaders({
       directory,
       expressApp: app,
+      skipLoadingEntryPoints: true,
     })
+    const logger = container.resolve(ContainerRegistrationKeys.LOGGER)
 
     const userService = container.resolve(Modules.USER)
     const authService = container.resolve(Modules.AUTH)

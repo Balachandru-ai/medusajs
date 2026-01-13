@@ -3,7 +3,9 @@
  * operationId: PostOrderEditsIdItemsItemItem_id
  * summary: Update Order Item Quantity of Order Edit
  * x-sidebar-summary: Update Item Quantity
- * description: Update an existing order item's quantity of an order edit.
+ * description: |
+ *   Update an existing order item's quantity of an order edit.
+ *   You can also use this API route to remove an item from an order by setting its quantity to `0`.
  * x-authenticated: true
  * parameters:
  *   - name: id
@@ -55,7 +57,7 @@
  *     label: cURL
  *     source: |-
  *       curl -X POST '{backend_url}/admin/order-edits/{id}/items/item/{item_id}' \
- *       -H 'Authorization: Bearer {access_token}' \
+ *       -H 'Authorization: Bearer {jwt_token}' \
  *       -H 'Content-Type: application/json' \
  *       --data-raw '{
  *         "quantity": 7564330046324736

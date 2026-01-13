@@ -38,17 +38,7 @@
  *   content:
  *     application/json:
  *       schema:
- *         type: object
- *         description: The properties to update in the inventory level.
- *         properties:
- *           stocked_quantity:
- *             type: number
- *             title: stocked_quantity
- *             description: The inventory level's stocked quantity.
- *           incoming_quantity:
- *             type: number
- *             title: incoming_quantity
- *             description: The inventory level's incoming quantity.
+ *         $ref: "#/components/schemas/AdminUpdateInventoryLevel"
  * x-codeSamples:
  *   - lang: JavaScript
  *     label: JS SDK
@@ -77,7 +67,7 @@
  *     label: cURL
  *     source: |-
  *       curl -X POST '{backend_url}/admin/inventory-items/{id}/location-levels/{location_id}' \
- *       -H 'Authorization: Bearer {access_token}'
+ *       -H 'Authorization: Bearer {jwt_token}'
  * tags:
  *   - Inventory Items
  * responses:

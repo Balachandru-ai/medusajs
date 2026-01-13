@@ -24,6 +24,11 @@ export const orderSidebar = [
           },
           {
             type: "link",
+            path: "/commerce-modules/order/custom-display-id",
+            title: "Custom Order Display ID",
+          },
+          {
+            type: "link",
             path: "/commerce-modules/order/promotion-adjustments",
             title: "Promotions Adjustments",
           },
@@ -41,6 +46,11 @@ export const orderSidebar = [
             type: "link",
             path: "/commerce-modules/order/order-versioning",
             title: "Order Versioning",
+          },
+          {
+            type: "link",
+            path: "/commerce-modules/order/draft-orders",
+            title: "Draft Orders",
           },
           {
             type: "link",
@@ -82,6 +92,13 @@ export const orderSidebar = [
         sort_sidebar: "alphabetize",
         description:
           "Learn how to use the Order Module in your customizations on the Medusa application server.",
+        children: [
+          {
+            type: "link",
+            path: "/commerce-modules/order/order-totals",
+            title: "Retrieve Order Totals",
+          },
+        ],
       },
       {
         type: "category",

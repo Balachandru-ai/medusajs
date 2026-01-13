@@ -9,7 +9,11 @@ import {
   WorkflowData,
   WorkflowResponse,
 } from "@medusajs/framework/workflows-sdk"
-import { OrderChangeDTO, OrderDTO, PromotionDTO } from "@medusajs/types"
+import {
+  OrderChangeDTO,
+  OrderDTO,
+  PromotionDTO,
+} from "@medusajs/framework/types"
 import { useRemoteQueryStep } from "../../common"
 import {
   createOrderChangeActionsWorkflow,
@@ -17,8 +21,10 @@ import {
 } from "../../order"
 import { validateDraftOrderChangeStep } from "../steps/validate-draft-order-change"
 import { validatePromoCodesToRemoveStep } from "../steps/validate-promo-codes-to-remove"
+import { updateDraftOrderPromotionsStep } from "../steps/update-draft-order-promotions"
 import { draftOrderFieldsForRefreshSteps } from "../utils/fields"
-import { refreshDraftOrderAdjustmentsWorkflow } from "./refresh-draft-order-adjustments"
+import { acquireLockStep, releaseLockStep } from "../../locking"
+import { computeDraftOrderAdjustmentsWorkflow } from "./compute-draft-order-adjustments"
 
 export const removeDraftOrderPromotionsWorkflowId =
   "remove-draft-order-promotions"
@@ -40,10 +46,10 @@ export interface RemoveDraftOrderPromotionsWorkflowInput {
 /**
  * This workflow removes promotions from a draft order edit. It's used by the
  * [Remove Promotions from Draft Order Edit Admin API Route](https://docs.medusajs.com/api/admin#draft-orders_deletedraftordersideditpromotions).
- * 
+ *
  * You can use this workflow within your customizations or your own custom workflows, allowing you to wrap custom logic around
  * removing promotions from a draft order edit.
- * 
+ *
  * @example
  * const { result } = await removeDraftOrderPromotionsWorkflow(container)
  * .run({
@@ -52,14 +58,20 @@ export interface RemoveDraftOrderPromotionsWorkflowInput {
  *     promo_codes: ["PROMO_CODE_1", "PROMO_CODE_2"],
  *   }
  * })
- * 
+ *
  * @summary
- * 
+ *
  * Remove promotions from a draft order edit.
  */
 export const removeDraftOrderPromotionsWorkflow = createWorkflow(
   removeDraftOrderPromotionsWorkflowId,
   function (input: WorkflowData<RemoveDraftOrderPromotionsWorkflowInput>) {
+    acquireLockStep({
+      key: input.order_id,
+      timeout: 2,
+      ttl: 10,
+    })
+
     const order: OrderDTO = useRemoteQueryStep({
       entry_point: "orders",
       fields: draftOrderFieldsForRefreshSteps,
@@ -72,7 +84,7 @@ export const removeDraftOrderPromotionsWorkflow = createWorkflow(
 
     const orderChange: OrderChangeDTO = useRemoteQueryStep({
       entry_point: "order_change",
-      fields: ["id", "status"],
+      fields: ["id", "status", "version"],
       variables: {
         filters: {
           order_id: input.order_id,
@@ -100,11 +112,15 @@ export const removeDraftOrderPromotionsWorkflow = createWorkflow(
       promotions,
     })
 
-    refreshDraftOrderAdjustmentsWorkflow.runAsStep({
+    updateDraftOrderPromotionsStep({
+      id: input.order_id,
+      promo_codes: input.promo_codes,
+      action: PromotionActions.REMOVE,
+    })
+
+    computeDraftOrderAdjustmentsWorkflow.runAsStep({
       input: {
-        order,
-        promo_codes: input.promo_codes,
-        action: PromotionActions.REMOVE,
+        order_id: input.order_id,
       },
     })
 
@@ -126,6 +142,10 @@ export const removeDraftOrderPromotionsWorkflow = createWorkflow(
 
     createOrderChangeActionsWorkflow.runAsStep({
       input: orderChangeActionInput,
+    })
+
+    releaseLockStep({
+      key: input.order_id,
     })
 
     return new WorkflowResponse(previewOrderChangeStep(input.order_id))

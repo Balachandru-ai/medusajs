@@ -20,6 +20,7 @@ export interface GetShippingMethodTotalOutput {
   amount: BigNumber
 
   subtotal: BigNumber
+  original_subtotal: BigNumber
 
   total: BigNumber
   original_total: BigNumber
@@ -72,7 +73,6 @@ export function getShippingMethodTotals(
     adjustmentsTaxTotal: discountsTaxTotal,
   } = calculateAdjustmentTotal({
     adjustments: shippingMethod.adjustments || [],
-    includesTax: isTaxInclusive,
     taxRate: sumTaxRate,
   })
 
@@ -96,6 +96,14 @@ export function getShippingMethodTotals(
     subtotal: new BigNumber(subtotal),
     total: new BigNumber(
       MathBN.sum(MathBN.sub(subtotal, discountsSubtotal), taxTotal)
+    ),
+    original_subtotal: new BigNumber(
+      MathBN.sub(
+        isTaxInclusive
+          ? shippingMethodAmount
+          : MathBN.add(subtotal, originalTaxTotal),
+        originalTaxTotal
+      )
     ),
     original_total: new BigNumber(
       isTaxInclusive

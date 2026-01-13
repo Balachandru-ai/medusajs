@@ -8,6 +8,9 @@
 			"is_enabled": "Whether the notification provider is enabled.",
 			"channels": "The channels the notification provider can be used for. For example, `email`.",
 			"notifications": "The associated notifications.\n\n@expandable"
+		},
+		"deprecated": {
+			"is_deprecated": false
 		}
 	},
 	"Notification": {
@@ -26,7 +29,12 @@
 			"idempotency_key": "The idempotency key of the notification.",
 			"external_id": "The id of the notification in the external system.",
 			"provider": "The associated provider used to send the notification.\n\n@expandable",
-			"status": "The status of the notification"
+			"status": "The status of the notification",
+			"from": "The address, number, or general user identifier to send the notification from",
+			"provider_data": "Data relevant to the provider used to send the notification"
+		},
+		"deprecated": {
+			"is_deprecated": false
 		}
 	}
 }

@@ -1,4 +1,3 @@
-import { snakeCase } from "lodash"
 import {
   MedusaNextFunction,
   MedusaRequest,
@@ -6,10 +5,14 @@ import {
   Query,
 } from "@medusajs/framework"
 import { ApiLoader } from "@medusajs/framework/http"
-import { Tracer } from "@medusajs/framework/telemetry"
-import type { SpanExporter } from "@opentelemetry/sdk-trace-node"
-import type { NodeSDKConfiguration } from "@opentelemetry/sdk-node"
+import { SpanStatusCode } from "@medusajs/framework/opentelemetry/api"
+import type { NodeSDKConfiguration } from "@medusajs/framework/opentelemetry/sdk-node"
+import type { SpanExporter } from "@medusajs/framework/opentelemetry/sdk-trace-node"
 import { TransactionOrchestrator } from "@medusajs/framework/orchestration"
+import { Tracer } from "@medusajs/framework/telemetry"
+import { ICachingModuleService } from "@medusajs/framework/types"
+import { camelToSnakeCase, FeatureFlag } from "@medusajs/framework/utils"
+import CacheModule from "../modules/caching"
 
 const EXCLUDED_RESOURCES = [".vite", "virtual:"]
 
@@ -26,7 +29,6 @@ function shouldExcludeResource(resource: string) {
 export function instrumentHttpLayer() {
   const startCommand = require("../commands/start")
   const HTTPTracer = new Tracer("@medusajs/http", "2.0.0")
-  const { SpanStatusCode } = require("@opentelemetry/api")
 
   startCommand.traceRequestHandler = async (
     requestHandler,
@@ -106,7 +108,7 @@ export function instrumentHttpLayer() {
       }
 
       const traceName = `middleware: ${
-        handler.name ? snakeCase(handler.name) : `anonymous`
+        handler.name ? camelToSnakeCase(handler.name) : `anonymous`
       }`
 
       await HTTPTracer.trace(traceName, async (span) => {
@@ -131,7 +133,6 @@ export function instrumentHttpLayer() {
  */
 export function instrumentRemoteQuery() {
   const QueryTracer = new Tracer("@medusajs/query", "2.0.0")
-  const { SpanStatusCode } = require("@opentelemetry/api")
 
   Query.instrument.graphQuery(async function (queryFn, queryOptions) {
     return await QueryTracer.trace(
@@ -194,7 +195,7 @@ export function instrumentRemoteQuery() {
     options
   ) {
     return await QueryTracer.trace(
-      `${snakeCase(serviceName)}.${snakeCase(method)}`,
+      `${camelToSnakeCase(serviceName)}.${camelToSnakeCase(method)}`,
       async (span) => {
         span.setAttributes({
           "fetch.select": options.select,
@@ -231,7 +232,7 @@ export function instrumentWorkflows() {
     metadata
   ) => {
     return await WorkflowsTracer.trace(
-      `workflow:${snakeCase(metadata.model_id)}`,
+      `workflow:${camelToSnakeCase(metadata.model_id)}`,
       async function (span) {
         span.setAttribute("workflow.transaction_id", metadata.transaction_id)
 
@@ -248,7 +249,7 @@ export function instrumentWorkflows() {
 
   TransactionOrchestrator.traceStep = async (stepHandler, metadata) => {
     return await WorkflowsTracer.trace(
-      `step:${snakeCase(metadata.action)}:${metadata.type}`,
+      `step:${camelToSnakeCase(metadata.action)}:${metadata.type}`,
       async function (span) {
         Object.entries(metadata).forEach(([key, value]) => {
           span.setAttribute(`workflow.step.${key}`, value)
@@ -258,6 +259,110 @@ export function instrumentWorkflows() {
         return await stepHandler().finally(() => span.end())
       }
     )
+  }
+}
+
+export function instrumentCache() {
+  if (!FeatureFlag.isFeatureEnabled("caching")) {
+    return
+  }
+
+  const CacheTracer = new Tracer("@medusajs/caching", "2.0.0")
+  const cacheModule_ = CacheModule as unknown as {
+    service: ICachingModuleService & {
+      traceGet: (
+        cacheGetFn: () => Promise<any>,
+        key: string,
+        tags: string[]
+      ) => Promise<any>
+      traceSet: (
+        cacheSetFn: () => Promise<any>,
+        key: string,
+        tags: string[],
+        options: { autoInvalidate?: boolean }
+      ) => Promise<any>
+      traceClear: (
+        cacheClearFn: () => Promise<any>,
+        key: string,
+        tags: string[],
+        options: { autoInvalidate?: boolean }
+      ) => Promise<any>
+    }
+  }
+
+  cacheModule_.service.traceGet = async function (cacheGetFn, key, tags) {
+    return await CacheTracer.trace(`cache.get`, async (span) => {
+      span.setAttributes({
+        "cache.key": key,
+        "cache.tags": tags,
+      })
+
+      try {
+        return await cacheGetFn()
+      } catch (error) {
+        span.setStatus({
+          code: SpanStatusCode.ERROR,
+          message: error.message,
+        })
+        throw error
+      } finally {
+        span.end()
+      }
+    })
+  }
+
+  cacheModule_.service.traceSet = async function (
+    cacheSetFn,
+    key,
+    tags,
+    options = {}
+  ) {
+    return await CacheTracer.trace(`cache.set`, async (span) => {
+      span.setAttributes({
+        "cache.key": key,
+        "cache.tags": tags,
+        "cache.options": JSON.stringify(options),
+      })
+
+      try {
+        return await cacheSetFn()
+      } catch (error) {
+        span.setStatus({
+          code: SpanStatusCode.ERROR,
+          message: error.message,
+        })
+        throw error
+      } finally {
+        span.end()
+      }
+    })
+  }
+
+  cacheModule_.service.traceClear = async function (
+    cacheClearFn,
+    key,
+    tags,
+    options = {}
+  ) {
+    return await CacheTracer.trace(`cache.clear`, async (span) => {
+      span.setAttributes({
+        "cache.key": key,
+        "cache.tags": tags,
+        "cache.options": JSON.stringify(options),
+      })
+
+      try {
+        return await cacheClearFn()
+      } catch (error) {
+        span.setStatus({
+          code: SpanStatusCode.ERROR,
+          message: error.message,
+        })
+        throw error
+      } finally {
+        span.end()
+      }
+    })
   }
 }
 
@@ -283,6 +388,7 @@ export function registerOtel(
       query: boolean
       workflows: boolean
       db: boolean
+      cache: boolean
     }>
   }
 ) {
@@ -301,12 +407,16 @@ export function registerOtel(
   const {
     Resource,
     resourceFromAttributes,
-  } = require("@opentelemetry/resources")
-  const { NodeSDK } = require("@opentelemetry/sdk-node")
-  const { SimpleSpanProcessor } = require("@opentelemetry/sdk-trace-node")
+  } = require("@medusajs/framework/opentelemetry/resources")
+  const { NodeSDK } = require("@medusajs/framework/opentelemetry/sdk-node")
+  const {
+    SimpleSpanProcessor,
+  } = require("@medusajs/framework/opentelemetry/sdk-trace-node")
 
   if (instrument.db) {
-    const { PgInstrumentation } = require("@opentelemetry/instrumentation-pg")
+    const {
+      PgInstrumentation,
+    } = require("@medusajs/framework/opentelemetry/instrumentation-pg")
     instrumentations.push(new PgInstrumentation())
   }
   if (instrument.http) {
@@ -317,6 +427,9 @@ export function registerOtel(
   }
   if (instrument.workflows) {
     instrumentWorkflows()
+  }
+  if (instrument.cache) {
+    instrumentCache()
   }
 
   const sdk = new NodeSDK({

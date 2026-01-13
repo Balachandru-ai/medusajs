@@ -1,13 +1,12 @@
-import { featureFlagRouter } from "@medusajs/framework"
 import { MedusaResponse } from "@medusajs/framework/http"
 import { HttpTypes, QueryContextType } from "@medusajs/framework/types"
 import {
   ContainerRegistrationKeys,
+  FeatureFlag,
   isPresent,
   QueryContext,
-  remoteQueryObjectFromString,
 } from "@medusajs/framework/utils"
-import IndexEngineFeatureFlag from "../../../loaders/feature-flags/index-engine"
+import IndexEngineFeatureFlag from "../../../feature-flags/index-engine"
 import { wrapVariantsWithInventoryQuantityForSalesChannel } from "../../utils/middlewares"
 import { RequestWithContext, wrapProductsWithTaxPrices } from "./helpers"
 
@@ -15,7 +14,7 @@ export const GET = async (
   req: RequestWithContext<HttpTypes.StoreProductListParams>,
   res: MedusaResponse<HttpTypes.StoreProductListResponse>
 ) => {
-  if (featureFlagRouter.isFeatureEnabled(IndexEngineFeatureFlag.key)) {
+  if (FeatureFlag.isFeatureEnabled(IndexEngineFeatureFlag.key)) {
     // TODO: These filters are not supported by the index engine yet
     if (
       isPresent(req.filterableFields.tags) ||
@@ -49,7 +48,9 @@ async function getProductsWithIndexEngine(
 
   if (isPresent(req.pricingContext)) {
     context["variants"] ??= {}
-    context["variants"]["calculated_price"] = QueryContext(req.pricingContext!)
+    context["variants"]["calculated_price"] ??= QueryContext(
+      req.pricingContext!
+    )
   }
 
   const filters: Record<string, any> = req.filterableFields
@@ -62,13 +63,21 @@ async function getProductsWithIndexEngine(
     delete filters.sales_channel_id
   }
 
-  const { data: products = [], metadata } = await query.index({
-    entity: "product",
-    fields: req.queryConfig.fields,
-    filters,
-    pagination: req.queryConfig.pagination,
-    context,
-  })
+  const { data: products = [], metadata } = await query.index(
+    {
+      entity: "product",
+      fields: req.queryConfig.fields,
+      filters,
+      pagination: req.queryConfig.pagination,
+      context,
+    },
+    {
+      cache: {
+        enable: true,
+      },
+      locale: req.locale,
+    }
+  )
 
   if (withInventoryQuantity) {
     await wrapVariantsWithInventoryQuantityForSalesChannel(
@@ -78,6 +87,7 @@ async function getProductsWithIndexEngine(
   }
 
   await wrapProductsWithTaxPrices(req, products)
+
   res.json({
     products,
     count: metadata!.estimate_count,
@@ -91,7 +101,7 @@ async function getProducts(
   req: RequestWithContext<HttpTypes.StoreProductListParams>,
   res: MedusaResponse<HttpTypes.StoreProductListResponse>
 ) {
-  const remoteQuery = req.scope.resolve(ContainerRegistrationKeys.REMOTE_QUERY)
+  const query = req.scope.resolve(ContainerRegistrationKeys.QUERY)
   const context: object = {}
   const withInventoryQuantity = req.queryConfig.fields.some((field) =>
     field.includes("variants.inventory_quantity")
@@ -104,22 +114,27 @@ async function getProducts(
   }
 
   if (isPresent(req.pricingContext)) {
-    context["variants.calculated_price"] = {
-      context: req.pricingContext,
-    }
+    context["variants"] ??= {}
+    context["variants"]["calculated_price"] ??= QueryContext(
+      req.pricingContext!
+    )
   }
 
-  const queryObject = remoteQueryObjectFromString({
-    entryPoint: "product",
-    variables: {
+  const { data: products = [], metadata } = await query.graph(
+    {
+      entity: "product",
+      fields: req.queryConfig.fields,
       filters: req.filterableFields,
-      ...req.queryConfig.pagination,
-      ...context,
+      pagination: req.queryConfig.pagination,
+      context,
     },
-    fields: req.queryConfig.fields,
-  })
-
-  const { rows: products, metadata } = await remoteQuery(queryObject)
+    {
+      cache: {
+        enable: true,
+      },
+      locale: req.locale,
+    }
+  )
 
   if (withInventoryQuantity) {
     await wrapVariantsWithInventoryQuantityForSalesChannel(
@@ -129,10 +144,11 @@ async function getProducts(
   }
 
   await wrapProductsWithTaxPrices(req, products)
+
   res.json({
     products,
-    count: metadata.count,
-    offset: metadata.skip,
-    limit: metadata.take,
+    count: metadata!.count,
+    offset: metadata!.skip,
+    limit: metadata!.take,
   })
 }

@@ -11,22 +11,7 @@
  *   content:
  *     application/json:
  *       schema:
- *         type: object
- *         description: The details of the user to be created.
- *         properties:
- *           email:
- *             type: string
- *             title: email
- *             description: The user's email.
- *             format: email
- *           first_name:
- *             type: string
- *             title: first_name
- *             description: The user's first name.
- *           last_name:
- *             type: string
- *             title: last_name
- *             description: The user's last name.
+ *         $ref: "#/components/schemas/AdminInviteAccept"
  * x-codeSamples:
  *   - lang: JavaScript
  *     label: JS SDK
@@ -110,9 +95,9 @@
  *   - name: user.created
  *     payload: |-
  *       ```ts
- *       [{
+ *       {
  *         id, // The ID of the user
- *       }]
+ *       }
  *       ```
  *     description: Emitted when users are created.
  *     deprecated: false

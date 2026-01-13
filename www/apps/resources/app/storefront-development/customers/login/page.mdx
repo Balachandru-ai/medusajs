@@ -137,7 +137,7 @@ export const highlights = [
           password,
         })
       } catch (error) {
-        alert(`An error occured while logging in: ${error}`)
+        alert(`An error occurred while logging in: ${error}`)
         return
       }
 
@@ -200,7 +200,7 @@ export const fetchHighlights = [
         password,
       })
     } catch (error) {
-      alert(`An error occured while logging in: ${error}`)
+      alert(`An error occurred while logging in: ${error}`)
       return
     }
 
@@ -292,7 +292,7 @@ curl '{backend_url}/store/products' \
   </CodeTab>
   <CodeTab label="Fetch" value="fetch">
 
-```ts highlights={["2", "", "Passes the cookie session ID in your request."]}
+```ts highlights={[["2", "credentials", "Passes the cookie session ID in your request."]]}
 fetch(`<BACKEND_URL>/store/products`, {
   credentials: "include",
 })

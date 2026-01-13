@@ -3,19 +3,20 @@ import { BigNumber } from "../big-number"
 import { MathBN } from "../math"
 
 export function calculateTaxTotal({
+  isTaxInclusive = false,
   taxLines,
   taxableAmount,
   setTotalField,
 }: {
+  isTaxInclusive?: boolean
   taxLines: Pick<TaxLineDTO, "rate">[]
   taxableAmount: BigNumberInput
   setTotalField?: string
 }) {
-  if (MathBN.lte(taxableAmount, 0)) {
-    return MathBN.convert(0)
-  }
-
   let taxTotal = MathBN.convert(0)
+  if (isTaxInclusive) {
+    return taxTotal
+  }
 
   for (const taxLine of taxLines) {
     const rate = MathBN.div(taxLine.rate, 100)

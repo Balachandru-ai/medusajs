@@ -37,7 +37,7 @@
  *     label: cURL
  *     source: |-
  *       curl -X DELETE '{backend_url}/admin/draft-orders/{id}' \
- *       -H 'Authorization: Bearer {access_token}'
+ *       -H 'Authorization: Bearer {jwt_token}'
  * tags:
  *   - Draft Orders
  * responses:
@@ -57,6 +57,7 @@
  *     $ref: "#/components/responses/500_error"
  * x-workflow: deleteDraftOrdersWorkflow
  * x-events: []
- * x-version: 2.8.4
+ * x-since: 2.8.4
+ * 
 */
 

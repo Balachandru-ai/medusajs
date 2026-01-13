@@ -120,10 +120,6 @@ export const eventBus = [
     "path": "https://docs.medusajs.com/resources/references/medusa-workflows/confirmReturnRequestWorkflow"
   },
   {
-    "title": "createAndCompleteReturnOrderWorkflow",
-    "path": "https://docs.medusajs.com/resources/references/medusa-workflows/createAndCompleteReturnOrderWorkflow"
-  },
-  {
     "title": "createOrderFulfillmentWorkflow",
     "path": "https://docs.medusajs.com/resources/references/medusa-workflows/createOrderFulfillmentWorkflow"
   },
@@ -154,10 +150,6 @@ export const eventBus = [
   {
     "title": "capturePaymentWorkflow",
     "path": "https://docs.medusajs.com/resources/references/medusa-workflows/capturePaymentWorkflow"
-  },
-  {
-    "title": "processPaymentWorkflow",
-    "path": "https://docs.medusajs.com/resources/references/medusa-workflows/processPaymentWorkflow"
   },
   {
     "title": "refundPaymentWorkflow",
@@ -274,6 +266,34 @@ export const eventBus = [
   {
     "title": "updateSalesChannelsWorkflow",
     "path": "https://docs.medusajs.com/resources/references/medusa-workflows/updateSalesChannelsWorkflow"
+  },
+  {
+    "title": "createShippingOptionTypesWorkflow",
+    "path": "https://docs.medusajs.com/resources/references/medusa-workflows/createShippingOptionTypesWorkflow"
+  },
+  {
+    "title": "deleteShippingOptionTypesWorkflow",
+    "path": "https://docs.medusajs.com/resources/references/medusa-workflows/deleteShippingOptionTypesWorkflow"
+  },
+  {
+    "title": "updateShippingOptionTypesWorkflow",
+    "path": "https://docs.medusajs.com/resources/references/medusa-workflows/updateShippingOptionTypesWorkflow"
+  },
+  {
+    "title": "batchTranslationsWorkflow",
+    "path": "https://docs.medusajs.com/resources/references/medusa-workflows/batchTranslationsWorkflow"
+  },
+  {
+    "title": "createTranslationsWorkflow",
+    "path": "https://docs.medusajs.com/resources/references/medusa-workflows/createTranslationsWorkflow"
+  },
+  {
+    "title": "deleteTranslationsWorkflow",
+    "path": "https://docs.medusajs.com/resources/references/medusa-workflows/deleteTranslationsWorkflow"
+  },
+  {
+    "title": "updateTranslationsWorkflow",
+    "path": "https://docs.medusajs.com/resources/references/medusa-workflows/updateTranslationsWorkflow"
   },
   {
     "title": "createUserAccountWorkflow",

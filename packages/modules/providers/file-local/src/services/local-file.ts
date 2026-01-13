@@ -3,10 +3,10 @@ import {
   AbstractFileProviderService,
   MedusaError,
 } from "@medusajs/framework/utils"
-import { createReadStream } from "fs"
+import { createReadStream, createWriteStream } from "fs"
 import fs from "fs/promises"
 import path from "path"
-import type { Readable } from "stream"
+import type { Readable, Writable } from "stream"
 
 export class LocalFileService extends AbstractFileProviderService {
   static identifier = "localfs"
@@ -57,12 +57,77 @@ export class LocalFileService extends AbstractFileProviderService {
     const filePath = this.getUploadFilePath(baseDir, fileKey)
     const fileUrl = this.getUploadFileUrl(fileKey)
 
-    const content = Buffer.from(file.content as string, "binary")
+    let content: Buffer
+    try {
+      const decoded = Buffer.from(file.content, "base64")
+      if (decoded.toString("base64") === file.content) {
+        content = decoded
+      } else {
+        content = Buffer.from(file.content, "utf8")
+      }
+    } catch {
+      // Last-resort fallback: binary
+      content = Buffer.from(file.content, "binary")
+    }
+
     await fs.writeFile(filePath, content)
 
     return {
       key: fileKey,
       url: fileUrl,
+    }
+  }
+
+  async getUploadStream(fileData: FileTypes.ProviderUploadStreamDTO): Promise<{
+    writeStream: Writable
+    promise: Promise<FileTypes.ProviderFileResultDTO>
+    url: string
+    fileKey: string
+  }> {
+    if (!fileData.filename) {
+      throw new MedusaError(
+        MedusaError.Types.INVALID_DATA,
+        `No filename provided`
+      )
+    }
+
+    const parsedFilename = path.parse(fileData.filename)
+    const baseDir =
+      fileData.access === "public" ? this.uploadDir_ : this.privateUploadDir_
+    await this.ensureDirExists(baseDir, parsedFilename.dir)
+
+    const fileKey = path.join(
+      parsedFilename.dir,
+      // We prepend "private" to the file key so deletions and presigned URLs can know which folder to look into
+      `${fileData.access === "public" ? "" : "private-"}${Date.now()}-${
+        parsedFilename.base
+      }`
+    )
+
+    const filePath = this.getUploadFilePath(baseDir, fileKey)
+    const fileUrl = this.getUploadFileUrl(fileKey)
+
+    const writeStream = createWriteStream(filePath)
+
+    const promise = new Promise<FileTypes.ProviderFileResultDTO>(
+      (resolve, reject) => {
+        writeStream.on("finish", () => {
+          resolve({
+            url: fileUrl,
+            key: fileKey,
+          })
+        })
+        writeStream.on("error", (err) => {
+          reject(err)
+        })
+      }
+    )
+
+    return {
+      writeStream,
+      promise,
+      url: fileUrl,
+      fileKey,
     }
   }
 
@@ -138,16 +203,6 @@ export class LocalFileService extends AbstractFileProviderService {
    * Returns the pre-signed URL that the client (frontend) can use to trigger
    * a file upload. In this case, the Medusa backend will implement the
    * "/upload" endpoint to perform the file upload.
-   *
-   * Since, we do not want the client to perform link detection on the frontend
-   * and then prepare a different kind of request for cloud providers and different
-   * request for the local server, we will have to make these URLs self sufficient.
-   *
-   * What is a self sufficient URL
-   *
-   * - There should be no need to specify the MIME type or filename separately in request body (cloud providers don't allow it).
-   * - There should be no need to pass auth headers like cookies. Again cloud providers
-   *   won't allow it and will likely result in a CORS error.
    */
   async getPresignedUploadUrl(
     fileData: FileTypes.ProviderGetPresignedUploadUrlDTO
@@ -159,18 +214,8 @@ export class LocalFileService extends AbstractFileProviderService {
       )
     }
 
-    const uploadUrl = new URL(
-      "upload",
-      `${this.backendUrl_.replace(/\/$/, "")}/`
-    )
-
-    uploadUrl.searchParams.set("filename", fileData.filename)
-    if (fileData.mimeType) {
-      uploadUrl.searchParams.set("type", fileData.mimeType)
-    }
-
     return {
-      url: uploadUrl.toString(),
+      url: "/admin/uploads",
       key: fileData.filename,
     }
   }

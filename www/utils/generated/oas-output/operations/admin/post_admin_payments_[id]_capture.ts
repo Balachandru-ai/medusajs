@@ -31,13 +31,7 @@
  *   content:
  *     application/json:
  *       schema:
- *         type: object
- *         description: The payment's details.
- *         properties:
- *           amount:
- *             type: number
- *             title: amount
- *             description: The amount to capture.
+ *         $ref: "#/components/schemas/AdminCapturePayment"
  * x-codeSamples:
  *   - lang: JavaScript
  *     label: JS SDK
@@ -60,7 +54,7 @@
  *     label: cURL
  *     source: |-
  *       curl -X POST '{backend_url}/admin/payments/{id}/capture' \
- *       -H 'Authorization: Bearer {access_token}'
+ *       -H 'Authorization: Bearer {jwt_token}'
  * tags:
  *   - Payments
  * responses:

@@ -8,16 +8,16 @@
  *   - type
  *   - options
  *   - images
- *   - length
  *   - title
  *   - status
- *   - description
+ *   - length
  *   - id
  *   - created_at
  *   - updated_at
  *   - subtitle
  *   - thumbnail
  *   - handle
+ *   - description
  *   - is_giftcard
  *   - width
  *   - weight
@@ -88,6 +88,9 @@
  *   metadata:
  *     type: object
  *     description: The product's metadata, can hold custom key-value pairs.
+ *     externalDocs:
+ *       url: https://docs.medusajs.com/api/admin#manage-metadata
+ *       description: Learn how to manage metadata
  *   created_at:
  *     type: string
  *     format: date-time
@@ -170,6 +173,11 @@
  *     description: The date the product was deleted.
  *   shipping_profile:
  *     $ref: "#/components/schemas/AdminShippingProfile"
+ *   translations:
+ *     type: array
+ *     description: The product's translations.
+ *     items:
+ *       $ref: "#/components/schemas/AdminTranslation"
  * 
 */
 

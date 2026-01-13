@@ -37,7 +37,7 @@
  *     label: cURL
  *     source: |-
  *       curl -X DELETE '{backend_url}/admin/collections/{id}' \
- *       -H 'Authorization: Bearer {access_token}'
+ *       -H 'Authorization: Bearer {jwt_token}'
  * tags:
  *   - Collections
  * responses:
@@ -64,9 +64,9 @@
  *   - name: product-collection.deleted
  *     payload: |-
  *       ```ts
- *       [{
+ *       {
  *         id, // The ID of the product collection
- *       }]
+ *       }
  *       ```
  *     description: Emitted when product collections are deleted.
  *     deprecated: false

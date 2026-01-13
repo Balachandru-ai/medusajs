@@ -25,6 +25,18 @@ export interface AdminProductVariantParams
    */
   allow_backorder?: boolean
   /**
+   * Filter by variant ean(s).
+   */
+  ean?: string | string[]
+  /**
+   * Filter by variant upc(s).
+   */
+  upc?: string | string[]
+  /**
+   * Filter by variant barcode(s).
+   */
+  barcode?: string | string[]
+  /**
    * Apply filters on the variant's creation date.
    */
   created_at?: OperatorMap<string>
@@ -46,5 +58,18 @@ export interface AdminProductListParams
   /**
    * Apply filters on the product variants.
    */
-  variants?: AdminProductVariantParams
+  variants?: Omit<AdminProductVariantParams, "q">
+}
+
+export interface AdminProductExportParams extends Omit<AdminProductListParams, "tags" | "variants"> {
+  tags?: {
+    id?: string[]
+  }
+  variants?: { 
+    options?: { 
+      value?: string
+      option_id?: string
+      option?: Record<string, any>
+    }
+  }
 }

@@ -5,12 +5,14 @@ import {
   IApiKeyModuleService,
   IAuthModuleService,
   ICacheService,
+  ICachingModuleService,
   ICartModuleService,
   ICurrencyModuleService,
   ICustomerModuleService,
   IEventBusModuleService,
   IFileModuleService,
   IFulfillmentModuleService,
+  IIndexService,
   IInventoryService,
   ILockingModule,
   INotificationModuleService,
@@ -19,11 +21,14 @@ import {
   IPricingModuleService,
   IProductModuleService,
   IPromotionModuleService,
+  IRbacModuleService,
   IRegionModuleService,
   ISalesChannelModuleService,
+  ISettingsModuleService,
   IStockLocationService,
   IStoreModuleService,
   ITaxModuleService,
+  ITranslationModuleService,
   IUserModuleService,
   IWorkflowEngineService,
   Logger,
@@ -31,8 +36,8 @@ import {
   RemoteQueryFunction,
 } from "@medusajs/types"
 import { ContainerRegistrationKeys, Modules } from "@medusajs/utils"
-import { Knex } from "@mikro-orm/knex"
-import { AwilixContainer, ResolveOptions } from "awilix"
+import { AwilixContainer, ResolveOptions } from "../deps/awilix"
+import { Knex } from "../deps/mikro-orm-knex"
 
 declare module "@medusajs/types" {
   export interface ModuleImplementations {
@@ -41,7 +46,7 @@ declare module "@medusajs/types" {
      */
     [ContainerRegistrationKeys.REMOTE_LINK]: Link
     /**
-     * @version 2.2.0
+     * @since 2.2.0
      */
     [ContainerRegistrationKeys.LINK]: Link
     [ContainerRegistrationKeys.CONFIG_MODULE]: ConfigModule
@@ -74,6 +79,11 @@ declare module "@medusajs/types" {
     [Modules.FILE]: IFileModuleService
     [Modules.NOTIFICATION]: INotificationModuleService
     [Modules.LOCKING]: ILockingModule
+    [Modules.SETTINGS]: ISettingsModuleService
+    [Modules.CACHING]: ICachingModuleService
+    [Modules.INDEX]: IIndexService
+    [Modules.TRANSLATION]: ITranslationModuleService
+    [Modules.RBAC]: IRbacModuleService
   }
 }
 

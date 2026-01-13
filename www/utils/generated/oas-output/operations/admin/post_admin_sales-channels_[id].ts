@@ -59,7 +59,7 @@
  *     label: cURL
  *     source: |-
  *       curl -X POST '{backend_url}/admin/sales-channels/{id}' \
- *       -H 'Authorization: Bearer {access_token}' \
+ *       -H 'Authorization: Bearer {jwt_token}' \
  *       -H 'Content-Type: application/json' \
  *       --data-raw '{
  *         "description": "{value}",
@@ -91,9 +91,9 @@
  *   - name: sales-channel.updated
  *     payload: |-
  *       ```ts
- *       [{
+ *       {
  *         id, // The ID of the sales channel
- *       }]
+ *       }
  *       ```
  *     description: Emitted when sales channels are updated.
  *     deprecated: false

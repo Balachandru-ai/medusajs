@@ -16,15 +16,19 @@ import {
   OrderWorkflowEvents,
 } from "@medusajs/framework/utils"
 import {
-  WorkflowData,
-  WorkflowResponse,
   createHook,
   createStep,
   createWorkflow,
   parallelize,
   transform,
+  WorkflowData,
+  WorkflowResponse,
 } from "@medusajs/framework/workflows-sdk"
-import { emitEventStep, useRemoteQueryStep } from "../../common"
+import {
+  emitEventStep,
+  useQueryGraphStep,
+  useRemoteQueryStep,
+} from "../../common"
 import { cancelFulfillmentWorkflow } from "../../fulfillment"
 import { adjustInventoryLevelsStep } from "../../inventory"
 import { cancelOrderFulfillmentStep } from "../steps/cancel-fulfillment"
@@ -32,8 +36,10 @@ import {
   throwIfItemsDoesNotExistsInOrder,
   throwIfOrderIsCancelled,
 } from "../utils/order-validation"
-import { createReservationsStep } from "../../reservation"
-import { updateReservationsStep } from "../../reservation"
+import {
+  createReservationsStep,
+  updateReservationsStep,
+} from "../../reservation"
 
 type OrderItemWithVariantDTO = OrderLineItemDTO & {
   variant?: ProductVariantDTO & {
@@ -103,7 +109,8 @@ export const cancelOrderFulfillmentValidateOrder = createStep(
       (f) => f.id === input.fulfillment_id
     )
     if (!fulfillment) {
-      throw new Error(
+      throw new MedusaError(
+        MedusaError.Types.INVALID_DATA,
         `Fulfillment with id ${input.fulfillment_id} not found in the order`
       )
     }
@@ -153,7 +160,9 @@ function prepareCancelOrderFulfillmentData({
         (i) => i.id === lineItemId
       ) as OrderItemWithVariantDTO
       // find inventory items
-      const iitems = orderItem!.variant?.inventory_items
+      const iitems = orderItem!.variant?.manage_inventory
+        ? orderItem!.variant?.inventory_items
+        : undefined
       // find fulfillment item
       const fitem = fulfillment.items.find(
         (i) => i.line_item_id === lineItemId
@@ -204,6 +213,7 @@ function prepareInventoryUpdate({
     location_id: string
     quantity: BigNumberInput
     line_item_id: string
+    allow_backorder: boolean
   }[] = []
   const toUpdate: {
     id: string
@@ -243,6 +253,7 @@ function prepareInventoryUpdate({
         location_id: fulfillment.location_id,
         quantity: fulfillmentItem.quantity, // <- this is the inventory quantity that is being fulfilled so it means it does include the required quantity
         line_item_id: fulfillmentItem.line_item_id as string,
+        allow_backorder: !!orderItem?.variant?.allow_backorder,
       })
     } else {
       toUpdate.push({
@@ -304,30 +315,29 @@ export const cancelOrderFulfillmentWorkflowId = "cancel-order-fulfillment"
 export const cancelOrderFulfillmentWorkflow = createWorkflow(
   cancelOrderFulfillmentWorkflowId,
   (input: WorkflowData<CancelOrderFulfillmentWorkflowInput>) => {
-    const order: OrderDTO & { fulfillments: FulfillmentDTO[] } =
-      useRemoteQueryStep({
-        entry_point: "orders",
-        fields: [
-          "id",
-          "status",
-          "items.id",
-          "items.quantity",
-          "items.variant.manage_inventory",
-          "items.variant.inventory_items.inventory.id",
-          "items.variant.inventory_items.required_quantity",
-          "fulfillments.id",
-          "fulfillments.canceled_at",
-          "fulfillments.shipped_at",
-          "fulfillments.location_id",
-          "fulfillments.items.id",
-          "fulfillments.items.quantity",
-          "fulfillments.items.line_item_id",
-          "fulfillments.items.inventory_item_id",
-        ],
-        variables: { id: input.order_id },
-        list: false,
-        throw_if_key_not_found: true,
-      })
+    const { data: order } = useQueryGraphStep({
+      entity: "order",
+      filters: { id: input.order_id },
+      fields: [
+        "id",
+        "status",
+        "items.id",
+        "items.quantity",
+        "items.variant.allow_backorder",
+        "items.variant.manage_inventory",
+        "items.variant.inventory_items.inventory.id",
+        "items.variant.inventory_items.required_quantity",
+        "fulfillments.id",
+        "fulfillments.canceled_at",
+        "fulfillments.shipped_at",
+        "fulfillments.location_id",
+        "fulfillments.items.id",
+        "fulfillments.items.quantity",
+        "fulfillments.items.line_item_id",
+        "fulfillments.items.inventory_item_id",
+      ],
+      options: { throwIfKeyNotFound: true, isList: false },
+    }).config({ name: "get-order" })
 
     cancelOrderFulfillmentValidateOrder({ order, input })
 

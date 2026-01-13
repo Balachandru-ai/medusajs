@@ -46,7 +46,7 @@
  *                 type: string
  *                 description: The promotion's type.
  *                 externalDocs:
- *                   url: https://docs.medusajs.com/v2/resources/commerce-modules/promotion/concepts#what-is-a-promotion
+ *                   url: https://docs.medusajs.com/resources/commerce-modules/promotion/concepts#what-is-a-promotion
  *                 enum:
  *                   - standard
  *                   - buyget
@@ -323,7 +323,7 @@
  *         },
  *       })
  * 
- *       sdk.admin.promotion.create({ 
+ *       sdk.admin.promotion.create({
  *         name: "My Promotion",
  *         description: "This is a test promotion",
  *         code: "PROMO123",
@@ -337,7 +337,7 @@
  *     label: cURL
  *     source: |-
  *       curl -X POST '{backend_url}/admin/promotions' \
- *       -H 'Authorization: Bearer {access_token}' \
+ *       -H 'Authorization: Bearer {jwt_token}' \
  *       -H 'Content-Type: application/json' \
  *       --data-raw '{
  *         "code": "{value}",

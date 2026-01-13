@@ -13,6 +13,7 @@ import {
   isString,
   Modules,
   OrchestrationUtils,
+  registerDevServerResource,
 } from "@medusajs/utils"
 import { ulid } from "ulid"
 import { exportWorkflow, WorkflowResult } from "../../helper"
@@ -24,11 +25,24 @@ import {
   CreateWorkflowComposerContext,
   HookHandler,
   ReturnWorkflow,
+  StepExecutionContext,
   StepFunction,
   WorkflowData,
 } from "./type"
 
 global[OrchestrationUtils.SymbolMedusaWorkflowComposerContext] = null
+
+const buildTransactionId = (
+  step: { __step__: string },
+  stepContext: StepExecutionContext
+) => {
+  return (
+    step.__step__ +
+    "-" +
+    (stepContext.transactionId ?? ulid()) +
+    (stepContext.attempt > 1 ? `-attempt-${stepContext.attempt}` : "")
+  )
+}
 
 /**
  * This function creates a workflow with the provided name and a constructor function.
@@ -103,6 +117,12 @@ export function createWorkflow<TData, TResult, THooks extends any[]>(
   const name = isString(nameOrConfig) ? nameOrConfig : nameOrConfig.name
   const options = isString(nameOrConfig) ? {} : nameOrConfig
 
+  registerDevServerResource({
+    sourcePath: fileSourcePath,
+    id: name,
+    type: "workflow",
+  })
+
   const handlers: WorkflowHandler = new Map()
 
   let newWorkflow = false
@@ -117,6 +137,7 @@ export function createWorkflow<TData, TResult, THooks extends any[]>(
     flow: WorkflowManager.getEmptyTransactionDefinition(),
     isAsync: false,
     handlers,
+    overriddenHandler: new Map(),
     hooks_: {
       declared: [],
       registered: [],
@@ -206,17 +227,20 @@ export function createWorkflow<TData, TResult, THooks extends any[]>(
 
         const executionContext = {
           ...(sharedContext?.context ?? {}),
-          transactionId:
-            step.__step__ + "-" + (stepContext.transactionId ?? ulid()),
+          transactionId: buildTransactionId(step, stepContext),
           parentStepIdempotencyKey: stepContext.idempotencyKey,
           preventReleaseEvents: true,
+          runId: stepContext.runId,
         }
 
         let transaction
         if (workflowEngine && isAsync) {
           transaction = await workflowEngine.run(name, {
             input: stepInput as any,
+            transactionId: executionContext.transactionId,
             context: executionContext,
+            throwOnError: false,
+            logOnError: true,
           })
         } else {
           transaction = await workflow.run({
@@ -233,9 +257,6 @@ export function createWorkflow<TData, TResult, THooks extends any[]>(
       },
       async (transaction, stepContext) => {
         // The step itself has failed, there is nothing to revert
-        if (!transaction) {
-          return
-        }
 
         const { container, ...sharedContext } = stepContext
         const isAsync = stepContext[" stepDefinition"]?.async
@@ -246,27 +267,28 @@ export function createWorkflow<TData, TResult, THooks extends any[]>(
 
         const executionContext = {
           ...(sharedContext?.context ?? {}),
-          transactionId:
-            step.__step__ + "-" + (stepContext.transactionId ?? ulid()),
+          transactionId: buildTransactionId(step, stepContext),
           parentStepIdempotencyKey: stepContext.idempotencyKey,
           preventReleaseEvents: true,
+          cancelingFromParentStep: true,
         }
-
-        const transactionId = step.__step__ + "-" + stepContext.transactionId
 
         if (workflowEngine && isAsync) {
           await workflowEngine.cancel(name, {
-            transactionId: transactionId,
+            transactionId: executionContext.transactionId,
             context: executionContext,
           })
         } else {
           await workflow(container).cancel({
-            transaction: (transaction as WorkflowResult<any>)?.transaction,
-            transactionId,
+            transaction: ((transaction as WorkflowResult<any>) ?? {})
+              ?.transaction,
+            transactionId: executionContext.transactionId,
             container,
             context: executionContext,
           })
         }
+
+        return
       }
     )(input) as ReturnType<StepFunction<TData, TResult>>
 

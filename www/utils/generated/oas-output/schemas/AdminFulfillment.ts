@@ -72,10 +72,13 @@
  *     type: object
  *     description: The fulfillment's data, useful for the third-party provider handling the fulfillment.
  *     externalDocs:
- *       url: https://docs.medusajs.com/v2/resources/commerce-modules/fulfillment/shipping-option#data-property
+ *       url: https://docs.medusajs.com/resources/commerce-modules/fulfillment/shipping-option#data-property
  *   metadata:
  *     type: object
  *     description: The fulfillment's metadata, can hold custom key-value pairs.
+ *     externalDocs:
+ *       url: https://docs.medusajs.com/api/admin#manage-metadata
+ *       description: Learn how to manage metadata
  *   created_at:
  *     type: string
  *     format: date-time

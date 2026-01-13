@@ -1,31 +1,42 @@
-import logger from "@medusajs/cli/dist/reporter"
+import {
+  ContainerRegistrationKeys,
+  FeatureFlag,
+  isFileDisabled,
+  parseCorsOrigins,
+} from "@medusajs/utils"
 import cors, { CorsOptions } from "cors"
-import { parseCorsOrigins } from "@medusajs/utils"
-import type { Express, RequestHandler, ErrorRequestHandler } from "express"
 import type {
+  ErrorRequestHandler,
+  Express,
+  IRouter,
+  RequestHandler,
+} from "express"
+import type {
+  AdditionalDataValidatorRoute,
+  BodyParserConfigRoute,
+  MedusaNextFunction,
   MedusaRequest,
   MedusaResponse,
+  MiddlewareDescriptor,
+  MiddlewareFunction,
   MiddlewareVerb,
   RouteDescriptor,
-  MiddlewareFunction,
-  MedusaNextFunction,
-  MiddlewareDescriptor,
-  BodyParserConfigRoute,
   RouteHandler,
-  AdditionalDataValidatorRoute,
 } from "./types"
 
-import { RoutesLoader } from "./routes-loader"
-import { RoutesFinder } from "./routes-finder"
-import { RoutesSorter } from "./routes-sorter"
-import { wrapHandler } from "./utils/wrap-handler"
-import { authenticate, AuthType } from "./middlewares"
-import { errorHandler } from "./middlewares/error-handler"
-import { RestrictedFields } from "./utils/restricted-fields"
+import { Logger, MedusaContainer } from "@medusajs/types"
+import { join } from "path"
+import { configManager } from "../config"
 import { MiddlewareFileLoader } from "./middleware-file-loader"
+import { applyLocale, authenticate, AuthType } from "./middlewares"
 import { createBodyParserMiddlewaresStack } from "./middlewares/bodyparser"
 import { ensurePublishableApiKeyMiddleware } from "./middlewares/ensure-publishable-api-key"
-import { configManager } from "../config"
+import { errorHandler } from "./middlewares/error-handler"
+import { RoutesFinder } from "./routes-finder"
+import { RoutesLoader } from "./routes-loader"
+import { RoutesSorter } from "./routes-sorter"
+import { RestrictedFields } from "./utils/restricted-fields"
+import { wrapHandler } from "./utils/wrap-handler"
 
 export class ApiLoader {
   /**
@@ -58,18 +69,23 @@ export class ApiLoader {
    */
   readonly #sourceDirs: string[]
 
+  readonly #logger: Logger
+
   constructor({
     app,
     sourceDir,
     baseRestrictedFields = [],
+    container,
   }: {
     app: Express
     sourceDir: string | string[]
     baseRestrictedFields?: string[]
+    container: MedusaContainer
   }) {
     this.#app = app
     this.#sourceDirs = Array.isArray(sourceDir) ? sourceDir : [sourceDir]
     this.#assignRestrictedFields(baseRestrictedFields ?? [])
+    this.#logger = container.resolve(ContainerRegistrationKeys.LOGGER)
   }
 
   /**
@@ -78,9 +94,10 @@ export class ApiLoader {
    */
   async #loadHttpResources() {
     const routesLoader = new RoutesLoader()
+
     const middlewareLoader = new MiddlewareFileLoader()
 
-    for (let dir of this.#sourceDirs) {
+    for (const dir of this.#sourceDirs) {
       await routesLoader.scanDir(dir)
       await middlewareLoader.scanDir(dir)
     }
@@ -99,13 +116,45 @@ export class ApiLoader {
   }
 
   /**
+   * Checks if a route file is disabled for a given matcher and method
+   * by trying to find the corresponding route file path
+   */
+  #isRouteFileDisabled(matcher: string): boolean {
+    const routePathSegments = matcher
+      .split("/")
+      .filter(Boolean)
+      .map((segment) => {
+        if (segment.startsWith(":")) {
+          return `[${segment.slice(1)}]`
+        }
+        return segment
+      })
+
+    for (const sourceDir of this.#sourceDirs) {
+      for (const ext of [".ts", ".js"]) {
+        const routeFilePath = join(
+          sourceDir,
+          ...routePathSegments,
+          `route${ext}`
+        )
+
+        if (isFileDisabled(routeFilePath)) {
+          return true
+        }
+      }
+    }
+
+    return false
+  }
+
+  /**
    * Registers a middleware or a route handler with Express
    */
   #registerExpressHandler(
     route: MiddlewareDescriptor | RouteDescriptor | RouteDescriptor
   ) {
     if ("isRoute" in route) {
-      logger.debug(`registering route ${route.method} ${route.matcher}`)
+      this.#logger.debug(`registering route ${route.method} ${route.matcher}`)
       const handler = ApiLoader.traceRoute
         ? ApiLoader.traceRoute(route.handler, {
             route: route.matcher,
@@ -114,11 +163,12 @@ export class ApiLoader {
         : route.handler
 
       this.#app[route.method.toLowerCase()](route.matcher, wrapHandler(handler))
+
       return
     }
 
     if (!route.methods) {
-      logger.debug(`registering global middleware for ${route.matcher}`)
+      this.#logger.debug(`registering global middleware for ${route.matcher}`)
       const handler = ApiLoader.traceMiddleware
         ? (ApiLoader.traceMiddleware(route.handler, {
             route: route.matcher,
@@ -133,7 +183,17 @@ export class ApiLoader {
       ? route.methods
       : [route.methods]
     methods.forEach((method) => {
-      logger.debug(`registering route middleware ${method} ${route.matcher}`)
+      const isDisabled = this.#isRouteFileDisabled(route.matcher)
+      if (isDisabled) {
+        this.#logger.debug(
+          `skipping disabled route middleware registration for ${method} ${route.matcher}`
+        )
+        return
+      }
+
+      this.#logger.debug(
+        `registering route middleware ${method} ${route.matcher}`
+      )
       const handler = ApiLoader.traceMiddleware
         ? (ApiLoader.traceMiddleware(wrapHandler(route.handler), {
             route: route.matcher,
@@ -192,6 +252,7 @@ export class ApiLoader {
       | "shouldAppendStoreCors",
     corsOptions: CorsOptions
   ) {
+    const logger = this.#logger
     const corsFn = cors(corsOptions)
     const corsMiddleware: RequestHandler = function corsMiddleware(
       req,
@@ -234,6 +295,7 @@ export class ApiLoader {
     authType: AuthType | AuthType[],
     options?: { allowUnauthenticated?: boolean; allowUnregistered?: boolean }
   ) {
+    const logger = this.#logger
     logger.debug(`Registering auth middleware for prefix ${namespace}`)
 
     const originalFn = authenticate(actorType, authType, options)
@@ -273,7 +335,9 @@ export class ApiLoader {
     namespace: string,
     routesFinder: RoutesFinder<BodyParserConfigRoute>
   ): void {
-    logger.debug(`Registering bodyparser middleware for prefix ${namespace}`)
+    this.#logger.debug(
+      `Registering bodyparser middleware for prefix ${namespace}`
+    )
     this.#app.use(
       namespace,
       createBodyParserMiddlewaresStack(
@@ -292,6 +356,7 @@ export class ApiLoader {
     namespace: string,
     routesFinder: RoutesFinder<AdditionalDataValidatorRoute>
   ) {
+    const logger = this.#logger
     logger.debug(
       `Registering assignAdditionalDataValidator middleware for prefix ${namespace}`
     )
@@ -329,7 +394,7 @@ export class ApiLoader {
    * a `x-publishable-key` header
    */
   #applyStorePublishableKeyMiddleware(namespace: string) {
-    logger.debug(
+    this.#logger.debug(
       `Registering publishable key middleware for namespace ${namespace}`
     )
     let middleware = ApiLoader.traceMiddleware
@@ -341,7 +406,23 @@ export class ApiLoader {
     this.#app.use(namespace, middleware as RequestHandler)
   }
 
+  #applyLocaleMiddleware(namespace: string) {
+    this.#logger.debug(
+      `Registering locale middleware for namespace ${namespace}`
+    )
+    let middleware = ApiLoader.traceMiddleware
+      ? ApiLoader.traceMiddleware(applyLocale, {
+          route: namespace,
+        })
+      : applyLocale
+    this.#app.use(namespace, middleware as RequestHandler)
+  }
+
   async load() {
+    if (FeatureFlag.isFeatureEnabled("backend_hmr")) {
+      ;(global as any).__MEDUSA_HMR_API_LOADER__ = this
+    }
+
     const {
       errorHandler: sourceErrorHandler,
       middlewares,
@@ -413,6 +494,8 @@ export class ApiLoader {
      */
     this.#applyStorePublishableKeyMiddleware("/store")
 
+    this.#applyLocaleMiddleware("/store")
+
     this.#applyAuthMiddleware(
       routesFinder,
       "/store",
@@ -449,5 +532,20 @@ export class ApiLoader {
      * Registering error handler as the final handler
      */
     this.#app.use(sourceErrorHandler ?? errorHandler())
+  }
+
+  /**
+   * Clear all API resources registered by this loader
+   * This removes all routes and middleware added after the initial stack state
+   * Used by HMR to reset the API state before reloading
+   */
+  clearAllResources() {
+    const router = this.#app._router as IRouter
+    const initialStackLength =
+      (global as any).__MEDUSA_HMR_INITIAL_STACK_LENGTH__ ?? 0
+
+    if (router && router.stack) {
+      router.stack.splice(initialStackLength)
+    }
   }
 }

@@ -14,7 +14,7 @@ A middleware is a function executed when a request is sent to an API Route. It's
 
 Middlewares are used to guard API routes, parse request content types other than `application/json`, manipulate request data, and more.
 
-![Diagram showcasing how a middleware is executed when a request is sent to an API route.](https://res.cloudinary.com/dza7lstvk/image/upload/v1746775148/Medusa%20Book/middleware-overview_wc2ws5.jpg)
+![API middleware execution flow diagram showing how HTTP requests first pass through middleware functions for authentication, validation, and data processing before reaching the actual route handler, providing a secure and flexible request processing pipeline in Medusa applications](https://res.cloudinary.com/dza7lstvk/image/upload/v1746775148/Medusa%20Book/middleware-overview_wc2ws5.jpg)
 
 <Note title="Tip">
 
@@ -166,6 +166,10 @@ npm run dev
 ```bash
 Received a request!
 ```
+
+### Troubleshooting
+
+If the middleware didn't run, make sure you've correctly created the middleware at `src/api/middlewares.ts` (with correct spelling). This is a common mistake that can lead to the middleware not being applied, resulting in unexpected behavior.
 
 ---
 

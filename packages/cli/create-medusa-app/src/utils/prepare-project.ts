@@ -1,11 +1,13 @@
 import fs from "fs"
 import path from "path"
 import { Ora } from "ora"
-import execute from "./execute.js"
+import { ExecuteResult } from "./execute.js"
 import { EOL } from "os"
 import { displayFactBox, FactBoxOptions } from "./facts.js"
 import ProcessManager from "./process-manager.js"
-import type { Client } from "pg"
+import type { Client } from "@medusajs/deps/pg"
+import PackageManager from "./package-manager.js"
+import { updatePackageVersions } from "./update-package-versions.js"
 
 const ADMIN_EMAIL = "admin@medusa-test.com"
 let STORE_CORS = "http://localhost:8000"
@@ -24,6 +26,7 @@ type PreparePluginOptions = {
   processManager: ProcessManager
   abortController?: AbortController
   verbose?: boolean
+  packageManager: PackageManager
 }
 
 type PrepareProjectOptions = {
@@ -42,6 +45,8 @@ type PrepareProjectOptions = {
   nextjsDirectory?: string
   client: Client | null
   verbose?: boolean
+  packageManager: PackageManager
+  version?: string
 }
 
 type PrepareOptions = PreparePluginOptions | PrepareProjectOptions
@@ -66,6 +71,7 @@ async function preparePlugin({
   processManager,
   abortController,
   verbose = false,
+  packageManager,
 }: PreparePluginOptions) {
   // initialize execution options
   const execOptions = {
@@ -89,6 +95,12 @@ async function preparePlugin({
   // Update name
   packageJson.name = projectName
 
+  // Add packageManager field to ensure consistent version usage
+  const packageManagerString = await packageManager.getPackageManagerString()
+  if (packageManagerString) {
+    packageJson.packageManager = packageManagerString
+  }
+
   fs.writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2))
 
   factBoxOptions.interval = displayFactBox({
@@ -98,20 +110,7 @@ async function preparePlugin({
     processManager,
   })
 
-  await processManager.runProcess({
-    process: async () => {
-      try {
-        await execute([`yarn`, execOptions], { verbose })
-      } catch (e) {
-        // yarn isn't available
-        // use npm
-        await execute([`npm install --legacy-peer-deps`, execOptions], {
-          verbose,
-        })
-      }
-    },
-    ignoreERESOLVE: true,
-  })
+  await packageManager.installDependencies(execOptions)
 
   factBoxOptions.interval = displayFactBox({
     ...factBoxOptions,
@@ -136,6 +135,8 @@ async function prepareProject({
   nextjsDirectory = "",
   client,
   verbose = false,
+  packageManager,
+  version,
 }: PrepareProjectOptions) {
   // initialize execution options
   const execOptions = {
@@ -167,6 +168,17 @@ async function prepareProject({
   // Update name
   packageJson.name = projectName
 
+  // Add packageManager field to ensure consistent version usage
+  const packageManagerString = await packageManager.getPackageManagerString()
+  if (packageManagerString) {
+    packageJson.packageManager = packageManagerString
+  }
+
+  // Update medusa dependencies versions
+  if (version) {
+    updatePackageVersions(packageJson, version)
+  }
+
   fs.writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2))
 
   // initialize the invite token to return
@@ -196,20 +208,7 @@ async function prepareProject({
     processManager,
   })
 
-  await processManager.runProcess({
-    process: async () => {
-      try {
-        await execute([`yarn`, execOptions], { verbose })
-      } catch (e) {
-        // yarn isn't available
-        // use npm
-        await execute([`npm install --legacy-peer-deps`, execOptions], {
-          verbose,
-        })
-      }
-    },
-    ignoreERESOLVE: true,
-  })
+  await packageManager.installDependencies(execOptions)
 
   factBoxOptions.interval = displayFactBox({
     ...factBoxOptions,
@@ -223,70 +222,59 @@ async function prepareProject({
     })
 
     // run migrations
-    await processManager.runProcess({
-      process: async () => {
-        const proc = await execute(["npx medusa db:migrate", npxOptions], {
-          verbose,
-          needOutput: true,
-        })
+    const migrationExecResult = await packageManager.runMedusaCommand(
+      "db:migrate",
+      npxOptions,
+      {
+        verbose,
+        needOutput: true,
+      }
+    )
 
-        if (client) {
-          // check the migrations table is in the database
-          // to ensure that migrations ran
-          let errorOccurred = false
-          try {
-            const migrations = await client.query(
-              `SELECT * FROM "mikro_orm_migrations"`
-            )
-            errorOccurred = migrations.rowCount == 0
-          } catch (e) {
-            // avoid error thrown if the migrations table
-            // doesn't exist
-            errorOccurred = true
-          }
+    if (client) {
+      // check the migrations table is in the database
+      // to ensure that migrations ran
+      let errorOccurred = false
+      try {
+        const migrations = await client.query(
+          `SELECT count(tablename) from pg_tables WHERE tablename = 'mikro_orm_migrations'`
+        )
+        errorOccurred = migrations.rowCount == 0
+      } catch (e) {
+        // avoid error thrown if the migrations table
+        // doesn't exist
+        errorOccurred = true
+      }
 
-          // ensure that migrations actually ran in case of an uncaught error
-          if (errorOccurred && (proc.stderr || proc.stdout)) {
-            throw new Error(
-              `An error occurred while running migrations: ${
-                proc.stderr || proc.stdout
-              }`
-            )
-          }
-        }
-      },
-    })
+      // ensure that migrations actually ran in case of an uncaught error
+      if (
+        errorOccurred &&
+        (migrationExecResult.stderr || migrationExecResult.stdout)
+      ) {
+        throw new Error(
+          `An error occurred while running migrations: ${
+            migrationExecResult.stderr || migrationExecResult.stdout
+          }`
+        )
+      }
+    }
 
     factBoxOptions.interval = displayFactBox({
       ...factBoxOptions,
       message: "Ran Migrations",
     })
 
-    // create admin user
-    factBoxOptions.interval = displayFactBox({
-      ...factBoxOptions,
-      title: "Creating an admin user...",
-    })
+    const userExecResult = (await packageManager.runMedusaCommand(
+      `user -e ${ADMIN_EMAIL} --invite`,
+      npxOptions,
+      { verbose, needOutput: true }
+    )) as ExecuteResult
 
-    await processManager.runProcess({
-      process: async () => {
-        const proc = await execute(
-          [`npx medusa user -e ${ADMIN_EMAIL} --invite`, npxOptions],
-          { verbose, needOutput: true }
-        )
-
-        // get invite token from stdout
-        const match = (proc.stdout as string).match(
-          /Invite token: (?<token>.+)/
-        )
-        inviteToken = match?.groups?.token
-      },
-    })
-
-    factBoxOptions.interval = displayFactBox({
-      ...factBoxOptions,
-      message: "Created admin user",
-    })
+    // get invite token from stdout
+    const match = (userExecResult.stdout as string).match(
+      /Invite token: (?<token>.+)/
+    )
+    inviteToken = match?.groups?.token
 
     // TODO for now we just seed the default data
     // we should add onboarding seeding again if it makes
@@ -296,18 +284,7 @@ async function prepareProject({
       title: "Seeding database...",
     })
 
-    await processManager.runProcess({
-      process: async () => {
-        try {
-          await execute([`yarn seed`, execOptions], { verbose })
-        } catch (e) {
-          // yarn isn't available
-          // use npm
-          await execute([`npm run seed`, execOptions], { verbose })
-        }
-      },
-      ignoreERESOLVE: true,
-    })
+    await packageManager.runCommand("seed", execOptions)
 
     displayFactBox({
       ...factBoxOptions,

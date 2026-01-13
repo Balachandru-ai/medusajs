@@ -31,7 +31,7 @@
  *   content:
  *     application/json:
  *       schema:
- *         $ref: "#/components/schemas/AdminPostExchangesAddItemsReqSchema"
+ *         $ref: "#/components/schemas/AdminAddExchangeOutboundItems"
  * x-codeSamples:
  *   - lang: JavaScript
  *     label: JS SDK
@@ -59,7 +59,7 @@
  *     label: cURL
  *     source: |-
  *       curl -X POST '{backend_url}/admin/exchanges/{id}/outbound/items' \
- *       -H 'Authorization: Bearer {access_token}'
+ *       -H 'Authorization: Bearer {jwt_token}'
  * tags:
  *   - Exchanges
  * responses:

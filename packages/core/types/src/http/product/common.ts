@@ -160,6 +160,14 @@ export interface BaseProductVariant {
    */
   upc: string | null
   /**
+   * The variant's thumbnail.
+   */
+  thumbnail: string | null
+  /**
+   * The variant's images.
+   */
+  images: BaseProductImage[] | null
+  /**
    * Whether the variant can be ordered even if it's out of stock.
    */
   allow_backorder: boolean | null
@@ -173,10 +181,10 @@ export interface BaseProductVariant {
    * This field is only retrieved in the [Get Product](https://docs.medusajs.com/api/store#products_getproductsid)
    * and [List Products](https://docs.medusajs.com/api/store#products_getproducts) API routes if you
    * pass `+variants.inventory_quantity` in the `fields` query parameter.
-   * 
+   *
    * Learn more in the [Retrieve Product Variant's Inventory](https://docs.medusajs.com/resources/storefront-development/products/inventory) storefront guide.
    */
-  inventory_quantity?: number
+  inventory_quantity?: number | null
   /**
    * The variant's HS code.
    */

@@ -1,5 +1,168 @@
 # Change Log
 
+## 2.12.5
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @medusajs/deps@2.12.5
+  - @medusajs/telemetry@2.12.5
+
+## 2.12.4
+
+### Patch Changes
+
+- [#14462](https://github.com/medusajs/medusa/pull/14462) [`b300a9334584d5b373d6b1879d715e9ebd9050db`](https://github.com/medusajs/medusa/commit/b300a9334584d5b373d6b1879d715e9ebd9050db) Thanks [@shahednasser](https://github.com/shahednasser)! - fix(create-medusa-app): fix version option not working with Next.js storefront
+
+- Updated dependencies []:
+  - @medusajs/deps@2.12.4
+  - @medusajs/telemetry@2.12.4
+
+## 2.12.3
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @medusajs/deps@2.12.3
+  - @medusajs/telemetry@2.12.3
+
+## 2.12.2
+
+### Patch Changes
+
+- [#14254](https://github.com/medusajs/medusa/pull/14254) [`9bcfb990bf1d14f99859cf1247627bcc0d797136`](https://github.com/medusajs/medusa/commit/9bcfb990bf1d14f99859cf1247627bcc0d797136) Thanks [@adrien2p](https://github.com/adrien2p)! - chore(): Upgrade validator patched version
+
+- Updated dependencies []:
+  - @medusajs/deps@2.12.2
+  - @medusajs/telemetry@2.12.2
+
+## 2.12.1
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @medusajs/deps@2.12.1
+  - @medusajs/telemetry@2.12.1
+
+## 2.12.0
+
+### Patch Changes
+
+- Updated dependencies [[`c2c3ad5ba53f1959422fb2d37297a8de8d714782`](https://github.com/medusajs/medusa/commit/c2c3ad5ba53f1959422fb2d37297a8de8d714782)]:
+  - @medusajs/telemetry@2.12.0
+  - @medusajs/deps@2.12.0
+
+## 2.11.3
+
+### Patch Changes
+
+- [#13910](https://github.com/medusajs/medusa/pull/13910) [`224ab39a81e8d3cf3d6fa3ff5eee82541f64728d`](https://github.com/medusajs/medusa/commit/224ab39a81e8d3cf3d6fa3ff5eee82541f64728d) Thanks [@adrien2p](https://github.com/adrien2p)! - chore(): Dependencies cleanup and improvements
+
+- [#13940](https://github.com/medusajs/medusa/pull/13940) [`afb40d437b3cc4ceb015df70985b2f005f40eaff`](https://github.com/medusajs/medusa/commit/afb40d437b3cc4ceb015df70985b2f005f40eaff) Thanks [@adrien2p](https://github.com/adrien2p)! - chore(): Cleanup and organize deps
+
+- [#13932](https://github.com/medusajs/medusa/pull/13932) [`37563987b8fe75c9acfe62957a33e8398977647a`](https://github.com/medusajs/medusa/commit/37563987b8fe75c9acfe62957a33e8398977647a) Thanks [@adrien2p](https://github.com/adrien2p)! - chore(): Fix dependencies vulnerabilities
+
+- Updated dependencies [[`224ab39a81e8d3cf3d6fa3ff5eee82541f64728d`](https://github.com/medusajs/medusa/commit/224ab39a81e8d3cf3d6fa3ff5eee82541f64728d), [`afb40d437b3cc4ceb015df70985b2f005f40eaff`](https://github.com/medusajs/medusa/commit/afb40d437b3cc4ceb015df70985b2f005f40eaff), [`37563987b8fe75c9acfe62957a33e8398977647a`](https://github.com/medusajs/medusa/commit/37563987b8fe75c9acfe62957a33e8398977647a)]:
+  - @medusajs/deps@2.11.3
+  - @medusajs/telemetry@2.11.3
+
+## 2.11.2
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @medusajs/deps@2.11.2
+  - @medusajs/telemetry@2.11.2
+
+## 2.11.1
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @medusajs/deps@2.11.1
+  - @medusajs/telemetry@2.11.1
+
+## 2.11.0
+
+### Patch Changes
+
+- [#13439](https://github.com/medusajs/medusa/pull/13439) [`12a96a7c7015f011f5e29a1d387f835e514ba536`](https://github.com/medusajs/medusa/commit/12a96a7c7015f011f5e29a1d387f835e514ba536) Thanks [@adrien2p](https://github.com/adrien2p)! - chore(): Move peer deps into a single package and re export from framework
+
+- [#13450](https://github.com/medusajs/medusa/pull/13450) [`8ece06d8ed6a197ebb370918c49a3ec5c21dd186`](https://github.com/medusajs/medusa/commit/8ece06d8ed6a197ebb370918c49a3ec5c21dd186) Thanks [@adrien2p](https://github.com/adrien2p)! - chore(): Upgrade mikro orm 6.5.4
+
+- Updated dependencies [[`0cbd9f0bc315b3eda1770ac301061f1576856387`](https://github.com/medusajs/medusa/commit/0cbd9f0bc315b3eda1770ac301061f1576856387), [`12a96a7c7015f011f5e29a1d387f835e514ba536`](https://github.com/medusajs/medusa/commit/12a96a7c7015f011f5e29a1d387f835e514ba536), [`41651721450c99e5f38cfbb87a6a47ab067ece86`](https://github.com/medusajs/medusa/commit/41651721450c99e5f38cfbb87a6a47ab067ece86), [`fc67fd0b36f53f0c0897df54ecea02061e65e816`](https://github.com/medusajs/medusa/commit/fc67fd0b36f53f0c0897df54ecea02061e65e816), [`c54c5ed6de2c9686f89aeef86c5c607c4b5f1cf3`](https://github.com/medusajs/medusa/commit/c54c5ed6de2c9686f89aeef86c5c607c4b5f1cf3), [`02b6d013822b9665f868c4ea6d1b5cfe58723459`](https://github.com/medusajs/medusa/commit/02b6d013822b9665f868c4ea6d1b5cfe58723459)]:
+  - @medusajs/deps@2.11.0
+  - @medusajs/telemetry@2.11.0
+
+## 2.10.3
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @medusajs/telemetry@2.10.3
+
+## 2.10.2
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @medusajs/telemetry@2.10.2
+
+## 2.10.1
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @medusajs/telemetry@2.10.1
+
+## 2.10.0
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @medusajs/telemetry@2.10.0
+
+## 2.9.0
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @medusajs/telemetry@2.9.0
+
+## 2.8.8
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @medusajs/telemetry@2.8.8
+
+## 2.8.7
+
+### Patch Changes
+
+- [#12882](https://github.com/medusajs/medusa/pull/12882) [`779ed018b9c1328d6554a0f3d3569147edaeae56`](https://github.com/medusajs/medusa/commit/779ed018b9c1328d6554a0f3d3569147edaeae56) Thanks [@adrien2p](https://github.com/adrien2p)! - feat(create-medusa-app): Allow to create project with specific medusa version
+
+- Updated dependencies []:
+  - @medusajs/telemetry@2.8.7
+
+## 2.8.6
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @medusajs/telemetry@2.8.6
+
+## 2.8.5
+
+### Patch Changes
+
+- [#12707](https://github.com/medusajs/medusa/pull/12707) [`774702153f389e59476ea0a027b8caeb5075f92a`](https://github.com/medusajs/medusa/commit/774702153f389e59476ea0a027b8caeb5075f92a) Thanks [@shahednasser](https://github.com/shahednasser)! - fix(create-medusa-app): remove "Created admin user" message
+
+- [#12714](https://github.com/medusajs/medusa/pull/12714) [`2e861a94492a486e2cbdb8d442f25611be1bc3bf`](https://github.com/medusajs/medusa/commit/2e861a94492a486e2cbdb8d442f25611be1bc3bf) Thanks [@shahednasser](https://github.com/shahednasser)! - fix(create-medusa-app): ensure the same package manager is used consistently
+
+- Updated dependencies []:
+  - @medusajs/telemetry@2.8.5
+
 ## 2.8.4
 
 ### Patch Changes

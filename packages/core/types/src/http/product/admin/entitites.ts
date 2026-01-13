@@ -6,6 +6,7 @@ import { AdminProductTag } from "../../product-tag"
 import { AdminProductType } from "../../product-type"
 import { AdminSalesChannel } from "../../sales-channel"
 import { AdminShippingProfile } from "../../shipping-profile"
+import { AdminTranslation } from "../../translations"
 import {
   BaseProduct,
   BaseProductImage,
@@ -36,6 +37,10 @@ export interface AdminProductVariantInventoryItemLink {
    * The inventory item that is linked to the variant.
    */
   inventory?: AdminInventoryItem
+  /**
+   * The quantity of the inventory item that is required to fulfill the variant.
+   */
+  required_quantity?: number
 }
 
 export interface AdminProductVariant extends BaseProductVariant {
@@ -52,6 +57,10 @@ export interface AdminProductVariant extends BaseProductVariant {
    */
   product?: AdminProduct | null
   /**
+   * The product variant's translations.
+   */
+  translations?: AdminTranslation[] | null
+  /**
    * The variant's inventory items.
    */
   inventory_items?: AdminProductVariantInventoryItemLink[] | null
@@ -66,7 +75,16 @@ export interface AdminProductOption extends BaseProductOption {
    */
   values?: AdminProductOptionValue[]
 }
-export interface AdminProductImage extends BaseProductImage {}
+export interface AdminProductImage extends BaseProductImage {
+  /**
+   * The product that the image belongs to.
+   */
+  product?: AdminProduct | null
+  /**
+   * The variants that the image is scoped to.
+   */
+  variants?: AdminProductVariant[] | null
+}
 export interface AdminProductOptionValue extends BaseProductOptionValue {
   /**
    * The option's details.
@@ -95,6 +113,10 @@ export interface AdminProduct
    * The product's variants.
    */
   variants: AdminProductVariant[] | null
+  /**
+   * The product's translations.
+   */
+  translations?: AdminTranslation[] | null
   /**
    * The product's type.
    */

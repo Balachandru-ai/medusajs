@@ -5,6 +5,7 @@ import rehypeSlug from "rehype-slug"
 import {
   brokenLinkCheckerPlugin,
   crossProjectLinksPlugin,
+  validateHighlightsPlugin,
 } from "remark-rehype-plugins"
 import path from "path"
 import { catchBadRedirects } from "build-scripts"
@@ -50,10 +51,12 @@ const withMDX = createMDX({
             },
             ui: {
               projectPath: path.resolve("..", "ui"),
-              contentPath: "src/content/docs",
             },
             "user-guide": {
               projectPath: path.resolve("..", "user-guide"),
+            },
+            cloud: {
+              projectPath: path.resolve("..", "cloud"),
             },
           },
         },
@@ -76,6 +79,9 @@ const withMDX = createMDX({
             ui: {
               url: process.env.NEXT_PUBLIC_UI_URL,
             },
+            cloud: {
+              url: process.env.NEXT_PUBLIC_CLOUD_URL,
+            },
           },
           useBaseUrl:
             process.env.NODE_ENV === "production" ||
@@ -88,6 +94,7 @@ const withMDX = createMDX({
           tagName: "code",
         },
       ],
+      [validateHighlightsPlugin, { verbose: false }],
       [rehypeSlug],
     ],
     development: process.env.NODE_ENV === "development",

@@ -277,6 +277,12 @@ export interface RetrievePaymentInput extends PaymentProviderInput {}
  */
 export interface CancelPaymentInput extends PaymentProviderInput {}
 
+export interface RetrieveAccountHolderInput extends PaymentProviderInput {
+  /**
+   * The ID of the account holder to retrieve.
+   */
+  id: string
+}
 /**
  * The data to create an account holder.
  */
@@ -307,7 +313,8 @@ export interface UpdateAccountHolderInput extends PaymentProviderInput {
 /**
  * The data to delete an account holder.
  */
-export interface DeleteAccountHolderInput extends Omit<PaymentProviderInput, "context"> {
+export interface DeleteAccountHolderInput
+  extends Omit<PaymentProviderInput, "context"> {
   /**
    * The context of deleting the account holder.
    */
@@ -354,6 +361,10 @@ export interface InitiatePaymentOutput extends PaymentProviderOutput {
    * The ID of the payment session in the payment provider.
    */
   id: string
+  /**
+   * The status of the payment session, which will be stored in the payment session's `status` field.
+   */
+  status?: PaymentSessionStatus
 }
 
 /**
@@ -369,7 +380,12 @@ export interface AuthorizePaymentOutput extends PaymentProviderOutput {
 /**
  * The result of updating a payment.
  */
-export interface UpdatePaymentOutput extends PaymentProviderOutput {}
+export interface UpdatePaymentOutput extends PaymentProviderOutput {
+  /**
+   * The status of the payment, which will be stored in the payment session's `status` field.
+   */
+  status?: PaymentSessionStatus
+}
 
 /**
  * The result of deleting a payment.
@@ -397,6 +413,17 @@ export interface RetrievePaymentOutput extends PaymentProviderOutput {}
 export interface CancelPaymentOutput extends PaymentProviderOutput {}
 
 /**
+ * The result of retrieving an account holder in the third-party payment provider. The `data`
+ * property is stored as-is in Medusa's account holder's `data` property.
+ */
+export interface RetrieveAccountHolderOutput extends PaymentProviderOutput {
+  /**
+   * The ID of the account holder in the payment provider.
+   */
+  id: string
+}
+
+/**
  * The result of creating an account holder in the third-party payment provider. The `data`
  * property is stored as-is in Medusa's account holder's `data` property.
  */
@@ -422,12 +449,15 @@ export interface DeleteAccountHolderOutput extends PaymentProviderOutput {}
 /**
  * The result of listing payment methods for an account holder in the third-party payment provider.
  */
-export interface ListPaymentMethodsOutput extends Array<PaymentProviderOutput & {
-  /**
-   * The ID of the payment method in the payment provider.
-   */
-  id: string
-}> {}
+export interface ListPaymentMethodsOutput
+  extends Array<
+    PaymentProviderOutput & {
+      /**
+       * The ID of the payment method in the payment provider.
+       */
+      id: string
+    }
+  > {}
 
 /**
  * The result of saving a payment method.
@@ -510,6 +540,40 @@ export interface IPaymentProvider {
   cancelPayment(data: CancelPaymentInput): Promise<CancelPaymentOutput>
 
   /**
+   * This method is used when retrieving an account holder in Medusa, allowing you to retrieve
+   * the equivalent account in the third-party payment provider. An account holder is useful to
+   * later save payment methods, such as credit cards, for a customer in the
+   * third-party payment provider using the {@link savePaymentMethod} method.
+   *
+   * @param data - Input data including the details of the account holder to retrieve.
+   * @returns The retrieved account holder. If an error occurs, throw it.
+   *
+   * @since 2.11.0
+   *
+   * @example
+   * import { MedusaError } from "@medusajs/framework/utils"
+   *
+   * class MyPaymentProviderService extends AbstractPaymentProvider<
+   *  Options
+   * > {
+   *  async retrieveAccountHolder({ id }: RetrieveAccountHolderInput) {
+   *
+   *   // assuming you have a client that retrieves the account holder
+   *   const providerAccountHolder = await this.client.retrieveAccountHolder({
+   *     id
+   *   })
+   *
+   *   return {
+   *     id: providerAccountHolder.id,
+   *     data: providerAccountHolder as unknown as Record<string, unknown>
+   *   }
+   * }
+   */
+  retrieveAccountHolder?(
+    data: RetrieveAccountHolderInput
+  ): Promise<RetrieveAccountHolderOutput>
+
+  /**
    * This method is used when creating an account holder in Medusa, allowing you to create
    * the equivalent account in the third-party payment provider. An account holder is useful to
    * later save payment methods, such as credit cards, for a customer in the
@@ -523,7 +587,7 @@ export interface IPaymentProvider {
    * @param data - Input data including the details of the account holder to create.
    * @returns The result of creating the account holder. If an error occurs, throw it.
    *
-   * @version 2.5.0
+   * @since 2.5.0
    *
    * @example
    * import { MedusaError } from "@medusajs/framework/utils"
@@ -571,7 +635,7 @@ export interface IPaymentProvider {
    * @param data - Input data including the details of the account holder to update.
    * @returns The result of updating the account holder. If an error occurs, throw it.
    *
-   * @version 2.5.1
+   * @since 2.5.1
    *
    * @example
    * import { MedusaError } from "@medusajs/framework/utils"
@@ -612,7 +676,7 @@ export interface IPaymentProvider {
    * @param data - Input data including the details of the account holder to delete.
    * @returns The result of deleting the account holder. If an error occurs, throw it.
    *
-   * @version 2.5.0
+   * @since 2.5.0
    *
    * @example
    * import { MedusaError } from "@medusajs/framework/utils"
@@ -648,7 +712,7 @@ export interface IPaymentProvider {
    * in the third-party payment provider. A payment provider that supports saving payment methods
    * must implement this method.
    *
-   * @version 2.5.0
+   * @since 2.5.0
    *
    * @param data - Input data including the details of the account holder to list payment methods for.
    * @returns The list of payment methods saved for the account holder. If an error occurs, throw it.
@@ -691,7 +755,7 @@ export interface IPaymentProvider {
    * third-party payment provider. A payment provider that supports saving payment methods
    * must implement this method.
    *
-   * @version 2.5.0
+   * @since 2.5.0
    *
    * @param data - The details of the payment method to save.
    * @returns The result of saving the payment method. If an error occurs, throw it.

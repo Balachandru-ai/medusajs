@@ -3,9 +3,10 @@ import type {
   EntityProperty,
   FindOneOptions,
   FindOptions,
-} from "@mikro-orm/core"
-import { EntityMetadata, ReferenceKind } from "@mikro-orm/core"
-import { SqlEntityManager } from "@mikro-orm/postgresql"
+  EntityMetadata,
+} from "@medusajs/deps/mikro-orm/core"
+import { raw, ReferenceKind } from "@medusajs/deps/mikro-orm/postgresql"
+import { SqlEntityManager } from "@medusajs/deps/mikro-orm/postgresql"
 
 export const FreeTextSearchFilterKeyPrefix = "freeTextSearch_"
 
@@ -54,9 +55,10 @@ function retrieveRelationsConstraints(
     }
 
     const isText = propertyConfiguration?.columnTypes?.includes("text")
+
     const columnName = isText
       ? propertyConfiguration.name
-      : `${propertyConfiguration.name}::text`
+      : raw((alias) => `cast(${alias}.${propertyConfiguration.name} as text)`)
 
     relationFreeTextSearchWhere.push({
       [columnName]: {

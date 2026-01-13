@@ -1,15 +1,14 @@
 "use client"
 
 import React, { useEffect, useMemo, useRef, useState } from "react"
-import {
-  Details,
-  CopyButton,
-  DetailsSummary,
-  ExpandableNotice,
-  FeatureFlagNotice,
-  InlineCode,
-  MarkdownContent,
-} from "@/components"
+import { Details } from "@/components/Details"
+import { CopyButton } from "@/components/CopyButton"
+import { DetailsSummary } from "@/components/Details/Summary"
+import { ExpandableNotice } from "@/components/Notices/ExpandableNotice"
+import { FeatureFlagNotice } from "@/components/Notices/FeatureFlagNotice"
+import { InlineCode } from "@/components/InlineCode"
+import { MarkdownContent } from "@/components/MarkdownContent"
+import { MDXComponents } from "@/components/MDXComponents"
 import clsx from "clsx"
 import { Type, CommonProps as ParentCommonProps } from ".."
 import {
@@ -19,9 +18,13 @@ import {
   Link,
   TriangleRightMini,
 } from "@medusajs/icons"
-import { decodeStr, isInView } from "@/utils"
+import { decodeStr } from "@/utils/decode-str"
+import { isInView } from "@/utils/is-in-view"
 import { usePathname } from "next/navigation"
-import { useIsBrowser, useSiteConfig } from "../../.."
+import { useSiteConfig } from "../../../providers/SiteConfig"
+import { useIsBrowser } from "../../../providers/BrowserProvider"
+import { VersionNotice } from "../../Notices/VersionNotice"
+import { DeprecatedNotice } from "../../Notices/DeprecatedNotice"
 
 type CommonProps = ParentCommonProps & {
   level?: number
@@ -130,13 +133,40 @@ const TypeListItem = ({
     return (
       <DetailsSummary
         subtitle={
-          item.description || item.defaultValue ? (
+          item.description || item.defaultValue || item.example ? (
             <>
               {item.description && (
                 <MarkdownContent
-                  allowedElements={["a", "strong", "code", "ul", "ol", "li"]}
+                  allowedElements={[
+                    "a",
+                    "strong",
+                    "code",
+                    "ul",
+                    "ol",
+                    "li",
+                    "br",
+                  ]}
                   unwrapDisallowed={true}
-                  className="text-medium"
+                  components={{
+                    ...MDXComponents,
+                    ol: (props: React.HTMLAttributes<HTMLElement>) => (
+                      // @ts-expect-error Not recognized as a JSX element
+                      <MDXComponents.ol
+                        {...props}
+                        className={clsx(props.className, "mt-docs_1.5")}
+                      />
+                    ),
+                    li: (props: React.HTMLAttributes<HTMLElement>) => (
+                      // @ts-expect-error Not recognized as a JSX element
+                      <MDXComponents.li
+                        {...props}
+                        className={clsx(
+                          props.className,
+                          "!text-medusa-fg-subtle"
+                        )}
+                      />
+                    ),
+                  }}
                 >
                   {item.description}
                 </MarkdownContent>
@@ -145,6 +175,11 @@ const TypeListItem = ({
                 <p className="mt-0.5 mb-0">
                   Default: <InlineCode>{item.defaultValue}</InlineCode>
                 </p>
+              )}
+              {item.example && (
+                <div className="mt-0.5">
+                  Example: <InlineCode>{item.example}</InlineCode>
+                </div>
               )}
             </>
           ) : undefined
@@ -202,8 +237,13 @@ const TypeListItem = ({
             </CopyButton>
           )}
           <div className="flex gap-0.75 flex-wrap flex-1">
-            <InlineCode>{decodeStr(item.name)}</InlineCode>
-            <span className="font-monospace text-compact-small-plus text-medusa-fg-subtle">
+            <InlineCode data-testid="type-name">
+              {decodeStr(item.name)}
+            </InlineCode>
+            <span
+              className="font-monospace text-compact-small-plus text-medusa-fg-subtle"
+              data-testid="type-type"
+            >
               <MarkdownContent allowedElements={["a"]} unwrapDisallowed={true}>
                 {item.type}
               </MarkdownContent>
@@ -214,6 +254,7 @@ const TypeListItem = ({
                   "text-compact-x-small-plus",
                   "text-medusa-tag-blue-text"
                 )}
+                data-testid="type-optional"
               >
                 Optional
               </span>
@@ -235,6 +276,15 @@ const TypeListItem = ({
                 badgeClassName="!p-docs_0.25 block leading-none"
                 badgeContent={<ArrowsPointingOutMini />}
               />
+            )}
+            {item.since && (
+              <VersionNotice
+                version={item.since}
+                badgeClassName="!p-0 leading-none"
+              />
+            )}
+            {item.deprecated?.is_deprecated && (
+              <DeprecatedNotice description={item.deprecated?.description} />
             )}
           </div>
         </div>

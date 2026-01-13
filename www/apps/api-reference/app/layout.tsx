@@ -1,16 +1,17 @@
 import "./globals.css"
 import Providers from "../providers"
 import { BareboneLayout, WideLayout } from "docs-ui"
-import { Inter, Roboto_Mono } from "next/font/google"
 import clsx from "clsx"
 import { Metadata } from "next"
+import { inter, robotoMono } from "./fonts"
+import { config } from "@/config"
 
 const ogImage =
   "https://res.cloudinary.com/dza7lstvk/image/upload/v1732200992/Medusa%20Resources/opengraph-image_daq6nx.jpg"
 
 export const metadata: Metadata = {
-  title: "Medusa API Reference",
-  description: "Check out Medusa's API reference",
+  title: `%s - ${config.titleSuffix}`,
+  description: config.description,
   metadataBase: new URL(
     process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"
   ),
@@ -35,17 +36,6 @@ export const metadata: Metadata = {
     ],
   },
 }
-
-const inter = Inter({
-  subsets: ["latin"],
-  variable: "--font-inter",
-  weight: ["400", "500"],
-})
-
-const robotoMono = Roboto_Mono({
-  subsets: ["latin"],
-  variable: "--font-roboto-mono",
-})
 
 export default function RootLayout({
   children,

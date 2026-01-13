@@ -1,5 +1,6 @@
 import { medusaIntegrationTestRunner } from "@medusajs/test-utils"
-import { ModuleRegistrationName } from "@medusajs/utils"
+import { AdminShippingOption } from "@medusajs/types"
+import { ModuleRegistrationName, ProductStatus } from "@medusajs/utils"
 import {
   adminHeaders,
   createAdminUser,
@@ -8,12 +9,18 @@ import {
 } from "../../../../helpers/create-admin-user"
 import { setupTaxStructure } from "../../../../modules/__tests__/fixtures"
 import { createOrderSeeder } from "../../fixtures/order"
+import { createShippingOptionSeeder } from "../../fixtures/shipping"
 
 jest.setTimeout(300000)
 
 medusaIntegrationTestRunner({
   testSuite: ({ dbConnection, getContainer, api }) => {
-    let order, seeder, inventoryItemOverride3, productOverride3, shippingProfile
+    let order,
+      seeder,
+      inventoryItemOverride3,
+      productOverride3,
+      shippingProfile,
+      productOverride4
 
     beforeEach(async () => {
       const container = getContainer()
@@ -30,6 +37,125 @@ medusaIntegrationTestRunner({
       ).data.shipping_profile
     })
 
+    describe("GET /admin/orders", () => {
+      beforeEach(async () => {
+        seeder = await createOrderSeeder({
+          api,
+          container: getContainer(),
+        })
+        order = seeder.order
+      })
+
+      it("should search orders by display_id", async () => {
+        let response = await api.get(`/admin/orders`, adminHeaders)
+
+        expect(response.data.orders).toHaveLength(1)
+        expect(response.data.orders).toEqual([
+          expect.objectContaining({
+            id: order.id,
+          }),
+        ])
+
+        response = await api.get(
+          `/admin/orders?q=${order.display_id}`,
+          adminHeaders
+        )
+
+        expect(response.data.orders).toHaveLength(1)
+        expect(response.data.orders).toEqual([
+          expect.objectContaining({
+            id: order.id,
+          }),
+        ])
+
+        response = await api.get(`/admin/orders?q=2345`, adminHeaders)
+
+        expect(response.data.orders).toHaveLength(0)
+        expect(response.data.orders).toEqual([])
+      })
+
+      it("should search orders by shipping address", async () => {
+        let response = await api.get(
+          `/admin/orders?fields=+shipping_address.address_1,+shipping_address.address_2`,
+          adminHeaders
+        )
+
+        expect(response.data.orders).toHaveLength(1)
+        expect(response.data.orders).toEqual([
+          expect.objectContaining({
+            id: order.id,
+          }),
+        ])
+
+        response = await api.get(
+          `/admin/orders?fields=+shipping_address.address_1,+shipping_address.address_2&q=${order.shipping_address.address_1}`,
+          adminHeaders
+        )
+
+        expect(response.data.orders).toHaveLength(1)
+        expect(response.data.orders).toEqual([
+          expect.objectContaining({
+            id: order.id,
+          }),
+        ])
+
+        response = await api.get(
+          `/admin/orders?q=${order.shipping_address.address_2}`,
+          adminHeaders
+        )
+
+        expect(response.data.orders).toHaveLength(1)
+        expect(response.data.orders).toEqual([
+          expect.objectContaining({
+            id: order.id,
+          }),
+        ])
+
+        response = await api.get(`/admin/orders?q=does-not-exist`, adminHeaders)
+
+        expect(response.data.orders).toHaveLength(0)
+        expect(response.data.orders).toEqual([])
+      })
+
+      it("should search orders by billing address", async () => {
+        let response = await api.get(
+          `/admin/orders?fields=+billing_address.address_1,+billing_address.address_2`,
+          adminHeaders
+        )
+
+        expect(response.data.orders).toHaveLength(1)
+        expect(response.data.orders).toEqual([
+          expect.objectContaining({
+            id: order.id,
+          }),
+        ])
+
+        response = await api.get(
+          `/admin/orders?fields=+billing_address.address_1,+billing_address.address_2&q=${order.billing_address.address_1}`,
+          adminHeaders
+        )
+
+        expect(response.data.orders).toHaveLength(1)
+        expect(response.data.orders).toEqual([
+          expect.objectContaining({
+            id: order.id,
+          }),
+        ])
+
+        response = await api.get(
+          `/admin/orders?q=${order.billing_address.address_2}`,
+          adminHeaders
+        )
+
+        expect(response.data.orders).toHaveLength(1)
+        expect(response.data.orders).toEqual([
+          expect.objectContaining({
+            id: order.id,
+          }),
+        ])
+      })
+    })
+
     describe("POST /orders/:id", () => {
       beforeEach(async () => {
         seeder = await createOrderSeeder({
@@ -39,7 +165,10 @@ medusaIntegrationTestRunner({
         order = seeder.order
 
         order = (
-          await api.get(`/admin/orders/${order.id}?fields=+email`, adminHeaders)
+          await api.get(
+            `/admin/orders/${order.id}?fields=+email,+customer_id`,
+            adminHeaders
+          )
         ).data.order
       })
 
@@ -351,6 +480,215 @@ medusaIntegrationTestRunner({
 
         expect(orderChangesResult.length).toEqual(0)
       })
+
+      describe("conditional customer creation", () => {
+        it("should create or find a customer when order email is unset and input email is provided", async () => {
+          const container = getContainer()
+          const orderService = container.resolve(ModuleRegistrationName.ORDER)
+          const customerService = container.resolve(
+            ModuleRegistrationName.CUSTOMER
+          )
+
+          const orderWithoutEmail = await orderService.createOrders({
+            region_id: seeder.region.id,
+            currency_code: "usd",
+            items: [
+              {
+                title: "Test Item",
+                quantity: 1,
+                unit_price: 100,
+              },
+            ],
+            shipping_address: {
+              first_name: "Test",
+              last_name: "Test",
+              address_1: "Test",
+              city: "Test",
+              country_code: "US",
+              postal_code: "12345",
+            },
+            billing_address: {
+              first_name: "Test",
+              last_name: "Test",
+              address_1: "Test",
+              city: "Test",
+              country_code: "US",
+              postal_code: "12345",
+            },
+          })
+
+          expect(orderWithoutEmail.email).toBeNull()
+
+          const newEmail = "newcustomer@example.com"
+
+          const customersBefore = await customerService.listCustomers()
+          const customerCountBefore = customersBefore.length
+
+          const response = await api.post(
+            `/admin/orders/${orderWithoutEmail.id}?fields=+email,+customer_id`,
+            {
+              email: newEmail,
+            },
+            adminHeaders
+          )
+
+          expect(response.data.order.email).toBe(newEmail)
+          expect(response.data.order.customer_id).toBeDefined()
+
+          const customersAfter = await customerService.listCustomers()
+          expect(customersAfter.length).toBe(customerCountBefore + 1)
+
+          const customer = await customerService.retrieveCustomer(
+            response.data.order.customer_id
+          )
+          expect(customer.email).toBe(newEmail)
+        })
+
+        it("should NOT create or find a customer when order email is already set and input email is provided", async () => {
+          const container = getContainer()
+          const customerService = container.resolve(
+            ModuleRegistrationName.CUSTOMER
+          )
+
+          const existingEmail = order.email
+
+          expect(existingEmail).toBeDefined()
+
+          const originalCustomerId = order.customer_id
+          const newEmail = "updated@example.com"
+
+          const customersBefore = await customerService.listCustomers()
+          const customerCountBefore = customersBefore.length
+
+          const response = await api.post(
+            `/admin/orders/${order.id}?fields=+email,+customer_id`,
+            {
+              email: newEmail,
+            },
+            adminHeaders
+          )
+
+          expect(response.data.order.email).toBe(newEmail)
+          expect(response.data.order.customer_id).toBe(originalCustomerId)
+
+          const customersAfter = await customerService.listCustomers()
+          expect(customersAfter.length).toBe(customerCountBefore)
+        })
+
+        it("should NOT create or find a customer when order email is unset and input email is not provided", async () => {
+          const container = getContainer()
+          const orderService = container.resolve(ModuleRegistrationName.ORDER)
+          const customerService = container.resolve(
+            ModuleRegistrationName.CUSTOMER
+          )
+
+          const orderWithoutEmail = await orderService.createOrders({
+            region_id: seeder.region.id,
+            currency_code: "usd",
+            email: undefined,
+            items: [
+              {
+                title: "Test Item",
+                quantity: 1,
+                unit_price: 100,
+              },
+            ],
+            shipping_address: {
+              first_name: "Test",
+              last_name: "Test",
+              address_1: "Test",
+              city: "Test",
+              country_code: "US",
+              postal_code: "12345",
+            },
+            billing_address: {
+              first_name: "Test",
+              last_name: "Test",
+              address_1: "Test",
+              city: "Test",
+              country_code: "US",
+              postal_code: "12345",
+            },
+          })
+
+          const customersBefore = await customerService.listCustomers()
+          const customerCountBefore = customersBefore.length
+
+          const response = await api.post(
+            `/admin/orders/${orderWithoutEmail.id}?fields=+customer_id`,
+            {
+              metadata: {
+                test: "value",
+              },
+            },
+            adminHeaders
+          )
+
+          expect(response.data.order.customer_id).toBeNull()
+
+          const customersAfter = await customerService.listCustomers()
+          expect(customersAfter.length).toBe(customerCountBefore)
+        })
+
+        it("should find existing customer when order email is unset and input email matches existing customer", async () => {
+          const container = getContainer()
+          const orderService = container.resolve(ModuleRegistrationName.ORDER)
+          const customerService = container.resolve(
+            ModuleRegistrationName.CUSTOMER
+          )
+
+          const existingEmail = "existingcustomer@example.com"
+
+          const existingCustomer = await customerService.createCustomers({
+            email: existingEmail,
+          })
+
+          const orderWithoutEmail = await orderService.createOrders({
+            region_id: seeder.region.id,
+            currency_code: "usd",
+            items: [
+              {
+                title: "Test Item",
+                quantity: 1,
+                unit_price: 100,
+              },
+            ],
+            shipping_address: {
+              first_name: "Test",
+              last_name: "Test",
+              address_1: "Test",
+              city: "Test",
+              country_code: "US",
+              postal_code: "12345",
+            },
+            billing_address: {
+              first_name: "Test",
+              last_name: "Test",
+              address_1: "Test",
+              city: "Test",
+              country_code: "US",
+              postal_code: "12345",
+            },
+          })
+
+          const customersBefore = await customerService.listCustomers()
+          const customerCountBefore = customersBefore.length
+
+          const response = await api.post(
+            `/admin/orders/${orderWithoutEmail.id}?fields=+email,+customer_id`,
+            {
+              email: existingEmail,
+            },
+            adminHeaders
+          )
+
+          expect(response.data.order.email).toBe(existingEmail)
+          expect(response.data.order.customer_id).toBe(existingCustomer.id)
+
+          const customersAfter = await customerService.listCustomers()
+          expect(customersAfter.length).toBe(customerCountBefore)
+        })
+      })
     })
 
     describe("POST /orders/:id/cancel", () => {
@@ -579,6 +917,7 @@ medusaIntegrationTestRunner({
             "/admin/products",
             {
               title: `Test fixture`,
+              status: ProductStatus.PUBLISHED,
               shipping_profile_id: shippingProfile.id,
               options: [
                 { title: "size", values: ["large", "small"] },
@@ -667,6 +1006,7 @@ medusaIntegrationTestRunner({
             "/admin/products",
             {
               title: `Test fixture 2`,
+              status: ProductStatus.PUBLISHED,
               options: [
                 { title: "size", values: ["large", "small"] },
                 { title: "color", values: ["green"] },
@@ -703,6 +1043,7 @@ medusaIntegrationTestRunner({
             "/admin/products",
             {
               title: `Test fixture 3`,
+              status: ProductStatus.PUBLISHED,
               shipping_profile_id: shippingProfile.id,
               options: [
                 { title: "size", values: ["large", "small"] },
@@ -735,6 +1076,57 @@ medusaIntegrationTestRunner({
           )
         ).data.product
 
+        const inventoryItemOverride4 = (
+          await api.post(
+            `/admin/inventory-items`,
+            { sku: "test-variant-4-no-shipping", requires_shipping: false },
+            adminHeaders
+          )
+        ).data.inventory_item
+
+        await api.post(
+          `/admin/inventory-items/${inventoryItemOverride4.id}/location-levels`,
+          {
+            location_id: stockChannelOverride.id,
+            stocked_quantity: 10,
+          },
+          adminHeaders
+        )
+
+        productOverride4 = (
+          await api.post(
+            "/admin/products",
+            {
+              title: `Test override 4`,
+              status: ProductStatus.PUBLISHED,
+              shipping_profile_id: shippingProfile.id,
+              options: [{ title: "size", values: ["large"] }],
+              variants: [
+                {
+                  title: "Test variant 4",
+                  sku: "test-variant-4-override",
+                  inventory_items: [
+                    {
+                      inventory_item_id: inventoryItemOverride4.id,
+                      required_quantity: 3,
+                    },
+                  ],
+                  prices: [
+                    {
+                      currency_code: "usd",
+                      amount: 100,
+                    },
+                  ],
+                  options: {
+                    size: "large",
+                  },
+                },
+              ],
+            },
+            adminHeaders
+          )
+        ).data.product
+
         shippingProfileOverride = (
           await api.post(
             `/admin/shipping-profiles`,
@@ -748,6 +1140,7 @@ medusaIntegrationTestRunner({
             "/admin/products",
             {
               title: `Test fixture 4`,
+              status: ProductStatus.PUBLISHED,
               shipping_profile_id: shippingProfileOverride.id,
               options: [
                 { title: "size", values: ["large", "small"] },
@@ -788,6 +1181,7 @@ medusaIntegrationTestRunner({
           additionalProducts: [
             { variant_id: productOverride2.variants[0].id, quantity: 1 },
             { variant_id: productOverride3.variants[0].id, quantity: 3 },
+            { variant_id: productOverride4.variants[0].id, quantity: 1 },
             {
               variant_id:
                 productOverride4WithOverrideShippingProfile.variants[0].id,
@@ -801,23 +1195,6 @@ medusaIntegrationTestRunner({
         order = seeder.order
         order = (await api.get(`/admin/orders/${order.id}`, adminHeaders)).data
           .order
-      })
-
-      it("should find the order querying it by number", async () => {
-        const userEmail = "tony@stark-industries.com"
-
-        const response = (
-          await api.get(`/admin/orders/?q=non-existing`, adminHeaders)
-        ).data
-
-        expect(response.orders).toHaveLength(0)
-
-        const response2 = (
-          await api.get(`/admin/orders/?fields=+email&q=@stark`, adminHeaders)
-        ).data
-
-        expect(response2.orders).toHaveLength(1)
-        expect(response2.orders[0].email).toEqual(userEmail)
       })
 
       it("should update stock levels correctly when creating partial fulfillment on an order", async () => {
@@ -912,6 +1289,50 @@ medusaIntegrationTestRunner({
               shipping_option_id: seeder.shippingOption.id,
               location_id: seeder.stockLocation.id,
               items: [{ id: orderItemId, quantity: 5 }],
+            },
+            adminHeaders
+          )
+          .catch((e) => e)
+
+        expect(res.response.status).toBe(400)
+        expect(res.response.data.message).toBe(
+          `Quantity to fulfill exceeds the reserved quantity for the item: ${orderItemId}`
+        )
+      })
+
+      it("should throw if trying to fulfillment more items than it is reserved when item has required quantity", async () => {
+        const orderItemId = order.items.find(
+          (i) => i.variant_id === productOverride4.variants[0].id
+        ).id
+
+        let reservation = (
+          await api.get(
+            `/admin/reservations?line_item_id=${orderItemId}`,
+            adminHeaders
+          )
+        ).data.reservations[0]
+
+        expect(reservation.quantity).toBe(3) // one item with required quantity 3
+
+        reservation = (
+          await api.post(
+            `/admin/reservations/${reservation.id}`,
+            {
+              quantity: 2,
+            },
+            adminHeaders
+          )
+        ).data.reservation
+
+        expect(reservation.quantity).toBe(2)
+
+        const res = await api
+          .post(
+            `/admin/orders/${order.id}/fulfillments`,
+            {
+              shipping_option_id: seeder.shippingOption.id,
+              location_id: seeder.stockLocation.id,
+              items: [{ id: orderItemId, quantity: 1 }], // fulfill 1 orer item which requires 3 inventor items
             },
             adminHeaders
           )
@@ -1106,6 +1527,7 @@ medusaIntegrationTestRunner({
             "/admin/products",
             {
               title: `Wooden table`,
+              status: ProductStatus.PUBLISHED,
               shipping_profile_id: shippingProfile.id,
               options: [{ title: "color", values: ["green"] }],
               variants: [
@@ -1270,6 +1692,7 @@ medusaIntegrationTestRunner({
             "/admin/products",
             {
               title: `Tablet`,
+              status: ProductStatus.PUBLISHED,
               shipping_profile_id: shippingProfile.id,
               options: [{ title: "color", values: ["green"] }],
               variants: [
@@ -1465,6 +1888,213 @@ medusaIntegrationTestRunner({
               line_item_id: lineItemId,
               inventory_item_id: inventoryItemTablet.id,
               quantity: 1,
+            }),
+          ])
+        )
+      })
+
+      it("should manage reservations when canceling a fulfillment (with allow_backorder item)", async () => {
+        const inventoryItemTablet = (
+          await api.post(
+            `/admin/inventory-items`,
+            { sku: "tablet" },
+            adminHeaders
+          )
+        ).data.inventory_item
+
+        await api.post(
+          `/admin/inventory-items/${inventoryItemTablet.id}/location-levels`,
+          {
+            location_id: stockLocation.id,
+            stocked_quantity: 1,
+          },
+          adminHeaders
+        )
+
+        const productTablet = (
+          await api.post(
+            "/admin/products",
+            {
+              title: `Tablet`,
+              status: ProductStatus.PUBLISHED,
+              shipping_profile_id: shippingProfile.id,
+              options: [{ title: "color", values: ["green"] }],
+              variants: [
+                {
+                  title: "Green tablet",
+                  sku: "green-tablet",
+                  allow_backorder: true,
+                  manage_inventory: true,
+                  inventory_items: [
+                    {
+                      inventory_item_id: inventoryItemTablet.id,
+                      required_quantity: 1,
+                    },
+                  ],
+                  prices: [
+                    {
+                      currency_code: "usd",
+                      amount: 1000,
+                    },
+                  ],
+                  options: {
+                    color: "green",
+                  },
+                },
+              ],
+            },
+            adminHeaders
+          )
+        ).data.product
+
+        const cartTablet = (
+          await api.post(
+            `/store/carts`,
+            {
+              currency_code: "usd",
+              email: "tony@stark-industries.com",
+              region_id: region.id,
+              shipping_address: {
+                address_1: "test address 1",
+                address_2: "test address 2",
+                city: "ny",
+                country_code: "us",
+                province: "ny",
+                postal_code: "94016",
+              },
+              billing_address: {
+                address_1: "test billing address 1",
+                address_2: "test billing address 2",
+                city: "ny",
+                country_code: "us",
+                province: "ny",
+                postal_code: "94016",
+              },
+              sales_channel_id: salesChannel.id,
+              items: [
+                { quantity: 2, variant_id: productTablet.variants[0].id },
+              ],
+            },
+            storeHeaders
+          )
+        ).data.cart
+
+        await api.post(
+          `/store/carts/${cartTablet.id}/shipping-methods`,
+          { option_id: shippingOption.id },
+          storeHeaders
+        )
+
+        const paymentCollectionTablet = (
+          await api.post(
+            `/store/payment-collections`,
+            {
+              cart_id: cartTablet.id,
+            },
+            storeHeaders
+          )
+        ).data.payment_collection
+
+        await api.post(
+          `/store/payment-collections/${paymentCollectionTablet.id}/payment-sessions`,
+          { provider_id: "pp_system_default" },
+          storeHeaders
+        )
+
+        const tabletOrder = (
+          await api.post(
+            `/store/carts/${cartTablet.id}/complete`,
+            {},
+            storeHeaders
+          )
+        ).data.order
+
+        const lineItemId = tabletOrder.items[0].id
+
+        let reservations = (
+          await api.get(
+            `/admin/reservations?line_item_id[]=${lineItemId}`,
+            adminHeaders
+          )
+        ).data.reservations
+
+        expect(reservations).toEqual(
+          expect.arrayContaining([
+            expect.objectContaining({
+              line_item_id: lineItemId,
+              inventory_item_id: inventoryItemTablet.id,
+              quantity: 2,
+              inventory_item: expect.objectContaining({
+                reserved_quantity: 2,
+                stocked_quantity: 1,
+              }),
+            }),
+          ])
+        )
+
+        const fulOrder = (
+          await api.post(
+            `/admin/orders/${tabletOrder.id}/fulfillments?fields=*fulfillments,*fulfillments.items`,
+            {
+              items: [{ id: tabletOrder.items[0].id, quantity: 2 }],
+            },
+            adminHeaders
+          )
+        ).data.order
+
+        reservations = (
+          await api.get(
+            `/admin/reservations?line_item_id[]=${lineItemId}`,
+            adminHeaders
+          )
+        ).data.reservations
+
+        expect(reservations.length).toEqual(0)
+
+        const inventoryItem = (
+          await api.get(
+            `/admin/inventory-items/${inventoryItemTablet.id}`,
+            adminHeaders
+          )
+        ).data.inventory_item
+
+        expect(inventoryItem).toEqual(
+          expect.objectContaining({
+            reserved_quantity: 0,
+            stocked_quantity: -1,
+            location_levels: [
+              expect.objectContaining({
+                available_quantity: -1,
+                reserved_quantity: 0,
+                stocked_quantity: -1,
+              }),
+            ],
+          })
+        )
+
+        await api.post(
+          `/admin/orders/${tabletOrder.id}/fulfillments/${fulOrder.fulfillments[0].id}/cancel`,
+          {},
+          adminHeaders
+        )
+
+        reservations = (
+          await api.get(
+            `/admin/reservations?line_item_id[]=${lineItemId}`,
+            adminHeaders
+          )
+        ).data.reservations
+
+        expect(reservations).toEqual(
+          expect.arrayContaining([
+            expect.objectContaining({
+              line_item_id: lineItemId,
+              inventory_item_id: inventoryItemTablet.id,
+              quantity: 2,
+              inventory_item: expect.objectContaining({
+                reserved_quantity: 2,
+                stocked_quantity: 1,
+              }),
             }),
           ])
         )
@@ -1691,6 +2321,7 @@ medusaIntegrationTestRunner({
             "/admin/products",
             {
               title: `Bottle Packs`,
+              status: ProductStatus.PUBLISHED,
               shipping_profile_id: shippingProfile.id,
               options: [{ title: "packs", values: ["one", "two", "three"] }],
               variants: [
@@ -2270,6 +2901,76 @@ medusaIntegrationTestRunner({
       })
     })
 
+    describe("GET /orders/:id/shipping-options", () => {
+      let so1: AdminShippingOption
+      let so2: AdminShippingOption
+      let so3: AdminShippingOption
+
+      beforeEach(async () => {
+        seeder = await createOrderSeeder({ api, container: getContainer() })
+        order = seeder.order
+        order = (await api.get(`/admin/orders/${order.id}`, adminHeaders)).data
+          .order
+
+        so1 = (
+          await createShippingOptionSeeder({
+            api,
+            container: getContainer(),
+            salesChannelOverride: seeder.salesChannel,
+            countries: ["us"],
+          })
+        ).shippingOption
+
+        so2 = (
+          await createShippingOptionSeeder({
+            api,
+            container: getContainer(),
+            salesChannelOverride: seeder.salesChannel,
+            countries: ["us", "ca"],
+          })
+        ).shippingOption
+
+        so3 = (
+          await createShippingOptionSeeder({
+            api,
+            container: getContainer(),
+            salesChannelOverride: seeder.salesChannel,
+            countries: ["de"],
+          })
+        ).shippingOption
+      })
+
+      it("should return the shipping options applicable for the order", async () => {
+        const { data } = await api.get(
+          `/admin/orders/${order.id}/shipping-options`,
+          adminHeaders
+        )
+
+        const originalShippingOptionId =
+          order.shipping_methods[0].shipping_option_id
+
+        expect(order.shipping_address.country_code).toEqual("us")
+
+        expect(data.shipping_options.length).toEqual(3)
+        expect(data.shipping_options).toEqual(
+          expect.arrayContaining([
+            expect.objectContaining({
+              id: so1.id,
+              insufficient_inventory: true,
+            }),
+            expect.objectContaining({
+              id: so2.id,
+              insufficient_inventory: true, // new SO without location levels for the order item, should have insufficient inventory
+            }),
+            expect.objectContaining({
+              id: originalShippingOptionId,
+              insufficient_inventory: false, // order is created with this SO, location has to have enough inventory
+            }),
+          ])
+        )
+      })
+    })
+
     describe("POST /orders/:id/fulfillments/:id/mark-as-delivered", () => {
       beforeEach(async () => {
         seeder = await createOrderSeeder({ api, container: getContainer() })
@@ -2427,6 +3128,7 @@ medusaIntegrationTestRunner({
               "/admin/products",
               {
                 title: `Wooden table`,
+                status: ProductStatus.PUBLISHED,
                 shipping_profile_id: shippingProfile.id,
                 options: [{ title: "color", values: ["green"] }],
                 variants: [

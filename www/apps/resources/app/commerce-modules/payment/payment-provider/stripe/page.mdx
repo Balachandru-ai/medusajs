@@ -189,6 +189,28 @@ STRIPE_API_KEY=<YOUR_STRIPE_API_KEY>
       
       </Table.Cell>
     </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+      
+      `oxxoExpiresDays`
+      
+      </Table.Cell>
+      <Table.Cell>
+      
+      The number of days before an OXXO payment expires. Only applicable if you plan to use OXXO as a payment method.
+      
+      </Table.Cell>
+      <Table.Cell>
+      
+      No
+      
+      </Table.Cell>
+      <Table.Cell>
+      
+      `3`
+      
+      </Table.Cell>
+    </Table.Row>
   </Table.Body>
 </Table>
 
@@ -305,6 +327,18 @@ Assuming you set the ID of the Stripe Module Provider to `stripe` in `medusa-con
       
       </Table.Cell>
     </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+      
+      OXXO Payments (Available since [Medusa v2.12.0](https://github.com/medusajs/medusa/releases/tag/v2.12.0))
+      
+      </Table.Cell>
+      <Table.Cell>
+      
+      `pp_stripe-oxxo_stripe`
+      
+      </Table.Cell>
+    </Table.Row>
   </Table.Body>
 </Table>
 
@@ -415,6 +449,18 @@ The Stripe Module Provider supports the following payment types, and the webhook
       
       </Table.Cell>
     </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+      
+      OXXO Payments (Available since [Medusa v2.12.0](https://github.com/medusajs/medusa/releases/tag/v2.12.0))
+      
+      </Table.Cell>
+      <Table.Cell>
+      
+      `{server_url}/hooks/payment/stripe-oxxo_stripe`
+      
+      </Table.Cell>
+    </Table.Row>
   </Table.Body>
 </Table>
 
@@ -425,6 +471,7 @@ When you set up the webhook in Stripe, choose the following events to listen to:
 - `payment_intent.amount_capturable_updated`
 - `payment_intent.succeeded`
 - `payment_intent.payment_failed`
+- `payment_intent.partially_funded` (Since [v2.8.5](https://github.com/medusajs/medusa/releases/tag/v2.8.5))
 
 ---
 

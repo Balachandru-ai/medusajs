@@ -1,10 +1,13 @@
 export const defaultAdminOrderFields = [
   "id",
   "display_id",
+  "custom_display_id",
   "status",
   "version",
   "summary",
+  "total",
   "metadata",
+  "locale",
   "created_at",
   "updated_at",
 ]
@@ -15,10 +18,10 @@ export const defaultAdminRetrieveOrderFields = [
   "total",
   "subtotal",
   "tax_total",
-  "order_change",
   "discount_total",
   "discount_tax_total",
   "original_total",
+  "original_subtotal",
   "original_tax_total",
   "item_total",
   "item_subtotal",
@@ -78,6 +81,7 @@ export const defaultAdminRetrieveOrderChangesFields = [
   "canceled_at",
   "created_at",
   "updated_at",
+  "carry_over_promotions",
 ]
 
 export const defaultAdminOrderItemsFields = [
@@ -107,5 +111,40 @@ export const retrieveOrderChangesTransformQueryConfig = {
 export const listOrderItemsQueryConfig = {
   defaults: defaultAdminOrderItemsFields,
   defaultLimit: 100,
+  isList: true,
+}
+
+export const listShippingOptionsQueryConfig = {
+  defaultLimit: 100,
+  isList: true,
+}
+
+export const defaultAdminExportOrderFields = [
+  "id",
+  "display_id",
+  "status",
+  "created_at",
+  "updated_at",
+  "email",
+  "currency_code",
+  "region_id",
+  "subtotal",
+  "tax_total",
+  "shipping_total",
+  "discount_total",
+  "gift_card_total",
+  "total",
+  "*customer",
+  "*shipping_address",
+  "*billing_address",
+  "*sales_channel",
+  "*items",
+  "*shipping_methods",
+  "*payment_collections",
+  "*fulfillments",
+]
+
+export const exportTransformQueryConfig = {
+  defaults: defaultAdminExportOrderFields,
   isList: true,
 }

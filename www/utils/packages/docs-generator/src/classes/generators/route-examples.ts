@@ -72,6 +72,7 @@ class RouteExamplesGenerator extends AbstractGenerator {
    * @returns Whether the Route Examples generator can run on this file.
    */
   isFileIncluded(fileName: string): boolean {
+    console.log(fileName, getBasePath(fileName))
     return (
       super.isFileIncluded(fileName) &&
       minimatch(

@@ -2,10 +2,17 @@
  * @oas [get] /store/products/{id}
  * operationId: GetProductsId
  * summary: Get a Product
- * description: Retrieve a product by its ID. You can expand the product's relations or select the fields that should be returned.
+ * description: >
+ *   Retrieve a product by its ID. You can expand the product's relations or select the fields that should be returned.
+ * 
+ * 
+ *   You can retrieve the content of the product translated to a specific locale either by passing the `locale` query parameter or by setting the `x-medusa-locale` header to the desired locale code in BCP 47 format. If you don't pass a locale, and your store has a default locale, the default locale will be used.
+ * 
+ * 
+ *   With localization, the product's content like title and description will be in the specified locale if a translation is available,  and fallback to the original content otherwise. Learn more in the [Localization](#localization) section.
  * x-authenticated: false
  * externalDocs:
- *   url: https://docs.medusajs.com/v2/resources/storefront-development/products/price
+ *   url: https://docs.medusajs.com/resources/storefront-development/products/price
  *   description: "Storefront guide: How to retrieve a product variants' prices."
  * parameters:
  *   - name: id
@@ -22,6 +29,16 @@
  *       type: string
  *       externalDocs:
  *         url: https://docs.medusajs.com/api/store#publishable-api-key
+ *   - name: x-medusa-locale
+ *     in: header
+ *     description: The locale in BCP 47 format to retrieve localized content.
+ *     required: false
+ *     schema:
+ *       type: string
+ *       example: en-US
+ *       externalDocs:
+ *         url: https://docs.medusajs.com/resources/commerce-modules/translation/storefront
+ *         description: Learn more in the Serve Translations in Storefront guide.
  *   - name: fields
  *     in: query
  *     description: Comma-separated fields that should be included in the returned data. if a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default
@@ -43,7 +60,7 @@
  *       title: region_id
  *       description: The ID of the region the product is being viewed from. This is required if you're retrieving product variant prices with taxes.
  *       externalDocs:
- *         url: https://docs.medusajs.com/v2/resources/storefront-development/products/price/examples/tax-price
+ *         url: https://docs.medusajs.com/resources/storefront-development/products/price/examples/tax-price
  *         description: "Storefront guide: How to show product variants' prices with taxes."
  *   - name: country_code
  *     in: query
@@ -73,36 +90,16 @@
  *       type: string
  *       title: cart_id
  *       description: The ID of the customer's cart. If set, the cart's region and shipping address's country code and province are used instead of the `region_id`, `country_code`, and `province` properties.
- *   - name: limit
+ *   - name: locale
  *     in: query
- *     description: Limit the number of items returned in the list.
- *     required: false
- *     schema:
- *       type: number
- *       title: limit
- *       description: Limit the number of items returned in the list.
- *       externalDocs:
- *         url: "#pagination"
- *   - name: offset
- *     in: query
- *     description: The number of items to skip when retrieving a list.
- *     required: false
- *     schema:
- *       type: number
- *       title: offset
- *       description: The number of items to skip when retrieving a list.
- *       externalDocs:
- *         url: "#pagination"
- *   - name: order
- *     in: query
- *     description: The field to sort the data by. By default, the sort order is ascending. To change the order to descending, prefix the field name with `-`.
+ *     description: The locale in BCP 47 format to retrieve localized content.
  *     required: false
  *     schema:
  *       type: string
- *       title: order
- *       description: The field to sort the data by. By default, the sort order is ascending. To change the order to descending, prefix the field name with `-`.
+ *       example: en-US
  *       externalDocs:
- *         url: "#pagination"
+ *         url: https://docs.medusajs.com/resources/commerce-modules/translation/storefront
+ *         description: Learn more in the Serve Translations in Storefront guide.
  * x-codeSamples:
  *   - lang: JavaScript
  *     label: JS SDK

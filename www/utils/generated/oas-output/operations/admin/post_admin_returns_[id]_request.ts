@@ -32,7 +32,7 @@
  *   content:
  *     application/json:
  *       schema:
- *         $ref: "#/components/schemas/AdminPostReturnsConfirmRequestReqSchema"
+ *         $ref: "#/components/schemas/AdminConfirmReturnRequest"
  * x-codeSamples:
  *   - lang: JavaScript
  *     label: JS SDK
@@ -57,7 +57,7 @@
  *     label: cURL
  *     source: |-
  *       curl -X POST '{backend_url}/admin/returns/{id}/request' \
- *       -H 'Authorization: Bearer {access_token}'
+ *       -H 'Authorization: Bearer {jwt_token}'
  * tags:
  *   - Returns
  * responses:

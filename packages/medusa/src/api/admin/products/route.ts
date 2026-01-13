@@ -1,5 +1,4 @@
 import { createProductsWorkflow } from "@medusajs/core-flows"
-import { featureFlagRouter } from "@medusajs/framework"
 import {
   AuthenticatedMedusaRequest,
   MedusaResponse,
@@ -7,15 +6,19 @@ import {
   refetchEntity,
 } from "@medusajs/framework/http"
 import { AdditionalData, HttpTypes } from "@medusajs/framework/types"
-import { ContainerRegistrationKeys, isPresent } from "@medusajs/framework/utils"
-import IndexEngineFeatureFlag from "../../../loaders/feature-flags/index-engine"
+import {
+  ContainerRegistrationKeys,
+  FeatureFlag,
+  isPresent,
+} from "@medusajs/framework/utils"
+import IndexEngineFeatureFlag from "../../../feature-flags/index-engine"
 import { remapKeysForProduct, remapProductResponse } from "./helpers"
 
 export const GET = async (
   req: AuthenticatedMedusaRequest<HttpTypes.AdminProductListParams>,
   res: MedusaResponse<HttpTypes.AdminProductListResponse>
 ) => {
-  if (featureFlagRouter.isFeatureEnabled(IndexEngineFeatureFlag.key)) {
+  if (FeatureFlag.isFeatureEnabled(IndexEngineFeatureFlag.key)) {
     // Use regular list when no filters are provided
     // TODO: Tags and categories are not supported by the index engine yet
     if (
@@ -38,13 +41,14 @@ async function getProducts(
 ) {
   const selectFields = remapKeysForProduct(req.queryConfig.fields ?? [])
 
-  const { rows: products, metadata } = await refetchEntities(
-    "product",
-    req.filterableFields,
-    req.scope,
-    selectFields,
-    req.queryConfig.pagination
-  )
+  const { data: products, metadata } = await refetchEntities({
+    entity: "product",
+    idOrFilter: req.filterableFields,
+    scope: req.scope,
+    fields: selectFields,
+    pagination: req.queryConfig.pagination,
+    withDeleted: req.queryConfig.withDeleted,
+  })
 
   res.json({
     products: products.map(remapProductResponse),
@@ -75,6 +79,7 @@ async function getProductsWithIndexEngine(
     fields: req.queryConfig.fields ?? [],
     filters: filters,
     pagination: req.queryConfig.pagination,
+    withDeleted: req.queryConfig.withDeleted,
   })
 
   res.json({
@@ -88,7 +93,8 @@ async function getProductsWithIndexEngine(
 
 export const POST = async (
   req: AuthenticatedMedusaRequest<
-    HttpTypes.AdminCreateProduct & AdditionalData
+    HttpTypes.AdminCreateProduct & AdditionalData,
+    HttpTypes.SelectParams
   >,
   res: MedusaResponse<HttpTypes.AdminProductResponse>
 ) => {
@@ -98,12 +104,12 @@ export const POST = async (
     input: { products: [products], additional_data },
   })
 
-  const product = await refetchEntity(
-    "product",
-    result[0].id,
-    req.scope,
-    remapKeysForProduct(req.queryConfig.fields ?? [])
-  )
+  const product = await refetchEntity({
+    entity: "product",
+    idOrFilter: result[0].id,
+    scope: req.scope,
+    fields: remapKeysForProduct(req.queryConfig.fields ?? []),
+  })
 
   res.status(200).json({ product: remapProductResponse(product) })
 }

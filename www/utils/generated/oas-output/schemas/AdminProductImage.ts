@@ -30,10 +30,20 @@
  *   metadata:
  *     type: object
  *     description: The image's metadata, can hold custom key-value pairs.
+ *     externalDocs:
+ *       url: https://docs.medusajs.com/api/admin#manage-metadata
+ *       description: Learn how to manage metadata
  *   rank:
  *     type: number
  *     title: rank
  *     description: The image's rank among sibling images.
+ *   product:
+ *     $ref: "#/components/schemas/AdminProduct"
+ *   variants:
+ *     type: array
+ *     description: The variants associated with the image.
+ *     items:
+ *       $ref: "#/components/schemas/AdminProductVariant"
  * required:
  *   - id
  *   - url

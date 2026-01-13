@@ -31,16 +31,7 @@
  *   content:
  *     application/json:
  *       schema:
- *         type: object
- *         description: The properties to update in the product tag.
- *         properties:
- *           value:
- *             type: string
- *             title: value
- *             description: The product tag's value.
- *           metadata:
- *             type: object
- *             description: The product tag's metadata. Can hold custom key-value pairs.
+ *         $ref: "#/components/schemas/AdminUpdateProductTag"
  * x-codeSamples:
  *   - lang: JavaScript
  *     label: JS SDK
@@ -65,7 +56,7 @@
  *     label: cURL
  *     source: |-
  *       curl -X POST '{backend_url}/admin/product-tags/{id}' \
- *       -H 'Authorization: Bearer {access_token}' \
+ *       -H 'Authorization: Bearer {jwt_token}' \
  *       -H 'Content-Type: application/json' \
  *       --data-raw '{
  *         "metadata": {}
@@ -96,9 +87,9 @@
  *   - name: product-tag.updated
  *     payload: |-
  *       ```ts
- *       [{
+ *       {
  *         id, // The ID of the product tag
- *       }]
+ *       }
  *       ```
  *     description: Emitted when product tags are updated.
  *     deprecated: false

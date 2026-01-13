@@ -1,3 +1,6 @@
+import { MedusaContainer } from "@medusajs/framework/types"
+import { ContainerRegistrationKeys } from "@medusajs/framework/utils"
+import { dynamicImport } from "@medusajs/utils"
 import createStore from "connect-redis"
 import cookieParser from "cookie-parser"
 import express, { Express, RequestHandler } from "express"
@@ -5,16 +8,20 @@ import session from "express-session"
 import Redis from "ioredis"
 import morgan from "morgan"
 import path from "path"
-import { logger } from "../logger"
 import { configManager } from "../config"
 import { MedusaRequest, MedusaResponse } from "./types"
-import { dynamicImport } from "@medusajs/utils"
 
 const NOISY_ENDPOINTS_CHUNKS = ["@fs", "@id", "@vite", "@react", "node_modules"]
 
 const isHealthCheck = (req: MedusaRequest) => req.path === "/health"
 
-export async function expressLoader({ app }: { app: Express }): Promise<{
+export async function expressLoader({
+  app,
+  container,
+}: {
+  app: Express
+  container: MedusaContainer
+}): Promise<{
   app: Express
   shutdown: () => Promise<void>
 }> {
@@ -25,6 +32,7 @@ export async function expressLoader({ app }: { app: Express }): Promise<{
   const IS_DEV = NODE_ENV.startsWith("dev")
   const isStaging = NODE_ENV === "staging"
   const isTest = NODE_ENV === "test"
+  const logger = container.resolve(ContainerRegistrationKeys.LOGGER)
 
   let sameSite: string | boolean = false
   let secure = false
@@ -33,7 +41,7 @@ export async function expressLoader({ app }: { app: Express }): Promise<{
     sameSite = "none"
   }
 
-  const { http, sessionOptions } = configModule.projectConfig
+  const { http, sessionOptions, cookieOptions } = configModule.projectConfig
   const sessionOpts = {
     name: sessionOptions?.name ?? "connect.sid",
     resave: sessionOptions?.resave ?? true,
@@ -45,6 +53,7 @@ export async function expressLoader({ app }: { app: Express }): Promise<{
       sameSite,
       secure,
       maxAge: sessionOptions?.ttl ?? 10 * 60 * 60 * 1000,
+      ...cookieOptions,
     },
     store: null,
   }

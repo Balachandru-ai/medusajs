@@ -50,7 +50,7 @@
  *     label: cURL
  *     source: |-
  *       curl -X POST '{backend_url}/admin/product-types' \
- *       -H 'Authorization: Bearer {access_token}' \
+ *       -H 'Authorization: Bearer {jwt_token}' \
  *       -H 'Content-Type: application/json' \
  *       --data-raw '{
  *         "value": "{value}",
@@ -82,9 +82,9 @@
  *   - name: product-type.created
  *     payload: |-
  *       ```ts
- *       [{
+ *       {
  *         id, // The ID of the product type
- *       }]
+ *       }
  *       ```
  *     description: Emitted when product types are created.
  *     deprecated: false

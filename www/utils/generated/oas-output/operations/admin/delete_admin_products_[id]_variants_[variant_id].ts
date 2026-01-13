@@ -56,7 +56,7 @@
  *     label: cURL
  *     source: |-
  *       curl -X DELETE '{backend_url}/admin/products/{id}/variants/{variant_id}' \
- *       -H 'Authorization: Bearer {access_token}'
+ *       -H 'Authorization: Bearer {jwt_token}'
  * tags:
  *   - Products
  * responses:
@@ -83,9 +83,9 @@
  *   - name: product-variant.deleted
  *     payload: |-
  *       ```ts
- *       [{
+ *       {
  *         id, // The ID of the product variant
- *       }]
+ *       }
  *       ```
  *     description: Emitted when product variants are deleted.
  *     deprecated: false

@@ -449,7 +449,7 @@ medusaIntegrationTestRunner({
           // BREAKING: Comparison operators changed, so eg. `gt` became `$gt`
           const response = await api
             .get(
-              `/admin/products?deleted_at[$gt]=01-26-1990&q=test`,
+              `/admin/products?deleted_at[$gt]=01-26-1990&with_deleted=true&q=test`,
               adminHeaders
             )
             .catch((err) => {
@@ -519,7 +519,10 @@ medusaIntegrationTestRunner({
 
         it("returns a list of deleted products", async () => {
           const response = await api
-            .get(`/admin/products?deleted_at[$gt]=01-26-1990`, adminHeaders)
+            .get(
+              `/admin/products?deleted_at[$gt]=01-26-1990&with_deleted=true`,
+              adminHeaders
+            )
             .catch((err) => {
               console.log(err)
             })
@@ -948,6 +951,231 @@ medusaIntegrationTestRunner({
               id: newProduct.id,
             }),
           ])
+        })
+
+        it("returns a list of products filtered by variants[ean]", async () => {
+          const productWithEan = await api.post(
+            "/admin/products",
+            getProductFixture({
+              title: "Product with EAN",
+              shipping_profile_id: shippingProfile.id,
+              variants: [
+                {
+                  title: "Test variant",
+                  ean: "1234567890123",
+                  prices: [{ currency_code: "usd", amount: 100 }],
+                  options: {
+                    size: "large",
+                    color: "green",
+                  },
+                },
+              ],
+            }),
+            adminHeaders
+          )
+
+          await api.post(
+            "/admin/products",
+            getProductFixture({
+              title: "Product with different EAN",
+              shipping_profile_id: shippingProfile.id,
+              variants: [
+                {
+                  title: "Test variant 2",
+                  ean: "9876543210987",
+                  prices: [{ currency_code: "usd", amount: 150 }],
+                  options: {
+                    size: "large",
+                    color: "green",
+                  },
+                },
+              ],
+            }),
+            adminHeaders
+          )
+
+          const response = await api
+            .get("/admin/products?variants[ean]=1234567890123", adminHeaders)
+            .catch((err) => {
+              console.log(err)
+            })
+
+          expect(response.status).toEqual(200)
+          expect(response.data.products).toHaveLength(1)
+          expect(response.data.products).toEqual(
+            expect.arrayContaining([
+              expect.objectContaining({
+                id: productWithEan.data.product.id,
+                title: "Product with EAN",
+                variants: expect.arrayContaining([
+                  expect.objectContaining({
+                    ean: "1234567890123",
+                  }),
+                ]),
+              }),
+            ])
+          )
+        })
+
+        it("returns a list of products filtered by variants[upc]", async () => {
+          const productWithUpc = await api.post(
+            "/admin/products",
+            getProductFixture({
+              title: "Product with UPC",
+              shipping_profile_id: shippingProfile.id,
+              variants: [
+                {
+                  title: "Test variant",
+                  upc: "123456789012",
+                  prices: [{ currency_code: "usd", amount: 200 }],
+                  options: {
+                    size: "large",
+                    color: "green",
+                  },
+                },
+              ],
+            }),
+            adminHeaders
+          )
+
+          await api.post(
+            "/admin/products",
+            getProductFixture({
+              title: "Product with different UPC",
+              shipping_profile_id: shippingProfile.id,
+              variants: [
+                {
+                  title: "Test variant 2",
+                  upc: "098765432109",
+                  prices: [{ currency_code: "usd", amount: 250 }],
+                  options: {
+                    size: "large",
+                    color: "green",
+                  },
+                },
+              ],
+            }),
+            adminHeaders
+          )
+
+          const response = await api
+            .get("/admin/products?variants[upc]=123456789012", adminHeaders)
+            .catch((err) => {
+              console.log(err)
+            })
+
+          expect(response.status).toEqual(200)
+          expect(response.data.products).toHaveLength(1)
+          expect(response.data.products).toEqual(
+            expect.arrayContaining([
+              expect.objectContaining({
+                id: productWithUpc.data.product.id,
+                title: "Product with UPC",
+                variants: expect.arrayContaining([
+                  expect.objectContaining({
+                    upc: "123456789012",
+                  }),
+                ]),
+              }),
+            ])
+          )
+        })
+
+        it("returns a list of products filtered by variants[barcode]", async () => {
+          const productWithBarcode = await api.post(
+            "/admin/products",
+            getProductFixture({
+              title: "Product with Barcode",
+              shipping_profile_id: shippingProfile.id,
+              variants: [
+                {
+                  title: "Test variant",
+                  barcode: "1234567890",
+                  prices: [{ currency_code: "usd", amount: 300 }],
+                  options: {
+                    size: "large",
+                    color: "green",
+                  },
+                },
+              ],
+            }),
+            adminHeaders
+          )
+
+          await api.post(
+            "/admin/products",
+            getProductFixture({
+              title: "Product with different Barcode",
+              shipping_profile_id: shippingProfile.id,
+              variants: [
+                {
+                  title: "Test variant 2",
+                  barcode: "0987654321",
+                  prices: [{ currency_code: "usd", amount: 350 }],
+                  options: {
+                    size: "large",
+                    color: "green",
+                  },
+                },
+              ],
+            }),
+            adminHeaders
+          )
+
+          const response = await api
+            .get("/admin/products?variants[barcode]=1234567890", adminHeaders)
+            .catch((err) => {
+              console.log(err)
+            })
+
+          expect(response.status).toEqual(200)
+          expect(response.data.products).toHaveLength(1)
+          expect(response.data.products).toEqual(
+            expect.arrayContaining([
+              expect.objectContaining({
+                id: productWithBarcode.data.product.id,
+                title: "Product with Barcode",
+                variants: expect.arrayContaining([
+                  expect.objectContaining({
+                    barcode: "1234567890",
+                  }),
+                ]),
+              }),
+            ])
+          )
+        })
+
+        it("returns empty list when filtering by non-existent variants[ean]", async () => {
+          const response = await api
+            .get("/admin/products?variants[ean]=5555555555555", adminHeaders)
+            .catch((err) => {
+              console.log(err)
+            })
+
+          expect(response.status).toEqual(200)
+          expect(response.data.products).toHaveLength(0)
+        })
+
+        it("returns empty list when filtering by non-existent variants[upc]", async () => {
+          const response = await api
+            .get("/admin/products?variants[upc]=555555555555", adminHeaders)
+            .catch((err) => {
+              console.log(err)
+            })
+
+          expect(response.status).toEqual(200)
+          expect(response.data.products).toHaveLength(0)
+        })
+
+        it("returns empty list when filtering by non-existent variants[barcode]", async () => {
+          const response = await api
+            .get("/admin/products?variants[barcode]=5555555555", adminHeaders)
+            .catch((err) => {
+              console.log(err)
+            })
+
+          expect(response.status).toEqual(200)
+          expect(response.data.products).toHaveLength(0)
         })
       })
 
@@ -1585,6 +1813,110 @@ medusaIntegrationTestRunner({
           )
         })
 
+        it("updates products relations and attributes", async () => {
+          const shortsCategory = (
+            await api.post(
+              "/admin/product-categories",
+              { name: "Shorts", is_internal: false, is_active: true },
+              adminHeaders
+            )
+          ).data.product_category
+
+          const pantsCategory = (
+            await api.post(
+              "/admin/product-categories",
+              { name: "Pants", is_internal: false, is_active: true },
+              adminHeaders
+            )
+          ).data.product_category
+
+          const payload = {
+            title: "Test an update",
+            weight: 100,
+            length: 100,
+            width: 100,
+            height: 100,
+            options: [{ title: "size", values: ["large", "small"] }],
+            variants: [
+              {
+                options: { size: "large" },
+                title: "New variant",
+                prices: [
+                  {
+                    currency_code: "usd",
+                    amount: 200,
+                  },
+                ],
+              },
+            ],
+          }
+
+          const createdProduct = (
+            await api.post("/admin/products", payload, adminHeaders)
+          ).data.product
+
+          let updatedProduct = (
+            await api.post(
+              `/admin/products/${createdProduct.id}`,
+              { weight: 20, length: null },
+              adminHeaders
+            )
+          ).data.product
+
+          expect(updatedProduct).toEqual(
+            expect.objectContaining({
+              weight: "20",
+              length: null,
+              width: "100",
+              height: "100",
+            })
+          )
+
+          updatedProduct = (
+            await api.post(
+              `/admin/products/${createdProduct.id}?fields=+categories.id`,
+              { categories: [{ id: pantsCategory.id }] },
+              adminHeaders
+            )
+          ).data.product
+
+          expect(updatedProduct).toEqual(
+            expect.objectContaining({
+              weight: "20",
+              length: null,
+              width: "100",
+              height: "100",
+              categories: expect.arrayContaining([
+                expect.objectContaining({
+                  id: pantsCategory.id,
+                }),
+              ]),
+            })
+          )
+
+          updatedProduct = (
+            await api.post(
+              `/admin/products/${createdProduct.id}?fields=+categories.id`,
+              { weight: null, length: 20, width: 50 },
+              adminHeaders
+            )
+          ).data.product
+
+          expect(updatedProduct).toEqual(
+            expect.objectContaining({
+              weight: null,
+              length: "20",
+              width: "50",
+              height: "100",
+              categories: expect.arrayContaining([
+                expect.objectContaining({
+                  id: pantsCategory.id,
+                }),
+              ]),
+            })
+          )
+        })
+
         it("updates a product (update prices, tags, update status, delete collection, delete type, replaces images)", async () => {
           const payload = {
             collection_id: null,
@@ -1929,6 +2261,218 @@ medusaIntegrationTestRunner({
             "test-key-2": null, // updated
             "test-key-3": "test-value-3", // preserved
           })
+        })
+
+        it("should recreate a variant with the same sku after deletion", async () => {
+          const payload = {
+            title: "Test sku",
+            shipping_profile_id: shippingProfile.id,
+            variants: [
+              {
+                sku: "test-sku-should-persist",
+                manage_inventory: true,
+                title: "Recreate variant",
+                prices: [
+                  {
+                    currency_code: "usd",
+                    amount: 100,
+                  },
+                ],
+              },
+            ],
+          }
+
+          const created = (
+            await api.post(
+              "/admin/products?fields=*variants.inventory_items.inventory",
+              getProductFixture(payload),
+              adminHeaders
+            )
+          ).data.product
+
+          const createdVariant = created.variants.find(
+            (v) => v.sku === "test-sku-should-persist"
+          )
+
+          const inventoryItem = createdVariant.inventory_items[0]
+
+          expect(created).toEqual(
+            expect.objectContaining({
+              variants: expect.arrayContaining([
+                expect.objectContaining({
+                  sku: "test-sku-should-persist",
+                  inventory_items: expect.arrayContaining([
+                    expect.objectContaining({
+                      inventory: expect.objectContaining({
+                        sku: "test-sku-should-persist",
+                      }),
+                    }),
+                  ]),
+                  title: "Recreate variant",
+                }),
+              ]),
+            })
+          )
+
+          await api.delete(
+            `/admin/products/${created.id}/variants/${createdVariant.id}`,
+            adminHeaders
+          )
+
+          const recreated = (
+            await api.post(
+              `/admin/products/${created.id}/variants?fields=+variants.inventory_items.inventory.sku`,
+              {
+                sku: "test-sku-should-persist",
+                manage_inventory: true,
+                title: "Recreate variant",
+                prices: [
+                  {
+                    currency_code: "usd",
+                    amount: 100,
+                  },
+                ],
+              },
+              adminHeaders
+            )
+          ).data.product
+
+          expect(recreated).toEqual(
+            expect.objectContaining({
+              variants: expect.arrayContaining([
+                expect.objectContaining({
+                  sku: "test-sku-should-persist",
+                  inventory_items: expect.arrayContaining([
+                    expect.objectContaining({
+                      inventory: expect.objectContaining({
+                        sku: "test-sku-should-persist",
+                      }),
+                    }),
+                  ]),
+                  title: "Recreate variant",
+                }),
+              ]),
+            })
+          )
+        })
+
+        it("should update variant to manage_inventory false and unlink inventory items", async () => {
+          const inventoryItem1 = (
+            await api.post(
+              `/admin/inventory-items`,
+              { sku: "inventory-item-1" },
+              adminHeaders
+            )
+          ).data.inventory_item
+
+          const inventoryItem2 = (
+            await api.post(
+              `/admin/inventory-items`,
+              { sku: "inventory-item-2" },
+              adminHeaders
+            )
+          ).data.inventory_item
+
+          const createPayload = {
+            title: "Test product with inventory",
+            handle: "test-product-inventory",
+            options: [{ title: "size", values: ["large"] }],
+            shipping_profile_id: shippingProfile.id,
+            variants: [
+              {
+                title: "Variant with inventory",
+                prices: [{ currency_code: "usd", amount: 100 }],
+                manage_inventory: true,
+                options: { size: "large" },
+                inventory_items: [
+                  {
+                    inventory_item_id: inventoryItem1.id,
+                    required_quantity: 5,
+                  },
+                  {
+                    inventory_item_id: inventoryItem2.id,
+                    required_quantity: 10,
+                  },
+                ],
+              },
+            ],
+          }
+
+          const createdProduct = (
+            await api.post("/admin/products", createPayload, {
+              ...adminHeaders,
+              params: {
+                fields:
+                  "variants.inventory_items.*,variants.inventory_items.inventory.*",
+              },
+            })
+          ).data.product
+
+          const variantWithInventory = createdProduct.variants[0]
+
+          expect(variantWithInventory.manage_inventory).toBe(true)
+          expect(variantWithInventory.inventory_items).toHaveLength(2)
+          expect(variantWithInventory.inventory_items).toEqual(
+            expect.arrayContaining([
+              expect.objectContaining({
+                inventory_item_id: inventoryItem1.id,
+                required_quantity: 5,
+              }),
+              expect.objectContaining({
+                inventory_item_id: inventoryItem2.id,
+                required_quantity: 10,
+              }),
+            ])
+          )
+
+          const updatePayload = {
+            variants: [
+              {
+                id: variantWithInventory.id,
+                manage_inventory: false,
+              },
+            ],
+          }
+
+          const updatedProduct = (
+            await api.post(
+              `/admin/products/${createdProduct.id}`,
+              updatePayload,
+              {
+                ...adminHeaders,
+                params: {
+                  fields:
+                    "variants.inventory_items.*,variants.inventory_items.inventory.*",
+                },
+              }
+            )
+          ).data.product
+
+          const updatedVariant = updatedProduct.variants.find(
+            (v) => v.id === variantWithInventory.id
+          )
+
+          expect(updatedVariant.manage_inventory).toBe(false)
+          expect(updatedVariant.inventory_items).toHaveLength(0)
+          expect(updatedVariant.inventory_items).toEqual([])
+
+          const inventoryItem1Response = await api.get(
+            `/admin/inventory-items/${inventoryItem1.id}`,
+            adminHeaders
+          )
+          const inventoryItem2Response = await api.get(
+            `/admin/inventory-items/${inventoryItem2.id}`,
+            adminHeaders
+          )
+
+          expect(inventoryItem1Response.status).toEqual(200)
+          expect(inventoryItem2Response.status).toEqual(200)
+          expect(inventoryItem1Response.data.inventory_item.id).toBe(
+            inventoryItem1.id
+          )
+          expect(inventoryItem2Response.data.inventory_item.id).toBe(
+            inventoryItem2.id
+          )
         })
 
         it("updates products sales channels", async () => {
@@ -3473,6 +4017,308 @@ medusaIntegrationTestRunner({
               { id: "tag1", usage_count: "2", value: "123" },
               { id: "tag3", usage_count: "2", value: "1235" },
               { id: "tag4", usage_count: "1", value: "1234" },
+            ])
+          )
+        })
+      })
+
+      describe("POST /admin/products/:id/images/:image_id/variants/batch", () => {
+        it("should batch assign and remove variants from images", async () => {
+          // Create a product with multiple images
+          const productWithMultipleImages = await api.post(
+            "/admin/products",
+            {
+              title: "product with multiple images",
+              status: "published",
+              options: [
+                {
+                  title: "size",
+                  values: ["large", "small"],
+                },
+                {
+                  title: "color",
+                  values: ["red", "blue"],
+                },
+              ],
+              images: [
+                {
+                  url: "https://via.placeholder.com/100",
+                },
+                {
+                  url: "https://via.placeholder.com/200",
+                },
+                {
+                  url: "https://via.placeholder.com/300",
+                },
+              ],
+            },
+            adminHeaders
+          )
+
+          const product = productWithMultipleImages.data.product
+
+          const variant1Response = await api.post(
+            `/admin/products/${product.id}/variants`,
+            {
+              title: "variant 1",
+              options: { size: "large", color: "red" },
+              prices: [{ currency_code: "usd", amount: 100 }],
+            },
+            adminHeaders
+          )
+
+          const variant2Response = await api.post(
+            `/admin/products/${product.id}/variants`,
+            {
+              title: "variant 2",
+              options: { size: "small", color: "blue" },
+              prices: [{ currency_code: "usd", amount: 200 }],
+            },
+            adminHeaders
+          )
+
+          const variant1 = variant1Response.data.product.variants.find(
+            (v) => v.title === "variant 1"
+          )
+          const variant2 = variant2Response.data.product.variants.find(
+            (v) => v.title === "variant 2"
+          )
+
+          const addResponse = await api.post(
+            `/admin/products/${product.id}/images/${product.images[0].id}/variants/batch`,
+            {
+              add: [variant1.id, variant2.id],
+            },
+            adminHeaders
+          )
+
+          expect(addResponse.status).toBe(200)
+          expect(addResponse.data.added).toHaveLength(2)
+          expect(addResponse.data.added).toContain(variant1.id)
+          expect(addResponse.data.added).toContain(variant2.id)
+
+          const addResponse2 = await api.post(
+            `/admin/products/${product.id}/images/${product.images[1].id}/variants/batch`,
+            {
+              add: [variant1.id],
+            },
+            adminHeaders
+          )
+
+          expect(addResponse2.status).toBe(200)
+          expect(addResponse2.data.added).toHaveLength(1)
+          expect(addResponse2.data.added).toContain(variant1.id)
+
+          const variant1WithImages = await api.get(
+            `/admin/products/${product.id}/variants/${variant1.id}?fields=*images`,
+            adminHeaders
+          )
+
+          const variant2WithImages = await api.get(
+            `/admin/products/${product.id}/variants/${variant2.id}?fields=*images`,
+            adminHeaders
+          )
+
+          expect(variant1WithImages.data.variant.images).toHaveLength(3)
+
+          // Variant 1 should have both images (first and second)
+          expect(variant1WithImages.data.variant.images).toEqual(
+            expect.arrayContaining([
+              expect.objectContaining({
+                id: product.images[0].id, // Variant image
+              }),
+              expect.objectContaining({
+                id: product.images[1].id, // Variant image
+              }),
+              expect.objectContaining({
+                id: product.images[2].id, // General product image
+              }),
+            ])
+          )
+
+          expect(variant2WithImages.data.variant.images).toHaveLength(2)
+
+          // Variant 2 should have the first image
+          expect(variant2WithImages.data.variant.images).toEqual(
+            expect.arrayContaining([
+              expect.objectContaining({
+                id: product.images[0].id, // Variant image
+              }),
+              expect.objectContaining({
+                id: product.images[2].id, // General product image
+              }),
+            ])
+          )
+
+          const removeResponse = await api.post(
+            `/admin/products/${product.id}/images/${product.images[0].id}/variants/batch`,
+            {
+              remove: [variant1.id],
+            },
+            adminHeaders
+          )
+
+          expect(removeResponse.status).toBe(200)
+          expect(removeResponse.data.removed).toHaveLength(1)
+          expect(removeResponse.data.removed).toContain(variant1.id)
+
+          const variant1WithImagesAfterRemove = await api.get(
+            `/admin/products/${product.id}/variants/${variant1.id}?fields=*images`,
+            adminHeaders
+          )
+
+          expect(
+            variant1WithImagesAfterRemove.data.variant.images
+          ).toHaveLength(2)
+          expect(variant1WithImagesAfterRemove.data.variant.images).toEqual(
+            expect.arrayContaining([
+              expect.objectContaining({
+                id: product.images[1].id, // Variant image
+              }),
+              expect.objectContaining({
+                id: product.images[2].id, // General product image
+              }),
+            ])
+          )
+
+          const variant2WithImagesAfterRemove = await api.get(
+            `/admin/products/${product.id}/variants/${variant2.id}?fields=*images`,
+            adminHeaders
+          )
+
+          expect(
+            variant2WithImagesAfterRemove.data.variant.images
+          ).toHaveLength(2)
+          expect(variant2WithImagesAfterRemove.data.variant.images).toEqual(
+            expect.arrayContaining([
+              expect.objectContaining({
+                // Removed from the first variant but still on the second
+                id: product.images[0].id,
+              }),
+              expect.objectContaining({
+                id: product.images[2].id,
+              }),
+            ])
+          )
+        })
+      })
+
+      describe("POST /admin/products/:id/variants/:variant_id/images/batch", () => {
+        it("should batch manage images for a specific variant", async () => {
+          // Create a product with multiple images and variants
+          const productWithMultipleImages = await api.post(
+            "/admin/products",
+            {
+              title: "product for variant image batch management",
+              status: "published",
+              options: [
+                {
+                  title: "size",
+                  values: ["large", "small"],
+                },
+                {
+                  title: "color",
+                  values: ["red", "blue"],
+                },
+              ],
+              images: [
+                {
+                  url: "https://via.placeholder.com/100",
+                },
+                {
+                  url: "https://via.placeholder.com/200",
+                },
+                {
+                  url: "https://via.placeholder.com/300",
+                },
+                {
+                  url: "https://via.placeholder.com/400",
+                },
+              ],
+              variants: [
+                {
+                  title: "variant 1",
+                  options: { size: "large", color: "red" },
+                  prices: [{ currency_code: "usd", amount: 100 }],
+                },
+                {
+                  title: "variant 2",
+                  options: { size: "small", color: "blue" },
+                  prices: [{ currency_code: "usd", amount: 200 }],
+                },
+              ],
+            },
+            adminHeaders
+          )
+
+          const product = productWithMultipleImages.data.product
+          const variant1 = product.variants.find((v) => v.title === "variant 1")
+          const variant2 = product.variants.find((v) => v.title === "variant 2")
+
+          // First, assign some images to variant1
+          const initialAssignResponse = await api.post(
+            `/admin/products/${product.id}/variants/${variant1.id}/images/batch`,
+            {
+              add: [product.images[0].id, product.images[1].id],
+            },
+            adminHeaders
+          )
+
+          expect(initialAssignResponse.status).toBe(200)
+          expect(initialAssignResponse.data.added).toHaveLength(2)
+          expect(initialAssignResponse.data.added).toEqual(
+            expect.arrayContaining([product.images[0].id, product.images[1].id])
+          )
+
+          // Now batch manage images for variant1: add one more, remove one
+          const batchResponse = await api.post(
+            `/admin/products/${product.id}/variants/${variant1.id}/images/batch`,
+            {
+              add: [product.images[2].id],
+              remove: [product.images[0].id],
+            },
+            adminHeaders
+          )
+
+          expect(batchResponse.status).toBe(200)
+          expect(batchResponse.data.added).toHaveLength(1)
+          expect(batchResponse.data.added).toEqual(
+            expect.arrayContaining([product.images[2].id])
+          )
+          expect(batchResponse.data.removed).toHaveLength(1)
+          expect(batchResponse.data.removed).toEqual(
+            expect.arrayContaining([product.images[0].id])
+          )
+
+          // Verify the final state by checking variant1 images
+          const variant1WithImages = await api.get(
+            `/admin/products/${product.id}/variants/${variant1.id}?fields=*images`,
+            adminHeaders
+          )
+
+          // Should have 3 images: images[0] and images[3] (general product image), images[1] and images[2] variant scoped
+          expect(variant1WithImages.data.variant.images).toHaveLength(4)
+          expect(variant1WithImages.data.variant.images).toEqual(
+            expect.arrayContaining([
+              expect.objectContaining({ id: product.images[0].id }),
+              expect.objectContaining({ id: product.images[1].id }),
+              expect.objectContaining({ id: product.images[2].id }),
+              expect.objectContaining({ id: product.images[3].id }),
+            ])
+          )
+
+          // Verify variant2
+          const variant2WithImages = await api.get(
+            `/admin/products/${product.id}/variants/${variant2.id}?fields=*images`,
+            adminHeaders
+          )
+
+          // Should only have the general product image
+          expect(variant2WithImages.data.variant.images).toHaveLength(2)
+          expect(variant2WithImages.data.variant.images).toEqual(
+            expect.arrayContaining([
+              expect.objectContaining({ id: product.images[0].id }),
+              expect.objectContaining({ id: product.images[3].id }),
             ])
           )
         })

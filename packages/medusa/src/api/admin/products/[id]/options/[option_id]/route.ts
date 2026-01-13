@@ -12,24 +12,25 @@ import { remapKeysForProduct, remapProductResponse } from "../../../helpers"
 import { AdditionalData, HttpTypes } from "@medusajs/framework/types"
 
 export const GET = async (
-  req: AuthenticatedMedusaRequest,
+  req: AuthenticatedMedusaRequest<HttpTypes.SelectParams>,
   res: MedusaResponse<HttpTypes.AdminProductOptionResponse>
 ) => {
   const productId = req.params.id
   const optionId = req.params.option_id
-  const productOption = await refetchEntity(
-    "product_option",
-    { id: optionId, product_id: productId },
-    req.scope,
-    req.queryConfig.fields
-  )
+  const productOption = await refetchEntity({
+    entity: "product_option",
+    idOrFilter: { id: optionId, product_id: productId },
+    scope: req.scope,
+    fields: req.queryConfig.fields,
+  })
 
   res.status(200).json({ product_option: productOption })
 }
 
 export const POST = async (
   req: AuthenticatedMedusaRequest<
-    HttpTypes.AdminUpdateProductOption & AdditionalData
+    HttpTypes.AdminUpdateProductOption & AdditionalData,
+    HttpTypes.SelectParams
   >,
   res: MedusaResponse<HttpTypes.AdminProductResponse>
 ) => {
@@ -45,18 +46,18 @@ export const POST = async (
     },
   })
 
-  const product = await refetchEntity(
-    "product",
-    productId,
-    req.scope,
-    remapKeysForProduct(req.queryConfig.fields ?? [])
-  )
+  const product = await refetchEntity({
+    entity: "product",
+    idOrFilter: productId,
+    scope: req.scope,
+    fields: remapKeysForProduct(req.queryConfig.fields ?? []),
+  })
 
   res.status(200).json({ product: remapProductResponse(product) })
 }
 
 export const DELETE = async (
-  req: AuthenticatedMedusaRequest,
+  req: AuthenticatedMedusaRequest<{}, HttpTypes.SelectParams>,
   res: MedusaResponse<HttpTypes.AdminProductOptionDeleteResponse>
 ) => {
   const productId = req.params.id
@@ -67,12 +68,12 @@ export const DELETE = async (
     input: { ids: [optionId] /* product_id: productId */ },
   })
 
-  const product = await refetchEntity(
-    "product",
-    productId,
-    req.scope,
-    remapKeysForProduct(req.queryConfig.fields ?? [])
-  )
+  const product = await refetchEntity({
+    entity: "product",
+    idOrFilter: productId,
+    scope: req.scope,
+    fields: remapKeysForProduct(req.queryConfig.fields ?? []),
+  })
 
   res.status(200).json({
     id: optionId,

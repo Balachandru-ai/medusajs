@@ -2,6 +2,7 @@ import { LoaderOptions, Logger, ModulesSdkTypes } from "@medusajs/types"
 import { mikroOrmCreateConnection } from "../../dal"
 import { loadDatabaseConfig } from "../load-module-database-config"
 import { Migrations } from "../../migrations"
+import { MedusaError } from "../../common/errors"
 
 const TERMINAL_SIZE = process.stdout.columns
 
@@ -22,10 +23,11 @@ export function buildRevertMigrationScript({ moduleName, pathToMigrations }) {
   return async function ({
     options,
     logger,
+    migrationNames,
   }: Pick<
     LoaderOptions<ModulesSdkTypes.ModuleServiceInitializeOptions>,
     "options" | "logger"
-  > = {}) {
+  > & { migrationNames?: string[] }) {
     logger ??= console as unknown as Logger
 
     logger.info(new Array(TERMINAL_SIZE).join("-"))
@@ -47,7 +49,10 @@ export function buildRevertMigrationScript({ moduleName, pathToMigrations }) {
     })
 
     try {
-      const result = await migrations.revert()
+      const revertOptions = migrationNames?.length
+        ? { step: migrationNames.length }
+        : undefined
+      const result = await migrations.revert(revertOptions as any)
       if (result.length) {
         logger.info("Reverted successfully")
       } else {
@@ -55,6 +60,11 @@ export function buildRevertMigrationScript({ moduleName, pathToMigrations }) {
       }
     } catch (error) {
       logger.error(`Failed with error ${error.message}`, error)
+      throw new MedusaError(
+        MedusaError.Types.DB_ERROR,
+        error.message,
+        error.code
+      )
     }
   }
 }

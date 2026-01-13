@@ -23,6 +23,11 @@ export interface AdjustmentLineDTO {
   amount: BigNumberValue
 
   /**
+   * Whether the adjustment is tax inclusive.
+   */
+  is_tax_inclusive?: boolean
+
+  /**
    * The raw amount to adjust the original amount with.
    */
   raw_amount: BigNumberRawValue
@@ -763,6 +768,11 @@ export interface CartDTO {
    * The currency of the cart
    */
   currency_code: string
+
+  /**
+   * The locale code of the cart.
+   */
+  locale?: string
 
   /**
    * The associated shipping address.

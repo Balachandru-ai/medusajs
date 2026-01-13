@@ -59,7 +59,7 @@
  *     label: cURL
  *     source: |-
  *       curl -X DELETE '{backend_url}/admin/products/{id}/options/{option_id}' \
- *       -H 'Authorization: Bearer {access_token}'
+ *       -H 'Authorization: Bearer {jwt_token}'
  * tags:
  *   - Products
  * responses:
@@ -86,9 +86,9 @@
  *   - name: product-option.deleted
  *     payload: |-
  *       ```ts
- *       [{
+ *       {
  *         id, // The ID of the product option
- *       }]
+ *       }
  *       ```
  *     description: Emitted when product options are deleted.
  *     deprecated: false

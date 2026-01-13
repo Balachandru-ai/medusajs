@@ -8,24 +8,26 @@ import {
   MedusaResponse,
   refetchEntity,
 } from "@medusajs/framework/http"
-import { AdminUpdatePaymentRefundReasonType } from "../validators"
 
 export const GET = async (
-  req: AuthenticatedMedusaRequest,
+  req: AuthenticatedMedusaRequest<HttpTypes.AdminRefundReasonParams>,
   res: MedusaResponse<RefundReasonResponse>
 ) => {
-  const refund_reason = await refetchEntity(
-    "refund_reason",
-    req.params.id,
-    req.scope,
-    req.queryConfig.fields
-  )
+  const refund_reason = await refetchEntity({
+    entity: "refund_reason",
+    idOrFilter: req.params.id,
+    scope: req.scope,
+    fields: req.queryConfig.fields,
+  })
 
   res.json({ refund_reason })
 }
 
 export const POST = async (
-  req: AuthenticatedMedusaRequest<AdminUpdatePaymentRefundReasonType>,
+  req: AuthenticatedMedusaRequest<
+    HttpTypes.AdminUpdateRefundReason,
+    HttpTypes.AdminRefundReasonParams
+  >,
   res: MedusaResponse<RefundReasonResponse>
 ) => {
   const { id } = req.params
@@ -39,12 +41,12 @@ export const POST = async (
     ],
   })
 
-  const refund_reason = await refetchEntity(
-    "refund_reason",
-    req.params.id,
-    req.scope,
-    req.queryConfig.fields
-  )
+  const refund_reason = await refetchEntity({
+    entity: "refund_reason",
+    idOrFilter: req.params.id,
+    scope: req.scope,
+    fields: req.queryConfig.fields,
+  })
 
   res.json({ refund_reason })
 }

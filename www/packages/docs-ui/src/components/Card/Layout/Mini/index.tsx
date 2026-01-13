@@ -2,13 +2,11 @@
 
 import React from "react"
 import clsx from "clsx"
-import { CardProps } from "../.."
-import {
-  BorderedIcon,
-  Button,
-  ThemeImage,
-  useIsExternalLink,
-} from "../../../.."
+import { CardProps } from "@/components/Card"
+import { BorderedIcon } from "@/components/BorderedIcon"
+import { Button } from "@/components/Button"
+import { ThemeImage } from "@/components/ThemeImage"
+import { useIsExternalLink } from "@/hooks/use-is-external-link"
 import Link from "next/link"
 import Image from "next/image"
 import { ArrowUpRightOnBox, TriangleRightMini, XMark } from "@medusajs/icons"
@@ -25,6 +23,9 @@ export const CardLayoutMini = ({
   onClose,
   className,
   imageDimensions = { width: 45, height: 36 },
+  iconClassName,
+  cardRef,
+  onClick,
 }: CardProps) => {
   const isExternal = useIsExternalLink({ href })
 
@@ -39,6 +40,7 @@ export const CardLayoutMini = ({
         "w-fit transition-[shadow,background]",
         className
       )}
+      ref={cardRef}
     >
       <div
         className={clsx(
@@ -57,7 +59,8 @@ export const CardLayoutMini = ({
             src={image}
             className={clsx(
               "shadow-elevation-card-rest dark:shadow-elevation-card-rest-dark",
-              "rounded-docs_xs"
+              "rounded-docs_xs",
+              iconClassName
             )}
             width={imageDimensions.width}
             height={imageDimensions.height}
@@ -73,7 +76,8 @@ export const CardLayoutMini = ({
             {...themeImage}
             className={clsx(
               "shadow-elevation-card-rest dark:shadow-elevation-card-rest-dark",
-              "rounded-docs_xs"
+              "rounded-docs_xs",
+              iconClassName
             )}
             width={imageDimensions.width}
             height={imageDimensions.height}
@@ -86,19 +90,29 @@ export const CardLayoutMini = ({
         )}
         <div className="flex flex-col">
           {title && (
-            <span className="text-x-small-plus text-medusa-fg-base">
+            <span
+              className="text-x-small-plus text-medusa-fg-base"
+              data-testid="title"
+            >
               {title}
             </span>
           )}
           {text && (
-            <span className="text-x-small-plus text-medusa-fg-subtle">
+            <span
+              className="text-x-small-plus text-medusa-fg-subtle"
+              data-testid="text"
+            >
               {text}
             </span>
           )}
         </div>
         {!closeable && (
           <span className="text-medusa-fg-subtle">
-            {isExternal ? <ArrowUpRightOnBox /> : <TriangleRightMini />}
+            {isExternal ? (
+              <ArrowUpRightOnBox data-testid="external-icon" />
+            ) : (
+              <TriangleRightMini data-testid="internal-icon" />
+            )}
           </span>
         )}
         {href && (
@@ -107,15 +121,20 @@ export const CardLayoutMini = ({
             className="absolute left-0 top-0 w-full h-full z-[1]"
             prefetch={false}
             {...hrefProps}
+            rel={isExternal ? "noopener noreferrer" : undefined}
+            target={isExternal ? "_blank" : undefined}
+            aria-label={title}
+            onClick={onClick}
           />
         )}
         {closeable && (
           <Button
             variant="transparent-clear"
             onClick={onClose}
-            className="!p-[2.5px] z-[2] hover:!bg-transparent focus:!shadow-none focus:!bg-transparent"
+            className="!p-[2.5px] z-[2] hover:!bg-medusa-button-transparent-hover focus:!shadow-none focus:!bg-transparent"
+            data-testid="close-button"
           >
-            <XMark />
+            <XMark data-testid="close-icon" />
           </Button>
         )}
       </div>

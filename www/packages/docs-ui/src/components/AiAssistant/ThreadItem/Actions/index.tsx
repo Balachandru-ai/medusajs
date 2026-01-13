@@ -1,70 +1,116 @@
 import React, { useState } from "react"
 import clsx from "clsx"
-import { Badge, Button, Link, type ButtonProps } from "@/components"
-import { ThumbDown, ThumbUp } from "@medusajs/icons"
-import { AiAssistantFeedbackType, useAiAssistant } from "@/providers"
-import { AiAssistantThread } from "../../../../providers/AiAssistant/Chat"
+import { Badge } from "@/components/Badge"
+import { Button, type ButtonProps } from "@/components/Button"
+import { Link } from "@/components/Link"
+import {
+  ThumbDown,
+  ThumbUp,
+  Link as LinkIcon,
+  CheckCircle,
+  SquareTwoStack,
+} from "@medusajs/icons"
+import { useSiteConfig } from "../../../../providers/SiteConfig"
+import { AiAssistantThreadItem as AiAssistantThreadItemType } from "../../../../providers/AiAssistant"
+import { Reaction, useChat } from "@kapaai/react-sdk"
+import { useCopy } from "../../../../hooks/use-copy"
 
 export type AiAssistantThreadItemActionsProps = {
-  item: AiAssistantThread
+  item: AiAssistantThreadItemType
 }
 
 export const AiAssistantThreadItemActions = ({
   item,
 }: AiAssistantThreadItemActionsProps) => {
-  const [feedback, setFeedback] = useState<AiAssistantFeedbackType | null>(null)
-  const { sendFeedback } = useAiAssistant()
+  const [feedback, setFeedback] = useState<Reaction | null>(null)
+  const { addFeedback } = useChat()
+  const {
+    config: { baseUrl },
+  } = useSiteConfig()
+  const { handleCopy: handleLinkCopy, isCopied: isLinkCopied } = useCopy(
+    `${baseUrl}?query=${encodeURI(item.content)}`
+  )
+  const { handleCopy: handleAnswerCopy, isCopied: isAnswerCopied } = useCopy(
+    item.content
+  )
 
   const handleFeedback = async (
-    reaction: AiAssistantFeedbackType,
-    question_id?: string
+    reaction: Reaction,
+    question_id?: string | null
   ) => {
     try {
       if (!question_id || feedback) {
         return
       }
       setFeedback(reaction)
-      const response = await sendFeedback(question_id, reaction)
-
-      if (response.status !== 200) {
-        console.error("Error sending feedback:", response.status)
-      }
+      addFeedback(question_id, reaction)
     } catch (error) {
       console.error("Error sending feedback:", error)
     }
   }
 
   return (
-    <div className={clsx("flex gap-docs_0.75 justify-between items-center")}>
-      {item.sources !== undefined && item.sources.length > 0 && (
-        <div className="flex gap-[6px] items-center flex-wrap">
-          {item.sources.map((source) => (
-            <Badge key={source.source_url} variant="neutral">
-              <Link href={source.source_url} className="!text-inherit">
-                {source.title}
-              </Link>
-            </Badge>
-          ))}
+    <div
+      className={clsx(
+        "flex gap-docs_0.75 items-center",
+        item.type === "question" && "justify-end",
+        item.type === "answer" && "justify-between"
+      )}
+    >
+      {item.type === "question" && (
+        <div className="flex gap-docs_0.25 items-center text-medusa-fg-muted">
+          <ActionButton onClick={handleLinkCopy} data-testid="link-copy-button">
+            {isLinkCopied ? <CheckCircle /> : <LinkIcon />}
+          </ActionButton>
         </div>
       )}
-      <div className="flex gap-docs_0.25 items-center text-medusa-fg-muted">
-        {(feedback === null || feedback === "upvote") && (
-          <ActionButton
-            onClick={async () => handleFeedback("upvote", item.question_id)}
-            className={clsx(feedback === "upvote" && "!text-medusa-fg-muted")}
-          >
-            <ThumbUp />
-          </ActionButton>
-        )}
-        {(feedback === null || feedback === "downvote") && (
-          <ActionButton
-            onClick={async () => handleFeedback("downvote", item.question_id)}
-            className={clsx(feedback === "downvote" && "!text-medusa-fg-muted")}
-          >
-            <ThumbDown />
-          </ActionButton>
-        )}
-      </div>
+      {item.type === "answer" && (
+        <>
+          {item.sources !== undefined && item.sources.length > 0 && (
+            <div className="flex gap-[6px] items-center flex-wrap">
+              {item.sources.map((source) => (
+                <Badge key={source.source_url} variant="neutral">
+                  <Link href={source.source_url} className="!text-inherit">
+                    {source.title}
+                  </Link>
+                </Badge>
+              ))}
+            </div>
+          )}
+          <div className="flex gap-docs_0.25 items-center text-medusa-fg-muted">
+            <ActionButton
+              onClick={handleAnswerCopy}
+              data-testid="answer-copy-button"
+            >
+              {isAnswerCopied ? <CheckCircle /> : <SquareTwoStack />}
+            </ActionButton>
+            {(feedback === null || feedback === "upvote") && (
+              <ActionButton
+                onClick={async () => handleFeedback("upvote", item.question_id)}
+                data-testid="upvote-button"
+                className={clsx(
+                  feedback === "upvote" && "!text-medusa-fg-muted"
+                )}
+              >
+                <ThumbUp />
+              </ActionButton>
+            )}
+            {(feedback === null || feedback === "downvote") && (
+              <ActionButton
+                onClick={async () =>
+                  handleFeedback("downvote", item.question_id)
+                }
+                data-testid="downvote-button"
+                className={clsx(
+                  feedback === "downvote" && "!text-medusa-fg-muted"
+                )}
+              >
+                <ThumbDown />
+              </ActionButton>
+            )}
+          </div>
+        </>
+      )}
     </div>
   )
 }

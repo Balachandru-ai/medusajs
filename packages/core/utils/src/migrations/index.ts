@@ -1,14 +1,34 @@
-import { MikroORM, MikroORMOptions } from "@mikro-orm/core"
+import { MikroORM, MikroORMOptions } from "@medusajs/deps/mikro-orm/core"
 import {
   MigrateOptions,
   MigrationResult,
   UmzugMigration,
-} from "@mikro-orm/migrations"
-import { defineConfig, PostgreSqlDriver } from "@mikro-orm/postgresql"
+} from "@medusajs/deps/mikro-orm/migrations"
+import {
+  defineConfig,
+  PostgreSqlDriver,
+} from "@medusajs/deps/mikro-orm/postgresql"
 import { EventEmitter } from "events"
 import { access, mkdir, rename, writeFile } from "fs/promises"
 import { dirname, join } from "path"
 import { readDir } from "../common"
+import { CustomDBMigrator } from "../dal/mikro-orm/custom-db-migrator"
+
+// Define the replacement mappings
+const replacements = [
+  // MikroORM imports - replace mikro-orm/{subpath} with @medusajs/framework/mikro-orm/{subpath}
+  {
+    pattern: /from\s+['"]@?mikro-orm\/([^'"]+)['"]/g,
+    // eslint-disable-next-line quotes
+    replacement: 'from "@medusajs/framework/mikro-orm/$1"',
+  },
+  // PG imports - replace pg with @medusajs/framework/pg
+  {
+    pattern: /from\s+['"]pg['"]/g,
+    // eslint-disable-next-line quotes
+    replacement: 'from "@medusajs/framework/pg"',
+  },
+]
 
 /**
  * Events emitted by the migrations class
@@ -50,6 +70,7 @@ export class Migrations extends EventEmitter<MigrationsEvents> {
           ...this.#configOrConnection.migrations,
           silent: true,
         },
+        extensions: [CustomDBMigrator],
       })
     )
   }
@@ -65,7 +86,33 @@ export class Migrations extends EventEmitter<MigrationsEvents> {
     try {
       await this.migrateSnapshotFile(migrator["snapshotPath"])
       await this.ensureSnapshot(migrator["snapshotPath"])
-      return await migrator.createMigration()
+      const migrationResult = await migrator.createMigration()
+      const code = migrationResult.code
+      if (code) {
+        let modifiedContent = code
+        let wasModified = false
+
+        replacements.forEach(({ pattern, replacement }) => {
+          const newContent = modifiedContent.replace(pattern, replacement)
+          if (newContent !== modifiedContent) {
+            wasModified = true
+            modifiedContent = newContent
+          }
+        })
+
+        if (wasModified) {
+          await writeFile(
+            join(
+              connection.config.getDriver().config.get("migrations").path ?? "",
+              migrationResult.fileName
+            ),
+            modifiedContent,
+            "utf-8"
+          )
+        }
+        migrationResult.code = modifiedContent
+      }
+      return migrationResult
     } finally {
       await connection.close(true)
     }
@@ -163,7 +210,7 @@ export class Migrations extends EventEmitter<MigrationsEvents> {
     )
 
     if (snapshotFile) {
-      const absoluteName = join(snapshotFile.path, snapshotFile.name)
+      const absoluteName = join(snapshotFile.parentPath, snapshotFile.name)
       if (absoluteName !== snapshotPath) {
         await rename(absoluteName, snapshotPath)
       }

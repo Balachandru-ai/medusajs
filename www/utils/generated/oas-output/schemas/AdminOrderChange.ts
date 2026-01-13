@@ -16,7 +16,6 @@
  *   - created_at
  *   - updated_at
  *   - order_id
- *   - canceled_at
  *   - return_id
  *   - exchange_id
  *   - claim_id
@@ -28,6 +27,7 @@
  *   - declined_reason
  *   - declined_at
  *   - canceled_by
+ *   - canceled_at
  * properties:
  *   id:
  *     type: string
@@ -112,6 +112,9 @@
  *   metadata:
  *     type: object
  *     description: The order change's metadata, can hold custom key-value pairs.
+ *     externalDocs:
+ *       url: https://docs.medusajs.com/api/admin#manage-metadata
+ *       description: Learn how to manage metadata
  *   declined_at:
  *     type: string
  *     title: declined_at
@@ -136,6 +139,10 @@
  *     format: date-time
  *     title: updated_at
  *     description: The date the order change was updated.
+ *   carry_over_promotions:
+ *     type: boolean
+ *     title: carry_over_promotions
+ *     description: Whether promotions from the original order should be carried over to the order change (specifically, exchanges).
  * 
 */
 

@@ -1,4 +1,4 @@
-import { OrderChangeStatus, PromotionActions } from "@medusajs/framework/utils"
+import { OrderChangeStatus } from "@medusajs/framework/utils"
 import {
   createWorkflow,
   parallelize,
@@ -13,7 +13,7 @@ import {
   OrderDTO,
   OrderPreviewDTO,
   OrderWorkflow,
-} from "@medusajs/types"
+} from "@medusajs/framework/types"
 import { useRemoteQueryStep } from "../../common"
 import {
   deleteOrderChangeActionsStep,
@@ -24,7 +24,8 @@ import { getDraftOrderPromotionContextStep } from "../steps/get-draft-order-prom
 import { validateDraftOrderChangeStep } from "../steps/validate-draft-order-change"
 import { validateDraftOrderShippingMethodActionStep } from "../steps/validate-draft-order-shipping-method-action"
 import { draftOrderFieldsForRefreshSteps } from "../utils/fields"
-import { refreshDraftOrderAdjustmentsWorkflow } from "./refresh-draft-order-adjustments"
+import { acquireLockStep, releaseLockStep } from "../../locking"
+import { computeDraftOrderAdjustmentsWorkflow } from "./compute-draft-order-adjustments"
 
 export const removeDraftOrderActionShippingMethodWorkflowId =
   "remove-draft-order-action-shipping-method"
@@ -32,10 +33,10 @@ export const removeDraftOrderActionShippingMethodWorkflowId =
 /**
  * This workflow removes a shipping method that was added to an edited draft order. It's used by the
  * [Remove Shipping Method from Draft Order Edit Admin API Route](https://docs.medusajs.com/api/admin#draft-orders_deletedraftordersideditshippingmethodsaction_id).
- * 
+ *
  * You can use this workflow within your customizations or your own custom workflows, allowing you to wrap custom logic around
  * removing a shipping method from an edited draft order.
- * 
+ *
  * @example
  * const { result } = await removeDraftOrderActionShippingMethodWorkflow(container)
  * .run({
@@ -44,9 +45,9 @@ export const removeDraftOrderActionShippingMethodWorkflowId =
  *     action_id: "action_123",
  *   }
  * })
- * 
+ *
  * @summary
- * 
+ *
  * Remove a shipping method from an edited draft order.
  */
 export const removeDraftOrderActionShippingMethodWorkflow = createWorkflow(
@@ -54,6 +55,12 @@ export const removeDraftOrderActionShippingMethodWorkflow = createWorkflow(
   function (
     input: WorkflowData<OrderWorkflow.DeleteOrderEditShippingMethodWorkflowInput>
   ): WorkflowResponse<OrderPreviewDTO> {
+    acquireLockStep({
+      key: input.order_id,
+      timeout: 2,
+      ttl: 10,
+    })
+
     const order: OrderDTO = useRemoteQueryStep({
       entry_point: "orders",
       fields: draftOrderFieldsForRefreshSteps,
@@ -100,31 +107,25 @@ export const removeDraftOrderActionShippingMethodWorkflow = createWorkflow(
       order,
     })
 
-    const appliedPromoCodes = transform(context, (context) => {
-      const promotionLink = (context as any).promotion_link
-
-      if (!promotionLink) {
-        return []
-      }
-
-      if (Array.isArray(promotionLink)) {
-        return promotionLink.map((promo) => promo.promotion.code)
-      }
-
-      return [promotionLink.promotion.code]
-    })
+    const appliedPromoCodes: string[] = transform(
+      context,
+      (context) =>
+        (context as any).promotions?.map((promotion) => promotion.code) ?? []
+    )
 
     when(
       appliedPromoCodes,
       (appliedPromoCodes) => appliedPromoCodes.length > 0
     ).then(() => {
-      refreshDraftOrderAdjustmentsWorkflow.runAsStep({
+      computeDraftOrderAdjustmentsWorkflow.runAsStep({
         input: {
-          order,
-          promo_codes: appliedPromoCodes,
-          action: PromotionActions.REPLACE,
+          order_id: input.order_id,
         },
       })
+    })
+
+    releaseLockStep({
+      key: input.order_id,
     })
 
     return new WorkflowResponse(previewOrderChangeStep(input.order_id))

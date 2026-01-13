@@ -1,3 +1,4 @@
+import type { ProjectConfigOptions } from "@medusajs/framework/types"
 import {
   AuthWorkflowEvents,
   generateJwtToken,
@@ -45,7 +46,9 @@ export const generateResetPasswordTokenWorkflow = createWorkflow(
     entityId: string
     actorType: string
     provider: string
-    secret: string
+    secret: ProjectConfigOptions["http"]["jwtSecret"]
+    jwtOptions?: ProjectConfigOptions["http"]["jwtOptions"]
+    metadata?: Record<string, unknown>
   }) => {
     const providerIdentities = useRemoteQueryStep({
       entry_point: "provider_identity",
@@ -79,6 +82,7 @@ export const generateResetPasswordTokenWorkflow = createWorkflow(
           {
             secret: input.secret,
             expiresIn: "15m",
+            jwtOptions: input.jwtOptions,
           }
         )
 
@@ -92,6 +96,7 @@ export const generateResetPasswordTokenWorkflow = createWorkflow(
         entity_id: input.entityId,
         actor_type: input.actorType,
         token,
+        metadata: input.metadata ?? {},
       },
     })
 

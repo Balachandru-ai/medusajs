@@ -4,7 +4,7 @@ import React, { useState } from "react"
 import { Menu, MenuProps } from ".."
 import clsx from "clsx"
 import { MenuItemSubMenu } from "types"
-import { ChevronRight } from "@medusajs/icons"
+import { TriangleRightMini } from "@medusajs/icons"
 import Link from "next/link"
 
 type MenuSubMenuProps = Pick<MenuProps, "itemsOnClick"> & {
@@ -21,6 +21,7 @@ export const MenuSubMenu = ({ item, itemsOnClick }: MenuSubMenuProps) => {
       className="px-docs_0.25 relative"
       onMouseOver={() => setOpen(true)}
       onMouseLeave={() => setOpen(false)}
+      data-testid="sub-menu-wrapper"
     >
       <Component
         className={clsx(
@@ -34,7 +35,7 @@ export const MenuSubMenu = ({ item, itemsOnClick }: MenuSubMenuProps) => {
       >
         <span className="text-compact-small">{item.title}</span>
         <span className="text-medusa-fg-subtle mt-[2.5px] block">
-          <ChevronRight />
+          <TriangleRightMini />
         </span>
       </Component>
       {open && (

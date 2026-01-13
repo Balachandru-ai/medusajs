@@ -4,6 +4,10 @@ post:
   x-sidebar-summary: Add Promotions
   description: Add a list of promotions to a cart.
   x-authenticated: false
+  externalDocs:
+    url: >-
+      https://docs.medusajs.com/resources/storefront-development/cart/manage-promotions#add-promotion-to-cart
+    description: 'Storefront guide: How to add a promotion to cart.'
   parameters:
     - name: id
       in: path
@@ -19,6 +23,17 @@ post:
         type: string
         externalDocs:
           url: https://docs.medusajs.com/api/store#publishable-api-key
+    - name: x-medusa-locale
+      in: header
+      description: The locale in BCP 47 format to retrieve localized content.
+      required: false
+      schema:
+        type: string
+        example: en-US
+        externalDocs:
+          url: >-
+            https://docs.medusajs.com/resources/commerce-modules/translation/storefront
+          description: Learn more in the Serve Translations in Storefront guide.
     - name: fields
       in: query
       description: >-
@@ -37,6 +52,17 @@ post:
           prefix it will replace the entire default fields.
         externalDocs:
           url: '#select-fields-and-relations'
+    - name: locale
+      in: query
+      description: The locale in BCP 47 format to retrieve localized content.
+      required: false
+      schema:
+        type: string
+        example: en-US
+        externalDocs:
+          url: >-
+            https://docs.medusajs.com/resources/commerce-modules/translation/storefront
+          description: Learn more in the Serve Translations in Storefront guide.
   requestBody:
     content:
       application/json:
@@ -75,6 +101,10 @@ delete:
   summary: Remove Promotions from Cart
   description: Remove a list of promotions from a cart.
   x-authenticated: false
+  externalDocs:
+    url: >-
+      https://docs.medusajs.com/resources/storefront-development/cart/manage-promotions#remove-promotion-from-cart
+    description: 'Storefront guide: How to remove a promotion from cart.'
   parameters:
     - name: id
       in: path
@@ -90,6 +120,17 @@ delete:
         type: string
         externalDocs:
           url: https://docs.medusajs.com/api/store#publishable-api-key
+    - name: x-medusa-locale
+      in: header
+      description: The locale in BCP 47 format to retrieve localized content.
+      required: false
+      schema:
+        type: string
+        example: en-US
+        externalDocs:
+          url: >-
+            https://docs.medusajs.com/resources/commerce-modules/translation/storefront
+          description: Learn more in the Serve Translations in Storefront guide.
     - name: fields
       in: query
       description: >-
@@ -108,6 +149,17 @@ delete:
           prefix it will replace the entire default fields.
         externalDocs:
           url: '#select-fields-and-relations'
+    - name: locale
+      in: query
+      description: The locale in BCP 47 format to retrieve localized content.
+      required: false
+      schema:
+        type: string
+        example: en-US
+        externalDocs:
+          url: >-
+            https://docs.medusajs.com/resources/commerce-modules/translation/storefront
+          description: Learn more in the Serve Translations in Storefront guide.
   x-codeSamples:
     - lang: Shell
       label: cURL

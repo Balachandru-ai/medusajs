@@ -1,17 +1,13 @@
 "use client"
 
 import React, { Children, useCallback, useEffect, useMemo, useRef } from "react"
-import {
-  Badge,
-  BaseTabType,
-  CodeBlockProps,
-  CodeBlockStyle,
-  useColorMode,
-  useTabs,
-} from "../.."
+import { Badge } from "@/components/Badge"
+import { CodeBlockProps, CodeBlockStyle } from "@/components/CodeBlock"
+import { useColorMode } from "@/providers/ColorMode"
 import clsx from "clsx"
 import { CodeBlockActions, CodeBlockActionsProps } from "../CodeBlock/Actions"
 import { CodeBlockHeaderWrapper } from "../CodeBlock/Header/Wrapper"
+import { BaseTabType, useTabs } from "../../hooks/use-tabs"
 
 type CodeTab = BaseTabType & {
   codeProps: CodeBlockProps
@@ -66,17 +62,28 @@ export const CodeTabs = ({
       return codeBlock.props as CodeBlockProps
     }
 
-    if (
-      "children" in codeBlock.props &&
-      typeof codeBlock.props.children === "object" &&
-      codeBlock.props.children
-    ) {
-      return getCodeBlockProps(
-        codeBlock.props.children as React.ReactElement<
-          unknown,
-          string | React.JSXElementConstructor<any>
-        >
-      )
+    if ("children" in codeBlock.props) {
+      if (
+        typeof codeBlock.props.children === "object" &&
+        codeBlock.props.children
+      ) {
+        return getCodeBlockProps(
+          codeBlock.props.children as React.ReactElement<
+            unknown,
+            string | React.JSXElementConstructor<any>
+          >
+        )
+      } else if (typeof codeBlock.props.children === "string") {
+        const lang = "lang" in codeBlock.props ? codeBlock.props.lang : "ts"
+        return {
+          ...codeBlock.props,
+          source: codeBlock.props.children,
+          className:
+            "className" in codeBlock.props
+              ? codeBlock.props.className
+              : `language-${lang}`,
+        } as CodeBlockProps
+      }
     }
 
     return undefined
@@ -90,7 +97,6 @@ export const CodeTabs = ({
       }
       const typedChildProps = child.props as CodeTab
       if (
-        !React.isValidElement(child) ||
         !typedChildProps.label ||
         !typedChildProps.value ||
         !React.isValidElement(typedChildProps.children)
@@ -109,11 +115,14 @@ export const CodeTabs = ({
       let codeBlockProps = codeBlock.props as CodeBlockProps
       const showBadge = !codeBlockProps.title
       const originalBadgeLabel = codeBlockProps.badgeLabel
+      const parsedCodeBlockProps = getCodeBlockProps(codeBlock) || {
+        source: "",
+      }
 
       const commonProps = {
         badgeLabel: showBadge ? undefined : originalBadgeLabel,
         hasTabs: true,
-        className: clsx("!my-0", codeBlockProps.className),
+        className: clsx("!my-0", parsedCodeBlockProps.className),
       }
 
       if (
@@ -128,9 +137,7 @@ export const CodeTabs = ({
       }
 
       const modifiedProps: CodeBlockProps = {
-        ...(getCodeBlockProps(codeBlock) || {
-          source: "",
-        }),
+        ...parsedCodeBlockProps,
         ...commonProps,
       }
 
@@ -164,7 +171,7 @@ export const CodeTabs = ({
     group,
   })
 
-  const tabRefs: (HTMLButtonElement | null)[] = useMemo(() => [], [])
+  const tabRefs = useRef<(HTMLButtonElement | null)[]>([])
   const codeTabSelectorRef = useRef<HTMLSpanElement | null>(null)
   const codeTabsWrapperRef = useRef<HTMLDivElement | null>(null)
 
@@ -210,8 +217,8 @@ export const CodeTabs = ({
   )
 
   useEffect(() => {
-    if (codeTabSelectorRef?.current && tabRefs.length) {
-      const selectedTabElm = tabRefs.find(
+    if (codeTabSelectorRef?.current && tabRefs.current.length) {
+      const selectedTabElm = tabRefs.current.find(
         (tab) => tab?.getAttribute("aria-selected") === "true"
       )
       if (selectedTabElm) {
@@ -239,6 +246,9 @@ export const CodeTabs = ({
     }
   }, [selectedTab])
 
+  // Reset tabRefs array before each render
+  tabRefs.current = []
+
   return (
     <div
       className={clsx(
@@ -248,6 +258,7 @@ export const CodeTabs = ({
         boxShadow,
         className
       )}
+      data-testid="code-tabs"
     >
       <CodeBlockHeaderWrapper blockStyle={blockStyle} ref={codeTabsWrapperRef}>
         <span
@@ -288,7 +299,7 @@ export const CodeTabs = ({
                   {...(typeof child.props === "object" ? child.props : {})}
                   changeSelectedTab={changeSelectedTab}
                   pushRef={(tabButton: HTMLButtonElement | null) =>
-                    tabRefs.push(tabButton)
+                    tabRefs.current.push(tabButton)
                   }
                   blockStyle={blockStyle}
                   isSelected={

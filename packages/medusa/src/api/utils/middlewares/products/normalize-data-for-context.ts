@@ -5,26 +5,45 @@ import {
   refetchEntities,
   refetchEntity,
 } from "@medusajs/framework/http"
+import { DEFAULT_PRICE_FIELD_PATHS } from "./constants"
 
-export function normalizeDataForContext() {
+type PricingContextOptions = {
+  priceFieldPaths?: string[]
+}
+
+export function normalizeDataForContext(options: PricingContextOptions = {}) {
+  const { priceFieldPaths = DEFAULT_PRICE_FIELD_PATHS } = options
+
   return async (req: AuthenticatedMedusaRequest, _, next: NextFunction) => {
     // If the product pricing is not requested, we don't need region information
-    const calculatedPriceIndex = req.queryConfig.fields.findIndex((field) =>
-      field.startsWith("variants.calculated_price")
-    )
-
     let withCalculatedPrice = false
-    if (calculatedPriceIndex !== -1) {
-      req.queryConfig.fields[calculatedPriceIndex] =
-        "variants.calculated_price.*"
-      withCalculatedPrice = true
-    }
+
+    req.queryConfig.fields = req.queryConfig.fields.map((field) => {
+      for (const pricePath of priceFieldPaths) {
+        if (field === pricePath) {
+          withCalculatedPrice = true
+          return `${pricePath}.*`
+        }
+
+        if (field.startsWith(`${pricePath}.`)) {
+          withCalculatedPrice = true
+          return field
+        }
+      }
+
+      return field
+    })
 
     // If the region is passed, we calculate the prices without requesting them.
     // TODO: This seems a bit messy, reconsider if we want to keep this logic.
     if (!withCalculatedPrice && req.filterableFields.region_id) {
-      req.queryConfig.fields.push("variants.calculated_price.*")
-      withCalculatedPrice = true
+      for (const pricePath of priceFieldPaths) {
+        const wildcardField = `${pricePath}.*`
+        if (!req.queryConfig.fields.includes(wildcardField)) {
+          req.queryConfig.fields.push(wildcardField)
+        }
+      }
+      withCalculatedPrice = priceFieldPaths.length > 0
     }
 
     if (!withCalculatedPrice) {
@@ -39,12 +58,12 @@ export function normalizeDataForContext() {
 
     // If the cart is passed, get the information from it
     if (req.filterableFields.cart_id) {
-      const cart = await refetchEntity(
-        "cart",
-        req.filterableFields.cart_id,
-        req.scope,
-        ["region_id", "shipping_address.*"]
-      )
+      const cart = await refetchEntity({
+        entity: "cart",
+        idOrFilter: req.filterableFields.cart_id,
+        scope: req.scope,
+        fields: ["region_id", "shipping_address.*"],
+      })
 
       if (cart?.region_id) {
         regionId = cart.region_id
@@ -58,9 +77,16 @@ export function normalizeDataForContext() {
 
     // Finally, try to get it from the store defaults if not available
     if (!regionId) {
-      const stores = await refetchEntities("store", {}, req.scope, [
-        "default_region_id",
-      ])
+      const { data: stores } = await refetchEntities({
+        entity: "store",
+        scope: req.scope,
+        fields: ["id", "default_region_id"],
+        options: {
+          cache: {
+            enable: true,
+          },
+        },
+      })
       regionId = stores[0]?.default_region_id
     }
 

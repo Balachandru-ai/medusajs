@@ -41,7 +41,7 @@
  *   content:
  *     application/json:
  *       schema:
- *         $ref: "#/components/schemas/AdminPostReturnsShippingActionReqSchema"
+ *         $ref: "#/components/schemas/AdminUpdateReturnShipping"
  * x-codeSamples:
  *   - lang: JavaScript
  *     label: JS SDK
@@ -66,7 +66,7 @@
  *     label: cURL
  *     source: |-
  *       curl -X POST '{backend_url}/admin/returns/{id}/shipping-method/{action_id}' \
- *       -H 'Authorization: Bearer {access_token}'
+ *       -H 'Authorization: Bearer {jwt_token}'
  * tags:
  *   - Returns
  * responses:

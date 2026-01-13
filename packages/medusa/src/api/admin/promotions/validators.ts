@@ -6,7 +6,7 @@ import {
   PromotionStatus,
   PromotionType,
 } from "@medusajs/framework/utils"
-import { z } from "zod"
+import { z } from "@medusajs/framework/zod"
 import { applyAndAndOrOperators } from "../../utils/common-validators"
 import {
   createFindParams,
@@ -24,6 +24,9 @@ export const AdminGetPromotionParams = createSelectParams()
 export const AdminGetPromotionsParamsFields = z.object({
   q: z.string().optional(),
   code: z
+    .union([z.string(), z.array(z.string()), createOperatorMap()])
+    .optional(),
+  id: z
     .union([z.string(), z.array(z.string()), createOperatorMap()])
     .optional(),
   campaign_id: z.union([z.string(), z.array(z.string())]).optional(),
@@ -54,6 +57,7 @@ export type AdminGetPromotionRuleParamsType = z.infer<
 export const AdminGetPromotionRuleParams = z.object({
   promotion_type: z.string().optional(),
   application_method_type: z.string().optional(),
+  application_method_target_type: z.string().optional(),
 })
 
 export type AdminGetPromotionRuleTypeParamsType = z.infer<
@@ -63,6 +67,7 @@ export const AdminGetPromotionRuleTypeParams = createSelectParams().merge(
   z.object({
     promotion_type: z.string().optional(),
     application_method_type: z.string().optional(),
+    application_method_target_type: z.string().optional(),
   })
 )
 
@@ -76,6 +81,7 @@ export const AdminGetPromotionsRuleValueParams = createFindParams({
   z.object({
     q: z.string().optional(),
     value: z.union([z.string(), z.array(z.string())]).optional(),
+    application_method_target_type: z.string().optional(),
   })
 )
 
@@ -163,21 +169,41 @@ export const CreatePromotion = z
     code: z.string(),
     is_automatic: z.boolean().optional(),
     type: z.nativeEnum(PromotionType),
+    is_tax_inclusive: z.boolean().optional(),
     status: z.nativeEnum(PromotionStatus).default(PromotionStatus.DRAFT),
     campaign_id: z.string().nullish(),
     campaign: CreateCampaign.optional(),
     application_method: AdminCreateApplicationMethod,
     rules: z.array(AdminCreatePromotionRule).optional(),
+    limit: z.number().int().min(1).nullable().optional(),
   })
   .strict()
 
 export const AdminCreatePromotion = WithAdditionalData(
   CreatePromotion,
   (schema) => {
-    return schema.refine(promoRefinement, {
-      message:
-        "Buyget promotions require at least one buy rule and quantities to be defined",
-    })
+    return schema
+      .refine(promoRefinement, {
+        message:
+          "Buyget promotions require at least one buy rule and quantities to be defined",
+      })
+      .refine(
+        (data) => {
+          // Automatic promotions cannot have a limit
+          if (
+            data.is_automatic &&
+            data.limit !== null &&
+            data.limit !== undefined
+          ) {
+            return false
+          }
+          return true
+        },
+        {
+          message: "Automatic promotions cannot have a usage limit",
+          path: ["limit"],
+        }
+      )
   }
 )
 
@@ -186,19 +212,39 @@ export const UpdatePromotion = z
   .object({
     code: z.string().optional(),
     is_automatic: z.boolean().optional(),
+    is_tax_inclusive: z.boolean().optional(),
     type: z.nativeEnum(PromotionType).optional(),
     status: z.nativeEnum(PromotionStatus).optional(),
     campaign_id: z.string().nullish(),
     application_method: AdminUpdateApplicationMethod.optional(),
+    limit: z.number().int().min(1).nullable().optional(),
   })
   .strict()
 
 export const AdminUpdatePromotion = WithAdditionalData(
   UpdatePromotion,
   (schema) => {
-    return schema.refine(promoRefinement, {
-      message:
-        "Buyget promotions require at least one buy rule and quantities to be defined",
-    })
+    return schema
+      .refine(promoRefinement, {
+        message:
+          "Buyget promotions require at least one buy rule and quantities to be defined",
+      })
+      .refine(
+        (data) => {
+          // Automatic promotions cannot have a limit
+          if (
+            data.is_automatic &&
+            data.limit !== null &&
+            data.limit !== undefined
+          ) {
+            return false
+          }
+          return true
+        },
+        {
+          message: "Automatic promotions cannot have a usage limit",
+          path: ["limit"],
+        }
+      )
   }
 )

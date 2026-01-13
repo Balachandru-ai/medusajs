@@ -63,7 +63,7 @@ In this guide, you'll learn how to:
 - Install and set up Medusa.
 - Create a custom express checkout storefront with Next.js.
 
-![Screenshot of the express checkout storefront](https://res.cloudinary.com/dza7lstvk/image/upload/v1739344861/Medusa%20Resources/Screenshot_2025-02-12_at_9.20.09_AM_ufqdi3.png)
+![Express checkout storefront interface showing a single-page checkout flow with product selection](https://res.cloudinary.com/dza7lstvk/image/upload/v1739344861/Medusa%20Resources/Screenshot_2025-02-12_at_9.20.09_AM_ufqdi3.png)
 
 You can follow this guide whether you're new to Medusa or an advanced Medusa developer.
 
@@ -212,7 +212,7 @@ Aside from the SDK, you also install the `@medusajs/types` package, which provid
 
 Next, to use the SDK, you'll export a configured instance and re-use it across your application. So, create the file `lib/sdk.ts` with the following content:
 
-![Directory structure after creating SDK file](https://res.cloudinary.com/dza7lstvk/image/upload/v1735815487/Medusa%20Resources/express-checkout-1_vrudhk.jpg)
+![Project directory structure showing the newly created 'lib' folder containing the 'sdk.ts' file, which exports a configured Medusa SDK instance for connecting to the backend API](https://res.cloudinary.com/dza7lstvk/image/upload/v1735815487/Medusa%20Resources/express-checkout-1_vrudhk.jpg)
 
 export const sdkHighlights = [
   ["6", "NEXT_PUBLIC_MEDUSA_BACKEND_URL", "Set the backend URL from an environment variable."],
@@ -240,7 +240,7 @@ This file exports a configured instance of the Medusa SDK that you can use to se
 - `NEXT_PUBLIC_MEDUSA_BACKEND_URL`: The URL of the Medusa application server. By default, it's set to `http://localhost:9000`.
 - `NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY`: The publishable API key of the Medusa application. You can find this key in the Medusa Admin dashboard under Settings -> Publishable API Keys.
 
-![Find the publishable API key by going to Settings -> Publishable API Key, then clicking the publishable API key to copy its token.](https://res.cloudinary.com/dza7lstvk/image/upload/v1735810830/Medusa%20Resources/Screenshot_2025-01-02_at_11.36.20_AM_gw7i7h.png)
+![Navigation path in Medusa Admin dashboard: Settings showing "Publishable API Key" option, with the publishable API key displayed and a copy button to retrieve the token for storefront configuration](https://res.cloudinary.com/dza7lstvk/image/upload/v1735810830/Medusa%20Resources/Screenshot_2025-01-02_at_11.36.20_AM_gw7i7h.png)
 
 ---
 
@@ -257,7 +257,7 @@ To easily access and manage these resources, you'll wrap your storefront with tw
 
 To create the region provider, create the file `providers/region.tsx` with the following content:
 
-![Directory structure after creating region provider file](https://res.cloudinary.com/dza7lstvk/image/upload/v1735815539/Medusa%20Resources/express-checkout-2_htf5ke.jpg)
+![Project directory tree showing the newly created 'providers' folder containing the 'region.tsx' file, which implements React context for managing regional settings and currency selection across the storefront](https://res.cloudinary.com/dza7lstvk/image/upload/v1735815539/Medusa%20Resources/express-checkout-2_htf5ke.jpg)
 
 export const regionProviderHighlights1 = [
   ["9", "region", "The region selected by the customer."],
@@ -1350,7 +1350,7 @@ Then, replace the `TODO` in the `Product` component with the following:
 export const productHighlights4 = [
   ["1", "price", "The formatted price to show to the customer."],
   ["2", "selectedVariantPrice", "Determine the variant to show its price, which is either the selected variant or the variant with the smallest price."],
-  ["29", "formatPrice", "Return the formatted price using the utility you created."]
+  ["19", "formatPrice", "Return the formatted price using the utility you created."]
 ]
 
 ```tsx title="components/Product/index.tsx" highlights={productHighlights4}
@@ -1440,7 +1440,7 @@ const handleAddToCart = () => {
 
 You add a `handleAddToCart` function that first checks that a variant is selected, that it's in stock, and that the customer has set a quantity greater than `0`.
 
-If the conditions are satisifed, you set `loading` to `true`, then call the `addToCart` function from the cart context, passing the selected variant's ID and the quantity as arguments.
+If the conditions are satisfied, you set `loading` to `true`, then call the `addToCart` function from the cart context, passing the selected variant's ID and the quantity as arguments.
 
 After the product is added to the cart, you navigate to the address step, which you'll create later.
 
@@ -1542,7 +1542,7 @@ return (
             placeholder="Quantity"
             type="number"
             min="1"
-            max={selectedVariant?.inventory_quantity}
+              max={selectedVariant?.inventory_quantity || undefined}
             value={quantity}
             onChange={(e) => setQuantity(parseInt(e.target.value))}
           />
@@ -2049,7 +2049,7 @@ export const shippingHighlights3 = [
   ["7", "filter", "Retrieve shipping options with calculated prices only."],
   ["9", "fetch", "Retrieve the calculated price from the Medusa application."],
   ["24", "Promise.allSettled", "Wait for all calculated prices to be retrieved."],
-  ["13", "setCalculatedPrices", "Set the calculated prices in the state variable."],
+  ["33", "setCalculatedPrices", "Set the calculated prices in the state variable."],
 ]
 
 ```tsx title="components/Shipping/index.tsx" highlights={shippingHighlights3}

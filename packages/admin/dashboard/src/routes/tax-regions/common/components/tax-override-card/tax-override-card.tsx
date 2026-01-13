@@ -24,6 +24,8 @@ import { useProducts } from "../../../../../hooks/api/products"
 import { formatPercentage } from "../../../../../lib/percentage-helpers"
 import { TaxRateRuleReferenceType } from "../../constants"
 import { useDeleteTaxRateAction } from "../../hooks"
+import { useShippingOptions } from "../../../../../hooks/api"
+import { DISPLAY_OVERRIDE_ITEMS_LIMIT } from "../../../tax-region-tax-override-edit/components/tax-region-tax-override-edit-form"
 
 interface TaxOverrideCardProps extends ComponentPropsWithoutRef<"div"> {
   taxRate: HttpTypes.AdminTaxRate
@@ -37,18 +39,15 @@ export const TaxOverrideCard = ({ taxRate }: TaxOverrideCardProps) => {
     return null
   }
 
-  const groupedRules = taxRate.rules.reduce(
-    (acc, rule) => {
-      if (!acc[rule.reference]) {
-        acc[rule.reference] = []
-      }
+  const groupedRules = taxRate.rules.reduce((acc, rule) => {
+    if (!acc[rule.reference]) {
+      acc[rule.reference] = []
+    }
 
-      acc[rule.reference].push(rule.reference_id)
+    acc[rule.reference].push(rule.reference_id)
 
-      return acc
-    },
-    {} as Record<string, string[]>
-  )
+    return acc
+  }, {} as Record<string, string[]>)
 
   const validKeys = Object.values(TaxRateRuleReferenceType)
   const numberOfTargets = Object.keys(groupedRules).map((key) =>
@@ -201,6 +200,9 @@ const ReferenceBadge = ({
     case TaxRateRuleReferenceType.PRODUCT_TYPE:
       label = t("taxRegions.fields.targets.tags.productType")
       break
+    case TaxRateRuleReferenceType.SHIPPING_OPTION:
+      label = t("taxRegions.fields.targets.tags.shippingOption")
+      break
     // case TaxRateRuleReferenceType.CUSTOMER_GROUP:
     //   label = t("taxRegions.fields.targets.tags.customerGroup")
     //   break
@@ -275,8 +277,11 @@ const useReferenceValues = (
 } => {
   const products = useProducts(
     {
-      id: ids,
-      limit: 10,
+      id: ids.slice(0, DISPLAY_OVERRIDE_ITEMS_LIMIT),
+      limit: DISPLAY_OVERRIDE_ITEMS_LIMIT,
+      // TODO: Remove exclusion once we avoid including unnecessary relations by default in the query config
+      fields:
+        "-type,-collection,-options,-tags,-images,-variants,-sales_channels",
     },
     {
       enabled: !!ids.length && type === TaxRateRuleReferenceType.PRODUCT,
@@ -295,14 +300,24 @@ const useReferenceValues = (
 
   const productTypes = useProductTypes(
     {
-      id: ids,
-      limit: 10,
+      id: ids.slice(0, DISPLAY_OVERRIDE_ITEMS_LIMIT),
+      limit: DISPLAY_OVERRIDE_ITEMS_LIMIT,
     },
     {
       enabled: !!ids.length && type === TaxRateRuleReferenceType.PRODUCT_TYPE,
     }
   )
 
+  const shippingOptions = useShippingOptions(
+    {
+      id: ids.slice(0, DISPLAY_OVERRIDE_ITEMS_LIMIT),
+      limit: DISPLAY_OVERRIDE_ITEMS_LIMIT,
+    },
+    {
+      enabled:
+        !!ids.length && type === TaxRateRuleReferenceType.SHIPPING_OPTION,
+    }
+  )
   // const collections = useCollections(
   //   {
   //     id: ids,
@@ -323,16 +338,16 @@ const useReferenceValues = (
   //     enabled: !!ids.length && type === TaxRateRuleReferenceType.CUSTOMER_GROUP,
   //   }
   // )
-
+  const additionalCount =
+    ids.length > DISPLAY_OVERRIDE_ITEMS_LIMIT
+      ? ids.length - DISPLAY_OVERRIDE_ITEMS_LIMIT
+      : 0
   switch (type) {
     case TaxRateRuleReferenceType.PRODUCT:
       return {
         labels: products.products?.map((product) => product.title),
         isPending: products.isPending,
-        additional:
-          products.products && products.count
-            ? products.count - products.products.length
-            : 0,
+        additional: additionalCount,
         isError: products.isError,
         error: products.error,
       }
@@ -351,12 +366,17 @@ const useReferenceValues = (
       return {
         labels: productTypes.product_types?.map((type) => type.value),
         isPending: productTypes.isPending,
-        additional:
-          productTypes.product_types && productTypes.count
-            ? productTypes.count - productTypes.product_types.length
-            : 0,
+        additional: additionalCount,
         isError: productTypes.isError,
         error: productTypes.error,
+      }
+    case TaxRateRuleReferenceType.SHIPPING_OPTION:
+      return {
+        labels: shippingOptions.shipping_options?.map((option) => option.name),
+        isPending: shippingOptions.isPending,
+        additional: additionalCount,
+        isError: shippingOptions.isError,
+        error: shippingOptions.error,
       }
     // case TaxRateRuleReferenceType.PRODUCT_COLLECTION:
     //   return {

@@ -27,6 +27,10 @@ const _OrderChange = model
     declined_at: model.dateTime().nullable(),
     canceled_by: model.text().nullable(),
     canceled_at: model.dateTime().nullable(),
+    /**
+     * @since 2.12.0
+     */
+    carry_over_promotions: model.boolean().nullable(),
     order: model.belongsTo<() => typeof Order>(() => Order, {
       mappedBy: "changes",
     }),
@@ -42,31 +46,31 @@ const _OrderChange = model
       name: "IDX_order_change_order_id",
       on: ["order_id"],
       unique: false,
-      where: "deleted_at IS NOT NULL",
+      where: "deleted_at IS NULL",
     },
     {
       name: "IDX_order_change_return_id",
       on: ["return_id"],
       unique: false,
-      where: "return_id IS NOT NULL AND deleted_at IS NOT NULL",
+      where: "return_id IS NOT NULL AND deleted_at IS NULL",
     },
     {
       name: "IDX_order_change_claim_id",
       on: ["claim_id"],
       unique: false,
-      where: "claim_id IS NOT NULL AND deleted_at IS NOT NULL",
+      where: "claim_id IS NOT NULL AND deleted_at IS NULL",
     },
     {
       name: "IDX_order_change_exchange_id",
       on: ["exchange_id"],
       unique: false,
-      where: "exchange_id IS NOT NULL AND deleted_at IS NOT NULL",
+      where: "exchange_id IS NOT NULL AND deleted_at IS NULL",
     },
     {
       name: "IDX_order_change_status",
       on: ["status"],
       unique: false,
-      where: "deleted_at IS NOT NULL",
+      where: "deleted_at IS NULL",
     },
     {
       name: "IDX_order_change_deleted_at",
@@ -78,7 +82,7 @@ const _OrderChange = model
       name: "IDX_order_change_version",
       on: ["order_id", "version"],
       unique: false,
-      where: "deleted_at IS NOT NULL",
+      where: "deleted_at IS NULL",
     },
   ])
 

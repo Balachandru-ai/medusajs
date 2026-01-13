@@ -11,7 +11,7 @@ export const POST = async (
   res: MedusaResponse
 ) => {
   const { auth_provider, actor_type } = req.params
-  const { identifier } = req.validatedBody
+  const { identifier, metadata } = req.validatedBody
 
   const { http } = req.scope.resolve(
     ContainerRegistrationKeys.CONFIG_MODULE
@@ -22,7 +22,9 @@ export const POST = async (
       entityId: identifier,
       actorType: actor_type,
       provider: auth_provider,
-      secret: http.jwtSecret as string,
+      secret: http.jwtSecret!,
+      jwtOptions: http.jwtOptions,
+      metadata,
     },
     throwOnError: false, // we don't want to throw on error to avoid leaking information about non-existing identities
   })

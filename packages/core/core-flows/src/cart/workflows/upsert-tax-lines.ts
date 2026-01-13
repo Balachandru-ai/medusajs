@@ -8,8 +8,9 @@ import {
   transform,
   when,
 } from "@medusajs/framework/workflows-sdk"
-import { useRemoteQueryStep } from "../../common"
+import { useQueryGraphStep } from "../../common"
 import { getItemTaxLinesStep } from "../../tax/steps/get-item-tax-lines"
+import { validateCartStep } from "../steps"
 import { upsertTaxLinesForItemsStep } from "../steps/upsert-tax-lines-for-items"
 
 const cartFields = [
@@ -121,21 +122,27 @@ export const upsertTaxLinesWorkflowId = "upsert-tax-lines"
 export const upsertTaxLinesWorkflow = createWorkflow(
   upsertTaxLinesWorkflowId,
   (input: WorkflowData<UpsertTaxLinesWorkflowInput>): WorkflowData<void> => {
-    const fetchCart = when({ input }, ({ input }) => {
+    const fetchCart = when("should-fetch-cart", { input }, ({ input }) => {
       return !input.cart
     }).then(() => {
-      return useRemoteQueryStep({
-        entry_point: "cart",
+      const { data: cart } = useQueryGraphStep({
+        entity: "cart",
         fields: cartFields,
-        variables: { id: input.cart_id },
-        throw_if_key_not_found: true,
-        list: false,
-      })
+        filters: { id: input.cart_id },
+        options: {
+          throwIfKeyNotFound: true,
+          isList: false,
+        },
+      }).config({ name: "fetch-cart" })
+
+      return cart
     })
 
     const cart = transform({ fetchCart, input }, ({ fetchCart, input }) => {
       return input.cart ?? fetchCart
     })
+
+    validateCartStep({ cart })
 
     const taxLineItems = getItemTaxLinesStep(
       transform({ input, cart }, (data) => ({

@@ -1,15 +1,16 @@
-import { glob } from "glob"
-import { logger } from "@medusajs/framework/logger"
+import { logger } from "@medusajs/framework"
+import type { Logger } from "@medusajs/framework/types"
 import {
-  toUnixSlash,
+  defineMikroOrmCliConfig,
   DmlEntity,
   dynamicImport,
-  defineMikroOrmCliConfig,
+  isFileSkipped,
+  toUnixSlash,
 } from "@medusajs/framework/utils"
+import { MetadataStorage } from "@medusajs/framework/mikro-orm/core"
+import { MikroORM } from "@medusajs/framework/mikro-orm/postgresql"
+import { glob } from "glob"
 import { dirname, join } from "path"
-
-import { MetadataStorage } from "@mikro-orm/core"
-import { MikroORM } from "@mikro-orm/postgresql"
 
 const TERMINAL_SIZE = process.stdout.columns
 
@@ -45,14 +46,14 @@ const main = async function ({ directory }) {
      */
     logger.info("Generating migrations...")
 
-    await generateMigrations(moduleDescriptors)
+    await generateMigrations(moduleDescriptors, logger)
 
-    console.log(new Array(TERMINAL_SIZE).join("-"))
+    logger.log(new Array(TERMINAL_SIZE).join("-"))
     logger.info("Migrations generated")
 
     process.exit()
   } catch (error) {
-    console.log(new Array(TERMINAL_SIZE).join("-"))
+    logger.log(new Array(TERMINAL_SIZE).join("-"))
 
     logger.error(error.message, error)
     process.exit(1)
@@ -68,6 +69,9 @@ async function getEntitiesForModule(path: string) {
 
   for (const entityPath of entityPaths) {
     const entityExports = await dynamicImport(entityPath)
+    if (isFileSkipped(entityExports)) {
+      continue
+    }
 
     const validEntities = Object.values(entityExports).filter(
       (potentialEntity) => {
@@ -97,7 +101,8 @@ async function generateMigrations(
     serviceName: string
     migrationsPath: string
     entities: any[]
-  }[] = []
+  }[] = [],
+  logger: Logger
 ) {
   const DB_HOST = process.env.DB_HOST ?? "localhost"
   const DB_USERNAME = process.env.DB_USERNAME ?? ""
@@ -109,6 +114,10 @@ async function generateMigrations(
     logger.info(
       `Generating migrations for module ${moduleDescriptor.serviceName}...`
     )
+    if (moduleDescriptor.entities.length === 0) {
+      logger.info(`No entities found for module ${moduleDescriptor.serviceName}, skipping...`)
+      continue
+    }
 
     const mikroOrmConfig = defineMikroOrmCliConfig(
       moduleDescriptor.serviceName,

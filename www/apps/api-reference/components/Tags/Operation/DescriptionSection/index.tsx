@@ -1,5 +1,6 @@
 "use client"
 
+import React from "react"
 import type { OpenAPI } from "types"
 import type { TagsOperationDescriptionSectionSecurityProps } from "./Security"
 import type { TagsOperationDescriptionSectionRequestProps } from "./RequestBody"
@@ -7,12 +8,18 @@ import type { TagsOperationDescriptionSectionResponsesProps } from "./Responses"
 import dynamic from "next/dynamic"
 import TagsOperationDescriptionSectionParameters from "./Parameters"
 import MDXContentClient from "@/components/MDXContent/Client"
-import { useArea } from "../../../../providers/area"
-import { Feedback, Badge, Link, FeatureFlagNotice, H2, Tooltip } from "docs-ui"
-import { usePathname } from "next/navigation"
+import {
+  Badge,
+  Link,
+  FeatureFlagNotice,
+  H2,
+  Tooltip,
+  MarkdownContent,
+} from "docs-ui"
 import { TagsOperationDescriptionSectionWorkflowBadgeProps } from "./WorkflowBadge"
 import { TagsOperationDescriptionSectionEventsProps } from "./Events"
 import { TagsOperationDescriptionSectionDeprecationNoticeProps } from "./DeprecationNotice"
+import { Feedback } from "@/components/Feedback"
 
 const TagsOperationDescriptionSectionSecurity =
   dynamic<TagsOperationDescriptionSectionSecurityProps>(
@@ -50,9 +57,6 @@ type TagsOperationDescriptionSectionProps = {
 const TagsOperationDescriptionSection = ({
   operation,
 }: TagsOperationDescriptionSectionProps) => {
-  const { area } = useArea()
-  const pathname = usePathname()
-
   return (
     <>
       <H2>
@@ -70,15 +74,37 @@ const TagsOperationDescriptionSection = ({
             badgeClassName="ml-0.5"
           />
         )}
-        {operation["x-version"] && (
+        {operation["x-since"] && (
           <Tooltip
-            text={`This API route is available since v${operation["x-version"]}`}
+            text={`This API route is available since v${operation["x-since"]}`}
           >
-            <Badge variant="blue" className="ml-0.5">
-              v{operation["x-version"]}
+            <Badge variant="blue" className="ml-0.5" data-testid="since-badge">
+              v{operation["x-since"]}
             </Badge>
           </Tooltip>
         )}
+        {operation["x-badges"]?.map((badge, index) => (
+          <Tooltip
+            key={index}
+            tooltipChildren={
+              <MarkdownContent
+                allowedElements={["a", "strong", "em", "br"]}
+                unwrapDisallowed={true}
+              >
+                {badge.description}
+              </MarkdownContent>
+            }
+            clickable={true}
+          >
+            <Badge
+              variant={badge.variant || "neutral"}
+              className="ml-0.5"
+              data-testid="custom-badge"
+            >
+              {badge.text}
+            </Badge>
+          </Tooltip>
+        ))}
       </H2>
       <div className="my-1">
         <MDXContentClient content={operation.description} />
@@ -91,20 +117,21 @@ const TagsOperationDescriptionSection = ({
       {operation.externalDocs && (
         <>
           Related guide:{" "}
-          <Link href={operation.externalDocs.url} target="_blank">
+          <Link
+            href={operation.externalDocs.url}
+            target="_blank"
+            variant="content"
+            data-testid="related-guide-link"
+          >
             {operation.externalDocs.description || "Read More"}
           </Link>
         </>
       )}
       <Feedback
-        event="survey_api-ref"
         extraData={{
-          area,
           section: operation.summary,
         }}
-        pathName={pathname}
         className="!my-2"
-        vertical={true}
         question="Did this API Route run successfully?"
       />
       {operation.security && (
@@ -112,16 +139,17 @@ const TagsOperationDescriptionSection = ({
           security={operation.security}
         />
       )}
-      {operation.parameters && (
+      {operation.parameters && operation.parameters.length > 0 && (
         <TagsOperationDescriptionSectionParameters
           parameters={operation.parameters}
         />
       )}
-      {operation.requestBody && (
-        <TagsOperationDescriptionSectionRequest
-          requestBody={operation.requestBody}
-        />
-      )}
+      {operation.requestBody?.content !== undefined &&
+        Object.keys(operation.requestBody.content).length > 0 && (
+          <TagsOperationDescriptionSectionRequest
+            requestBody={operation.requestBody}
+          />
+        )}
       <TagsOperationDescriptionSectionResponses
         responses={operation.responses}
       />

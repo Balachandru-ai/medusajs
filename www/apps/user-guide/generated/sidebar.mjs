@@ -127,6 +127,39 @@ export const generatedSidebars = [
             "title": "Manage Claims",
             "path": "/orders/claims",
             "children": []
+          },
+          {
+            "loaded": true,
+            "isPathHref": true,
+            "type": "link",
+            "title": "Draft Orders",
+            "path": "/orders/draft-orders",
+            "children": [
+              {
+                "loaded": true,
+                "isPathHref": true,
+                "type": "link",
+                "title": "Create Draft Order",
+                "path": "/orders/draft-orders/create",
+                "children": []
+              },
+              {
+                "loaded": true,
+                "isPathHref": true,
+                "type": "link",
+                "title": "Manage Draft Order",
+                "path": "/orders/draft-orders/manage",
+                "children": []
+              }
+            ]
+          },
+          {
+            "loaded": true,
+            "isPathHref": true,
+            "type": "link",
+            "title": "Export Orders",
+            "path": "/orders/export",
+            "children": []
           }
         ]
       },
@@ -422,6 +455,14 @@ export const generatedSidebars = [
             "loaded": true,
             "isPathHref": true,
             "type": "link",
+            "title": "Refund Reasons",
+            "path": "/settings/refund-reasons",
+            "children": []
+          },
+          {
+            "loaded": true,
+            "isPathHref": true,
+            "type": "link",
             "title": "Sales Channels",
             "path": "/settings/sales-channels",
             "children": []
@@ -461,11 +502,27 @@ export const generatedSidebars = [
                 "loaded": true,
                 "isPathHref": true,
                 "type": "link",
-                "title": "Manage Shipping Profiles",
+                "title": "Shipping Profiles",
                 "path": "/settings/locations-and-shipping/shipping-profiles",
+                "children": []
+              },
+              {
+                "loaded": true,
+                "isPathHref": true,
+                "type": "link",
+                "title": "Shipping Option Types",
+                "path": "/settings/locations-and-shipping/shipping-option-types",
                 "children": []
               }
             ]
+          },
+          {
+            "loaded": true,
+            "isPathHref": true,
+            "type": "link",
+            "title": "Translations",
+            "path": "/settings/translations",
+            "children": []
           },
           {
             "loaded": true,

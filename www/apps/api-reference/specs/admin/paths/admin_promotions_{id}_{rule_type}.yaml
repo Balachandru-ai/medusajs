@@ -49,6 +49,37 @@ get:
           prefix it will replace the entire default fields.
         externalDocs:
           url: '#select-fields-and-relations'
+    - name: promotion_type
+      in: query
+      description: The type
+      required: false
+      schema:
+        type: string
+        description: The promotion's type.
+        enum:
+          - standard
+          - buyget
+    - name: application_method_type
+      in: query
+      description: The promotion's application method type.
+      required: false
+      schema:
+        type: string
+        description: The promotion's application method type.
+        enum:
+          - fixed
+          - percentage
+    - name: application_method_target_type
+      in: query
+      description: The promotion's application method target type.
+      required: false
+      schema:
+        type: string
+        description: The promotion's application method target type.
+        enum:
+          - items
+          - shipping_methods
+          - order
   security:
     - api_token: []
     - cookie_auth: []

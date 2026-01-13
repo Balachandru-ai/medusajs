@@ -22,6 +22,12 @@ const generatedgeneratedAdminSidebarSidebar = {
     },
     {
       "type": "link",
+      "title": "Manage Metadata",
+      "path": "manage-metadata",
+      "loaded": true
+    },
+    {
+      "type": "link",
       "title": "Select Fields and Relations",
       "path": "select-fields-and-relations",
       "loaded": true
@@ -218,6 +224,13 @@ const generatedgeneratedAdminSidebarSidebar = {
     },
     {
       "type": "category",
+      "title": "Feature Flags",
+      "children": [],
+      "loaded": false,
+      "showLoadingIfEmpty": true
+    },
+    {
+      "type": "category",
       "title": "Fulfillment Providers",
       "children": [
         {
@@ -272,6 +285,31 @@ const generatedgeneratedAdminSidebarSidebar = {
     },
     {
       "type": "category",
+      "title": "Gift Cards",
+      "children": [
+        {
+          "type": "link",
+          "path": "gift-cards_giftcard_schema",
+          "title": "GiftCard Object",
+          "loaded": true,
+          "badge": {
+            "variant": "neutral",
+            "text": "Schema"
+          }
+        }
+      ],
+      "loaded": false,
+      "showLoadingIfEmpty": true
+    },
+    {
+      "type": "category",
+      "title": "Index",
+      "children": [],
+      "loaded": false,
+      "showLoadingIfEmpty": true
+    },
+    {
+      "type": "category",
       "title": "Inventory Items",
       "children": [
         {
@@ -308,12 +346,48 @@ const generatedgeneratedAdminSidebarSidebar = {
     },
     {
       "type": "category",
+      "title": "Locales",
+      "children": [
+        {
+          "type": "link",
+          "path": "locales_locale_schema",
+          "title": "Locale Object",
+          "loaded": true,
+          "badge": {
+            "variant": "neutral",
+            "text": "Schema"
+          }
+        }
+      ],
+      "loaded": false,
+      "showLoadingIfEmpty": true
+    },
+    {
+      "type": "category",
       "title": "Notifications",
       "children": [
         {
           "type": "link",
           "path": "notifications_notification_schema",
           "title": "Notification Object",
+          "loaded": true,
+          "badge": {
+            "variant": "neutral",
+            "text": "Schema"
+          }
+        }
+      ],
+      "loaded": false,
+      "showLoadingIfEmpty": true
+    },
+    {
+      "type": "category",
+      "title": "Order Changes",
+      "children": [
+        {
+          "type": "link",
+          "path": "order-changes_orderchange_schema",
+          "title": "OrderChange Object",
           "loaded": true,
           "badge": {
             "variant": "neutral",
@@ -657,6 +731,24 @@ const generatedgeneratedAdminSidebarSidebar = {
     },
     {
       "type": "category",
+      "title": "Shipping Option Types",
+      "children": [
+        {
+          "type": "link",
+          "path": "shipping-option-types_shippingoptiontype_schema",
+          "title": "ShippingOptionType Object",
+          "loaded": true,
+          "badge": {
+            "variant": "neutral",
+            "text": "Schema"
+          }
+        }
+      ],
+      "loaded": false,
+      "showLoadingIfEmpty": true
+    },
+    {
+      "type": "category",
       "title": "Shipping Options",
       "children": [
         {
@@ -699,6 +791,24 @@ const generatedgeneratedAdminSidebarSidebar = {
           "type": "link",
           "path": "stock-locations_stocklocation_schema",
           "title": "StockLocation Object",
+          "loaded": true,
+          "badge": {
+            "variant": "neutral",
+            "text": "Schema"
+          }
+        }
+      ],
+      "loaded": false,
+      "showLoadingIfEmpty": true
+    },
+    {
+      "type": "category",
+      "title": "Store Credit Accounts",
+      "children": [
+        {
+          "type": "link",
+          "path": "store-credit-accounts_storecreditaccount_schema",
+          "title": "StoreCreditAccount Object",
           "loaded": true,
           "badge": {
             "variant": "neutral",
@@ -783,6 +893,42 @@ const generatedgeneratedAdminSidebarSidebar = {
     },
     {
       "type": "category",
+      "title": "Transaction Groups",
+      "children": [
+        {
+          "type": "link",
+          "path": "transaction-groups_transactiongroup_schema",
+          "title": "TransactionGroup Object",
+          "loaded": true,
+          "badge": {
+            "variant": "neutral",
+            "text": "Schema"
+          }
+        }
+      ],
+      "loaded": false,
+      "showLoadingIfEmpty": true
+    },
+    {
+      "type": "category",
+      "title": "Translations",
+      "children": [
+        {
+          "type": "link",
+          "path": "translations_translation_schema",
+          "title": "Translation Object",
+          "loaded": true,
+          "badge": {
+            "variant": "neutral",
+            "text": "Schema"
+          }
+        }
+      ],
+      "loaded": false,
+      "showLoadingIfEmpty": true
+    },
+    {
+      "type": "category",
       "title": "Uploads",
       "children": [],
       "loaded": false,
@@ -803,6 +949,13 @@ const generatedgeneratedAdminSidebarSidebar = {
           }
         }
       ],
+      "loaded": false,
+      "showLoadingIfEmpty": true
+    },
+    {
+      "type": "category",
+      "title": "Views",
+      "children": [],
       "loaded": false,
       "showLoadingIfEmpty": true
     },

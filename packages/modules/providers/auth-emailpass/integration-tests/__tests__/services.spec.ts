@@ -1,6 +1,7 @@
 import { MedusaError } from "@medusajs/framework/utils"
 import Scrypt from "scrypt-kdf"
 import { EmailPassAuthService } from "../../src/services/emailpass"
+
 jest.setTimeout(100000)
 
 describe("Email password auth provider", () => {
@@ -152,10 +153,82 @@ describe("Email password auth provider", () => {
     )
   })
 
-  it("throw if auth identity with email already exists", async () => {
+  it("updates identity if it exists but doesnt have app_metadata", async () => {
     const authServiceSpies = {
       retrieve: jest.fn().mockImplementation(() => {
         return { success: true }
+      }),
+      update: jest.fn().mockImplementation(() => {
+        return {
+          provider_identities: [
+            {
+              entity_id: "test@admin.com",
+              provider: "emailpass",
+              provider_metadata: {
+                password: "somehash",
+              },
+            },
+          ],
+        }
+      }),
+    }
+
+    const resp = await emailpassService.register(
+      { body: { email: "test@admin.com", password: "test" } },
+      authServiceSpies
+    )
+
+    expect(authServiceSpies.retrieve).toHaveBeenCalled()
+    expect(authServiceSpies.update).toHaveBeenCalled()
+
+    expect(resp.authIdentity?.provider_identities?.[0]).toEqual(
+      expect.objectContaining({
+        entity_id: "test@admin.com",
+        provider_metadata: {},
+      })
+    )
+  })
+
+  it("updates identity if it exists but app_metadata is empty", async () => {
+    const authServiceSpies = {
+      retrieve: jest.fn().mockImplementation(() => {
+        return { success: true, app_metadata: {} }
+      }),
+      update: jest.fn().mockImplementation(() => {
+        return {
+          provider_identities: [
+            {
+              entity_id: "test@admin.com",
+              provider: "emailpass",
+              provider_metadata: {
+                password: "somehash",
+              },
+            },
+          ],
+        }
+      }),
+    }
+
+    const resp = await emailpassService.register(
+      { body: { email: "test@admin.com", password: "test" } },
+      authServiceSpies
+    )
+
+    expect(authServiceSpies.retrieve).toHaveBeenCalled()
+    expect(authServiceSpies.update).toHaveBeenCalled()
+
+    expect(resp.authIdentity?.provider_identities?.[0]).toEqual(
+      expect.objectContaining({
+        entity_id: "test@admin.com",
+        provider_metadata: {},
+      })
+    )
+  })
+
+  it("throw if auth identity with email already exists and has app_metadata", async () => {
+    const authServiceSpies = {
+      retrieve: jest.fn().mockImplementation(() => {
+        return { success: true, app_metadata: {"user_id": "some-id"} }
       }),
       create: jest.fn().mockImplementation(() => {
         return {

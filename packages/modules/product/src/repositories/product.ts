@@ -8,8 +8,13 @@ import {
   MedusaError,
   isPresent,
   mergeMetadata,
+  isDefined,
+  deepCopy,
 } from "@medusajs/framework/utils"
-import { SqlEntityManager, wrap } from "@mikro-orm/postgresql"
+import {
+  SqlEntityManager,
+  wrap,
+} from "@medusajs/framework/mikro-orm/postgresql"
 
 export class ProductRepository extends DALUtils.mikroOrmBaseRepositoryFactory(
   Product
@@ -57,10 +62,18 @@ export class ProductRepository extends DALUtils.mikroOrmBaseRepositoryFactory(
     height?: string | number
     width?: string | number
   }) {
-    productToUpdate.weight = productToUpdate.weight?.toString()
-    productToUpdate.length = productToUpdate.length?.toString()
-    productToUpdate.height = productToUpdate.height?.toString()
-    productToUpdate.width = productToUpdate.width?.toString()
+    if (isDefined(productToUpdate.weight)) {
+      productToUpdate.weight = productToUpdate.weight?.toString()
+    }
+    if (isDefined(productToUpdate.length)) {
+      productToUpdate.length = productToUpdate.length?.toString()
+    }
+    if (isDefined(productToUpdate.height)) {
+      productToUpdate.height = productToUpdate.height?.toString()
+    }
+    if (isDefined(productToUpdate.width)) {
+      productToUpdate.width = productToUpdate.width?.toString()
+    }
   }
 
   async deepUpdate(
@@ -71,20 +84,22 @@ export class ProductRepository extends DALUtils.mikroOrmBaseRepositoryFactory(
     ) => void,
     context: Context = {}
   ): Promise<InferEntityType<typeof Product>[]> {
+    const productsToUpdate_ = deepCopy(productsToUpdate)
     const productIdsToUpdate: string[] = []
-    productsToUpdate.forEach((productToUpdate) => {
+
+    productsToUpdate_.forEach((productToUpdate) => {
       ProductRepository.#correctUpdateDTOTypes(productToUpdate)
       productIdsToUpdate.push(productToUpdate.id)
     })
 
     const relationsToLoad =
-      ProductRepository.#getProductDeepUpdateRelationsToLoad(productsToUpdate)
+      ProductRepository.#getProductDeepUpdateRelationsToLoad(productsToUpdate_)
 
     const findOptions = buildQuery(
       { id: productIdsToUpdate },
       {
         relations: relationsToLoad,
-        take: productsToUpdate.length,
+        take: productsToUpdate_.length,
       }
     )
 
@@ -101,7 +116,7 @@ export class ProductRepository extends DALUtils.mikroOrmBaseRepositoryFactory(
       )
     }
 
-    for (const productToUpdate of productsToUpdate) {
+    for (const productToUpdate of productsToUpdate_) {
       const product = productsMap.get(productToUpdate.id)!
       const wrappedProduct = wrap(product)
 
@@ -151,7 +166,10 @@ export class ProductRepository extends DALUtils.mikroOrmBaseRepositoryFactory(
       }
 
       if (isPresent(productToUpdate.metadata)) {
-        productToUpdate.metadata = mergeMetadata(product.metadata ?? {}, productToUpdate.metadata)
+        productToUpdate.metadata = mergeMetadata(
+          product.metadata ?? {},
+          productToUpdate.metadata
+        )
       }
 
       wrappedProduct.assign(productToUpdate)
@@ -160,7 +178,7 @@ export class ProductRepository extends DALUtils.mikroOrmBaseRepositoryFactory(
     // Doing this to ensure updates are returned in the same order they were provided,
     // since some core flows rely on this.
     // This is a high level of coupling though.
-    return productsToUpdate.map(
+    return productsToUpdate_.map(
       (productToUpdate) => productsMap.get(productToUpdate.id)!
     )
   }

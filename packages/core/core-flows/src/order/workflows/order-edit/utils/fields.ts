@@ -1,0 +1,16 @@
+export const fieldsToRefreshOrderEdit = [
+  "id",
+  "status",
+  "version",
+  "currency_code",
+  "canceled_at",
+  "promotions.*",
+  "subtotal",
+  "items.*",
+  "items.subtotal",
+  "items.product.id",
+  "items.adjustments.*",
+  "shipping_methods.*",
+  "shipping_methods.adjustments.*",
+  "shipping_address.*",
+]

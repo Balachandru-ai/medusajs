@@ -31,21 +31,7 @@
  *   content:
  *     application/json:
  *       schema:
- *         type: object
- *         description: The refund's details.
- *         properties:
- *           amount:
- *             type: number
- *             title: amount
- *             description: The amount to refund.
- *           refund_reason_id:
- *             type: string
- *             title: refund_reason_id
- *             description: The ID of a refund reason.
- *           note:
- *             type: string
- *             title: note
- *             description: A note to attach to the refund.
+ *         $ref: "#/components/schemas/AdminRefundPayment"
  * x-codeSamples:
  *   - lang: JavaScript
  *     label: JS SDK
@@ -68,7 +54,7 @@
  *     label: cURL
  *     source: |-
  *       curl -X POST '{backend_url}/admin/payments/{id}/refund' \
- *       -H 'Authorization: Bearer {access_token}'
+ *       -H 'Authorization: Bearer {jwt_token}'
  * tags:
  *   - Payments
  * responses:

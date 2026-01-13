@@ -36,6 +36,11 @@ export const navDropdownItems: NavigationItem[] = [
           },
           {
             type: "link",
+            title: "Index Module",
+            link: "/learn/fundamentals/module-links/index-module",
+          },
+          {
+            type: "link",
             title: "Medusa Container",
             link: "/learn/fundamentals/medusa-container",
           },
@@ -70,6 +75,11 @@ export const navDropdownItems: NavigationItem[] = [
             link: "/learn/fundamentals/workflows",
           },
         ],
+      },
+      {
+        type: "link",
+        title: "Admin Extensions",
+        link: "/learn/fundamentals/admin",
       },
       {
         type: "sub-menu",
@@ -163,6 +173,11 @@ export const navDropdownItems: NavigationItem[] = [
           },
           {
             type: "link",
+            title: "Translation",
+            link: "/resources/commerce-modules/translation",
+          },
+          {
+            type: "link",
             title: "User",
             link: "/resources/commerce-modules/user",
           },
@@ -180,8 +195,8 @@ export const navDropdownItems: NavigationItem[] = [
           },
           {
             type: "link",
-            title: "Cache",
-            link: "/resources/infrastructure-modules/cache",
+            title: "Caching",
+            link: "/resources/infrastructure-modules/caching",
           },
           {
             type: "link",
@@ -354,6 +369,11 @@ export const navDropdownItems: NavigationItem[] = [
     title: "User Guide",
     link: "/user-guide",
   },
+  {
+    type: "link",
+    title: "Cloud",
+    link: "/cloud",
+  },
 ]
 
 export const products: Product[] = [
@@ -484,3 +504,12 @@ export const products: Product[] = [
     image: "/images/user-icon.png",
   },
 ]
+
+export enum DocsTrackingEvents {
+  SURVEY = "survey",
+  SURVEY_API = "survey_api-ref",
+  CODE_BLOCK_COPY = "code_block_copy",
+  AI_ASSISTANT_START_CHAT = "ai_assistant_start_chat",
+  AI_ASSISTANT_CALLOUT_CLICK = "ai_assistant_callout_click",
+  SEARCH_CALLOUT_CLICK = "search_callout_click",
+}

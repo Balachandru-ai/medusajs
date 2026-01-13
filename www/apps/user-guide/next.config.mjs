@@ -13,6 +13,7 @@ import {
   prerequisitesLinkFixerPlugin,
   remarkAttachFrontmatterDataPlugin,
   recmaInjectMdxDataPlugin,
+  validateHighlightsPlugin,
 } from "remark-rehype-plugins"
 import bundleAnalyzer from "@next/bundle-analyzer"
 import withExtractedTableOfContents from "@stefanprobst/rehype-extract-toc"
@@ -30,7 +31,6 @@ const withMDX = mdx({
             },
             ui: {
               projectPath: path.resolve("..", "ui"),
-              contentPath: "src/content/docs",
             },
             resources: {
               projectPath: path.resolve("..", "resources"),
@@ -39,6 +39,9 @@ const withMDX = mdx({
             api: {
               projectPath: path.resolve("..", "api-reference"),
               skipSlugValidation: true,
+            },
+            cloud: {
+              projectPath: path.resolve("..", "cloud"),
             },
           },
         },
@@ -61,6 +64,9 @@ const withMDX = mdx({
             api: {
               url: process.env.NEXT_PUBLIC_API_URL,
             },
+            cloud: {
+              url: process.env.NEXT_PUBLIC_CLOUD_URL,
+            },
           },
           useBaseUrl:
             process.env.NODE_ENV === "production" ||
@@ -74,6 +80,7 @@ const withMDX = mdx({
           tagName: "code",
         },
       ],
+      [validateHighlightsPlugin, { verbose: false }],
       [rehypeSlug],
       [
         cloudinaryImgRehypePlugin,
@@ -123,6 +130,27 @@ const nextConfig = {
   },
   experimental: {
     optimizePackageImports: ["@medusajs/icons", "@medusajs/ui"],
+  },
+  rewrites: async () => {
+    return {
+      beforeFiles: [
+        {
+          source: "/:path*/index.html.md",
+          destination: "/md-content/:path*",
+        },
+        {
+          source: "/:path*",
+          has: [
+            {
+              type: "header",
+              key: "Accept",
+              value: ".*(text/markdown|text/plain).*",
+            },
+          ],
+          destination: "/md-content/:path*",
+        },
+      ],
+    }
   },
 }
 

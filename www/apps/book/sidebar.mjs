@@ -17,11 +17,28 @@ export const sidebars = [
             type: "link",
             path: "/learn/installation",
             title: "Installation",
+            children: [
+              {
+                type: "link",
+                path: "/learn/installation/docker",
+                title: "Install with Docker",
+              },
+            ],
+          },
+          {
+            type: "link",
+            title: "AI Assistants and LLMs",
+            path: "/learn/introduction/build-with-llms-ai",
           },
           {
             type: "link",
             title: "Architecture",
             path: "/learn/introduction/architecture",
+          },
+          {
+            type: "link",
+            title: "From v1 to v2",
+            path: "/learn/introduction/from-v1-to-v2",
           },
         ],
       },
@@ -222,6 +239,11 @@ export const sidebars = [
               },
               {
                 type: "link",
+                path: "/learn/fundamentals/module-links/index-module",
+                title: "Index Module",
+              },
+              {
+                type: "link",
                 path: "/learn/fundamentals/module-links/custom-columns",
                 title: "Add Custom Columns",
               },
@@ -251,6 +273,11 @@ export const sidebars = [
                 type: "link",
                 path: "/learn/fundamentals/data-models/properties",
                 title: "Properties",
+              },
+              {
+                type: "link",
+                path: "/learn/fundamentals/data-models/json-properties",
+                title: "JSON Properties",
               },
               {
                 type: "link",
@@ -341,6 +368,11 @@ export const sidebars = [
               },
               {
                 type: "link",
+                path: "/learn/fundamentals/api-routes/localization",
+                title: "Localization",
+              },
+              {
+                type: "link",
                 path: "/learn/fundamentals/api-routes/override",
                 title: "Override API Routes",
               },
@@ -414,12 +446,22 @@ export const sidebars = [
               {
                 type: "link",
                 path: "/learn/fundamentals/workflows/execute-another-workflow",
-                title: "Execute Another Workflow",
+                title: "Nested Workflows",
               },
               {
                 type: "link",
                 path: "/learn/fundamentals/workflows/multiple-step-usage",
                 title: "Multiple Step Usage",
+              },
+              {
+                type: "link",
+                path: "/learn/fundamentals/workflows/locks",
+                title: "Using Locks",
+              },
+              {
+                type: "ref",
+                path: "/learn/debugging-and-testing/debug-workflows",
+                title: "Debug Workflows",
               },
             ],
           },
@@ -450,6 +492,11 @@ export const sidebars = [
                 path: "/learn/fundamentals/scheduled-jobs/execution-number",
                 title: "Execution Number",
               },
+              {
+                type: "link",
+                path: "/learn/fundamentals/scheduled-jobs/interval",
+                title: "Set Interval",
+              },
             ],
           },
           {
@@ -475,6 +522,11 @@ export const sidebars = [
                 title: "Seed Data",
               },
             ],
+          },
+          {
+            type: "link",
+            path: "/learn/fundamentals/generated-types",
+            title: "Auto-Generated Types",
           },
         ],
       },
@@ -509,6 +561,11 @@ export const sidebars = [
           },
           {
             type: "link",
+            path: "/learn/fundamentals/admin/translations",
+            title: "Translations",
+          },
+          {
+            type: "link",
             path: "/learn/fundamentals/admin/constraints",
             title: "Constraints",
           },
@@ -538,6 +595,13 @@ export const sidebars = [
             type: "link",
             title: "Medusa Configuations",
             path: "/learn/configurations/medusa-config",
+            children: [
+              {
+                type: "link",
+                title: "Asymmetric Encryption",
+                path: "/learn/configurations/medusa-config/asymmetric-encryption",
+              },
+            ],
           },
           {
             type: "link",
@@ -576,23 +640,63 @@ export const sidebars = [
             type: "link",
             path: "/learn/debugging-and-testing/testing-tools/modules-tests",
             title: "Modules Tests",
-            children: [
-              {
-                type: "link",
-                path: "/learn/debugging-and-testing/testing-tools/modules-tests/module-example",
-                title: "Example",
-              },
-            ],
+          },
+          {
+            type: "link",
+            path: "/learn/debugging-and-testing/debug-workflows",
+            title: "Debug Workflows",
           },
           {
             type: "link",
             path: "/learn/debugging-and-testing/instrumentation",
             title: "Instrumentation",
+            children: [
+              {
+                type: "ref",
+                path: "/resources/integrations/guides/sentry",
+                title: "Guide: Sentry",
+              },
+            ],
           },
           {
             type: "link",
             path: "/learn/debugging-and-testing/logging",
             title: "Logging",
+            children: [
+              {
+                type: "link",
+                path: "/learn/debugging-and-testing/logging/custom-logger",
+                title: "Override Logger",
+              },
+            ],
+          },
+          {
+            type: "link",
+            path: "/learn/debugging-and-testing/feature-flags",
+            title: "Feature Flags",
+            children: [
+              {
+                type: "link",
+                path: "/learn/debugging-and-testing/feature-flags/create",
+                title: "Create Feature Flag",
+              },
+            ],
+          },
+        ],
+      },
+      {
+        type: "category",
+        title: "Best Practices",
+        children: [
+          {
+            type: "link",
+            path: "/learn/best-practices/third-party-sync",
+            title: "Third-Party Syncing",
+          },
+          {
+            type: "ref",
+            path: "/learn/fundamentals/scheduled-jobs/interval",
+            title: "Scheduled Job Intervals",
           },
         ],
       },
@@ -608,7 +712,7 @@ export const sidebars = [
           {
             type: "link",
             path: "/learn/production/worker-mode",
-            title: "Worker Mode",
+            title: "Worker Modes",
           },
           {
             type: "link",
@@ -637,6 +741,18 @@ export const sidebars = [
             type: "external",
             path: "https://github.com/medusajs/medusa/releases",
             title: "Release Notes",
+          },
+          {
+            type: "link",
+            path: "/learn/codemods",
+            title: "Codemods",
+            children: [
+              {
+                type: "link",
+                title: "Replace Imports (v2.11.0+)",
+                path: "/learn/codemods/replace-imports",
+              },
+            ],
           },
         ],
       },

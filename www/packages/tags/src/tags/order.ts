@@ -4,12 +4,28 @@ export const order = [
     "path": "https://docs.medusajs.com/user-guide/orders/claims"
   },
   {
+    "title": "Create Draft Order",
+    "path": "https://docs.medusajs.com/user-guide/orders/draft-orders/create"
+  },
+  {
+    "title": "Manage Draft Order",
+    "path": "https://docs.medusajs.com/user-guide/orders/draft-orders/manage"
+  },
+  {
+    "title": "Draft Orders",
+    "path": "https://docs.medusajs.com/user-guide/orders/draft-orders"
+  },
+  {
     "title": "Edit Order Items",
     "path": "https://docs.medusajs.com/user-guide/orders/edit"
   },
   {
     "title": "Manage Order Exchanges",
     "path": "https://docs.medusajs.com/user-guide/orders/exchanges"
+  },
+  {
+    "title": "Export Orders",
+    "path": "https://docs.medusajs.com/user-guide/orders/export"
   },
   {
     "title": "Manage Order Fulfillments",
@@ -32,20 +48,48 @@ export const order = [
     "path": "https://docs.medusajs.com/user-guide/orders/returns"
   },
   {
+    "title": "Manage Refund Reasons",
+    "path": "https://docs.medusajs.com/user-guide/settings/refund-reasons"
+  },
+  {
     "title": "Manage Return Reasons",
     "path": "https://docs.medusajs.com/user-guide/settings/return-reasons"
+  },
+  {
+    "title": "Retrieve Order Totals Using Query",
+    "path": "https://docs.medusajs.com/resources/commerce-modules/order/order-totals"
   },
   {
     "title": "Implement Quote Management",
     "path": "https://docs.medusajs.com/resources/examples/guides/quote-management"
   },
   {
+    "title": "Agentic Commerce",
+    "path": "https://docs.medusajs.com/resources/how-to-tutorials/tutorials/agentic-commerce"
+  },
+  {
+    "title": "Add Gift Message",
+    "path": "https://docs.medusajs.com/resources/how-to-tutorials/tutorials/gift-message"
+  },
+  {
+    "title": "Generate Invoices",
+    "path": "https://docs.medusajs.com/resources/how-to-tutorials/tutorials/invoice-generator"
+  },
+  {
     "title": "Implement Loyalty Points",
     "path": "https://docs.medusajs.com/resources/how-to-tutorials/tutorials/loyalty-points"
   },
   {
+    "title": "Implement Pre-Orders",
+    "path": "https://docs.medusajs.com/resources/how-to-tutorials/tutorials/preorder"
+  },
+  {
     "title": "Implement Re-Order",
     "path": "https://docs.medusajs.com/resources/how-to-tutorials/tutorials/re-order"
+  },
+  {
+    "title": "Return Request - Order #",
+    "path": "https://docs.medusajs.com/resources/nextjs-starter/guides/storefront-returns"
   },
   {
     "title": "Checkout Step 5: Complete Cart",
@@ -60,12 +104,20 @@ export const order = [
     "path": "https://docs.medusajs.com/resources/storefront-development/guides/express-checkout"
   },
   {
+    "title": "Implement Mobile App with React Native, Expo, and Medusa",
+    "path": "https://docs.medusajs.com/resources/storefront-development/guides/react-native-expo"
+  },
+  {
     "title": "completeCartWorkflow",
     "path": "https://docs.medusajs.com/resources/references/medusa-workflows/completeCartWorkflow"
   },
   {
     "title": "refundPaymentAndRecreatePaymentSessionWorkflow",
     "path": "https://docs.medusajs.com/resources/references/medusa-workflows/refundPaymentAndRecreatePaymentSessionWorkflow"
+  },
+  {
+    "title": "deleteDraftOrdersStep",
+    "path": "https://docs.medusajs.com/resources/references/medusa-workflows/steps/deleteDraftOrdersStep"
   },
   {
     "title": "addDraftOrderItemsWorkflow",
@@ -88,8 +140,16 @@ export const order = [
     "path": "https://docs.medusajs.com/resources/references/medusa-workflows/cancelDraftOrderEditWorkflow"
   },
   {
+    "title": "computeDraftOrderAdjustmentsWorkflow",
+    "path": "https://docs.medusajs.com/resources/references/medusa-workflows/computeDraftOrderAdjustmentsWorkflow"
+  },
+  {
     "title": "confirmDraftOrderEditWorkflow",
     "path": "https://docs.medusajs.com/resources/references/medusa-workflows/confirmDraftOrderEditWorkflow"
+  },
+  {
+    "title": "deleteDraftOrdersWorkflow",
+    "path": "https://docs.medusajs.com/resources/references/medusa-workflows/deleteDraftOrdersWorkflow"
   },
   {
     "title": "removeDraftOrderActionItemWorkflow",
@@ -352,6 +412,10 @@ export const order = [
     "path": "https://docs.medusajs.com/resources/references/medusa-workflows/completeOrderWorkflow"
   },
   {
+    "title": "computeAdjustmentsForPreviewWorkflow",
+    "path": "https://docs.medusajs.com/resources/references/medusa-workflows/computeAdjustmentsForPreviewWorkflow"
+  },
+  {
     "title": "confirmClaimRequestWorkflow",
     "path": "https://docs.medusajs.com/resources/references/medusa-workflows/confirmClaimRequestWorkflow"
   },
@@ -442,6 +506,10 @@ export const order = [
   {
     "title": "maybeRefreshShippingMethodsWorkflow",
     "path": "https://docs.medusajs.com/resources/references/medusa-workflows/maybeRefreshShippingMethodsWorkflow"
+  },
+  {
+    "title": "onCarryPromotionsFlagSet",
+    "path": "https://docs.medusajs.com/resources/references/medusa-workflows/onCarryPromotionsFlagSet"
   },
   {
     "title": "orderClaimAddNewItemWorkflow",
@@ -552,6 +620,10 @@ export const order = [
     "path": "https://docs.medusajs.com/resources/references/medusa-workflows/updateOrderChangeActionsWorkflow"
   },
   {
+    "title": "updateOrderChangeWorkflow",
+    "path": "https://docs.medusajs.com/resources/references/medusa-workflows/updateOrderChangeWorkflow"
+  },
+  {
     "title": "updateOrderChangesWorkflow",
     "path": "https://docs.medusajs.com/resources/references/medusa-workflows/updateOrderChangesWorkflow"
   },
@@ -594,10 +666,6 @@ export const order = [
   {
     "title": "capturePaymentWorkflow",
     "path": "https://docs.medusajs.com/resources/references/medusa-workflows/capturePaymentWorkflow"
-  },
-  {
-    "title": "processPaymentWorkflow",
-    "path": "https://docs.medusajs.com/resources/references/medusa-workflows/processPaymentWorkflow"
   },
   {
     "title": "refundPaymentWorkflow",

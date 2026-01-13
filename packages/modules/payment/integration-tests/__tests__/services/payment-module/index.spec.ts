@@ -23,11 +23,13 @@ moduleIntegrationTestRunner<IPaymentModuleService>({
           service: PaymentModuleService,
         }).linkable
 
-        expect(Object.keys(linkable)).toHaveLength(6)
+        expect(Object.keys(linkable)).toHaveLength(8)
         expect(Object.keys(linkable)).toEqual([
           "paymentCollection",
           "paymentSession",
           "payment",
+          "capture",
+          "refund",
           "refundReason",
           "accountHolder",
           "paymentProvider",
@@ -38,58 +40,76 @@ moduleIntegrationTestRunner<IPaymentModuleService>({
         })
 
         expect(linkable).toEqual({
-          payment: {
-            id: {
-              linkable: "payment_id",
-              entity: "Payment",
-              primaryKey: "id",
-              serviceName: "payment",
-              field: "payment",
-            },
-          },
           paymentCollection: {
             id: {
               linkable: "payment_collection_id",
-              entity: "PaymentCollection",
               primaryKey: "id",
               serviceName: "payment",
               field: "paymentCollection",
+              entity: "PaymentCollection",
             },
           },
           paymentSession: {
             id: {
-              field: "paymentSession",
-              entity: "PaymentSession",
               linkable: "payment_session_id",
               primaryKey: "id",
               serviceName: "payment",
+              field: "paymentSession",
+              entity: "PaymentSession",
+            },
+          },
+          payment: {
+            id: {
+              linkable: "payment_id",
+              primaryKey: "id",
+              serviceName: "payment",
+              field: "payment",
+              entity: "Payment",
+            },
+          },
+          capture: {
+            id: {
+              linkable: "capture_id",
+              primaryKey: "id",
+              serviceName: "payment",
+              field: "capture",
+              entity: "Capture",
+            },
+          },
+          refund: {
+            id: {
+              linkable: "refund_id",
+              primaryKey: "id",
+              serviceName: "payment",
+              field: "refund",
+              entity: "Refund",
             },
           },
           refundReason: {
             id: {
               linkable: "refund_reason_id",
-              entity: "RefundReason",
               primaryKey: "id",
               serviceName: "payment",
               field: "refundReason",
+              entity: "RefundReason",
             },
           },
           accountHolder: {
             id: {
               linkable: "account_holder_id",
-              entity: "AccountHolder",
               primaryKey: "id",
               serviceName: "payment",
               field: "accountHolder",
+              entity: "AccountHolder",
             },
           },
           paymentProvider: {
             id: {
               linkable: "payment_provider_id",
-              entity: "PaymentProvider",
               primaryKey: "id",
               serviceName: "payment",
               field: "paymentProvider",
+              entity: "PaymentProvider",
             },
           },
         })
@@ -161,6 +181,79 @@ moduleIntegrationTestRunner<IPaymentModuleService>({
                   captures: [
                     expect.objectContaining({
                       amount: 200,
+                    }),
+                  ],
+                }),
+              ],
+            })
+          )
+        })
+
+        it("complete payment flow successfully when rounded numbers are equal", async () => {
+          let paymentCollection = await service.createPaymentCollections({
+            currency_code: "usd",
+            amount: 200.129,
+          })
+
+          const paymentSession = await service.createPaymentSession(
+            paymentCollection.id,
+            {
+              provider_id: "pp_system_default",
+              amount: 200.129,
+              currency_code: "usd",
+              data: {},
+              context: {
+                customer: { id: "cus-id-1", email: "new@test.tsst" },
+              },
+            }
+          )
+
+          const payment = await service.authorizePaymentSession(
+            paymentSession.id,
+            {}
+          )
+
+          await service.capturePayment({
+            amount: 200.13, // rounded from payment provider
+            payment_id: payment.id,
+          })
+
+          await service.completePaymentCollections(paymentCollection.id)
+
+          paymentCollection = await service.retrievePaymentCollection(
+            paymentCollection.id,
+            { relations: ["payment_sessions", "payments.captures"] }
+          )
+
+          expect(paymentCollection).toEqual(
+            expect.objectContaining({
+              id: expect.any(String),
+              currency_code: "usd",
+              amount: 200.129,
+              authorized_amount: 200.129,
+              captured_amount: 200.13,
+              status: "completed",
+              deleted_at: null,
+              completed_at: expect.any(Date),
+              payment_sessions: [
+                expect.objectContaining({
+                  id: expect.any(String),
+                  currency_code: "usd",
+                  amount: 200.129,
+                  provider_id: "pp_system_default",
+                  status: "authorized",
+                  authorized_at: expect.any(Date),
+                }),
+              ],
+              payments: [
+                expect.objectContaining({
+                  id: expect.any(String),
+                  amount: 200.129,
+                  currency_code: "usd",
+                  provider_id: "pp_system_default",
+                  captures: [
+                    expect.objectContaining({
+                      amount: 200.13,
                     }),
                   ],
                 }),
@@ -538,6 +631,62 @@ moduleIntegrationTestRunner<IPaymentModuleService>({
               })
             )
           })
+
+          it("should auto capture payment when provider returns captured status", async () => {
+            const collection = await service.createPaymentCollections({
+              amount: 200,
+              currency_code: "usd",
+            })
+
+            const session = await service.createPaymentSession(collection.id, {
+              provider_id: "pp_system_default",
+              amount: 100,
+              currency_code: "usd",
+              data: {},
+              context: {
+                customer: { id: "cus-id-1", email: "new@test.tsst" },
+              },
+            })
+
+            // Mock the provider to return CAPTURED status
+            const authorizePaymentMock = jest
+              .spyOn(
+                (service as any).paymentProviderService_,
+                "authorizePayment"
+              )
+              .mockResolvedValueOnce({
+                data: { payment_id: "external_payment_id" },
+                status: "captured",
+              })
+
+            const capturePaymentMock = jest.spyOn(
+              (service as any).paymentProviderService_,
+              "capturePayment"
+            )
+
+            const payment = await service.authorizePaymentSession(
+              session.id,
+              {}
+            )
+
+            expect(authorizePaymentMock).toHaveBeenCalledTimes(1)
+            expect(capturePaymentMock).not.toHaveBeenCalled()
+
+            expect(payment).toEqual(
+              expect.objectContaining({
+                id: expect.any(String),
+                amount: 100,
+                currency_code: "usd",
+                provider_id: "pp_system_default",
+                captured_at: expect.any(Date),
+                captures: [expect.objectContaining({})],
+                payment_session: expect.objectContaining({
+                  status: "authorized",
+                  authorized_at: expect.any(Date),
+                }),
+              })
+            )
+          })
         })
       })
 
@@ -685,6 +834,68 @@ moduleIntegrationTestRunner<IPaymentModuleService>({
 
             expect(error.message).toEqual(
               "The payment: pay-id-1 has been canceled."
+            )
+          })
+
+          it("should not call provider capturePayment for auto-captured payments", async () => {
+            const collection = await service.createPaymentCollections({
+              amount: 200,
+              currency_code: "usd",
+            })
+
+            const session = await service.createPaymentSession(collection.id, {
+              provider_id: "pp_system_default",
+              amount: 100,
+              currency_code: "usd",
+              data: {},
+              context: {
+                customer: { id: "cus-id-1", email: "new@test.tsst" },
+              },
+            })
+
+            // Mock the provider to return CAPTURED status for auto-capture
+            jest
+              .spyOn(
+                (service as any).paymentProviderService_,
+                "authorizePayment"
+              )
+              .mockResolvedValueOnce({
+                data: { payment_id: "external_payment_id" },
+                status: "captured",
+              })
+
+            const payment = await service.authorizePaymentSession(
+              session.id,
+              {}
+            )
+
+            // Spy on capturePayment provider method
+            const capturePaymentMock = jest.spyOn(
+              (service as any).paymentProviderService_,
+              "capturePayment"
+            )
+
+            // Try to capture the already auto-captured payment
+            const capturedPayment = await service.capturePayment({
+              amount: 100,
+              payment_id: payment.id,
+            })
+
+            // Provider's capturePayment should NOT be called since it was auto-captured
+            expect(capturePaymentMock).not.toHaveBeenCalled()
+
+            // Verify data consistency
+            expect(capturedPayment).toEqual(
+              expect.objectContaining({
+                id: payment.id,
+                amount: 100,
+                captured_at: expect.any(Date),
+                captures: [
+                  expect.objectContaining({
+                    amount: 100,
+                  }),
+                ],
+              })
             )
           })
         })
@@ -1032,7 +1243,7 @@ moduleIntegrationTestRunner<IPaymentModuleService>({
 
             expect(finalCollection).toEqual(
               expect.objectContaining({
-                status: "authorized",
+                status: "completed",
                 amount: 500,
                 authorized_amount: 1000,
                 captured_amount: 1000,

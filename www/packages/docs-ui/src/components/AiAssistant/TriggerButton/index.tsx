@@ -4,12 +4,13 @@ import React from "react"
 import { Button } from "../../Button"
 import { Tooltip } from "../../Tooltip"
 import { Kbd } from "../../Kbd"
-import { getOsShortcut } from "../../../utils"
-import { useAiAssistant, useSearch, useSiteConfig } from "../../../providers"
+import { getOsShortcut } from "../../../utils/os-browser-utils"
+import { useAiAssistant } from "../../../providers/AiAssistant"
 import { useKeyboardShortcut } from "../../../hooks"
+import { useSearch } from "../../../providers/Search"
+import { useSiteConfig } from "../../../providers/SiteConfig"
 import Image from "next/image"
 
-// const AI_ASSISTANT_ICON = "/images/ai-assistent-luminosity.png"
 const AI_ASSISTANT_ICON_ACTIVE = "/images/ai-assistent.png"
 
 export const AiAssistantTriggerButton = () => {

@@ -190,7 +190,7 @@ export class Compiler {
   }> {
     const ts = await this.#loadTSCompiler()
     const filesToCompile = tsConfig.fileNames.filter((fileName) => {
-      return !chunksToIgnore.some((chunk) => fileName.includes(`${chunk}/`))
+      return !chunksToIgnore.some((chunk) => fileName.includes(`${chunk}`))
     })
 
     /**
@@ -495,7 +495,7 @@ export class Compiler {
         "dist",
         "static",
         "private",
-        ".medusa/**/*",
+        ".medusa",
         ...this.#backendIgnoreFiles,
       ],
     })

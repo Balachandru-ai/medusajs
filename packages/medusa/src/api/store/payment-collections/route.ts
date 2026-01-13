@@ -1,16 +1,20 @@
-import { createPaymentCollectionForCartWorkflow } from "@medusajs/core-flows"
-import {
-  ContainerRegistrationKeys,
-  remoteQueryObjectFromString,
-} from "@medusajs/framework/utils"
+import { createPaymentCollectionForCartWorkflowId } from "@medusajs/core-flows"
 import {
   AuthenticatedMedusaRequest,
   MedusaResponse,
 } from "@medusajs/framework/http"
 import { HttpTypes } from "@medusajs/framework/types"
+import {
+  ContainerRegistrationKeys,
+  remoteQueryObjectFromString,
+} from "@medusajs/framework/utils"
+import { Modules } from "@medusajs/utils"
 
 export const POST = async (
-  req: AuthenticatedMedusaRequest<HttpTypes.StoreCreatePaymentCollection>,
+  req: AuthenticatedMedusaRequest<
+    HttpTypes.StoreCreatePaymentCollection,
+    HttpTypes.SelectParams
+  >,
   res: MedusaResponse<HttpTypes.StorePaymentCollectionResponse>
 ) => {
   const remoteQuery = req.scope.resolve(ContainerRegistrationKeys.REMOTE_QUERY)
@@ -27,7 +31,8 @@ export const POST = async (
   let paymentCollection = cartCollectionRelation?.payment_collection
 
   if (!paymentCollection) {
-    await createPaymentCollectionForCartWorkflow(req.scope).run({
+    const we = req.scope.resolve(Modules.WORKFLOW_ENGINE)
+    await we.run(createPaymentCollectionForCartWorkflowId, {
       input: req.body,
     })
 

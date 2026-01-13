@@ -7,128 +7,121 @@ import React, {
   useEffect,
   useState,
 } from "react"
-import { Analytics, AnalyticsBrowser } from "@segment/analytics-next"
+import { useSegmentAnalytics } from "./providers/segment"
+import { usePostHogAnalytics } from "./providers/posthog"
+import { useReoDevAnalytics } from "./providers/reo-dev"
+import { usePathname } from "next/navigation"
 
 export type ExtraData = {
   section?: string
-  [key: string]: any
+  [key: string]: unknown
 }
 
 export type AnalyticsContextType = {
-  loaded: boolean
-  analytics: Analytics | null
-  track: (
-    event: string,
-    options?: Record<string, any>,
-    callback?: () => void
-  ) => void
+  track: ({
+    event,
+    instant,
+  }: {
+    event: TrackedEvent
+    instant?: boolean
+  }) => void
 }
+
+type Trackers = "segment" | "posthog"
 
 export type TrackedEvent = {
   event: string
-  options?: Record<string, any>
+  options?: Record<string, unknown>
+  callback?: () => void
+  tracker?: Trackers | Trackers[]
 }
 
 const AnalyticsContext = createContext<AnalyticsContextType | null>(null)
 
 export type AnalyticsProviderProps = {
-  writeKey?: string
+  segmentWriteKey?: string
+  reoDevKey?: string
   children?: React.ReactNode
 }
 
-const LOCAL_STORAGE_KEY = "ajs_anonymous_id"
+const DEFAULT_TRACKER: Trackers = "posthog"
 
 export const AnalyticsProvider = ({
-  writeKey = "temp",
+  segmentWriteKey,
+  reoDevKey,
   children,
 }: AnalyticsProviderProps) => {
-  // loaded is used to ensure that a connection has been made to segment
-  // even if it failed. This is to ensure that the connection isn't
-  // continuously retried
-  const [loaded, setLoaded] = useState<boolean>(false)
-  const [analytics, setAnalytics] = useState<Analytics | null>(null)
-  const analyticsBrowser = new AnalyticsBrowser()
-  const [queue, setQueue] = useState<TrackedEvent[]>([])
+  const [eventsQueue, setEventsQueue] = useState<TrackedEvent[]>([])
+  const { track: trackWithSegment } = useSegmentAnalytics({
+    segmentWriteKey,
+    setEventsQueue,
+  })
+  const { track: trackWithPostHog } = usePostHogAnalytics()
+  useReoDevAnalytics({ reoDevKey })
+  const pathname = usePathname()
 
-  const init = useCallback(() => {
-    if (!loaded) {
-      analyticsBrowser
-        .load(
-          { writeKey },
-          {
-            initialPageview: true,
-            user: {
-              localStorage: {
-                key: LOCAL_STORAGE_KEY,
-              },
-            },
-          }
-        )
-        .then((instance) => {
-          setAnalytics(instance[0])
-        })
-        .catch((e) =>
-          console.error(`Could not connect to Segment. Error: ${e}`)
-        )
-        .finally(() => setLoaded(true))
-    }
-  }, [loaded, writeKey])
+  const processEvent = useCallback(
+    async (event: TrackedEvent) => {
+      const trackers = !event.tracker
+        ? [DEFAULT_TRACKER]
+        : Array.isArray(event.tracker)
+          ? event.tracker
+          : [event.tracker]
 
-  const track = useCallback(
-    async (
-      event: string,
-      options?: Record<string, any>,
-      callback?: () => void
-    ) => {
-      if (analytics) {
-        void analytics.track(
-          event,
-          {
-            ...options,
-            uuid: analytics.user().anonymousId(),
-          },
-          callback
-        )
-      } else {
-        // push the event into the queue
-        setQueue((prevQueue) => [
-          ...prevQueue,
-          {
-            event,
-            options,
-          },
-        ])
-        if (callback) {
-          console.warn(
-            "Segment is either not installed or not configured. Simulating success..."
-          )
-          callback()
-        }
+      event.options = {
+        url: pathname,
+        label: document.title,
+        os: window.navigator.userAgent,
+        ...event.options,
       }
+
+      await Promise.all(
+        trackers.map(async (tracker) => {
+          switch (tracker) {
+            case "posthog":
+              return trackWithPostHog(event)
+            case "segment":
+            default:
+              return trackWithSegment(event)
+          }
+        })
+      )
     },
-    [analytics, loaded]
+    [trackWithSegment, trackWithPostHog, pathname]
   )
 
-  useEffect(() => {
-    init()
-  }, [init])
+  const track = ({ event }: { event: TrackedEvent }) => {
+    // Always queue events - this makes tracking non-blocking
+    setEventsQueue((prevQueue) => [...prevQueue, event])
+
+    // Process event callback immediately
+    // This ensures that the callback is called even if the event is queued
+    event.callback?.()
+  }
 
   useEffect(() => {
-    if (analytics && queue.length) {
-      // track stuff in queue
-      queue.forEach(async (trackEvent) =>
-        track(trackEvent.event, trackEvent.options)
-      )
-      setQueue([])
+    if (!eventsQueue.length) {
+      return
     }
-  }, [analytics, queue])
+
+    // Process queue in background without blocking
+    const currentQueue = [...eventsQueue]
+    setEventsQueue([])
+
+    // Process events asynchronously in batches to avoid overwhelming the system
+    const batchSize = 5
+    for (let i = 0; i < currentQueue.length; i += batchSize) {
+      const batch = currentQueue.slice(i, i + batchSize)
+      setTimeout(() => {
+        batch.forEach(processEvent)
+      }, i * 10) // Small delay between batches
+    }
+  }, [eventsQueue, processEvent])
 
   return (
     <AnalyticsContext.Provider
       value={{
-        analytics,
         track,
-        loaded,
       }}
     >
       {children}

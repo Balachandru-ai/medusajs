@@ -53,6 +53,17 @@ export const ModulesDefinition: {
       scope: MODULE_SCOPE.INTERNAL,
     },
   },
+  [Modules.CACHING]: {
+    key: Modules.CACHING,
+    defaultPackage: false,
+    label: upperCaseFirst(Modules.CACHING),
+    isRequired: false,
+    isQueryable: false,
+    dependencies: [Modules.EVENT_BUS, ContainerRegistrationKeys.LOGGER],
+    defaultModuleDeclaration: {
+      scope: MODULE_SCOPE.INTERNAL,
+    },
+  },
   [Modules.PRODUCT]: {
     key: Modules.PRODUCT,
     defaultPackage: false,
@@ -212,6 +223,17 @@ export const ModulesDefinition: {
     key: Modules.API_KEY,
     defaultPackage: false,
     label: upperCaseFirst(Modules.API_KEY),
+    isRequired: false,
+    isQueryable: true,
+    dependencies: [ContainerRegistrationKeys.LOGGER],
+    defaultModuleDeclaration: {
+      scope: MODULE_SCOPE.INTERNAL,
+    },
+  },
+  [Modules.SETTINGS]: {
+    key: Modules.SETTINGS,
+    defaultPackage: false,
+    label: upperCaseFirst(Modules.SETTINGS),
     isRequired: false,
     isQueryable: true,
     dependencies: [ContainerRegistrationKeys.LOGGER],

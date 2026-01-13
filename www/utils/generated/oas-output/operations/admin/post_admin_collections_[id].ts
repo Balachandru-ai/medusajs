@@ -77,7 +77,7 @@
  *     label: cURL
  *     source: |-
  *       curl -X POST '{backend_url}/admin/collections/{id}' \
- *       -H 'Authorization: Bearer {access_token}' \
+ *       -H 'Authorization: Bearer {jwt_token}' \
  *       -H 'Content-Type: application/json' \
  *       --data-raw '{
  *         "metadata": {}
@@ -108,9 +108,9 @@
  *   - name: product-collection.updated
  *     payload: |-
  *       ```ts
- *       [{
+ *       {
  *         id, // The ID of the product collection
- *       }]
+ *       }
  *       ```
  *     description: Emitted when product collections are updated.
  *     deprecated: false

@@ -12,6 +12,8 @@
  *   - barcode
  *   - ean
  *   - upc
+ *   - thumbnail
+ *   - images
  *   - allow_backorder
  *   - manage_inventory
  *   - hs_code
@@ -134,11 +136,28 @@
  *   metadata:
  *     type: object
  *     description: The variant's metadata, can hold custom key-value pairs.
+ *     externalDocs:
+ *       url: https://docs.medusajs.com/api/admin#manage-metadata
+ *       description: Learn how to manage metadata
  *   inventory_items:
  *     type: array
  *     description: The variant's inventory items.
  *     items:
  *       $ref: "#/components/schemas/AdminProductVariantInventoryItemLink"
+ *   images:
+ *     type: array
+ *     description: The variant's images.
+ *     items:
+ *       $ref: "#/components/schemas/BaseProductImage"
+ *   thumbnail:
+ *     type: string
+ *     title: thumbnail
+ *     description: The variant's thumbnail.
+ *   translations:
+ *     type: array
+ *     description: The variant's translations.
+ *     items:
+ *       $ref: "#/components/schemas/AdminTranslation"
  * 
 */
 

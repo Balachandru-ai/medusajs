@@ -22,7 +22,7 @@ For example, you can import products from another system.
 The workflow only starts the import, but you'll have to confirm it using the [Workflow Engine](https://docs.medusajs.com/resources/infrastructure-modules/workflow-engine).
 The below example shows how to confirm the import.
 
-<SourceCodeLink link="https://github.com/medusajs/medusa/blob/cab00ff2b8935fdd788157ee36402ae59b079268/packages/core/core-flows/src/product/workflows/import-products.ts#L88" />
+<SourceCodeLink link="https://github.com/medusajs/medusa/blob/a960fb75c9f662372fd5cd623f883f9d6d8ad473/packages/core/core-flows/src/product/workflows/import-products.ts#L88" />
 
 ## Examples
 
@@ -156,7 +156,7 @@ import {
   importProductsWorkflowId,
   waitConfirmationProductImportStepId,
 } from "@medusajs/core-flows"
-import { IWorkflowEngineService } from "@medusajs/framework/types"
+import type { IWorkflowEngineService } from "@medusajs/framework/types"
 import { Modules, TransactionHandlerType } from "@medusajs/framework/utils"
 import { StepResponse } from "@medusajs/framework/workflows-sdk"
 
@@ -205,6 +205,12 @@ This example API route uses the same implementation as the [Confirm Product Impo
 
 This section lists the events that are either triggered by the `emitEventStep` in the workflow, or by another workflow executed within this workflow.
 
+:::note
+
+The `emitEventStep` only emits the event after the workflow has finished successfully. So, even if it's executed in the middle of the workflow, it won't actually emit the event until the workflow has completed successfully. If the workflow fails, it won't emit the event at all.
+
+:::
+
 You can listen to these events in a subscriber, as explained in the [Subscribers](https://docs.medusajs.com/learn/fundamentals/events-and-subscribers) documentation.
 
 <Table>
@@ -234,18 +240,18 @@ Emitted when product variants are created.
 </Table.Cell>
       <Table.Cell>
 ```ts blockStyle="inline"
-[{
+{
   id, // The ID of the product variant
-}]
+}
 ```
 </Table.Cell>
       <Table.Cell>
 <CopyGeneratedSnippetButton tooltipText="Copy subscriber for event" type="subscriber" options={{
         event: "product-variant.created",
         payload: `\`\`\`ts
-[{
+{
   id, // The ID of the product variant
-}]
+}
 \`\`\``
         }}/>
 </Table.Cell>
@@ -259,18 +265,18 @@ Emitted when products are updated.
 </Table.Cell>
       <Table.Cell>
 ```ts blockStyle="inline"
-[{
+{
   id, // The ID of the product
-}]
+}
 ```
 </Table.Cell>
       <Table.Cell>
 <CopyGeneratedSnippetButton tooltipText="Copy subscriber for event" type="subscriber" options={{
         event: "product.updated",
         payload: `\`\`\`ts
-[{
+{
   id, // The ID of the product
-}]
+}
 \`\`\``
         }}/>
 </Table.Cell>
@@ -284,18 +290,18 @@ Emitted when products are created.
 </Table.Cell>
       <Table.Cell>
 ```ts blockStyle="inline"
-[{
+{
   id, // The ID of the product
-}]
+}
 ```
 </Table.Cell>
       <Table.Cell>
 <CopyGeneratedSnippetButton tooltipText="Copy subscriber for event" type="subscriber" options={{
         event: "product.created",
         payload: `\`\`\`ts
-[{
+{
   id, // The ID of the product
-}]
+}
 \`\`\``
         }}/>
 </Table.Cell>
@@ -309,18 +315,18 @@ Emitted when products are deleted.
 </Table.Cell>
       <Table.Cell>
 ```ts blockStyle="inline"
-[{
+{
   id, // The ID of the product
-}]
+}
 ```
 </Table.Cell>
       <Table.Cell>
 <CopyGeneratedSnippetButton tooltipText="Copy subscriber for event" type="subscriber" options={{
         event: "product.deleted",
         payload: `\`\`\`ts
-[{
+{
   id, // The ID of the product
-}]
+}
 \`\`\``
         }}/>
 </Table.Cell>

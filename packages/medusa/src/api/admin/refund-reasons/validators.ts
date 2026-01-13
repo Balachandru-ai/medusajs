@@ -1,5 +1,5 @@
-import { z } from "zod"
-import { createFindParams, createOperatorMap } from "../../utils/validators"
+import { z } from "@medusajs/framework/zod"
+import { createFindParams, createOperatorMap, createSelectParams } from "../../utils/validators"
 
 export type AdminCreatePaymentRefundReasonType = z.infer<
   typeof AdminCreatePaymentRefundReason
@@ -7,6 +7,7 @@ export type AdminCreatePaymentRefundReasonType = z.infer<
 export const AdminCreatePaymentRefundReason = z
   .object({
     label: z.string(),
+    code: z.string(),
     description: z.string().nullish(),
   })
   .strict()
@@ -17,6 +18,7 @@ export type AdminUpdatePaymentRefundReasonType = z.infer<
 export const AdminUpdatePaymentRefundReason = z
   .object({
     label: z.string().optional(),
+    code: z.string().optional(),
     description: z.string().nullish(),
   })
   .strict()
@@ -38,4 +40,10 @@ export const AdminGetRefundReasonsParams = createFindParams({
 )
 export type AdminGetRefundReasonsParamsType = z.infer<
   typeof AdminGetRefundReasonsParams
+>
+
+export const AdminGetRefundReasonParams = createSelectParams()
+
+export type AdminGetRefundReasonParamsType = z.infer<
+  typeof AdminGetRefundReasonParams
 >

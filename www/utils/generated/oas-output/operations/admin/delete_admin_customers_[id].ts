@@ -37,7 +37,7 @@
  *     label: cURL
  *     source: |-
  *       curl -X DELETE '{backend_url}/admin/customers/{id}' \
- *       -H 'Authorization: Bearer {access_token}'
+ *       -H 'Authorization: Bearer {jwt_token}'
  * tags:
  *   - Customers
  * responses:
@@ -82,9 +82,9 @@
  *   - name: customer.deleted
  *     payload: |-
  *       ```ts
- *       [{
+ *       {
  *         id, // The ID of the customer
- *       }]
+ *       }
  *       ```
  *     description: Emitted when a customer is deleted.
  *     deprecated: false

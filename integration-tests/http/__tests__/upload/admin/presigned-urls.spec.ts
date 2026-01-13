@@ -55,7 +55,7 @@ medusaIntegrationTestRunner({
             extension: "csv",
             mime_type: "text/csv",
             size: file.size,
-            url: expect.stringContaining(response.data.filename),
+            url: "/admin/uploads",
           })
         )
         expect(response.status).toEqual(200)

@@ -1,10 +1,10 @@
 "use client"
 
+import React from "react"
 import { Suspense, useEffect, useMemo } from "react"
 import { OpenAPI } from "types"
 import TagOperationParameters from "../../Operation/Parameters"
 import {
-  Badge,
   CodeBlock,
   isElmWindow,
   Link,
@@ -29,7 +29,7 @@ export type TagSectionSchemaProps = {
 }
 
 const TagSectionSchema = ({ schema, tagName }: TagSectionSchemaProps) => {
-  const { setActivePath, activePath, shownSidebar, updateItems } = useSidebar()
+  const { setActivePath, activePath } = useSidebar()
   const { displayedArea } = useArea()
   const formattedName = useMemo(
     () => singular(tagName).replaceAll(" ", ""),
@@ -112,7 +112,10 @@ const TagSectionSchema = ({ schema, tagName }: TagSectionSchemaProps) => {
                   Medusa application may support more fields and relations. To
                   view the models in the Medusa application and their relations,
                   visit the{" "}
-                  <Link href="https://docs.medusajs.com/resources/commerce-modules">
+                  <Link
+                    href="https://docs.medusajs.com/resources/commerce-modules"
+                    variant="content"
+                  >
                     Commerce Modules Documentation
                   </Link>
                 </Note>

@@ -6,7 +6,7 @@
  * required:
  *   - id
  *   - label
- *   - metadata
+ *   - code
  *   - created_at
  *   - updated_at
  * properties:
@@ -25,6 +25,9 @@
  *   metadata:
  *     type: object
  *     description: The refund reason's metadata, can hold custom key-value pairs.
+ *     externalDocs:
+ *       url: https://docs.medusajs.com/api/admin#manage-metadata
+ *       description: Learn how to manage metadata
  *   created_at:
  *     type: string
  *     format: date-time
@@ -35,6 +38,10 @@
  *     format: date-time
  *     title: updated_at
  *     description: The date the refund reason was updated.
+ *   code:
+ *     type: string
+ *     title: code
+ *     description: The refund reason's code.
  * 
 */
 

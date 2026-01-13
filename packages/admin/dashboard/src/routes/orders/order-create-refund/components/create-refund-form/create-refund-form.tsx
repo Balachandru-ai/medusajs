@@ -8,44 +8,48 @@ import {
   Textarea,
   toast,
 } from "@medusajs/ui"
-import { useEffect, useMemo } from "react"
+import { useEffect, useMemo, useState } from "react"
+import { formatValue } from "react-currency-input-field"
 import { useForm } from "react-hook-form"
 import { useTranslation } from "react-i18next"
-import { useNavigate, useSearchParams } from "react-router-dom"
+import { useSearchParams } from "react-router-dom"
 import * as zod from "zod"
 import { Form } from "../../../../../components/common/form"
 import { RouteDrawer, useRouteModal } from "../../../../../components/modals"
 import { KeyboundForm } from "../../../../../components/utilities/keybound-form"
-import { useRefundPayment } from "../../../../../hooks/api"
+import { useRefundPayment, useRefundReasons } from "../../../../../hooks/api"
 import { currencies } from "../../../../../lib/data/currencies"
 import { formatCurrency } from "../../../../../lib/format-currency"
 import { getLocaleAmount } from "../../../../../lib/money-amount-helpers"
-import { getPaymentsFromOrder } from "../../../order-detail/components/order-payment-section"
-import { formatValue } from "react-currency-input-field"
-import { formatProvider } from "../../../../../lib/format-provider"
+import { getPaymentsFromOrder } from "../../../../../lib/orders"
+import { useDocumentDirection } from "../../../../../hooks/use-document-direction"
+import { formatProvider } from "../../../../../lib/format-provider.ts"
 
 type CreateRefundFormProps = {
   order: HttpTypes.AdminOrder
-  refundReasons: HttpTypes.AdminRefundReason[]
 }
 
 const CreateRefundSchema = zod.object({
-  amount: zod.string().or(zod.number()),
-  refund_reason_id: zod.string().nullish(),
+  amount: zod.object({
+    value: zod.string().or(zod.number()),
+    float: zod.number().or(zod.null()),
+  }),
   note: zod.string().optional(),
+  refund_reason_id: zod.string().optional(),
 })
 
-export const CreateRefundForm = ({
-  order,
-  refundReasons,
-}: CreateRefundFormProps) => {
+export const CreateRefundForm = ({ order }: CreateRefundFormProps) => {
   const { t } = useTranslation()
   const { handleSuccess } = useRouteModal()
-  const navigate = useNavigate()
+  const { refund_reasons } = useRefundReasons()
+
   const [searchParams] = useSearchParams()
-  const paymentId = searchParams.get("paymentId")
+  const hasPaymentIdInSearchParams = !!searchParams.get("paymentId")
+  const [paymentId, setPaymentId] = useState<string | undefined>(
+    searchParams.get("paymentId") || undefined
+  )
   const payments = getPaymentsFromOrder(order)
-  const payment = payments.find((p) => p.id === paymentId)!
+  const payment = payments.find((p) => p.id === paymentId)
   const paymentAmount = payment?.amount || 0
 
   const currency = useMemo(
@@ -53,10 +57,13 @@ export const CreateRefundForm = ({
     [order.currency_code]
   )
 
+  const direction = useDocumentDirection()
   const form = useForm<zod.infer<typeof CreateRefundSchema>>({
     defaultValues: {
-      amount: paymentAmount,
-      note: "",
+      amount: {
+        value: paymentAmount.toFixed(currency.decimal_digits),
+        float: paymentAmount,
+      },
     },
     resolver: zodResolver(CreateRefundSchema),
   })
@@ -66,29 +73,35 @@ export const CreateRefundForm = ({
     const paymentAmount = (payment?.amount || 0) as number
     const pendingAmount =
       pendingDifference < 0
-        ? Math.min(pendingDifference, paymentAmount)
+        ? Math.min(Math.abs(pendingDifference), paymentAmount)
         : paymentAmount
 
     const normalizedAmount =
       pendingAmount < 0 ? pendingAmount * -1 : pendingAmount
 
-    form.setValue("amount", normalizedAmount as number)
-  }, [payment])
+    form.setValue("amount", {
+      value: normalizedAmount.toFixed(currency.decimal_digits),
+      float: normalizedAmount,
+    })
+  }, [payment?.id || ""])
 
   const { mutateAsync, isPending } = useRefundPayment(order.id, payment?.id!)
 
   const handleSubmit = form.handleSubmit(async (data) => {
     await mutateAsync(
       {
-        amount: parseFloat(data.amount as string),
-        refund_reason_id: data.refund_reason_id,
+        amount: data.amount.float!,
         note: data.note,
+        refund_reason_id: data.refund_reason_id,
       },
       {
         onSuccess: () => {
           toast.success(
             t("orders.payment.refundPaymentSuccess", {
-              amount: formatCurrency(data.amount, payment?.currency_code!),
+              amount: formatCurrency(
+                data.amount.float!,
+                payment?.currency_code!
+              ),
             })
           )
 
@@ -109,54 +122,69 @@ export const CreateRefundForm = ({
       >
         <RouteDrawer.Body className="flex-1 overflow-auto">
           <div className="flex flex-col gap-y-4">
-            <Select
-              value={payment?.id}
-              onValueChange={(value) => {
-                navigate(`/orders/${order.id}/refund?paymentId=${value}`, {
-                  replace: true,
-                })
-              }}
-            >
-              <Label className="txt-compact-small mb-[-6px] font-sans font-medium">
-                {t("orders.payment.selectPaymentToRefund")}
-              </Label>
+            {!hasPaymentIdInSearchParams && (
+              <Select
+                dir={direction}
+                value={paymentId}
+                onValueChange={(value) => {
+                  setPaymentId(value)
+                }}
+              >
+                <Label className="txt-compact-small mb-[-6px] font-sans font-medium">
+                  {t("orders.payment.selectPaymentToRefund")}
+                </Label>
 
-              <Select.Trigger>
-                <Select.Value
-                  placeholder={t("orders.payment.selectPaymentToRefund")}
-                />
-              </Select.Trigger>
+                <Select.Trigger>
+                  <Select.Value
+                    placeholder={t("orders.payment.selectPaymentToRefund")}
+                  />
+                </Select.Trigger>
 
-              <Select.Content>
-                {payments.map((payment) => {
-                  const totalRefunded = payment.refunds.reduce(
-                    (acc, next) => next.amount + acc,
-                    0
-                  )
+                <Select.Content>
+                  {payments.map((payment) => {
+                    const totalRefunded =
+                      payment.refunds?.reduce(
+                        (acc, next) => next.amount + acc,
+                        0
+                      ) || 0
 
-                  return (
-                    <Select.Item
-                      value={payment!.id}
-                      key={payment.id}
-                      disabled={
-                        !!payment.canceled_at || totalRefunded >= payment.amount
-                      }
-                      className="flex items-center justify-center"
-                    >
-                      <span>
-                        {getLocaleAmount(
-                          payment.amount as number,
-                          payment.currency_code
-                        )}
-                        {" - "}
-                      </span>
-                      <span>{formatProvider(payment.provider_id)}</span>
-                      <span> - (#{payment.id.substring(23)})</span>
-                    </Select.Item>
-                  )
-                })}
-              </Select.Content>
-            </Select>
+                    return (
+                      <Select.Item
+                        value={payment!.id}
+                        key={payment.id}
+                        disabled={
+                          !!payment.canceled_at ||
+                          totalRefunded >= payment.amount
+                        }
+                        className="flex items-center justify-center"
+                      >
+                        <span>
+                          {getLocaleAmount(
+                            payment.amount as number,
+                            payment.currency_code
+                          )}
+                          {" - "}
+                        </span>
+                        <span>{formatProvider(payment.provider_id)}</span>
+                        <span> - (#{payment.id.substring(23)})</span>
+                      </Select.Item>
+                    )
+                  })}
+                </Select.Content>
+              </Select>
+            )}
+            {hasPaymentIdInSearchParams && (
+              <div className="flex items-center">
+                <span>
+                  {getLocaleAmount(
+                    payment!.amount as number,
+                    payment!.currency_code
+                  )}
+                </span>
+                <span> - </span>
+                <span>(#{payment!.id.substring(23)})</span>
+              </div>
+            )}
 
             <Form.Field
               control={form.control}
@@ -182,9 +210,12 @@ export const CreateRefundForm = ({
                         decimalScale={currency.decimal_digits}
                         symbol={currency.symbol_native}
                         code={currency.code}
-                        value={field.value}
+                        value={field.value.value}
                         onValueChange={(_value, _name, values) =>
-                          onChange(values?.value ? values?.value : "")
+                          onChange({
+                            value: values?.value ?? "",
+                            float: values?.float ?? null,
+                          })
                         }
                         autoFocus
                       />
@@ -196,8 +227,7 @@ export const CreateRefundForm = ({
               }}
             />
 
-            {/* TODO: Bring this back when we have a refund reason management UI */}
-            {/* <Form.Field
+            <Form.Field
               control={form.control}
               name="refund_reason_id"
               render={({ field }) => {
@@ -206,19 +236,30 @@ export const CreateRefundForm = ({
                     <Form.Label>{t("fields.refundReason")}</Form.Label>
 
                     <Form.Control>
-                      <Combobox
-                        {...field}
-                        options={refundReasons.map((pp) => ({
-                          label: upperCaseFirst(pp.label),
-                          value: pp.id,
-                        }))}
-                      />
+                      <Select
+                        dir={direction}
+                        value={field.value}
+                        onValueChange={field.onChange}
+                      >
+                        <Select.Trigger>
+                          <Select.Value />
+                        </Select.Trigger>
+
+                        <Select.Content>
+                          {refund_reasons?.map((reason) => (
+                            <Select.Item key={reason.id} value={reason.id}>
+                              {reason.label}
+                            </Select.Item>
+                          ))}
+                        </Select.Content>
+                      </Select>
                     </Form.Control>
+
                     <Form.ErrorMessage />
                   </Form.Item>
                 )
               }}
-            /> */}
+            />
 
             <Form.Field
               control={form.control}

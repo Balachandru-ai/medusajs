@@ -4,10 +4,11 @@ import {
   generatePublishableKey,
   generateStoreHeaders,
 } from "../../../../helpers/create-admin-user"
+import { ProductStatus } from "@medusajs/utils"
 
 jest.setTimeout(50000)
 
-const env = { MEDUSA_FF_MEDUSA_V2: true }
+const env = {}
 const adminHeaders = { headers: { "x-medusa-access-token": "test_token" } }
 
 medusaIntegrationTestRunner({
@@ -80,6 +81,7 @@ medusaIntegrationTestRunner({
             {
               title: "Test fixture",
               shipping_profile_id: shippingProfile.id,
+              status: ProductStatus.PUBLISHED,
               options: [
                 { title: "size", values: ["large", "small"] },
                 { title: "color", values: ["green"] },

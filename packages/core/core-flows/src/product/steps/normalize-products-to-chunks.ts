@@ -1,11 +1,13 @@
-import { parse, Parser } from "csv-parse"
-import { HttpTypes, IFileModuleService } from "@medusajs/framework/types"
+import { CsvError, parse, Parser } from "csv-parse"
+import type { HttpTypes, IFileModuleService } from "@medusajs/framework/types"
 import {
-  Modules,
   CSVNormalizer,
+  MedusaError,
+  Modules,
   productValidators,
 } from "@medusajs/framework/utils"
-import { StepResponse, createStep } from "@medusajs/framework/workflows-sdk"
+import { createStep, StepResponse } from "@medusajs/framework/workflows-sdk"
+import { MedusaErrorTypes } from "@medusajs/utils"
 
 /**
  * The CSV file content to parse.
@@ -13,6 +15,8 @@ import { StepResponse, createStep } from "@medusajs/framework/workflows-sdk"
 export type NormalizeProductCsvV1StepInput = string
 
 export const normalizeCsvToChunksStepId = "normalize-product-csv-to-chunks"
+
+type Chunk = { id: string; toCreate: number; toUpdate: number }
 
 /**
  * Processes a chunk of products by writing them to a file. Later the
@@ -23,7 +27,7 @@ async function processChunk(
   fileKey: string,
   csvRows: ReturnType<(typeof CSVNormalizer)["preProcess"]>[],
   currentRowNumber: number
-) {
+): Promise<Chunk> {
   const normalizer = new CSVNormalizer(csvRows)
   const products = normalizer.proccess(currentRowNumber)
 
@@ -76,7 +80,7 @@ async function createChunks(
   file: IFileModuleService,
   fileKey: string,
   stream: Parser
-) {
+): Promise<Chunk[]> {
   /**
    * The row under process
    */
@@ -97,7 +101,7 @@ async function createChunks(
    * Validated chunks that have been written with the file
    * provider
    */
-  const chunks: { id: string; toCreate: number; toUpdate: number }[] = []
+  const chunks: Chunk[] = []
 
   /**
    * Currently collected rows to be processed as one chunk
@@ -192,36 +196,57 @@ async function createChunks(
 export const normalizeCsvToChunksStep = createStep(
   normalizeCsvToChunksStepId,
   async (fileKey: NormalizeProductCsvV1StepInput, { container }) => {
-    const file = container.resolve(Modules.FILE)
-    const contents = await file.getDownloadStream(fileKey)
-    const chunks = await createChunks(
-      file,
-      fileKey,
-      contents.pipe(
-        parse({
+    return new Promise<
+      StepResponse<{
+        chunks: Chunk[]
+        summary: Omit<Chunk, "id">
+      }>
+    >(async (resolve, reject) => {
+      try {
+        const file = container.resolve(Modules.FILE)
+        const contents = await file.getDownloadStream(fileKey)
+
+        const transformer = parse({
           columns: true,
           skip_empty_lines: true,
         })
-      )
-    )
 
-    const summary = chunks.reduce<{ toCreate: number; toUpdate: number }>(
-      (result, chunk) => {
-        result.toCreate = result.toCreate + chunk.toCreate
-        result.toUpdate = result.toUpdate + chunk.toUpdate
-        return result
-      },
-      { toCreate: 0, toUpdate: 0 }
-    )
+        contents.on("error", reject)
 
-    /**
-     * Delete CSV file once we have the chunks
-     */
-    await file.deleteFiles(fileKey)
+        const chunks = await createChunks(
+          file,
+          fileKey,
+          contents.pipe(transformer)
+        )
 
-    return new StepResponse({
-      chunks,
-      summary,
+        const summary = chunks.reduce<{ toCreate: number; toUpdate: number }>(
+          (result, chunk) => {
+            result.toCreate = result.toCreate + chunk.toCreate
+            result.toUpdate = result.toUpdate + chunk.toUpdate
+            return result
+          },
+          { toCreate: 0, toUpdate: 0 }
+        )
+
+        /**
+         * Delete CSV file once we have the chunks
+         */
+        await file.deleteFiles(fileKey)
+
+        resolve(
+          new StepResponse({
+            chunks,
+            summary,
+          })
+        )
+      } catch (error) {
+        if (error instanceof CsvError) {
+          return reject(
+            new MedusaError(MedusaErrorTypes.INVALID_DATA, error.message)
+          )
+        }
+        reject(error)
+      }
     })
   }
 )

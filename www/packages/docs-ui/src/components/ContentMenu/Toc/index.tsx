@@ -2,14 +2,14 @@
 
 import React, { useEffect } from "react"
 import { ToCItem, ToCItemUi } from "types"
+import { useScrollController } from "../../../hooks/use-scroll-utils"
 import {
   ActiveOnScrollItem,
   useActiveOnScroll,
-  useScrollController,
-} from "../../../hooks"
+} from "../../../hooks/use-active-on-scroll"
 import clsx from "clsx"
 import Link from "next/link"
-import { useSiteConfig } from "../../../providers"
+import { useSiteConfig } from "../../../providers/SiteConfig"
 import { Loading } from "../../Loading"
 
 export const ContentMenuToc = () => {
@@ -18,8 +18,11 @@ export const ContentMenuToc = () => {
     maxLevel: 4,
   })
 
-  const formatHeadingContent = (content: string | null): string => {
-    return content?.replaceAll(/#$/g, "") || ""
+  const formatHeadingContent = (heading: HTMLHeadingElement): string => {
+    return Array.from(heading.childNodes)
+      .filter((child) => child.nodeType === Node.TEXT_NODE && child.textContent)
+      .map((textNode) => textNode.textContent!.trim())
+      .join("")
   }
 
   const formatHeadingObject = ({
@@ -28,7 +31,7 @@ export const ContentMenuToc = () => {
   }: ActiveOnScrollItem): ToCItemUi => {
     const level = parseInt(heading.tagName.replace("H", ""))
     return {
-      title: formatHeadingContent(heading.textContent),
+      title: formatHeadingContent(heading),
       id: heading.id,
       level,
       children: children?.map(formatHeadingObject),
@@ -68,7 +71,7 @@ export const ContentMenuToc = () => {
 
   return (
     <div className="h-max max-h-full overflow-y-hidden flex relative flex-col">
-      <div className="absolute -left-px top-0 h-full w-[1.5px] bg-medusa-border-base" />
+      <div className="absolute left-0 top-docs_0.5 h-[calc(100%-8px)] w-[1.5px] bg-medusa-border-base" />
       {items !== null && (
         <TocList
           items={items}
@@ -89,7 +92,7 @@ type TocListProps = {
 
 const TocList = ({ items, activeItemId, className }: TocListProps) => {
   return (
-    <ul className={className}>
+    <ul className={className} data-testid="toc-list">
       {items.map((item) => (
         <TocItem item={item} key={item.id} activeItemId={activeItemId} />
       ))}
@@ -105,13 +108,11 @@ type TocItemProps = {
 const TocItem = ({ item, activeItemId }: TocItemProps) => {
   const { scrollToElement } = useScrollController()
   return (
-    <li className="w-full pt-docs_0.5 toc-item">
+    <li className="w-full pt-docs_0.5 toc-item" data-testid="toc-item">
       <Link
         href={`#${item.id}`}
         className={clsx(
-          "text-x-small-plus block w-full border-l-[1.5px]",
-          item.id === activeItemId &&
-            "border-medusa-fg-base text-medusa-fg-base",
+          "text-x-small-plus block w-full relative",
           item.id !== activeItemId &&
             "text-medusa-fg-muted hover:text-medusa-fg-base border-transparent"
         )}
@@ -125,6 +126,12 @@ const TocItem = ({ item, activeItemId }: TocItemProps) => {
           scrollToElement(elm)
         }}
       >
+        <span
+          className={clsx(
+            "absolute left-0 top-0 w-[1.5px] h-full bg-medusa-fg-base rounded-full",
+            item.id !== activeItemId && "invisible"
+          )}
+        />
         {item.title}
       </Link>
       {(item.children?.length ?? 0) > 0 && (
@@ -136,7 +143,7 @@ const TocItem = ({ item, activeItemId }: TocItemProps) => {
 
 const EmptyTocItems = () => {
   return (
-    <div className="animate-pulse">
+    <div className="animate-pulse" data-testid="empty-toc-items">
       <Loading count={5} className="pt-docs_0.5 px-docs_0.75 !my-0" />
     </div>
   )

@@ -10,6 +10,8 @@
  *   - barcode
  *   - ean
  *   - upc
+ *   - thumbnail
+ *   - images
  *   - allow_backorder
  *   - manage_inventory
  *   - hs_code
@@ -128,6 +130,18 @@
  *   metadata:
  *     type: object
  *     description: The variant's metadata, can hold custom key-value pairs.
+ *     externalDocs:
+ *       url: https://docs.medusajs.com/api/store#manage-metadata
+ *       description: Learn how to manage metadata
+ *   thumbnail:
+ *     type: string
+ *     title: thumbnail
+ *     description: The variant's thumbnail.
+ *   images:
+ *     type: array
+ *     description: The variant's images.
+ *     items:
+ *       $ref: "#/components/schemas/BaseProductImage"
  * 
 */
 

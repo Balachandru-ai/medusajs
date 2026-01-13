@@ -1,5 +1,5 @@
 import { FetchError } from "@medusajs/js-sdk"
-import { HttpTypes } from "@medusajs/types"
+import { CreateOrderCreditLineDTO, HttpTypes } from "@medusajs/types"
 import {
   QueryKey,
   useMutation,
@@ -18,6 +18,7 @@ const _orderKeys = queryKeysFactory(ORDERS_QUERY_KEY) as TQueryKey<"orders"> & {
   preview: (orderId: string) => any
   changes: (orderId: string) => any
   lineItems: (orderId: string) => any
+  shippingOptions: (orderId: string) => any
 }
 
 _orderKeys.preview = function (id: string) {
@@ -30,6 +31,10 @@ _orderKeys.changes = function (id: string) {
 
 _orderKeys.lineItems = function (id: string) {
   return [this.detail(id), "lineItems"]
+}
+
+_orderKeys.shippingOptions = function (id: string) {
+  return [this.detail(id), "shippingOptions"]
 }
 
 export const ordersQueryKeys = _orderKeys
@@ -119,6 +124,28 @@ export const useOrders = (
   const { data, ...rest } = useQuery({
     queryFn: async () => sdk.admin.order.list(query),
     queryKey: ordersQueryKeys.list(query),
+    ...options,
+  })
+
+  return { ...data, ...rest }
+}
+
+export const useOrderShippingOptions = (
+  id: string,
+  query?: HttpTypes.AdminGetOrderShippingOptionList,
+  options?: Omit<
+    UseQueryOptions<
+      { shipping_options: HttpTypes.AdminShippingOption[] },
+      FetchError,
+      { shipping_options: HttpTypes.AdminShippingOption[] },
+      QueryKey
+    >,
+    "queryFn" | "queryKey"
+  >
+) => {
+  const { data, ...rest } = useQuery({
+    queryFn: async () => sdk.admin.order.listShippingOptions(id, query),
+    queryKey: ordersQueryKeys.shippingOptions(id),
     ...options,
   })
 
@@ -349,6 +376,80 @@ export const useCancelOrderTransfer = (
         queryKey: ordersQueryKeys.changes(orderId),
       })
 
+      options?.onSuccess?.(data, variables, context)
+    },
+    ...options,
+  })
+}
+
+export const useCreateOrderCreditLine = (
+  orderId: string,
+  options?: UseMutationOptions<
+    HttpTypes.AdminOrderResponse,
+    FetchError,
+    Omit<CreateOrderCreditLineDTO, "order_id">
+  >
+) => {
+  return useMutation({
+    mutationFn: (payload) => sdk.admin.order.createCreditLine(orderId, payload),
+    onSuccess: (data, variables, context) => {
+      queryClient.invalidateQueries({
+        queryKey: ordersQueryKeys.details(),
+      })
+
+      queryClient.invalidateQueries({
+        queryKey: ordersQueryKeys.preview(orderId),
+      })
+
+      options?.onSuccess?.(data, variables, context)
+    },
+    ...options,
+  })
+}
+
+export const useUpdateOrderChange = (
+  orderChangeId: string,
+  options?: UseMutationOptions<
+    HttpTypes.AdminOrderChangeResponse,
+    FetchError,
+    { carry_over_promotions: boolean }
+  >
+) => {
+  return useMutation({
+    mutationFn: (payload: { carry_over_promotions: boolean }) =>
+      sdk.admin.order.updateOrderChange(orderChangeId, payload),
+    onSuccess: (data, variables, context) => {
+      const orderId = data.order_change.order_id
+
+      queryClient.invalidateQueries({
+        queryKey: ordersQueryKeys.details(),
+      })
+
+      queryClient.invalidateQueries({
+        queryKey: ordersQueryKeys.preview(orderId),
+      })
+
+      queryClient.invalidateQueries({
+        queryKey: ordersQueryKeys.changes(orderId),
+      })
+
+      options?.onSuccess?.(data, variables, context)
+    },
+    ...options,
+  })
+}
+
+export const useExportOrders = (
+  query?: HttpTypes.AdminOrderFilters,
+  options?: UseMutationOptions<
+    { transaction_id: string },
+    FetchError,
+    HttpTypes.AdminOrderFilters
+  >
+) => {
+  return useMutation({
+    mutationFn: () => sdk.admin.order.export(query),
+    onSuccess: (data, variables, context) => {
       options?.onSuccess?.(data, variables, context)
     },
     ...options,

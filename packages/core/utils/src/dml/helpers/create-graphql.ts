@@ -1,9 +1,9 @@
 import type { PropertyType } from "@medusajs/types"
 import { DmlEntity } from "../entity"
-import { parseEntityName } from "./entity-builder/parse-entity-name"
-import { setGraphQLRelationship } from "./graphql-builder/set-relationship"
-import { getGraphQLAttributeFromDMLPropety } from "./graphql-builder/get-attribute"
 import { getForeignKey } from "./entity-builder"
+import { parseEntityName } from "./entity-builder/parse-entity-name"
+import { getGraphQLAttributeFromDMLPropety } from "./graphql-builder/get-attribute"
+import { setGraphQLRelationship } from "./graphql-builder/set-relationship"
 
 export function generateGraphQLFromEntity<T extends DmlEntity<any, any>>(
   entity: T
@@ -82,5 +82,14 @@ export const toGraphQLSchema = <T extends any[]>(entities: T): string => {
     return entity
   })
 
-  return gqlSchemas.join("\n")
+  const defaultMedusaSchema =
+    gqlSchemas.length > 0
+      ? `
+    scalar DateTime
+    scalar JSON
+    directive @enumValue(value: String) on ENUM_VALUE
+  `
+      : ""
+
+  return defaultMedusaSchema + gqlSchemas.join("\n")
 }

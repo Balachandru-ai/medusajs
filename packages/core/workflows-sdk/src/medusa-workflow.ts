@@ -22,6 +22,10 @@ class MedusaWorkflow {
     MedusaWorkflow.workflows[workflowId] = exportedWorkflow
   }
 
+  static unregisterWorkflow(workflowId) {
+    delete MedusaWorkflow.workflows[workflowId]
+  }
+
   static getWorkflow(workflowId): ExportedWorkflow {
     return MedusaWorkflow.workflows[workflowId] as unknown as ExportedWorkflow
   }

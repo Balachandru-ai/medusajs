@@ -1,15 +1,16 @@
 post:
   operationId: PostCartsIdCustomer
-  summary: Set Cart's Customer
-  x-sidebar-summary: Set Customer
+  summary: Change Cart's Customer to Logged-in Customer
+  x-sidebar-summary: Change Customer
   description: >-
-    Set the customer of the cart. This is useful when you create the cart for a
-    guest customer, then they log in with their account.
+    Change the cart's customer to the currently logged-in customer. This is
+    useful when you create the cart for a guest customer, then they log in with
+    their account.
   externalDocs:
     url: >-
       https://docs.medusajs.com/resources/storefront-development/cart/update#set-carts-customer
     description: 'Storefront guide: How to set the cart''s customer.'
-  x-authenticated: false
+  x-authenticated: true
   parameters:
     - name: id
       in: path
@@ -25,6 +26,17 @@ post:
         type: string
         externalDocs:
           url: https://docs.medusajs.com/api/store#publishable-api-key
+    - name: x-medusa-locale
+      in: header
+      description: The locale in BCP 47 format to retrieve localized content.
+      required: false
+      schema:
+        type: string
+        example: en-US
+        externalDocs:
+          url: >-
+            https://docs.medusajs.com/resources/commerce-modules/translation/storefront
+          description: Learn more in the Serve Translations in Storefront guide.
     - name: fields
       in: query
       description: >-
@@ -45,6 +57,33 @@ post:
           prefix it will replace the entire default fields.
         externalDocs:
           url: '#select-fields-and-relations'
+    - name: locale
+      in: query
+      description: The locale in BCP 47 format to retrieve localized content.
+      required: false
+      schema:
+        type: string
+        example: en-US
+        externalDocs:
+          url: >-
+            https://docs.medusajs.com/resources/commerce-modules/translation/storefront
+          description: Learn more in the Serve Translations in Storefront guide.
+  security:
+    - cookie_auth: []
+    - jwt_token: []
+  requestBody:
+    content:
+      application/json:
+        schema:
+          type: object
+          description: Optional additional data to pass to the underlying workflow.
+          properties:
+            additional_data:
+              type: object
+              description: >-
+                Pass additional custom data to the API route. This data is
+                passed to the underlying workflow under the `additional_data`
+                parameter.
   x-codeSamples:
     - lang: JavaScript
       label: JS SDK
@@ -87,4 +126,4 @@ post:
         ```
       description: Emitted when the customer in the cart is transferred.
       deprecated: false
-      version: 2.8.0
+      since: 2.8.0

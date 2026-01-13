@@ -1,4 +1,8 @@
-import { BigNumberInput, PromotionTypes } from "@medusajs/framework/types"
+import {
+  BigNumberInput,
+  InferEntityType,
+  PromotionTypes,
+} from "@medusajs/framework/types"
 import {
   ApplicationMethodAllocation,
   ApplicationMethodTargetType,
@@ -7,15 +11,17 @@ import {
   MathBN,
   MedusaError,
 } from "@medusajs/framework/utils"
+import { Promotion } from "@models"
 import { areRulesValidForContext } from "../validations"
+import { sortShippingLineByPriceAscending } from "./sort-by-price"
 import { computeActionForBudgetExceeded } from "./usage"
 
 export function getComputedActionsForShippingMethods(
-  promotion: PromotionTypes.PromotionDTO,
+  promotion: PromotionTypes.PromotionDTO | InferEntityType<typeof Promotion>,
   shippingMethodApplicationContext: PromotionTypes.ComputeActionContext[ApplicationMethodTargetType.SHIPPING_METHODS],
   methodIdPromoValueMap: Map<string, number>
 ): PromotionTypes.ComputeActions[] {
-  const applicableShippingItems: PromotionTypes.ComputeActionContext[ApplicationMethodTargetType.SHIPPING_METHODS] =
+  let applicableShippingItems: PromotionTypes.ComputeActionContext[ApplicationMethodTargetType.SHIPPING_METHODS] =
     []
 
   if (!shippingMethodApplicationContext) {
@@ -39,6 +45,13 @@ export function getComputedActionsForShippingMethods(
     applicableShippingItems.push(shippingMethodContext)
   }
 
+  const allocation = promotion.application_method?.allocation!
+  if (allocation === ApplicationMethodAllocation.ONCE) {
+    applicableShippingItems = applicableShippingItems.sort(
+      sortShippingLineByPriceAscending
+    )
+  }
+
   return applyPromotionToShippingMethods(
     promotion,
     applicableShippingItems,
@@ -47,16 +60,27 @@ export function getComputedActionsForShippingMethods(
 }
 
 export function applyPromotionToShippingMethods(
-  promotion: PromotionTypes.PromotionDTO,
+  promotion: PromotionTypes.PromotionDTO | InferEntityType<typeof Promotion>,
   shippingMethods: PromotionTypes.ComputeActionContext[ApplicationMethodTargetType.SHIPPING_METHODS],
   methodIdPromoValueMap: Map<string, BigNumberInput>
 ): PromotionTypes.ComputeActions[] {
   const { application_method: applicationMethod } = promotion
   const allocation = applicationMethod?.allocation!
   const computedActions: PromotionTypes.ComputeActions[] = []
+  const maxQuantity = applicationMethod?.max_quantity ?? 0
+  let remainingQuota = maxQuantity
 
-  if (allocation === ApplicationMethodAllocation.EACH) {
+  if (
+    allocation === ApplicationMethodAllocation.EACH ||
+    allocation === ApplicationMethodAllocation.ONCE
+  ) {
     for (const method of shippingMethods!) {
+      if (
+        allocation === ApplicationMethodAllocation.ONCE &&
+        remainingQuota <= 0
+      ) {
+        break
+      }
       if (!method.subtotal) {
         continue
       }
@@ -94,6 +118,10 @@ export function applyPromotionToShippingMethods(
         MathBN.add(appliedPromoValue, amount)
       )
 
+      if (allocation === ApplicationMethodAllocation.ONCE) {
+        remainingQuota -= 1
+      }
+
       computedActions.push({
         action: ComputedActions.ADD_SHIPPING_METHOD_ADJUSTMENT,
         shipping_method_id: method.id,
@@ -123,19 +151,18 @@ export function applyPromotionToShippingMethods(
       }
 
       const promotionValue = applicationMethod?.value ?? 0
-      const applicableTotal = method.subtotal
       const appliedPromoValue = methodIdPromoValueMap.get(method.id) ?? 0
+      const applicableTotal = MathBN.sub(method.subtotal, appliedPromoValue)
 
-      const div = MathBN.eq(totalApplicableValue, 0) ? 1 : totalApplicableValue
-      let applicablePromotionValue = MathBN.sub(
-        MathBN.mult(MathBN.div(applicableTotal, div), promotionValue),
-        appliedPromoValue
+      let applicablePromotionValue = MathBN.mult(
+        MathBN.div(applicableTotal, totalApplicableValue),
+        promotionValue
       )
 
       if (applicationMethod?.type === ApplicationMethodType.PERCENTAGE) {
-        applicablePromotionValue = MathBN.sub(
-          MathBN.mult(MathBN.div(promotionValue, 100), applicableTotal),
-          appliedPromoValue
+        applicablePromotionValue = MathBN.mult(
+          MathBN.div(promotionValue, 100),
+          applicableTotal
         )
       }
 

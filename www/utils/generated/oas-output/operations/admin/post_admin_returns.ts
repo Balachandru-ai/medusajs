@@ -25,7 +25,7 @@
  *   content:
  *     application/json:
  *       schema:
- *         $ref: "#/components/schemas/AdminPostReturnsReqSchema"
+ *         $ref: "#/components/schemas/AdminInitiateReturnRequest"
  * x-codeSamples:
  *   - lang: JavaScript
  *     label: JS SDK
@@ -50,7 +50,7 @@
  *     label: cURL
  *     source: |-
  *       curl -X POST '{backend_url}/admin/returns' \
- *       -H 'Authorization: Bearer {access_token}' \
+ *       -H 'Authorization: Bearer {jwt_token}' \
  *       -H 'Content-Type: application/json' \
  *       --data-raw '{
  *         "order_id": "{value}",

@@ -51,7 +51,7 @@
  *     label: cURL
  *     source: |-
  *       curl -X POST '{backend_url}/admin/regions' \
- *       -H 'Authorization: Bearer {access_token}' \
+ *       -H 'Authorization: Bearer {jwt_token}' \
  *       -H 'Content-Type: application/json' \
  *       --data-raw '{
  *         "name": "Heloise",
@@ -84,9 +84,9 @@
  *   - name: region.created
  *     payload: |-
  *       ```ts
- *       [{
+ *       {
  *         id, // The ID of the region
- *       }]
+ *       }
  *       ```
  *     description: Emitted when regions are created.
  *     deprecated: false

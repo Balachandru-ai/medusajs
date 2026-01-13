@@ -125,6 +125,13 @@ export function getRouteMap({
                             import("../../routes/products/product-media"),
                         },
                         {
+                          path: "images/:image_id/variants",
+                          lazy: () =>
+                            import(
+                              "../../routes/products/product-image-variants-edit"
+                            ),
+                        },
+                        {
                           path: "prices",
                           lazy: () =>
                             import("../../routes/products/product-prices"),
@@ -196,6 +203,13 @@ export function getRouteMap({
                           lazy: () =>
                             import(
                               "../../routes/product-variants/product-variant-manage-inventory-items"
+                            ),
+                        },
+                        {
+                          path: "media",
+                          lazy: () =>
+                            import(
+                              "../../routes/product-variants/product-variant-media"
                             ),
                         },
                         {
@@ -286,6 +300,12 @@ export function getRouteMap({
                 {
                   path: "",
                   lazy: () => import("../../routes/orders/order-list"),
+                  children: [
+                    {
+                      path: "export",
+                      lazy: () => import("../../routes/orders/order-export"),
+                    },
+                  ],
                 },
                 {
                   path: ":id",
@@ -996,6 +1016,10 @@ export function getRouteMap({
                   lazy: () => import("../../routes/store/store-add-currencies"),
                 },
                 {
+                  path: "locales",
+                  lazy: () => import("../../routes/store/store-add-locales"),
+                },
+                {
                   path: "metadata/edit",
                   lazy: () => import("../../routes/store/store-metadata"),
                 },
@@ -1184,6 +1208,60 @@ export function getRouteMap({
                   ],
                 },
                 {
+                  path: "shipping-option-types",
+                  errorElement: <ErrorBoundary />,
+                  element: <Outlet />,
+                  handle: {
+                    breadcrumb: () => t("shippingOptionTypes.domain"),
+                  },
+                  children: [
+                    {
+                      path: "",
+                      lazy: () =>
+                        import(
+                          "../../routes/shipping-option-types/shipping-option-type-list"
+                        ),
+                      children: [
+                        {
+                          path: "create",
+                          lazy: () =>
+                            import(
+                              "../../routes/shipping-option-types/shipping-option-type-create"
+                            ),
+                        },
+                      ],
+                    },
+                    {
+                      path: ":id",
+                      lazy: async () => {
+                        const { Component, Breadcrumb, loader } = await import(
+                          "../../routes/shipping-option-types/shipping-option-type-detail"
+                        )
+
+                        return {
+                          Component,
+                          loader,
+                          handle: {
+                            breadcrumb: (
+                              // eslint-disable-next-line max-len
+                              match: UIMatch<HttpTypes.AdminShippingOptionTypeResponse>
+                            ) => <Breadcrumb {...match} />,
+                          },
+                        }
+                      },
+                      children: [
+                        {
+                          path: "edit",
+                          lazy: () =>
+                            import(
+                              "../../routes/shipping-option-types/shipping-option-type-edit"
+                            ),
+                        },
+                      ],
+                    },
+                  ],
+                },
+                {
                   path: ":location_id",
                   lazy: async () => {
                     const { Component, Breadcrumb, loader } = await import(
@@ -1328,6 +1406,13 @@ export function getRouteMap({
                       path: "edit",
                       lazy: () =>
                         import("../../routes/product-tags/product-tag-edit"),
+                    },
+                    {
+                      path: "metadata/edit",
+                      lazy: () =>
+                        import(
+                          "../../routes/product-tags/product-tag-metadata"
+                        ),
                     },
                   ],
                 },
@@ -1716,6 +1801,65 @@ export function getRouteMap({
                       ],
                     },
                   ],
+                },
+              ],
+            },
+            {
+              path: "refund-reasons",
+              element: <Outlet />,
+              handle: {
+                breadcrumb: () => t("refundReasons.domain"),
+              },
+              children: [
+                {
+                  path: "",
+                  lazy: () =>
+                    import("../../routes/refund-reasons/refund-reason-list"),
+                  children: [
+                    {
+                      path: "create",
+                      lazy: () =>
+                        import(
+                          "../../routes/refund-reasons/refund-reason-create"
+                        ),
+                    },
+
+                    {
+                      path: ":id",
+                      children: [
+                        {
+                          path: "edit",
+                          lazy: () =>
+                            import(
+                              "../../routes/refund-reasons/refund-reason-edit"
+                            ),
+                        },
+                      ],
+                    },
+                  ],
+                },
+              ],
+            },
+            {
+              path: "translations",
+              errorElement: <ErrorBoundary />,
+              handle: {
+                breadcrumb: () => t("translations.domain"),
+              },
+              children: [
+                {
+                  path: "",
+                  lazy: () =>
+                    import("../../routes/translations/translation-list"),
+                },
+                {
+                  path: "edit",
+                  lazy: () =>
+                    import("../../routes/translations/translations-edit"),
+                },
+                {
+                  path: "add-locales",
+                  lazy: () => import("../../routes/translations/add-locales"),
                 },
               ],
             },

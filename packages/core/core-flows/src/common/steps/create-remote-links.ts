@@ -1,21 +1,21 @@
 import { Link } from "@medusajs/framework/modules-sdk"
-import { LinkDefinition } from "@medusajs/framework/types"
+import type { LinkDefinition } from "@medusajs/framework/types"
 import { ContainerRegistrationKeys } from "@medusajs/framework/utils"
 import { createStep, StepResponse } from "@medusajs/framework/workflows-sdk"
 
 export const createLinksStepId = "create-remote-links"
 /**
- * This step creates remote links between two records of linked data models.
+ * This step creates links between two records of linked data models.
  *
- * Learn more in the [Remote Link documentation.](https://docs.medusajs.com/learn/fundamentals/module-links/remote-link#create-link).
+ * Learn more in the [Link documentation.](https://docs.medusajs.com/learn/fundamentals/module-links/link#create-link).
  *
  * @example
  * createRemoteLinkStep([{
  *   [Modules.PRODUCT]: {
  *     product_id: "prod_123",
  *   },
- *   "helloModuleService": {
- *     my_custom_id: "mc_123",
+ *   blog: {
+ *     post_id: "post_123",
  *   },
  * }])
  */

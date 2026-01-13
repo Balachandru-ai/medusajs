@@ -1,5 +1,150 @@
 # @medusajs/ui
 
+## 4.0.33
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @medusajs/icons@2.12.5
+
+## 4.0.32
+
+### Patch Changes
+
+- [#14464](https://github.com/medusajs/medusa/pull/14464) [`d54589751c7f929c173c500344ce5689b8a5dc15`](https://github.com/medusajs/medusa/commit/d54589751c7f929c173c500344ce5689b8a5dc15) Thanks [@adrien2p](https://github.com/adrien2p)! - feat(translation): Improve translation alert in empty languages state
+
+- Updated dependencies []:
+  - @medusajs/icons@2.12.4
+
+## 4.0.31
+
+### Patch Changes
+
+- Updated dependencies [[`a43eb11d6565d19e82cf2b06e262ab509214b3d4`](https://github.com/medusajs/medusa/commit/a43eb11d6565d19e82cf2b06e262ab509214b3d4)]:
+  - @medusajs/icons@2.12.3
+
+## 4.0.30
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @medusajs/icons@2.12.2
+
+## 4.0.29
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @medusajs/icons@2.12.1
+
+## 4.0.28
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @medusajs/icons@2.12.0
+
+## 4.0.27
+
+### Patch Changes
+
+- [#13910](https://github.com/medusajs/medusa/pull/13910) [`224ab39a81e8d3cf3d6fa3ff5eee82541f64728d`](https://github.com/medusajs/medusa/commit/224ab39a81e8d3cf3d6fa3ff5eee82541f64728d) Thanks [@adrien2p](https://github.com/adrien2p)! - chore(): Dependencies cleanup and improvements
+
+- [#13940](https://github.com/medusajs/medusa/pull/13940) [`afb40d437b3cc4ceb015df70985b2f005f40eaff`](https://github.com/medusajs/medusa/commit/afb40d437b3cc4ceb015df70985b2f005f40eaff) Thanks [@adrien2p](https://github.com/adrien2p)! - chore(): Cleanup and organize deps
+
+- [#13932](https://github.com/medusajs/medusa/pull/13932) [`37563987b8fe75c9acfe62957a33e8398977647a`](https://github.com/medusajs/medusa/commit/37563987b8fe75c9acfe62957a33e8398977647a) Thanks [@adrien2p](https://github.com/adrien2p)! - chore(): Fix dependencies vulnerabilities
+
+- Updated dependencies [[`224ab39a81e8d3cf3d6fa3ff5eee82541f64728d`](https://github.com/medusajs/medusa/commit/224ab39a81e8d3cf3d6fa3ff5eee82541f64728d), [`afb40d437b3cc4ceb015df70985b2f005f40eaff`](https://github.com/medusajs/medusa/commit/afb40d437b3cc4ceb015df70985b2f005f40eaff), [`37563987b8fe75c9acfe62957a33e8398977647a`](https://github.com/medusajs/medusa/commit/37563987b8fe75c9acfe62957a33e8398977647a)]:
+  - @medusajs/icons@2.11.3
+
+## 4.0.26
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @medusajs/icons@2.11.2
+
+## 4.0.25
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @medusajs/icons@2.11.1
+
+## 4.0.24
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @medusajs/icons@2.11.0
+
+## 4.0.23
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @medusajs/icons@2.10.3
+
+## 4.0.22
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @medusajs/icons@2.10.2
+
+## 4.0.21
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @medusajs/icons@2.10.1
+
+## 4.0.20
+
+### Patch Changes
+
+- [#13092](https://github.com/medusajs/medusa/pull/13092) [`5b7a0412463ebab1dbc86c29024c1fd326ac47fc`](https://github.com/medusajs/medusa/commit/5b7a0412463ebab1dbc86c29024c1fd326ac47fc) Thanks [@fPolic](https://github.com/fPolic)! - chore(ui): display toast in top right corner
+
+- Updated dependencies []:
+  - @medusajs/icons@2.10.0
+
+## 4.0.19
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @medusajs/icons@2.9.0
+
+## 4.0.18
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @medusajs/icons@2.8.8
+
+## 4.0.17
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @medusajs/icons@2.8.7
+
+## 4.0.16
+
+### Patch Changes
+
+- [#12855](https://github.com/medusajs/medusa/pull/12855) [`4b224d5effda952d7d87b96dd30407178edf4115`](https://github.com/medusajs/medusa/commit/4b224d5effda952d7d87b96dd30407178edf4115) Thanks [@peterlgh7](https://github.com/peterlgh7)! - fix: fix onScroll in Select.Content
+
+- Updated dependencies []:
+  - @medusajs/icons@2.8.6
+
+## 4.0.15
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @medusajs/icons@2.8.5
+
 ## 4.0.14
 
 ### Patch Changes

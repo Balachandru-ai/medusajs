@@ -4,7 +4,7 @@
  * summary: Update Customer
  * description: Update the logged-in customer's details.
  * externalDocs:
- *   url: https://docs.medusajs.com/v2/resources/storefront-development/customers/profile
+ *   url: https://docs.medusajs.com/resources/storefront-development/customers/profile
  *   description: "Storefront guide: How to edit a customer's profile."
  * x-authenticated: true
  * parameters:
@@ -16,6 +16,16 @@
  *       type: string
  *       externalDocs:
  *         url: https://docs.medusajs.com/api/store#publishable-api-key
+ *   - name: x-medusa-locale
+ *     in: header
+ *     description: The locale in BCP 47 format to retrieve localized content.
+ *     required: false
+ *     schema:
+ *       type: string
+ *       example: en-US
+ *       externalDocs:
+ *         url: https://docs.medusajs.com/resources/commerce-modules/translation/storefront
+ *         description: Learn more in the Serve Translations in Storefront guide.
  *   - name: fields
  *     in: query
  *     description: Comma-separated fields that should be included in the returned data. if a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default
@@ -29,6 +39,16 @@
  *         Links](https://docs.medusajs.com/learn/fundamentals/api-routes/retrieve-custom-links) documentation.
  *       externalDocs:
  *         url: "#select-fields-and-relations"
+ *   - name: locale
+ *     in: query
+ *     description: The locale in BCP 47 format to retrieve localized content.
+ *     required: false
+ *     schema:
+ *       type: string
+ *       example: en-US
+ *       externalDocs:
+ *         url: https://docs.medusajs.com/resources/commerce-modules/translation/storefront
+ *         description: Learn more in the Serve Translations in Storefront guide.
  * security:
  *   - cookie_auth: []
  *   - jwt_token: []
@@ -55,6 +75,7 @@
  *         publishableKey: process.env.NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY,
  *       })
  * 
+ *       // TODO must be authenticated as the customer to update their details
  *       sdk.store.customer.update({
  *         first_name: "John"
  *       })
@@ -65,7 +86,7 @@
  *     label: cURL
  *     source: |-
  *       curl -X POST '{backend_url}/store/customers/me' \
- *       -H 'Authorization: Bearer {access_token}' \
+ *       -H 'Authorization: Bearer {jwt_token}' \
  *       -H 'Content-Type: application/json' \
  *       -H 'x-publishable-api-key: {your_publishable_api_key}' \
  *       --data-raw '{
@@ -100,9 +121,9 @@
  *   - name: customer.updated
  *     payload: |-
  *       ```ts
- *       [{
+ *       {
  *         id, // The ID of the customer
- *       }]
+ *       }
  *       ```
  *     description: Emitted when a customer is updated.
  *     deprecated: false

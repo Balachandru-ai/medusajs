@@ -3,6 +3,7 @@ import {
   DAL,
   FilterableWorkflowExecutionProps,
   FindConfig,
+  IdempotencyKeyParts,
   InferEntityType,
   InternalModuleDeclaration,
   ModulesSdkTypes,
@@ -20,7 +21,7 @@ import type {
   ReturnWorkflow,
   UnwrapWorkflowInputDataType,
 } from "@medusajs/framework/workflows-sdk"
-import { SqlEntityManager } from "@mikro-orm/postgresql"
+import { SqlEntityManager } from "@medusajs/framework/mikro-orm/postgresql"
 import { WorkflowExecution } from "@models"
 import {
   WorkflowOrchestratorCancelOptions,
@@ -47,7 +48,6 @@ export class WorkflowsModuleService<
   protected workflowOrchestratorService_: WorkflowOrchestratorService
   protected redisDisconnectHandler_: () => Promise<void>
   protected manager_: SqlEntityManager
-  private clearTimeout_: NodeJS.Timeout
 
   constructor(
     {
@@ -72,13 +72,6 @@ export class WorkflowsModuleService<
   __hooks = {
     onApplicationStart: async () => {
       await this.workflowOrchestratorService_.onApplicationStart()
-
-      await this.clearExpiredExecutions()
-      this.clearTimeout_ = setInterval(async () => {
-        try {
-          await this.clearExpiredExecutions()
-        } catch {}
-      }, 1000 * 60 * 60)
     },
     onApplicationPrepareShutdown: async () => {
       await this.workflowOrchestratorService_.onApplicationPrepareShutdown()
@@ -86,7 +79,6 @@ export class WorkflowsModuleService<
     onApplicationShutdown: async () => {
       await this.workflowOrchestratorService_.onApplicationShutdown()
       await this.redisDisconnectHandler_()
-      clearInterval(this.clearTimeout_)
     },
   }
 
@@ -259,7 +251,9 @@ export class WorkflowsModuleService<
     }: {
       idempotencyKey: string | object
       stepResponse: unknown
-      options?: Record<string, any>
+      options?: Record<string, any> & {
+        forcePermanentFailure?: boolean
+      }
     },
     @MedusaContext() context: Context = {}
   ) {
@@ -277,44 +271,46 @@ export class WorkflowsModuleService<
   }
 
   @InjectSharedContext()
-  async subscribe(
-    args: {
-      workflowId: string
-      transactionId?: string
-      subscriber: Function
-      subscriberId?: string
+  async retryStep(
+    {
+      idempotencyKey,
+      options,
+    }: {
+      idempotencyKey: string | IdempotencyKeyParts
+      options?: Record<string, any>
     },
     @MedusaContext() context: Context = {}
   ) {
+    const options_ = JSON.parse(JSON.stringify(options ?? {}))
+
+    const { manager, transactionManager, ...restContext } = context
+
+    options_.context ??= restContext
+
+    return await this.workflowOrchestratorService_.retryStep({
+      idempotencyKey,
+      options: options_,
+    })
+  }
+
+  async subscribe(args: {
+    workflowId: string
+    transactionId?: string
+    subscriber: Function
+    subscriberId?: string
+  }) {
     return this.workflowOrchestratorService_.subscribe(args as any)
   }
 
-  @InjectSharedContext()
-  async unsubscribe(
-    args: {
-      workflowId: string
-      transactionId?: string
-      subscriberOrId: string | Function
-    },
-    @MedusaContext() context: Context = {}
-  ) {
+  async unsubscribe(args: {
+    workflowId: string
+    transactionId?: string
+    subscriberOrId: string | Function
+  }) {
     return this.workflowOrchestratorService_.unsubscribe(args as any)
   }
 
-  private async clearExpiredExecutions() {
-    return this.manager_.execute(`
-      DELETE FROM workflow_execution
-      WHERE retention_time IS NOT NULL AND
-      updated_at <= (CURRENT_TIMESTAMP - INTERVAL '1 second' * retention_time);
-    `)
-  }
-
-  @InjectSharedContext()
-  async cancel(
-    workflowId: string,
-    options: WorkflowOrchestratorCancelOptions,
-    @MedusaContext() context: Context = {}
-  ) {
+  async cancel(workflowId: string, options: WorkflowOrchestratorCancelOptions) {
     return await this.workflowOrchestratorService_.cancel(workflowId, options)
   }
 }

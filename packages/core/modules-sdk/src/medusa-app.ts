@@ -1,10 +1,14 @@
+import { asValue } from "@medusajs/deps/awilix"
 import { RemoteFetchDataCallback } from "@medusajs/orchestration"
 import {
+  ConfigModule,
   ExternalModuleDeclaration,
+  FlagSettings,
   IIndexService,
   ILinkMigrationsPlanner,
   InternalModuleDeclaration,
   LoadedModule,
+  Logger,
   MedusaContainer,
   ModuleBootstrapDeclaration,
   ModuleDefinition,
@@ -16,7 +20,10 @@ import {
 import {
   ContainerRegistrationKeys,
   createMedusaContainer,
+  discoverFeatureFlagsFromDir,
   dynamicImport,
+  executeWithConcurrency,
+  FeatureFlag,
   GraphQLUtils,
   isObject,
   isSharedConnectionSymbol,
@@ -26,8 +33,8 @@ import {
   Modules,
   ModulesSdkUtils,
   promiseAll,
+  registerFeatureFlag,
 } from "@medusajs/utils"
-import { asValue } from "awilix"
 import { Link } from "./link"
 import {
   MedusaModule,
@@ -40,7 +47,9 @@ import { MODULE_SCOPE } from "./types"
 
 const LinkModulePackage = MODULE_PACKAGE_NAMES[Modules.LINK]
 
-export type RunMigrationFn = () => Promise<void>
+export type RunMigrationFn = (options?: {
+  allOrNothing?: boolean
+}) => Promise<void>
 export type RevertMigrationFn = (moduleNames: string[]) => Promise<void>
 export type GenerateMigrations = (moduleNames: string[]) => Promise<void>
 export type GetLinkExecutionPlanner = () => ILinkMigrationsPlanner
@@ -77,16 +86,20 @@ export async function loadModules(args: {
   sharedContainer: MedusaContainer
   sharedResourcesConfig?: SharedResources
   migrationOnly?: boolean
+  schemaOnly?: boolean
   loaderOnly?: boolean
   workerMode?: "shared" | "worker" | "server"
+  cwd?: string
 }) {
   const {
     modulesConfig,
     sharedContainer,
     sharedResourcesConfig,
     migrationOnly = false,
+    schemaOnly = false,
     loaderOnly = false,
     workerMode = "shared" as ModuleBootstrapOptions["workerMode"],
+    cwd,
   } = args
 
   const allModules = {} as any
@@ -153,8 +166,10 @@ export async function loadModules(args: {
 
   const loaded = (await MedusaModule.bootstrapAll(modulesToLoad, {
     migrationOnly,
+    schemaOnly,
     loaderOnly,
     workerMode,
+    cwd,
   })) as LoadedModule[]
 
   if (loaderOnly) {
@@ -192,6 +207,8 @@ async function initializeLinks({
   linkModules,
   injectedDependencies,
   moduleExports,
+  migrationOnly = false,
+  schemaOnly = false,
 }) {
   try {
     let resources = moduleExports
@@ -208,7 +225,10 @@ async function initializeLinks({
     const linkResolution = await initialize(
       config,
       linkModules,
-      injectedDependencies
+      injectedDependencies,
+      undefined,
+      migrationOnly,
+      schemaOnly
     )
 
     return {
@@ -234,6 +254,7 @@ function cleanAndMergeSchema(loadedSchema) {
   const defaultMedusaSchema = `
     scalar DateTime
     scalar JSON
+    directive @enumValue(value: String) on ENUM_VALUE
   `
   const { schema: cleanedSchema, notFound } = GraphQLUtils.cleanGraphQLSchema(
     defaultMedusaSchema + loadedSchema
@@ -284,7 +305,7 @@ export type MedusaAppOptions = {
   sharedResourcesConfig?: SharedResources
   loadedModules?: LoadedModule[]
   servicesConfig?: ModuleJoinerConfig[]
-  modulesConfigPath?: string
+  medusaConfigPath?: string
   modulesConfigFileName?: string
   modulesConfig?: MedusaModuleConfig
   linkModules?: RegisterModuleJoinerConfig | RegisterModuleJoinerConfig[]
@@ -295,25 +316,56 @@ export type MedusaAppOptions = {
    * Forces the modules bootstrapper to only run the modules loaders and return prematurely
    */
   loaderOnly?: boolean
+  /**
+   * Only partially load modules to retrieve their module joiner configs and run their loaders.
+   * Useful for migrations.
+   */
+  migrationOnly?: boolean
+  /**
+   * Only partially load modules to retrieve their module joiner configs without running loaders.
+   * Useful for type generation.
+   */
+  schemaOnly?: boolean
+  cwd?: string
 }
 
 async function MedusaApp_({
   sharedContainer,
   sharedResourcesConfig,
   servicesConfig,
-  modulesConfigPath,
+  medusaConfigPath,
   modulesConfigFileName,
   modulesConfig,
   linkModules,
   remoteFetchData,
   injectedDependencies = {},
   migrationOnly = false,
+  schemaOnly = false,
   loaderOnly = false,
   workerMode = "shared",
-}: MedusaAppOptions & {
-  migrationOnly?: boolean
-} = {}): Promise<MedusaAppOutput> {
+  cwd = process.cwd(),
+}: MedusaAppOptions = {}): Promise<MedusaAppOutput> {
   const sharedContainer_ = createMedusaContainer({}, sharedContainer)
+
+  const config = sharedContainer_.resolve(
+    ContainerRegistrationKeys.CONFIG_MODULE,
+    {
+      allowUnregistered: true,
+    }
+  ) as ConfigModule
+  const logger = sharedContainer_.resolve(ContainerRegistrationKeys.LOGGER, {
+    allowUnregistered: true,
+  }) as Logger
+
+  const discovered = await discoverFeatureFlagsFromDir(cwd)
+  for (const def of discovered) {
+    registerFeatureFlag({
+      flag: def as FlagSettings,
+      projectConfigFlags: config?.featureFlags ?? {},
+      router: FeatureFlag,
+      logger,
+    })
+  }
 
   const onApplicationShutdown = async () => {
     await promiseAll([
@@ -334,8 +386,7 @@ async function MedusaApp_({
     modulesConfig ??
     (
       await dynamicImport(
-        modulesConfigPath ??
-          process.cwd() + (modulesConfigFileName ?? "/modules-config")
+        medusaConfigPath ?? cwd + (modulesConfigFileName ?? "/modules-config")
       )
     ).default
 
@@ -388,8 +439,10 @@ async function MedusaApp_({
     sharedContainer: sharedContainer_,
     sharedResourcesConfig: { database: dbData },
     migrationOnly,
+    schemaOnly,
     loaderOnly,
     workerMode,
+    cwd,
   })
 
   if (loaderOnly) {
@@ -450,6 +503,8 @@ async function MedusaApp_({
     linkModules,
     injectedDependencies,
     moduleExports: isMedusaModule(linkModule) ? linkModule : undefined,
+    migrationOnly,
+    schemaOnly,
   })
 
   const loadedSchema = getLoadedSchema()
@@ -465,16 +520,20 @@ async function MedusaApp_({
   const applyMigration = async ({
     modulesNames,
     action = "run",
+    allOrNothing = false,
   }: {
     modulesNames: string[]
     action?: "run" | "revert" | "generate"
-  }) => {
-    const moduleResolutions = modulesNames.map((moduleName) => {
-      return {
-        moduleName,
-        resolution: MedusaModule.getModuleResolutions(moduleName),
+    allOrNothing?: boolean
+  }): Promise<{ name: string; path: string }[] | void> => {
+    const moduleResolutions = Array.from(new Set(modulesNames)).map(
+      (moduleName) => {
+        return {
+          moduleName,
+          resolution: MedusaModule.getModuleResolutions(moduleName),
+        }
       }
-    })
+    )
 
     const missingModules = moduleResolutions
       .filter(({ resolution }) => !resolution)
@@ -492,7 +551,11 @@ async function MedusaApp_({
       throw error
     }
 
-    for (const { resolution: moduleResolution } of moduleResolutions) {
+    let executedResolutions: [any, string[]][] = [] // [moduleResolution, migration names[]]
+    const run = async (
+      { resolution: moduleResolution },
+      migrationNames?: string[]
+    ) => {
       if (
         !moduleResolution.options?.database &&
         moduleResolution.moduleDeclaration?.scope === MODULE_SCOPE.INTERNAL
@@ -511,21 +574,66 @@ async function MedusaApp_({
         container: sharedContainer,
         options: moduleResolution.options,
         moduleExports: moduleResolution.moduleExports as ModuleExports,
+        cwd,
       }
 
       if (action === "revert") {
-        await MedusaModule.migrateDown(migrationOptions)
+        await MedusaModule.migrateDown(migrationOptions, migrationNames)
       } else if (action === "run") {
-        await MedusaModule.migrateUp(migrationOptions)
+        const ranMigrationsResult = await MedusaModule.migrateUp(
+          migrationOptions
+        )
+
+        // Store for revert if anything goes wrong later
+        executedResolutions.push([
+          moduleResolution,
+          ranMigrationsResult?.map((r) => r.name) ?? [],
+        ])
       } else {
         await MedusaModule.migrateGenerate(migrationOptions)
       }
     }
+
+    const concurrency = parseInt(process.env.DB_MIGRATION_CONCURRENCY ?? "1")
+    try {
+      const results = await executeWithConcurrency(
+        moduleResolutions.map((a) => () => run(a)),
+        concurrency
+      )
+      const rejections = results.filter(
+        (result) => result.status === "rejected"
+      )
+      if (rejections.length) {
+        throw new Error(
+          `Some migrations failed to ${action}: ${rejections
+            .map((r) => r.reason)
+            .join(", ")}`
+        )
+      }
+    } catch (error) {
+      if (allOrNothing) {
+        action = "revert"
+        await executeWithConcurrency(
+          executedResolutions.map(
+            ([resolution, migrationNames]) =>
+              () =>
+                run({ resolution }, migrationNames)
+          ),
+          concurrency
+        )
+      }
+      throw error
+    }
   }
 
-  const runMigrations: RunMigrationFn = async (): Promise<void> => {
+  const runMigrations: RunMigrationFn = async (
+    { allOrNothing = false }: { allOrNothing?: boolean } = {
+      allOrNothing: false,
+    }
+  ): Promise<void> => {
     await applyMigration({
       modulesNames: Object.keys(allModules),
+      allOrNothing,
     })
   }
 
@@ -576,6 +684,7 @@ async function MedusaApp_({
     query: createQuery({
       remoteQuery,
       indexModule,
+      container: sharedContainer_,
     }) as any, // TODO: rm any once we remove the old RemoteQueryFunction and rely on the Query object instead,
     entitiesMap,
     gqlSchema: schema,
@@ -595,7 +704,7 @@ export async function MedusaApp(
 }
 
 export async function MedusaAppMigrateUp(
-  options: MedusaAppOptions = {}
+  options: MedusaAppOptions & { allOrNothing?: boolean } = {}
 ): Promise<void> {
   const migrationOnly = true
 
@@ -604,7 +713,9 @@ export async function MedusaAppMigrateUp(
     migrationOnly,
   })
 
-  await runMigrations().finally(MedusaModule.clearInstances)
+  await runMigrations({ allOrNothing: options.allOrNothing }).finally(
+    MedusaModule.clearInstances
+  )
 }
 
 export async function MedusaAppMigrateDown(

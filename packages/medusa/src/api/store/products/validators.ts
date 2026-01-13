@@ -1,4 +1,4 @@
-import { z } from "zod"
+import { z } from "@medusajs/framework/zod"
 import {
   applyAndAndOrOperators,
   GetProductsParams,
@@ -81,4 +81,4 @@ export const StoreGetProductsParams = createFindParams({
       .merge(applyAndAndOrOperators(StoreGetProductParamsDirectFields))
       .strict()
   )
-  .transform(recursivelyNormalizeSchema(transformProductParams))
+  .transform(recursivelyNormalizeSchema(transformProductParams) as any)

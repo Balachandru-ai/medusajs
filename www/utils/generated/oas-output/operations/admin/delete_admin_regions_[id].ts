@@ -37,7 +37,7 @@
  *     label: cURL
  *     source: |-
  *       curl -X DELETE '{backend_url}/admin/regions/{id}' \
- *       -H 'Authorization: Bearer {access_token}'
+ *       -H 'Authorization: Bearer {jwt_token}'
  * tags:
  *   - Regions
  * responses:
@@ -83,9 +83,9 @@
  *   - name: region.deleted
  *     payload: |-
  *       ```ts
- *       [{
+ *       {
  *         id, // The ID of the region
- *       }]
+ *       }
  *       ```
  *     description: Emitted when regions are deleted.
  *     deprecated: false

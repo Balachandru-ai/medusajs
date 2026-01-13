@@ -50,7 +50,7 @@
  *     label: cURL
  *     source: |-
  *       curl -X POST '{backend_url}/admin/product-tags' \
- *       -H 'Authorization: Bearer {access_token}' \
+ *       -H 'Authorization: Bearer {jwt_token}' \
  *       -H 'Content-Type: application/json' \
  *       --data-raw '{
  *         "value": "{value}",
@@ -82,9 +82,9 @@
  *   - name: product-tag.created
  *     payload: |-
  *       ```ts
- *       [{
+ *       {
  *         id, // The ID of the product tag
- *       }]
+ *       }
  *       ```
  *     description: Emitted when product tags are created.
  *     deprecated: false

@@ -32,15 +32,7 @@
  *   content:
  *     application/json:
  *       schema:
- *         type: object
- *         description: The payment details.
- *         required:
- *           - order_id
- *         properties:
- *           order_id:
- *             type: string
- *             title: order_id
- *             description: The ID of the order associated with the payment collection.
+ *         $ref: "#/components/schemas/AdminMarkPaymentCollectionAsPaid"
  * x-codeSamples:
  *   - lang: JavaScript
  *     label: JS SDK
@@ -65,7 +57,7 @@
  *     label: cURL
  *     source: |-
  *       curl -X POST '{backend_url}/admin/payment-collections/{id}/mark-as-paid' \
- *       -H 'Authorization: Bearer {access_token}' \
+ *       -H 'Authorization: Bearer {jwt_token}' \
  *       -H 'Content-Type: application/json' \
  *       --data-raw '{
  *         "order_id": "{value}"

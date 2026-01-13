@@ -1,5 +1,5 @@
-import plugin from "tailwindcss/plugin"
-import presets from "./theme-presets"
+const plugin = require("tailwindcss/plugin")
+const presets = require("./theme-presets")
 
 /** @type {import('tailwindcss').Config} */
 module.exports = {
@@ -193,6 +193,11 @@ module.exports = {
               },
             },
           },
+          alphas: {
+            alpha: {
+              250: "var(--docs-alphas-alpha-250)",
+            }
+          }
         },
       },
       boxShadow: {
@@ -347,21 +352,21 @@ module.exports = {
         h2: [
           "18px",
           {
-            lineHeight: "28px",
+            lineHeight: "160%",
             fontWeight: "500",
           },
         ],
         h3: [
           "16px",
           {
-            lineHeight: "150%",
+            lineHeight: "160%",
             fontWeight: "500",
           },
         ],
         h4: [
-          "1rem",
+          "14px",
           {
-            lineHeight: "20px",
+            lineHeight: "160%",
             fontWeight: "500",
           },
         ],

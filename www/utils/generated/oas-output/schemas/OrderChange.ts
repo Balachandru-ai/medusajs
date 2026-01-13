@@ -112,6 +112,9 @@
  *   metadata:
  *     type: object
  *     description: The order change's metadata, can hold custom key-value pairs.
+ *     externalDocs:
+ *       url: https://docs.medusajs.com/api/store#manage-metadata
+ *       description: Learn how to manage metadata
  *   declined_at:
  *     type: string
  *     title: declined_at
@@ -136,6 +139,10 @@
  *     format: date-time
  *     title: updated_at
  *     description: The date the order change was updated.
+ *   carry_over_promotions:
+ *     type: boolean
+ *     title: carry_over_promotions
+ *     description: Whether promotions from the original order should be carried over to the order change (specifically, exchanges).
  * 
 */
 

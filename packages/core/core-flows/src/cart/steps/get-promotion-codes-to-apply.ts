@@ -1,6 +1,9 @@
-import { IPromotionModuleService } from "@medusajs/framework/types"
-import { Modules, PromotionActions } from "@medusajs/framework/utils"
-import { StepResponse, createStep } from "@medusajs/framework/workflows-sdk"
+import {
+  ContainerRegistrationKeys,
+  MedusaError,
+  PromotionActions,
+} from "@medusajs/framework/utils"
+import { createStep, StepResponse } from "@medusajs/framework/workflows-sdk"
 
 /**
  * The details of the promotion codes to apply on a cart.
@@ -68,35 +71,17 @@ export const getPromotionCodesToApply = createStep(
   async (data: GetPromotionCodesToApplyStepInput, { container }) => {
     const { promo_codes = [], cart, action = PromotionActions.ADD } = data
     const { items = [], shipping_methods = [] } = cart
+
     const adjustmentCodes: string[] = []
-    const promotionService = container.resolve<IPromotionModuleService>(
-      Modules.PROMOTION
-    )
-
-    const objects = items.concat(shipping_methods)
-
-    objects.forEach((object) => {
+    items.concat(shipping_methods).forEach((object) => {
       object.adjustments?.forEach((adjustment) => {
-        if (adjustment.code && !adjustmentCodes.includes(adjustment.code)) {
+        if (adjustment.code) {
           adjustmentCodes.push(adjustment.code)
         }
       })
     })
 
-    const promotionCodesToApply: Set<string> = new Set(
-      adjustmentCodes.length
-        ? (
-            await promotionService.listPromotions(
-              { code: adjustmentCodes },
-              { select: ["code"] }
-            )
-          ).map((p) => p.code!)
-        : []
-    )
-
-    if (action === PromotionActions.ADD) {
-      promo_codes.forEach((code) => promotionCodesToApply.add(code))
-    }
+    const promotionCodesToApply: Set<string> = new Set(adjustmentCodes)
 
     if (action === PromotionActions.REMOVE) {
       promo_codes.forEach((code) => promotionCodesToApply.delete(code))
@@ -104,7 +89,41 @@ export const getPromotionCodesToApply = createStep(
 
     if (action === PromotionActions.REPLACE) {
       promotionCodesToApply.clear()
-      promo_codes.forEach((code) => promotionCodesToApply.add(code))
+    }
+
+    if (
+      action === PromotionActions.ADD ||
+      action === PromotionActions.REPLACE
+    ) {
+      const query = container.resolve(ContainerRegistrationKeys.QUERY)
+      const validPromoCodes: Set<string> = new Set(
+        promo_codes.length
+          ? (
+              await query.graph(
+                {
+                  entity: "promotion",
+                  fields: ["id", "code"],
+                  filters: { code: promo_codes },
+                },
+                {
+                  cache: {
+                    enable: true,
+                  },
+                }
+              )
+            ).data.map((p) => p.code!)
+          : []
+      )
+
+      promo_codes.forEach((code) => {
+        if (!validPromoCodes.has(code)) {
+          throw new MedusaError(
+            MedusaError.Types.INVALID_DATA,
+            `The promotion code ${code} is invalid`
+          )
+        }
+        promotionCodesToApply.add(code)
+      })
     }
 
     return new StepResponse(

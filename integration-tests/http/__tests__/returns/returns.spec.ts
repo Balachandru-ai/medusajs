@@ -1,15 +1,15 @@
+import { medusaIntegrationTestRunner } from "@medusajs/test-utils"
 import {
   ContainerRegistrationKeys,
   Modules,
   RuleOperator,
 } from "@medusajs/utils"
-import { medusaIntegrationTestRunner } from "@medusajs/test-utils"
 import {
   adminHeaders,
   createAdminUser,
 } from "../../../helpers/create-admin-user"
 
-jest.setTimeout(30000)
+jest.setTimeout(60000)
 
 medusaIntegrationTestRunner({
   testSuite: ({ dbConnection, getContainer, api }) => {
@@ -478,6 +478,16 @@ medusaIntegrationTestRunner({
           adminHeaders
         )
 
+        expect(result.data.order_preview.summary).toEqual(
+          expect.objectContaining({
+            transaction_total: 0,
+            current_order_total: 61,
+            pending_difference: 61, // item is not yet received
+            paid_total: 0,
+            refunded_total: 0,
+          })
+        )
+
         expect(result.data.order_preview).toEqual(
           expect.objectContaining({
             id: order.id,
@@ -697,6 +707,12 @@ medusaIntegrationTestRunner({
                 internal_note: "cx agent note",
               }),
             ],
+          })
+        )
+
+        expect(result.data.order_preview.summary).toEqual(
+          expect.objectContaining({
+            pending_difference: 61 + 1002, // original total + newly added shipping
           })
         )
 

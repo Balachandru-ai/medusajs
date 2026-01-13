@@ -28,11 +28,28 @@
  *   - cookie_auth: []
  *   - jwt_token: []
  * x-codeSamples:
+ *   - lang: JavaScript
+ *     label: JS SDK
+ *     source: |-
+ *       import Medusa from "@medusajs/js-sdk"
+ * 
+ *       export const sdk = new Medusa({
+ *         baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+ *         debug: import.meta.env.DEV,
+ *         auth: {
+ *           type: "session",
+ *         },
+ *       })
+ * 
+ *       sdk.admin.refundReason.retrieve("refr_123")
+ *       .then(({ refund_reason }) => {
+ *         console.log(refund_reason)
+ *       })
  *   - lang: Shell
  *     label: cURL
  *     source: |-
  *       curl '{backend_url}/admin/refund-reasons/{id}' \
- *       -H 'Authorization: Bearer {access_token}'
+ *       -H 'Authorization: Bearer {jwt_token}'
  * tags:
  *   - Refund Reasons
  * responses:

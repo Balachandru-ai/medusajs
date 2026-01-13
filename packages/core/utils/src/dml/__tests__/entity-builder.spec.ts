@@ -1,4 +1,8 @@
-import { ArrayType, EntityMetadata, MetadataStorage } from "@mikro-orm/core"
+import {
+  ArrayType,
+  EntityMetadata,
+  MetadataStorage,
+} from "@medusajs/deps/mikro-orm/core"
 import { expectTypeOf } from "expect-type"
 import { DmlEntity } from "../entity"
 import { model } from "../entity-builder"
@@ -162,7 +166,7 @@ describe("Entity builder", () => {
           kind: "scalar",
           setter: true,
           trackChanges: false,
-          type: "any",
+          type: expect.any(Function),
           runtimeType: "any",
         },
         raw_spend_limit: {
@@ -306,7 +310,7 @@ describe("Entity builder", () => {
           kind: "scalar",
           setter: true,
           trackChanges: false,
-          type: "any",
+          type: expect.any(Function),
           runtimeType: "any",
         },
         raw_spend_limit: {
@@ -441,7 +445,7 @@ describe("Entity builder", () => {
           kind: "scalar",
           setter: true,
           trackChanges: false,
-          type: "any",
+          type: expect.any(Function),
           runtimeType: "any",
         },
         raw_spend_limit: {
@@ -555,11 +559,12 @@ describe("Entity builder", () => {
           kind: "scalar",
           setter: true,
           trackChanges: false,
-          type: "any",
+          type: expect.any(Function),
           runtimeType: "any",
         },
         raw_spend_limit: {
           columnType: "jsonb",
+          default: '{"value":"500.4","precision":20}',
           getter: false,
           name: "raw_spend_limit",
           fieldName: "raw_spend_limit",
@@ -701,11 +706,12 @@ describe("Entity builder", () => {
           kind: "scalar",
           setter: true,
           trackChanges: false,
-          type: "any",
+          type: expect.any(Function),
           runtimeType: "any",
         },
         raw_spend_limit: {
           columnType: "jsonb",
+          default: '{"value":"500.4","precision":20}',
           getter: false,
           name: "raw_spend_limit",
           fieldName: "raw_spend_limit",
@@ -858,7 +864,7 @@ describe("Entity builder", () => {
           kind: "scalar",
           setter: true,
           trackChanges: false,
-          type: "any",
+          type: expect.any(Function),
           runtimeType: "any",
         },
         created_at: {
@@ -2103,16 +2109,16 @@ describe("Entity builder", () => {
         {
           name: "IDX_user_id",
           expression:
-            'CREATE INDEX IF NOT EXISTS "IDX_user_id" ON "user" (id) WHERE deleted_at IS NULL',
+            'CREATE INDEX IF NOT EXISTS "IDX_user_id" ON "user" ("id") WHERE deleted_at IS NULL',
         },
         {
           name: "IDX_user_email_unique",
           expression:
-            'CREATE UNIQUE INDEX IF NOT EXISTS "IDX_user_email_unique" ON "user" (email) WHERE deleted_at IS NULL',
+            'CREATE UNIQUE INDEX IF NOT EXISTS "IDX_user_email_unique" ON "user" ("email") WHERE deleted_at IS NULL',
         },
         {
           expression:
-            'CREATE INDEX IF NOT EXISTS "IDX_user_deleted_at" ON "user" (deleted_at) WHERE deleted_at IS NULL',
+            'CREATE INDEX IF NOT EXISTS "IDX_user_deleted_at" ON "user" ("deleted_at") WHERE deleted_at IS NULL',
           name: "IDX_user_deleted_at",
         },
       ])
@@ -2223,16 +2229,16 @@ describe("Entity builder", () => {
         {
           name: "IDX_user_id",
           expression:
-            'CREATE INDEX IF NOT EXISTS "IDX_user_id" ON "platform"."user" (id) WHERE deleted_at IS NULL',
+            'CREATE INDEX IF NOT EXISTS "IDX_user_id" ON "platform"."user" ("id") WHERE deleted_at IS NULL',
         },
         {
           name: "IDX_user_email_unique",
           expression:
-            'CREATE UNIQUE INDEX IF NOT EXISTS "IDX_user_email_unique" ON "platform"."user" (email) WHERE deleted_at IS NULL',
+            'CREATE UNIQUE INDEX IF NOT EXISTS "IDX_user_email_unique" ON "platform"."user" ("email") WHERE deleted_at IS NULL',
         },
         {
           expression:
-            'CREATE INDEX IF NOT EXISTS "IDX_user_deleted_at" ON "platform"."user" (deleted_at) WHERE deleted_at IS NULL',
+            'CREATE INDEX IF NOT EXISTS "IDX_user_deleted_at" ON "platform"."user" ("deleted_at") WHERE deleted_at IS NULL',
           name: "IDX_user_deleted_at",
         },
       ])
@@ -2342,16 +2348,16 @@ describe("Entity builder", () => {
         {
           name: "IDX_user_id",
           expression:
-            'CREATE INDEX IF NOT EXISTS "IDX_user_id" ON "user" (id) WHERE deleted_at IS NULL',
+            'CREATE INDEX IF NOT EXISTS "IDX_user_id" ON "user" ("id") WHERE deleted_at IS NULL',
         },
         {
           name: "IDX_user_myEmail_unique",
           expression:
-            'CREATE UNIQUE INDEX IF NOT EXISTS "IDX_user_myEmail_unique" ON "user" (myEmail) WHERE deleted_at IS NULL',
+            'CREATE UNIQUE INDEX IF NOT EXISTS "IDX_user_myEmail_unique" ON "user" ("myEmail") WHERE deleted_at IS NULL',
         },
         {
           expression:
-            'CREATE INDEX IF NOT EXISTS "IDX_user_deleted_at" ON "user" (deleted_at) WHERE deleted_at IS NULL',
+            'CREATE INDEX IF NOT EXISTS "IDX_user_deleted_at" ON "user" ("deleted_at") WHERE deleted_at IS NULL',
           name: "IDX_user_deleted_at",
         },
       ])
@@ -3939,32 +3945,32 @@ describe("Entity builder", () => {
       expect(metaData.indexes).toEqual([
         {
           expression:
-            'CREATE INDEX IF NOT EXISTS "IDX_user_group_id" ON "user" (group_id) WHERE deleted_at IS NULL',
+            'CREATE INDEX IF NOT EXISTS "IDX_user_group_id" ON "user" ("group_id") WHERE deleted_at IS NULL',
           name: "IDX_user_group_id",
         },
         {
           expression:
-            'CREATE INDEX IF NOT EXISTS "IDX_user_deleted_at" ON "user" (deleted_at) WHERE deleted_at IS NULL',
+            'CREATE INDEX IF NOT EXISTS "IDX_user_deleted_at" ON "user" ("deleted_at") WHERE deleted_at IS NULL',
           name: "IDX_user_deleted_at",
         },
         {
           expression:
-            'CREATE UNIQUE INDEX IF NOT EXISTS "IDX_user_email_account_unique" ON "user" (email, account) WHERE deleted_at IS NULL',
+            'CREATE UNIQUE INDEX IF NOT EXISTS "IDX_user_email_account_unique" ON "user" ("email", "account") WHERE deleted_at IS NULL',
           name: "IDX_user_email_account_unique",
         },
         {
           expression:
-            'CREATE INDEX IF NOT EXISTS "IDX_user_email_account" ON "user" (email, account) WHERE deleted_at IS NULL',
+            'CREATE INDEX IF NOT EXISTS "IDX_user_email_account" ON "user" ("email", "account") WHERE deleted_at IS NULL',
           name: "IDX_user_email_account",
         },
         {
           expression:
-            'CREATE INDEX IF NOT EXISTS "IDX_user_organization_account" ON "user" (organization, account) WHERE email IS NOT NULL AND deleted_at IS NULL',
+            'CREATE INDEX IF NOT EXISTS "IDX_user_organization_account" ON "user" ("organization", "account") WHERE email IS NOT NULL AND deleted_at IS NULL',
           name: "IDX_user_organization_account",
         },
         {
           expression:
-            'CREATE UNIQUE INDEX IF NOT EXISTS "IDX_unique-name" ON "user" (organization, account, group_id) WHERE deleted_at IS NULL',
+            'CREATE UNIQUE INDEX IF NOT EXISTS "IDX_unique-name" ON "user" ("organization", "account", "group_id") WHERE deleted_at IS NULL',
           name: "IDX_unique-name",
         },
       ])
@@ -4020,37 +4026,37 @@ describe("Entity builder", () => {
       expect(metaData.indexes).toEqual([
         {
           expression:
-            'CREATE INDEX IF NOT EXISTS "IDX_user_group_id" ON "user" (group_id) WHERE deleted_at IS NULL',
+            'CREATE INDEX IF NOT EXISTS "IDX_user_group_id" ON "user" ("group_id") WHERE deleted_at IS NULL',
           name: "IDX_user_group_id",
         },
         {
           expression:
-            'CREATE INDEX IF NOT EXISTS "IDX_user_deleted_at" ON "user" (deleted_at) WHERE deleted_at IS NULL',
+            'CREATE INDEX IF NOT EXISTS "IDX_user_deleted_at" ON "user" ("deleted_at") WHERE deleted_at IS NULL',
           name: "IDX_user_deleted_at",
         },
         {
           expression:
-            'CREATE INDEX IF NOT EXISTS "IDX_user_organization_account" ON "user" (organization, account) WHERE email IS NOT NULL AND deleted_at IS NULL',
+            'CREATE INDEX IF NOT EXISTS "IDX_user_organization_account" ON "user" ("organization", "account") WHERE email IS NOT NULL AND deleted_at IS NULL',
           name: "IDX_user_organization_account",
         },
         {
           expression:
-            'CREATE INDEX IF NOT EXISTS "IDX-email-account-special" ON "user" (organization, account) WHERE email IS NOT NULL AND account IS NULL AND deleted_at IS NULL',
+            'CREATE INDEX IF NOT EXISTS "IDX-email-account-special" ON "user" ("organization", "account") WHERE email IS NOT NULL AND account IS NULL AND deleted_at IS NULL',
           name: "IDX-email-account-special",
         },
         {
           expression:
-            'CREATE UNIQUE INDEX IF NOT EXISTS "IDX_unique-name" ON "user" (organization, account, group_id) WHERE deleted_at IS NULL',
+            'CREATE UNIQUE INDEX IF NOT EXISTS "IDX_unique-name" ON "user" ("organization", "account", "group_id") WHERE deleted_at IS NULL',
           name: "IDX_unique-name",
         },
         {
           expression:
-            'CREATE INDEX IF NOT EXISTS "IDX_user_organization_group_id" ON "user" (organization, group_id) WHERE is_owner IS FALSE AND deleted_at IS NULL',
+            'CREATE INDEX IF NOT EXISTS "IDX_user_organization_group_id" ON "user" ("organization", "group_id") WHERE is_owner IS FALSE AND deleted_at IS NULL',
           name: "IDX_user_organization_group_id",
         },
         {
           expression:
-            'CREATE INDEX IF NOT EXISTS "IDX_user_account_group_id" ON "user" (account, group_id) WHERE is_owner IS TRUE AND deleted_at IS NULL',
+            'CREATE INDEX IF NOT EXISTS "IDX_user_account_group_id" ON "user" ("account", "group_id") WHERE is_owner IS TRUE AND deleted_at IS NULL',
           name: "IDX_user_account_group_id",
         },
       ])
@@ -4116,12 +4122,12 @@ describe("Entity builder", () => {
       expect(metaData.indexes).toEqual([
         {
           expression:
-            'CREATE INDEX IF NOT EXISTS "IDX_user_group_id" ON "user" (group_id) WHERE deleted_at IS NULL',
+            'CREATE INDEX IF NOT EXISTS "IDX_user_group_id" ON "user" ("group_id") WHERE deleted_at IS NULL',
           name: "IDX_user_group_id",
         },
         {
           expression:
-            'CREATE INDEX IF NOT EXISTS "IDX_user_deleted_at" ON "user" (deleted_at) WHERE deleted_at IS NULL',
+            'CREATE INDEX IF NOT EXISTS "IDX_user_deleted_at" ON "user" ("deleted_at") WHERE deleted_at IS NULL',
           name: "IDX_user_deleted_at",
         },
       ])
@@ -4132,12 +4138,12 @@ describe("Entity builder", () => {
       expect(settingMetadata.indexes).toEqual([
         {
           expression:
-            'CREATE UNIQUE INDEX IF NOT EXISTS "IDX_setting_user_id_unique" ON "setting" (user_id) WHERE deleted_at IS NULL',
+            'CREATE UNIQUE INDEX IF NOT EXISTS "IDX_setting_user_id_unique" ON "setting" ("user_id") WHERE deleted_at IS NULL',
           name: "IDX_setting_user_id_unique",
         },
         {
           expression:
-            'CREATE INDEX IF NOT EXISTS "IDX_setting_deleted_at" ON "setting" (deleted_at) WHERE deleted_at IS NULL',
+            'CREATE INDEX IF NOT EXISTS "IDX_setting_deleted_at" ON "setting" ("deleted_at") WHERE deleted_at IS NULL',
           name: "IDX_setting_deleted_at",
         },
       ])

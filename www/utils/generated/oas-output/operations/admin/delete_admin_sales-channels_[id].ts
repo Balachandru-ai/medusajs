@@ -37,7 +37,7 @@
  *     label: cURL
  *     source: |-
  *       curl -X DELETE '{backend_url}/admin/sales-channels/{id}' \
- *       -H 'Authorization: Bearer {access_token}'
+ *       -H 'Authorization: Bearer {jwt_token}'
  * tags:
  *   - Sales Channels
  * responses:
@@ -64,9 +64,9 @@
  *   - name: sales-channel.deleted
  *     payload: |-
  *       ```ts
- *       [{
+ *       {
  *         id, // The ID of the sales channel
- *       }]
+ *       }
  *       ```
  *     description: Emitted when sales channels are deleted.
  *     deprecated: false

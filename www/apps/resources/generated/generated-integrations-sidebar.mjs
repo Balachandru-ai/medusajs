@@ -60,6 +60,14 @@ const generatedgeneratedIntegrationsSidebarSidebar = {
           "path": "/commerce-modules/auth/auth-providers/github",
           "title": "GitHub",
           "children": []
+        },
+        {
+          "loaded": true,
+          "isPathHref": true,
+          "type": "link",
+          "path": "/integrations/guides/okta",
+          "title": "Okta",
+          "children": []
         }
       ]
     },
@@ -82,8 +90,24 @@ const generatedgeneratedIntegrationsSidebarSidebar = {
           "loaded": true,
           "isPathHref": true,
           "type": "link",
+          "path": "/integrations/guides/payload",
+          "title": "Payload CMS",
+          "children": []
+        },
+        {
+          "loaded": true,
+          "isPathHref": true,
+          "type": "link",
           "path": "/integrations/guides/sanity",
           "title": "Sanity",
+          "children": []
+        },
+        {
+          "loaded": true,
+          "isPathHref": true,
+          "type": "link",
+          "path": "/integrations/guides/strapi",
+          "title": "Strapi",
           "children": []
         }
       ]
@@ -143,6 +167,23 @@ const generatedgeneratedIntegrationsSidebarSidebar = {
       "loaded": true,
       "isPathHref": true,
       "type": "category",
+      "title": "Instrumentation",
+      "initialOpen": true,
+      "children": [
+        {
+          "loaded": true,
+          "isPathHref": true,
+          "type": "link",
+          "path": "/integrations/guides/sentry",
+          "title": "Sentry",
+          "children": []
+        }
+      ]
+    },
+    {
+      "loaded": true,
+      "isPathHref": true,
+      "type": "category",
       "title": "Migration",
       "initialOpen": true,
       "children": [
@@ -167,6 +208,14 @@ const generatedgeneratedIntegrationsSidebarSidebar = {
           "loaded": true,
           "isPathHref": true,
           "type": "link",
+          "path": "/integrations/guides/mailchimp",
+          "title": "Mailchimp",
+          "children": []
+        },
+        {
+          "loaded": true,
+          "isPathHref": true,
+          "type": "link",
           "path": "/integrations/guides/resend",
           "title": "Resend",
           "children": []
@@ -177,6 +226,14 @@ const generatedgeneratedIntegrationsSidebarSidebar = {
           "type": "ref",
           "path": "/infrastructure-modules/notification/sendgrid",
           "title": "SendGrid",
+          "children": []
+        },
+        {
+          "loaded": true,
+          "isPathHref": true,
+          "type": "link",
+          "path": "/integrations/guides/slack",
+          "title": "Slack",
           "children": []
         },
         {
@@ -216,9 +273,34 @@ const generatedgeneratedIntegrationsSidebarSidebar = {
         {
           "loaded": true,
           "isPathHref": true,
-          "type": "ref",
+          "type": "link",
           "path": "/integrations/guides/algolia",
           "title": "Algolia",
+          "children": []
+        },
+        {
+          "loaded": true,
+          "isPathHref": true,
+          "type": "link",
+          "path": "/integrations/guides/meilisearch",
+          "title": "Meilisearch",
+          "children": []
+        }
+      ]
+    },
+    {
+      "loaded": true,
+      "isPathHref": true,
+      "type": "category",
+      "title": "Tax",
+      "initialOpen": true,
+      "children": [
+        {
+          "loaded": true,
+          "isPathHref": true,
+          "type": "link",
+          "path": "/integrations/guides/avalara",
+          "title": "Avalara",
           "children": []
         }
       ]

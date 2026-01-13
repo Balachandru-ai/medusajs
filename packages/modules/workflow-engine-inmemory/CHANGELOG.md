@@ -1,5 +1,188 @@
 # @medusajs/workflow-engine-inmemory
 
+## 2.12.5
+
+### Patch Changes
+
+- Updated dependencies [[`233ec261be200fac83002415aa7c0df082339a3f`](https://github.com/medusajs/medusa/commit/233ec261be200fac83002415aa7c0df082339a3f)]:
+  - @medusajs/framework@2.12.5
+
+## 2.12.4
+
+### Patch Changes
+
+- Updated dependencies [[`181d5fa67122e4e5f38b91f6b716d35f2d08a204`](https://github.com/medusajs/medusa/commit/181d5fa67122e4e5f38b91f6b716d35f2d08a204), [`d347e369ce555064e24f2dc3cd93b9e4e73a006d`](https://github.com/medusajs/medusa/commit/d347e369ce555064e24f2dc3cd93b9e4e73a006d)]:
+  - @medusajs/framework@2.12.4
+
+## 2.12.3
+
+### Patch Changes
+
+- Updated dependencies [[`7b4dda5a179c78de5e099231ec407836db4c8dbd`](https://github.com/medusajs/medusa/commit/7b4dda5a179c78de5e099231ec407836db4c8dbd), [`8964a03fa1b9e6a4c443bf5b21d65d41a8441d29`](https://github.com/medusajs/medusa/commit/8964a03fa1b9e6a4c443bf5b21d65d41a8441d29), [`c8a7122ba918751b215dc0b19cf9b09b2c011ab8`](https://github.com/medusajs/medusa/commit/c8a7122ba918751b215dc0b19cf9b09b2c011ab8)]:
+  - @medusajs/framework@2.12.3
+
+## 2.12.2
+
+### Patch Changes
+
+- Updated dependencies [[`9f7846ae0babbad39947a1f33d236bff8b5098d0`](https://github.com/medusajs/medusa/commit/9f7846ae0babbad39947a1f33d236bff8b5098d0), [`fe49b567d6d55ae224095c06c710d31d40887653`](https://github.com/medusajs/medusa/commit/fe49b567d6d55ae224095c06c710d31d40887653), [`6dc0b8bed84a330c1c24f4f1331f1ed078430a47`](https://github.com/medusajs/medusa/commit/6dc0b8bed84a330c1c24f4f1331f1ed078430a47), [`356283c359e5c30e0d31e6c6fd0fb8e16c025b78`](https://github.com/medusajs/medusa/commit/356283c359e5c30e0d31e6c6fd0fb8e16c025b78)]:
+  - @medusajs/framework@2.12.2
+
+## 2.12.1
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @medusajs/framework@2.12.1
+
+## 2.12.0
+
+### Patch Changes
+
+- [#14037](https://github.com/medusajs/medusa/pull/14037) [`1ea932a56f1d85fd1ebbe4a77f3619fe58d2947a`](https://github.com/medusajs/medusa/commit/1ea932a56f1d85fd1ebbe4a77f3619fe58d2947a) Thanks [@adrien2p](https://github.com/adrien2p)! - fix(): Identify step that force save checkpoint
+
+- Updated dependencies [[`c2c3ad5ba53f1959422fb2d37297a8de8d714782`](https://github.com/medusajs/medusa/commit/c2c3ad5ba53f1959422fb2d37297a8de8d714782), [`7e3eb6e41316d7b04d32bc7186ed0c78de1aa539`](https://github.com/medusajs/medusa/commit/7e3eb6e41316d7b04d32bc7186ed0c78de1aa539), [`beb91d88a2f224075e4fcf35a0ee9483b3124504`](https://github.com/medusajs/medusa/commit/beb91d88a2f224075e4fcf35a0ee9483b3124504)]:
+  - @medusajs/framework@2.12.0
+
+## 2.11.3
+
+### Patch Changes
+
+- [#13910](https://github.com/medusajs/medusa/pull/13910) [`224ab39a81e8d3cf3d6fa3ff5eee82541f64728d`](https://github.com/medusajs/medusa/commit/224ab39a81e8d3cf3d6fa3ff5eee82541f64728d) Thanks [@adrien2p](https://github.com/adrien2p)! - chore(): Dependencies cleanup and improvements
+
+- Updated dependencies [[`28c3ea68f5634792848f146ac6af5b27c848bf21`](https://github.com/medusajs/medusa/commit/28c3ea68f5634792848f146ac6af5b27c848bf21), [`224ab39a81e8d3cf3d6fa3ff5eee82541f64728d`](https://github.com/medusajs/medusa/commit/224ab39a81e8d3cf3d6fa3ff5eee82541f64728d), [`afb40d437b3cc4ceb015df70985b2f005f40eaff`](https://github.com/medusajs/medusa/commit/afb40d437b3cc4ceb015df70985b2f005f40eaff), [`37563987b8fe75c9acfe62957a33e8398977647a`](https://github.com/medusajs/medusa/commit/37563987b8fe75c9acfe62957a33e8398977647a), [`13d7d15be594ca413785eebe8f86b47c36cb9830`](https://github.com/medusajs/medusa/commit/13d7d15be594ca413785eebe8f86b47c36cb9830)]:
+  - @medusajs/framework@2.11.3
+
+## 2.11.2
+
+### Patch Changes
+
+- Updated dependencies [[`85b1f3d43aa8d8e0269a545ef7867733fd0eb8e2`](https://github.com/medusajs/medusa/commit/85b1f3d43aa8d8e0269a545ef7867733fd0eb8e2)]:
+  - @medusajs/framework@2.11.2
+
+## 2.11.1
+
+### Patch Changes
+
+- [#13789](https://github.com/medusajs/medusa/pull/13789) [`d51ae2768be0dad5ece49324aa4866bb591e7ad0`](https://github.com/medusajs/medusa/commit/d51ae2768be0dad5ece49324aa4866bb591e7ad0) Thanks [@adrien2p](https://github.com/adrien2p)! - chore(workflow-engine-\*): cleanup and improvements
+
+- Updated dependencies []:
+  - @medusajs/framework@2.11.1
+
+## 2.11.0
+
+### Patch Changes
+
+- [#13439](https://github.com/medusajs/medusa/pull/13439) [`12a96a7c7015f011f5e29a1d387f835e514ba536`](https://github.com/medusajs/medusa/commit/12a96a7c7015f011f5e29a1d387f835e514ba536) Thanks [@adrien2p](https://github.com/adrien2p)! - chore(): Move peer deps into a single package and re export from framework
+
+- [#13645](https://github.com/medusajs/medusa/pull/13645) [`76aa4a48b3cbec519ab16c96cc87ee3288de28de`](https://github.com/medusajs/medusa/commit/76aa4a48b3cbec519ab16c96cc87ee3288de28de) Thanks [@adrien2p](https://github.com/adrien2p)! - Fix/workflows concurrency
+
+- [`5346079d4717933d31d57f549d4158f3d433551c`](undefined) - chore(): create default refund reasons
+
+- [`5b135a41fe40ccda9ef0e867748a77c619214d0a`](undefined) - fix(): workflow engine migration issue
+
+- [`cb716856b653c31178a5977b17ec77eed4c9c241`](undefined) - fix(engine): Always create cleaner job
+
+- [`b43b285125a66455ed6567543414eddcbe54781e`](undefined) - fix(): Workflow save to db + index integration instability
+
+- [#13769](https://github.com/medusajs/medusa/pull/13769) [`516f5a38960f1ea05a2c696e0079d2e4c34d5c86`](https://github.com/medusajs/medusa/commit/516f5a38960f1ea05a2c696e0079d2e4c34d5c86) Thanks [@adrien2p](https://github.com/adrien2p)! - fix: workflow async concurrency
+
+- Updated dependencies [[`12a96a7c7015f011f5e29a1d387f835e514ba536`](https://github.com/medusajs/medusa/commit/12a96a7c7015f011f5e29a1d387f835e514ba536), [`b9d6f73320c36c53235b12fb8397b30a448917f0`](https://github.com/medusajs/medusa/commit/b9d6f73320c36c53235b12fb8397b30a448917f0), [`8ece06d8ed6a197ebb370918c49a3ec5c21dd186`](https://github.com/medusajs/medusa/commit/8ece06d8ed6a197ebb370918c49a3ec5c21dd186), [`92d30b28f45b4037cd73c180c8f257070cf49bd4`](https://github.com/medusajs/medusa/commit/92d30b28f45b4037cd73c180c8f257070cf49bd4), [`02b6d013822b9665f868c4ea6d1b5cfe58723459`](https://github.com/medusajs/medusa/commit/02b6d013822b9665f868c4ea6d1b5cfe58723459)]:
+  - @medusajs/framework@2.11.0
+
+## 2.10.3
+
+### Patch Changes
+
+- [#13457](https://github.com/medusajs/medusa/pull/13457) [`ebf33bea43bb6fe03a60a3099b2bc62608f0d13b`](https://github.com/medusajs/medusa/commit/ebf33bea43bb6fe03a60a3099b2bc62608f0d13b) Thanks [@adrien2p](https://github.com/adrien2p)! - fix(): pipeline missing suites
+
+- Updated dependencies [[`25634b038248ab6501af719faec79b59b496bada`](https://github.com/medusajs/medusa/commit/25634b038248ab6501af719faec79b59b496bada)]:
+  - @medusajs/framework@2.10.3
+
+## 2.10.2
+
+### Patch Changes
+
+- [#13396](https://github.com/medusajs/medusa/pull/13396) [`2b89510df3b87c153beae5207b1f9184002129d7`](https://github.com/medusajs/medusa/commit/2b89510df3b87c153beae5207b1f9184002129d7) Thanks [@adrien2p](https://github.com/adrien2p)! - chore(): only execute race execution checks for async workflows
+
+- [#13345](https://github.com/medusajs/medusa/pull/13345) [`bd206cb2505a832d0e426040f7a8cf10a947d346`](https://github.com/medusajs/medusa/commit/bd206cb2505a832d0e426040f7a8cf10a947d346) Thanks [@adrien2p](https://github.com/adrien2p)! - Chore(): workflow engine race condition improvements
+
+- [#13391](https://github.com/medusajs/medusa/pull/13391) [`d7692100e7a2b2f078756cac9ca2b33784d3d1ff`](https://github.com/medusajs/medusa/commit/d7692100e7a2b2f078756cac9ca2b33784d3d1ff) Thanks [@adrien2p](https://github.com/adrien2p)! - chore(orchestration): add support for autoRetry step configuration
+
+- [#13434](https://github.com/medusajs/medusa/pull/13434) [`fc4d5f0ac94afaf48fdf39f1d6bd3ac97259a8c5`](https://github.com/medusajs/medusa/commit/fc4d5f0ac94afaf48fdf39f1d6bd3ac97259a8c5) Thanks [@adrien2p](https://github.com/adrien2p)! - chore(): Workflow engine timers and notification improvements
+
+- Updated dependencies [[`b4c0f131b70ba950339c1ca4d81b5ce062a588a3`](https://github.com/medusajs/medusa/commit/b4c0f131b70ba950339c1ca4d81b5ce062a588a3), [`a4b72f9a21fd1d278c622fcd45d24bb9bfb1e0a8`](https://github.com/medusajs/medusa/commit/a4b72f9a21fd1d278c622fcd45d24bb9bfb1e0a8)]:
+  - @medusajs/framework@2.10.2
+
+## 2.10.1
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @medusajs/framework@2.10.1
+
+## 2.10.0
+
+### Minor Changes
+
+- [#13236](https://github.com/medusajs/medusa/pull/13236) [`9412669e654c994e2dbee9cf61c18004d79f6475`](https://github.com/medusajs/medusa/commit/9412669e654c994e2dbee9cf61c18004d79f6475) Thanks [@carlos-r-l-rodrigues](https://github.com/carlos-r-l-rodrigues)! - chore(core-flows): idempotent cart operations and nested workflow deletion lifecycle fix
+
+### Patch Changes
+
+- [#13319](https://github.com/medusajs/medusa/pull/13319) [`ff152e7ace60232c02932bbd06a759e555a823d4`](https://github.com/medusajs/medusa/commit/ff152e7ace60232c02932bbd06a759e555a823d4) Thanks [@adrien2p](https://github.com/adrien2p)! - fix(orchestration): Use the step definition max retries on set step failure
+
+- Updated dependencies [[`e413cfefc2e0579ba7c5299dc4f4270310e39c2c`](https://github.com/medusajs/medusa/commit/e413cfefc2e0579ba7c5299dc4f4270310e39c2c), [`e2213448ac9eb93318570fde2807a3036108d44b`](https://github.com/medusajs/medusa/commit/e2213448ac9eb93318570fde2807a3036108d44b)]:
+  - @medusajs/framework@2.10.0
+
+## 2.9.0
+
+### Patch Changes
+
+- [#13151](https://github.com/medusajs/medusa/pull/13151) [`b1cba9fdeba901c9d4c7bddd414ed2fd085fa7b0`](https://github.com/medusajs/medusa/commit/b1cba9fdeba901c9d4c7bddd414ed2fd085fa7b0) Thanks [@carlos-r-l-rodrigues](https://github.com/carlos-r-l-rodrigues)! - fix(workflow-engine-inmemory): fix cron job schedule
+
+- Updated dependencies []:
+  - @medusajs/framework@2.9.0
+
+## 2.8.8
+
+### Patch Changes
+
+- [#12987](https://github.com/medusajs/medusa/pull/12987) [`7b1debfe12fc096f7b4e20f13bdeb925c96085c1`](https://github.com/medusajs/medusa/commit/7b1debfe12fc096f7b4e20f13bdeb925c96085c1) Thanks [@adrien2p](https://github.com/adrien2p)! - fix(wfe): add missing state in inmemory notify on run finished
+
+- [#12976](https://github.com/medusajs/medusa/pull/12976) [`eb83954f23077c0714125b6f2f19fd0ef0f288f9`](https://github.com/medusajs/medusa/commit/eb83954f23077c0714125b6f2f19fd0ef0f288f9) Thanks [@adrien2p](https://github.com/adrien2p)! - chore(workflow-engine-\*): Align event subscribers management
+
+- [#12982](https://github.com/medusajs/medusa/pull/12982) [`238e7d53c13a1c033886d7c33254919f8b5b22dc`](https://github.com/medusajs/medusa/commit/238e7d53c13a1c033886d7c33254919f8b5b22dc) Thanks [@adrien2p](https://github.com/adrien2p)! - fix(wfe): should notify when finished + add state info
+
+- Updated dependencies [[`43fb06ecc2d87ea2a11e12524679c142eb890ec7`](https://github.com/medusajs/medusa/commit/43fb06ecc2d87ea2a11e12524679c142eb890ec7)]:
+  - @medusajs/framework@2.8.8
+
+## 2.8.7
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @medusajs/framework@2.8.7
+
+## 2.8.6
+
+### Patch Changes
+
+- [#12834](https://github.com/medusajs/medusa/pull/12834) [`95d282e8ef8f2185737d493dea8b6f1677684543`](https://github.com/medusajs/medusa/commit/95d282e8ef8f2185737d493dea8b6f1677684543) Thanks [@adrien2p](https://github.com/adrien2p)! - Fix/test utils events
+
+- Updated dependencies []:
+  - @medusajs/framework@2.8.6
+
+## 2.8.5
+
+### Patch Changes
+
+- [#12795](https://github.com/medusajs/medusa/pull/12795) [`316a325b63e92003df25452faf88e577e9133064`](https://github.com/medusajs/medusa/commit/316a325b63e92003df25452faf88e577e9133064) Thanks [@adrien2p](https://github.com/adrien2p)! - fix(workflow-engine-\*): Cleanup expired executions
+
+- [#12675](https://github.com/medusajs/medusa/pull/12675) [`1a7847660890ae84648123567ce8dc4c9a0eca03`](https://github.com/medusajs/medusa/commit/1a7847660890ae84648123567ce8dc4c9a0eca03) Thanks [@adrien2p](https://github.com/adrien2p)! - fix(workflow-sdk): Async propagation
+
+- Updated dependencies [[`cbf3644eb7c8a24eaed879647b58c9ece3373c0e`](https://github.com/medusajs/medusa/commit/cbf3644eb7c8a24eaed879647b58c9ece3373c0e), [`d517dbd66a47817d1270c278b03add9a5c4244cb`](https://github.com/medusajs/medusa/commit/d517dbd66a47817d1270c278b03add9a5c4244cb), [`820a936b9836ae83e7a45de1e1ed0488d8cde2fd`](https://github.com/medusajs/medusa/commit/820a936b9836ae83e7a45de1e1ed0488d8cde2fd), [`00505b4f8e49873123111752adfda47ccb35ab46`](https://github.com/medusajs/medusa/commit/00505b4f8e49873123111752adfda47ccb35ab46), [`94b62c67249d13ec6342411cf7efdedfd0ac47e1`](https://github.com/medusajs/medusa/commit/94b62c67249d13ec6342411cf7efdedfd0ac47e1)]:
+  - @medusajs/framework@2.8.5
+
 ## 2.8.4
 
 ### Patch Changes

@@ -32,29 +32,13 @@
  *   content:
  *     application/json:
  *       schema:
- *         type: object
- *         description: The inventory level's details.
- *         required:
- *           - location_id
- *         properties:
- *           location_id:
- *             type: string
- *             title: location_id
- *             description: The ID of the associated location.
- *           stocked_quantity:
- *             type: number
- *             title: stocked_quantity
- *             description: The inventory level's stocked quantity.
- *           incoming_quantity:
- *             type: number
- *             title: incoming_quantity
- *             description: The inventory level's incoming quantity.
+ *         $ref: "#/components/schemas/AdminBatchCreateInventoryItemLocationLevels"
  * x-codeSamples:
  *   - lang: Shell
  *     label: cURL
  *     source: |-
  *       curl -X POST '{backend_url}/admin/inventory-items/{id}/location-levels' \
- *       -H 'Authorization: Bearer {access_token}' \
+ *       -H 'Authorization: Bearer {jwt_token}' \
  *       -H 'Content-Type: application/json' \
  *       --data-raw '{
  *         "location_id": "{value}"

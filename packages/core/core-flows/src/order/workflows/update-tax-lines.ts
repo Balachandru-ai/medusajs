@@ -1,11 +1,12 @@
-import { OrderWorkflowDTO } from "@medusajs/framework/types"
+import type { OrderWorkflowDTO } from "@medusajs/framework/types"
 import {
-  WorkflowData,
   createWorkflow,
   transform,
   when,
+  WorkflowData,
+  WorkflowResponse,
 } from "@medusajs/framework/workflows-sdk"
-import { useRemoteQueryStep } from "../../common"
+import { useQueryGraphStep } from "../../common"
 import { getItemTaxLinesStep } from "../../tax/steps/get-item-tax-lines"
 import { setOrderTaxLinesForItemsStep } from "../steps"
 
@@ -24,6 +25,7 @@ const completeOrderFields = [
   "items.product_description",
   "items.product_subtitle",
   "items.product_type",
+  "items.product_type_id",
   "items.product_collection",
   "items.product_handle",
   "items.variant_sku",
@@ -107,6 +109,7 @@ const lineItemFields = [
   "product_description",
   "product_subtitle",
   "product_type",
+  "product_type_id",
   "product_collection",
   "product_handle",
   "variant_sku",
@@ -177,9 +180,7 @@ export const updateOrderTaxLinesWorkflowId = "update-order-tax-lines"
  */
 export const updateOrderTaxLinesWorkflow = createWorkflow(
   updateOrderTaxLinesWorkflowId,
-  (
-    input: WorkflowData<UpdateOrderTaxLinesWorkflowInput>
-  ): WorkflowData<void> => {
+  (input: WorkflowData<UpdateOrderTaxLinesWorkflowInput>) => {
     const isFullOrder = transform(input, (data) => {
       return !data.item_ids && !data.shipping_method_ids
     })
@@ -188,31 +189,39 @@ export const updateOrderTaxLinesWorkflow = createWorkflow(
       return isFullOrder ? completeOrderFields : orderFields
     })
 
-    const order = useRemoteQueryStep({
-      entry_point: "order",
+    const { data: order } = useQueryGraphStep({
+      entity: "order",
+      filters: { id: input.order_id },
       fields: fetchOrderFields,
-      variables: { id: input.order_id },
-      list: false,
-    })
+      options: { isList: false },
+    }).config({ name: "order-query" })
 
-    const items = when({ input }, ({ input }) => {
+    const items = when("get-order-line-items", { input }, ({ input }) => {
       return input.item_ids!?.length > 0
     }).then(() => {
-      return useRemoteQueryStep({
-        entry_point: "order_line_item",
+      const { data: orderLineItems } = useQueryGraphStep({
+        entity: "order_line_item",
+        filters: { id: input.item_ids },
         fields: lineItemFields,
-        variables: { id: input.item_ids },
       }).config({ name: "query-order-line-items" })
+
+      return orderLineItems
     })
 
-    const shippingMethods = when({ input }, ({ input }) => {
-      return input.shipping_method_ids!?.length > 0
-    }).then(() => {
-      return useRemoteQueryStep({
-        entry_point: "order_shipping_method",
+    const shippingMethods = when(
+      "get-order-shipping-methods",
+      { input },
+      ({ input }) => {
+        return input.shipping_method_ids!?.length > 0
+      }
+    ).then(() => {
+      const { data: orderShippingMethods } = useQueryGraphStep({
+        entity: "order_shipping_method",
+        filters: { id: input.shipping_method_ids },
         fields: shippingMethodFields,
-        variables: { id: input.shipping_method_ids },
       }).config({ name: "query-order-shipping-methods" })
+
+      return orderShippingMethods
     })
 
     const taxLineItems = getItemTaxLinesStep(
@@ -243,6 +252,11 @@ export const updateOrderTaxLinesWorkflow = createWorkflow(
       order,
       item_tax_lines: taxLineItems.lineItemTaxLines,
       shipping_tax_lines: taxLineItems.shippingMethodsTaxLines,
+    })
+
+    return new WorkflowResponse({
+      itemTaxLines: taxLineItems.lineItemTaxLines,
+      shippingTaxLines: taxLineItems.shippingMethodsTaxLines,
     })
   }
 )

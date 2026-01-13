@@ -1,4 +1,4 @@
-import { PencilSquare, Trash } from "@medusajs/icons"
+import { GlobeEurope, PencilSquare, Trash } from "@medusajs/icons"
 import { Button, Container, Heading, toast, usePrompt } from "@medusajs/ui"
 import { keepPreviousData } from "@tanstack/react-query"
 import { createColumnHelper } from "@tanstack/react-table"
@@ -18,12 +18,20 @@ import { useProductTableFilters } from "../../../../../hooks/table/filters/use-p
 import { useProductTableQuery } from "../../../../../hooks/table/query/use-product-table-query"
 import { useDataTable } from "../../../../../hooks/use-data-table"
 import { productsLoader } from "../../loader"
+import { useFeatureFlag } from "../../../../../providers/feature-flag-provider"
+import { ConfigurableProductListTable } from "./configurable-product-list-table"
 
 const PAGE_SIZE = 20
 
 export const ProductListTable = () => {
   const { t } = useTranslation()
   const location = useLocation()
+  const isViewConfigEnabled = useFeatureFlag("view_configurations")
+
+  // If feature flag is enabled, use the new configurable table
+  if (isViewConfigEnabled) {
+    return <ConfigurableProductListTable />
+  }
 
   const initialData = useLoaderData() as Awaited<
     ReturnType<ReturnType<typeof productsLoader>>
@@ -60,13 +68,13 @@ export const ProductListTable = () => {
   return (
     <Container className="divide-y p-0">
       <div className="flex items-center justify-between px-6 py-4">
-        <Heading level="h2">{t("products.domain")}</Heading>
+        <Heading level="h1">{t("products.domain")}</Heading>
         <div className="flex items-center justify-center gap-x-2">
           <Button size="small" variant="secondary" asChild>
             <Link to={`export${location.search}`}>{t("actions.export")}</Link>
           </Button>
           <Button size="small" variant="secondary" asChild>
-            <Link to="import">{t("actions.import")}</Link>
+            <Link to={`import${location.search}`}>{t("actions.import")}</Link>
           </Button>
           <Button size="small" variant="secondary" asChild>
             <Link to="create">{t("actions.create")}</Link>
@@ -102,6 +110,7 @@ const ProductActions = ({ product }: { product: HttpTypes.AdminProduct }) => {
   const { t } = useTranslation()
   const prompt = usePrompt()
   const { mutateAsync } = useDeleteProduct(product.id)
+  const isTranslationsEnabled = useFeatureFlag("translation")
 
   const handleDelete = async () => {
     const res = await prompt({
@@ -145,6 +154,19 @@ const ProductActions = ({ product }: { product: HttpTypes.AdminProduct }) => {
             },
           ],
         },
+        ...(isTranslationsEnabled
+          ? [
+              {
+                actions: [
+                  {
+                    icon: <GlobeEurope />,
+                    label: t("translations.actions.manage"),
+                    to: `/settings/translations/edit?reference=product&reference_id=${product.id}`,
+                  },
+                ],
+              },
+            ]
+          : []),
         {
           actions: [
             {

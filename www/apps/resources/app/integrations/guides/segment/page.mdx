@@ -205,14 +205,14 @@ class SegmentAnalyticsProviderService extends AbstractAnalyticsProviderService {
         userId: data.actor_id,
         anonymousId,
         traits,
-        context: data.properties
+        context: data.properties,
       })
     } else {
       this.client.identify({
         userId: data.actor_id,
         anonymousId,
         traits,
-        context: data.properties
+        context: data.properties,
       })
     }
   }
@@ -507,9 +507,9 @@ Next, you'll create the workflow that tracks the order placement event.
 To create the workflow, create the file `src/workflows/track-order-placed.ts` with the following content:
 
 export const workflowHighlights = [
-  ["16", "useQueryGraphStep", "Retrieve the order's details."],
-  ["35", "transform", "Prepare data for tracking."],
-  ["58", "trackEventStep", "Track the order placement event in Segment."]
+  ["15", "useQueryGraphStep", "Retrieve the order's details."],
+  ["34", "transform", "Prepare data for tracking."],
+  ["57", "trackEventStep", "Track the order placement event in Segment."]
 ]
 
 ```ts title="src/workflows/track-order-placed.ts" highlights={workflowHighlights}
@@ -527,7 +527,6 @@ type WorkflowInput = {
 export const trackOrderPlacedWorkflow = createWorkflow(
   "track-order-placed",
   ({ id }: WorkflowInput) => {
-    // @ts-ignore
     const { data: orders } = useQueryGraphStep({
       entity: "order",
       fields: [

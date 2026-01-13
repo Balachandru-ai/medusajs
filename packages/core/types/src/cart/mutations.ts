@@ -117,6 +117,11 @@ export interface CreateCartDTO {
   currency_code: string
 
   /**
+   * The locale code of the cart.
+   */
+  locale?: string
+
+  /**
    * The associated shipping address's ID.
    */
   shipping_address_id?: string
@@ -177,6 +182,11 @@ export interface UpdateCartDataDTO {
   currency_code?: string
 
   /**
+   * The locale code of the cart.
+   */
+  locale?: string | null
+
+  /**
    * The associated shipping address's ID.
    */
   shipping_address_id?: string | null
@@ -235,6 +245,11 @@ export interface CreateAdjustmentDTO {
    * The amount to adjust the original amount with.
    */
   amount: BigNumberInput
+
+  /**
+   * Whether the adjustment amount includes tax.
+   */
+  is_tax_inclusive?: boolean
 
   /**
    * The description of the adjustment.

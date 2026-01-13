@@ -121,10 +121,21 @@ class OasKindGenerator extends FunctionKindGenerator {
       requiresAuthentication: true,
       allowedAuthTypes: ["cookie_auth", "jwt_token"],
     },
+    {
+      exact: "store/gift-cards/[idOrCode]/redeem",
+      requiresAuthentication: true,
+    },
+    {
+      startsWith: "store/store-credit-accounts",
+      requiresAuthentication: true,
+    },
+    {
+      exact: "store/carts/[id]/customer",
+      requiresAuthentication: true,
+    },
   ]
   readonly RESPONSE_TYPE_NAMES = ["MedusaResponse"]
-  readonly FIELD_QUERY_PARAMS = ["fields", "expand"]
-  readonly PAGINATION_QUERY_PARAMS = ["limit", "offset", "order"]
+  readonly LOCALIZED_ROUTES = ["store/"]
 
   /**
    * This map collects tags of all the generated OAS, then, once the generation process finishes,
@@ -149,7 +160,7 @@ class OasKindGenerator extends FunctionKindGenerator {
 
     this.tags = new Map()
     this.oasSchemaHelper = new OasSchemaHelper()
-    this.schemaFactory = new SchemaFactory()
+    this.schemaFactory = new SchemaFactory({ checker: this.checker })
     this.typesHelper = new TypesHelper({
       checker: this.checker,
     })
@@ -187,6 +198,10 @@ class OasKindGenerator extends FunctionKindGenerator {
       !this.METHOD_NAMES.includes(functionName) ||
       functionNode.parameters.length !== 2
     ) {
+      return false
+    }
+
+    if (this.isIgnored(functionNode)) {
       return false
     }
 
@@ -334,16 +349,17 @@ class OasKindGenerator extends FunctionKindGenerator {
       node,
       tagName,
       methodName,
+      oasPath,
     })
 
     oas.parameters?.push(...queryParameters)
-    if (requestSchema && Object.keys(requestSchema).length > 0) {
+    if (!this.oasSchemaHelper.isSchemaEmpty(requestSchema)) {
       oas.requestBody = {
         content: {
           "application/json": {
             schema:
-              this.oasSchemaHelper.namedSchemaToReference(requestSchema) ||
-              this.oasSchemaHelper.schemaChildrenToRefs(requestSchema),
+              this.oasSchemaHelper.namedSchemaToReference(requestSchema!) ||
+              this.oasSchemaHelper.schemaChildrenToRefs(requestSchema!),
           },
         },
       }
@@ -435,7 +451,7 @@ class OasKindGenerator extends FunctionKindGenerator {
     }
 
     // check deprecation and version in tags
-    const { deprecatedTag, versionTag, featureFlagTag } =
+    const { deprecatedTag, sinceTag, featureFlagTag } =
       this.getInformationFromTags(node)
 
     if (deprecatedTag) {
@@ -445,9 +461,9 @@ class OasKindGenerator extends FunctionKindGenerator {
         : undefined
     }
 
-    if (versionTag) {
-      oas["x-version"] = versionTag.comment
-        ? (versionTag.comment as string)
+    if (sinceTag) {
+      oas["x-since"] = sinceTag.comment
+        ? (sinceTag.comment as string)
         : undefined
     }
 
@@ -568,6 +584,7 @@ class OasKindGenerator extends FunctionKindGenerator {
       node,
       tagName,
       methodName,
+      oasPath,
       forUpdate: true,
     })
 
@@ -596,10 +613,7 @@ class OasKindGenerator extends FunctionKindGenerator {
 
     parametersUpdated = updatedRequestSchema?.wasUpdated || parametersUpdated
 
-    if (
-      !updatedRequestSchema?.schema ||
-      Object.keys(updatedRequestSchema.schema).length === 0
-    ) {
+    if (this.oasSchemaHelper.isSchemaEmpty(updatedRequestSchema?.schema)) {
       // if there's no request schema, remove it from the OAS
       delete oas.requestBody
     } else {
@@ -609,10 +623,10 @@ class OasKindGenerator extends FunctionKindGenerator {
           "application/json": {
             schema:
               this.oasSchemaHelper.namedSchemaToReference(
-                updatedRequestSchema.schema
+                updatedRequestSchema!.schema!
               ) ||
               this.oasSchemaHelper.schemaChildrenToRefs(
-                updatedRequestSchema.schema
+                updatedRequestSchema!.schema!
               ),
           },
         },
@@ -791,7 +805,7 @@ class OasKindGenerator extends FunctionKindGenerator {
     }
 
     // check deprecation and version in tags
-    const { deprecatedTag, versionTag, featureFlagTag } =
+    const { deprecatedTag, sinceTag, featureFlagTag } =
       this.getInformationFromTags(node)
 
     if (deprecatedTag) {
@@ -804,12 +818,12 @@ class OasKindGenerator extends FunctionKindGenerator {
       delete oas["x-deprecated_message"]
     }
 
-    if (versionTag) {
-      oas["x-version"] = versionTag.comment
-        ? (versionTag.comment as string)
+    if (sinceTag) {
+      oas["x-since"] = sinceTag.comment
+        ? (sinceTag.comment as string)
         : undefined
     } else {
-      delete oas["x-version"]
+      delete oas["x-since"]
     }
 
     if (featureFlagTag) {
@@ -1159,6 +1173,7 @@ class OasKindGenerator extends FunctionKindGenerator {
     node,
     tagName,
     methodName,
+    oasPath,
     forUpdate = false,
   }: {
     /**
@@ -1173,6 +1188,10 @@ class OasKindGenerator extends FunctionKindGenerator {
      * The tag's name.
      */
     tagName?: string
+    /**
+     * The OAS path.
+     */
+    oasPath: string
     /**
      * Whether the request parameters are retrieved for update purposes only.
      */
@@ -1189,6 +1208,30 @@ class OasKindGenerator extends FunctionKindGenerator {
   } {
     const queryParameters: OpenAPIV3.ParameterObject[] = []
     let requestSchema: OpenApiSchema | undefined
+    const isLocalizedRoute = this.LOCALIZED_ROUTES.some((route) =>
+      oasPath.startsWith(route)
+    )
+
+    if (isLocalizedRoute) {
+      queryParameters.push(
+        this.getParameterObject({
+          type: "query",
+          name: "locale",
+          description:
+            "The locale in BCP 47 format to retrieve localized content.",
+          required: false,
+          schema: {
+            type: "string",
+            example: "en-US",
+            externalDocs: {
+              url: "https://docs.medusajs.com/resources/commerce-modules/translation/storefront",
+              description:
+                "Learn more in the Serve Translations in Storefront guide.",
+            },
+          },
+        })
+      )
+    }
 
     if (
       !node.parameters[0].type ||
@@ -1203,53 +1246,6 @@ class OasKindGenerator extends FunctionKindGenerator {
     const requestType = this.checker.getTypeFromTypeNode(
       node.parameters[0].type
     ) as ts.TypeReference
-    // TODO for now I'll use the type for validatedQuery until
-    // we have an actual approach to infer query types
-    const querySymbol = requestType.getProperty("validatedQuery")
-    if (querySymbol) {
-      const { shouldAddFields, shouldAddPagination } =
-        this.shouldAddQueryParams(node)
-      const queryType = this.checker.getTypeOfSymbol(querySymbol)
-      const queryTypeName = this.checker.typeToString(queryType)
-      queryType.getProperties().forEach((property) => {
-        const propertyName = property.getName()
-        // if this is a field / pagination query parameter and
-        // they're not used in the route, don't add them.
-        if (
-          (this.FIELD_QUERY_PARAMS.includes(propertyName) &&
-            !shouldAddFields) ||
-          (this.PAGINATION_QUERY_PARAMS.includes(propertyName) &&
-            !shouldAddPagination)
-        ) {
-          return
-        }
-        const propertyType = this.checker.getTypeOfSymbol(property)
-        const descriptionOptions: SchemaDescriptionOptions = {
-          typeStr: propertyName,
-          parentName: tagName,
-          rawParentName: queryTypeName,
-          node: property.valueDeclaration,
-          symbol: property,
-          nodeType: propertyType,
-        }
-        queryParameters.push(
-          this.getParameterObject({
-            name: propertyName,
-            type: "query",
-            description: this.getSchemaDescription(descriptionOptions),
-            required: this.isRequired(property),
-            schema: this.typeToSchema({
-              itemType: propertyType,
-              title: propertyName,
-              descriptionOptions,
-              context: "query",
-              saveSchema: !forUpdate,
-              symbol: property,
-            }),
-          })
-        )
-      })
-    }
 
     const requestTypeArguments =
       requestType.typeArguments || requestType.aliasTypeArguments
@@ -1376,6 +1372,22 @@ class OasKindGenerator extends FunctionKindGenerator {
           type: "string",
           externalDocs: {
             url: "https://docs.medusajs.com/api/store#publishable-api-key",
+          },
+        },
+      }),
+      this.getParameterObject({
+        type: "header",
+        name: "x-medusa-locale",
+        description:
+          "The locale in BCP 47 format to retrieve localized content.",
+        required: false,
+        schema: {
+          type: "string",
+          example: "en-US",
+          externalDocs: {
+            url: "https://docs.medusajs.com/resources/commerce-modules/translation/storefront",
+            description:
+              "Learn more in the Serve Translations in Storefront guide.",
           },
         },
       }),
@@ -1537,17 +1549,30 @@ class OasKindGenerator extends FunctionKindGenerator {
     const typeAsString =
       zodObjectTypeName || this.checker.typeToString(itemType)
 
-    const schemaFromFactory = this.schemaFactory.tryGetSchema(
-      itemType.symbol?.getName() ||
-        itemType.aliasSymbol?.getName() ||
-        title ||
-        typeAsString,
-      {
-        title: title || typeAsString,
-        description,
-      },
-      rest.context
-    )
+    const schemaFromFactory =
+      this.schemaFactory.tryGetSchema({
+        name:
+          itemType.symbol?.getName() ||
+          itemType.aliasSymbol?.getName() ||
+          title ||
+          typeAsString,
+        additionalData: {
+          title: title || typeAsString,
+          description,
+        },
+        context: rest.context,
+        type: itemType,
+      }) ||
+      this.schemaFactory.tryGetSchema({
+        // remove type arguments from name
+        name: typeAsString.replace(/<.*>$/, ""),
+        additionalData: {
+          title: title || typeAsString,
+          description,
+        },
+        context: rest.context,
+        type: itemType,
+      })
 
     if (schemaFromFactory) {
       return schemaFromFactory
@@ -2514,7 +2539,7 @@ class OasKindGenerator extends FunctionKindGenerator {
     }
 
     if (oldSchemaObj?.deprecated !== newSchemaObj?.deprecated) {
-      // avoid many changes to exising OAS
+      // avoid many changes to existing OAS
       if (!newSchemaObj?.deprecated) {
         if (oldSchemaObj!.deprecated) {
           wasUpdated = true
@@ -2527,7 +2552,7 @@ class OasKindGenerator extends FunctionKindGenerator {
     }
 
     if (oldSchemaObj?.["x-featureFlag"] !== newSchemaObj?.["x-featureFlag"]) {
-      // avoid many changes to exising OAS
+      // avoid many changes to existing OAS
       if (!newSchemaObj?.["x-featureFlag"]) {
         if (oldSchemaObj!["x-featureFlag"]) {
           wasUpdated = true
@@ -2640,9 +2665,16 @@ class OasKindGenerator extends FunctionKindGenerator {
         if (
           fnText.includes(`${workflowName}(`) ||
           fnText.includes(`${workflowName} (`) ||
-          fnText.includes(`${workflowName}.`)
+          fnText.includes(`${workflowName}.`) ||
+          fnText.includes(`we.run(${workflowName}`) ||
+          fnText.includes(`we.run (${workflowName}`) ||
+          fnText.includes(`we.run(
+            ${workflowName}
+          )`)
         ) {
-          workflow = workflowName
+          // workaround for API routes that execute a workflow
+          // by its ID. Not very smart but will do for now.
+          workflow = workflowName.replace(/Id$/, "")
         }
       })
     })
@@ -2735,18 +2767,6 @@ class OasKindGenerator extends FunctionKindGenerator {
     }
   }
 
-  shouldAddQueryParams(node: FunctionNode): {
-    shouldAddFields: boolean
-    shouldAddPagination: boolean
-  } {
-    const fnText = node.getText()
-
-    return {
-      shouldAddFields: fnText.includes(`req.queryConfig.fields`),
-      shouldAddPagination: fnText.includes(`req.queryConfig.pagination`),
-    }
-  }
-
   hasResponseType(node: FunctionNode, oas: OpenApiOperation): boolean {
     const oldResponseStatus = Object.keys(oas.responses!).find(
       (status) => !Object.keys(DEFAULT_OAS_RESPONSES).includes(status)
@@ -2794,7 +2814,7 @@ class OasKindGenerator extends FunctionKindGenerator {
           description: event.description,
           deprecated: event.deprecated,
           deprecated_message: event.deprecated_message,
-          version: event.version,
+          since: event.since,
         }))
       )
     }

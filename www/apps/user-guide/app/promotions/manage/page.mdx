@@ -28,11 +28,11 @@ To view a promotion's details:
 
 This opens the promotion's details page. The sections in the details page may differ based on the promotion's type.
 
-![Promotion Details](https://res.cloudinary.com/dza7lstvk/image/upload/v1739951000/User%20Guide/Screenshot_2025-02-19_at_9.42.23_AM_fjpgv7.png)
+![Promotion Details](https://res.cloudinary.com/dza7lstvk/image/upload/v1764580476/User%20Guide/CleanShot_2025-12-01_at_11.03.26_2x_xxxa8m.png)
 
 ### Promotion Statuses
 
-A promotion's status is shown in the Promotions listing page, and in the promotion's details page at the top right of the first section. The status can be one of the following:
+A promotion's status is shown in the Promotions listing page, and in the promotion's details page in the first section's header. The status can be one of the following:
 
 <Table>
   <Table.Header>
@@ -65,21 +65,42 @@ A promotion's status is shown in the Promotions listing page, and in the promoti
   </Table.Body>
 </Table>
 
+### Promotion Limits
+
+In the summary section of the promotion's details page, you can see the usage limit of the promotion, if set during its creation. This is the maximum number of times the promotion can be used across all orders.
+
+A promotion's usage can also be limited by:
+
+1. The campaign's usage limit, if the promotion is part of a campaign. This is the maximum number of times all promotions in the campaign can be used across all orders. You can set this limit when [creating the campaign](../campaigns/page.mdx).
+2. The per-customer usage limit, if the promotion is part of a campaign. This is the maximum number of times a single customer can use promotions in a campaign across all their orders. You can set this limit when [creating the campaign](../campaigns/page.mdx).
+
+Once any of the promotion's limits are reached, the promotion can't be used anymore. For example, if a promotion has a usage limit of 10 and is part of a campaign with a usage limit of 50, the promotion can only be used 10 times even if the campaign's limit hasn't been reached yet.
+
 ---
 
 ## Edit Promotion's Details
 
+<Note>
+
+If any of the fields are not visible in your admin, contact your technical team to [update your Medusa version](!docs!/learn/update).
+
+</Note>
+
 To edit a promotion's general details:
 
 1. Go to the promotion's details page.
-2. Click the <InlineIcon Icon={EllipsisHorizontal} alt="three-dots" /> icon at the top right of the first section.
+2. Click the <InlineIcon Icon={EllipsisHorizontal} alt="three-dots" /> icon in the first section's header.
 3. Choose Edit from the dropdown.
 4. In the side window that opens:
     - You can change the promotion's status to either **Draft**, **Active**, or **Inactive**. Inactive is useful if the promotion was originally active but you want to expire it.
     - You can edit the promotion's method (whether it's applied manually or automatically) and code.
-    - You can change how the amount is discounted, either by a fixed amount or a percentage. You can also change the discounted amount.
-    - You can change how the promotion is applied, either on every applicable item or across all items in the cart.
-        - For example, if your promotion discounts an amount from applicable products in a cart, choosing **Each** applies the discount on each applicable product, whereas **Across** applies the discount across all applicable products.
+    - Based on the promotion's type, you can change how the amount is discounted, either by a fixed amount or a percentage. You can also change the discounted amount.
+    - Based on the promotion's type, you can change how the promotion is applied:
+        - **Each**: The discount is applied to each applicable item in the cart.
+        - **Across**: The discount is applied across all applicable items in the cart.
+        - **Once**: The discount is applied to a specific number of applicable items in the cart, which is determined by the Maximum Quantity field.
+        - Based on the promotion's type, some of the above options may not be available. For example, for "Amount off order", only "Across" is available.
+    - You can edit the maximum quantity of applicable items that the promotion is applied to in the cart.
 5. Once you're done, click the Save button.
 
 ![Edit Promotion Form](https://res.cloudinary.com/dza7lstvk/image/upload/v1739951499/User%20Guide/Screenshot_2025-02-19_at_9.51.26_AM_zylmig.png)
@@ -91,7 +112,7 @@ To edit a promotion's general details:
 To edit who can use the promotion:
 
 1. Go to the promotion's details page.
-2. Click the <InlineIcon Icon={EllipsisHorizontal} alt="three-dots" /> icon at the top right of the "Who can use this code?" section.
+2. Click the <InlineIcon Icon={EllipsisHorizontal} alt="three-dots" /> icon in the header of the "Who can use this code?" section.
 3. Choose Edit from the dropdown.
 4. In the side window that opens, you can edit existing conditions or add new ones by clicking the "Add condition" button. For each condition:
     - Select the attribute in the first field. This is the attribute that the condition applies to. It can be:
@@ -102,12 +123,11 @@ To edit who can use the promotion:
         - **Currency Code**: The currency code that the customer must / must not be placing the order in.
     - Select the operator of the condition:
         - **In**: The customer's value for the chosen attribute must belong to the specified values.
-        - **Equals**: The customer's value for the chosen attribute must be the same as the specified value.
         - **Not In**: The customer's value for the chosen attribute must not belong to the specified values.
     - Select the value of the attribute.
     - For example, if you want to allow only customers belonging to the B2B group to use this promotion:
         - Set the Attribute to Customer Group.
-        - Set the Operator to In or Equals.
+        - Set the Operator to In.
         - Set the Value to the B2B customer group.
 5. Once you're done, click the Save button.
 
@@ -126,7 +146,7 @@ For "Buy X Get Y" or "buyget" promotion types, this section allows you to edit w
 To edit the items the promotion applies to:
 
 1. Go to the promotion's details page.
-2. Click the <InlineIcon Icon={EllipsisHorizontal} alt="three-dots" /> icon at the top right of the "What items will the promotion be applied to?" section.
+2. Click the <InlineIcon Icon={EllipsisHorizontal} alt="three-dots" /> icon in the header of the "What items will the promotion be applied to?" section.
 3. Choose Edit from the dropdown.
 4. In the side window that opens, you can edit existing conditions or add new ones by clicking the "Add condition" button. For each condition:
     - Select the attribute in the first field. This is the attribute that the condition applies to. It can be:
@@ -163,7 +183,7 @@ To edit the items that the customer gets for free when they buy the specified it
 To edit the "Buy X" part of the promotion:
 
 1. Go to the promotion's details page.
-2. Click the <InlineIcon Icon={EllipsisHorizontal} alt="three-dots" /> icon at the top right of the "What needs to be in the cart to unlock the promotion?" section.
+2. Click the <InlineIcon Icon={EllipsisHorizontal} alt="three-dots" /> icon in the header of the "What needs to be in the cart to unlock the promotion?" section.
 3. Choose Edit from the dropdown.
 4. In the side window, you can edit the minimum required quantity of the product in the "Buy X" condition, and any other existing conditions. You can also add new conditions by clicking the "Add condition" button. For each condition:
     - Select the attribute in the first field. This is the attribute that the condition applies to. It can be:
@@ -187,6 +207,34 @@ To edit the "Buy X" part of the promotion:
 
 ---
 
+## Edit the Shipping Methods the Promotion Applies To
+
+<Note>
+
+Free shipping promotions were added in [Medusa v2.10.0](https://github.com/medusajs/medusa/releases/tag/v2.10.0).
+
+</Note>
+
+For "Free Shipping" promotions, you can edit the required conditions for the promotion to be applicable on a cart's shipping methods.
+
+To edit the shipping methods the promotion applies to:
+
+1. Go to the promotion's details page.
+2. Click the <InlineIcon Icon={EllipsisHorizontal} alt="three-dots" /> icon in the header of the "What shipping methods will the promotion be applied to?" section.
+3. Choose Edit from the dropdown.
+4. In the side window, you can edit the required conditions for the promotion to be applicable on a cart's shipping methods. You can also add new conditions by clicking the "Add condition" button. For each condition:
+    - Select the attribute in the first field. This is the attribute that the condition applies to. It can be:
+        - **Shipping Option Type**: The promotion applies / doesn't apply to shipping methods whose underlying shipping option is of the specified type(s).
+    - Select the operator of the condition:
+        - **In**: The value of the shipping method in the cart must belong to the specified values.
+        - **Not In**: The value of the shipping method in the cart must not belong to the specified values.
+    - Select the value of the attribute.
+5. Once you're done, click the Save button.
+
+![Edit shipping methods condition form](https://res.cloudinary.com/dza7lstvk/image/upload/v1756370174/User%20Guide/CleanShot_2025-08-28_at_11.35.57_2x_fjvmwe.png)
+
+---
+
 ## Add Promotion to Campaign
 
 If you created a promotion without a campaign, you can add it to an existing campaign from its details page.
@@ -194,7 +242,7 @@ If you created a promotion without a campaign, you can add it to an existing cam
 To add a promotion to a campaign:
 
 1. Go to the promotion's details page.
-2. Click on "Add to Campaign" at the top right of the "Campaign" section.
+2. Click on "Add to Campaign" in the header of the "Campaign" section.
 3. In the side window that opens:
     - Select "Existing Campaign".
     - Choose the campaign from the "Existing Campaign" dropdown. For promotions that are applied as a fixed amount, only campaigns whose budget uses the same currency as the promotion are shown.
@@ -211,7 +259,7 @@ You can change the campaign that a promotion belongs to, or remove it from a cam
 To change a promotion's campaign:
 
 1. Go to the promotion's details page.
-2. Click the <InlineIcon Icon={EllipsisHorizontal} alt="three-dots" /> icon at the top right of the "Campaign" section.
+2. Click the <InlineIcon Icon={EllipsisHorizontal} alt="three-dots" /> icon in the header of the "Campaign" section.
 3. Choose Edit from the dropdown.
 4. In the side window that opens:
     - To remove the promotion from its current campaign, select "Without Campaign".
@@ -231,6 +279,6 @@ Deleting a promotion is irreversible.
 To delete a promotion:
 
 1. Go to the promotion's details page.
-2. Click the <InlineIcon Icon={EllipsisHorizontal} alt="three-dots" /> icon at the top right of the first section.
+2. Click the <InlineIcon Icon={EllipsisHorizontal} alt="three-dots" /> icon in the first section's header.
 3. Choose Delete from the dropdown.
 4. Confirm deleting the promotion in the pop-up by entering its code and clicking the "Delete" button.

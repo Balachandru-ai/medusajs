@@ -31,8 +31,8 @@
  *               description: The associations to create between a product variant and an inventory item.
  *               required:
  *                 - variant_id
- *                 - inventory_item_id
  *                 - required_quantity
+ *                 - inventory_item_id
  *               properties:
  *                 required_quantity:
  *                   type: number
@@ -55,8 +55,8 @@
  *               description: Update a product variant's association with an inventory item.
  *               required:
  *                 - variant_id
- *                 - inventory_item_id
  *                 - required_quantity
+ *                 - inventory_item_id
  *               properties:
  *                 required_quantity:
  *                   type: number
@@ -135,7 +135,7 @@
  *     label: cURL
  *     source: |-
  *       curl -X POST '{backend_url}/admin/products/{id}/variants/inventory-items/batch' \
- *       -H 'Authorization: Bearer {access_token}'
+ *       -H 'Authorization: Bearer {jwt_token}'
  * tags:
  *   - Products
  * responses:

@@ -25,6 +25,28 @@
  *         Links](https://docs.medusajs.com/learn/fundamentals/api-routes/retrieve-custom-links) documentation.
  *       externalDocs:
  *         url: "#select-fields-and-relations"
+ *   - name: include_ancestors_tree
+ *     in: query
+ *     description: Whether to retrieve the category's parent. If you enable this, add to the `fields` query parameter `parent_category` to set the parent of a category in this field. You can either pass
+ *       `*parent_category` to retreieve the fields of all parent categories, or select specific fields to make the response size smaller. For example, `fields=parent_category.id,parent_category.name`.
+ *     required: false
+ *     schema:
+ *       type: boolean
+ *       title: include_ancestors_tree
+ *       description: Whether to retrieve the category's parent. If you enable this, add to the `fields` query parameter `parent_category` to set the parent of a category in this field. You can either pass
+ *         `*parent_category` to retreieve the fields of all parent categories, or select specific fields to make the response size smaller. For example, `fields=parent_category.id,parent_category.name`.
+ *   - name: include_descendants_tree
+ *     in: query
+ *     description: Whether to retrieve a list of child categories. If you enable this, add to the `fields` query parameter `category_children` to set the child of a category in this field. You can either
+ *       pass `*category_children` to retreieve the fields of all child categories, or select specific fields to make the response size smaller. For example,
+ *       `fields=category_children.id,category_children.name`.
+ *     required: false
+ *     schema:
+ *       type: boolean
+ *       title: include_descendants_tree
+ *       description: Whether to retrieve a list of child categories. If you enable this, add to the `fields` query parameter `category_children` to set the child of a category in this field. You can either
+ *         pass `*category_children` to retreieve the fields of all child categories, or select specific fields to make the response size smaller. For example,
+ *         `fields=category_children.id,category_children.name`.
  * security:
  *   - api_token: []
  *   - cookie_auth: []
@@ -33,40 +55,7 @@
  *   content:
  *     application/json:
  *       schema:
- *         type: object
- *         description: The properties to update in the product category.
- *         properties:
- *           name:
- *             type: string
- *             title: name
- *             description: The product category's name.
- *           description:
- *             type: string
- *             title: description
- *             description: The product category's description.
- *           handle:
- *             type: string
- *             title: handle
- *             description: The product category's handle. Must be a unique value.
- *           is_internal:
- *             type: boolean
- *             title: is_internal
- *             description: Whether the product category is only used for internal purposes and shouldn't be shown the customer.
- *           is_active:
- *             type: boolean
- *             title: is_active
- *             description: Whether the product category is active.
- *           parent_category_id:
- *             type: string
- *             title: parent_category_id
- *             description: The ID of a parent category.
- *           metadata:
- *             type: object
- *             description: The product category's metadata. Can hold custom key-value pairs.
- *           rank:
- *             type: number
- *             title: rank
- *             description: The product category's rank among other categories.
+ *         $ref: "#/components/schemas/AdminUpdateProductCategory"
  * x-codeSamples:
  *   - lang: JavaScript
  *     label: JS SDK
@@ -91,7 +80,7 @@
  *     label: cURL
  *     source: |-
  *       curl -X POST '{backend_url}/admin/product-categories/{id}' \
- *       -H 'Authorization: Bearer {access_token}' \
+ *       -H 'Authorization: Bearer {jwt_token}' \
  *       -H 'Content-Type: application/json' \
  *       --data-raw '{
  *         "parent_category_id": "{value}",
@@ -123,9 +112,9 @@
  *   - name: product-category.updated
  *     payload: |-
  *       ```ts
- *       [{
+ *       {
  *         id, // The ID of the product category
- *       }]
+ *       }
  *       ```
  *     description: Emitted when product categories are updated.
  *     deprecated: false

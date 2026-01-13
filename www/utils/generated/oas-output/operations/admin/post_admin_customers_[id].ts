@@ -99,7 +99,7 @@
  *     label: cURL
  *     source: |-
  *       curl -X POST '{backend_url}/admin/customers/{id}' \
- *       -H 'Authorization: Bearer {access_token}' \
+ *       -H 'Authorization: Bearer {jwt_token}' \
  *       -H 'Content-Type: application/json' \
  *       --data-raw '{
  *         "email": "Daren_Rodriguez-Rutherford93@gmail.com",
@@ -135,9 +135,9 @@
  *   - name: customer.updated
  *     payload: |-
  *       ```ts
- *       [{
+ *       {
  *         id, // The ID of the customer
- *       }]
+ *       }
  *       ```
  *     description: Emitted when a customer is updated.
  *     deprecated: false

@@ -23,29 +23,6 @@
  *         fields. without prefix it will replace the entire default fields.
  *       externalDocs:
  *         url: "#select-fields-and-relations"
- *   - name: province_code
- *     in: query
- *     description: Filter by a tax region's province code.
- *     required: false
- *     schema:
- *       type: string
- *       title: province_code
- *       description: Filter by a tax region's province code.
- *   - name: provider_id
- *     in: query
- *     description: Filter by a tax provider ID to retrieve the tax regions using it.
- *     required: false
- *     schema:
- *       type: string
- *       title: provider_id
- *       description: Filter by a tax provider ID to retrieve the tax regions using it.
- *   - name: metadata
- *     in: query
- *     description: Filter by a tax region's metadata. Refer to the [Object Query Parameter](https://docs.medusajs.com/api/admin#object) section to learn how to filter by object fields.
- *     required: false
- *     schema:
- *       type: object
- *       description: Filter by a tax region's metadata. Refer to the [Object Query Parameter](https://docs.medusajs.com/api/admin#object) section to learn how to filter by object fields.
  * security:
  *   - api_token: []
  *   - cookie_auth: []
@@ -72,7 +49,7 @@
  *     label: cURL
  *     source: |-
  *       curl '{backend_url}/admin/tax-regions/{id}' \
- *       -H 'Authorization: Bearer {access_token}'
+ *       -H 'Authorization: Bearer {jwt_token}'
  * tags:
  *   - Tax Regions
  * responses:

@@ -1,6 +1,6 @@
 import { BatchMethodRequest, HttpTypes } from "@medusajs/framework/types"
 import { ProductStatus } from "@medusajs/framework/utils"
-import { z, ZodType } from "zod"
+import { z, type ZodType } from "@medusajs/framework/zod"
 import {
   applyAndAndOrOperators,
   booleanString,
@@ -13,6 +13,7 @@ import {
   createSelectParams,
   WithAdditionalData,
 } from "../../utils/validators"
+import { AdminGetProductVariantsParamsFields } from "../product-variants/validators"
 
 const statusEnum = z.nativeEnum(ProductStatus)
 
@@ -20,30 +21,14 @@ export const AdminGetProductParams = createSelectParams()
 export const AdminGetProductVariantParams = createSelectParams()
 export const AdminGetProductOptionParams = createSelectParams()
 
-export const AdminGetProductVariantsParamsFields = z.object({
-  q: z.string().optional(),
-  id: z.union([z.string(), z.array(z.string())]).optional(),
-  manage_inventory: booleanString().optional(),
-  allow_backorder: booleanString().optional(),
-  created_at: createOperatorMap().optional(),
-  updated_at: createOperatorMap().optional(),
-  deleted_at: createOperatorMap().optional(),
-})
-
-export type AdminGetProductVariantsParamsType = z.infer<
-  typeof AdminGetProductVariantsParams
->
-export const AdminGetProductVariantsParams = createFindParams({
-  offset: 0,
-  limit: 50,
-})
-  .merge(AdminGetProductVariantsParamsFields)
-  .merge(applyAndAndOrOperators(AdminGetProductVariantsParamsFields))
-
 export const AdminGetProductsParamsDirectFields = z.object({
-  variants: AdminGetProductVariantsParamsFields.merge(
-    applyAndAndOrOperators(AdminGetProductVariantsParamsFields)
-  ).optional(),
+  variants: AdminGetProductVariantsParamsFields.omit({ q: true })
+    .merge(
+      applyAndAndOrOperators(
+        AdminGetProductVariantsParamsFields.omit({ q: true })
+      )
+    )
+    .optional(),
   status: statusEnum.array().optional(),
 })
 
@@ -61,7 +46,7 @@ export const AdminGetProductsParams = createFindParams({
       .merge(applyAndAndOrOperators(AdminGetProductsParamsDirectFields))
       .merge(GetProductsParams)
   )
-  .transform(transformProductParams)
+  .transform(transformProductParams as any)
 
 export const AdminGetProductOptionsParamsFields = z.object({
   q: z.string().optional(),
@@ -184,6 +169,7 @@ export const UpdateProductVariant = z
     barcode: z.string().nullish(),
     hs_code: z.string().nullish(),
     mid_code: z.string().nullish(),
+    thumbnail: z.string().nullish(),
     allow_backorder: booleanString().optional(),
     manage_inventory: booleanString().optional(),
     variant_rank: z.number().optional(),
@@ -258,7 +244,9 @@ export const UpdateProduct = z
     status: statusEnum.optional(),
     subtitle: z.string().nullish(),
     description: z.string().nullish(),
-    images: z.array(z.object({ url: z.string() })).optional(),
+    images: z
+      .array(z.object({ id: z.string().optional(), url: z.string() }))
+      .optional(),
     thumbnail: z.string().nullish(),
     handle: z.string().nullish(),
     type_id: z.string().nullish(),
@@ -340,6 +328,20 @@ export type AdminBatchVariantInventoryItemsType = BatchMethodRequest<
   AdminBatchCreateVariantInventoryItemType,
   AdminBatchUpdateVariantInventoryItemType,
   AdminBatchDeleteVariantInventoryItemType
+>
+
+export const AdminBatchImageVariant = z.object({
+  add: z.array(z.string()).optional(),
+  remove: z.array(z.string()).optional(),
+}) satisfies ZodType<HttpTypes.AdminBatchImageVariantRequest>
+export type AdminBatchImageVariantType = z.infer<typeof AdminBatchImageVariant>
+
+export const AdminBatchVariantImages = z.object({
+  add: z.array(z.string()).optional(),
+  remove: z.array(z.string()).optional(),
+}) satisfies ZodType<HttpTypes.AdminBatchVariantImagesRequest>
+export type AdminBatchVariantImagesType = z.infer<
+  typeof AdminBatchVariantImages
 >
 
 export const AdminImportProducts = z.object({

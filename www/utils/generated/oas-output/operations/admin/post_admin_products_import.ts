@@ -37,7 +37,7 @@
  *     label: cURL
  *     source: |-
  *       curl -X POST '{backend_url}/admin/products/import' \
- *       -H 'Authorization: Bearer {access_token}'
+ *       -H 'Authorization: Bearer {jwt_token}'
  * tags:
  *   - Products
  * responses:
@@ -64,39 +64,41 @@
  *   - name: product-variant.created
  *     payload: |-
  *       ```ts
- *       [{
+ *       {
  *         id, // The ID of the product variant
- *       }]
+ *       }
  *       ```
  *     description: Emitted when product variants are created.
  *     deprecated: false
  *   - name: product.updated
  *     payload: |-
  *       ```ts
- *       [{
+ *       {
  *         id, // The ID of the product
- *       }]
+ *       }
  *       ```
  *     description: Emitted when products are updated.
  *     deprecated: false
  *   - name: product.created
  *     payload: |-
  *       ```ts
- *       [{
+ *       {
  *         id, // The ID of the product
- *       }]
+ *       }
  *       ```
  *     description: Emitted when products are created.
  *     deprecated: false
  *   - name: product.deleted
  *     payload: |-
  *       ```ts
- *       [{
+ *       {
  *         id, // The ID of the product
- *       }]
+ *       }
  *       ```
  *     description: Emitted when products are deleted.
  *     deprecated: false
+ * deprecated: true
+ * x-deprecated_message: use `POST /admin/products/imports` instead.
  * 
 */
 

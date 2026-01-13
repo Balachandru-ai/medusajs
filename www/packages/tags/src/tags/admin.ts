@@ -52,6 +52,10 @@ export const admin = [
     "path": "https://docs.medusajs.com/resources/references/js-sdk/admin/invite"
   },
   {
+    "title": "locale",
+    "path": "https://docs.medusajs.com/resources/references/js-sdk/admin/locale"
+  },
+  {
     "title": "notification",
     "path": "https://docs.medusajs.com/resources/references/js-sdk/admin/notification"
   },
@@ -140,6 +144,10 @@ export const admin = [
     "path": "https://docs.medusajs.com/resources/references/js-sdk/admin/shippingOption"
   },
   {
+    "title": "shippingOptionType",
+    "path": "https://docs.medusajs.com/resources/references/js-sdk/admin/shippingOptionType"
+  },
+  {
     "title": "shippingProfile",
     "path": "https://docs.medusajs.com/resources/references/js-sdk/admin/shippingProfile"
   },
@@ -164,12 +172,20 @@ export const admin = [
     "path": "https://docs.medusajs.com/resources/references/js-sdk/admin/taxRegion"
   },
   {
+    "title": "translation",
+    "path": "https://docs.medusajs.com/resources/references/js-sdk/admin/translation"
+  },
+  {
     "title": "upload",
     "path": "https://docs.medusajs.com/resources/references/js-sdk/admin/upload"
   },
   {
     "title": "user",
     "path": "https://docs.medusajs.com/resources/references/js-sdk/admin/user"
+  },
+  {
+    "title": "views",
+    "path": "https://docs.medusajs.com/resources/references/js-sdk/admin/views"
   },
   {
     "title": "workflowExecution",

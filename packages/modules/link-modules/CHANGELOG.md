@@ -1,5 +1,174 @@
 # @medusajs/link-modules
 
+## 2.12.5
+
+### Patch Changes
+
+- [#14493](https://github.com/medusajs/medusa/pull/14493) [`bb599a26deed6d5b98e6ce6308c447dca5b90f10`](https://github.com/medusajs/medusa/commit/bb599a26deed6d5b98e6ce6308c447dca5b90f10) Thanks [@adrien2p](https://github.com/adrien2p)! - feat(medusa-app): Link initialization should respect migrationOnly flag
+
+- [#14502](https://github.com/medusajs/medusa/pull/14502) [`233ec261be200fac83002415aa7c0df082339a3f`](https://github.com/medusajs/medusa/commit/233ec261be200fac83002415aa7c0df082339a3f) Thanks [@adrien2p](https://github.com/adrien2p)! - Fix/add schema only flag
+
+- Updated dependencies [[`233ec261be200fac83002415aa7c0df082339a3f`](https://github.com/medusajs/medusa/commit/233ec261be200fac83002415aa7c0df082339a3f)]:
+  - @medusajs/framework@2.12.5
+
+## 2.12.4
+
+### Patch Changes
+
+- Updated dependencies [[`181d5fa67122e4e5f38b91f6b716d35f2d08a204`](https://github.com/medusajs/medusa/commit/181d5fa67122e4e5f38b91f6b716d35f2d08a204), [`d347e369ce555064e24f2dc3cd93b9e4e73a006d`](https://github.com/medusajs/medusa/commit/d347e369ce555064e24f2dc3cd93b9e4e73a006d)]:
+  - @medusajs/framework@2.12.4
+
+## 2.12.3
+
+### Patch Changes
+
+- [#14293](https://github.com/medusajs/medusa/pull/14293) [`dd3eb10b1afd0659a6095b6a642d0bf5322285cd`](https://github.com/medusajs/medusa/commit/dd3eb10b1afd0659a6095b6a642d0bf5322285cd) Thanks [@NicolasGorga](https://github.com/NicolasGorga)! - fix(link-modules): export store locale link definition
+
+- [#14316](https://github.com/medusajs/medusa/pull/14316) [`f5ec359c4c4c81c007d57069df32ad6cc1f31c5d`](https://github.com/medusajs/medusa/commit/f5ec359c4c4c81c007d57069df32ad6cc1f31c5d) Thanks [@adrien2p](https://github.com/adrien2p)! - Fix/readonly link feature flag conditional
+
+- [#14307](https://github.com/medusajs/medusa/pull/14307) [`0f1566c64456a6f29a7bfb1dda5a7c470a84ace7`](https://github.com/medusajs/medusa/commit/0f1566c64456a6f29a7bfb1dda5a7c470a84ace7) Thanks [@adrien2p](https://github.com/adrien2p)! - feat(): Add support for store locales end point
+
+- Updated dependencies [[`7b4dda5a179c78de5e099231ec407836db4c8dbd`](https://github.com/medusajs/medusa/commit/7b4dda5a179c78de5e099231ec407836db4c8dbd), [`8964a03fa1b9e6a4c443bf5b21d65d41a8441d29`](https://github.com/medusajs/medusa/commit/8964a03fa1b9e6a4c443bf5b21d65d41a8441d29), [`c8a7122ba918751b215dc0b19cf9b09b2c011ab8`](https://github.com/medusajs/medusa/commit/c8a7122ba918751b215dc0b19cf9b09b2c011ab8)]:
+  - @medusajs/framework@2.12.3
+
+## 2.12.2
+
+### Patch Changes
+
+- [#14004](https://github.com/medusajs/medusa/pull/14004) [`5b7e3c0e7649a3a61b0a4fe796f37e5f7fbe9a3a`](https://github.com/medusajs/medusa/commit/5b7e3c0e7649a3a61b0a4fe796f37e5f7fbe9a3a) Thanks [@carlos-r-l-rodrigues](https://github.com/carlos-r-l-rodrigues)! - chore(link-modules): ignore duplicates link creation
+
+- [#14269](https://github.com/medusajs/medusa/pull/14269) [`d7398736e84cfab77db70a8eddf832bb64e89fe5`](https://github.com/medusajs/medusa/commit/d7398736e84cfab77db70a8eddf832bb64e89fe5) Thanks [@adrien2p](https://github.com/adrien2p)! - fix(): Remove unnecessary store support\_\* read only links
+
+- [#14276](https://github.com/medusajs/medusa/pull/14276) [`9852a7c74d3c27d38b60f865061fd39bc0c46911`](https://github.com/medusajs/medusa/commit/9852a7c74d3c27d38b60f865061fd39bc0c46911) Thanks [@adrien2p](https://github.com/adrien2p)! - fix(): Improve store currency readonly link
+
+- Updated dependencies [[`9f7846ae0babbad39947a1f33d236bff8b5098d0`](https://github.com/medusajs/medusa/commit/9f7846ae0babbad39947a1f33d236bff8b5098d0), [`fe49b567d6d55ae224095c06c710d31d40887653`](https://github.com/medusajs/medusa/commit/fe49b567d6d55ae224095c06c710d31d40887653), [`6dc0b8bed84a330c1c24f4f1331f1ed078430a47`](https://github.com/medusajs/medusa/commit/6dc0b8bed84a330c1c24f4f1331f1ed078430a47), [`356283c359e5c30e0d31e6c6fd0fb8e16c025b78`](https://github.com/medusajs/medusa/commit/356283c359e5c30e0d31e6c6fd0fb8e16c025b78)]:
+  - @medusajs/framework@2.12.2
+
+## 2.12.1
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @medusajs/framework@2.12.1
+
+## 2.12.0
+
+### Patch Changes
+
+- [#14036](https://github.com/medusajs/medusa/pull/14036) [`e59cdae3365981339d55ec01224f09995250e67d`](https://github.com/medusajs/medusa/commit/e59cdae3365981339d55ec01224f09995250e67d) Thanks [@adrien2p](https://github.com/adrien2p)! - fix(): Proper schema usage when running migrations
+
+- Updated dependencies [[`c2c3ad5ba53f1959422fb2d37297a8de8d714782`](https://github.com/medusajs/medusa/commit/c2c3ad5ba53f1959422fb2d37297a8de8d714782), [`7e3eb6e41316d7b04d32bc7186ed0c78de1aa539`](https://github.com/medusajs/medusa/commit/7e3eb6e41316d7b04d32bc7186ed0c78de1aa539), [`beb91d88a2f224075e4fcf35a0ee9483b3124504`](https://github.com/medusajs/medusa/commit/beb91d88a2f224075e4fcf35a0ee9483b3124504)]:
+  - @medusajs/framework@2.12.0
+
+## 2.11.3
+
+### Patch Changes
+
+- [#13910](https://github.com/medusajs/medusa/pull/13910) [`224ab39a81e8d3cf3d6fa3ff5eee82541f64728d`](https://github.com/medusajs/medusa/commit/224ab39a81e8d3cf3d6fa3ff5eee82541f64728d) Thanks [@adrien2p](https://github.com/adrien2p)! - chore(): Dependencies cleanup and improvements
+
+- Updated dependencies [[`28c3ea68f5634792848f146ac6af5b27c848bf21`](https://github.com/medusajs/medusa/commit/28c3ea68f5634792848f146ac6af5b27c848bf21), [`224ab39a81e8d3cf3d6fa3ff5eee82541f64728d`](https://github.com/medusajs/medusa/commit/224ab39a81e8d3cf3d6fa3ff5eee82541f64728d), [`afb40d437b3cc4ceb015df70985b2f005f40eaff`](https://github.com/medusajs/medusa/commit/afb40d437b3cc4ceb015df70985b2f005f40eaff), [`37563987b8fe75c9acfe62957a33e8398977647a`](https://github.com/medusajs/medusa/commit/37563987b8fe75c9acfe62957a33e8398977647a), [`13d7d15be594ca413785eebe8f86b47c36cb9830`](https://github.com/medusajs/medusa/commit/13d7d15be594ca413785eebe8f86b47c36cb9830)]:
+  - @medusajs/framework@2.11.3
+
+## 2.11.2
+
+### Patch Changes
+
+- Updated dependencies [[`85b1f3d43aa8d8e0269a545ef7867733fd0eb8e2`](https://github.com/medusajs/medusa/commit/85b1f3d43aa8d8e0269a545ef7867733fd0eb8e2)]:
+  - @medusajs/framework@2.11.2
+
+## 2.11.1
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @medusajs/framework@2.11.1
+
+## 2.11.0
+
+### Patch Changes
+
+- [#13439](https://github.com/medusajs/medusa/pull/13439) [`12a96a7c7015f011f5e29a1d387f835e514ba536`](https://github.com/medusajs/medusa/commit/12a96a7c7015f011f5e29a1d387f835e514ba536) Thanks [@adrien2p](https://github.com/adrien2p)! - chore(): Move peer deps into a single package and re export from framework
+
+- Updated dependencies [[`12a96a7c7015f011f5e29a1d387f835e514ba536`](https://github.com/medusajs/medusa/commit/12a96a7c7015f011f5e29a1d387f835e514ba536), [`b9d6f73320c36c53235b12fb8397b30a448917f0`](https://github.com/medusajs/medusa/commit/b9d6f73320c36c53235b12fb8397b30a448917f0), [`8ece06d8ed6a197ebb370918c49a3ec5c21dd186`](https://github.com/medusajs/medusa/commit/8ece06d8ed6a197ebb370918c49a3ec5c21dd186), [`92d30b28f45b4037cd73c180c8f257070cf49bd4`](https://github.com/medusajs/medusa/commit/92d30b28f45b4037cd73c180c8f257070cf49bd4), [`02b6d013822b9665f868c4ea6d1b5cfe58723459`](https://github.com/medusajs/medusa/commit/02b6d013822b9665f868c4ea6d1b5cfe58723459)]:
+  - @medusajs/framework@2.11.0
+
+## 2.10.3
+
+### Patch Changes
+
+- [#13516](https://github.com/medusajs/medusa/pull/13516) [`25634b038248ab6501af719faec79b59b496bada`](https://github.com/medusajs/medusa/commit/25634b038248ab6501af719faec79b59b496bada) Thanks [@adrien2p](https://github.com/adrien2p)! - test(): test dynamic max workers and improve CI
+
+- Updated dependencies [[`25634b038248ab6501af719faec79b59b496bada`](https://github.com/medusajs/medusa/commit/25634b038248ab6501af719faec79b59b496bada)]:
+  - @medusajs/framework@2.10.3
+
+## 2.10.2
+
+### Patch Changes
+
+- [#13459](https://github.com/medusajs/medusa/pull/13459) [`de9a21a9da38b82c6de28bd6272c9e87ca72bccc`](https://github.com/medusajs/medusa/commit/de9a21a9da38b82c6de28bd6272c9e87ca72bccc) Thanks [@adrien2p](https://github.com/adrien2p)! - chore(): Improve link indexes
+
+- [#13465](https://github.com/medusajs/medusa/pull/13465) [`8e849074e44fe3b967dbfb3bbbef527f4aed3eed`](https://github.com/medusajs/medusa/commit/8e849074e44fe3b967dbfb3bbbef527f4aed3eed) Thanks [@adrien2p](https://github.com/adrien2p)! - fix(): missing events
+
+- Updated dependencies [[`b4c0f131b70ba950339c1ca4d81b5ce062a588a3`](https://github.com/medusajs/medusa/commit/b4c0f131b70ba950339c1ca4d81b5ce062a588a3), [`a4b72f9a21fd1d278c622fcd45d24bb9bfb1e0a8`](https://github.com/medusajs/medusa/commit/a4b72f9a21fd1d278c622fcd45d24bb9bfb1e0a8)]:
+  - @medusajs/framework@2.10.2
+
+## 2.10.1
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @medusajs/framework@2.10.1
+
+## 2.10.0
+
+### Patch Changes
+
+- [#13263](https://github.com/medusajs/medusa/pull/13263) [`486621383a79e83c831933c1a0ffdae58a695cb0`](https://github.com/medusajs/medusa/commit/486621383a79e83c831933c1a0ffdae58a695cb0) Thanks [@willbouch](https://github.com/willbouch)! - feat(dashboard,core-flows,js-sdk,link-modules,promotion): free shipping promotion in dashboard
+
+- Updated dependencies [[`e413cfefc2e0579ba7c5299dc4f4270310e39c2c`](https://github.com/medusajs/medusa/commit/e413cfefc2e0579ba7c5299dc4f4270310e39c2c), [`e2213448ac9eb93318570fde2807a3036108d44b`](https://github.com/medusajs/medusa/commit/e2213448ac9eb93318570fde2807a3036108d44b)]:
+  - @medusajs/framework@2.10.0
+
+## 2.9.0
+
+### Patch Changes
+
+- [#13137](https://github.com/medusajs/medusa/pull/13137) [`9725bff25d321011da7ba5096fe0946c5a8f0059`](https://github.com/medusajs/medusa/commit/9725bff25d321011da7ba5096fe0946c5a8f0059) Thanks [@carlos-r-l-rodrigues](https://github.com/carlos-r-l-rodrigues)! - fix(index): handle $and and $or operators
+
+- Updated dependencies []:
+  - @medusajs/framework@2.9.0
+
+## 2.8.8
+
+### Patch Changes
+
+- [#12928](https://github.com/medusajs/medusa/pull/12928) [`97a8e5cb2e8819672803bfcd9cde19cb1ce1acc0`](https://github.com/medusajs/medusa/commit/97a8e5cb2e8819672803bfcd9cde19cb1ce1acc0) Thanks [@riqwan](https://github.com/riqwan)! - chore(link-modules): keep promotion alias
+
+- [#12920](https://github.com/medusajs/medusa/pull/12920) [`8c4228fc42e717f9ab72230040e708f606a585b7`](https://github.com/medusajs/medusa/commit/8c4228fc42e717f9ab72230040e708f606a585b7) Thanks [@riqwan](https://github.com/riqwan)! - fix(link-modules,core-flows): Carry over cart promotions to order promotions
+
+- Updated dependencies [[`43fb06ecc2d87ea2a11e12524679c142eb890ec7`](https://github.com/medusajs/medusa/commit/43fb06ecc2d87ea2a11e12524679c142eb890ec7)]:
+  - @medusajs/framework@2.8.8
+
+## 2.8.7
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @medusajs/framework@2.8.7
+
+## 2.8.6
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @medusajs/framework@2.8.6
+
+## 2.8.5
+
+### Patch Changes
+
+- Updated dependencies [[`cbf3644eb7c8a24eaed879647b58c9ece3373c0e`](https://github.com/medusajs/medusa/commit/cbf3644eb7c8a24eaed879647b58c9ece3373c0e), [`d517dbd66a47817d1270c278b03add9a5c4244cb`](https://github.com/medusajs/medusa/commit/d517dbd66a47817d1270c278b03add9a5c4244cb), [`820a936b9836ae83e7a45de1e1ed0488d8cde2fd`](https://github.com/medusajs/medusa/commit/820a936b9836ae83e7a45de1e1ed0488d8cde2fd), [`00505b4f8e49873123111752adfda47ccb35ab46`](https://github.com/medusajs/medusa/commit/00505b4f8e49873123111752adfda47ccb35ab46), [`94b62c67249d13ec6342411cf7efdedfd0ac47e1`](https://github.com/medusajs/medusa/commit/94b62c67249d13ec6342411cf7efdedfd0ac47e1)]:
+  - @medusajs/framework@2.8.5
+
 ## 2.8.4
 
 ### Patch Changes

@@ -1,3 +1,5 @@
+import { CodeTab, CodeTabs } from "docs-ui"
+
 export const metadata = {
   title: `${pageNumber} Add Columns to a Link Table`,
 }
@@ -97,9 +99,12 @@ For example:
 
 <Note>
 
-Learn more about Link, how to resolve it, and its methods in [this chapter](../link/page.mdx).
+Refer to the [Link](../link/page.mdx) chapter to learn how to import and use the `link` instance.
 
 </Note>
+
+<CodeTabs group="link">
+  <CodeTab label="Link" value="link">
 
 ```ts
 await link.create({
@@ -117,11 +122,83 @@ await link.create({
 })
 ```
 
+  </CodeTab>
+  <CodeTab label="createRemoteLinksStep" value="createRemoteLinksStep">
+
+```ts
+import { Modules } from "@medusajs/framework/utils"
+import { BLOG_MODULE } from "../modules/blog"
+import { createRemoteLinksStep } from "@medusajs/medusa/core-flows"
+import { 
+  createWorkflow,
+  transform,
+} from "@medusajs/framework/workflows-sdk"
+
+export const myWorkflow = createWorkflow(
+  "my-workflow",
+  () => {
+    // ...
+    const linkData = transform({
+      // TODO pass input data
+    }, () => {
+      return [
+        {
+          [Modules.PRODUCT]: {
+            product_id: "123",
+          },
+          [BLOG_MODULE]: {
+            post_id: "321",
+          },
+          data: {
+            metadata: {
+              test: true,
+            },
+          },
+        },
+      ]
+    })
+    createRemoteLinksStep(linkData)
+    // ...
+  }
+)
+```
+
+  </CodeTab>
+</CodeTabs>
+
 ---
 
 ## Retrieve Custom Column with Link
 
-To retrieve linked records with their custom columns, use [Query](../query/page.mdx). A module link's definition, exported by a file under `src/links`, has a special `entryPoint` property. Use this property when specifying the `entity` property in Query's `graph` method.
+To retrieve linked records with their custom columns, use [Query](../query/page.mdx). This section explores two methods to retrieve a link's custom columns.
+
+### Method 1: Using Special Link Field
+
+A data model will have a special field for all its link tables. The field's name is in the `{camel_case_data_model_name}_link` format, where `{camel_case_data_model_name}` is the name of the linked data model in camel case.
+
+For example:
+
+export const method1Highlights = [
+  ["3", `"post_link.metadata"`, "Retrieve the `metadata` custom column."]
+]
+
+```ts highlights={method1Highlights}
+const { data } = await query.graph({
+  entity: "product",
+  fields: ["id", "title", "post_link.metadata", "post.*"],
+  filters: {
+    id: "prod_123",
+  },
+})
+```
+
+In this example, you retrieve a product and the `metadata` custom column in the link table between `product` and `post` using the `post_link.metadata` field.
+
+You can also retrieve all custom columns in the link table using the `post_link.*` field.
+
+### Method 2: Using Entry Point
+
+A module link's definition, exported by a file under `src/links`, has a special `entryPoint` property. Use this property when specifying the `entity` property in Query's `graph` method.
 
 For example:
 
@@ -161,6 +238,9 @@ So, to update the value of a custom column in a created link, use the `create` m
 
 For example:
 
+<CodeTabs group="link">
+  <CodeTab label="Link" value="link">
+
 ```ts
 await link.create({
   [Modules.PRODUCT]: {
@@ -176,3 +256,47 @@ await link.create({
   },
 })
 ```
+
+  </CodeTab>
+  <CodeTab label="updateRemoteLinksStep" value="updateRemoteLinksStep">
+
+```ts
+import { Modules } from "@medusajs/framework/utils"
+import { BLOG_MODULE } from "../modules/blog"
+import { updateRemoteLinksStep } from "@medusajs/medusa/core-flows"
+import { 
+  createWorkflow,
+  transform,
+} from "@medusajs/framework/workflows-sdk"
+
+export const myWorkflow = createWorkflow(
+  "my-workflow",
+  () => {
+    // ...
+    const linkData = transform({
+      // TODO pass input data
+    }, () => {
+      return [
+        {
+          [Modules.PRODUCT]: {
+            product_id: "123",
+          },
+          [BLOG_MODULE]: {
+            post_id: "321",
+          },
+          data: {
+            metadata: {
+              test: false,
+            },
+          },
+        },
+      ]
+    })
+    updateRemoteLinksStep(linkData)
+    // ...
+  }
+)
+```
+
+  </CodeTab>
+</CodeTabs>

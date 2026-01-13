@@ -26,7 +26,6 @@ describe("CSV processor", () => {
       {
         "toCreate": {
           "sweatshirt": {
-            "categories": [],
             "description": "Reimagine the feeling of a classic sweatshirt. With our cotton sweatshirt, everyday essentials no longer have to be ordinary.",
             "discountable": true,
             "handle": "sweatshirt",
@@ -52,7 +51,6 @@ describe("CSV processor", () => {
               },
             ],
             "status": "published",
-            "tags": [],
             "thumbnail": "https://medusa-public-images.s3.eu-west-1.amazonaws.com/sweatshirt-vintage-front.png",
             "title": "Medusa Sweatshirt",
             "variants": [
@@ -99,7 +97,6 @@ describe("CSV processor", () => {
       {
         "toCreate": {
           "sweatshirt": {
-            "categories": [],
             "description": "Reimagine the feeling of a classic sweatshirt. With our cotton sweatshirt, everyday essentials no longer have to be ordinary.",
             "discountable": true,
             "handle": "sweatshirt",
@@ -127,7 +124,6 @@ describe("CSV processor", () => {
               },
             ],
             "status": "published",
-            "tags": [],
             "thumbnail": "https://medusa-public-images.s3.eu-west-1.amazonaws.com/sweatshirt-vintage-front.png",
             "title": "Medusa Sweatshirt",
             "variants": [
@@ -216,7 +212,6 @@ describe("CSV processor", () => {
       {
         "toCreate": {
           "sweatshirt": {
-            "categories": [],
             "description": "Reimagine the feeling of a classic sweatshirt. With our cotton sweatshirt, everyday essentials no longer have to be ordinary.",
             "discountable": true,
             "handle": "sweatshirt",
@@ -251,7 +246,6 @@ describe("CSV processor", () => {
               },
             ],
             "status": "published",
-            "tags": [],
             "thumbnail": "https://medusa-public-images.s3.eu-west-1.amazonaws.com/sweatshirt-vintage-front.png",
             "title": "Medusa Sweatshirt",
             "variants": [
@@ -343,7 +337,6 @@ describe("CSV processor", () => {
       {
         "toCreate": {
           "shorts": {
-            "categories": [],
             "description": "Reimagine the feeling of classic shorts. With our cotton shorts, everyday essentials no longer have to be ordinary.",
             "discountable": true,
             "handle": "shorts",
@@ -372,7 +365,6 @@ describe("CSV processor", () => {
               },
             ],
             "status": "published",
-            "tags": [],
             "thumbnail": "https://medusa-public-images.s3.eu-west-1.amazonaws.com/shorts-vintage-front.png",
             "title": "Medusa Shorts",
             "variants": [
@@ -464,7 +456,6 @@ describe("CSV processor", () => {
             "weight": 400,
           },
           "sweatpants": {
-            "categories": [],
             "description": "Reimagine the feeling of classic sweatpants. With our cotton sweatpants, everyday essentials no longer have to be ordinary.",
             "discountable": true,
             "handle": "sweatpants",
@@ -493,7 +484,6 @@ describe("CSV processor", () => {
               },
             ],
             "status": "published",
-            "tags": [],
             "thumbnail": "https://medusa-public-images.s3.eu-west-1.amazonaws.com/sweatpants-gray-front.png",
             "title": "Medusa Sweatpants",
             "variants": [
@@ -585,7 +575,6 @@ describe("CSV processor", () => {
             "weight": 400,
           },
           "t-shirt": {
-            "categories": [],
             "description": "Reimagine the feeling of a classic T-shirt. With our cotton T-shirts, everyday essentials no longer have to be ordinary.",
             "discountable": true,
             "handle": "t-shirt",
@@ -627,7 +616,6 @@ describe("CSV processor", () => {
               },
             ],
             "status": "published",
-            "tags": [],
             "thumbnail": "https://medusa-public-images.s3.eu-west-1.amazonaws.com/tee-black-front.png",
             "title": "Medusa T-Shirt",
             "variants": [
@@ -813,7 +801,6 @@ describe("CSV processor", () => {
         },
         "toUpdate": {
           "prod_01JSXX3ZVW4M4RS0NH4MSWCQWA": {
-            "categories": [],
             "description": "Reimagine the feeling of a classic sweatshirt. With our cotton sweatshirt, everyday essentials no longer have to be ordinary.",
             "discountable": true,
             "handle": "sweatshirt",
@@ -843,7 +830,6 @@ describe("CSV processor", () => {
               },
             ],
             "status": "published",
-            "tags": [],
             "thumbnail": "https://medusa-public-images.s3.eu-west-1.amazonaws.com/sweatshirt-vintage-front.png",
             "title": "Medusa Sweatshirt",
             "variants": [
@@ -935,7 +921,6 @@ describe("CSV processor", () => {
             "weight": 400,
           },
           "prod_01JT598HEWAE555V0A6BD602MG": {
-            "categories": [],
             "description": "Every programmer's best friend.",
             "discountable": true,
             "handle": "coffee-mug-v3",
@@ -955,7 +940,6 @@ describe("CSV processor", () => {
             ],
             "sales_channels": [],
             "status": "published",
-            "tags": [],
             "thumbnail": "https://medusa-public-images.s3.eu-west-1.amazonaws.com/coffee-mug.png",
             "title": "Medusa Coffee Mug",
             "variants": [
@@ -983,7 +967,6 @@ describe("CSV processor", () => {
             "weight": 400,
           },
           "prod_01JT598HEX26EHDG7SRK37Q3FG": {
-            "categories": [],
             "description": "Reimagine the feeling of classic sweatpants. With our cotton sweatpants, everyday essentials no longer have to be ordinary.",
             "discountable": true,
             "handle": "sweatpants-v2",
@@ -1009,7 +992,6 @@ describe("CSV processor", () => {
             ],
             "sales_channels": [],
             "status": "published",
-            "tags": [],
             "thumbnail": "https://medusa-public-images.s3.eu-west-1.amazonaws.com/sweatpants-gray-front.png",
             "title": "Medusa Sweatpants",
             "variants": [
@@ -1099,5 +1081,271 @@ describe("CSV processor", () => {
         },
       }
     `)
+  })
+
+  describe("Variant Metadata column", () => {
+    it("should process variant metadata as JSON correctly", () => {
+      const csvRow = {
+        "Product Handle": "test-product",
+        "Variant Title": "Test Variant",
+        "Variant Metadata": '{ "key": "value", "number": 123 }',
+      }
+
+      const normalized = CSVNormalizer.preProcess(csvRow, 1)
+      const processor = new CSVNormalizer([normalized])
+      const result = processor.proccess()
+
+      expect(result.toCreate["test-product"].variants[0].metadata).toEqual({
+        key: "value",
+        number: 123,
+      })
+    })
+
+    it("should throw an error for invalid JSON in variant metadata", () => {
+      const csvRow = {
+        "Product Handle": "test-product",
+        "Variant Title": "Test Variant",
+        "Variant Metadata": "invalid json",
+      }
+
+      const normalized = CSVNormalizer.preProcess(csvRow, 1)
+      const processor = new CSVNormalizer([normalized])
+
+      expect(() => processor.proccess()).toThrow(
+        'Row 1: Invalid value provided for "variant metadata". Expected a valid JSON string, received "invalid json"'
+      )
+    })
+  })
+
+  describe("System-generated columns", () => {
+    it("should ignore product timestamp columns during import", () => {
+      const csvRow: Record<string, string | boolean | number> = {
+        "Product Handle": "test-product",
+        "Product Title": "Test Product",
+        "Product Created At": "",
+        "Product Updated At": "",
+        "Product Deleted At": "",
+        "Product Is Giftcard": "true",
+      }
+
+      const normalized = CSVNormalizer.preProcess(csvRow, 1)
+      expect(normalized["product created at"]).toBe("")
+      expect(normalized["product updated at"]).toBe("")
+      expect(normalized["product deleted at"]).toBe("")
+      expect(normalized["product is giftcard"]).toBe("true")
+
+      const processor = new CSVNormalizer([normalized])
+      const result = processor.proccess()
+
+      // Should be in toCreate since we only have handle
+      expect(result.toCreate["test-product"]).toBeDefined()
+      expect(result.toCreate["test-product"].is_giftcard).toBe(true)
+
+      // Timestamp fields should not be in the output since they're ignored
+      expect(result.toCreate["test-product"]["created_at"]).toBeUndefined()
+      expect(result.toCreate["test-product"]["updated_at"]).toBeUndefined()
+      expect(result.toCreate["test-product"]["deleted_at"]).toBeUndefined()
+
+      // Verify that the timestamp fields are present in normalized data but ignored during processing
+      expect(normalized["product created at"]).toBe("")
+      expect(normalized["product updated at"]).toBe("")
+      expect(normalized["product deleted at"]).toBe("")
+    })
+
+    it("should ignore variant timestamp columns during import", () => {
+      const csvRow: Record<string, string | boolean | number> = {
+        "Product Handle": "test-product",
+        "Product Title": "Test Product",
+        "Variant Title": "Test Variant",
+        "Variant SKU": "TEST-SKU",
+        "Variant Created At": "",
+        "Variant Updated At": "",
+        "Variant Deleted At": "",
+        "Variant Product Id": "prod_123",
+      }
+
+      const normalized = CSVNormalizer.preProcess(csvRow, 1)
+      expect(normalized["variant created at"]).toBe("")
+      expect(normalized["variant updated at"]).toBe("")
+      expect(normalized["variant deleted at"]).toBe("")
+      expect(normalized["variant product id"]).toBe("prod_123")
+
+      const processor = new CSVNormalizer([normalized])
+      const result = processor.proccess()
+
+      // Should be in toCreate since we only have handle
+      expect(result.toCreate["test-product"]).toBeDefined()
+      expect(result.toCreate["test-product"].variants).toHaveLength(1)
+
+      const variant = result.toCreate["test-product"].variants[0]
+      expect(variant.title).toBe("Test Variant")
+      expect(variant.sku).toBe("TEST-SKU")
+
+      // Timestamp fields should not be in the variant output since they're ignored
+      expect(variant["created_at"]).toBeUndefined()
+      expect(variant["updated_at"]).toBeUndefined()
+      expect(variant["deleted_at"]).toBeUndefined()
+      expect(variant["product_id"]).toBeUndefined()
+
+      // Verify that the timestamp fields are present in normalized data but ignored during processing
+      expect(normalized["variant created at"]).toBe("")
+      expect(normalized["variant updated at"]).toBe("")
+      expect(normalized["variant deleted at"]).toBe("")
+      expect(normalized["variant product id"]).toBe("prod_123")
+    })
+
+    it("should process product is giftcard as boolean correctly", () => {
+      const csvRow = {
+        "Product Handle": "giftcard-product",
+        "Product Title": "Gift Card",
+        "Product Is Giftcard": "true",
+      }
+
+      const normalized = CSVNormalizer.preProcess(csvRow, 1)
+      const processor = new CSVNormalizer([normalized])
+      const result = processor.proccess()
+
+      expect(result.toCreate["giftcard-product"].is_giftcard).toBe(true)
+    })
+
+    it("should process product is giftcard as false correctly", () => {
+      const csvRow = {
+        "Product Handle": "regular-product",
+        "Product Title": "Regular Product",
+        "Product Is Giftcard": "false",
+      }
+
+      const normalized = CSVNormalizer.preProcess(csvRow, 1)
+      const processor = new CSVNormalizer([normalized])
+      const result = processor.proccess()
+
+      expect(result.toCreate["regular-product"].is_giftcard).toBe(false)
+    })
+
+    it("should handle product is giftcard with various truthy/falsy values", () => {
+      const testCases = [
+        { value: "true", expected: true },
+        { value: "false", expected: false },
+        { value: "TRUE", expected: true },
+        { value: "FALSE", expected: false },
+      ]
+
+      testCases.forEach(({ value, expected }) => {
+        const csvRow = {
+          "Product Handle": `test-product-${value}`,
+          "Product Title": "Test Product",
+          "Product Is Giftcard": value,
+        }
+
+        const normalized = CSVNormalizer.preProcess(csvRow, 1)
+        const processor = new CSVNormalizer([normalized])
+        const result = processor.proccess()
+
+        expect(result.toCreate[`test-product-${value}`].is_giftcard).toBe(
+          expected
+        )
+      })
+    })
+  })
+
+  describe("Column validation", () => {
+    it("should accept all system-generated columns without error", () => {
+      const csvRow: Record<string, string | boolean | number> = {
+        "Product Handle": "test-product",
+        "Product Title": "Test Product",
+        "Product Created At": "",
+        "Product Updated At": "",
+        "Product Deleted At": "",
+        "Product Is Giftcard": "true",
+        "Variant Title": "Test Variant",
+        "Variant Created At": "",
+        "Variant Updated At": "",
+        "Variant Deleted At": "",
+        "Variant Product Id": "prod_123",
+      }
+
+      expect(() => CSVNormalizer.preProcess(csvRow, 1)).not.toThrow()
+    })
+
+    it("should still reject truly unknown columns", () => {
+      const csvRow = {
+        "Product Handle": "test-product",
+        "Product Title": "Test Product",
+        "Unknown Column": "some value",
+      }
+
+      expect(() => CSVNormalizer.preProcess(csvRow, 1)).toThrow(
+        'Invalid column name(s) "Unknown Column"'
+      )
+    })
+
+    it("should handle mixed case column names correctly", () => {
+      const csvRow = {
+        "PRODUCT HANDLE": "test-product",
+        "Product Title": "Test Product",
+        "PRODUCT IS GIFTCARD": "true",
+        "Variant Created At": "2024-01-01T00:00:00Z",
+      }
+
+      const normalized = CSVNormalizer.preProcess(csvRow, 1)
+      expect(normalized["product handle"]).toBe("test-product")
+      expect(normalized["product is giftcard"]).toBe("true")
+      expect(normalized["variant created at"]).toBe("2024-01-01T00:00:00Z")
+    })
+  })
+
+  describe("Edge cases", () => {
+    it("should handle empty timestamp values", () => {
+      const csvRow: Record<string, string | boolean | number> = {
+        "Product Handle": "test-product",
+        "Product Title": "Test Product",
+        "Product Created At": "",
+        "Product Updated At": "",
+        "Product Deleted At": "",
+      }
+
+      const normalized = CSVNormalizer.preProcess(csvRow, 1)
+      expect(normalized["product created at"]).toBe("")
+      expect(normalized["product updated at"]).toBe("")
+      expect(normalized["product deleted at"]).toBe("")
+
+      const processor = new CSVNormalizer([normalized])
+      const result = processor.proccess()
+      expect(result.toCreate["test-product"]).toBeDefined()
+    })
+
+    it("should handle products with only ID (no handle) correctly", () => {
+      const csvRow = {
+        "Product Id": "prod_123",
+        "Product Title": "Test Product",
+        "Product Is Giftcard": "true",
+      }
+
+      const normalized = CSVNormalizer.preProcess(csvRow, 1)
+      const processor = new CSVNormalizer([normalized])
+      const result = processor.proccess()
+
+      // Should be in toUpdate since we have an ID
+      expect(result.toUpdate["prod_123"]).toBeDefined()
+      expect(result.toUpdate["prod_123"].is_giftcard).toBe(true)
+    })
+
+    it("should handle products with both ID and handle correctly", () => {
+      const csvRow = {
+        "Product Id": "prod_123",
+        "Product Handle": "test-product",
+        "Product Title": "Test Product",
+        "Product Is Giftcard": "true",
+      }
+
+      const normalized = CSVNormalizer.preProcess(csvRow, 1)
+      const processor = new CSVNormalizer([normalized])
+      const result = processor.proccess()
+
+      // Should be in toUpdate since we have an ID
+      expect(result.toUpdate["prod_123"]).toBeDefined()
+      expect(result.toUpdate["prod_123"].is_giftcard).toBe(true)
+      expect(result.toCreate["test-product"]).toBeUndefined()
+    })
   })
 })

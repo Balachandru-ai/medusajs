@@ -5,10 +5,11 @@ import {
   getOrderDetailWorkflow,
 } from "@medusajs/core-flows"
 
-import { StoreDeclineOrderTransferRequestType } from "../../../validators"
-
 export const POST = async (
-  req: AuthenticatedMedusaRequest<StoreDeclineOrderTransferRequestType>,
+  req: AuthenticatedMedusaRequest<
+    HttpTypes.StoreDeclineOrderTransfer,
+    HttpTypes.SelectParams
+  >,
   res: MedusaResponse<HttpTypes.StoreOrderResponse>
 ) => {
   await declineOrderTransferRequestWorkflow(req.scope).run({

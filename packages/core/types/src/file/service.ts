@@ -1,10 +1,15 @@
+import type { Writable } from "stream"
 import { Readable } from "stream"
-import { IModuleService } from "../modules-sdk"
-import { FileDTO, FilterableFileProps, UploadFileUrlDTO } from "./common"
 import { FindConfig } from "../common"
+import { IModuleService } from "../modules-sdk"
 import { Context } from "../shared-context"
-import { IFileProvider } from "./provider"
+import { FileDTO, FilterableFileProps, UploadFileUrlDTO } from "./common"
 import { CreateFileDTO, GetUploadFileUrlDTO } from "./mutations"
+import {
+  IFileProvider,
+  ProviderFileResultDTO,
+  ProviderUploadStreamDTO,
+} from "./provider"
 
 export interface IFileModuleService extends IModuleService {
   /**
@@ -30,7 +35,7 @@ export interface IFileModuleService extends IModuleService {
    * const [file] = await fileModuleService.createFiles([{
    *   filename: "product.png",
    *   mimeType: "image/png",
-   *   content: "somecontent" // binary string
+   *   content: "somecontent" // base64 string
    * }])
    */
   createFiles(
@@ -49,7 +54,7 @@ export interface IFileModuleService extends IModuleService {
    * const file = await fileModuleService.createFiles({
    *   filename: "product.png",
    *   mimeType: "image/png",
-   *   content: "somecontent" // binary string
+   *   content: "somecontent" // base64 string
    * })
    */
 
@@ -176,7 +181,7 @@ export interface IFileModuleService extends IModuleService {
    * This method retrieves a file by its ID and returns a stream to download the file. Under the hood, it will use the
    * file provider that was used to upload the file to retrievethe stream.
    *
-   * @version 2.8.0
+   * @since 2.8.0
    *
    * @param {string} id - The ID of the file.
    * @param {Context} sharedContext - A context used to share resources, such as transaction manager, between the application and the module.
@@ -192,7 +197,7 @@ export interface IFileModuleService extends IModuleService {
    * This method retrieves a file by its ID and returns the file contents as a buffer. Under the hood, it will use the
    * file provider that was used to upload the file to retrieve the buffer.
    *
-   * @version 2.8.0
+   * @since 2.8.0
    *
    * @param {string} id - The ID of the file.
    * @param {Context} sharedContext - A context used to share resources, such as transaction manager, between the application and the module.
@@ -203,4 +208,14 @@ export interface IFileModuleService extends IModuleService {
    * contents.toString('utf-8')
    */
   getAsBuffer(id: string, sharedContext?: Context): Promise<Buffer>
+
+  /**
+   * Get a writeable stream to upload a file.
+   */
+  getUploadStream(fileData: ProviderUploadStreamDTO): Promise<{
+    writeStream: Writable
+    promise: Promise<ProviderFileResultDTO>
+    url: string
+    fileKey: string
+  }>
 }

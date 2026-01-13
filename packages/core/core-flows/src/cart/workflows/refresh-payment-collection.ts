@@ -8,9 +8,11 @@ import {
   transform,
   when,
 } from "@medusajs/framework/workflows-sdk"
-import { useRemoteQueryStep } from "../../common/steps/use-remote-query"
+import { useQueryGraphStep } from "../../common"
+import { acquireLockStep, releaseLockStep } from "../../locking"
 import { updatePaymentCollectionStep } from "../../payment-collection"
 import { deletePaymentSessionsWorkflow } from "../../payment-collection/workflows/delete-payment-sessions"
+import { validateCartStep } from "../steps"
 
 /**
  * The details of the cart to refresh.
@@ -54,13 +56,32 @@ export const refreshPaymentCollectionForCartWorkflowId =
  * @property hooks.validate - This hook is executed before all operations. You can consume this hook to perform any custom validation. If validation fails, you can throw an error to stop the workflow execution.
  */
 export const refreshPaymentCollectionForCartWorkflow = createWorkflow(
-  refreshPaymentCollectionForCartWorkflowId,
+  {
+    name: refreshPaymentCollectionForCartWorkflowId,
+    idempotent: false,
+  },
   (input: WorkflowData<RefreshPaymentCollectionForCartWorklowInput>) => {
-    const fetchCart = when({ input }, ({ input }) => {
-      return !input.cart
-    }).then(() => {
-      return useRemoteQueryStep({
-        entry_point: "cart",
+    const shouldExecute = transform({ input }, ({ input }) => {
+      if (input.cart) {
+        return !!input.cart.payment_collection
+      }
+
+      return !!input.cart_id
+    })
+
+    const cartId = transform({ input }, ({ input }) => {
+      return input.cart_id ?? input.cart?.id
+    })
+
+    const fetchCart = when(
+      "should-fetch-cart",
+      { shouldExecute },
+      ({ shouldExecute }) => {
+        return shouldExecute
+      }
+    ).then(() => {
+      const { data: cart } = useQueryGraphStep({
+        entity: "cart",
         fields: [
           "id",
           "region_id",
@@ -73,14 +94,26 @@ export const refreshPaymentCollectionForCartWorkflow = createWorkflow(
           "payment_collection.currency_code",
           "payment_collection.payment_sessions.id",
         ],
-        variables: { id: input.cart_id },
-        throw_if_key_not_found: true,
-        list: false,
-      })
+        filters: { id: cartId },
+        options: {
+          throwIfKeyNotFound: true,
+          isList: false,
+        },
+      }).config({ name: "fetch-cart" })
+
+      return cart
     })
 
     const cart = transform({ fetchCart, input }, ({ fetchCart, input }) => {
-      return input.cart ?? fetchCart
+      return fetchCart ?? input.cart
+    })
+
+    validateCartStep({ cart })
+
+    acquireLockStep({
+      key: cart.id,
+      timeout: 2,
+      ttl: 10,
     })
 
     const validate = createHook("validate", {
@@ -88,18 +121,22 @@ export const refreshPaymentCollectionForCartWorkflow = createWorkflow(
       cart,
     })
 
-    when({ cart }, ({ cart }) => {
-      const valueIsEqual = MathBN.eq(
-        cart.payment_collection?.raw_amount ?? -1,
-        cart.raw_total
-      )
+    when(
+      "should-update-payment-collection",
+      { cart, shouldExecute },
+      ({ cart, shouldExecute }) => {
+        const valueIsEqual = MathBN.eq(
+          cart.payment_collection?.raw_amount ?? -1,
+          cart.raw_total
+        )
 
-      if (valueIsEqual) {
-        return cart.payment_collection.currency_code !== cart.currency_code
+        if (valueIsEqual) {
+          return cart.payment_collection.currency_code !== cart.currency_code
+        }
+
+        return shouldExecute
       }
-
-      return true
-    }).then(() => {
+    ).then(() => {
       const deletePaymentSessionInput = transform(
         { paymentCollection: cart.payment_collection },
         (data) => {
@@ -120,7 +157,7 @@ export const refreshPaymentCollectionForCartWorkflow = createWorkflow(
         return {
           selector: { id: cart.payment_collection.id },
           update: {
-            amount: cart.total,
+            amount: cart.raw_total,
             currency_code: cart.currency_code,
           },
         }
@@ -132,6 +169,10 @@ export const refreshPaymentCollectionForCartWorkflow = createWorkflow(
         }),
         updatePaymentCollectionStep(updatePaymentCollectionInput)
       )
+    })
+
+    releaseLockStep({
+      key: cart.id,
     })
 
     return new WorkflowResponse(void 0, {

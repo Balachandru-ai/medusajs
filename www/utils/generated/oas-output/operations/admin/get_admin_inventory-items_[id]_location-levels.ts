@@ -51,24 +51,28 @@
  *       type: string
  *       title: order
  *       description: The field to sort the data by. By default, the sort order is ascending. To change the order to descending, prefix the field name with `-`.
- *   - name: $and
+ *   - name: with_deleted
+ *     in: query
+ *     description: Whether to include deleted records in the result.
+ *     required: false
+ *     schema:
+ *       type: boolean
+ *       title: with_deleted
+ *       description: Whether to include deleted records in the result.
+ *   - name: location_id
  *     in: query
  *     required: false
  *     schema:
- *       type: array
- *       description: Join query parameters with an AND condition. Each object's content is the same type as the expected query parameters.
- *       items:
- *         type: object
- *       title: $and
- *   - name: $or
- *     in: query
- *     required: false
- *     schema:
- *       type: array
- *       description: Join query parameters with an OR condition. Each object's content is the same type as the expected query parameters.
- *       items:
- *         type: object
- *       title: $or
+ *       oneOf:
+ *         - type: string
+ *           title: location_id
+ *           description: Filter by the inventory item's location ID.
+ *         - type: array
+ *           description: The inventory item's location IDs.
+ *           items:
+ *             type: string
+ *             title: location_id
+ *             description: The location ID.
  * security:
  *   - api_token: []
  *   - cookie_auth: []
@@ -95,7 +99,7 @@
  *     label: cURL
  *     source: |-
  *       curl '{backend_url}/admin/inventory-items/{id}/location-levels' \
- *       -H 'Authorization: Bearer {access_token}'
+ *       -H 'Authorization: Bearer {jwt_token}'
  * tags:
  *   - Inventory Items
  * responses:

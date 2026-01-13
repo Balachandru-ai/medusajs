@@ -34,7 +34,7 @@
  *   content:
  *     application/json:
  *       schema:
- *         $ref: "#/components/schemas/AdminCreateOrderCreditLines"
+ *         $ref: "#/components/schemas/AdminCreateOrderCreditLine"
  * x-codeSamples:
  *   - lang: JavaScript
  *     label: JS SDK
@@ -64,7 +64,7 @@
  *     label: cURL
  *     source: |-
  *       curl -X POST '{backend_url}/admin/orders/{id}/credit-lines' \
- *       -H 'Authorization: Bearer {access_token}' \
+ *       -H 'Authorization: Bearer {jwt_token}' \
  *       -H 'Content-Type: application/json' \
  *       --data-raw '{
  *         "amount": 32,

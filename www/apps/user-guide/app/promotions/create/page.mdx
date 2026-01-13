@@ -32,10 +32,11 @@ In the first step of creating a promotion, you need to specify the type of the p
 3. **Percentage off product**: Discount a percentage off the amount of products matching custom and dynamic conditions.
 4. **Percentage off order**: Discount a percentage off an order's total.
 5. **Buy X Get Y**: When the customer buys X quantity of a product, they get Y quantity for free. For example, buy 3 shirts get 1 for free.
+6. **Free Shipping**: Offer free shipping on orders that meet certain conditions.
 
 Once you've selected the type, click on the Continue button.
 
-![Create Promotion Form First Step](https://res.cloudinary.com/dza7lstvk/image/upload/v1739894084/User%20Guide/Screenshot_2025-02-18_at_5.54.25_PM_irp2ax.png)
+![Create Promotion Form First Step](https://res.cloudinary.com/dza7lstvk/image/upload/v1756368023/User%20Guide/CleanShot_2025-08-28_at_11.00.07_2x_nptdyk.png)
 
 ---
 
@@ -52,7 +53,8 @@ If you chose the "Amount off Products" promotion type in the first section, fill
     - **Automatic**: The promotion is applied automatically if the customer's cart matches the promotion's conditions.
 2. For the Status, choose **Draft** if you don't want to allow customers to use the promotion yet, or **Active** otherwise.
 3. In the Code field, enter the promotion's code. It must be a code that doesn't have spaces. For example, `50OFF`.
-4. In the "Who can use this code?" section, you'll specify the conditions that must be met for the promotion to be applicable for a customer's cart.
+4. The "Does promotion include taxes" field allows you to customize when the promotion is applied on the cart. By default, this field is disabled, meaning the promotion is applied on the cart total before taxes. Enable this field to apply the promotion on the cart total after taxes.
+5. In the "Who can use this code?" section, you'll specify the conditions that must be met for the promotion to be applicable for a customer's cart.
     - You must set the currency code that this promotion applies to, which is shown as a required field.
     - To add a custom condition, click on the "Add condition" button. For each condition:
         - Select the attribute in the first field. This is the attribute that the condition applies to. It can be:
@@ -62,19 +64,23 @@ If you chose the "Amount off Products" promotion type in the first section, fill
             - **Sales Channel**: The customer must be / must not be placing the order from the specified sales channels.
         - Select the operator of the condition:
             - **In**: The customer's value for the chosen attribute must belong to the specified values.
-            - **Equals**: The customer's value for the chosen attribute must be the same as the specified value.
             - **Not In**: The customer's value for the chosen attribute must not belong to the specified values.
         - Select the value of the attribute.
         - For example, if you want to allow only customers belonging to the VIP group to use this promotion:
             - Set the Attribute to Customer Group.
-            - Set the Operator to In or Equals.
+            - Set the Operator to In.
             - Set the Value to the VIP customer group.
 
 ![Who can use this section](https://res.cloudinary.com/dza7lstvk/image/upload/v1739898104/User%20Guide/Screenshot_2025-02-18_at_7.01.14_PM_wvskll.png)
 
-5. In the Promotion Value field, set the amount to be discounted from applicable products when the promotion is applied. The amount is in the currency you chose in the previous section.
-6. In the Maximum Quantity field, set the maximum quantity of the applicable that the promotion is applied to in the cart. For example, if set to `1` and the customer has two applicable items in the cart, the promotion is only applied to one of them.
-7. In the "What items will the promotion be applied to?" section, you'll specify the items in the cart that the promotion can be applied to. To add a condition, click on the "Add condition" button. For each condition:
+6. In the Promotion Value field, set the amount to be discounted from applicable products when the promotion is applied. The amount is in the currency you chose in the previous section.
+7. In the Maximum Quantity field, set the maximum quantity line-item quantity that the promotion is applied to in the cart.
+    - For example, if set to `1` and the customer has a line item with quantity two in the cart, the promotion is only applied to one of them.
+    - This condition is applied on the quantity of every applicable item in the cart. For example, if set to `1` and the customer has two applicable items in the cart, the promotion is applied to one of each of them.
+8. In the Allocation field, choose how the discount is applied when there are multiple applicable items in the cart:
+    - **Each**: The discount is applied to each applicable item in the cart.
+    - **Once**: The discount is applied to a specific number of applicable items in the cart, which is determined by the Maximum Quantity field.
+9. In the "What items will the promotion be applied to?" section, you'll specify the items in the cart that the promotion can be applied to. To add a condition, click on the "Add condition" button. For each condition:
     - Select the attribute in the first field. This is the attribute that the condition applies to. It can be:
         - **Product**: The promotion applies / doesn't apply to the specified product(s).
         - **Product Category**: The promotion applies / doesn't apply to the products belonging to the specified categories.
@@ -83,14 +89,17 @@ If you chose the "Amount off Products" promotion type in the first section, fill
         - **Product Tag**: The promotion applies / doesn't apply to the products belonging to the specified tag(s).
     - Select the operator of the condition:
         - **In**: The value of the item in the cart must belong to the specified values.
-        - **Equals**: The value of the item in the cart must equal the specified values.
         - **Not In**: The value of the item in the cart must not belong to the specified values.
     - Select the value of the attribute.
     - For example, if you want to apply the promotion on products in the "Shirts" category:
         - Set the Attribute to Product Category.
-        - Set the Operator to In or Equals.
+        - Set the Operator to In.
         - Set the Value to the Shirts product category.
-8. Once you're done, click Next and move on to the [next step](#step-3-campaign).
+10. In the Usage Limit field, optionally set the maximum number of times this promotion can be used across all orders.
+    - For example, if you set this field to `10`, the promotion can be used a total of 10 times across all orders. After that, the promotion can't be used anymore.
+    - If left empty, the promotion can be used an unlimited number of times, or until the campaign's usage limit is reached if the promotion is part of a campaign.
+    - You can't update this field after creating the promotion.
+10. Once you're done, click Next and move on to the [next step](#step-3-campaign).
 
 ![What items will the promotion be applied to section](https://res.cloudinary.com/dza7lstvk/image/upload/v1739898160/User%20Guide/Screenshot_2025-02-18_at_7.02.26_PM_izi1sv.png)
 
@@ -103,7 +112,8 @@ If you chose the "Amount off Order" promotion type in the first section, fill ou
     - **Automatic**: The promotion is applied automatically if the customer's cart matches the promotion's conditions.
 2. For the Status, choose Draft if you don't want to allow customers to use the promotion yet, or Active otherwise.
 3. In the Code field, enter the promotion's code. It must be a code that doesn't have spaces. For example, `50OFF`.
-4. In the "Who can use this code?" section, you'll specify the conditions that must be met for the promotion to be applicable for a customer's cart.
+4. The "Does promotion include taxes" field allows you to customize when the promotion is applied on the cart. By default, this field is disabled, meaning the promotion is applied on the cart total before taxes. Enable this field to apply the promotion on the cart total after taxes.
+5. In the "Who can use this code?" section, you'll specify the conditions that must be met for the promotion to be applicable for a customer's cart.
     - You must set the currency code that this promotion applies to, which is shown as a required field.
     - To add a custom condition, click on the "Add condition" button. For each condition:
         - Select the attribute in the first field. This is the attribute that the condition applies to. It can be:
@@ -113,20 +123,29 @@ If you chose the "Amount off Order" promotion type in the first section, fill ou
             - **Sales Channel**: The customer must be / must not be placing the order from the specified sales channels.
         - Select the operator of the condition:
             - **In**: The customer's value for the chosen attribute must belong to the specified values.
-            - **Equals**: The customer's value for the chosen attribute must be the same as the specified value.
             - **Not In**: The customer's value for the chosen attribute must not belong to the specified values.
         - Select the value of the attribute.
         - For example, if you want to allow only customers belonging to the VIP group to use this promotion:
             - Set the Attribute to Customer Group.
-            - Set the Operator to In or Equals.
+            - Set the Operator to In.
             - Set the Value to the VIP customer group.
 
 ![Who can use this code form](https://res.cloudinary.com/dza7lstvk/image/upload/v1739898239/User%20Guide/Screenshot_2025-02-18_at_7.03.46_PM_iawubi.png)
 
-5. In the Promotion Value field, set the amount to be discounted from the order when the promotion is applied. The amount is in the currency you chose in the previous section.
-6. Once you're done, click Next and move on to the [next step](#step-3-campaign).
+6. In the Promotion Value field, set the amount to be discounted from the order when the promotion is applied. The amount is in the currency you chose in the previous section.
+7. In the Usage Limit field, optionally set the maximum number of times this promotion can be used across all orders.
+    - For example, if you set this field to `10`, the promotion can be used a total of 10 times across all orders. After that, the promotion can't be used anymore.
+    - If left empty, the promotion can be used an unlimited number of times, or until the campaign's usage limit is reached if the promotion is part of a campaign.
+    - You can't update this field after creating the promotion.
+8. Once you're done, click Next and move on to the [next step](#step-3-campaign).
 
 ### c. Percentage off Product
+
+<Note>
+
+If any of the fields are not visible in your admin, contact your technical team to [update your Medusa version](!docs!/learn/update).
+
+</Note>
 
 If you chose the "Percentage off Product" promotion type in the first section, fill out the following in the Details step:
 
@@ -135,7 +154,8 @@ If you chose the "Percentage off Product" promotion type in the first section, f
     - **Automatic**: The promotion is applied automatically if the customer's cart matches the promotion's conditions.
 2. For the Status, choose Draft if you don't want to allow customers to use the promotion yet, or Active otherwise.
 3. In the Code field, enter the promotion's code. It must be a code that doesn't have spaces. For example, `50OFF`.
-4. In the "Who can use this code?" section, you'll specify the conditions that must be met for the promotion to be applicable for a customer's cart. To add a condition, click on the "Add condition" button. For each condition:
+4. The "Does promotion include taxes" field allows you to customize when the promotion is applied on the cart. By default, this field is disabled, meaning the promotion is applied on the cart total before taxes. Enable this field to apply the promotion on the cart total after taxes.
+5. In the "Who can use this code?" section, you'll specify the conditions that must be met for the promotion to be applicable for a customer's cart. To add a condition, click on the "Add condition" button. For each condition:
     - Select the attribute in the first field. This is the attribute that the condition applies to. It can be:
         - **Customer Group**: The customer must belong / not belong to the specified customer group(s).
         - **Region**: The customer's region must belong / not belong to the specified region(s).
@@ -144,19 +164,21 @@ If you chose the "Percentage off Product" promotion type in the first section, f
         - **Currency Code**: The currency code that the customer must / must not be placing the order in.
     - Select the operator of the condition:
         - **In**: The customer's value for the chosen attribute must belong to the specified values.
-        - **Equals**: The customer's value for the chosen attribute must be the same as the specified value.
         - **Not In**: The customer's value for the chosen attribute must not belong to the specified values.
     - Select the value of the attribute.
     - For example, if you want to allow only customers belonging to the VIP group to use this promotion:
         - Set the Attribute to Customer Group.
-        - Set the Operator to In or Equals.
+        - Set the Operator to In.
         - Set the Value to the VIP customer group.
 
 ![Who can use this code section](https://res.cloudinary.com/dza7lstvk/image/upload/v1739898340/User%20Guide/Screenshot_2025-02-18_at_7.05.27_PM_yircnf.png)
 
-5. In the Promotion Value field, set the amount to be discounted from applicable products when the promotion is applied. The amount is in the currency you chose in the previous section.
-6. In the Maximum Quantity field, set the maximum quantity of the applicable that the promotion is applied to in the cart. For example, if set to `1` and the customer has two applicable items in the cart, the promotion is only applied to one of them.
-7. In the "What items will the promotion be applied to?" section, you'll specify the items in the cart that the promotion can be applied to. To add a condition, click on the "Add condition" button. For each condition:
+6. In the Promotion Value field, set the amount to be discounted from applicable products when the promotion is applied. The amount is in the currency you chose in the previous section.
+7. In the Maximum Quantity field, set the maximum quantity of the applicable that the promotion is applied to in the cart. For example, if set to `1` and the customer has two applicable items in the cart, the promotion is only applied to one of them.
+8. In the Allocation field, choose how the discount is applied when there are multiple applicable items in the cart:
+    - **Each**: The discount is applied to each applicable item in the cart.
+    - **Once**: The discount is applied to a specific number of applicable items in the cart, which is determined by the Maximum Quantity field.
+9. In the "What items will the promotion be applied to?" section, you'll specify the items in the cart that the promotion can be applied to. To add a condition, click on the "Add condition" button. For each condition:
     - Select the attribute in the first field. This is the attribute that the condition applies to. It can be:
         - **Product**: The promotion applies / doesn't apply to the specified product(s).
         - **Product Category**: The promotion applies / doesn't apply to the products belonging to the specified categories.
@@ -165,14 +187,17 @@ If you chose the "Percentage off Product" promotion type in the first section, f
         - **Product Tag**: The promotion applies / doesn't apply to the products belonging to the specified tag(s).
     - Select the operator of the condition:
         - **In**: The value of the item in the cart must belong to the specified values.
-        - **Equals**: The value of the item in the cart must equal the specified values.
         - **Not In**: The value of the item in the cart must not belong to the specified values.
     - Select the value of the attribute.
     - For example, if you want to apply the promotion on products in the "Shirts" category:
         - Set the Attribute to Product Category.
-        - Set the Operator to In or Equals.
+        - Set the Operator to In.
         - Set the Value to the Shirts product category.
-8. Once you're done, click Next and move on to the [next step](#step-3-campaign).
+10. In the Usage Limit field, optionally set the maximum number of times this promotion can be used across all orders.
+    - For example, if you set this field to `10`, the promotion can be used a total of 10 times across all orders. After that, the promotion can't be used anymore.
+    - If left empty, the promotion can be used an unlimited number of times, or until the campaign's usage limit is reached if the promotion is part of a campaign.
+    - You can't update this field after creating the promotion.
+11. Once you're done, click Next and move on to the [next step](#step-3-campaign).
 
 ![What items will the promotion be applied to section](https://res.cloudinary.com/dza7lstvk/image/upload/v1739898386/User%20Guide/Screenshot_2025-02-18_at_7.06.14_PM_bdi5jv.png)
 
@@ -185,7 +210,8 @@ If you chose the "Percentage off Order" promotion type in the first section, fil
     - **Automatic**: The promotion is applied automatically if the customer's cart matches the promotion's conditions.
 2. For the Status, choose Draft if you don't want to allow customers to use the promotion yet, or Active otherwise.
 3. In the Code field, enter the promotion's code. It must be a code that doesn't have spaces. For example, `50OFF`.
-4. In the "Who can use this code?" section, you'll specify the conditions that must be met for the promotion to be applicable for a customer's cart. To add a condition, click on the "Add condition" button. For each condition:
+4. The "Does promotion include taxes" field allows you to customize when the promotion is applied on the cart. By default, this field is disabled, meaning the promotion is applied on the cart total before taxes. Enable this field to apply the promotion on the cart total after taxes.
+5. In the "Who can use this code?" section, you'll specify the conditions that must be met for the promotion to be applicable for a customer's cart. To add a condition, click on the "Add condition" button. For each condition:
     - Select the attribute in the first field. This is the attribute that the condition applies to. It can be:
         - **Customer Group**: The customer must belong / not belong to the specified customer group(s).
         - **Region**: The customer's region must belong / not belong to the specified region(s).
@@ -194,18 +220,21 @@ If you chose the "Percentage off Order" promotion type in the first section, fil
         - **Currency Code**: The currency code that the customer must / must not be placing the order in.
     - Select the operator of the condition:
         - **In**: The customer's value for the chosen attribute must belong to the specified values.
-        - **Equals**: The customer's value for the chosen attribute must be the same as the specified value.
         - **Not In**: The customer's value for the chosen attribute must not belong to the specified values.
     - Select the value of the attribute.
     - For example, if you want to allow only customers belonging to the VIP group to use this promotion:
         - Set the Attribute to Customer Group.
-        - Set the Operator to In or Equals.
+        - Set the Operator to In.
         - Set the Value to the VIP customer group.
 
 ![Who can use this code section](https://res.cloudinary.com/dza7lstvk/image/upload/v1739898478/User%20Guide/Screenshot_2025-02-18_at_7.07.46_PM_eriyxm.png)
 
-5. In the Promotion Value field, set the amount to be discounted from applicable products when the promotion is applied. The amount is in the currency you chose in the previous section.
-6. Once you're done, click Next and move on to the [next step](#step-3-campaign).
+6. In the Promotion Value field, set the amount to be discounted from applicable products when the promotion is applied. The amount is in the currency you chose in the previous section.
+7. In the Usage Limit field, optionally set the maximum number of times this promotion can be used across all orders.
+    - For example, if you set this field to `10`, the promotion can be used a total of 10 times across all orders. After that, the promotion can't be used anymore.
+    - If left empty, the promotion can be used an unlimited number of times, or until the campaign's usage limit is reached if the promotion is part of a campaign.
+    - You can't update this field after creating the promotion.
+8. Once you're done, click Next and move on to the [next step](#step-3-campaign).
 
 ### e. Buy X Get Y
 
@@ -215,7 +244,7 @@ If you chose the "Buy X Get Y" promotion type in the first section, fill out the
     - **Promotion code**: The customer must enter the promotion's code during checkout for the promotion to apply.
     - **Automatic**: The promotion is applied automatically if the customer's cart matches the promotion's conditions.
 2. For the Status, choose Draft if you don't want to allow customers to use the promotion yet, or Active otherwise.
-3. In the Code field, enter the promotion's code. It must be a code that doesn't have spaces. For example, `50OFF`.
+3. In the Code field, enter the promotion's code. It must be a code that doesn't have spaces. For example, `BUY3GET1`.
 4. In the "Who can use this code?" section, you'll specify the conditions that must be met for the promotion to be applicable for a customer's cart. To add a condition, click on the "Add condition" button. For each condition:
     - Select the attribute in the first field. This is the attribute that the condition applies to. It can be:
         - **Customer Group**: The customer must belong / not belong to the specified customer group(s).
@@ -225,12 +254,11 @@ If you chose the "Buy X Get Y" promotion type in the first section, fill out the
         - **Currency Code**: The currency code that the customer must / must not be placing the order in.
     - Select the operator of the condition:
         - **In**: The customer's value for the chosen attribute must belong to the specified values.
-        - **Equals**: The customer's value for the chosen attribute must be the same as the specified value.
         - **Not In**: The customer's value for the chosen attribute must not belong to the specified values.
     - Select the value of the attribute.
     - For example, if you want to allow only customers belonging to the VIP group to use this promotion:
         - Set the Attribute to Customer Group.
-        - Set the Operator to In or Equals.
+        - Set the Operator to In.
         - Set the Value to the VIP customer group.
 
 ![Who can use this code section](https://res.cloudinary.com/dza7lstvk/image/upload/v1739898542/User%20Guide/Screenshot_2025-02-18_at_7.08.45_PM_nh5iw4.png)
@@ -246,16 +274,12 @@ If you chose the "Buy X Get Y" promotion type in the first section, fill out the
             - **Product Tag**: The promotion applies / doesn't apply to the products belonging to the specified tag(s).
         - Select the operator of the condition:
             - **In**: The value of the item in the cart must belong to the specified values.
-            - **Equals**: The value of the item in the cart must equal the specified values.
             - **Not In**: The value of the item in the cart must not belong to the specified values.
         - Select the value of the attribute.
         - For example, if you don't want the promotion to apply to products in the "Shirt" category:
             - Set the Attribute to Product Category.
             - Set the Operator to "Not In".
             - Set the Value to the "Shirt" category.
-
-![What needs to be in cart to unlock promotion section](https://res.cloudinary.com/dza7lstvk/image/upload/v1739898589/User%20Guide/Screenshot_2025-02-18_at_7.09.31_PM_xzj8ro.png)
-
 6. In the "What items will the promotion be applied to?" section, you'll specify the Buy Y part (for example, "get 1 free shirt"):
     - You must set the quantity of items that the customer gets out of the promotion. For example, for the "Buy 3 shirts get 1 for free", you set the quantity to one.
     - You must set the products tht the customer gets out of the promotion for free.
@@ -267,16 +291,66 @@ If you chose the "Buy X Get Y" promotion type in the first section, fill out the
             - **Product Tag**: The promotion applies / doesn't apply to the products belonging to the specified tag(s).
         - Select the operator of the condition:
             - **In**: The value of the item in the cart must belong to the specified values.
-            - **Equals**: The value of the item in the cart must equal the specified values.
             - **Not In**: The value of the item in the cart must not belong to the specified values.
         - Select the value of the attribute.
         - For example, if you don't want the promotion to offer products in the "Shirt" category:
             - Set the Attribute to Product Category.
             - Set the Operator to "Not In".
             - Set the Value to the "Shirt" category.
+7. In the Usage Limit field, optionally set the maximum number of times this promotion can be used across all orders.
+    - For example, if you set this field to `10`, the promotion can be used a total of 10 times across all orders. After that, the promotion can't be used anymore.
+    - If left empty, the promotion can be used an unlimited number of times, or until the campaign's usage limit is reached if the promotion is part of a campaign.
+    - You can't update this field after creating the promotion.
+8. Once you're done, click Next and move on to the [next step](#step-3-campaign).
+
+### f. Free Shipping
+
+<Note>
+
+Free shipping promotions were added in [Medusa v2.10.0](https://github.com/medusajs/medusa/releases/tag/v2.10.0).
+
+</Note>
+
+If you chose the "Free Shipping" promotion type in the first section, fill out the following in the Details step:
+
+1. For the Method, choose how you want the promotion to be applied:
+    - **Promotion code**: The customer must enter the promotion's code during checkout for the promotion to apply.
+    - **Automatic**: The promotion is applied automatically if the customer's cart matches the promotion's conditions.
+2. For the Status, choose Draft if you don't want to allow customers to use the promotion yet, or Active otherwise.
+3. In the Code field, enter the promotion's code. It must be a code that doesn't have spaces. For example, `FREESHIPPING`.
+4. In the "Who can use this code?" section, you'll specify the conditions that must be met for the promotion to be applicable for a customer's cart. To add a condition, click on the "Add condition" button. For each condition:
+    - Select the attribute in the first field. This is the attribute that the condition applies to. It can be:
+        - **Customer Group**: The customer must belong / not belong to the specified customer group(s).
+        - **Region**: The customer's region must belong / not belong to the specified region(s).
+        - **Country**: The customer's country, which is determined through their shipping address, must belong / not belong to the specified countries.
+        - **Sales Channel**: The customer must / must not be placing the order from the specified sales channels.
+        - **Currency Code**: The currency code that the customer must / must not be placing the order in.
+    - Select the operator of the condition:
+        - **In**: The customer's value for the chosen attribute must belong to the specified values.
+        - **Not In**: The customer's value for the chosen attribute must not belong to the specified values.
+    - Select the value of the attribute.
+    - For example, if you want to allow only customers belonging to the VIP group to use this promotion:
+        - Set the Attribute to Customer Group.
+        - Set the Operator to In or Equals.
+        - Set the Value to the VIP customer group.
+5. In the "What shipping methods will the promotion be applied to?" section, you'll specify the required conditions related to the cart's shipping method. To add a condition, click on the "Add condition" button. For each condition:
+    - Select the attribute in the first field. This is the attribute that the condition applies to. It can be:
+        - **Shipping Option Type**: The promotion applies / doesn't apply to shipping methods whose underlying shipping option is of the specified type(s).
+    - Select the operator of the condition:
+        - **In**: The value of the shipping method in the cart must belong to the specified values.
+        - **Not In**: The value of the shipping method in the cart must not belong to the specified values.
+    - Select the value of the attribute.
+    - For example, if you want to apply the promotion on shipping methods in the "Express" shipping option type:
+        - Set the Attribute to Shipping Option Type.
+        - Set the Operator to In.
+        - Set the Value to the "Express" shipping option type.
+6. In the Usage Limit field, optionally set the maximum number of times this promotion can be used across all orders.
+    - For example, if you set this field to `10`, the promotion can be used a total of 10 times across all orders. After that, the promotion can't be used anymore.
+    - If left empty, the promotion can be used an unlimited number of times, or until the campaign's usage limit is reached if the promotion is part of a campaign.
+    - You can't update this field after creating the promotion.
 7. Once you're done, click Next and move on to the [next step](#step-3-campaign).
 
-![What items will the promotion be applied to section](https://res.cloudinary.com/dza7lstvk/image/upload/v1739898642/User%20Guide/Screenshot_2025-02-18_at_7.10.28_PM_rl3dkp.png)
+![What shipping methods will the promotion be applied to section](https://res.cloudinary.com/dza7lstvk/image/upload/v1756368838/User%20Guide/CleanShot_2025-08-28_at_11.13.29_2x_rdcivr.png)
 
 ---
 
@@ -294,18 +368,26 @@ In the campaigns section, you can select whether to:
 
 If you selected a new campaign, you need to fill out the following to create a campaign and add the promotion to it:
 
-1. In the Name field, enter the campaign's name.
-2. In the Identifier field, enter a custom identifier for the campaign. This is useful if you're associating the campaign with a campaign in an external system, for example.
+1. In the **Name** field, enter the campaign's name.
+2. In the **Identifier** field, enter a custom identifier for the campaign. This is useful if you're associating the campaign with a campaign in an external system, for example.
 3. Optionally enter a description, and start and end dates.
     - If a start date is specified, all promotions in the campaign can be used after the specified date.
     - If an end date is specified, all promotions in the campaign can't be used after the specified date.
 4. Under the campaign budget, you can add limits that automatically expires the campaign, which means promotions in that campaign can't be used anymore.
     - For Type, you can choose to set the budget either based on:
         - **Usage**: How many times the promotions in the campaign can be used. Once the number of times exceed the limit, the campaign and its promotions expire.
-        - **Spend**: The total amount that can be discounted by the promotions in the campaign. Once the total amount discounted exceeds the limit, the campaign and its promotions expire. This is disabled if you select the "Buy X Get Y" promotion type.
-    - In the Limit field, enter the budget limit based on the chosen type.
+        - **Spend**: The total amount that can be discounted by the promotions in the campaign. Once the total amount discounted exceeds the limit, the campaign and its promotions expire. This is disabled if you select the "Buy X Get Y" or "Free Shipping" promotion types.
+    - In the **Limit** field, enter the budget limit based on the chosen type.
+    - If you chose the **Usage** type, you can optionally set the **Limit usage per** field to apply the limitation for each customer or email.
+        - If you don't select any condition, the limit is applied globally. For example, if the limit is set to 5, the promotions in the campaign can be used a total of 5 times.
+        - If you select "Customer", the limit is applied for each customer based on their unique identifier. For example, if the limit is set to 5, each customer can use the promotions in the campaign 5 times.
+        - If you select "Customer Email", the limit is applied for each customer based on their email address. For example, if the limit is set to 5, each unique email address can use the promotions in the campaign 5 times.
 5. Once you're done, click on the Save button.
 
-![Create campaign form](https://res.cloudinary.com/dza7lstvk/image/upload/v1739897668/User%20Guide/Screenshot_2025-02-18_at_6.53.46_PM_gfhp9l.png)
+<Note>
+
+The **Limit usage per** field is available from [Medusa Admin v2.11.0](https://github.com/medusajs/medusa/releases/tag/v2.11.0). If you don't see it, request your technical team to [upgrade your Medusa application](!docs!/learn/update).
+
+</Note>
 
 You can now [manage the promotion](../manage/page.mdx) you created.

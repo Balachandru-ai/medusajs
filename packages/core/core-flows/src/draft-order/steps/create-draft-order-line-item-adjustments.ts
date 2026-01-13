@@ -3,7 +3,7 @@ import { createStep, StepResponse } from "@medusajs/framework/workflows-sdk"
 import {
   CreateLineItemAdjustmentDTO,
   IOrderModuleService,
-} from "@medusajs/types"
+} from "@medusajs/framework/types"
 
 export const createDraftOrderLineItemAdjustmentsStepId =
   "create-draft-order-line-item-adjustments"
@@ -20,11 +20,15 @@ export interface CreateDraftOrderLineItemAdjustmentsStepInput {
    * The line item adjustments to create.
    */
   lineItemAdjustmentsToCreate: CreateLineItemAdjustmentDTO[]
+  /**
+   * The version of the order change to create the line item adjustments for.
+   */
+  version?: number
 }
 
 /**
  * This step creates line item adjustments for a draft order.
- * 
+ *
  * @example
  * const data = createDraftOrderLineItemAdjustmentsStep({
  *   order_id: "order_123",
@@ -43,7 +47,7 @@ export const createDraftOrderLineItemAdjustmentsStep = createStep(
     data: CreateDraftOrderLineItemAdjustmentsStepInput,
     { container }
   ) {
-    const { lineItemAdjustmentsToCreate = [], order_id } = data
+    const { lineItemAdjustmentsToCreate = [], order_id, version } = data
 
     if (!lineItemAdjustmentsToCreate?.length) {
       return new StepResponse(void 0, [])
@@ -65,6 +69,7 @@ export const createDraftOrderLineItemAdjustmentsStep = createStep(
     const lineItemAdjustments = await service.createOrderLineItemAdjustments(
       filteredAdjustments.map((adjustment) => ({
         ...adjustment,
+        version,
         order_id,
       }))
     )

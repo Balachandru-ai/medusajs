@@ -1,4 +1,4 @@
-import { FulfillmentWorkflow } from "@medusajs/framework/types"
+import type { FulfillmentWorkflow } from "@medusajs/framework/types"
 import {
   createWorkflow,
   parallelize,
@@ -12,29 +12,34 @@ import {
 } from "../steps"
 import { validateFulfillmentProvidersStep } from "../steps/validate-fulfillment-providers"
 import { validateShippingOptionPricesStep } from "../steps/validate-shipping-option-prices"
-import { ShippingOptionPriceType } from "@medusajs/framework/utils"
+import {
+  ShippingOptionPriceType,
+  ShippingOptionWorkflowEvents,
+} from "@medusajs/framework/utils"
+import { emitEventStep } from "../../common"
 
 /**
  * The data to update the shipping options.
  */
-export type UpdateShippingOptionsWorkflowInput = FulfillmentWorkflow.UpdateShippingOptionsWorkflowInput[]
+export type UpdateShippingOptionsWorkflowInput =
+  FulfillmentWorkflow.UpdateShippingOptionsWorkflowInput[]
 
 export const updateShippingOptionsWorkflowId =
   "update-shipping-options-workflow"
 /**
  * This workflow updates one or more shipping options. It's used by the
  * [Update Shipping Options Admin API Route](https://docs.medusajs.com/api/admin#shipping-options_postshippingoptionsid).
- * 
+ *
  * You can use this workflow within your own customizations or custom workflows, allowing you to
  * update shipping options within your custom flows.
- * 
+ *
  * :::note
- * 
- * Learn more about adding rules to the shipping option's prices in the Pricing Module's 
+ *
+ * Learn more about adding rules to the shipping option's prices in the Pricing Module's
  * [Price Rules](https://docs.medusajs.com/resources/commerce-modules/pricing/price-rules) documentation.
- * 
+ *
  * :::
- * 
+ *
  * @example
  * const { result } = await updateShippingOptionsWorkflow(container)
  * .run({
@@ -45,9 +50,9 @@ export const updateShippingOptionsWorkflowId =
  *     }
  *   ]
  * })
- * 
+ *
  * @summary
- * 
+ *
  * Update one or more shipping options.
  */
 export const updateShippingOptionsWorkflow = createWorkflow(
@@ -91,6 +96,10 @@ export const updateShippingOptionsWorkflow = createWorkflow(
       data.shippingOptions
     )
 
+    const eventData = transform(updatedShippingOptions, (data) => {
+      return data.map((option) => option.id)
+    })
+
     const normalizedShippingOptionsPrices = transform(
       {
         shippingOptions: updatedShippingOptions,
@@ -114,8 +123,14 @@ export const updateShippingOptionsWorkflow = createWorkflow(
       }
     )
 
-    setShippingOptionsPricesStep(
-      normalizedShippingOptionsPrices.shippingOptionsPrices
+    parallelize(
+      setShippingOptionsPricesStep(
+        normalizedShippingOptionsPrices.shippingOptionsPrices
+      ),
+      emitEventStep({
+        eventName: ShippingOptionWorkflowEvents.UPDATED,
+        data: eventData,
+      })
     )
 
     return new WorkflowResponse(updatedShippingOptions)

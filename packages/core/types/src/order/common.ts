@@ -30,6 +30,7 @@ export type ChangeActionType =
   | "CREDIT_LINE_ADD"
   | "PROMOTION_ADD"
   | "PROMOTION_REMOVE"
+  | "ITEM_ADJUSTMENTS_REPLACE"
 
 export type OrderChangeStatus =
   | "confirmed"
@@ -1037,6 +1038,11 @@ export interface OrderDTO {
   display_id: number
 
   /**
+   * The order's custom display ID.
+   */
+  custom_display_id?: string
+
+  /**
    * The active order change, if any.
    *
    * @expandable
@@ -1128,6 +1134,11 @@ export interface OrderDTO {
   is_draft_order?: boolean
 
   /**
+   * The locale of the order.
+   */
+  locale?: string | null
+
+  /**
    * Holds custom data in key-value pairs.
    */
   metadata?: Record<string, unknown> | null
@@ -1183,6 +1194,11 @@ export interface OrderDTO {
   item_tax_total: BigNumberValue
 
   /**
+   * The item discount total of the order.
+   */
+  item_discount_total: BigNumberValue
+
+  /**
    * The original total of the order.
    */
   original_total: BigNumberValue
@@ -1228,6 +1244,11 @@ export interface OrderDTO {
   discount_tax_total: BigNumberValue
 
   /**
+   * The credit line total of the order.
+   */
+  credit_line_total: BigNumberValue
+
+  /**
    * The gift card total of the order.
    */
   gift_card_total: BigNumberValue
@@ -1251,6 +1272,11 @@ export interface OrderDTO {
    * The shipping tax total of the order.
    */
   shipping_tax_total: BigNumberValue
+
+  /**
+   * The shipping discount total of the order.
+   */
+  shipping_discount_total: BigNumberValue
 
   /**
    * The original shipping total of the order.
@@ -1364,6 +1390,13 @@ export interface OrderDTO {
    * @ignore
    */
   raw_discount_tax_total: BigNumberRawValue
+
+  /**
+   * The raw credit line total of the order.
+   *
+   * @ignore
+   */
+  raw_credit_line_total: BigNumberRawValue
 
   /**
    * The raw gift card total of the order.
@@ -2090,6 +2123,11 @@ export interface OrderChangeDTO {
   change_type?: "return" | "exchange" | "claim" | "edit" | "transfer"
 
   /**
+   * Whether to carry over promotions (apply promotions to outbound exchange items).
+   */
+  carry_over_promotions?: boolean | null
+
+  /**
    * The ID of the associated order
    */
   order_id: string
@@ -2284,6 +2322,11 @@ export interface OrderChangeActionDTO {
   internal_note: string | null
 
   /**
+   * The ordering of the order change action
+   */
+  ordering: number
+
+  /**
    * When the order change action was created
    */
   created_at: Date | string
@@ -2476,11 +2519,6 @@ export interface FilterableOrderLineItemProps
   id?: string | string[]
 
   /**
-   * Filter line items by their associated order's ID.
-   */
-  order_id?: string | string[]
-
-  /**
    * Filter by line items' title.
    */
   title?: string
@@ -2536,11 +2574,6 @@ export interface FilterableOrderShippingMethodProps
    * The IDs to filter the shipping methods by.
    */
   id?: string | string[]
-
-  /**
-   * Filter the shipping methods by their associated order's ID.
-   */
-  order_id?: string | string[]
 
   /**
    * Filter shipping methods by their name.
@@ -2802,32 +2835,6 @@ export interface FilterableOrderTransactionProps
    * Filter the transactions by their creation date.
    */
   created_at?: OperatorMap<string>
-}
-
-/**
- * The filters to apply on the retrieved order items.
- */
-export interface FilterableOrderItemProps
-  extends BaseFilterable<FilterableOrderItemProps> {
-  /**
-   * The IDs to filter the order items by.
-   */
-  id?: string | string[] | OperatorMap<string>
-
-  /**
-   * Filter the order items by their associated order's ID.
-   */
-  order_id?: string | string[] | OperatorMap<string>
-
-  /**
-   * Filter the order items by their version.
-   */
-  version?: string | string[] | OperatorMap<string>
-
-  /**
-   * Filter the order items by their associated line item's ID.
-   */
-  item_id?: string | string[] | OperatorMap<string>
 }
 
 /**

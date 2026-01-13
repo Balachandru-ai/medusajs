@@ -62,16 +62,19 @@ export const POST = async (
 }
 
 export const DELETE = async (
-  req: AuthenticatedMedusaRequest,
+  req: AuthenticatedMedusaRequest<{}, HttpTypes.SelectParams>,
   res: MedusaResponse<HttpTypes.AdminExchangeReturnResponse>
 ) => {
   const remoteQuery = req.scope.resolve(ContainerRegistrationKeys.REMOTE_QUERY)
 
   const { id, action_id } = req.params
 
-  const exchange = await refetchEntity("order_exchange", id, req.scope, [
-    "return_id",
-  ])
+  const exchange = await refetchEntity({
+    entity: "order_exchange",
+    idOrFilter: id,
+    scope: req.scope,
+    fields: ["return_id"],
+  })
 
   const { result: orderPreview } = await removeItemReturnActionWorkflow(
     req.scope

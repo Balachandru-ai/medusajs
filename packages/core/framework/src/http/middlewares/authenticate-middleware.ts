@@ -1,7 +1,13 @@
 import { ApiKeyDTO, IApiKeyModuleService } from "@medusajs/types"
 import { ContainerRegistrationKeys, Modules } from "@medusajs/utils"
 import { NextFunction, RequestHandler } from "express"
-import { JwtPayload, verify } from "jsonwebtoken"
+import type {
+  JwtPayload,
+  Secret,
+  SignOptions,
+  VerifyOptions,
+} from "jsonwebtoken"
+import { verify } from "jsonwebtoken"
 import { ConfigModule } from "../../config"
 import {
   AuthContext,
@@ -52,6 +58,7 @@ export const authenticate = (
           actor_type: "api-key",
           auth_identity_id: "",
           app_metadata: {},
+          user_metadata: {},
         }
 
         return next()
@@ -76,7 +83,9 @@ export const authenticate = (
         req.headers.authorization,
         http.jwtSecret!,
         authTypes,
-        actorTypes
+        actorTypes,
+        http.jwtPublicKey,
+        http.jwtVerifyOptions ?? http.jwtOptions
       )
     }
 
@@ -172,9 +181,11 @@ const getAuthContextFromSession = (
 
 export const getAuthContextFromJwtToken = (
   authHeader: string | undefined,
-  jwtSecret: string,
+  jwtSecret: Secret,
   authTypes: AuthType[],
-  actorTypes: string[]
+  actorTypes: string[],
+  jwtPublicKey?: Secret,
+  jwtOptions?: VerifyOptions | SignOptions
 ): AuthContext | null => {
   if (!authTypes.includes(BEARER_AUTH)) {
     return null
@@ -195,7 +206,18 @@ export const getAuthContextFromJwtToken = (
       // get config jwt secret
       // verify token and set authUser
       try {
-        const verified = verify(token, jwtSecret) as JwtPayload
+        const options = { ...jwtOptions } as VerifyOptions & SignOptions
+
+        if (!options.algorithms && options.algorithm) {
+          options.algorithms = [options.algorithm]
+          delete options.algorithm
+        }
+
+        const verified = verify(
+          token,
+          jwtPublicKey ?? jwtSecret!,
+          options
+        ) as JwtPayload
         if (isActorTypePermitted(actorTypes, verified.actor_type)) {
           return verified as AuthContext
         }

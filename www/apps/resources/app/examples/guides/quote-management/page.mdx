@@ -65,7 +65,7 @@ By following this guide, you'll add the following features to Medusa:
 3. Customers can accept or reject a quote once it's been sent by the merchant.
 4. Once the customer accepts a quote, it's converted to an order in Medusa.
 
-![Diagram showcasing the features summary](https://res.cloudinary.com/dza7lstvk/image/upload/v1741173690/Medusa%20Resources/quote-management-summary_xd319j.jpg)
+![Quote management system workflow diagram illustrating the complete quote lifecycle: customers request quotes from cart items, merchants review and create detailed quotes with pricing, quotes are sent to customers for approval, and upon acceptance, quotes are automatically converted into processable orders within the Medusa e-commerce platform](https://res.cloudinary.com/dza7lstvk/image/upload/v1741173690/Medusa%20Resources/quote-management-summary_xd319j.jpg)
 
 To implement these features, you'll be customizing the Medusa server and the Medusa Admin dashboard.
 
@@ -635,8 +635,8 @@ You can now create the workflow using the steps provided by Medusa and your cust
 To create the workflow, create the file `src/workflows/create-request-for-quote.ts` with the following content:
 
 export const createRequestForQuoteHighlights = [
-  ["25", "useQueryGraphStep", "Retrieve the cart's details."],
-  ["46", "useQueryGraphStep", "Retrieve the customer's details."]
+  ["24", "useQueryGraphStep", "Retrieve the cart's details."],
+  ["45", "useQueryGraphStep", "Retrieve the customer's details."]
 ]
 
 ```ts title="src/workflows/create-request-for-quote.ts" highlights={createRequestForQuoteHighlights} collapsibleLines="1-20" expandButtonLabel="Show Imports"
@@ -663,7 +663,6 @@ type WorkflowInput = {
 export const createRequestForQuoteWorkflow = createWorkflow(
   "create-request-for-quote",
   (input: WorkflowInput) => {
-    // @ts-ignore
     const { data: carts } = useQueryGraphStep({
       entity: "cart",
       fields: [
@@ -707,7 +706,7 @@ In the workflow's constructor function, you use `useQueryGraphStep` to retrieve 
 
 <Note title="Tip">
 
-`useQueryGraphStep` uses [Query](!docs!/learn/fundamentals/module-links/query), whic allows you to retrieve data across modules. For example, in the above snippet you're retrieving the cart's promotions, which are managed in the [Promotion Module](../../../commerce-modules/promotion/page.mdx), by passing `promotions.code` to the `fields` array.
+`useQueryGraphStep` uses [Query](!docs!/learn/fundamentals/module-links/query), which allows you to retrieve data across modules. For example, in the above snippet you're retrieving the cart's promotions, which are managed in the [Promotion Module](../../../commerce-modules/promotion/page.mdx), by passing `promotions.code` to the `fields` array.
 
 </Note>
 
@@ -1537,7 +1536,7 @@ export type AdminQuoteResponse = {
 You define the following types:
 
 - `AdminQuote`: Represents a quote.
-- `QuoteQueryParams`: Represents the query parameters that can be passed when retrieving qoutes.
+- `QuoteQueryParams`: Represents the query parameters that can be passed when retrieving quotes.
 - `AdminQuotesResponse`: Represents the response when retrieving a list of quotes.
 - `AdminQuoteResponse`: Represents the response when retrieving a single quote, which you'll implement later in this guide.
 
@@ -1629,9 +1628,9 @@ export const config = defineRouteConfig({
 export default Quotes
 ```
 
-The route file must export a React component that implements the content of the page. To show a link to the route in the sidebar, you can also export a configuation object created with `defineRouteConfig` that specifies the label and icon of the route in the Medusa Admin sidebar.
+The route file must export a React component that implements the content of the page. To show a link to the route in the sidebar, you can also export a configuration object created with `defineRouteConfig` that specifies the label and icon of the route in the Medusa Admin sidebar.
 
-In the `Quotes` component, you'll show a table of quotes using the [DataTable component](!ui!/components/data-table) from Medusa UI. This componet requires you first define the columns of the table.
+In the `Quotes` component, you'll show a table of quotes using the [DataTable component](!ui!/components/data-table) from Medusa UI. This component requires you first define the columns of the table.
 
 To define the table's columns, add in the same file and before the `Quotes` component the following:
 
@@ -1755,7 +1754,7 @@ In the component, you use the `useQuotes` hook to fetch the quotes from the Medu
 
 Next, you use the `useDataTable` hook to create a table instance with the columns you defined. You pass the fetched quotes to the `DataTable` component, along with configurations related to pagination and loading.
 
-Notice that as part of the `useDataTable` configurations you naviagte to the `/quotes/:id` UI route when a row is clicked. You'll create that route in a later step.
+Notice that as part of the `useDataTable` configurations you navigate to the `/quotes/:id` UI route when a row is clicked. You'll create that route in a later step.
 
 Finally, you render the `DataTable` component to display the quotes in a table.
 
@@ -1773,7 +1772,7 @@ Then, open the Medusa Admin dashboard at `http://localhost:9000/app` and login u
 
 You'll find a "Quotes" sidebar item. If you click on it, it will show you the table of quotes.
 
-![Quotes table in Medusa Admin](https://res.cloudinary.com/dza7lstvk/image/upload/v1741099952/Medusa%20Resources/Screenshot_2025-03-04_at_4.52.17_PM_nqxyfq.png)
+![Medusa Admin dashboard displaying the Quotes management interface with a data table showing quote entries including columns for quote ID, customer information, status, and creation date](https://res.cloudinary.com/dza7lstvk/image/upload/v1741099952/Medusa%20Resources/Screenshot_2025-03-04_at_4.52.17_PM_nqxyfq.png)
 
 ---
 
@@ -2584,9 +2583,9 @@ You can now implement the merchant-rejection workflow. Create the file `src/work
 ![Diagram showcasing the directory structure after adding the merchant reject quote workflow file](https://res.cloudinary.com/dza7lstvk/image/upload/v1741159969/Medusa%20Resources/quote-36_l1ffxm.jpg)
 
 export const merchantRejectionWorkflowHighlights = [
-  ["15", "useQueryGraphStep", "Retrieve the quote's details."],
-  ["24", "validateQuoteNotAccepted", "Validate that the quote isn't already accepted by the customer."],
-  ["29", "updateQuotesStep", "Update the quote's status to `merchant_rejected`."]
+  ["14", "useQueryGraphStep", "Retrieve the quote's details."],
+  ["23", "validateQuoteNotAccepted", "Validate that the quote isn't already accepted by the customer."],
+  ["28", "updateQuotesStep", "Update the quote's status to `merchant_rejected`."]
 ]
 
 ```ts title="src/workflows/merchant-reject-quote.ts" highlights={merchantRejectionWorkflowHighlights}
@@ -2603,7 +2602,6 @@ type WorkflowInput = {
 export const merchantRejectQuoteWorkflow = createWorkflow(
   "merchant-reject-quote-workflow",
   (input: WorkflowInput) => {
-    // @ts-ignore
     const { data: quotes } = useQueryGraphStep({
       entity: "quote",
       fields: ["id", "status"],
@@ -2886,9 +2884,9 @@ Create the file `src/workflows/merchant-send-quote.ts` with the following conten
 ![Directory structure after adding the merchant send quote workflow file](https://res.cloudinary.com/dza7lstvk/image/upload/v1741162342/Medusa%20Resources/quote-38_n4ksr0.jpg)
 
 export const sendQuoteHighlights = [
-  ["15", "useQueryGraphStep", "Retrieve the quote's details."],
-  ["24", "validateQuoteNotAccepted", "Validate that the quote isn't already accepted by the customer."],
-  ["29", "updateQuotesStep", "Update the quote's status to `pending_customer`."]
+  ["14", "useQueryGraphStep", "Retrieve the quote's details."],
+  ["23", "validateQuoteNotAccepted", "Validate that the quote isn't already accepted by the customer."],
+  ["28", "updateQuotesStep", "Update the quote's status to `pending_customer`."]
 ]
 
 ```ts title="src/workflows/merchant-send-quote.ts" highlights={sendQuoteHighlights}
@@ -2905,7 +2903,6 @@ type WorkflowInput = {
 export const merchantSendQuoteWorkflow = createWorkflow(
   "merchant-send-quote-workflow",
   (input: WorkflowInput) => {
-    // @ts-ignore
     const { data: quotes } = useQueryGraphStep({
       entity: "quote",
       fields: ["id", "status"],
@@ -3282,9 +3279,9 @@ Create the file `src/workflows/customer-reject-quote.ts` with the following cont
 ![Directory structure after adding the customer reject quote workflow file](https://res.cloudinary.com/dza7lstvk/image/upload/v1741164371/Medusa%20Resources/quote-41_fgpqhz.jpg)
 
 export const customerRejectQuoteHighlights = [
-  ["16", "useQueryGraphStep", "Retrieve the quote's details."],
-  ["25", "validateQuoteNotAccepted", "Validate that the quote isn't already accepted by the customer."],
-  ["30", "updateQuotesStep", "Update the quote's status to `customer_rejected`."]
+  ["15", "useQueryGraphStep", "Retrieve the quote's details."],
+  ["24", "validateQuoteNotAccepted", "Validate that the quote isn't already accepted by the customer."],
+  ["29", "updateQuotesStep", "Update the quote's status to `customer_rejected`."]
 ]
 
 ```ts title="src/workflows/customer-reject-quote.ts" highlights={customerRejectQuoteHighlights}
@@ -3302,7 +3299,6 @@ type WorkflowInput = {
 export const customerRejectQuoteWorkflow = createWorkflow(
   "customer-reject-quote-workflow",
   (input: WorkflowInput) => {
-    // @ts-ignore
     const { data: quotes } = useQueryGraphStep({
       entity: "quote",
       fields: ["id", "status"],
@@ -3511,11 +3507,11 @@ You can now implement the workflow that accepts a quote for a customer. Create t
 ![Directory structure after adding the customer accept quote workflow file](https://res.cloudinary.com/dza7lstvk/image/upload/v1741166025/Medusa%20Resources/quote-44_c09ts9.jpg)
 
 export const customerAcceptQuoteHighlights = [
-  ["21", "useQueryGraphStep", "Retrieve the quote's details."],
-  ["30", "validateQuoteCanAcceptStep", "Validate that the quote can be accepted."],
-  ["35", "updateQuotesStep", "Update the quote's status to `accepted`."],
-  ["40", "confirmOrderEditRequestWorkflow", "Confirm the changes made on the draft order, such as changes to item quantities and prices."],
-  ["47", "updateOrderWorkflow", "Update the draft order to change its status and convert it into an order."]
+  ["20", "useQueryGraphStep", "Retrieve the quote's details."],
+  ["29", "validateQuoteCanAcceptStep", "Validate that the quote can be accepted."],
+  ["34", "updateQuotesStep", "Update the quote's status to `accepted`."],
+  ["39", "confirmOrderEditRequestWorkflow", "Confirm the changes made on the draft order, such as changes to item quantities and prices."],
+  ["46", "updateOrderWorkflow", "Update the draft order to change its status and convert it into an order."]
 ]
 
 ```ts title="src/workflows/customer-accept-quote.ts" highlights={customerAcceptQuoteHighlights}
@@ -3538,7 +3534,6 @@ type WorkflowInput = {
 export const customerAcceptQuoteWorkflow = createWorkflow(
   "customer-accept-quote-workflow",
   (input: WorkflowInput) => {
-    // @ts-ignore
     const { data: quotes } = useQueryGraphStep({
       entity: "quote",
       fields: ["id", "draft_order_id", "status"],

@@ -103,6 +103,7 @@ export type FormattingOptionType = {
   workflowDiagramComponent?: string
   isEventsReference?: boolean
   sortMembers?: boolean
+  internalType?: string
 }
 
 export type AllowedProjectDocumentsOption = {
@@ -306,6 +307,13 @@ export declare type DmlFile = {
   [k: string]: {
     filePath: string
     properties: DmlObject
+    since?: string
+    deprecated?: {
+      is_deprecated: boolean
+      description?: string
+    }
+    featureFlag?: string
+    example?: string
   }
 }
 
@@ -344,8 +352,7 @@ export declare type MedusaEvent = {
   payload: string
   description?: string
   workflows: string[]
-  version?: string
+  since?: string
   deprecated?: boolean
   deprecated_message?: string
-  version?: string
 }

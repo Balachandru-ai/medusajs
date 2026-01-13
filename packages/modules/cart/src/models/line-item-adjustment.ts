@@ -9,6 +9,7 @@ const LineItemAdjustment = model
       description: model.text().nullable(),
       code: model.text().nullable(),
       amount: model.bigNumber(),
+      is_tax_inclusive: model.boolean().default(false),
       provider_id: model.text().nullable(),
       promotion_id: model.text().nullable(),
       metadata: model.json().nullable(),
@@ -23,8 +24,8 @@ const LineItemAdjustment = model
       on: ["promotion_id"],
       where: "deleted_at IS NULL AND promotion_id IS NOT NULL",
     },
-    {
-      name: "IDX_adjustment_item_id",
+     {
+      name: "IDX_cart_line_item_adjustment_item_id",
       on: ["item_id"],
       where: "deleted_at IS NULL",
     },

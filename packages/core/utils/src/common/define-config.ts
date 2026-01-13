@@ -1,8 +1,10 @@
 import {
+  AdminOptions,
   ConfigModule,
   InputConfig,
   InputConfigModules,
   InternalModuleDeclaration,
+  MedusaCloudOptions,
 } from "@medusajs/types"
 import {
   MODULE_PACKAGE_NAMES,
@@ -12,9 +14,9 @@ import {
 } from "../modules-sdk"
 import { isObject } from "./is-object"
 import { isString } from "./is-string"
-import { tryConvertToNumber } from "./try-convert-to-number"
 import { normalizeImportPathWithSource } from "./normalize-import-path-with-source"
 import { resolveExports } from "./resolve-exports"
+import { tryConvertToNumber } from "./try-convert-to-number"
 
 const MEDUSA_CLOUD_EXECUTION_CONTEXT = "medusa-cloud"
 const DEFAULT_SECRET = "supersecret"
@@ -48,14 +50,17 @@ export function defineConfig(config: InputConfig = {}): ConfigModule {
 
   const projectConfig = normalizeProjectConfig(config.projectConfig, options)
   const adminConfig = normalizeAdminConfig(config.admin)
-  const modules = resolveModules(config.modules, options)
+  const modules = resolveModules(config.modules, options, config.projectConfig)
+  applyCloudOptionsToModules(modules, projectConfig?.cloud, adminConfig)
+  const plugins = resolvePlugins(config.plugins, options)
 
   return {
     projectConfig,
     featureFlags: (config.featureFlags ?? {}) as ConfigModule["featureFlags"],
-    plugins: config.plugins || [],
     admin: adminConfig,
     modules: modules,
+    logger: config.logger,
+    plugins,
   }
 }
 
@@ -124,6 +129,33 @@ export function transformModules(
   return remappedModules as Exclude<ConfigModule["modules"], undefined>
 }
 
+function resolvePlugins(
+  configPlugins: InputConfig["plugins"],
+  { isCloud }: { isCloud: boolean }
+): ConfigModule["plugins"] {
+  const defaultPlugins: Map<string, ConfigModule["plugins"][number]> = new Map([
+    [
+      "@medusajs/draft-order",
+      { resolve: "@medusajs/draft-order", options: {} },
+    ],
+  ])
+
+  if (configPlugins?.length) {
+    configPlugins.forEach((plugin) => {
+      if (typeof plugin === "string") {
+        defaultPlugins.set(plugin, { resolve: plugin, options: {} })
+      } else {
+        defaultPlugins.set(plugin.resolve, plugin)
+      }
+    })
+  }
+
+  // We don't have any cloud plugins yet, but we might in the future
+  const cloudPlugins = [...Array.from(defaultPlugins.values())]
+
+  return isCloud ? cloudPlugins : Array.from(defaultPlugins.values())
+}
+
 /**
  * The user API allow to use array of modules configuration. This method manage the loading of the
  * user modules along side the default modules and re map them to an object.
@@ -132,7 +164,8 @@ export function transformModules(
  */
 function resolveModules(
   configModules: InputConfig["modules"],
-  { isCloud }: { isCloud: boolean }
+  { isCloud }: { isCloud: boolean },
+  projectConfig: InputConfig["projectConfig"]
 ): Exclude<ConfigModule["modules"], undefined> {
   const sharedModules = [
     { resolve: MODULE_PACKAGE_NAMES[Modules.STOCK_LOCATION] },
@@ -151,6 +184,10 @@ function resolveModules(
     { resolve: MODULE_PACKAGE_NAMES[Modules.CURRENCY] },
     { resolve: MODULE_PACKAGE_NAMES[Modules.PAYMENT] },
     { resolve: MODULE_PACKAGE_NAMES[Modules.ORDER] },
+    { resolve: MODULE_PACKAGE_NAMES[Modules.SETTINGS] },
+
+    // TODO: re-enable this once we have the final release
+    // { resolve: MODULE_PACKAGE_NAMES[Modules.TRANSLATION] },
 
     {
       resolve: MODULE_PACKAGE_NAMES[Modules.AUTH],
@@ -166,7 +203,10 @@ function resolveModules(
     {
       resolve: MODULE_PACKAGE_NAMES[Modules.USER],
       options: {
-        jwt_secret: process.env.JWT_SECRET ?? DEFAULT_SECRET,
+        jwt_secret: projectConfig?.http?.jwtSecret ?? DEFAULT_SECRET,
+        jwt_options: projectConfig?.http?.jwtOptions,
+        jwt_verify_options: projectConfig?.http?.jwtVerifyOptions,
+        jwt_public_key: projectConfig?.http?.jwtPublicKey,
       },
     },
     {
@@ -231,7 +271,10 @@ function resolveModules(
     },
     {
       resolve: TEMPORARY_REDIS_MODULE_PACKAGE_NAMES[Modules.EVENT_BUS],
-      options: { redisUrl: process.env.REDIS_URL },
+      options: {
+        redisUrl: process.env.REDIS_URL,
+        workerOptions: { concurrency: 3 },
+      },
     },
     {
       resolve: MODULE_PACKAGE_NAMES[Modules.LOCKING],
@@ -269,6 +312,24 @@ function resolveModules(
     },
   ]
 
+  if (process.env.CACHE_REDIS_URL) {
+    cloudModules.push({
+      resolve: MODULE_PACKAGE_NAMES[Modules.CACHING],
+      options: {
+        providers: [
+          {
+            id: "caching-redis",
+            resolve: "@medusajs/medusa/caching-redis",
+            is_default: true,
+            options: {
+              redisUrl: process.env.CACHE_REDIS_URL,
+            },
+          },
+        ],
+      },
+    })
+  }
+
   /**
    * The default set of modules to always use. The end user can swap
    * the modules by providing an alternate implementation via their
@@ -292,11 +353,11 @@ function resolveModules(
           ...(isObject(moduleConfig)
             ? moduleConfig
             : { disable: !moduleConfig }),
-        })
+        } as InputConfigModules[number])
       })
     } else if (Array.isArray(configModules)) {
       const modules_ = (configModules ?? []) as InternalModuleDeclaration[]
-      modules.push(...modules_)
+      modules.push(...(modules_ as InputConfigModules))
     } else {
       throw new Error(
         "Invalid modules configuration. Should be an array or object."
@@ -311,14 +372,32 @@ function normalizeProjectConfig(
   projectConfig: InputConfig["projectConfig"],
   { isCloud }: { isCloud: boolean }
 ): ConfigModule["projectConfig"] {
-  const { http, redisOptions, sessionOptions, ...restOfProjectConfig } =
+  const { http, redisOptions, sessionOptions, cloud, ...restOfProjectConfig } =
     projectConfig || {}
+
+  const mergedCloudOptions: MedusaCloudOptions = {
+    environmentHandle: process.env.MEDUSA_CLOUD_ENVIRONMENT_HANDLE,
+    sandboxHandle: process.env.MEDUSA_CLOUD_SANDBOX_HANDLE,
+    apiKey: process.env.MEDUSA_CLOUD_API_KEY,
+    webhookSecret: process.env.MEDUSA_CLOUD_WEBHOOK_SECRET,
+    emailsEndpoint: process.env.MEDUSA_CLOUD_EMAILS_ENDPOINT,
+    paymentsEndpoint: process.env.MEDUSA_CLOUD_PAYMENTS_ENDPOINT,
+    oauthAuthorizeEndpoint: process.env.MEDUSA_CLOUD_OAUTH_AUTHORIZE_ENDPOINT,
+    oauthTokenEndpoint: process.env.MEDUSA_CLOUD_OAUTH_TOKEN_ENDPOINT,
+    oauthCallbackUrl: process.env.MEDUSA_CLOUD_OAUTH_CALLBACK_URL,
+    oauthDisabled:
+      process.env.MEDUSA_CLOUD_OAUTH_DISABLED === "true" ? true : undefined,
+    ...cloud,
+  }
+  const hasCloudOptions = Object.values(mergedCloudOptions).some(
+    (value) => value !== undefined
+  )
 
   /**
    * The defaults to use for the project config. They are shallow merged
    * with the user defined config.
    */
-  return {
+  const config = {
     ...(isCloud ? { redisUrl: process.env.REDIS_URL } : {}),
     databaseUrl: process.env.DATABASE_URL || DEFAULT_DATABASE_URL,
     http: {
@@ -326,6 +405,7 @@ function normalizeProjectConfig(
       adminCors: process.env.ADMIN_CORS || DEFAULT_ADMIN_CORS,
       authCors: process.env.AUTH_CORS || DEFAULT_ADMIN_CORS,
       jwtSecret: process.env.JWT_SECRET || DEFAULT_SECRET,
+      jwtPublicKey: process.env.JWT_PUBLIC_KEY,
       cookieSecret: process.env.COOKIE_SECRET || DEFAULT_SECRET,
       restrictedFields: {
         store: DEFAULT_STORE_RESTRICTED_FIELDS,
@@ -373,8 +453,27 @@ function normalizeProjectConfig(
         : {}),
       ...sessionOptions,
     },
+    // If there are no cloud options, we better don't pollute the project config for people not using the cloud
+    ...(hasCloudOptions ? { cloud: mergedCloudOptions } : {}),
     ...restOfProjectConfig,
   } satisfies ConfigModule["projectConfig"]
+
+  if (
+    isCloud &&
+    !mergedCloudOptions.oauthDisabled &&
+    mergedCloudOptions.oauthAuthorizeEndpoint &&
+    mergedCloudOptions.oauthTokenEndpoint
+  ) {
+    const userAuthMethods = config.http.authMethodsPerActor?.user ?? [
+      "emailpass",
+    ]
+    config.http.authMethodsPerActor = {
+      ...config.http.authMethodsPerActor,
+      user: userAuthMethods.concat("cloud"),
+    }
+  }
+
+  return config
 }
 
 function normalizeAdminConfig(
@@ -388,5 +487,68 @@ function normalizeAdminConfig(
     backendUrl: process.env.MEDUSA_BACKEND_URL || DEFAULT_ADMIN_URL,
     path: "/app",
     ...adminConfig,
+  }
+}
+
+function applyCloudOptionsToModules(
+  modules: Exclude<ConfigModule["modules"], undefined>,
+  config?: MedusaCloudOptions,
+  adminConfig?: AdminOptions
+) {
+  if (!config) {
+    return
+  }
+
+  for (const name in modules) {
+    const module = modules[name]
+    if (typeof module !== "object") {
+      continue
+    }
+
+    switch (name) {
+      case Modules.NOTIFICATION:
+        module.options = {
+          cloud: {
+            api_key: config.apiKey,
+            endpoint: config.emailsEndpoint,
+            environment_handle: config.environmentHandle,
+            sandbox_handle: config.sandboxHandle,
+          },
+          ...(module.options ?? {}),
+        }
+        break
+      case Modules.PAYMENT:
+        module.options = {
+          cloud: {
+            api_key: config.apiKey,
+            webhook_secret: config.webhookSecret,
+            endpoint: config.paymentsEndpoint,
+            environment_handle: config.environmentHandle,
+            sandbox_handle: config.sandboxHandle,
+          },
+          ...(module.options ?? {}),
+        }
+        break
+      case Modules.AUTH:
+        let callbackUrl = config.oauthCallbackUrl
+        if (!callbackUrl && adminConfig?.backendUrl) {
+          callbackUrl = `${adminConfig?.backendUrl}${adminConfig?.path}/login?auth_provider=cloud`
+        }
+        module.options = {
+          cloud: {
+            oauth_authorize_endpoint: config.oauthAuthorizeEndpoint,
+            oauth_token_endpoint: config.oauthTokenEndpoint,
+            environment_handle: config.environmentHandle,
+            sandbox_handle: config.sandboxHandle,
+            api_key: config.apiKey,
+            callback_url: callbackUrl,
+            disabled: config.oauthDisabled,
+          },
+          ...(module.options ?? {}),
+        }
+        break
+      default:
+        break
+    }
   }
 }

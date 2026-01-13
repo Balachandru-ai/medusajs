@@ -68,10 +68,10 @@ export const ProductAttributesForm = ({
   const handleSubmit = form.handleSubmit(async (data) => {
     await mutateAsync(
       {
-        weight: data.weight ? data.weight : undefined,
-        length: data.length ? data.length : undefined,
-        width: data.width ? data.width : undefined,
-        height: data.height ? data.height : undefined,
+        weight: data.weight ? data.weight : null,
+        length: data.length ? data.length : null,
+        width: data.width ? data.width : null,
+        height: data.height ? data.height : null,
         mid_code: data.mid_code,
         hs_code: data.hs_code,
         origin_country: data.origin_country,
@@ -101,6 +101,7 @@ export const ProductAttributesForm = ({
                         <Input
                           type="number"
                           min={0}
+                          step="any"
                           value={value || ""}
                           onChange={(e) => {
                             const value = e.target.value
@@ -130,6 +131,7 @@ export const ProductAttributesForm = ({
                         <Input
                           type="number"
                           min={0}
+                          step="any"
                           value={value || ""}
                           onChange={(e) => {
                             const value = e.target.value
@@ -159,6 +161,7 @@ export const ProductAttributesForm = ({
                         <Input
                           type="number"
                           min={0}
+                          step="any"
                           value={value || ""}
                           onChange={(e) => {
                             const value = e.target.value
@@ -188,6 +191,7 @@ export const ProductAttributesForm = ({
                         <Input
                           type="number"
                           min={0}
+                          step="any"
                           value={value || ""}
                           onChange={(e) => {
                             const value = e.target.value

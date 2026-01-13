@@ -32,6 +32,9 @@ const mdxPluginOptions = {
             api: {
               url: process.env.NEXT_PUBLIC_API_URL,
             },
+            cloud: {
+              url: process.env.NEXT_PUBLIC_CLOUD_URL,
+            },
           },
           useBaseUrl:
             process.env.NODE_ENV === "production" ||

@@ -1,21 +1,29 @@
-import { Modules, OrderWorkflowEvents } from "@medusajs/framework/utils"
-import {
-  createStep,
-  createWorkflow,
-  StepResponse,
-  transform,
-  WorkflowData,
-  WorkflowResponse,
-} from "@medusajs/framework/workflows-sdk"
 import {
   IOrderModuleService,
   OrderDTO,
   RegisterOrderChangeDTO,
   UpdateOrderDTO,
   UpsertOrderAddressDTO,
-} from "@medusajs/types"
+} from "@medusajs/framework/types"
+import { Modules, OrderWorkflowEvents } from "@medusajs/framework/utils"
+import {
+  createStep,
+  createWorkflow,
+  parallelize,
+  StepResponse,
+  transform,
+  when,
+  WorkflowData,
+  WorkflowResponse,
+} from "@medusajs/framework/workflows-sdk"
 import { emitEventStep, useRemoteQueryStep } from "../../common"
-import { previewOrderChangeStep, registerOrderChangesStep } from "../../order"
+import { acquireLockStep, releaseLockStep } from "../../locking"
+import {
+  previewOrderChangeStep,
+  registerOrderChangesStep,
+  updateOrderItemsTranslationsStep,
+  updateOrderShippingMethodsTranslationsStep,
+} from "../../order"
 import { validateDraftOrderStep } from "../steps/validate-draft-order"
 
 export const updateDraftOrderWorkflowId = "update-draft-order"
@@ -53,6 +61,11 @@ export interface UpdateDraftOrderWorkflowInput {
    */
   sales_channel_id?: string
   /**
+   * The new locale of the draft order. When changed, all line items
+   * will be re-translated to the new locale.
+   */
+  locale?: string | null
+  /**
    * The new metadata of the draft order.
    */
   metadata?: Record<string, unknown> | null
@@ -74,14 +87,14 @@ export interface UpdateDraftOrderStepInput {
 
 /**
  * This step updates a draft order's details.
- * 
+ *
  * :::note
- * 
+ *
  * You can retrieve a draft order's details using [Query](https://docs.medusajs.com/learn/fundamentals/module-links/query),
  * or [useQueryGraphStep](https://docs.medusajs.com/resources/references/medusa-workflows/steps/useQueryGraphStep).
- * 
+ *
  * :::
- * 
+ *
  * @example
  * const data = updateDraftOrderStep({
  *   order: {
@@ -123,15 +136,15 @@ export const updateDraftOrderStep = createStep(
 /**
  * This workflow updates a draft order's details. It's used by the
  * [Update Draft Order Admin API Route](https://docs.medusajs.com/api/admin#draft-orders_postdraftordersid).
- * 
- * This workflow doesn't update the draft order's items, shipping methods, or promotions. Instead, you have to 
+ *
+ * This workflow doesn't update the draft order's items, shipping methods, or promotions. Instead, you have to
  * create a draft order edit using {@link beginDraftOrderEditWorkflow} and make updates in the draft order edit.
  * Then, you can confirm the draft order edit using {@link confirmDraftOrderEditWorkflow} or request a draft order edit
  * using {@link requestDraftOrderEditWorkflow}.
- * 
+ *
  * You can use this workflow within your customizations or your own custom workflows, allowing you to wrap custom logic around
  * updating a draft order.
- * 
+ *
  * @example
  * const { result } = await updateDraftOrderWorkflow(container)
  * .run({
@@ -141,14 +154,20 @@ export const updateDraftOrderStep = createStep(
  *     customer_id: "cus_123",
  *   }
  * })
- * 
+ *
  * @summary
- * 
+ *
  * Update a draft order's details.
  */
 export const updateDraftOrderWorkflow = createWorkflow(
   updateDraftOrderWorkflowId,
   function (input: WorkflowData<UpdateDraftOrderWorkflowInput>) {
+    acquireLockStep({
+      key: input.id,
+      timeout: 2,
+      ttl: 10,
+    })
+
     const order = useRemoteQueryStep({
       entry_point: "orders",
       fields: [
@@ -159,8 +178,12 @@ export const updateDraftOrderWorkflow = createWorkflow(
         "sales_channel_id",
         "email",
         "customer_id",
+        "locale",
         "shipping_address.*",
         "billing_address.*",
+        "shipping_methods.id",
+        "shipping_methods.name",
+        "shipping_methods.shipping_option_id",
         "metadata",
       ],
       variables: {
@@ -299,11 +322,40 @@ export const updateDraftOrderWorkflow = createWorkflow(
           })
         }
 
+        if (!!input.locale && input.locale !== order.locale) {
+          changes.push({
+            change_type: "update_order" as const,
+            order_id: input.id,
+            created_by: input.user_id,
+            confirmed_by: input.user_id,
+            details: {
+              type: "locale",
+              old: order.locale,
+              new: updatedOrder.locale,
+            },
+          })
+        }
+
         return changes
       }
     )
 
     registerOrderChangesStep(orderChangeInput)
+
+    when({ input, order }, ({ input, order }) => {
+      return !!input.locale && input.locale !== order.locale
+    }).then(() => {
+      parallelize(
+        updateOrderShippingMethodsTranslationsStep({
+          locale: input.locale!,
+          shippingMethods: order.shipping_methods,
+        }),
+        updateOrderItemsTranslationsStep({
+          order_id: input.id,
+          locale: input.locale!,
+        })
+      )
+    })
 
     emitEventStep({
       eventName: OrderWorkflowEvents.UPDATED,
@@ -311,6 +363,10 @@ export const updateDraftOrderWorkflow = createWorkflow(
     })
 
     const preview = previewOrderChangeStep(input.id)
+
+    releaseLockStep({
+      key: input.id,
+    })
 
     return new WorkflowResponse(preview)
   }

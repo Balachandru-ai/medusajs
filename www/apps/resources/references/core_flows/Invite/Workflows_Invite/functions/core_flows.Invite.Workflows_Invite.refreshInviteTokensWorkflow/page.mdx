@@ -24,7 +24,7 @@ which you can listen to in a [Subscriber](https://docs.medusajs.com/learn/fundam
 You can use this workflow within your customizations or your own custom workflows, allowing you to
 refresh invite tokens within your custom flows.
 
-<SourceCodeLink link="https://github.com/medusajs/medusa/blob/cab00ff2b8935fdd788157ee36402ae59b079268/packages/core/core-flows/src/invite/workflows/refresh-invite-tokens.ts#L37" />
+<SourceCodeLink link="https://github.com/medusajs/medusa/blob/a960fb75c9f662372fd5cd623f883f9d6d8ad473/packages/core/core-flows/src/invite/workflows/refresh-invite-tokens.ts#L37" />
 
 ## Examples
 
@@ -133,7 +133,7 @@ const myWorkflow = createWorkflow(
 
 ## Steps
 
-<WorkflowDiagram workflow={{"name":"refreshInviteTokensWorkflow","steps":[{"type":"step","name":"refreshInviteTokensStep","description":"This step refreshes the tokens of one or more invites.","link":"../../../Steps_Invite/functions/core_flows.Invite.Steps_Invite.refreshInviteTokensStep/page.mdx","depth":1},{"type":"step","name":"emitEventStep","description":"Emit an event.","link":"../../../../Common/Steps_Common/functions/core_flows.Common.Steps_Common.emitEventStep/page.mdx","depth":2}]}} />
+<WorkflowDiagram workflow={{"name":"refreshInviteTokensWorkflow","steps":[{"type":"step","name":"refreshInviteTokensStep","description":"This step refreshes the tokens of one or more invites.","link":"../../../Steps_Invite/functions/core_flows.Invite.Steps_Invite.refreshInviteTokensStep/page.mdx","depth":1},{"type":"step","name":"emitEventStep","description":"This step emits an event, which you can listen to in a [subscriber](https://docs.medusajs.com/learn/fundamentals/events-and-subscribers). You can pass data to the\nsubscriber by including it in the `data` property.\n\nThe event is only emitted after the workflow has finished successfully. So, even if it's executed in the middle of the workflow, it won't actually emit the event until the workflow has completed successfully. \nIf the workflow fails, it won't emit the event at all.","link":"../../../../Common/Steps_Common/functions/core_flows.Common.Steps_Common.emitEventStep/page.mdx","depth":2}]}} />
 
 ## Input
 
@@ -146,6 +146,12 @@ const myWorkflow = createWorkflow(
 ## Emitted Events
 
 This section lists the events that are either triggered by the `emitEventStep` in the workflow, or by another workflow executed within this workflow.
+
+:::note
+
+The `emitEventStep` only emits the event after the workflow has finished successfully. So, even if it's executed in the middle of the workflow, it won't actually emit the event until the workflow has completed successfully. If the workflow fails, it won't emit the event at all.
+
+:::
 
 You can listen to these events in a subscriber, as explained in the [Subscribers](https://docs.medusajs.com/learn/fundamentals/events-and-subscribers) documentation.
 
@@ -178,18 +184,18 @@ for example.
 </Table.Cell>
       <Table.Cell>
 ```ts blockStyle="inline"
-[{
+{
   id, // The ID of the invite
-}]
+}
 ```
 </Table.Cell>
       <Table.Cell>
 <CopyGeneratedSnippetButton tooltipText="Copy subscriber for event" type="subscriber" options={{
         event: "invite.resent",
         payload: `\`\`\`ts
-[{
+{
   id, // The ID of the invite
-}]
+}
 \`\`\``
         }}/>
 </Table.Cell>

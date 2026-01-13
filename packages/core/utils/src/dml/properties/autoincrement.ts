@@ -8,7 +8,10 @@ import { PrimaryKeyModifier } from "./primary-key"
 export class AutoIncrementProperty extends BaseProperty<number> {
   protected dataType: {
     name: "serial"
-    options: {}
+    options: {
+      searchable?: boolean
+      primaryKey?: boolean
+    }
   }
 
   /**
@@ -28,6 +31,27 @@ export class AutoIncrementProperty extends BaseProperty<number> {
    */
   primaryKey() {
     return new PrimaryKeyModifier<number, AutoIncrementProperty>(this)
+  }
+
+  /**
+   * This method indicates that a serial property is searchable.
+   *
+   * @example
+   * import { model } from "@medusajs/framework/utils"
+   *
+   * const MyCustom = model.define("my_custom", {
+   *   name: model.autoincrement().searchable(),
+   *   // ...
+   * })
+   *
+   * export default MyCustom
+   *
+   * @customNamespace Property Configuration Methods
+   */
+  searchable() {
+    this.dataType.options.searchable = true
+
+    return this
   }
 
   constructor(options?: { primaryKey?: boolean }) {

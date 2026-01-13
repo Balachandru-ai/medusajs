@@ -32,23 +32,7 @@
  *   content:
  *     application/json:
  *       schema:
- *         type: object
- *         description: The customers to add or remove from the group.
- *         properties:
- *           add:
- *             type: array
- *             description: The customers to add to the group.
- *             items:
- *               type: string
- *               title: add
- *               description: A customer's ID.
- *           remove:
- *             type: array
- *             description: The customers to remove from the group.
- *             items:
- *               type: string
- *               title: remove
- *               description: A customer's ID.
+ *         $ref: "#/components/schemas/AdminBatchLink"
  * x-codeSamples:
  *   - lang: JavaScript
  *     label: JS SDK
@@ -74,7 +58,7 @@
  *     label: cURL
  *     source: |-
  *       curl -X POST '{backend_url}/admin/customer-groups/{id}/customers' \
- *       -H 'Authorization: Bearer {access_token}'
+ *       -H 'Authorization: Bearer {jwt_token}'
  * tags:
  *   - Customer Groups
  * responses:

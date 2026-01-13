@@ -72,7 +72,7 @@
  *     label: cURL
  *     source: |-
  *       curl -X POST '{backend_url}/admin/products/{id}/variants/batch' \
- *       -H 'Authorization: Bearer {access_token}'
+ *       -H 'Authorization: Bearer {jwt_token}'
  * tags:
  *   - Products
  * responses:
@@ -99,27 +99,27 @@
  *   - name: product-variant.updated
  *     payload: |-
  *       ```ts
- *       [{
+ *       {
  *         id, // The ID of the product variant
- *       }]
+ *       }
  *       ```
  *     description: Emitted when product variants are updated.
  *     deprecated: false
  *   - name: product-variant.created
  *     payload: |-
  *       ```ts
- *       [{
+ *       {
  *         id, // The ID of the product variant
- *       }]
+ *       }
  *       ```
  *     description: Emitted when product variants are created.
  *     deprecated: false
  *   - name: product-variant.deleted
  *     payload: |-
  *       ```ts
- *       [{
+ *       {
  *         id, // The ID of the product variant
- *       }]
+ *       }
  *       ```
  *     description: Emitted when product variants are deleted.
  *     deprecated: false

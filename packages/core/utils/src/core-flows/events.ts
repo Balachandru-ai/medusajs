@@ -51,8 +51,8 @@ export const CartWorkflowEvents = {
 
   /**
    * Emitted when the customer in the cart is transferred.
-   * 
-   * @version 2.8.0
+   *
+   * @since 2.8.0
    *
    * @eventPayload
    * ```ts
@@ -75,9 +75,9 @@ export const CustomerWorkflowEvents = {
    *
    * @eventPayload
    * ```ts
-   * [{
+   * {
    *   id, // The ID of the customer
-   * }]
+   * }
    * ```
    */
   CREATED: "customer.created",
@@ -86,9 +86,9 @@ export const CustomerWorkflowEvents = {
    *
    * @eventPayload
    * ```ts
-   * [{
+   * {
    *   id, // The ID of the customer
-   * }]
+   * }
    * ```
    */
   UPDATED: "customer.updated",
@@ -97,9 +97,9 @@ export const CustomerWorkflowEvents = {
    *
    * @eventPayload
    * ```ts
-   * [{
+   * {
    *   id, // The ID of the customer
-   * }]
+   * }
    * ```
    */
   DELETED: "customer.deleted",
@@ -151,9 +151,9 @@ export const OrderWorkflowEvents = {
    *
    * @eventPayload
    * ```ts
-   * [{
+   * {
    *   id, // The ID of the order
-   * }]
+   * }
    * ```
    */
   COMPLETED: "order.completed",
@@ -162,9 +162,9 @@ export const OrderWorkflowEvents = {
    *
    * @eventPayload
    * ```ts
-   * [{
+   * {
    *   id, // The ID of the order
-   * }]
+   * }
    * ```
    */
   ARCHIVED: "order.archived",
@@ -269,7 +269,7 @@ export const OrderEditWorkflowEvents = {
   /**
    * Emitted when an order edit is requested.
    *
-   * @version 2.8.0
+   * @since 2.8.0
    *
    * @eventPayload
    * ```ts
@@ -283,7 +283,7 @@ export const OrderEditWorkflowEvents = {
   /**
    * Emitted when an order edit request is confirmed.
    *
-   * @version 2.8.0
+   * @since 2.8.0
    *
    * @eventPayload
    * ```ts
@@ -297,7 +297,7 @@ export const OrderEditWorkflowEvents = {
   /**
    * Emitted when an order edit request is canceled.
    *
-   * @version 2.8.0
+   * @since 2.8.0
    *
    * @eventPayload
    * ```ts
@@ -320,9 +320,9 @@ export const UserWorkflowEvents = {
    *
    * @eventPayload
    * ```ts
-   * [{
+   * {
    *   id, // The ID of the user
-   * }]
+   * }
    * ```
    */
   CREATED: "user.created",
@@ -331,9 +331,9 @@ export const UserWorkflowEvents = {
    *
    * @eventPayload
    * ```ts
-   * [{
+   * {
    *   id, // The ID of the user
-   * }]
+   * }
    * ```
    */
   UPDATED: "user.updated",
@@ -342,9 +342,9 @@ export const UserWorkflowEvents = {
    *
    * @eventPayload
    * ```ts
-   * [{
+   * {
    *   id, // The ID of the user
-   * }]
+   * }
    * ```
    */
   DELETED: "user.deleted",
@@ -365,6 +365,7 @@ export const AuthWorkflowEvents = {
    *   entity_id, // The identifier of the user or customer. For example, an email address.
    *   actor_type, // The type of actor. For example, "customer", "user", or custom.
    *   token, // The generated token.
+   *   metadata, // Optional custom metadata passed from the request.
    * }
    * ```
    */
@@ -381,9 +382,9 @@ export const SalesChannelWorkflowEvents = {
    *
    * @eventPayload
    * ```ts
-   * [{
+   * {
    *   id, // The ID of the sales channel
-   * }]
+   * }
    * ```
    */
   CREATED: "sales-channel.created",
@@ -392,9 +393,9 @@ export const SalesChannelWorkflowEvents = {
    *
    * @eventPayload
    * ```ts
-   * [{
+   * {
    *   id, // The ID of the sales channel
-   * }]
+   * }
    * ```
    */
   UPDATED: "sales-channel.updated",
@@ -403,9 +404,9 @@ export const SalesChannelWorkflowEvents = {
    *
    * @eventPayload
    * ```ts
-   * [{
+   * {
    *   id, // The ID of the sales channel
-   * }]
+   * }
    * ```
    */
   DELETED: "sales-channel.deleted",
@@ -421,9 +422,9 @@ export const ProductCategoryWorkflowEvents = {
    *
    * @eventPayload
    * ```ts
-   * [{
+   * {
    *   id, // The ID of the product category
-   * }]
+   * }
    * ```
    */
   CREATED: "product-category.created",
@@ -432,9 +433,9 @@ export const ProductCategoryWorkflowEvents = {
    *
    * @eventPayload
    * ```ts
-   * [{
+   * {
    *   id, // The ID of the product category
-   * }]
+   * }
    * ```
    */
   UPDATED: "product-category.updated",
@@ -443,9 +444,9 @@ export const ProductCategoryWorkflowEvents = {
    *
    * @eventPayload
    * ```ts
-   * [{
+   * {
    *   id, // The ID of the product category
-   * }]
+   * }
    * ```
    */
   DELETED: "product-category.deleted",
@@ -461,9 +462,9 @@ export const ProductCollectionWorkflowEvents = {
    *
    * @eventPayload
    * ```ts
-   * [{
+   * {
    *   id, // The ID of the product collection
-   * }]
+   * }
    * ```
    */
   CREATED: "product-collection.created",
@@ -472,9 +473,9 @@ export const ProductCollectionWorkflowEvents = {
    *
    * @eventPayload
    * ```ts
-   * [{
+   * {
    *   id, // The ID of the product collection
-   * }]
+   * }
    * ```
    */
   UPDATED: "product-collection.updated",
@@ -483,9 +484,9 @@ export const ProductCollectionWorkflowEvents = {
    *
    * @eventPayload
    * ```ts
-   * [{
+   * {
    *   id, // The ID of the product collection
-   * }]
+   * }
    * ```
    */
   DELETED: "product-collection.deleted",
@@ -501,9 +502,9 @@ export const ProductVariantWorkflowEvents = {
    *
    * @eventPayload
    * ```ts
-   * [{
+   * {
    *   id, // The ID of the product variant
-   * }]
+   * }
    * ```
    */
   UPDATED: "product-variant.updated",
@@ -512,9 +513,9 @@ export const ProductVariantWorkflowEvents = {
    *
    * @eventPayload
    * ```ts
-   * [{
+   * {
    *   id, // The ID of the product variant
-   * }]
+   * }
    * ```
    */
   CREATED: "product-variant.created",
@@ -523,9 +524,9 @@ export const ProductVariantWorkflowEvents = {
    *
    * @eventPayload
    * ```ts
-   * [{
+   * {
    *   id, // The ID of the product variant
-   * }]
+   * }
    * ```
    */
   DELETED: "product-variant.deleted",
@@ -541,9 +542,9 @@ export const ProductWorkflowEvents = {
    *
    * @eventPayload
    * ```ts
-   * [{
+   * {
    *   id, // The ID of the product
-   * }]
+   * }
    * ```
    */
   UPDATED: "product.updated",
@@ -552,9 +553,9 @@ export const ProductWorkflowEvents = {
    *
    * @eventPayload
    * ```ts
-   * [{
+   * {
    *   id, // The ID of the product
-   * }]
+   * }
    * ```
    */
   CREATED: "product.created",
@@ -563,9 +564,9 @@ export const ProductWorkflowEvents = {
    *
    * @eventPayload
    * ```ts
-   * [{
+   * {
    *   id, // The ID of the product
-   * }]
+   * }
    * ```
    */
   DELETED: "product.deleted",
@@ -581,9 +582,9 @@ export const ProductTypeWorkflowEvents = {
    *
    * @eventPayload
    * ```ts
-   * [{
+   * {
    *   id, // The ID of the product type
-   * }]
+   * }
    * ```
    */
   UPDATED: "product-type.updated",
@@ -592,9 +593,9 @@ export const ProductTypeWorkflowEvents = {
    *
    * @eventPayload
    * ```ts
-   * [{
+   * {
    *   id, // The ID of the product type
-   * }]
+   * }
    * ```
    */
   CREATED: "product-type.created",
@@ -603,9 +604,9 @@ export const ProductTypeWorkflowEvents = {
    *
    * @eventPayload
    * ```ts
-   * [{
+   * {
    *   id, // The ID of the product type
-   * }]
+   * }
    * ```
    */
   DELETED: "product-type.deleted",
@@ -621,9 +622,9 @@ export const ProductTagWorkflowEvents = {
    *
    * @eventPayload
    * ```ts
-   * [{
+   * {
    *   id, // The ID of the product tag
-   * }]
+   * }
    * ```
    */
   UPDATED: "product-tag.updated",
@@ -632,9 +633,9 @@ export const ProductTagWorkflowEvents = {
    *
    * @eventPayload
    * ```ts
-   * [{
+   * {
    *   id, // The ID of the product tag
-   * }]
+   * }
    * ```
    */
   CREATED: "product-tag.created",
@@ -643,9 +644,9 @@ export const ProductTagWorkflowEvents = {
    *
    * @eventPayload
    * ```ts
-   * [{
+   * {
    *   id, // The ID of the product tag
-   * }]
+   * }
    * ```
    */
   DELETED: "product-tag.deleted",
@@ -661,9 +662,9 @@ export const ProductOptionWorkflowEvents = {
    *
    * @eventPayload
    * ```ts
-   * [{
+   * {
    *   id, // The ID of the product option
-   * }]
+   * }
    * ```
    */
   UPDATED: "product-option.updated",
@@ -672,9 +673,9 @@ export const ProductOptionWorkflowEvents = {
    *
    * @eventPayload
    * ```ts
-   * [{
+   * {
    *   id, // The ID of the product option
-   * }]
+   * }
    * ```
    */
   CREATED: "product-option.created",
@@ -683,9 +684,9 @@ export const ProductOptionWorkflowEvents = {
    *
    * @eventPayload
    * ```ts
-   * [{
+   * {
    *   id, // The ID of the product option
-   * }]
+   * }
    * ```
    */
   DELETED: "product-option.deleted",
@@ -713,9 +714,9 @@ export const InviteWorkflowEvents = {
    *
    * @eventPayload
    * ```ts
-   * [{
+   * {
    *   id, // The ID of the invite
-   * }]
+   * }
    * ```
    */
   CREATED: "invite.created",
@@ -724,9 +725,9 @@ export const InviteWorkflowEvents = {
    *
    * @eventPayload
    * ```ts
-   * [{
+   * {
    *   id, // The ID of the invite
-   * }]
+   * }
    * ```
    */
   DELETED: "invite.deleted",
@@ -737,9 +738,9 @@ export const InviteWorkflowEvents = {
    *
    * @eventPayload
    * ```ts
-   * [{
+   * {
    *   id, // The ID of the invite
-   * }]
+   * }
    * ```
    */
   RESENT: "invite.resent",
@@ -755,9 +756,9 @@ export const RegionWorkflowEvents = {
    *
    * @eventPayload
    * ```ts
-   * [{
+   * {
    *   id, // The ID of the region
-   * }]
+   * }
    * ```
    */
   UPDATED: "region.updated",
@@ -766,9 +767,9 @@ export const RegionWorkflowEvents = {
    *
    * @eventPayload
    * ```ts
-   * [{
+   * {
    *   id, // The ID of the region
-   * }]
+   * }
    * ```
    */
   CREATED: "region.created",
@@ -777,9 +778,9 @@ export const RegionWorkflowEvents = {
    *
    * @eventPayload
    * ```ts
-   * [{
+   * {
    *   id, // The ID of the region
-   * }]
+   * }
    * ```
    */
   DELETED: "region.deleted",
@@ -796,7 +797,7 @@ export const FulfillmentWorkflowEvents = {
    * @eventPayload
    * ```ts
    * {
-   *   id, // the ID of the shipment
+   *   id, // the ID of the fulfillment
    *   no_notification, // (boolean) whether to notify the customer
    * }
    * ```
@@ -813,6 +814,98 @@ export const FulfillmentWorkflowEvents = {
    * ```
    */
   DELIVERY_CREATED: "delivery.created",
+}
+
+/**
+ * @category Shipping Option Type
+ * @customNamespace Fulfillment
+ */
+export const ShippingOptionTypeWorkflowEvents = {
+  /**
+   * Emitted when shipping option types are updated.
+   *
+   * @since 2.10.0
+   *
+   * @eventPayload
+   * ```ts
+   * {
+   *   id, // The ID of the shipping option type
+   * }
+   * ```
+   */
+  UPDATED: "shipping-option-type.updated",
+  /**
+   * Emitted when shipping option types are created.
+   *
+   * @since 2.10.0
+   *
+   * @eventPayload
+   * ```ts
+   * {
+   *   id, // The ID of the shipping option type
+   * }
+   * ```
+   */
+  CREATED: "shipping-option-type.created",
+  /**
+   * Emitted when shipping option types are deleted.
+   *
+   * @since 2.10.0
+   *
+   * @eventPayload
+   * ```ts
+   * {
+   *   id, // The ID of the shipping option type
+   * }
+   * ```
+   */
+  DELETED: "shipping-option-type.deleted",
+}
+
+/**
+ * @category Shipping Option
+ * @customNamespace Fulfillment
+ */
+export const ShippingOptionWorkflowEvents = {
+  /**
+   * Emitted when shipping options are created.
+   *
+   * @since 2.12.4
+   *
+   * @eventPayload
+   * ```ts
+   * {
+   *   id, // The ID of the shipping option
+   * }
+   * ```
+   */
+  CREATED: "shipping-option.created",
+  /**
+   * Emitted when shipping options are updated.
+   *
+   * @since 2.12.4
+   *
+   * @eventPayload
+   * ```ts
+   * {
+   *   id, // The ID of the shipping option
+   * }
+   * ```
+   */
+  UPDATED: "shipping-option.updated",
+  /**
+   * Emitted when shipping options are deleted.
+   *
+   * @since 2.12.4
+   *
+   * @eventPayload
+   * ```ts
+   * {
+   *   id, // The ID of the shipping option
+   * }
+   * ```
+   */
+  DELETED: "shipping-option.deleted",
 }
 
 /**
@@ -842,4 +935,50 @@ export const PaymentEvents = {
    * ```
    */
   REFUNDED: "payment.refunded",
+}
+
+/**
+ * @category Translation
+ * @customNamespace Translation
+ */
+export const TranslationWorkflowEvents = {
+  /**
+   * Emitted when translations are created.
+   *
+   * @since 2.12.3
+   * @featureFlag translation
+   * @eventPayload
+   * ```ts
+   * {
+   *   id, // The ID of the translation
+   * }
+   * ```
+   */
+  CREATED: "translation.created",
+  /**
+   * Emitted when translations are updated.
+   *
+   * @since 2.12.3
+   * @featureFlag translation
+   * @eventPayload
+   * ```ts
+   * {
+   *   id, // The ID of the translation
+   * }
+   * ```
+   */
+  UPDATED: "translation.updated",
+  /**
+   * Emitted when translations are deleted.
+   *
+   * @since 2.12.3
+   * @featureFlag translation
+   * @eventPayload
+   * ```ts
+   * {
+   *   id, // The ID of the translation
+   * }
+   * ```
+   */
+  DELETED: "translation.deleted",
 }

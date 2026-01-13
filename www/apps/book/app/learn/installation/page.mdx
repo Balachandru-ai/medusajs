@@ -8,13 +8,27 @@ export const metadata = {
 
 In this chapter, you'll learn how to install and run a Medusa application.
 
-## Create Medusa Application
+## Get Started with Cloud
 
-A Medusa application is made up of a Node.js server and an admin dashboard. You can optionally install the [Next.js Starter Storefront](!resources!/nextjs-starter) separately either while installing the Medusa application or at a later point.
+[Cloud](!cloud!) is Medusa's PaaS platform that allows you to deploy and manage production-ready Medusa applications with ease. Benefit from features like zero-configuration deployments, automatic scaling, storefront hosting, and GitHub integration to streamline your development workflow.
+
+[Sign up](http://cloud.medusajs.com/signup) with Cloud and create your first Medusa project in minutes.
+
+---
+
+## Create Medusa Application Locally
+
+A Medusa application is made up of a Node.js server and a Vite admin dashboard. You can optionally install the [Next.js Starter Storefront](!resources!/nextjs-starter) separately either while installing the Medusa application or at a later point.
+
+<Note>
+
+While this is the recommended way to create a Medusa application, you can alternatively [install a Medusa application with Docker](./docker/page.mdx).
+
+</Note>
 
 <Prerequisites items={[
   {
-    text: "Node.js v20+",
+    text: "Node.js v20+ (LTS versions only)",
     link: "https://nodejs.org/en/download"
   },
   {
@@ -22,7 +36,7 @@ A Medusa application is made up of a Node.js server and an admin dashboard. You 
     link: "https://git-scm.com/downloads"
   },
   {
-    text: "PostgreSQL",
+    text: "PostgreSQL installed and running",
     link: "https://www.postgresql.org/download/"
   }
 ]} />
@@ -35,11 +49,17 @@ npx create-medusa-app@latest my-medusa-store
 
 Where `my-medusa-store` is the name of the project's directory and PostgreSQL database created for the project. When you run the command, you'll be asked whether you want to install the Next.js Starter Storefront.
 
+<Note>
+
+To customize the default installation behavior, such as specify a database URL, refer to the [create-medusa-app reference](!resources!/create-medusa-app).
+
+</Note>
+
 After answering the prompts, the command installs the Medusa application in a directory with your project name, and sets up a PostgreSQL database that the application connects to.
 
 If you chose to install the storefront with the Medusa application, the storefront is installed in a separate directory named `{project-name}-storefront`.
 
-![Diagram showcasing an overview of the installation directories](https://res.cloudinary.com/dza7lstvk/image/upload/v1745856132/Medusa%20Resources/installation-dirs_x8jux4.jpg)
+![Directory structure overview after Medusa installation showing the main project folder containing the Medusa backend application and admin dashboard, alongside the separate storefront directory for the customer-facing Next.js application](https://res.cloudinary.com/dza7lstvk/image/upload/v1745856132/Medusa%20Resources/installation-dirs_x8jux4.jpg)
 
 ### Successful Installation Result
 
@@ -51,7 +71,7 @@ If you also installed the Next.js Starter Storefront, it'll be running at `http:
 
 You can stop the servers for the Medusa application and Next.js Starter Storefront by exiting the installation command. To run the server for the Medusa application again, refer to [this section](#run-medusa-application-in-development).
 
-![Diagram showcasing the server and applications running after successful installation](https://res.cloudinary.com/dza7lstvk/image/upload/v1745856706/Medusa%20Resources/success-overview_bj4pbt.jpg)
+![Post-installation running services overview: Medusa backend server and admin dashboard running on localhost:9000, Next.js Starter Storefront running on localhost:8000, with PostgreSQL database and other essential services active and ready for development](https://res.cloudinary.com/dza7lstvk/image/upload/v1745856706/Medusa%20Resources/success-overview_bj4pbt.jpg)
 
 ### Troubleshooting Installation Errors
 
@@ -59,7 +79,8 @@ If you ran into an error during your installation, refer to the following troubl
 
 1. [create-medusa-app troubleshooting guides](!resources!/troubleshooting/create-medusa-app-errors).
 2. [CORS errors](!resources!/troubleshooting/cors-errors).
-3. [All troubleshooting guides](!resources!/troubleshooting).
+3. [Errors with pnpm](!resources!/troubleshooting/pnpm).
+4. [All troubleshooting guides](!resources!/troubleshooting).
 
 If you can't find your error reported anywhere, please open a [GitHub issue](https://github.com/medusajs/medusa/issues/new/choose).
 

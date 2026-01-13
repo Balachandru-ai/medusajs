@@ -1,4 +1,4 @@
-import { Migration } from "@mikro-orm/migrations"
+import { Migration } from "@medusajs/framework/mikro-orm/migrations"
 
 export class Migration20241211074630 extends Migration {
   async up(): Promise<void> {
@@ -61,12 +61,6 @@ export class Migration20241211074630 extends Migration {
     )
     this.addSql(
       'alter table if exists "customer_group_customer" drop column if exists "deleted_at";'
-    )
-    this.addSql(
-      'alter table if exists "customer_group_customer" add constraint "customer_group_customer_customer_group_id_foreign" foreign key ("customer_group_id") references "customer_group" ("id") on delete cascade;'
-    )
-    this.addSql(
-      'alter table if exists "customer_group_customer" add constraint "customer_group_customer_customer_id_foreign" foreign key ("customer_id") references "customer" ("id") on delete cascade;'
     )
     this.addSql(
       'create index if not exists "IDX_customer_group_customer_group_id" on "customer_group_customer" ("customer_group_id");'

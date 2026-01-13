@@ -32,7 +32,35 @@ medusaIntegrationTestRunner({
         adminHeaders
       )
 
-      await api.post(`/admin/claims/${claim.id}/request`, {}, adminHeaders)
+      const createdClaim = await api.post(
+        `/admin/claims/${claim.id}/request`,
+        {},
+        adminHeaders
+      )
+
+      const returnOrder = createdClaim.data.return
+      const returnId = returnOrder.id
+      await api.post(`/admin/returns/${returnId}/receive`, {}, adminHeaders)
+
+      let lineItem = returnOrder.items[0].item
+      await api.post(
+        `/admin/returns/${returnId}/receive-items`,
+        {
+          items: [
+            {
+              id: lineItem.id,
+              quantity: returnOrder.items[0].quantity,
+            },
+          ],
+        },
+        adminHeaders
+      )
+
+      await api.post(
+        `/admin/returns/${returnId}/receive/confirm`,
+        {},
+        adminHeaders
+      )
     }
 
     beforeEach(async () => {
@@ -64,10 +92,6 @@ medusaIntegrationTestRunner({
     })
 
     describe("with outstanding amount due to claim", () => {
-      beforeEach(async () => {
-        await createClaim({ order })
-      })
-
       it("should capture an authorized payment", async () => {
         const payment = order.payment_collections[0].payments[0]
 
@@ -189,10 +213,12 @@ medusaIntegrationTestRunner({
           adminHeaders
         )
 
+        await createClaim({ order })
+
         const refundReason = (
           await api.post(
             `/admin/refund-reasons`,
-            { label: "test" },
+            { label: "test", code: "test" },
             adminHeaders
           )
         ).data.refund_reason
@@ -228,6 +254,7 @@ medusaIntegrationTestRunner({
                 refund_reason_id: refundReason.id,
                 refund_reason: expect.objectContaining({
                   label: "test",
+                  code: "test",
                 }),
               }),
             ],
@@ -248,10 +275,12 @@ medusaIntegrationTestRunner({
         const refundReason = (
           await api.post(
             `/admin/refund-reasons`,
-            { label: "test" },
+            { label: "test", code: "test" },
             adminHeaders
           )
         ).data.refund_reason
+
+        await createClaim({ order })
 
         await api.post(
           `/admin/payments/${payment.id}/refund`,
@@ -302,8 +331,16 @@ medusaIntegrationTestRunner({
         )
       })
 
-      it("should throw if refund exceeds captured total", async () => {
+      it("should create credit lines if issuing a refund when outstanding amount if >= 0", async () => {
         const payment = order.payment_collections[0].payments[0]
+
+        const refundReason = (
+          await api.post(
+            `/admin/refund-reasons`,
+            { label: "Test", code: "test" },
+            adminHeaders
+          )
+        ).data.refund_reason
 
         await api.post(
           `/admin/payments/${payment.id}/capture`,
@@ -313,44 +350,92 @@ medusaIntegrationTestRunner({
 
         await api.post(
           `/admin/payments/${payment.id}/refund`,
-          { amount: 25 },
+          {
+            amount: 50,
+            refund_reason_id: refundReason.id,
+          },
           adminHeaders
         )
 
-        const e = await api
-          .post(
-            `/admin/payments/${payment.id}/refund`,
-            { amount: 1000 },
+        const updatedOrder = (
+          await api.get(`/admin/orders/${order.id}`, adminHeaders)
+        ).data.order
+
+        expect(updatedOrder.credit_line_total).toEqual(50)
+        expect(updatedOrder.credit_lines).toEqual([
+          expect.objectContaining({
+            reference: "Test",
+            reference_id: "test",
+          }),
+        ])
+      })
+
+      it("should throw if the refund amount exceeds the payment amount", async () => {
+        const payment = order.payment_collections[0].payments[0]
+
+        const refundReason = (
+          await api.post(
+            `/admin/refund-reasons`,
+            { label: "Test", code: "test" },
             adminHeaders
           )
-          .catch((e) => e)
+        ).data.refund_reason
 
-        expect(e.response.data.message).toEqual(
-          "Cannot refund more than pending difference - 75"
-        )
-      })
-    })
-
-    it("should throw if outstanding amount is not present", async () => {
-      const payment = order.payment_collections[0].payments[0]
-
-      await api.post(
-        `/admin/payments/${payment.id}/capture`,
-        undefined,
-        adminHeaders
-      )
-
-      const e = await api
-        .post(
-          `/admin/payments/${payment.id}/refund`,
-          { amount: 10 },
+        await api.post(
+          `/admin/payments/${payment.id}/capture`,
+          undefined,
           adminHeaders
         )
-        .catch((e) => e)
 
-      expect(e.response.data.message).toEqual(
-        "Order does not have an outstanding balance to refund"
-      )
+        await api.post(
+          `/admin/payments/${payment.id}/refund`,
+          {
+            amount: 50,
+            refund_reason_id: refundReason.id,
+          },
+          adminHeaders
+        )
+
+        const updatedOrder = (
+          await api.get(`/admin/orders/${order.id}`, adminHeaders)
+        ).data.order
+
+        expect(updatedOrder.credit_line_total).toEqual(50)
+        expect(updatedOrder.credit_lines).toEqual([
+          expect.objectContaining({
+            reference: "Test",
+            reference_id: "test",
+          }),
+        ])
+
+        try {
+          await api.post(
+            `/admin/payments/${payment.id}/refund`,
+            {
+              amount: 5000,
+              refund_reason_id: refundReason.id,
+            },
+            adminHeaders
+          )
+        } catch (error) {
+          expect(error.response.status).toBe(400)
+          expect(error.response.data.message).toBe(
+            "You are not allowed to refund more than the captured amount"
+          )
+        }
+
+        const updatedUpdatedOrder = (
+          await api.get(`/admin/orders/${order.id}`, adminHeaders)
+        ).data.order
+
+        expect(updatedUpdatedOrder.credit_line_total).toEqual(50)
+        expect(updatedUpdatedOrder.credit_lines).toEqual([
+          expect.objectContaining({
+            reference: "Test",
+            reference_id: "test",
+          }),
+        ])
+      })
     })
   },
 })

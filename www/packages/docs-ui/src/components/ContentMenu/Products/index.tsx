@@ -1,7 +1,7 @@
 "use client"
 
 import React, { useMemo } from "react"
-import { useSiteConfig } from "../../../providers"
+import { useSiteConfig } from "@/providers/SiteConfig"
 import { products } from "../../../constants"
 import { Product } from "types"
 import { BorderedIcon } from "../../BorderedIcon"
@@ -42,13 +42,20 @@ export const ContentMenuProducts = () => {
         <a
           key={index}
           href={getProductUrl(product)}
-          className="flex gap-docs_0.5 items-center"
+          className="flex gap-docs_0.5 items-center group"
+          data-testid="product-link"
         >
           <BorderedIcon
             wrapperClassName={clsx("bg-medusa-bg-base")}
             icon={getProductImageUrl(product)}
+            iconWidth={16}
+            iconHeight={16}
           />
-          <span className="text-medusa-fg-subtle text-x-small-plus">
+          <span
+            className={
+              "text-medusa-fg-subtle text-x-small-plus group-hover:text-medusa-fg-base transition-colors"
+            }
+          >
             {product.title}
           </span>
         </a>

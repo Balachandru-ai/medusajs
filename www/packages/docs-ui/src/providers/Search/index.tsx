@@ -8,7 +8,9 @@ import React, {
   useMemo,
   useRef,
 } from "react"
-import { BadgeProps, Modal, Search, SearchProps } from "@/components"
+import { BadgeProps } from "../../components/Badge"
+import { Modal } from "../../components/Modal"
+import { Search, SearchProps } from "../../components/Search"
 import {
   liteClient as algoliasearch,
   LiteClient as SearchClient,
@@ -80,12 +82,10 @@ export const SearchProvider = ({
 
   const modalRef = useRef<HTMLDialogElement | null>(null)
 
-  const searchClient: SearchClient = useMemo(() => {
-    const algoliaClient = algoliasearch(algolia.appId, algolia.apiKey)
-    return {
-      ...algoliaClient,
-    }
-  }, [algolia.appId, algolia.apiKey])
+  const searchClient: SearchClient = useMemo(
+    () => algoliasearch(algolia.appId, algolia.apiKey),
+    [algolia.appId, algolia.apiKey]
+  )
 
   useEffect(() => {
     if (initialDefaultIndex !== selectedIndex) {

@@ -1,29 +1,60 @@
+import { track } from "@medusajs/telemetry"
+import cluster from "cluster"
+import express from "express"
+import http from "http"
+import { scheduleJob } from "node-schedule"
 import os from "os"
 import path from "path"
-import http from "http"
-import express from "express"
-import cluster from "cluster"
-import { track } from "@medusajs/telemetry"
-import { scheduleJob } from "node-schedule"
 
 import {
+  ContainerRegistrationKeys,
   dynamicImport,
   FileSystem,
+  generateContainerTypes,
+  generatePolicyTypes,
   gqlSchemaToTypes,
   GracefulShutdownServer,
+  isFileSkipped,
   isPresent,
-  generateContainerTypes,
+  promiseAll,
 } from "@medusajs/framework/utils"
-import { logger } from "@medusajs/framework/logger"
 
-import loaders from "../loaders"
 import { MedusaModule } from "@medusajs/framework/modules-sdk"
-import { MedusaContainer } from "@medusajs/framework/types"
+import { Logger, MedusaContainer } from "@medusajs/framework/types"
 import { parse } from "url"
+import loaders, { initializeContainer } from "../loaders"
+import { reloadResources } from "./utils/dev-server"
+import { HMRReloadError } from "./utils/dev-server/errors"
 
 const EVERY_SIXTH_HOUR = "0 */6 * * *"
 const CRON_SCHEDULE = EVERY_SIXTH_HOUR
 const INSTRUMENTATION_FILE = "instrumentation"
+
+function parseValueOrPercentage(value: string, base: number): number {
+  if (typeof value !== "string") {
+    throw new Error(`Invalid value: ${value}. Must be a string.`)
+  }
+
+  const trimmed = value.trim()
+  if (trimmed.endsWith("%")) {
+    const percent = parseFloat(trimmed.slice(0, -1))
+    if (isNaN(percent)) {
+      throw new Error(`Invalid percentage: ${value}`)
+    }
+    if (percent < 0 || percent > 100) {
+      throw new Error(`Percentage must be between 0 and 100: ${value}`)
+    }
+    return Math.round((percent / 100) * base)
+  } else {
+    const num = parseInt(trimmed, 10)
+    if (isNaN(num) || num < 0) {
+      throw new Error(
+        `Invalid number: ${value}. Must be a non-negative integer.`
+      )
+    }
+    return num
+  }
+}
 
 /**
  * Imports the "instrumentation.js" file from the root of the
@@ -32,6 +63,11 @@ const INSTRUMENTATION_FILE = "instrumentation"
  * errors.
  */
 export async function registerInstrumentation(directory: string) {
+  const container = await initializeContainer(directory, {
+    skipDbConnection: true,
+  })
+  const logger = container.resolve(ContainerRegistrationKeys.LOGGER)
+
   const fileSystem = new FileSystem(directory)
   const exists =
     (await fileSystem.exists(`${INSTRUMENTATION_FILE}.ts`)) ||
@@ -43,7 +79,11 @@ export async function registerInstrumentation(directory: string) {
   const instrumentation = await dynamicImport(
     path.join(directory, INSTRUMENTATION_FILE)
   )
-  if (typeof instrumentation.register === "function") {
+
+  if (
+    typeof instrumentation.register === "function" &&
+    !isFileSkipped(instrumentation)
+  ) {
     logger.info("OTEL registered")
     instrumentation.register()
   } else {
@@ -77,10 +117,10 @@ function displayAdminUrl({
     return
   }
 
-  const logger = container.resolve("logger")
+  const logger = container.resolve(ContainerRegistrationKeys.LOGGER)
   const {
     admin: { path: adminPath, disable },
-  } = container.resolve("configModule")
+  } = container.resolve(ContainerRegistrationKeys.CONFIG_MODULE)
 
   if (disable) {
     return
@@ -127,17 +167,79 @@ function findExpressRoutePath({
   return undefined
 }
 
+function handleHMRReload(logger: Logger) {
+  // Set up HMR reload handler if running in HMR mode
+  if (process.env.MEDUSA_HMR_ENABLED === "true" && process.send) {
+    ;(global as any).__MEDUSA_HMR_ROUTE_REGISTRY__ = true
+
+    process.on("message", async (msg: any) => {
+      if (msg?.type === "hmr-reload") {
+        const { action, file, rootDirectory } = msg
+
+        const success = await reloadResources({
+          logSource: "[HMR]",
+          action,
+          absoluteFilePath: file,
+          logger,
+          rootDirectory,
+        })
+          .then(() => true)
+          .catch((error) => {
+            if (HMRReloadError.isHMRReloadError(error)) {
+              return false
+            }
+            logger.error("[HMR] Reload failed with unexpected error", error)
+            return false
+          })
+
+        process.send!({ type: "hmr-result", success })
+      }
+    })
+  }
+}
+
 async function start(args: {
   directory: string
   host?: string
   port?: number
   types?: boolean
-  cluster?: number
-}) {
-  const { port = 9000, host, directory, types } = args
+  cluster?: string
+  workers?: string
+  servers?: string
+}): Promise<{
+  server: GracefulShutdownServer
+  gracefulShutDown: () => void
+} | void> {
+  const {
+    port = 9000,
+    host,
+    directory,
+    types,
+    cluster: clusterSize,
+    workers,
+    servers,
+  } = args
+
+  const maxCpus = os.cpus().length
+  const clusterSizeNum = clusterSize
+    ? parseValueOrPercentage(clusterSize, maxCpus)
+    : maxCpus
+  const serversCount = servers
+    ? parseValueOrPercentage(servers, clusterSizeNum)
+    : 0
+  const workersCount = workers
+    ? parseValueOrPercentage(workers, clusterSizeNum)
+    : 0
 
   async function internalStart(generateTypes: boolean) {
     track("CLI_START")
+
+    const container = await initializeContainer(directory, {
+      skipDbConnection: true,
+    })
+    const logger = container.resolve(ContainerRegistrationKeys.LOGGER)
+    const serverActivity = logger.activity(`Creating server`)
+
     await registerInstrumentation(directory)
 
     const app = express()
@@ -174,30 +276,36 @@ async function start(args: {
       if (generateTypes) {
         const typesDirectory = path.join(directory, ".medusa/types")
 
-        /**
-         * Cleanup existing types directory before creating new artifacts
-         */
-        await new FileSystem(typesDirectory).cleanup({ recursive: true })
+        const fileGenPromises: Promise<void>[] = []
 
-        await generateContainerTypes(modules, {
-          outputDir: typesDirectory,
-          interfaceName: "ModuleImplementations",
-        })
-        logger.debug("Generated container types")
+        fileGenPromises.push(
+          generateContainerTypes(modules, {
+            outputDir: typesDirectory,
+            interfaceName: "ModuleImplementations",
+          })
+        )
 
         if (gqlSchema) {
-          await gqlSchemaToTypes({
-            outputDir: typesDirectory,
-            filename: "query-entry-points",
-            interfaceName: "RemoteQueryEntryPoints",
-            schema: gqlSchema,
-            joinerConfigs: MedusaModule.getAllJoinerConfigs(),
-          })
-          logger.debug("Generated modules types")
+          fileGenPromises.push(
+            gqlSchemaToTypes({
+              outputDir: typesDirectory,
+              filename: "query-entry-points",
+              interfaceName: "RemoteQueryEntryPoints",
+              schema: gqlSchema,
+              joinerConfigs: MedusaModule.getAllJoinerConfigs(),
+            })
+          )
         }
-      }
 
-      const serverActivity = logger.activity(`Creating server`)
+        fileGenPromises.push(
+          generatePolicyTypes({
+            outputDir: typesDirectory,
+          })
+        )
+
+        await promiseAll(fileGenPromises)
+        logger.debug("Generated policy types")
+      }
 
       // Register a health check endpoint. Ideally this also checks the readiness of the service, rather than just returning a static response.
       app.get("/health", (_, res) => {
@@ -234,7 +342,9 @@ async function start(args: {
         track("PING")
       })
 
-      return { server }
+      handleHMRReload(logger)
+
+      return { server, gracefulShutDown }
     } catch (err) {
       logger.error("Error starting server", err)
       process.exit(1)
@@ -246,22 +356,33 @@ async function start(args: {
    * cluster mode
    */
   if ("cluster" in args) {
-    const maxCpus = os.cpus().length
-    const cpus = args.cluster ?? maxCpus
+    const cpus = clusterSizeNum
+    const numCPUs = Math.min(maxCpus, cpus)
+
+    if (serversCount + workersCount > numCPUs) {
+      throw new Error(
+        `Sum of servers (${serversCount}) and workers (${workersCount}) cannot exceed cluster size (${numCPUs})`
+      )
+    }
 
     if (cluster.isPrimary) {
       let isShuttingDown = false
-      const numCPUs = Math.min(maxCpus, cpus)
       const killMainProccess = () => process.exit(0)
       const gracefulShutDown = () => {
         isShuttingDown = true
-        for (const id of Object.keys(cluster.workers ?? {})) {
-          cluster.workers?.[id]?.kill("SIGTERM")
-        }
       }
 
       for (let index = 0; index < numCPUs; index++) {
-        cluster.fork().send({ index })
+        const worker = cluster.fork()
+        let workerMode: "server" | "worker" | "shared" = "shared"
+        if (index < serversCount) {
+          workerMode = "server"
+        } else if (index < serversCount + workersCount) {
+          workerMode = "worker"
+        }
+        worker.on("online", () => {
+          worker.send({ index, workerMode })
+        })
       }
 
       cluster.on("exit", () => {
@@ -276,18 +397,22 @@ async function start(args: {
       process.on("SIGINT", gracefulShutDown)
     } else {
       process.on("message", async (msg: any) => {
+        if (msg.workerMode) {
+          process.env.MEDUSA_WORKER_MODE = msg.workerMode
+        }
+
         if (msg.index > 0) {
           process.env.PLUGIN_ADMIN_UI_SKIP_CACHE = "true"
         }
 
-        await internalStart(!!types && msg.index === 0)
+        return await internalStart(!!types && msg.index === 0)
       })
     }
   } else {
     /**
      * Not in cluster mode
      */
-    await internalStart(!!types)
+    return await internalStart(!!types)
   }
 }
 

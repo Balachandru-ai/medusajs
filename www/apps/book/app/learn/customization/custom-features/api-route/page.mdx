@@ -157,7 +157,7 @@ You define the middlewares using the `defineMiddlewares` function and export its
 
 In the middleware object, you define three properties:
 
-- `matcher`: a string or regular expression indicating the API route path to apply the middleware on. You pass the create brand's route `/admin/brand`.
+- `matcher`: a string or regular expression indicating the API route path to apply the middleware on. You pass the create brand's route `/admin/brands`.
 - `method`: The HTTP method to restrict the middleware to, which is `POST`.
 - `middlewares`: An array of middlewares to apply on the route. You pass the `validateAndTransformBody` middleware, passing it the Zod schema you created earlier.
 
@@ -217,6 +217,12 @@ This returns the created brand in the response:
   }
 }
 ```
+
+### Troubleshooting
+
+#### Returned Empty Array
+
+If you sent a request to the API route and received an empty array in the response, make sure you've correctly created the middleware at `src/api/middlewares.ts` (with correct spelling). This is a common mistake that can lead to the middleware not being applied, resulting in unexpected behavior.
 
 ---
 

@@ -1,11 +1,12 @@
 "use client"
 
 import React from "react"
-import { useAiAssistant, useSiteConfig } from "../../../../providers"
-import { useAiAssistantChat } from "../../../../providers/AiAssistant/Chat"
+import { useAiAssistant } from "../../../../providers/AiAssistant"
+import { useSiteConfig } from "../../../../providers/SiteConfig"
 import clsx from "clsx"
 import { Tooltip } from "../../../Tooltip"
 import Image from "next/image"
+import { useChat } from "@kapaai/react-sdk"
 
 export type CodeBlockCopyActionProps = {
   source: string
@@ -16,15 +17,15 @@ export const CodeBlockAskAiAction = ({
   source,
   inHeader,
 }: CodeBlockCopyActionProps) => {
-  const { setChatOpened } = useAiAssistant()
-  const { setQuestion, loading } = useAiAssistantChat()
+  const { setChatOpened, loading } = useAiAssistant()
+  const { submitQuery } = useChat()
   const { config } = useSiteConfig()
 
   const handleClick = () => {
     if (loading) {
       return
     }
-    setQuestion(`\`\`\`tsx\n${source.trim()}\n\`\`\`\n\nExplain the code above`)
+    submitQuery(`\`\`\`tsx\n${source.trim()}\n\`\`\`\n\nExplain the code above`)
     setChatOpened(true)
   }
 

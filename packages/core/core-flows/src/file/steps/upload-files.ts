@@ -1,6 +1,6 @@
-import { IFileModuleService } from "@medusajs/framework/types"
+import type { IFileModuleService } from "@medusajs/framework/types"
 import { Modules } from "@medusajs/framework/utils"
-import { StepResponse, createStep } from "@medusajs/framework/workflows-sdk"
+import { createStep, StepResponse } from "@medusajs/framework/workflows-sdk"
 
 /**
  * The data to upload files.
@@ -16,14 +16,14 @@ export type UploadFilesStepInput = {
     filename: string
     /**
      * The MIME type of the file.
-     * 
+     *
      * @example
      * img/jpg
      */
     mimeType: string
     /**
-     * The content of the file. For images, for example, 
-     * use binary string. For CSV files, use the CSV content.
+     * The content of the file. For images, for example,
+     * use base64 string. For CSV files, use the CSV content.
      */
     content: string
     /**
@@ -41,14 +41,14 @@ export const uploadFilesStepId = "upload-files"
 /**
  * This step uploads one or more files using the installed
  * [File Module Provider](https://docs.medusajs.com/resources/infrastructure-modules/file).
- * 
+ *
  * @example
  * const data = uploadFilesStep({
  *   files: [
  *     {
  *       filename: "test.jpg",
  *       mimeType: "img/jpg",
- *       content: "binary-string",
+ *       content: "base64-string",
  *       access: "public"
  *     }
  *   ]

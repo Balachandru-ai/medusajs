@@ -90,8 +90,102 @@ const generatedgeneratedInfrastructureModulesSidebarSidebar = {
       "loaded": true,
       "isPathHref": true,
       "type": "category",
-      "title": "Cache Module",
+      "title": "Caching Module",
       "initialOpen": true,
+      "children": [
+        {
+          "loaded": true,
+          "isPathHref": true,
+          "type": "link",
+          "path": "/infrastructure-modules/caching",
+          "title": "Overview",
+          "children": []
+        },
+        {
+          "loaded": true,
+          "isPathHref": true,
+          "type": "link",
+          "path": "/infrastructure-modules/caching/concepts",
+          "title": "Concepts",
+          "children": []
+        },
+        {
+          "loaded": true,
+          "isPathHref": true,
+          "type": "link",
+          "path": "/infrastructure-modules/caching/migrate-cache",
+          "title": "Migrate from Cache Module",
+          "children": []
+        },
+        {
+          "loaded": true,
+          "isPathHref": true,
+          "type": "link",
+          "title": "Providers",
+          "path": "/infrastructure-modules/caching/providers",
+          "children": [
+            {
+              "loaded": true,
+              "isPathHref": true,
+              "type": "link",
+              "path": "/infrastructure-modules/caching/providers/redis",
+              "title": "Redis",
+              "children": []
+            },
+            {
+              "loaded": true,
+              "isPathHref": true,
+              "type": "link",
+              "path": "/infrastructure-modules/caching/guides/memcached",
+              "title": "Memcached",
+              "children": []
+            }
+          ]
+        },
+        {
+          "loaded": true,
+          "isPathHref": true,
+          "type": "sub-category",
+          "title": "Guides",
+          "children": [
+            {
+              "loaded": true,
+              "isPathHref": true,
+              "type": "link",
+              "path": "/infrastructure-modules/caching/guides/clear-cache",
+              "title": "Clear Cache",
+              "children": []
+            },
+            {
+              "loaded": true,
+              "isPathHref": true,
+              "type": "link",
+              "path": "/references/caching-module-provider",
+              "title": "Create Caching Module Provider",
+              "children": []
+            },
+            {
+              "loaded": true,
+              "isPathHref": true,
+              "type": "link",
+              "path": "/references/caching-service",
+              "title": "Use Caching Module",
+              "children": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "loaded": true,
+      "isPathHref": true,
+      "type": "category",
+      "title": "Cache Module",
+      "initialOpen": false,
+      "badge": {
+        "variant": "neutral",
+        "text": "Deprecated"
+      },
       "children": [
         {
           "loaded": true,
@@ -414,8 +508,8 @@ const generatedgeneratedInfrastructureModulesSidebarSidebar = {
               "loaded": true,
               "isPathHref": true,
               "type": "ref",
-              "title": "Handle Password Reset Event",
-              "path": "https://docs.medusajs.com/resources/commerce-modules/auth/reset-password",
+              "title": "Integrate Mailchimp",
+              "path": "https://docs.medusajs.com/resources/integrations/guides/mailchimp",
               "children": []
             },
             {
@@ -424,6 +518,30 @@ const generatedgeneratedInfrastructureModulesSidebarSidebar = {
               "type": "ref",
               "path": "/integrations/guides/resend",
               "title": "Integrate Resend",
+              "children": []
+            },
+            {
+              "loaded": true,
+              "isPathHref": true,
+              "type": "ref",
+              "title": "Integrate Slack",
+              "path": "https://docs.medusajs.com/resources/integrations/guides/slack",
+              "children": []
+            },
+            {
+              "loaded": true,
+              "isPathHref": true,
+              "type": "ref",
+              "title": "Invite User Email",
+              "path": "https://docs.medusajs.com/resources/commerce-modules/user/invite-user-subscriber",
+              "children": []
+            },
+            {
+              "loaded": true,
+              "isPathHref": true,
+              "type": "ref",
+              "title": "Reset Password Email",
+              "path": "https://docs.medusajs.com/resources/commerce-modules/auth/reset-password",
               "children": []
             },
             {

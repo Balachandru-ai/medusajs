@@ -13,13 +13,15 @@ import {
   createWorkflow,
   transform,
 } from "@medusajs/framework/workflows-sdk"
-import { emitEventStep, useRemoteQueryStep } from "../../../common"
+import { emitEventStep, useQueryGraphStep } from "../../../common"
+import { acquireLockStep, releaseLockStep } from "../../../locking"
 import { previewOrderChangeStep } from "../../steps"
 import { updateOrderChangesStep } from "../../steps/update-order-changes"
 import {
   throwIfIsCancelled,
   throwIfOrderChangeIsNotActive,
 } from "../../utils/order-validation"
+import { fieldsToRefreshOrderEdit } from "./utils/fields"
 
 function getOrderChangesData({
   input,
@@ -127,25 +129,40 @@ export const requestOrderEditRequestWorkflow = createWorkflow(
   function (
     input: OrderEditRequestWorkflowInput
   ): WorkflowResponse<OrderPreviewDTO> {
-    const order: OrderDTO = useRemoteQueryStep({
-      entry_point: "orders",
-      fields: ["id", "version", "canceled_at"],
-      variables: { id: input.order_id },
-      list: false,
-      throw_if_key_not_found: true,
+    acquireLockStep({
+      key: input.order_id,
+      timeout: 2,
+      ttl: 10,
+    })
+
+    const orderResult = useQueryGraphStep({
+      entity: "order",
+      fields: fieldsToRefreshOrderEdit,
+      filters: { id: input.order_id },
+      options: {
+        throwIfKeyNotFound: true,
+      },
     }).config({ name: "order-query" })
 
-    const orderChange: OrderChangeDTO = useRemoteQueryStep({
-      entry_point: "order_change",
-      fields: ["id", "canceled_at", "actions.*"],
-      variables: {
-        filters: {
-          order_id: input.order_id,
-          status: [OrderChangeStatus.PENDING, OrderChangeStatus.REQUESTED],
-        },
+    const order = transform({ orderResult }, ({ orderResult }) => {
+      return orderResult.data[0]
+    })
+
+    const orderChangeResult = useQueryGraphStep({
+      entity: "order_change",
+      fields: ["id", "status", "version", "actions.*"],
+      filters: {
+        order_id: input.order_id,
+        status: [OrderChangeStatus.PENDING, OrderChangeStatus.REQUESTED],
       },
-      list: false,
     }).config({ name: "order-change-query" })
+
+    const orderChange = transform(
+      { orderChangeResult },
+      ({ orderChangeResult }) => {
+        return orderChangeResult.data[0]
+      }
+    )
 
     requestOrderEditRequestValidationStep({
       order,
@@ -170,6 +187,12 @@ export const requestOrderEditRequestWorkflow = createWorkflow(
       data: eventData,
     })
 
-    return new WorkflowResponse(previewOrderChangeStep(order.id))
+    const previewOrderChange = previewOrderChangeStep(order.id) as OrderPreviewDTO
+
+    releaseLockStep({
+      key: input.order_id,
+    })
+
+    return new WorkflowResponse(previewOrderChange)
   }
 )

@@ -735,6 +735,12 @@ The first step of the workflow retrieves and returns the products from Magento.
 
 In your plugin, create the file `src/workflows/steps/get-magento-products.ts` with the following content:
 
+<Note>
+
+If you get a type error on resolving the Magento Module, run the Medusa application once with the `npm run dev` or `yarn dev` command to generate the necessary type definitions, as explained in the [Automatically Generated Types guide](!docs!/learn/fundamentals/generated-types).
+
+</Note>
+
 ![Diagram showcasing the get-magento-products file to create](https://res.cloudinary.com/dza7lstvk/image/upload/v1739349590/Medusa%20Resources/magento-5_ueb4wn.jpg)
 
 ```ts title="src/workflows/steps/get-magento-products.ts"
@@ -822,7 +828,7 @@ export const migrateProductsFromMagentoWorkflow = createWorkflow(
 You create a workflow using `createWorkflow` from the Workflows SDK. It accepts two parameters:
 
 1. An object with the workflow's configuration, including the name and whether to store the workflow's executions. You enable storing the workflow execution so that you can view it later in the Medusa Admin dashboard.
-2. A worflow constructor function, which holds the workflow's implementation. The function receives the input data for the workflow, which is the pagination parameters.
+2. A workflow constructor function, which holds the workflow's implementation. The function receives the input data for the workflow, which is the pagination parameters.
 
 In the workflow constructor function, you use the `getMagentoProductsStep` step to retrieve the products from Magento, passing it the pagination parameters from the workflow's input.
 
@@ -854,7 +860,7 @@ const { data: shippingProfiles } = useQueryGraphStep({
 
 You use the `useQueryGraphStep` step to retrieve the store details and shipping profiles. `useQueryGraphStep` is a Medusa step that wraps [Query](!docs!/learn/fundamentals/module-links/query), allowing you to use it in a workflow. Query is a tool that retrieves data across modules.
 
-Whe retrieving the store details, you specifically retrieve its supported currencies and default sales channel ID. You'll associate the products with the store's default sales channel, and set their variant prices in the supported currencies. You'll also associate the products with a shipping profile.
+When retrieving the store details, you specifically retrieve its supported currencies and default sales channel ID. You'll associate the products with the store's default sales channel, and set their variant prices in the supported currencies. You'll also associate the products with a shipping profile.
 
 Next, you'll retrieve products that were previously migrated from Magento to determine which products to create or update. Replace the `TODO` with the following:
 

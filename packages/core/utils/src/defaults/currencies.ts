@@ -675,6 +675,15 @@ export const defaultCurrencies: Record<string, Currency> = {
     code: "MUR",
     name_plural: "Mauritian rupees",
   },
+  MWK: {
+    symbol: "K",
+    name: "Malawian Kwacha",
+    symbol_native: "K",
+    decimal_digits: 2,
+    rounding: 0,
+    code: "MWK",
+    name_plural: "Malawian Kwachas",
+  },
   MXN: {
     symbol: "MX$",
     name: "Mexican Peso",
@@ -945,6 +954,15 @@ export const defaultCurrencies: Record<string, Currency> = {
     code: "TOP",
     name_plural: "Tongan paʻanga",
   },
+  TJS: {
+    symbol: "TJS",
+    name: "Tajikistani Somoni",
+    symbol_native: "с.",
+    decimal_digits: 2,
+    rounding: 0,
+    code: "TJS",
+    name_plural: "Tajikistani somonis",
+  },
   TRY: {
     symbol: "₺",
     name: "Turkish Lira",
@@ -1052,6 +1070,15 @@ export const defaultCurrencies: Record<string, Currency> = {
     rounding: 0,
     code: "XOF",
     name_plural: "CFA francs BCEAO",
+  },
+  XPF: {
+    symbol: "₣",
+    name: "CFP Franc",
+    symbol_native: "₣",
+    decimal_digits: 0,
+    rounding: 0,
+    code: "XPF",
+    name_plural: "CFP francs"
   },
   YER: {
     symbol: "YR",

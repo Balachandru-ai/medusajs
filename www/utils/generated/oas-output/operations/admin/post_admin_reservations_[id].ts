@@ -31,24 +31,7 @@
  *   content:
  *     application/json:
  *       schema:
- *         type: object
- *         description: The properties to update in the reservation.
- *         properties:
- *           location_id:
- *             type: string
- *             title: location_id
- *             description: The ID of the associated location.
- *           quantity:
- *             type: number
- *             title: quantity
- *             description: The reserved quantity.
- *           description:
- *             type: string
- *             title: description
- *             description: The reservation's description.
- *           metadata:
- *             type: object
- *             description: The reservation's metadata. Can hold custom key-value pairs.
+ *         $ref: "#/components/schemas/AdminUpdateReservation"
  * x-codeSamples:
  *   - lang: JavaScript
  *     label: JS SDK
@@ -73,7 +56,7 @@
  *     label: cURL
  *     source: |-
  *       curl -X POST '{backend_url}/admin/reservations/{id}' \
- *       -H 'Authorization: Bearer {access_token}' \
+ *       -H 'Authorization: Bearer {jwt_token}' \
  *       -H 'Content-Type: application/json' \
  *       --data-raw '{
  *         "description": "{value}",

@@ -4,16 +4,22 @@ import {
   OrderExchangeDTO,
   OrderPreviewDTO,
   OrderWorkflow,
+  PromotionDTO,
   ReturnDTO,
 } from "@medusajs/framework/types"
-import { ChangeActionType, OrderChangeStatus } from "@medusajs/framework/utils"
 import {
-  WorkflowData,
-  WorkflowResponse,
+  ChangeActionType,
+  deepFlatMap,
+  isDefined,
+  OrderChangeStatus,
+} from "@medusajs/framework/utils"
+import {
   createStep,
   createWorkflow,
   transform,
   when,
+  WorkflowData,
+  WorkflowResponse,
 } from "@medusajs/framework/workflows-sdk"
 import { useRemoteQueryStep } from "../../../common"
 import { updateOrderExchangesStep } from "../../steps/exchange/update-order-exchanges"
@@ -23,9 +29,11 @@ import { updateOrderChangesStep } from "../../steps/update-order-changes"
 import {
   throwIfIsCancelled,
   throwIfItemsDoesNotExistsInOrder,
+  throwIfManagedItemsNotStockedAtReturnLocation,
   throwIfOrderChangeIsNotActive,
 } from "../../utils/order-validation"
 import { createOrderChangeActionsWorkflow } from "../create-order-change-actions"
+import { computeAdjustmentsForPreviewWorkflow } from "../compute-adjustments-for-preview"
 import { refreshExchangeShippingWorkflow } from "./refresh-shipping"
 
 /**
@@ -106,6 +114,11 @@ export const exchangeRequestItemReturnValidationStep = createStep(
     throwIfIsCancelled(orderReturn, "Return")
     throwIfOrderChangeIsNotActive({ orderChange })
     throwIfItemsDoesNotExistsInOrder({ order, inputItems: items })
+    throwIfManagedItemsNotStockedAtReturnLocation({
+      order,
+      orderReturn,
+      inputItems: items,
+    })
   }
 )
 
@@ -144,7 +157,7 @@ export const orderExchangeRequestItemReturnWorkflow = createWorkflow(
   ): WorkflowResponse<OrderPreviewDTO> {
     const orderExchange = useRemoteQueryStep({
       entry_point: "order_exchange",
-      fields: ["id", "order_id", "return_id", "canceled_at"],
+      fields: ["id", "order_id", "return_id", "location_id", "canceled_at"],
       variables: { id: input.exchange_id },
       list: false,
       throw_if_key_not_found: true,
@@ -162,27 +175,18 @@ export const orderExchangeRequestItemReturnWorkflow = createWorkflow(
       }).config({ name: "return-query" }) as ReturnDTO
     })
 
-    const createdReturn = when({ orderExchange }, ({ orderExchange }) => {
-      return !orderExchange.return_id
-    }).then(() => {
-      return createReturnsStep([
-        {
-          order_id: orderExchange.order_id,
-          exchange_id: orderExchange.id,
-        },
-      ])
-    })
-
-    const orderReturn: ReturnDTO = transform(
-      { createdReturn, existingOrderReturn, orderExchange },
-      ({ createdReturn, existingOrderReturn, orderExchange }) => {
-        return existingOrderReturn ?? (createdReturn?.[0] as ReturnDTO)
-      }
-    )
-
     const order: OrderDTO = useRemoteQueryStep({
       entry_point: "orders",
-      fields: ["id", "status", "items.*"],
+      fields: [
+        "id",
+        "status",
+        "currency_code",
+        "items.*",
+        "items.variant.manage_inventory",
+        "items.variant.inventory_items.inventory_item_id",
+        "items.variant.inventory_items.inventory.location_levels.location_id",
+        "promotions.*",
+      ],
       variables: { id: orderExchange.order_id },
       list: false,
       throw_if_key_not_found: true,
@@ -190,7 +194,13 @@ export const orderExchangeRequestItemReturnWorkflow = createWorkflow(
 
     const orderChange: OrderChangeDTO = useRemoteQueryStep({
       entry_point: "order_change",
-      fields: ["id", "status"],
+      fields: [
+        "id",
+        "status",
+        "version",
+        "exchange_id",
+        "carry_over_promotions",
+      ],
       variables: {
         filters: {
           order_id: orderExchange.order_id,
@@ -203,6 +213,51 @@ export const orderExchangeRequestItemReturnWorkflow = createWorkflow(
       name: "order-change-query",
       status: [OrderChangeStatus.PENDING, OrderChangeStatus.REQUESTED],
     })
+
+    const pickItemLocationId = transform(
+      { order, input },
+      ({ order, input }) => {
+        if (input.location_id) {
+          return input.location_id
+        }
+
+        // pick the first item location
+        const item = order?.items?.find(
+          (item) => item.id === input.items[0].id
+        ) as any
+
+        let locationId: string | undefined
+        deepFlatMap(
+          item,
+          "variant.inventory_items.inventory.location_levels",
+          ({ location_levels }) => {
+            if (!locationId && isDefined(location_levels?.location_id)) {
+              locationId = location_levels.location_id
+            }
+          }
+        )
+        return locationId
+      }
+    )
+
+    const createdReturn = when({ orderExchange }, ({ orderExchange }) => {
+      return !orderExchange.return_id
+    }).then(() => {
+      return createReturnsStep([
+        {
+          order_id: orderExchange.order_id,
+          location_id: pickItemLocationId,
+          exchange_id: orderExchange.id,
+        },
+      ])
+    })
+
+    const orderReturn: ReturnDTO = transform(
+      { createdReturn, existingOrderReturn, orderExchange },
+      ({ createdReturn, existingOrderReturn, orderExchange }) => {
+        return existingOrderReturn ?? (createdReturn?.[0] as ReturnDTO)
+      }
+    )
 
     when({ createdReturn }, ({ createdReturn }) => {
       return !!createdReturn?.length
@@ -259,6 +314,20 @@ export const orderExchangeRequestItemReturnWorkflow = createWorkflow(
 
     createOrderChangeActionsWorkflow.runAsStep({
       input: orderChangeActionInput,
+    })
+
+    const orderWithPromotions = transform({ order }, ({ order }) => {
+      return {
+        ...order,
+        promotions: (order as any).promotions ?? [],
+      } as OrderDTO & { promotions: PromotionDTO[] }
+    })
+
+    computeAdjustmentsForPreviewWorkflow.runAsStep({
+      input: {
+        order: orderWithPromotions,
+        orderChange,
+      },
     })
 
     const refreshArgs = transform(

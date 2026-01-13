@@ -13,6 +13,8 @@ export type LinkProps = Partial<NextLinkProps> &
     variant?: "default" | "content"
   }
 
+const HASH_REGEX = /#.*$/
+
 export const Link = ({
   href,
   children,
@@ -21,8 +23,10 @@ export const Link = ({
   variant = "default",
   ...rest
 }: LinkProps) => {
-  if (href?.replace(/#.*$/, "").endsWith("page.mdx")) {
-    href = href.replace("/page.mdx", "")
+  const hash = href?.match(HASH_REGEX)?.[0] || ""
+  const hrefWithoutHash = href?.replace(HASH_REGEX, "") || ""
+  if (hrefWithoutHash.endsWith("page.mdx")) {
+    href = hrefWithoutHash.replace("/page.mdx", "") + hash
   }
   return (
     <NextLink
@@ -32,8 +36,8 @@ export const Link = ({
         variant === "default" &&
           "text-medusa-fg-interactive hover:text-medusa-fg-interactive-hover",
         variant === "content" && [
-          "border-b border-medusa-border-strong hover:border-medusa-fg-interactive",
-          "transition-all duration-200",
+          "underline decoration-medusa-fg-muted hover:decoration-medusa-fg-interactive",
+          "decoration-[1.5px] font-medium transition-[text-decoration-color]",
         ],
         withIcon && "flex gap-0.25 items-center group",
         className

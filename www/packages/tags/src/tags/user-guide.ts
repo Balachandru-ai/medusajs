@@ -28,12 +28,28 @@ export const userGuide = [
     "path": "https://docs.medusajs.com/user-guide/orders/claims"
   },
   {
+    "title": "Create Draft Order",
+    "path": "https://docs.medusajs.com/user-guide/orders/draft-orders/create"
+  },
+  {
+    "title": "Manage Draft Order",
+    "path": "https://docs.medusajs.com/user-guide/orders/draft-orders/manage"
+  },
+  {
+    "title": "Draft Orders",
+    "path": "https://docs.medusajs.com/user-guide/orders/draft-orders"
+  },
+  {
     "title": "Edit Order Items",
     "path": "https://docs.medusajs.com/user-guide/orders/edit"
   },
   {
     "title": "Manage Order Exchanges",
     "path": "https://docs.medusajs.com/user-guide/orders/exchanges"
+  },
+  {
+    "title": "Export Orders",
+    "path": "https://docs.medusajs.com/user-guide/orders/export"
   },
   {
     "title": "Manage Order Fulfillments",
@@ -148,6 +164,10 @@ export const userGuide = [
     "path": "https://docs.medusajs.com/user-guide/settings/locations-and-shipping"
   },
   {
+    "title": "Manage Shipping Option Types",
+    "path": "https://docs.medusajs.com/user-guide/settings/locations-and-shipping/shipping-option-types"
+  },
+  {
     "title": "Manage Shipping Profiles",
     "path": "https://docs.medusajs.com/user-guide/settings/locations-and-shipping/shipping-profiles"
   },
@@ -162,6 +182,10 @@ export const userGuide = [
   {
     "title": "Manage Profile",
     "path": "https://docs.medusajs.com/user-guide/settings/profile"
+  },
+  {
+    "title": "Manage Refund Reasons",
+    "path": "https://docs.medusajs.com/user-guide/settings/refund-reasons"
   },
   {
     "title": "Manage Regions",
@@ -182,6 +206,10 @@ export const userGuide = [
   {
     "title": "Manage Tax Regions",
     "path": "https://docs.medusajs.com/user-guide/settings/tax-regions"
+  },
+  {
+    "title": "Manage Translations",
+    "path": "https://docs.medusajs.com/user-guide/settings/translations"
   },
   {
     "title": "Manage Invites",

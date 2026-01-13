@@ -1,9 +1,9 @@
+import { ErrorRequestHandler, NextFunction, Response } from "express"
 import { fromZodIssue } from "zod-validation-error"
-import { NextFunction, ErrorRequestHandler, Response } from "express"
 
 import { ContainerRegistrationKeys, MedusaError } from "@medusajs/utils"
-import { formatException } from "./exception-formatter"
 import { MedusaRequest } from "../types"
+import { formatException } from "./exception-formatter"
 
 const QUERY_RUNNER_RELEASED = "QueryRunnerAlreadyReleasedError"
 const TRANSACTION_STARTED = "TransactionAlreadyStartedError"
@@ -20,14 +20,19 @@ export function errorHandler() {
     res: Response,
     _: NextFunction
   ) {
-    const logger = req.scope.resolve(ContainerRegistrationKeys.LOGGER)
+    const logger = req.scope
+      ? req.scope.resolve(ContainerRegistrationKeys.LOGGER)
+      : console
+
+    if (!req.scope) {
+      logger.error(
+        "req.scope is missing unexpectedly. It should be defined in all the cases"
+      )
+    }
 
     err = formatException(err)
 
-    logger.error(err)
-
     const errorType = err.type || err.name
-
     const errObj = {
       code: err.code,
       type: err.type,
@@ -74,6 +79,12 @@ export function errorHandler() {
         errObj.message = "An unknown error occurred."
         errObj.type = "unknown_error"
         break
+    }
+
+    if (statusCode >= 500) {
+      logger.error(err)
+    } else {
+      logger.info(err.message)
     }
 
     if ("issues" in err && Array.isArray(err.issues)) {

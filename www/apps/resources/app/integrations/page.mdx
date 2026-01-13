@@ -56,6 +56,14 @@ An Auth Module Provider authenticates users with their account on a third-party 
       href: "/commerce-modules/auth/auth-providers/github",
       title: "GitHub",
     },
+    {
+      href: "/integrations/guides/okta",
+      title: "Okta",
+      badge: {
+        variant: "blue",
+        children: "Tutorial"
+      }
+    }
   ]}
   className="mb-1"
 />
@@ -79,6 +87,14 @@ Integrate a third-party Content-Management System (CMS) to utilize rich content-
       }
     },
     {
+      href: "/integrations/guides/payload",
+      title: "Payload CMS",
+      badge: {
+        variant: "blue",
+        children: "Tutorial"
+      }
+    },
+    {
       href: "/integrations/guides/sanity",
       title: "Sanity",
       badge: {
@@ -86,8 +102,17 @@ Integrate a third-party Content-Management System (CMS) to utilize rich content-
         children: "Tutorial"
       }
     },
+    {
+      href: "/integrations/guides/strapi",
+      title: "Strapi",
+      badge: {
+        variant: "blue",
+        children: "Tutorial"
+      }
+    }
   ]}
   className="mb-1"
+  itemsPerRow={2}
 />
 
 ---
@@ -158,6 +183,46 @@ Learn how to integrate a third-party fulfillment provider in the [Create Fulfill
 
 ---
 
+## Instrumentation
+
+Integrate a third-party service to monitor performance, errors, and other metrics in your Medusa application.
+
+<CardList
+  items={[
+    {
+      href: "/integrations/guides/sentry",
+      title: "Sentry",
+      badge: {
+        variant: "blue",
+        children: "Tutorial"
+      }
+    }
+  ]}
+  className="mb-1"
+/>
+
+---
+
+## Migration
+
+Migrate data from another ecommerce platform to Medusa.
+
+<CardList
+  items={[
+    {
+      href: "/integrations/guides/magento",
+      title: "Magento",
+      badge: {
+        variant: "blue",
+        children: "Tutorial"
+      }
+    }
+  ]}
+  className="mb-1"
+/>
+
+---
+
 ## Notification
 
 A Notification Module Provider sends messages to users and customers in your Medusa application using a third-party service.
@@ -169,8 +234,24 @@ A Notification Module Provider sends messages to users and customers in your Med
       title: "SendGrid"
     },
     {
+      href: "/integrations/guides/mailchimp",
+      title: "Mailchimp",
+      badge: {
+        variant: "blue",
+        children: "Tutorial"
+      }
+    },
+    {
       href: "/integrations/guides/resend",
       title: "Resend",
+      badge: {
+        variant: "blue",
+        children: "Tutorial"
+      }
+    },
+    {
+      href: "/integrations/guides/slack",
+      title: "Slack",
       badge: {
         variant: "blue",
         children: "Tutorial"
@@ -186,6 +267,7 @@ A Notification Module Provider sends messages to users and customers in your Med
     }
   ]}
   className="mb-1"
+  itemsPerRow={2}
 />
 
 Learn how to integrate a third-party notification provider in the [Create Notification Module Provider](/references/notification-provider-module) documentation.
@@ -219,6 +301,34 @@ Integrate a search engine to index and search products or other types of data in
     {
       href: "/integrations/guides/algolia",
       title: "Algolia",
+      badge: {
+        variant: "blue",
+        children: "Tutorial"
+      }
+    },
+    {
+      href: "/integrations/guides/meilisearch",
+      title: "Meilisearch",
+      badge: {
+        variant: "blue",
+        children: "Tutorial"
+      }
+    }
+  ]}
+  className="mb-1"
+/>
+
+---
+
+## Tax
+
+Integrate a third-party tax calculation service to handle tax rates and rules in your Medusa application.
+
+<CardList
+  items={[
+    {
+      href: "/integrations/guides/avalara",
+      title: "Avalara",
       badge: {
         variant: "blue",
         children: "Tutorial"

@@ -44,7 +44,7 @@ A data model represents a table in the database. You create data models using Me
 
 You create a data model in a TypeScript or JavaScript file under the `models` directory of a module. So, to create a `Post` data model in the Blog Module, create the file `src/modules/blog/models/post.ts` with the following content:
 
-![Updated directory overview after adding the data model](https://res.cloudinary.com/dza7lstvk/image/upload/v1732806790/Medusa%20Book/blog-dir-overview-1_jfvovj.jpg)
+![Blog module directory structure showing the organized file hierarchy with the newly created 'models' folder containing the 'post.ts' data model file, which defines the data model for blog posts using Medusa's data modeling language](https://res.cloudinary.com/dza7lstvk/image/upload/v1732806790/Medusa%20Book/blog-dir-overview-1_jfvovj.jpg)
 
 ```ts title="src/modules/blog/models/post.ts"
 import { model } from "@medusajs/framework/utils"
@@ -81,7 +81,7 @@ You define a service in a `service.ts` or `service.js` file at the root of your 
 
 export const highlights = [
   ["4", "MedusaService", "The service factory function."],
-  ["5", "MyCustom", "The data models to generate data-management methods for."]
+  ["5", "Post", "The data models to generate data-management methods for."]
 ]
 
 ```ts title="src/modules/blog/service.ts" highlights={highlights}
@@ -195,8 +195,14 @@ npx medusa db:generate blog
 
 The `db:generate` command of the Medusa CLI accepts one or more module names to generate the migration for. It will create a migration file for the Blog Module in the directory `src/modules/blog/migrations` similar to the following:
 
+<Note>
+
+As of [Medusa v2.11.0](https://github.com/medusajs/medusa/releases/tag/v2.11.0), MikroORM dependencies are included in the `@medusajs/framework` package. If you're using an older version of Medusa, change the import statement to `@mikro-orm/migrations`.
+
+</Note>
+
 ```ts
-import { Migration } from "@mikro-orm/migrations"
+import { Migration } from "@medusajs/framework/mikro-orm/migrations"
 
 export class Migration20241121103722 extends Migration {
 
@@ -250,9 +256,9 @@ export const workflowHighlights = [
   ["17", "resolve", "Resolve the Blog Module's service from the Medusa container."],
   ["19", "createPosts", "Create a blog post using the Blog Module service's generated method."],
   ["25", "", "Add a compensation function that only runs if an error occurs in the workflow."],
-  ["28", "", "Delete the post if an error occurs using the Blog Module service's generated method."],
-  ["32", "createWorkflow", "Create and workflow that can be executed to create a blog post."],
-  ["35", "createPostStep", "Execute the `createPostStep` to create the post."]
+  ["31", "deletePosts", "Delete the post if an error occurs using the Blog Module service's generated method."],
+  ["35", "createWorkflow", "Create and workflow that can be executed to create a blog post."],
+  ["38", "createPostStep", "Execute the `createPostStep` to create the post."]
 ]
 
 ```ts title="src/workflows/create-post.ts" highlights={workflowHighlights}
@@ -281,6 +287,9 @@ const createPostStep = createStep(
     return new StepResponse(post, post)
   },
   async (post, { container }) => {
+    if (!post) {
+      return
+    }
     const blogModuleService: BlogModuleService = container.resolve(BLOG_MODULE)
 
     await blogModuleService.deletePosts(post.id)
@@ -303,7 +312,7 @@ The step also has a compensation function, which is a function passed as a third
 
 You'll now execute that workflow in an API route to expose the feature of creating blog posts to clients. To create an API route, create the file `src/api/blog/posts/route.ts` with the following content:
 
-```ts
+```ts title="src/api/blog/posts/route.ts"
 import type { 
   MedusaRequest, 
   MedusaResponse,

@@ -49,7 +49,7 @@
  *                 type: string
  *                 description: The promotion's type.
  *                 externalDocs:
- *                   url: https://docs.medusajs.com/v2/resources/commerce-modules/promotion/concepts#what-is-a-promotion
+ *                   url: https://docs.medusajs.com/resources/commerce-modules/promotion/concepts#what-is-a-promotion
  *                 enum:
  *                   - standard
  *                   - buyget
@@ -146,7 +146,7 @@
  *     label: cURL
  *     source: |-
  *       curl -X POST '{backend_url}/admin/promotions/{id}' \
- *       -H 'Authorization: Bearer {access_token}' \
+ *       -H 'Authorization: Bearer {jwt_token}' \
  *       -H 'Content-Type: application/json' \
  *       --data-raw '{
  *         "campaign_id": "{value}"

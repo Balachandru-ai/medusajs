@@ -8,7 +8,7 @@ import {
   MedusaError,
   MedusaModuleType,
 } from "@medusajs/utils"
-import { asValue } from "awilix"
+import { asValue } from "@medusajs/deps/awilix"
 import {
   DistributedTransactionEvent,
   DistributedTransactionEvents,
@@ -362,6 +362,7 @@ export class LocalWorkflow {
       handler: handler(this.container_, context),
       payload: input,
       flowMetadata,
+      context,
       onLoad: this.onLoad.bind(this),
     })
 
@@ -416,7 +417,9 @@ export class LocalWorkflow {
 
     if (this.medusaContext) {
       this.medusaContext.eventGroupId =
-        transaction.getFlow().metadata?.eventGroupId
+        transaction.getFlow().metadata!.eventGroupId
+      transaction.getFlow().metadata!.cancelingFromParentStep ??=
+        this.medusaContext.cancelingFromParentStep
     }
 
     const { cleanUpEventListeners } = this.registerEventCallbacks({
@@ -426,6 +429,33 @@ export class LocalWorkflow {
     })
 
     await orchestrator.cancelTransaction(transaction)
+
+    try {
+      return transaction
+    } finally {
+      cleanUpEventListeners()
+    }
+  }
+
+  async retryStep(
+    idempotencyKey: string,
+    context?: Context,
+    subscribe?: DistributedTransactionEvents
+  ): Promise<DistributedTransactionType> {
+    this.medusaContext = context
+    const { handler, orchestrator } = this.workflow
+
+    const { cleanUpEventListeners } = this.registerEventCallbacks({
+      orchestrator,
+      idempotencyKey,
+      subscribe,
+    })
+
+    const transaction = await orchestrator.retryStep({
+      responseIdempotencyKey: idempotencyKey,
+      handler: handler(this.container_, context),
+      onLoad: this.onLoad.bind(this),
+    })
 
     try {
       return transaction
@@ -467,7 +497,8 @@ export class LocalWorkflow {
     idempotencyKey: string,
     error?: Error | any,
     context?: Context,
-    subscribe?: DistributedTransactionEvents
+    subscribe?: DistributedTransactionEvents,
+    forcePermanentFailure?: boolean
   ): Promise<DistributedTransactionType> {
     this.medusaContext = context
     const { handler, orchestrator } = this.workflow
@@ -483,6 +514,7 @@ export class LocalWorkflow {
       error,
       handler: handler(this.container_, context),
       onLoad: this.onLoad.bind(this),
+      forcePermanentFailure,
     })
 
     try {
@@ -596,6 +628,8 @@ export class LocalWorkflow {
       this.medusaContext.parentStepIdempotencyKey =
         metadata.parentStepIdempotencyKey
       this.medusaContext.preventReleaseEvents = metadata?.preventReleaseEvents
+      this.medusaContext.cancelingFromParentStep =
+        metadata?.cancelingFromParentStep
     }
   }
 }

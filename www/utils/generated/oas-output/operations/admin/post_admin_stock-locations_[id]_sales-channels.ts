@@ -32,23 +32,7 @@
  *   content:
  *     application/json:
  *       schema:
- *         type: object
- *         description: The sales channels to add or remove.
- *         properties:
- *           add:
- *             type: array
- *             description: The sales channels to add.
- *             items:
- *               type: string
- *               title: add
- *               description: A sales channel's ID.
- *           remove:
- *             type: array
- *             description: The sales channels to remove.
- *             items:
- *               type: string
- *               title: remove
- *               description: A sales channel's ID.
+ *         $ref: "#/components/schemas/AdminBatchLink"
  * x-codeSamples:
  *   - lang: JavaScript
  *     label: JS SDK
@@ -74,7 +58,7 @@
  *     label: cURL
  *     source: |-
  *       curl -X POST '{backend_url}/admin/stock-locations/{id}/sales-channels' \
- *       -H 'Authorization: Bearer {access_token}'
+ *       -H 'Authorization: Bearer {jwt_token}'
  * tags:
  *   - Stock Locations
  * responses:

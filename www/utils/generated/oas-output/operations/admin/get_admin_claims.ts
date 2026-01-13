@@ -47,11 +47,11 @@
  *       description: The field to sort the data by. By default, the sort order is ascending. To change the order to descending, prefix the field name with `-`.
  *   - name: deleted_at
  *     in: query
- *     description: The claim's deleted at.
+ *     description: Filter by the claim's deletion date.
  *     required: false
  *     schema:
  *       type: object
- *       description: The claim's deleted at.
+ *       description: The claim's deletion date.
  *       properties:
  *         $and:
  *           type: array
@@ -276,6 +276,7 @@
  *           type: boolean
  *           title: $exists
  *           description: Filter by whether a value for this parameter exists (not `null`).
+ *       title: deleted_at
  *   - name: q
  *     in: query
  *     description: The claim's q.
@@ -319,20 +320,20 @@
  *       oneOf:
  *         - type: string
  *           title: status
- *           description: The claim's status.
+ *           description: Filter by the claim's status.
  *         - type: array
- *           description: The claim's status.
+ *           description: Filter by the claim's status.
  *           items:
  *             type: string
  *             title: status
- *             description: The status's details.
+ *             description: The claim's status.
  *   - name: created_at
  *     in: query
- *     description: The claim's created at.
+ *     description: Filter by the claim's creation date.
  *     required: false
  *     schema:
  *       type: object
- *       description: The claim's created at.
+ *       description: The claim's creation date.
  *       properties:
  *         $and:
  *           type: array
@@ -557,13 +558,14 @@
  *           type: boolean
  *           title: $exists
  *           description: Filter by whether a value for this parameter exists (not `null`).
+ *       title: created_at
  *   - name: updated_at
  *     in: query
- *     description: The claim's updated at.
+ *     description: Filter by the claim's update date.
  *     required: false
  *     schema:
  *       type: object
- *       description: The claim's updated at.
+ *       description: The claim's update date.
  *       properties:
  *         $and:
  *           type: array
@@ -788,6 +790,7 @@
  *           type: boolean
  *           title: $exists
  *           description: Filter by whether a value for this parameter exists (not `null`).
+ *       title: updated_at
  *   - name: $and
  *     in: query
  *     description: Join query parameters with an AND condition. Each object's content is the same type as the expected query parameters.
@@ -808,6 +811,14 @@
  *       items:
  *         type: object
  *       title: $or
+ *   - name: with_deleted
+ *     in: query
+ *     description: Whether to include deleted records in the result.
+ *     required: false
+ *     schema:
+ *       type: boolean
+ *       title: with_deleted
+ *       description: Whether to include deleted records in the result.
  * security:
  *   - api_token: []
  *   - cookie_auth: []
@@ -834,7 +845,7 @@
  *     label: cURL
  *     source: |-
  *       curl '{backend_url}/admin/claims' \
- *       -H 'Authorization: Bearer {access_token}'
+ *       -H 'Authorization: Bearer {jwt_token}'
  * tags:
  *   - Claims
  * responses:

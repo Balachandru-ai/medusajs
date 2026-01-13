@@ -8,7 +8,7 @@ export const payment = [
     "path": "https://docs.medusajs.com/resources/how-to-tutorials/tutorials/saved-payment-methods"
   },
   {
-    "title": "Customize the Stripe Integration in the Next.js Starter",
+    "title": "Customize Stripe in Next.js Starter",
     "path": "https://docs.medusajs.com/resources/nextjs-starter/guides/customize-stripe"
   },
   {
@@ -26,6 +26,10 @@ export const payment = [
   {
     "title": "Implement Express Checkout with Medusa",
     "path": "https://docs.medusajs.com/resources/storefront-development/guides/express-checkout"
+  },
+  {
+    "title": "Implement Mobile App with React Native, Expo, and Medusa",
+    "path": "https://docs.medusajs.com/resources/storefront-development/guides/react-native-expo"
   },
   {
     "title": "createPaymentCollectionsStep",
@@ -68,6 +72,10 @@ export const payment = [
     "path": "https://docs.medusajs.com/resources/references/medusa-workflows/transferCartCustomerWorkflow"
   },
   {
+    "title": "updateCartPromotionsWorkflow",
+    "path": "https://docs.medusajs.com/resources/references/medusa-workflows/updateCartPromotionsWorkflow"
+  },
+  {
     "title": "updateCartWorkflow",
     "path": "https://docs.medusajs.com/resources/references/medusa-workflows/updateCartWorkflow"
   },
@@ -102,6 +110,10 @@ export const payment = [
   {
     "title": "confirmOrderEditRequestWorkflow",
     "path": "https://docs.medusajs.com/resources/references/medusa-workflows/confirmOrderEditRequestWorkflow"
+  },
+  {
+    "title": "confirmReturnReceiveWorkflow",
+    "path": "https://docs.medusajs.com/resources/references/medusa-workflows/confirmReturnReceiveWorkflow"
   },
   {
     "title": "confirmReturnRequestWorkflow",
@@ -142,10 +154,6 @@ export const payment = [
   {
     "title": "capturePaymentWorkflow",
     "path": "https://docs.medusajs.com/resources/references/medusa-workflows/capturePaymentWorkflow"
-  },
-  {
-    "title": "processPaymentWorkflow",
-    "path": "https://docs.medusajs.com/resources/references/medusa-workflows/processPaymentWorkflow"
   },
   {
     "title": "refundPaymentWorkflow",

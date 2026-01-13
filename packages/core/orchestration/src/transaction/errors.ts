@@ -1,3 +1,5 @@
+import { OrchestrationUtils } from "@medusajs/utils"
+
 class BaseStepErrror extends Error {
   #stepResponse: unknown
 
@@ -99,7 +101,29 @@ export class SkipExecutionError extends Error {
   }
 }
 
+export class SkipStepAlreadyFinishedError extends Error {
+  static isSkipStepAlreadyFinishedError(
+    error: Error
+  ): error is SkipStepAlreadyFinishedError {
+    return (
+      error instanceof SkipStepAlreadyFinishedError ||
+      error?.name === "SkipStepAlreadyFinishedError"
+    )
+  }
+
+  constructor(message?: string) {
+    super(message)
+    this.name = "SkipStepAlreadyFinishedError"
+  }
+}
+
 export class SkipCancelledExecutionError extends Error {
+  readonly #__type = OrchestrationUtils.SymbolWorkflowStepResponse
+
+  get __type() {
+    return this.#__type
+  }
+
   static isSkipCancelledExecutionError(
     error: Error
   ): error is SkipCancelledExecutionError {

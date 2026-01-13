@@ -10,13 +10,14 @@ import {
   when,
   WorkflowData,
 } from "@medusajs/framework/workflows-sdk"
-import { OrderChangeDTO, OrderDTO } from "@medusajs/types"
+import type { OrderChangeDTO, OrderDTO } from "@medusajs/framework/types"
 import { useRemoteQueryStep } from "../../common"
 import { deleteOrderChangesStep, deleteOrderShippingMethods } from "../../order"
 import { restoreDraftOrderShippingMethodsStep } from "../steps/restore-draft-order-shipping-methods"
 import { validateDraftOrderChangeStep } from "../steps/validate-draft-order-change"
 import { draftOrderFieldsForRefreshSteps } from "../utils/fields"
-import { refreshDraftOrderAdjustmentsWorkflow } from "./refresh-draft-order-adjustments"
+import { acquireLockStep, releaseLockStep } from "../../locking"
+import { updateDraftOrderPromotionsStep } from "../steps/update-draft-order-promotions"
 
 export const cancelDraftOrderEditWorkflowId = "cancel-draft-order-edit"
 
@@ -33,10 +34,10 @@ export interface CancelDraftOrderEditWorkflowInput {
 /**
  * This workflow cancels a draft order edit. It's used by the
  * [Cancel Draft Order Edit Admin API Route](https://docs.medusajs.com/api/admin#draft-orders_deletedraftordersidedit).
- * 
+ *
  * You can use this workflow within your customizations or your own custom workflows, allowing you to wrap custom logic around
  * cancelling a draft order edit.
- * 
+ *
  * @example
  * const { result } = await cancelDraftOrderEditWorkflow(container)
  * .run({
@@ -44,15 +45,25 @@ export interface CancelDraftOrderEditWorkflowInput {
  *     order_id: "order_123",
  *   }
  * })
- * 
+ *
  * @summary
- * 
+ *
  * Cancel a draft order edit.
  */
 export const cancelDraftOrderEditWorkflow = createWorkflow(
   cancelDraftOrderEditWorkflowId,
   function (input: WorkflowData<CancelDraftOrderEditWorkflowInput>) {
-    const order: OrderDTO = useRemoteQueryStep({
+    acquireLockStep({
+      key: input.order_id,
+      timeout: 2,
+      ttl: 10,
+    })
+
+    const order: OrderDTO & {
+      promotions: {
+        code: string
+      }[]
+    } = useRemoteQueryStep({
       entry_point: "orders",
       fields: ["version", ...draftOrderFieldsForRefreshSteps],
       variables: { id: input.order_id },
@@ -73,6 +84,54 @@ export const cancelDraftOrderEditWorkflow = createWorkflow(
     }).config({ name: "order-change-query" })
 
     validateDraftOrderChangeStep({ order, orderChange })
+
+    const promotionsToRemove = transform(
+      { orderChange, input },
+      ({ orderChange }) => {
+        return (orderChange.actions ?? [])
+          .filter((a) => a.action === ChangeActionType.PROMOTION_ADD)
+          .map(({ details }) => details?.added_code)
+          .filter(Boolean) as string[]
+      }
+    )
+
+    const promotionsToRestore = transform(
+      { orderChange, input },
+      ({ orderChange }) => {
+        return (orderChange.actions ?? [])
+          .filter((a) => a.action === ChangeActionType.PROMOTION_REMOVE)
+          .map(({ details }) => details?.removed_code)
+          .filter(Boolean) as string[]
+      }
+    )
+
+    const promotionsToRefresh = transform(
+      { order, promotionsToRemove, promotionsToRestore },
+      ({ order, promotionsToRemove, promotionsToRestore }) => {
+        const orderPromotions = order.promotions
+        const codes: Set<string> = new Set()
+
+        orderPromotions?.forEach((promo) => {
+          codes.add(promo.code)
+        })
+
+        for (const code of promotionsToRemove) {
+          codes.delete(code)
+        }
+
+        for (const code of promotionsToRestore) {
+          codes.add(code)
+        }
+
+        return Array.from(codes)
+      }
+    )
+
+    updateDraftOrderPromotionsStep({
+      id: input.order_id,
+      promo_codes: promotionsToRefresh as string[],
+      action: PromotionActions.REPLACE,
+    })
 
     const shippingToRemove = transform(
       { orderChange, input },
@@ -102,73 +161,19 @@ export const cancelDraftOrderEditWorkflow = createWorkflow(
       }
     )
 
-    const promotionsToRemove = transform(
-      { orderChange, input },
-      ({ orderChange }) => {
-        return (orderChange.actions ?? [])
-          .filter((a) => a.action === ChangeActionType.PROMOTION_ADD)
-          .map(({ details }) => details?.added_code)
-          .filter(Boolean) as string[]
-      }
-    )
-
-    const promotionsToRestore = transform(
-      { orderChange, input },
-      ({ orderChange }) => {
-        return (orderChange.actions ?? [])
-          .filter((a) => a.action === ChangeActionType.PROMOTION_REMOVE)
-          .map(({ details }) => details?.removed_code)
-          .filter(Boolean) as string[]
-      }
-    )
-
-    const promotionsToRefresh = transform(
-      { order, promotionsToRemove, promotionsToRestore },
-      ({ order, promotionsToRemove, promotionsToRestore }) => {
-        const promotionLink = (order as any).promotion_link
-        const codes: Set<string> = new Set()
-
-        if (promotionLink) {
-          if (Array.isArray(promotionLink)) {
-            promotionLink.forEach((promo) => {
-              codes.add(promo.promotion.code)
-            })
-          } else {
-            codes.add(promotionLink.promotion.code)
-          }
-        }
-
-        for (const code of promotionsToRemove) {
-          codes.delete(code)
-        }
-
-        for (const code of promotionsToRestore) {
-          codes.add(code)
-        }
-
-        return Array.from(codes)
-      }
-    )
-
     parallelize(
       deleteOrderChangesStep({ ids: [orderChange.id] }),
       deleteOrderShippingMethods({ ids: shippingToRemove })
     )
 
-    refreshDraftOrderAdjustmentsWorkflow.runAsStep({
-      input: {
-        order,
-        promo_codes: promotionsToRefresh,
-        action: PromotionActions.REPLACE,
-      },
-    })
-
-    when(shippingToRestore, (methods) => {
-      return !!methods?.length
-    }).then(() => {
+    when(shippingToRestore, (methods) => !!methods?.length).then(() => {
       restoreDraftOrderShippingMethodsStep({
         shippingMethods: shippingToRestore as any,
       })
+    })
+
+    releaseLockStep({
+      key: input.order_id,
     })
   }
 )

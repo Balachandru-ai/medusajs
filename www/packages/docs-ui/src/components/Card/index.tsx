@@ -1,5 +1,5 @@
 import React from "react"
-import { BadgeProps } from "@/components"
+import { BadgeProps } from "@/components/Badge"
 import { CardDefaultLayout } from "./Layout/Default"
 import { IconProps } from "@medusajs/icons/dist/types"
 import { CardLargeLayout } from "./Layout/Large"
@@ -31,7 +31,9 @@ export type CardProps = {
   highlightText?: string[]
   closeable?: boolean
   onClose?: () => void
+  onClick?: () => void
   hrefProps?: Partial<LinkProps & React.AllHTMLAttributes<HTMLAnchorElement>>
+  cardRef?: React.Ref<HTMLDivElement>
 }
 
 export const Card = ({ type = "default", ...props }: CardProps) => {

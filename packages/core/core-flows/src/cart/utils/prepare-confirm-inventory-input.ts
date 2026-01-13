@@ -9,6 +9,43 @@ import {
   deepFlatMap,
 } from "@medusajs/framework/utils"
 
+export const requiredOrderFieldsForInventoryConfirmation = [
+  "id",
+  "version",
+  "canceled_at",
+  "sales_channel_id",
+  "items.*",
+  "items.variant.manage_inventory",
+  "items.variant.allow_backorder",
+  "items.variant.inventory_items.inventory_item_id",
+  "items.variant.inventory_items.required_quantity",
+  "items.variant.inventory_items.inventory.location_levels.stocked_quantity",
+  "items.variant.inventory_items.inventory.location_levels.reserved_quantity",
+  "items.variant.inventory_items.inventory.location_levels.raw_stocked_quantity",
+  "items.variant.inventory_items.inventory.location_levels.raw_reserved_quantity",
+  "items.variant.inventory_items.inventory.location_levels.location_id",
+  "items.variant.inventory_items.inventory.location_levels.stock_locations.id",
+  "items.variant.inventory_items.inventory.location_levels.stock_locations.name",
+  "items.variant.inventory_items.inventory.location_levels.stock_locations.sales_channels.id",
+  "items.variant.inventory_items.inventory.location_levels.stock_locations.sales_channels.name",
+]
+
+export const requiredVariantFieldsForInventoryConfirmation = [
+  "manage_inventory",
+  "allow_backorder",
+  "inventory_items.inventory_item_id",
+  "inventory_items.required_quantity",
+  "inventory_items.inventory.location_levels.stocked_quantity",
+  "inventory_items.inventory.location_levels.reserved_quantity",
+  "inventory_items.inventory.location_levels.raw_stocked_quantity",
+  "inventory_items.inventory.location_levels.raw_reserved_quantity",
+  "inventory_items.inventory.location_levels.location_id",
+  "inventory_items.inventory.location_levels.stock_locations.id",
+  "inventory_items.inventory.location_levels.stock_locations.name",
+  "inventory_items.inventory.location_levels.stock_locations.sales_channels.id",
+  "inventory_items.inventory.location_levels.stock_locations.sales_channels.name",
+]
+
 interface ConfirmInventoryPreparationInput {
   product_variant_inventory_items: {
     variant_id: string

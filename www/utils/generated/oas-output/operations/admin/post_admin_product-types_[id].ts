@@ -31,16 +31,7 @@
  *   content:
  *     application/json:
  *       schema:
- *         type: object
- *         description: The properties to update in the product type.
- *         properties:
- *           value:
- *             type: string
- *             title: value
- *             description: The product type's value.
- *           metadata:
- *             type: object
- *             description: The product type's metadata. Can hold custom key-value pairs.
+ *         $ref: "#/components/schemas/AdminUpdateProductType"
  * x-codeSamples:
  *   - lang: JavaScript
  *     label: JS SDK
@@ -65,7 +56,7 @@
  *     label: cURL
  *     source: |-
  *       curl -X POST '{backend_url}/admin/product-types/{id}' \
- *       -H 'Authorization: Bearer {access_token}' \
+ *       -H 'Authorization: Bearer {jwt_token}' \
  *       -H 'Content-Type: application/json' \
  *       --data-raw '{
  *         "metadata": {}
@@ -96,9 +87,9 @@
  *   - name: product-type.updated
  *     payload: |-
  *       ```ts
- *       [{
+ *       {
  *         id, // The ID of the product type
- *       }]
+ *       }
  *       ```
  *     description: Emitted when product types are updated.
  *     deprecated: false

@@ -23,8 +23,13 @@ export type Operation = OpenAPIV3.OperationObject<{
   "x-workflow"?: string
   "x-sidebar-summary"?: string
   "x-events"?: OasEvents[]
-  "x-version"?: string
+  "x-since"?: string
   "x-deprecated_message"?: string
+  "x-badges"?: {
+    text: string
+    description: string
+    variant?: "purple" | "orange" | "green" | "blue" | "red" | "neutral"
+  }[]
 }>
 
 export type RequestObject = OpenAPIV3.RequestBodyObject & {
@@ -144,5 +149,5 @@ export type OasEvents = {
   description?: string
   deprecated?: boolean
   deprecated_message?: string
-  version?: string
+  since?: string
 }

@@ -149,7 +149,7 @@ class WorkflowsPlugin {
       }
     }
 
-    this.handleAddTagsAfterParsing(context)
+    this.addTagsAfterParsingWorkflows(context)
   }
 
   /**
@@ -242,6 +242,10 @@ class WorkflowsPlugin {
 
     this.updateWorkflowsTagsMap(workflowId, uniqueResources)
     this.attachEvents(parentReflection)
+    this.attachLocksInWorkflow({
+      workflowReflection: parentReflection,
+      context,
+    })
   }
 
   /**
@@ -445,9 +449,6 @@ class WorkflowsPlugin {
     const whenCondition =
       whenInitializer.arguments[conditionIndex].body.getText()
 
-    const thenStatements = (thenInitializer.arguments[0].body as ts.Block)
-      .statements
-
     const documentReflection = new DocumentReflection(
       "when",
       parentReflection,
@@ -474,15 +475,10 @@ class WorkflowsPlugin {
       ])
     )
 
-    thenStatements.forEach((statement) => {
-      const initializer = this.getInitializerOfNode(statement)
-
-      if (!initializer) {
-        return
-      }
-
+    // Handles then with a single return statment rather than a block
+    if (ts.isCallExpression(thenInitializer.arguments[0].body)) {
       this.parseSteps({
-        initializer,
+        initializer: thenInitializer.arguments[0].body,
         context,
         workflow,
         workflowVarName: parentReflection.name,
@@ -497,7 +493,35 @@ class WorkflowsPlugin {
 
         resources.push(...step.resources)
       })
-    })
+    } else {
+      const thenStatements = (thenInitializer.arguments[0].body as ts.Block)
+        .statements
+
+      thenStatements.forEach((statement) => {
+        const initializer = this.getInitializerOfNode(statement)
+
+        if (!initializer) {
+          return
+        }
+
+        this.parseSteps({
+          initializer,
+          context,
+          workflow,
+          workflowVarName: parentReflection.name,
+          workflowReflection,
+          ...rest,
+        }).forEach((step) => {
+          this.createStepDocumentReflection({
+            ...step,
+            depth: stepDepth,
+            parentReflection: documentReflection,
+          })
+
+          resources.push(...step.resources)
+        })
+      })
+    }
 
     if (documentReflection.children?.length) {
       parentReflection.documents?.push(documentReflection)
@@ -823,7 +847,7 @@ class WorkflowsPlugin {
     this.workflowsTagsMap.set(workflowId, existingItems)
   }
 
-  handleAddTagsAfterParsing(context: Context) {
+  addTagsAfterParsingWorkflows(context: Context) {
     let keys = Object.keys(this.addTagsAfterParsing)
 
     const handleForWorkflow = (
@@ -928,8 +952,8 @@ class WorkflowsPlugin {
             commentText += ` -- ${event.deprecated_message}`
           }
         }
-        if (event.version) {
-          commentText += ` -- version: ${event.version}`
+        if (event.since) {
+          commentText += ` -- since: ${event.since}`
         }
         return new CommentTag(`@workflowEvent`, [
           {
@@ -939,6 +963,89 @@ class WorkflowsPlugin {
         ])
       })
     )
+  }
+
+  attachLocksInWorkflow({
+    workflowReflection,
+    context,
+  }: {
+    workflowReflection: DeclarationReflection
+    context: Context
+  }) {
+    const { initializer: workflowInitializer } =
+      this.helper.getReflectionSymbolAndInitializer({
+        project: context.project,
+        reflection: workflowReflection,
+      }) || {}
+    // check if the workflow acquires a lock
+    // for simplicity we'll assume the workflow acquires a lock
+    // with acquireLockStep only once
+    const checkHasAcquireLockStep = (
+      documents: DocumentReflection[]
+    ): boolean => {
+      return documents.some((child) => {
+        if (child.name === "acquireLockStep") {
+          return true
+        }
+
+        if (child.children) {
+          return checkHasAcquireLockStep(child.children)
+        }
+      })
+    }
+
+    if (workflowReflection.name === "completeCartWorkflow") {
+      console.log("here")
+    }
+    const hasAcquireLockStep = checkHasAcquireLockStep(
+      workflowReflection.documents || []
+    )
+
+    if (!hasAcquireLockStep) {
+      return
+    }
+
+    // use regex to get acquireLockStep call
+    const workflowText = workflowInitializer
+      ? workflowInitializer.getText()
+      : ""
+
+    const acquireLockStepRegex = /acquireLockStep\s*\(\s*\{[\s\S]*?\}\s*\)/g
+
+    // catch one match only
+    const match = acquireLockStepRegex.exec(workflowText)
+
+    if (!match) {
+      return
+    }
+
+    // remove extra spaces after new lines
+    const acquireLockStepCall = match[0]
+      .replace(/\n\s\s/g, "")
+      .replace(/\s{2,}/g, "  ")
+
+    // extract the key
+    const keyRegex = /key:\s*([^,}\n]+)/g
+    const keyMatch = keyRegex.exec(acquireLockStepCall)
+
+    if (!keyMatch) {
+      return
+    }
+
+    const lockKey = keyMatch[1].trim()
+
+    const comment = workflowReflection.comment || new Comment()
+
+    comment.blockTags.push(
+      new CommentTag(`@workflowLock`, [
+        {
+          kind: "text",
+          text: `${lockKey} --- ${acquireLockStepCall}`,
+        },
+      ])
+    )
+
+    workflowReflection.comment = comment
   }
 }
 

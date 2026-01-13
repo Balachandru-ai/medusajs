@@ -1,9 +1,15 @@
-import { z } from "zod"
+import { z } from "@medusajs/framework/zod"
 import {
   createFindParams,
   createOperatorMap,
   createSelectParams,
 } from "../../utils/validators"
+
+export const AdminGetExchangeParams = createSelectParams()
+
+export type AdminGetExchangeParamsType = z.infer<
+  typeof AdminGetExchangeParams
+>
 
 export const AdminGetOrdersOrderParams = createSelectParams().merge(
   z.object({
@@ -127,6 +133,7 @@ export type AdminPostExchangesAddItemsReqSchemaType = z.infer<
 >
 
 export const AdminPostExchangesReturnRequestItemsReqSchema = z.object({
+  location_id: z.string().optional(),
   items: z.array(
     z.object({
       id: z.string(),
@@ -167,4 +174,10 @@ export const AdminPostExchangesItemsActionReqSchema = z.object({
 
 export type AdminPostExchangesItemsActionReqSchemaType = z.infer<
   typeof AdminPostExchangesItemsActionReqSchema
+>
+
+export const AdminDeleteExchangeItemActionSchema = createSelectParams()
+
+export type AdminDeleteExchangeItemActionSchemaType = z.infer<
+  typeof AdminDeleteExchangeItemActionSchema
 >

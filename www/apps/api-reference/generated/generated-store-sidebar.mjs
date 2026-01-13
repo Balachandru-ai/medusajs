@@ -28,6 +28,12 @@ const generatedgeneratedStoreSidebarSidebar = {
     },
     {
       "type": "link",
+      "title": "Manage Metadata",
+      "path": "manage-metadata",
+      "loaded": true
+    },
+    {
+      "type": "link",
       "title": "Select Fields and Relations",
       "path": "select-fields-and-relations",
       "loaded": true
@@ -48,6 +54,12 @@ const generatedgeneratedStoreSidebarSidebar = {
       "type": "link",
       "title": "Workflows",
       "path": "workflows",
+      "loaded": true
+    },
+    {
+      "type": "link",
+      "title": "Localization",
+      "path": "localization",
       "loaded": true
     },
     {
@@ -122,6 +134,42 @@ const generatedgeneratedStoreSidebarSidebar = {
           "type": "link",
           "path": "customers_customer_schema",
           "title": "Customer Object",
+          "loaded": true,
+          "badge": {
+            "variant": "neutral",
+            "text": "Schema"
+          }
+        }
+      ],
+      "loaded": false,
+      "showLoadingIfEmpty": true
+    },
+    {
+      "type": "category",
+      "title": "Gift Cards",
+      "children": [
+        {
+          "type": "link",
+          "path": "gift-cards_giftcard_schema",
+          "title": "GiftCard Object",
+          "loaded": true,
+          "badge": {
+            "variant": "neutral",
+            "text": "Schema"
+          }
+        }
+      ],
+      "loaded": false,
+      "showLoadingIfEmpty": true
+    },
+    {
+      "type": "category",
+      "title": "Locales",
+      "children": [
+        {
+          "type": "link",
+          "path": "locales_locale_schema",
+          "title": "Locale Object",
           "loaded": true,
           "badge": {
             "variant": "neutral",
@@ -278,24 +326,6 @@ const generatedgeneratedStoreSidebarSidebar = {
     },
     {
       "type": "category",
-      "title": "Returns",
-      "children": [
-        {
-          "type": "link",
-          "path": "returns_return_schema",
-          "title": "Return Object",
-          "loaded": true,
-          "badge": {
-            "variant": "neutral",
-            "text": "Schema"
-          }
-        }
-      ],
-      "loaded": false,
-      "showLoadingIfEmpty": true
-    },
-    {
-      "type": "category",
       "title": "Return Reasons",
       "children": [
         {
@@ -314,12 +344,48 @@ const generatedgeneratedStoreSidebarSidebar = {
     },
     {
       "type": "category",
+      "title": "Returns",
+      "children": [
+        {
+          "type": "link",
+          "path": "returns_return_schema",
+          "title": "Return Object",
+          "loaded": true,
+          "badge": {
+            "variant": "neutral",
+            "text": "Schema"
+          }
+        }
+      ],
+      "loaded": false,
+      "showLoadingIfEmpty": true
+    },
+    {
+      "type": "category",
       "title": "Shipping Options",
       "children": [
         {
           "type": "link",
           "path": "shipping-options_shippingoption_schema",
           "title": "ShippingOption Object",
+          "loaded": true,
+          "badge": {
+            "variant": "neutral",
+            "text": "Schema"
+          }
+        }
+      ],
+      "loaded": false,
+      "showLoadingIfEmpty": true
+    },
+    {
+      "type": "category",
+      "title": "Store Credit Accounts",
+      "children": [
+        {
+          "type": "link",
+          "path": "store-credit-accounts_storecreditaccount_schema",
+          "title": "StoreCreditAccount Object",
           "loaded": true,
           "badge": {
             "variant": "neutral",

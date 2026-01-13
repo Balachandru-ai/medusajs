@@ -1,12 +1,17 @@
 import type { SchedulerOptions } from "@medusajs/orchestration"
 import { MedusaContainer } from "@medusajs/types"
-import { isObject, MedusaError } from "@medusajs/utils"
+import {
+  dynamicImport,
+  isFileSkipped,
+  isObject,
+  MedusaError,
+  registerDevServerResource,
+} from "@medusajs/utils"
 import {
   createStep,
   createWorkflow,
   StepResponse,
 } from "@medusajs/workflows-sdk"
-import { logger } from "../logger"
 import { ResourceLoader } from "../utils/resource-loader"
 
 type CronJobConfig = {
@@ -20,8 +25,13 @@ type CronJobHandler = (container: MedusaContainer) => Promise<any>
 export class JobLoader extends ResourceLoader {
   protected resourceName = "job"
 
-  constructor(sourceDir: string | string[]) {
-    super(sourceDir)
+  constructor(sourceDir: string | string[], container: MedusaContainer) {
+    super(sourceDir, container)
+  }
+
+  async loadFile(path: string) {
+    const exports = await dynamicImport(path)
+    await this.onFileLoaded(path, exports)
   }
 
   protected async onFileLoaded(
@@ -31,9 +41,14 @@ export class JobLoader extends ResourceLoader {
       config: CronJobConfig
     }
   ) {
+    if (isFileSkipped(fileExports)) {
+      return
+    }
+
     this.validateConfig(fileExports.config)
-    logger.debug(`Registering job from ${path}.`)
+    this.logger.debug(`Registering job from ${path}.`)
     this.register({
+      path,
       config: fileExports.config,
       handler: fileExports.default,
     })
@@ -77,9 +92,11 @@ export class JobLoader extends ResourceLoader {
    * @protected
    */
   protected register({
+    path,
     config,
     handler,
   }: {
+    path: string
     config: CronJobConfig
     handler: CronJobHandler
   }) {
@@ -92,7 +109,7 @@ export class JobLoader extends ResourceLoader {
           const res = await handler(container)
           return new StepResponse(res, res)
         } catch (error) {
-          logger.error(
+          this.logger.error(
             `Scheduled job ${config.name} failed with error: ${error.message}`
           )
           throw error
@@ -113,6 +130,13 @@ export class JobLoader extends ResourceLoader {
     createWorkflow(workflowConfig, () => {
       step()
     })
+
+    registerDevServerResource({
+      sourcePath: path,
+      id: workflowName,
+      type: "job",
+      config: config,
+    })
   }
 
   /**
@@ -121,6 +145,6 @@ export class JobLoader extends ResourceLoader {
   async load() {
     await super.discoverResources()
 
-    logger.debug(`Jobs registered.`)
+    this.logger.debug(`Jobs registered.`)
   }
 }

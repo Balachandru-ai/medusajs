@@ -1,7 +1,12 @@
-import { Prettify } from "../common"
+import { Prettify as CorePrettify } from "../common"
 import { OperatorMap } from "../dal"
 import { RemoteQueryEntryPoints } from "./remote-query-entry-points"
 
+type DeepPartial<T> = {
+  [P in keyof T]?: T[P] extends object ? DeepPartial<T[P]> : T[P]
+}
+
+type Prettify<T> = DeepPartial<CorePrettify<T>>
 type ExcludedProps = "__typename"
 type Depth = [never, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
 type CleanupObject<T> = Prettify<Omit<Exclude<T, symbol>, ExcludedProps>>
@@ -20,7 +25,7 @@ type ExtractFiltersOperators<
     ? never
     : Key extends ExcludedProps
     ? never
-    : T[Key] extends string | number | boolean | Date
+    : NonNullable<T[Key]> extends string | number | boolean | Date
     ? T[Key] | T[Key][] | OperatorMap<T[Key] | T[Key][]>
     : T[Key] extends Array<infer R>
     ? TypeOnly<R> extends { __typename: any }
@@ -45,10 +50,16 @@ type ExtractFiltersOperators<
     : never
 }
 
+type RemoteQueryFilterOperators<T> = {
+  $or?: (T & RemoteQueryFilterOperators<T>)[]
+  $and?: (T & RemoteQueryFilterOperators<T>)[]
+  $not?: T & RemoteQueryFilterOperators<T>
+}
+
 /**
  * Extract all available filters from a remote entry point deeply
  */
-export type RemoteQueryFilters<
+export type InternalRemoteQueryFilters<
   TEntry extends string,
   RemoteQueryEntryPointsLevel = RemoteQueryEntryPoints,
   Exclusion extends string[] = [],
@@ -70,3 +81,27 @@ export type RemoteQueryFilters<
         >
     : Record<string, any>
   : never
+
+export type RemoteQueryFilters<
+  TEntry extends string,
+  RemoteQueryEntryPointsLevel = RemoteQueryEntryPoints,
+  Exclusion extends string[] = [],
+  Lim extends number = Depth[3]
+> = RemoteQueryFilterOperators<
+  DeepPartial<
+    InternalRemoteQueryFilters<
+      TEntry,
+      RemoteQueryEntryPointsLevel,
+      Exclusion,
+      Lim
+    >
+  >
+> &
+  DeepPartial<
+    InternalRemoteQueryFilters<
+      TEntry,
+      RemoteQueryEntryPointsLevel,
+      Exclusion,
+      Lim
+    >
+  >

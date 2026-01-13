@@ -31,20 +31,7 @@
  *   content:
  *     application/json:
  *       schema:
- *         type: object
- *         description: The properties to update in the shipping profile.
- *         properties:
- *           name:
- *             type: string
- *             title: name
- *             description: The shipping profile's name.
- *           type:
- *             type: string
- *             title: type
- *             description: The shipping profile's type.
- *           metadata:
- *             type: object
- *             description: The shipping profile's metadata.
+ *         $ref: "#/components/schemas/AdminUpdateShippingProfile"
  * x-codeSamples:
  *   - lang: JavaScript
  *     label: JS SDK
@@ -69,7 +56,7 @@
  *     label: cURL
  *     source: |-
  *       curl -X POST '{backend_url}/admin/shipping-profiles/{id}' \
- *       -H 'Authorization: Bearer {access_token}' \
+ *       -H 'Authorization: Bearer {jwt_token}' \
  *       -H 'Content-Type: application/json' \
  *       --data-raw '{
  *         "metadata": {}

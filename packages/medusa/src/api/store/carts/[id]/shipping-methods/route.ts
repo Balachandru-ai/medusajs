@@ -1,11 +1,13 @@
 import { addShippingMethodToCartWorkflow } from "@medusajs/core-flows"
 import { MedusaRequest, MedusaResponse } from "@medusajs/framework/http"
-import { HttpTypes } from "@medusajs/framework/types"
+import { AdditionalData, HttpTypes } from "@medusajs/framework/types"
 import { refetchCart } from "../../helpers"
-import { StoreAddCartShippingMethodsType } from "../../validators"
 
 export const POST = async (
-  req: MedusaRequest<StoreAddCartShippingMethodsType>,
+  req: MedusaRequest<
+    HttpTypes.StoreAddCartShippingMethods & AdditionalData,
+    HttpTypes.SelectParams
+  >,
   res: MedusaResponse<HttpTypes.StoreCartResponse>
 ) => {
   const payload = req.validatedBody
@@ -14,6 +16,7 @@ export const POST = async (
     input: {
       options: [{ id: payload.option_id, data: payload.data }],
       cart_id: req.params.id,
+      additional_data: payload.additional_data,
     },
   })
 

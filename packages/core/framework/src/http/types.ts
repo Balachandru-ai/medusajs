@@ -1,5 +1,5 @@
 import type { NextFunction, Request, Response } from "express"
-import type { ZodNullable, ZodObject, ZodOptional, ZodRawShape } from "zod"
+import type { ZodNullable, ZodObject, ZodOptional, ZodRawShape } from "@medusajs/deps/zod"
 
 import {
   FindConfig,
@@ -136,11 +136,12 @@ export interface MedusaRequest<
   /**
    * An object containing fields and variables to be used with the remoteQuery
    *
-   * @version 2.2.0
+   * @since 2.2.0
    */
   queryConfig: {
     fields: string[]
     pagination: { order?: Record<string, string>; skip: number; take?: number }
+    withDeleted?: boolean
   }
 
   /**
@@ -182,6 +183,14 @@ export interface MedusaRequest<
    * requests that allows for additional_data
    */
   additionalDataValidator?: ZodOptional<ZodNullable<ZodObject<any, any>>>
+
+  /**
+   * The locale for the current request, resolved from:
+   * 1. Query parameter `?locale=`
+   * 2. x-medusa-locale header
+   * 3. Store's default locale
+   */
+  locale?: string
 }
 
 export interface AuthContext {
@@ -189,6 +198,7 @@ export interface AuthContext {
   actor_type: string
   auth_identity_id: string
   app_metadata: Record<string, unknown>
+  user_metadata: Record<string, unknown>
 }
 
 export interface PublishableKeyContext {

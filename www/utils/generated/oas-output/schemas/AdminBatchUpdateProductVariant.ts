@@ -71,6 +71,9 @@
  *   metadata:
  *     type: object
  *     description: The product variant's metadata, can hold custom key-value pairs.
+ *     externalDocs:
+ *       url: https://docs.medusajs.com/api/admin#manage-metadata
+ *       description: Learn how to manage metadata
  *   prices:
  *     type: array
  *     description: The product variant's prices.
@@ -83,6 +86,10 @@
  *     type: string
  *     title: id
  *     description: The update's ID.
+ *   thumbnail:
+ *     type: string
+ *     title: thumbnail
+ *     description: The variant's thumbnail.
  * required:
  *   - id
  * 

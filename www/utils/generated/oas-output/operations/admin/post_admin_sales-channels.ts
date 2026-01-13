@@ -50,7 +50,7 @@
  *     label: cURL
  *     source: |-
  *       curl -X POST '{backend_url}/admin/sales-channels' \
- *       -H 'Authorization: Bearer {access_token}' \
+ *       -H 'Authorization: Bearer {jwt_token}' \
  *       -H 'Content-Type: application/json' \
  *       --data-raw '{
  *         "name": "Linnea",
@@ -83,9 +83,9 @@
  *   - name: sales-channel.created
  *     payload: |-
  *       ```ts
- *       [{
+ *       {
  *         id, // The ID of the sales channel
- *       }]
+ *       }
  *       ```
  *     description: Emitted when sales channels are created.
  *     deprecated: false

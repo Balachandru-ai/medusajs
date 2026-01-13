@@ -1,5 +1,6 @@
 "use client"
 
+import React from "react"
 import {
   Badge,
   DetailsSummary,
@@ -36,7 +37,10 @@ const TagsOperationDescriptionSectionEvents = ({
           <span>
             The following events are emitted by the workflow used in this API
             route. You can listen to and handle these events using a{" "}
-            <Link href="https://docs.medusajs.com/learn/fundamentals/events-and-subscribers">
+            <Link
+              href="https://docs.medusajs.com/learn/fundamentals/events-and-subscribers"
+              variant="content"
+            >
               Subscriber
             </Link>
           </span>
@@ -102,15 +106,27 @@ const TagsOperationDescriptionSectionEvent = ({
           </MarkdownContent>
           {event.deprecated &&
             (event.deprecated_message ? (
-              <Tooltip text={event.deprecated_message}>
-                <Badge variant="orange">Deprecated</Badge>
+              <Tooltip
+                text={event.deprecated_message}
+                data-testid="deprecated-tooltip"
+              >
+                <Badge variant="orange" data-testid="deprecated-badge">
+                  Deprecated
+                </Badge>
               </Tooltip>
             ) : (
-              <Badge variant="orange">Deprecated</Badge>
+              <Badge variant="orange" data-testid="deprecated-badge">
+                Deprecated
+              </Badge>
             ))}
-          {event.version && (
-            <Tooltip text={`This event is emitted since v${event.version}`}>
-              <Badge variant="blue">v{event.version}</Badge>
+          {event.since && (
+            <Tooltip
+              text={`This event is emitted since v${event.since}`}
+              data-testid="since-tooltip"
+            >
+              <Badge variant="blue" data-testid="since-badge">
+                v{event.since}
+              </Badge>
             </Tooltip>
           )}
         </div>

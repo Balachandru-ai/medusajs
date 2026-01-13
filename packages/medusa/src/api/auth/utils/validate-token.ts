@@ -30,16 +30,17 @@ export const validateToken = () => {
 
     const req_ = req as AuthenticatedMedusaRequest
 
-    // @ts-ignore
     const { http } = req_.scope.resolve<ConfigModule>(
       ContainerRegistrationKeys.CONFIG_MODULE
     ).projectConfig
 
     const token = getAuthContextFromJwtToken(
       req.headers.authorization,
-      http.jwtSecret as string,
+      http.jwtSecret!,
       ["bearer"],
-      [actor_type]
+      [actor_type],
+      http.jwtPublicKey,
+      http.jwtVerifyOptions ?? http.jwtOptions
     ) as UpdateProviderJwtPayload | null
 
     const errorObject = new MedusaError(
@@ -63,7 +64,12 @@ export const validateToken = () => {
         provider: auth_provider,
       },
       {
-        select: ["provider_metadata", "auth_identity_id", "entity_id"],
+        select: [
+          "provider_metadata",
+          "auth_identity_id",
+          "entity_id",
+          "user_metadata",
+        ],
       }
     )
 
@@ -76,6 +82,7 @@ export const validateToken = () => {
       auth_identity_id: providerIdentity.auth_identity_id!,
       actor_id: providerIdentity.entity_id,
       app_metadata: {},
+      user_metadata: providerIdentity.user_metadata ?? {},
     }
 
     return next()

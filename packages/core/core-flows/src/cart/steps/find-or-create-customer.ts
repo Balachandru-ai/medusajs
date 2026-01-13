@@ -1,5 +1,14 @@
-import { CustomerDTO, ICustomerModuleService } from "@medusajs/framework/types"
-import { isDefined, Modules, validateEmail } from "@medusajs/framework/utils"
+import type {
+  CustomerDTO,
+  ICustomerModuleService,
+  MedusaContainer,
+} from "@medusajs/framework/types"
+import {
+  isDefined,
+  Modules,
+  useCache,
+  validateEmail,
+} from "@medusajs/framework/utils"
 import { createStep, StepResponse } from "@medusajs/framework/workflows-sdk"
 
 /**
@@ -36,11 +45,50 @@ interface StepCompensateInput {
   customerWasCreated: boolean
 }
 
+async function fetchCustomerById(
+  customerId: string,
+  container: MedusaContainer
+): Promise<CustomerDTO> {
+  const service = container.resolve<ICustomerModuleService>(Modules.CUSTOMER)
+
+  return await useCache<CustomerDTO>(
+    async () => service.retrieveCustomer(customerId),
+    {
+      container,
+      key: ["find-or-create-customer-by-id", customerId],
+    }
+  )
+}
+
+async function fetchCustomersByEmail(
+  email: string,
+  container: MedusaContainer,
+  hasAccount?: boolean
+): Promise<CustomerDTO[]> {
+  const service = container.resolve<ICustomerModuleService>(Modules.CUSTOMER)
+
+  const filters =
+    hasAccount !== undefined ? { email, has_account: hasAccount } : { email }
+
+  return await useCache<CustomerDTO[]>(
+    async () => service.listCustomers(filters),
+    {
+      container,
+      key: ["find-or-create-customer-by-email", filters],
+    }
+  )
+}
+
 export const findOrCreateCustomerStepId = "find-or-create-customer"
 /**
- * This step either finds a customer matching the specified ID, or finds / create a customer
- * matching the specified email. If both ID and email are provided, ID takes precedence.
- * If the customer is a guest, the email is updated to the provided email.
+ * This step finds or creates a customer based on the provided ID or email. It prioritizes finding the customer by ID, then by email.
+ *
+ * The step creates a new customer either if:
+ *
+ * - No customer is found with the provided ID and email;
+ * - Or if it found the customer by ID but their email does not match the email in the input.
+ *
+ * The step returns the details of the customer found or created, along with their email.
  */
 export const findOrCreateCustomerStep = createStep(
   findOrCreateCustomerStepId,
@@ -67,7 +115,7 @@ export const findOrCreateCustomerStep = createStep(
     let customerWasCreated = false
 
     if (data.customerId) {
-      originalCustomer = await service.retrieveCustomer(data.customerId)
+      originalCustomer = await fetchCustomerById(data.customerId, container)
       customerData.customer = originalCustomer
       customerData.email = originalCustomer.email
     }
@@ -77,9 +125,7 @@ export const findOrCreateCustomerStep = createStep(
 
       let [customer] = originalCustomer
         ? [originalCustomer]
-        : await service.listCustomers({
-            email: validatedEmail,
-          })
+        : await fetchCustomersByEmail(validatedEmail, container)
 
       // if NOT a guest customer, return it
       if (customer?.has_account) {
@@ -91,10 +137,15 @@ export const findOrCreateCustomerStep = createStep(
         })
       }
 
-      if (
-        !customer ||
-        (isDefined(data.email) && customer.email !== validatedEmail)
-      ) {
+      if (customer && customer.email !== validatedEmail) {
+        ;[customer] = await fetchCustomersByEmail(
+          validatedEmail,
+          container,
+          false
+        )
+      }
+
+      if (!customer) {
         customer = await service.createCustomers({ email: validatedEmail })
         customerWasCreated = true
       }

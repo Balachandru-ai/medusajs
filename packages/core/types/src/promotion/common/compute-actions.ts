@@ -9,13 +9,14 @@ export type ComputeActions =
   | AddShippingMethodAdjustment
   | RemoveShippingMethodAdjustment
   | CampaignBudgetExceededAction
+  | PromotionLimitExceededAction
 
 /**
  * These computed action types can affect a campaign's budget.
  */
 export type UsageComputedActions = {
   /**
-   * The amount to remove off the shipping method's total.
+   * The amount (of usage or money) to adjust the campaign budget by.
    */
   amount: BigNumberInput
 
@@ -34,6 +35,21 @@ export interface CampaignBudgetExceededAction {
    * The type of action.
    */
   action: "campaignBudgetExceeded"
+
+  /**
+   * The promotion's code.
+   */
+  code: string
+}
+
+/**
+ * This action indicates that a promotion usage limit has been exceeded.
+ */
+export interface PromotionLimitExceededAction {
+  /**
+   * The type of action.
+   */
+  action: "promotionLimitExceeded"
 
   /**
    * The promotion's code.
@@ -61,6 +77,11 @@ export interface AddItemAdjustmentAction {
   amount: BigNumberInput
 
   /**
+   * Whether the promotion amount includes tax.
+   */
+  is_tax_inclusive?: boolean
+
+  /**
    * The promotion's code.
    */
   code: string
@@ -84,6 +105,11 @@ export interface RemoveItemAdjustmentAction {
    * The associated adjustment's ID.
    */
   adjustment_id: string
+
+  /**
+   * The associated item's ID.
+   */
+  item_id: string
 
   /**
    * The promotion's description.
@@ -141,6 +167,11 @@ export interface RemoveShippingMethodAdjustment {
   adjustment_id: string
 
   /**
+   * The associated shipping method's ID.
+   */
+  shipping_method_id: string
+
+  /**
    * The promotion's code.
    */
   code: string
@@ -181,9 +212,26 @@ export interface ComputeActionItemLine extends Record<string, unknown> {
   subtotal: BigNumberInput
 
   /**
+   * The total of the line item.
+   */
+  original_total: BigNumberInput
+
+  /**
+   * Whether the line item is discountable.
+   */
+  is_discountable: boolean
+
+  /**
    * The adjustments applied before on the line item.
    */
   adjustments?: ComputeActionAdjustmentLine[]
+
+  /**
+   * The product ID of the line item. Our default promotion rules rely on the product ID to apply the promotion.
+   */
+  product?: {
+    id: string
+  }
 }
 
 /**
@@ -201,6 +249,11 @@ export interface ComputeActionShippingLine extends Record<string, unknown> {
   subtotal: BigNumberInput
 
   /**
+   * The total of the shipping method.
+   */
+  original_total: BigNumberInput
+
+  /**
    * The adjustments applied before on the shipping method.
    */
   adjustments?: ComputeActionAdjustmentLine[]
@@ -214,6 +267,13 @@ export interface ComputeActionContext extends Record<string, unknown> {
    * The cart's currency
    */
   currency_code: string
+
+  /**
+   * The cart's email
+   *
+   * @since 2.11.0
+   */
+  email?: string
 
   /**
    * The cart's line items.
@@ -235,4 +295,11 @@ export interface ComputeActionOptions {
    * automatically. If not provided, the automatic promotions are applied.
    */
   prevent_auto_promotions?: boolean
+
+  /**
+   * Whether to skip the usage limit checks.
+   * Useful when recomputing adjustment for promotions that are already applied as a part of edit/exchange flows.
+   *
+   */
+  skip_usage_limit_checks?: boolean
 }

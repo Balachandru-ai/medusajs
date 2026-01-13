@@ -40,6 +40,11 @@ export const integrationsSidebar = [
         path: "/commerce-modules/auth/auth-providers/github",
         title: "GitHub",
       },
+      {
+        type: "link",
+        path: "/integrations/guides/okta",
+        title: "Okta",
+      },
     ],
   },
   {
@@ -54,8 +59,18 @@ export const integrationsSidebar = [
       },
       {
         type: "link",
+        path: "/integrations/guides/payload",
+        title: "Payload CMS",
+      },
+      {
+        type: "link",
         path: "/integrations/guides/sanity",
         title: "Sanity",
+      },
+      {
+        type: "link",
+        path: "/integrations/guides/strapi",
+        title: "Strapi",
       },
     ],
   },
@@ -97,6 +112,18 @@ export const integrationsSidebar = [
   },
   {
     type: "category",
+    title: "Instrumentation",
+    initialOpen: true,
+    children: [
+      {
+        type: "link",
+        path: "/integrations/guides/sentry",
+        title: "Sentry",
+      },
+    ],
+  },
+  {
+    type: "category",
     title: "Migration",
     initialOpen: true,
     children: [
@@ -114,6 +141,11 @@ export const integrationsSidebar = [
     children: [
       {
         type: "link",
+        path: "/integrations/guides/mailchimp",
+        title: "Mailchimp",
+      },
+      {
+        type: "link",
         path: "/integrations/guides/resend",
         title: "Resend",
       },
@@ -121,6 +153,11 @@ export const integrationsSidebar = [
         type: "ref",
         path: "/infrastructure-modules/notification/sendgrid",
         title: "SendGrid",
+      },
+      {
+        type: "link",
+        path: "/integrations/guides/slack",
+        title: "Slack",
       },
       {
         type: "ref",
@@ -147,9 +184,26 @@ export const integrationsSidebar = [
     initialOpen: true,
     children: [
       {
-        type: "ref",
+        type: "link",
         path: "/integrations/guides/algolia",
         title: "Algolia",
+      },
+      {
+        type: "link",
+        path: "/integrations/guides/meilisearch",
+        title: "Meilisearch",
+      },
+    ],
+  },
+  {
+    type: "category",
+    title: "Tax",
+    initialOpen: true,
+    children: [
+      {
+        type: "link",
+        path: "/integrations/guides/avalara",
+        title: "Avalara",
       },
     ],
   },
