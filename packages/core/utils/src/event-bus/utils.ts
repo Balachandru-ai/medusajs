@@ -100,7 +100,7 @@ export function buildEventNamesFromEntityName<
   return events as ReturnType<TNames, TPrefix>
 }
 
-// TODO: Comment temporarely and we will re enable it in the near future
+// TODO: Comment temporarely and we will re enable it in the near future #14478
 // export const EventPriority = {
 //   CRITICAL: 10,
 //   HIGH: 50,

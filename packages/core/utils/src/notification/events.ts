@@ -1,4 +1,4 @@
-// TODO: Comment temporarely and we will re enable it in the near future
+// TODO: Comment temporarely and we will re enable it in the near future #14478
 // import { EventOptions } from "@medusajs/types"
 import { buildEventNamesFromEntityName } from "../event-bus"
 import { Modules } from "../modules-sdk"
@@ -10,7 +10,7 @@ export const NotificationEvents = buildEventNamesFromEntityName(
   Modules.NOTIFICATION
 )
 
-// TODO: Comment temporarely and we will re enable it in the near future
+// TODO: Comment temporarely and we will re enable it in the near future #14478
 // declare module "@medusajs/types" {
 //   export interface EventBusEventsOptions {
 //     // Notification events

@@ -1,4 +1,5 @@
-import type { EventBusEventsOptions } from "@medusajs/types"
+// TODO: Comment temporarely and we will re enable it in the near future #14478
+// import type { EventBusEventsOptions } from "@medusajs/types"
 import {
   BulkJobOptions,
   Job,
@@ -70,7 +71,14 @@ export type EventBusRedisModuleOptions = {
    */
   jobOptions?: EmitOptions
 
-  eventOptions?: EventBusEventsOptions
+  // eventOptions?: EventBusEventsOptions
+}
+
+declare module "@medusajs/types" {
+  interface ModuleOptions {
+    "@medusajs/event-bus-redis": EventBusRedisModuleOptions
+    "@medusajs/medusa/event-bus-redis": EventBusRedisModuleOptions
+  }
 }
 
 declare module "@medusajs/types" {
