@@ -1,25 +1,26 @@
 import { Context } from "../shared-context"
 
-/**
- * Configuration options for individual events.
- */
-export interface EventOptions {
-  /**
-   * Priority level for the event processing.
-   * Lower numbers indicate higher priority.
-   */
-  priority?: number
-}
+// TODO: Comment temporarely and we will re enable it in the near future
+// /**
+//  * Configuration options for individual events.
+//  */
+// export interface EventOptions {
+//   /**
+//    * Priority level for the event processing.
+//    * Lower numbers indicate higher priority.
+//    */
+//   priority?: number
+// }
 
-/**
- * Registry for event bus events options types.
- * Events will be added to this registry to serve as a global configuration for all events
- * as part of the event bus module service module options.
- *
- * Modules augment this interface using declaration merging to register their event configurations.
- * Custom events can be added via declaration merging in your project.
- */
-export interface EventBusEventsOptions {}
+// /**
+//  * Registry for event bus events options types.
+//  * Events will be added to this registry to serve as a global configuration for all events
+//  * as part of the event bus module service module options.
+//  *
+//  * Modules augment this interface using declaration merging to register their event configurations.
+//  * Custom events can be added via declaration merging in your project.
+//  */
+// export interface EventBusEventsOptions {}
 
 export type Subscriber<TData = unknown> = (data: Event<TData>) => Promise<void>
 

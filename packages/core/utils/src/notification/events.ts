@@ -1,4 +1,5 @@
-import { EventOptions } from "@medusajs/types"
+// TODO: Comment temporarely and we will re enable it in the near future
+// import { EventOptions } from "@medusajs/types"
 import { buildEventNamesFromEntityName } from "../event-bus"
 import { Modules } from "../modules-sdk"
 
@@ -9,14 +10,15 @@ export const NotificationEvents = buildEventNamesFromEntityName(
   Modules.NOTIFICATION
 )
 
-declare module "@medusajs/types" {
-  export interface EventBusEventsOptions {
-    // Notification events
-    [NotificationEvents.NOTIFICATION_CREATED]?: EventOptions
-    [NotificationEvents.NOTIFICATION_UPDATED]?: EventOptions
-    [NotificationEvents.NOTIFICATION_DELETED]?: EventOptions
-    [NotificationEvents.NOTIFICATION_RESTORED]?: EventOptions
-    [NotificationEvents.NOTIFICATION_ATTACHED]?: EventOptions
-    [NotificationEvents.NOTIFICATION_DETACHED]?: EventOptions
-  }
-}
+// TODO: Comment temporarely and we will re enable it in the near future
+// declare module "@medusajs/types" {
+//   export interface EventBusEventsOptions {
+//     // Notification events
+//     [NotificationEvents.NOTIFICATION_CREATED]?: EventOptions
+//     [NotificationEvents.NOTIFICATION_UPDATED]?: EventOptions
+//     [NotificationEvents.NOTIFICATION_DELETED]?: EventOptions
+//     [NotificationEvents.NOTIFICATION_RESTORED]?: EventOptions
+//     [NotificationEvents.NOTIFICATION_ATTACHED]?: EventOptions
+//     [NotificationEvents.NOTIFICATION_DETACHED]?: EventOptions
+//   }
+// }
