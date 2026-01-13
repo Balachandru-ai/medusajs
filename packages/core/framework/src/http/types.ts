@@ -68,6 +68,7 @@ export type MiddlewareRoute = {
   bodyParser?: ParserConfig
   additionalDataValidator?: ZodRawShape
   middlewares?: MiddlewareFunction[]
+  /** @ignore */
   policies?:
     | { resource: string; operation: string }
     | Array<{ resource: string; operation: string }>

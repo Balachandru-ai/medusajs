@@ -31,10 +31,7 @@ async function checkPermissions(
   const roleIds = (authContext.app_metadata?.roles as string[]) || []
 
   if (!roleIds.length) {
-    throw new MedusaError(
-      MedusaError.Types.UNAUTHORIZED,
-      "User has no roles assigned"
-    )
+    throw new MedusaError(MedusaError.Types.UNAUTHORIZED, "Unauthorized")
   }
 
   const hasAccess = await hasPermission({
