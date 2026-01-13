@@ -62,6 +62,12 @@ import {
  * ```
  */
 export interface IEventProvider {
+  __hooks?: {
+    onApplicationStart?: () => Promise<void>
+    onApplicationShutdown?: () => Promise<void>
+    onApplicationPrepareShutdown?: () => Promise<void>
+  }
+
   /**
    * A map of event names to their subscriber descriptors.
    * Used by the module service to check which events have subscribers.

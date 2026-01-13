@@ -8,5 +8,4 @@ export default Module(Modules.EVENT_BUS, {
   loaders: [loadProviders],
 })
 
-// Module options types
 export { EventModuleOptions } from "./types"

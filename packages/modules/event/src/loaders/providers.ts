@@ -34,6 +34,8 @@ const registrationFn = async (klass, container, { id }) => {
     providerIdentifier: key,
   })
 
+  // Provider service is already registered by load-internal.ts when loadingProviders: true.
+  // We only need to create an alias for easier access.
   container.register({
     [EventProviderRegistrationPrefix + id]: aliasTo(regKey),
   })

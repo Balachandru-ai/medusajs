@@ -30,6 +30,37 @@ export default class EventModuleService implements IEventBusModuleService {
     this.isWorkerMode = moduleDeclaration.worker_mode !== "server"
   }
 
+  /**
+   * Lifecycle hooks that forward to provider hooks.
+   * These are called by the MedusaModule during application lifecycle events.
+   */
+  __hooks = {
+    onApplicationStart: async () => {
+      const providers = this.providerService_.listProviders()
+      await Promise.all(
+        providers.map((provider) =>
+          provider.__hooks?.onApplicationStart?.bind(provider)()
+        )
+      )
+    },
+    onApplicationShutdown: async () => {
+      const providers = this.providerService_.listProviders()
+      await Promise.all(
+        providers.map((provider) =>
+          provider.__hooks?.onApplicationShutdown?.bind(provider)()
+        )
+      )
+    },
+    onApplicationPrepareShutdown: async () => {
+      const providers = this.providerService_.listProviders()
+      await Promise.all(
+        providers.map((provider) =>
+          provider.__hooks?.onApplicationPrepareShutdown?.bind(provider)()
+        )
+      )
+    },
+  }
+
   private getProvider(providerId?: string) {
     const id = providerId ?? this.defaultProviderId
     return this.providerService_.retrieveProviderRegistration(id)

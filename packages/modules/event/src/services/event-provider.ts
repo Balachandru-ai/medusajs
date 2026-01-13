@@ -57,4 +57,27 @@ Please make sure that the provider is registered in the container and it is conf
       throw new Error(errMessage)
     }
   }
+
+  /**
+   * List all registered event providers.
+   * Used by the module service to forward lifecycle hooks to providers.
+   */
+  public listProviders(): IEventProvider[] {
+    const providers: IEventProvider[] = []
+
+    for (const key of Object.keys(this.__container__)) {
+      if (key.startsWith(EventProviderRegistrationPrefix)) {
+        try {
+          const provider = this.__container__[key as `ep_${string}`]
+          if (provider) {
+            providers.push(provider)
+          }
+        } catch {
+          // Skip unresolvable entries
+        }
+      }
+    }
+
+    return providers
+  }
 }

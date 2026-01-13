@@ -69,7 +69,6 @@ export class RedisEventProvider extends AbstractEventProvider<EventRedisProvider
     this.jobOptions_ = container.eventRedisJobOptions ?? {}
 
     this.queue_ = new Queue(this.queueName_, {
-      prefix: `${this.constructor.name}`,
       ...this.queueOptions_,
       connection: this.eventRedisConnection_,
     })
@@ -77,7 +76,6 @@ export class RedisEventProvider extends AbstractEventProvider<EventRedisProvider
     // Register our worker to handle emit calls
     if (this.isWorkerMode) {
       this.bullWorker_ = new Worker(this.queueName_, this.worker_, {
-        prefix: `${this.constructor.name}`,
         ...this.workerOptions_,
         connection: this.eventRedisConnection_,
         autorun: false,
@@ -91,9 +89,10 @@ export class RedisEventProvider extends AbstractEventProvider<EventRedisProvider
     },
     onApplicationShutdown: async () => {
       await this.queue_.close()
-      this.eventRedisConnection_.disconnect()
+      await this.eventRedisConnection_.quit()
     },
     onApplicationPrepareShutdown: async () => {
+      // Wait for worker to finish processing current jobs
       await this.bullWorker_?.close()
     },
   }
