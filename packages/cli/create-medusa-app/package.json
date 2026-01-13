@@ -9,8 +9,9 @@
   "scripts": {
     "dev": "node --loader ts-node/esm src/index.ts",
     "start": "node dist/index.js",
-    "build": "tsc",
-    "watch": "yarn run -T tsc --watch"
+    "build": "yarn run -T tsc",
+    "watch": "yarn run -T tsc --watch",
+    "test": "../../../node_modules/.bin/jest --passWithNoTests src"
   },
   "dependencies": {
     "@medusajs/deps": "2.12.5",
