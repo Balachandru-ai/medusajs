@@ -8,6 +8,7 @@ import {
   AbstractEventProvider,
   EventPriority,
   isPresent,
+  MedusaError,
   promiseAll,
 } from "@medusajs/framework/utils"
 import {
@@ -93,6 +94,7 @@ export class RedisEventProvider extends AbstractEventProvider<EventRedisProvider
 
   __hooks = {
     onApplicationStart: async () => {
+      await this.ensureRedisConnection()
       await this.bullWorker_?.run()
     },
     onApplicationShutdown: async () => {
@@ -103,6 +105,39 @@ export class RedisEventProvider extends AbstractEventProvider<EventRedisProvider
       // Wait for worker to finish processing current jobs
       await this.bullWorker_?.close()
     },
+  }
+
+  private async ensureRedisConnection(): Promise<void> {
+    const reconnectTasks: Promise<void>[] = []
+
+    if (this.eventRedisConnection_.status !== "ready") {
+      this.logger_.warn(
+        `[event-redis] Redis connection is not ready (status: ${this.eventRedisConnection_.status}). Attempting to reconnect...`
+      )
+      reconnectTasks.push(
+        this.eventRedisConnection_
+          .connect()
+          .then(() => {
+            this.logger_.info(
+              "[event-redis] Redis connection reestablished successfully"
+            )
+          })
+          .catch((error) => {
+            this.logger_.error(
+              "[event-redis] Failed to reconnect to Redis",
+              error
+            )
+            throw new MedusaError(
+              MedusaError.Types.DB_ERROR,
+              `[event-redis] Redis connection failed: ${error.message}`
+            )
+          })
+      )
+    }
+
+    if (reconnectTasks.length > 0) {
+      await promiseAll(reconnectTasks)
+    }
   }
 
   /**
@@ -167,11 +202,11 @@ export class RedisEventProvider extends AbstractEventProvider<EventRedisProvider
           finalOptions.priority > EventPriority.LOWEST)
       ) {
         this.logger_.warn(
-          `Invalid priority value: ${finalOptions.priority} for event ${eventData.name}. Must be between 1 and ${EventPriority.LOWEST}`
+          `[event-redis] Invalid priority value: ${finalOptions.priority} for event ${eventData.name}. Must be between 1 and ${EventPriority.LOWEST}`
         )
         finalOptions.priority = EventPriority.DEFAULT
         this.logger_.warn(
-          `Setting priority to default value: ${EventPriority.DEFAULT} for event ${eventData.name}`
+          `[event-redis] Setting priority to default value: ${EventPriority.DEFAULT} for event ${eventData.name}`
         )
       }
 
@@ -391,17 +426,17 @@ export class RedisEventProvider extends AbstractEventProvider<EventRedisProvider
     if (!opts.internal) {
       if (isRetry) {
         if (isFinalAttempt) {
-          this.logger_.info(`Final retry attempt for ${name}`)
+          this.logger_.info(`[event-redis] Final retry attempt for ${name}`)
         }
 
         this.logger_.info(
-          `Retrying ${name} which has ${eventSubscribers.length} subscribers (${subscribersInCurrentAttempt.length} of them failed)`
+          `[event-redis] Retrying ${name} which has ${eventSubscribers.length} subscribers (${subscribersInCurrentAttempt.length} of them failed)`
         )
       } else {
         const prioirityInfo =
           opts.priority != undefined ? ` (priority: ${opts.priority})` : ""
         this.logger_.info(
-          `Processing ${name}${prioirityInfo} which has ${eventSubscribers.length} subscribers`
+          `[event-redis] Processing ${name}${prioirityInfo} which has ${eventSubscribers.length} subscribers`
         )
       }
     }
@@ -424,8 +459,9 @@ export class RedisEventProvider extends AbstractEventProvider<EventRedisProvider
             return data
           })
         } catch (err) {
-          this.logger_?.warn(`An error occurred while processing ${name}:`)
-          this.logger_?.warn(err)
+          this.logger_?.warn(
+            `[event-redis] An error occurred while processing ${name}: ${err}`
+          )
 
           return err
         }
@@ -453,7 +489,7 @@ export class RedisEventProvider extends AbstractEventProvider<EventRedisProvider
 
       await job.updateData(job.data)
 
-      const errorMessage = `One or more subscribers of ${name} failed. Retrying...`
+      const errorMessage = `[event-redis] One or more subscribers of ${name} failed. Retrying...`
 
       this.logger_.warn(errorMessage)
 
@@ -463,7 +499,7 @@ export class RedisEventProvider extends AbstractEventProvider<EventRedisProvider
     if (didSubscribersFail && !isFinalAttempt) {
       // If retrying is not configured, we log a warning to allow server admins to recover manually
       this.logger_.warn(
-        `One or more subscribers of ${name} failed. Retrying is not configured. Use 'attempts' option when emitting events.`
+        `[event-redis] One or more subscribers of ${name} failed. Retrying is not configured. Use 'attempts' option when emitting events.`
       )
     }
 

@@ -21,7 +21,7 @@ export default async ({
 
   if (!redisUrl) {
     throw Error(
-      `No "redisUrl" provided in "${Modules.EVENT_BUS}" module, "event-redis" provider options. It is required for the "event-redis" provider.`
+      `[event-redis] No "redisUrl" provided in "${Modules.EVENT_BUS}" module, "event-redis" provider options. It is required for the "event-redis" provider.`
     )
   }
 
@@ -38,10 +38,12 @@ export default async ({
     await new Promise(async (resolve) => {
       await connection.connect(resolve)
     })
-    logger?.info(`Connection to Redis in "event-redis" provider established`)
+    logger?.info(
+      `[event-redis] Connection to Redis in "event-redis" provider established`
+    )
   } catch (err) {
-    throw new Error(
-      `An error occurred while connecting to Redis in provider "event-redis":${EOL} ${err}`
+    logger?.error(
+      `[event-redis] An error occurred while connecting to Redis in provider "event-redis":${EOL} ${err}`
     )
   }
 

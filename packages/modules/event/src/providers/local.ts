@@ -47,7 +47,7 @@ export class LocalEventProvider extends AbstractEventProvider {
       !eventData.options?.internal
     ) {
       this.logger_.info(
-        `Processing ${eventData.name} which has ${totalSubscribers} subscribers`
+        `[event-local] Processing ${eventData.name} which has ${totalSubscribers} subscribers`
       )
     }
   }
@@ -190,9 +190,8 @@ export class LocalEventProvider extends AbstractEventProvider {
         await subscriber(data)
       } catch (err) {
         this.logger_.error(
-          `An error occurred while processing ${event.toString()}:`
+          `[event-local] An error occurred while processing ${event.toString()}: ${err}`
         )
-        this.logger_.error(err)
       }
     }
 
