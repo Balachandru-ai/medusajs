@@ -1552,6 +1552,10 @@ export const filesMap = [
     "pathname": "/troubleshooting/medusa-admin/no-widget-route"
   },
   {
+    "filePath": "/www/apps/resources/app/troubleshooting/nextjs-node-25/page.mdx",
+    "pathname": "/troubleshooting/nextjs-node-25"
+  },
+  {
     "filePath": "/www/apps/resources/app/troubleshooting/nextjs-starter-rewrites/page.mdx",
     "pathname": "/troubleshooting/nextjs-starter-rewrites"
   },
