@@ -1020,6 +1020,10 @@ export const filesMap = [
     "pathname": "/integrations/guides/payload"
   },
   {
+    "filePath": "/www/apps/resources/app/integrations/guides/paypal/page.mdx",
+    "pathname": "/integrations/guides/paypal"
+  },
+  {
     "filePath": "/www/apps/resources/app/integrations/guides/resend/page.mdx",
     "pathname": "/integrations/guides/resend"
   },

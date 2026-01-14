@@ -9577,6 +9577,14 @@ const generatedgeneratedCommerceModulesSidebarSidebar = {
               "path": "/commerce-modules/payment/payment-provider/stripe",
               "title": "Stripe",
               "children": []
+            },
+            {
+              "loaded": true,
+              "isPathHref": true,
+              "type": "ref",
+              "path": "/integrations/guides/paypal",
+              "title": "PayPal",
+              "children": []
             }
           ]
         },
