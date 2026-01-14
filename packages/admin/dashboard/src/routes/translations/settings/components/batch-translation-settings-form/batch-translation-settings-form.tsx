@@ -123,12 +123,7 @@ export const BatchTranslationSettingsForm = ({
   const [sortOrder, setSortOrder] = useState<SortOrder>("asc")
   const treeRef = useRef<EntitySelectorTreeRef>(null)
 
-  const { mutateAsync, isPending: isMutating } = useBatchTranslationSettings({
-    onSuccess: async () => {
-      toast.success(t("general.success"))
-      handleSuccess()
-    },
-  })
+  const { mutateAsync, isPending: isMutating } = useBatchTranslationSettings()
 
   const entities = useMemo(() => {
     if (!translation_settings) {
@@ -183,7 +178,15 @@ export const BatchTranslationSettingsForm = ({
     )
 
     if (batchRequest.create || batchRequest.update) {
-      await mutateAsync(batchRequest)
+      await mutateAsync(batchRequest, {
+        onSuccess: () => {
+          toast.success(t("general.success"))
+          handleSuccess()
+        },
+        onError: (error) => {
+          toast.error(error.message)
+        },
+      })
     } else {
       handleSuccess()
     }
