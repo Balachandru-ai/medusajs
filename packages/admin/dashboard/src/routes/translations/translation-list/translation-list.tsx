@@ -28,7 +28,7 @@ export const TranslationList = () => {
 
   const { store, isPending, isError, error } = useStore()
   const {
-    translatable_fields,
+    translation_settings,
     isPending: isTranslationSettingsPending,
     isError: isTranslationSettingsError,
     error: translationSettingsError,
@@ -44,11 +44,13 @@ export const TranslationList = () => {
         store?.supported_locales?.map(
           (suportedLocale) => suportedLocale.locale_code
         ) ?? [],
-      entity_types: Object.keys(translatable_fields ?? {}),
+      entity_types: Object.keys(translation_settings ?? {}),
     },
     {
       enabled:
-        !!translatable_fields && !!store && store.supported_locales?.length > 0,
+        !!translation_settings &&
+        !!store &&
+        store.supported_locales?.length > 0,
     }
   )
 
@@ -59,17 +61,17 @@ export const TranslationList = () => {
   const hasLocales = (store?.supported_locales ?? []).length > 0
 
   const translatableEntities: TranslatableEntity[] = useMemo(() => {
-    if (!translatable_fields) {
+    if (!translation_settings) {
       return []
     }
 
     return (
-      Object.entries(translatable_fields)
+      Object.entries(translation_settings)
         .filter(
           ([entity]) =>
             !["product_option", "product_option_value"].includes(entity)
         )
-        .map(([entity, fields]) => {
+        .map(([entity, setting]) => {
           const entityStatistics = statistics?.[entity] ?? {
             translated: 0,
             expected: 0,
@@ -81,7 +83,7 @@ export const TranslationList = () => {
               .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
               .join(" "),
             reference: entity,
-            translatableFields: fields,
+            translatableFields: setting.fields,
             translatedCount: entityStatistics.translated,
             totalCount: entityStatistics.expected,
           }
@@ -89,7 +91,7 @@ export const TranslationList = () => {
         // sort by label alphabetically
         .sort((a, b) => a.label.localeCompare(b.label))
     )
-  }, [translatable_fields, statistics])
+  }, [translation_settings, statistics])
 
   const handleManageLocales = useCallback(() => {
     navigate("/settings/translations/add-locales")
@@ -103,7 +105,7 @@ export const TranslationList = () => {
     !!store &&
     !isPending &&
     !isTranslationSettingsPending &&
-    !!translatable_fields &&
+    !!translation_settings &&
     ((!!statistics && !isTranslationStatisticsPending) || !hasLocales)
 
   if (!isReady) {
