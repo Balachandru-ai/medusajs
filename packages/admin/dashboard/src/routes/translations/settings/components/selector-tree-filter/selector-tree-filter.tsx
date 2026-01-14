@@ -1,6 +1,7 @@
 import { Collapse, DescendingSorting } from "@medusajs/icons"
-import { Button, clx, IconButton, Input } from "@medusajs/ui"
+import { Button, clx, IconButton, Input, Tooltip } from "@medusajs/ui"
 import { SegmentedControl } from "../../../../../components/common/segmented-control"
+import { useTranslation } from "react-i18next"
 
 type ViewMode = "full" | "selected"
 
@@ -11,6 +12,7 @@ type SelectorTreeFilterProps = {
   onViewModeChange: (value: ViewMode) => void
   onSelectAll: () => void
   onSortToggle: () => void
+  sortOrder: "asc" | "desc"
   onCollapseAll: () => void
   className?: string
 }
@@ -22,16 +24,18 @@ export const SelectorTreeFilter = ({
   onViewModeChange,
   onSelectAll,
   onSortToggle,
+  sortOrder,
   onCollapseAll,
   className,
 }: SelectorTreeFilterProps) => {
+  const { t } = useTranslation()
   return (
     <div className={clx("flex items-center gap-x-2", className)}>
       <div className="flex-1">
         <Input
           size="small"
           type="search"
-          placeholder="Search"
+          placeholder={t("general.search")}
           value={searchQuery}
           onChange={(e) => onSearchChange(e.target.value)}
           className="w-full"
@@ -41,19 +45,34 @@ export const SelectorTreeFilter = ({
         value={viewMode}
         onValueChange={(value) => onViewModeChange(value as ViewMode)}
         options={[
-          { value: "full", label: "Full list" },
-          { value: "selected", label: "Selected" },
+          { value: "full", label: t("general.fullList") },
+          { value: "selected", label: t("general.selected") },
         ]}
       />
-      <Button onClick={onSelectAll} size="small" variant="secondary">
-        Select all
+      <Button
+        onClick={onSelectAll}
+        size="small"
+        variant="secondary"
+        type="button"
+      >
+        {t("general.selectAll")}
       </Button>
-      <IconButton size="small" onClick={onSortToggle}>
-        <DescendingSorting />
-      </IconButton>
-      <IconButton size="small" onClick={onCollapseAll}>
-        <Collapse />
-      </IconButton>
+      <Tooltip
+        content={
+          sortOrder === "desc"
+            ? t("filters.sorting.alphabeticallyAsc")
+            : t("filters.sorting.alphabeticallyDesc")
+        }
+      >
+        <IconButton size="small" onClick={onSortToggle} type="button">
+          <DescendingSorting />
+        </IconButton>
+      </Tooltip>
+      <Tooltip content={t("filters.collapse.all")}>
+        <IconButton size="small" onClick={onCollapseAll} type="button">
+          <Collapse />
+        </IconButton>
+      </Tooltip>
     </div>
   )
 }

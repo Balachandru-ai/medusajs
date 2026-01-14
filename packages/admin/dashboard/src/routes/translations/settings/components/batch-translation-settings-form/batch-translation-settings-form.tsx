@@ -180,7 +180,7 @@ export const BatchTranslationSettingsForm = ({
     if (batchRequest.create || batchRequest.update) {
       await mutateAsync(batchRequest, {
         onSuccess: () => {
-          toast.success(t("general.success"))
+          toast.success(t("translations.settings.successToast"))
           handleSuccess()
         },
         onError: (error) => {
@@ -201,6 +201,7 @@ export const BatchTranslationSettingsForm = ({
         <RouteDrawer.Body className="p-0">
           <div className="px-6 py-4">
             <SelectorTreeFilter
+              sortOrder={sortOrder}
               searchQuery={searchQuery}
               onSearchChange={setSearchQuery}
               viewMode={viewMode}
