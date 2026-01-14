@@ -1851,6 +1851,12 @@ export function getRouteMap({
                   path: "",
                   lazy: () =>
                     import("../../routes/translations/translation-list"),
+                  children: [
+                    {
+                      path: "settings",
+                      lazy: () => import("../../routes/translations/settings"),
+                    },
+                  ],
                 },
                 {
                   path: "edit",
@@ -1860,10 +1866,6 @@ export function getRouteMap({
                 {
                   path: "add-locales",
                   lazy: () => import("../../routes/translations/add-locales"),
-                },
-                {
-                  path: "settings",
-                  lazy: () => import("../../routes/translations/settings"),
                 },
               ],
             },
