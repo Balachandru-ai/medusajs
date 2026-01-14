@@ -66,5 +66,7 @@ describe("configLoader", () => {
     expect(configModule.projectConfig.databaseName).toBe("foo")
     // http config should still be built with defaults even without throwing errors
     expect(configModule.projectConfig.http).toBeDefined()
+    expect(configModule.projectConfig.http.jwtSecret).toBe("supersecret")
+    expect(configModule.projectConfig.http.cookieSecret).toBe("supersecret")
   })
 })

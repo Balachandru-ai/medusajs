@@ -101,12 +101,14 @@ export class ConfigManager {
       )
     }
 
-    if (throwOnError && !http.jwtSecret) {
-      this.rejectErrors(
-        `http.jwtSecret not found.${
-          this.#isProduction ? "" : "Using default 'supersecret'."
-        }`
-      )
+    if (!http.jwtSecret) {
+      if (throwOnError) {
+        this.rejectErrors(
+          `http.jwtSecret not found.${
+            this.#isProduction ? "" : "Using default 'supersecret'."
+          }`
+        )
+      }
 
       http.jwtSecret = "supersecret"
     }
@@ -114,12 +116,14 @@ export class ConfigManager {
     http.cookieSecret = (projectConfig.http?.cookieSecret ??
       process.env.COOKIE_SECRET)!
 
-    if (throwOnError && !http.cookieSecret) {
-      this.rejectErrors(
-        `http.cookieSecret not found.${
-          this.#isProduction ? "" : " Using default 'supersecret'."
-        }`
-      )
+    if (!http.cookieSecret) {
+      if (throwOnError) {
+        this.rejectErrors(
+          `http.cookieSecret not found.${
+            this.#isProduction ? "" : " Using default 'supersecret'."
+          }`
+        )
+      }
 
       http.cookieSecret = "supersecret"
     }

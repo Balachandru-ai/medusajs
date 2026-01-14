@@ -25,6 +25,8 @@ container.register(
  *
  * @param entryDirectory The directory to find the config file from
  * @param configFileName The name of the config file to search for in the entry directory
+ * @param options.throwOnError When false, missing config files and validation errors won't throw.
+ * Useful for build/compile commands. Defaults to true.
  */
 export async function configLoader(
   entryDirectory: string,
