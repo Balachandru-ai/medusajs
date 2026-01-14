@@ -139,22 +139,28 @@ export class LocalEventProvider extends AbstractEventProvider {
       const options_ = options as { delay: number }
       const delay = (ms?: number) => (ms ? setTimeout(ms) : Promise.resolve())
 
-      delay(options_?.delay).then(async () => {
-        // Call interceptors before emitting grouped events
-        void this.callInterceptors(event, { isGrouped: true, eventGroupId })
+      delay(options_?.delay)
+        .then(async () => {
+          // Call interceptors before emitting grouped events
+          void this.callInterceptors(event, { isGrouped: true, eventGroupId })
 
-        if (eventListenersCount) {
-          this.eventEmitter_.emit(event.name, eventBody)
-        }
+          if (eventListenersCount) {
+            this.eventEmitter_.emit(event.name, eventBody)
+          }
 
-        if (hasStarSubscriber) {
-          this.eventEmitter_.emit("*", eventBody)
-        }
+          if (hasStarSubscriber) {
+            this.eventEmitter_.emit("*", eventBody)
+          }
 
-        const totalSubscribers =
-          eventListenersCount + (hasStarSubscriber ? 1 : 0)
-        this.logProcessingEvent(event, options, totalSubscribers)
-      })
+          const totalSubscribers =
+            eventListenersCount + (hasStarSubscriber ? 1 : 0)
+          this.logProcessingEvent(event, options, totalSubscribers)
+        })
+        .catch((err) => {
+          this.logger_.error(
+            `[event-local] An error occurred while releasing grouped event ${event.name}: ${err}`
+          )
+        })
     }
 
     await this.clearGroupedEvents(eventGroupId)

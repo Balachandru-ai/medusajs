@@ -204,10 +204,10 @@ export class RedisEventProvider extends AbstractEventProvider<EventRedisProvider
         this.logger_.warn(
           `[event-redis] Invalid priority value: ${finalOptions.priority} for event ${eventData.name}. Must be between 1 and ${EventPriority.LOWEST}`
         )
-        finalOptions.priority = EventPriority.DEFAULT
         this.logger_.warn(
           `[event-redis] Setting priority to default value: ${EventPriority.DEFAULT} for event ${eventData.name}`
         )
+        finalOptions.priority = EventPriority.DEFAULT
       }
 
       return {
@@ -463,7 +463,7 @@ export class RedisEventProvider extends AbstractEventProvider<EventRedisProvider
           })
         } catch (err) {
           this.logger_?.warn(
-            `[event-redis] An error occurred while processing ${name}: ${err}`
+            `[event-redis] An error occurred while processing event ${name}: ${err}`
           )
 
           return err
