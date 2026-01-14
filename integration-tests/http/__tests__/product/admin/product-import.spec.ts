@@ -3,9 +3,10 @@ import {
   medusaIntegrationTestRunner,
   TestEventUtils,
 } from "@medusajs/test-utils"
-import { IEventBusModuleService } from "@medusajs/types"
+import { IEventBusModuleService, IEventProvider } from "@medusajs/types"
 import { CommonEvents, Modules } from "@medusajs/utils"
 import FormData from "form-data"
+import EventEmitter from "events"
 import fs from "fs/promises"
 import path from "path"
 import {
@@ -13,6 +14,11 @@ import {
   createAdminUser,
 } from "../../../../helpers/create-admin-user"
 import { getProductFixture } from "../../../../helpers/fixtures"
+
+const LOCAL_PROVIDER_ID = "local"
+type EventBus = IEventBusModuleService & {
+  getProvider: (id: string) => IEventProvider & { eventEmitter_: EventEmitter }
+}
 
 const UNALLOWED_EXPORTED_COLUMNS = [
   "Product Is Giftcard",
@@ -67,9 +73,9 @@ medusaIntegrationTestRunner({
     let newTag
     let shippingProfile
 
-    let eventBus: IEventBusModuleService
+    let eventBus: EventBus
     beforeAll(async () => {
-      eventBus = getContainer().resolve(Modules.EVENT_BUS)
+      eventBus = getContainer().resolve<EventBus>(Modules.EVENT_BUS)
     })
 
     beforeEach(async () => {
@@ -163,7 +169,7 @@ medusaIntegrationTestRunner({
     })
 
     afterEach(() => {
-      ;(eventBus as any).eventEmitter_.removeAllListeners()
+      eventBus.getProvider(LOCAL_PROVIDER_ID).eventEmitter_.removeAllListeners()
     })
 
     describe("POST /admin/products/import", () => {

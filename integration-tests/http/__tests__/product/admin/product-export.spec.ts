@@ -1,4 +1,4 @@
-import { IEventBusModuleService } from "@medusajs/types"
+import { IEventBusModuleService, IEventProvider } from "@medusajs/types"
 import { CommonEvents, Modules } from "@medusajs/utils"
 import os from "os"
 import fs from "fs/promises"
@@ -13,8 +13,14 @@ import {
 } from "../../../../helpers/create-admin-user"
 import { getProductFixture } from "../../../../helpers/fixtures"
 import { csv2json } from "json-2-csv"
+import EventEmitter from "events"
 
 jest.setTimeout(50000)
+
+const LOCAL_PROVIDER_ID = "local"
+type EventBus = IEventBusModuleService & {
+  getProvider: (id: string) => IEventProvider & { eventEmitter_: EventEmitter }
+}
 
 const getCSVContents = async (filePath: string) => {
   const asLocalPath = filePath.replace("http://localhost:9000", os.tmpdir())
@@ -58,9 +64,9 @@ medusaIntegrationTestRunner({
     let newTag
     let shippingProfile
 
-    let eventBus: IEventBusModuleService
+    let eventBus: EventBus
     beforeAll(async () => {
-      eventBus = getContainer().resolve(Modules.EVENT_BUS)
+      eventBus = getContainer().resolve<EventBus>(Modules.EVENT_BUS)
     })
 
     beforeEach(async () => {
@@ -217,7 +223,7 @@ medusaIntegrationTestRunner({
     })
 
     afterEach(() => {
-      ;(eventBus as any).eventEmitter_.removeAllListeners()
+      eventBus.getProvider(LOCAL_PROVIDER_ID).eventEmitter_.removeAllListeners()
     })
 
     describe("POST /admin/products/export", () => {

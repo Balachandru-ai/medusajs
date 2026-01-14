@@ -2,7 +2,11 @@ import fs from "fs/promises"
 import path, { extname } from "path"
 import { csv2json, json2csv } from "json-2-csv"
 import { CommonEvents, Modules } from "@medusajs/utils"
-import { IEventBusModuleService, IFileModuleService } from "@medusajs/types"
+import {
+  IEventBusModuleService,
+  IEventProvider,
+  IFileModuleService,
+} from "@medusajs/types"
 import {
   TestEventUtils,
   medusaIntegrationTestRunner,
@@ -12,6 +16,12 @@ import {
   createAdminUser,
 } from "../../../../helpers/create-admin-user"
 import { getProductFixture } from "../../../../helpers/fixtures"
+import EventEmitter from "events"
+
+const LOCAL_PROVIDER_ID = "local"
+type EventBus = IEventBusModuleService & {
+  getProvider: (id: string) => IEventProvider & { eventEmitter_: EventEmitter }
+}
 
 const UNALLOWED_EXPORTED_COLUMNS = [
   "Product Is Giftcard",
@@ -69,10 +79,10 @@ medusaIntegrationTestRunner({
     let newTag
     let shippingProfile
 
-    let eventBus: IEventBusModuleService
+    let eventBus: EventBus
     let fileModule: IFileModuleService
     beforeAll(async () => {
-      eventBus = getContainer().resolve(Modules.EVENT_BUS)
+      eventBus = getContainer().resolve<EventBus>(Modules.EVENT_BUS)
       fileModule = getContainer().resolve(Modules.FILE)
     })
 
@@ -167,7 +177,7 @@ medusaIntegrationTestRunner({
     })
 
     afterEach(() => {
-      ;(eventBus as any).eventEmitter_.removeAllListeners()
+      eventBus.getProvider(LOCAL_PROVIDER_ID).eventEmitter_.removeAllListeners()
     })
 
     describe("POST /admin/products/imports", () => {

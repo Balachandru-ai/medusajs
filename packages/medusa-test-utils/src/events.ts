@@ -1,8 +1,15 @@
+import { IEventProvider } from "@medusajs/types"
 import { EventEmitter } from "events"
 
-type EventBus = {
-  eventEmitter_: EventEmitter
-}
+type EventBus =
+  | {
+      eventEmitter_: EventEmitter
+    }
+  | {
+      getProvider: (
+        id: string
+      ) => IEventProvider & { eventEmitter_: EventEmitter }
+    }
 
 type WaitSubscribersExecutionOptions = {
   /** Timeout in milliseconds for waiting for the event. Defaults to 15000ms. */
@@ -46,7 +53,10 @@ const doWaitSubscribersExecution = (
   eventBus: EventBus,
   { timeout = 15000, triggerCount = 1 }: WaitSubscribersExecutionOptions = {}
 ): Promise<any> => {
-  const eventEmitter = eventBus.eventEmitter_
+  const eventEmitter =
+    "eventEmitter_" in eventBus
+      ? eventBus.eventEmitter_
+      : eventBus.getProvider?.("local")?.eventEmitter_
   const subscriberPromises: Promise<any>[] = []
   const [timeoutPromise, clearTimeout] = createTimeoutPromise(
     timeout,
