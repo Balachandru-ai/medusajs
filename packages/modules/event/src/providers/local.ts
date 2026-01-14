@@ -94,7 +94,7 @@ export class LocalEventProvider extends AbstractEventProvider {
         eventData.name
       )
 
-      delay(options_?.delay).then(async () => {
+      void delay(options_?.delay).then(async () => {
         // Call interceptors before emitting
         void this.callInterceptors(eventData, { isGrouped: false })
 

@@ -257,11 +257,11 @@ export class RedisEventProvider extends AbstractEventProvider<EventRedisProvider
         this.callInterceptors(eventData, { isGrouped: false })
       )
 
+      const wilcardSubscribers = this.eventToSubscribersMap.get("*") || []
       const eventsWithSubscribers = eventsToEmit.filter((eventData) => {
         const eventSubscribers =
           this.eventToSubscribersMap.get(eventData.name) || []
-        const wildcardSubscribers = this.eventToSubscribersMap.get("*") || []
-        return eventSubscribers.length || wildcardSubscribers.length
+        return eventSubscribers.length || wilcardSubscribers.length
       })
 
       if (eventsWithSubscribers.length) {
@@ -319,14 +319,15 @@ export class RedisEventProvider extends AbstractEventProvider<EventRedisProvider
 
   async releaseGroupedEvents(eventGroupId: string) {
     const groupedEvents = await this.getGroupedEvents(eventGroupId)
-
     // Call interceptors before emitting grouped events
     // Extract the original messages from the job data structure
     groupedEvents.map((jobData) => {
+      const { name, data } = jobData
+      const { metadata, ...restData } = data
       const message = {
-        name: jobData.name,
-        data: jobData.data,
-        metadata: jobData.data.metadata,
+        name: name,
+        data: restData,
+        metadata: metadata,
       }
       this.callInterceptors(message as any, {
         isGrouped: true,
@@ -401,7 +402,9 @@ export class RedisEventProvider extends AbstractEventProvider<EventRedisProvider
    * @param job The job object
    * @return resolves to the results of the subscriber calls.
    */
-  worker_ = async <T>(job: BullJob<T>): Promise<unknown> => {
+  worker_ = async <T extends Record<string, unknown>>(
+    job: BullJob<T>
+  ): Promise<unknown> => {
     const { data, name, opts } = job
     const eventSubscribers = this.eventToSubscribersMap.get(name) || []
     const wildcardSubscribers = this.eventToSubscribersMap.get("*") || []

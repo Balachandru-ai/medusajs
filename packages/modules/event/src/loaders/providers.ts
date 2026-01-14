@@ -78,15 +78,26 @@ export default async ({
     registerServiceFn: registrationFn,
   })
 
+  const defaults: ModuleProvider[] = []
+
   const isSingleProvider = options?.providers?.length === 1
   let hasDefaultProvider = false
   for (const provider of options?.providers || []) {
     if (provider.is_default || isSingleProvider) {
       if (provider.is_default) {
         hasDefaultProvider = true
+        defaults.push(provider)
       }
       container.register(EventDefaultProvider, asValue(provider.id))
     }
+  }
+
+  if (defaults.length > 1) {
+    throw new Error(
+      `[event-module] Multiple default providers found: ${defaults
+        .map((provider) => provider.id)
+        .join(", ")}`
+    )
   }
 
   if (!hasDefaultProvider) {

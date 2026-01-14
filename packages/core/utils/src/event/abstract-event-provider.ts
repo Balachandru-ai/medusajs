@@ -1,4 +1,9 @@
-import { EventBusTypes, IEventProvider, InterceptorSubscriber } from "@medusajs/types"
+import {
+  EventBusTypes,
+  IEventProvider,
+  InterceptorSubscriber,
+  Logger,
+} from "@medusajs/types"
 import { ulid } from "ulid"
 
 /**
@@ -93,6 +98,8 @@ export abstract class AbstractEventProvider<TConfig = Record<string, unknown>>
    */
   protected readonly config: TConfig
 
+  protected readonly logger_: Logger
+
   /**
    * Map of event names to their subscriber descriptors.
    */
@@ -151,6 +158,7 @@ export abstract class AbstractEventProvider<TConfig = Record<string, unknown>>
   ) {
     this.container = cradle
     this.config = config
+    this.logger_ = ("logger" in cradle ? cradle.logger : console) as Logger
   }
 
   /**
@@ -344,7 +352,7 @@ export abstract class AbstractEventProvider<TConfig = Record<string, unknown>>
         await interceptor(message, context)
       } catch (error) {
         // Log error but don't stop other interceptors or the emission
-        console.error("Error in event bus interceptor:", error)
+        this.logger_.error("Error in event bus interceptor:", error)
       }
     })
   }
