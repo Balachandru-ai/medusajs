@@ -1002,7 +1002,10 @@ medusaIntegrationTestRunner({
             invoke: async function failStep({ context }) {
               eventGroupId = context!.eventGroupId!
               grouppedEventBefore = (
-                (eventBus as any).groupedEventsMap_ as Map<string, any>
+                (eventBus as any).getProvider("local").groupedEventsMap_ as Map<
+                  string,
+                  any
+                >
               ).get(context!.eventGroupId!)
 
               throw new Error(
@@ -1019,9 +1022,12 @@ medusaIntegrationTestRunner({
           })
 
           const grouppedEventAfter =
-            ((eventBus as any).groupedEventsMap_ as Map<string, any>).get(
-              eventGroupId
-            ) ?? []
+            (
+              (eventBus as any).getProvider("local").groupedEventsMap_ as Map<
+                string,
+                any
+              >
+            ).get(eventGroupId) ?? []
 
           expect(grouppedEventBefore).toHaveLength(17)
           expect(grouppedEventAfter).toHaveLength(0) // events have been compensated
