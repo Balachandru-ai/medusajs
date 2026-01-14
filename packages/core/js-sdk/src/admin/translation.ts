@@ -134,8 +134,8 @@ export class Translation {
    * sdk.admin.translation.settings({
    *   entity_type: "product"
    * })
-   * .then(({ translatable_fields }) => {
-   *   console.log(translatable_fields)
+   * .then(({ translation_settings }) => {
+   *   console.log(translation_settings)
    * })
    * ```
    *
@@ -143,8 +143,8 @@ export class Translation {
    *
    * ```ts
    * sdk.admin.translation.settings()
-   * .then(({ translatable_fields }) => {
-   *   console.log(translatable_fields)
+   * .then(({ translation_settings }) => {
+   *   console.log(translation_settings)
    * })
    * ```
    */
