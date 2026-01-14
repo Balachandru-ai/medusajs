@@ -1,4 +1,5 @@
 import {
+  createAndLinkProductOptionsToProductWorkflow,
   setProductProductOptionsWorkflow,
   setProductProductOptionsWorkflowId,
   updateProductOptionsWorkflow,
@@ -278,7 +279,9 @@ medusaIntegrationTestRunner({
                 product_option_id: option.id,
               },
             ])
-          ).rejects.toThrow("Duplicate product option assignments are not allowed")
+          ).rejects.toThrow(
+            "Duplicate product option assignments are not allowed"
+          )
 
           const [reloadedProduct] = await service.listProducts(
             { id: [product.id] },
@@ -577,6 +580,64 @@ medusaIntegrationTestRunner({
             )
           })
 
+          it("should remove newly added values after a failed update", async () => {
+            const workflow = setProductProductOptionsWorkflow(appContainer)
+
+            workflow.appendAction("throw", setProductProductOptionsWorkflowId, {
+              invoke: async function failStep() {
+                throw new Error(`Fail`)
+              },
+            })
+
+            const product = await service.createProducts({
+              title: "Test Product",
+              shipping_profile_id: shippingProfile.id,
+              options: [
+                {
+                  title: "Size",
+                  values: ["S"],
+                },
+              ],
+            })
+
+            const option = product.options[0]
+
+            const { errors } = await workflow.run({
+              input: {
+                product_id: product.id,
+                update: [
+                  {
+                    product_option_id: option.id,
+                    add: [{ value: "M" }],
+                  },
+                ],
+              },
+              throwOnError: false,
+            })
+
+            expect(errors).toEqual([
+              {
+                action: "throw",
+                handlerType: "invoke",
+                error: expect.objectContaining({
+                  message: `Fail`,
+                }),
+              },
+            ])
+
+            const [compensatedProduct] = await service.listProducts(
+              { id: [product.id] },
+              { relations: ["options.values"] }
+            )
+
+            const compensatedValues = compensatedProduct.options[0].values.map(
+              (value) => value.value
+            )
+
+            expect(compensatedValues).toHaveLength(1)
+            expect(compensatedValues).toEqual(expect.arrayContaining(["S"]))
+          })
+
           it("should not invert no-op updates when compensating", async () => {
             const workflow = setProductProductOptionsWorkflow(appContainer)
 
@@ -665,6 +726,177 @@ medusaIntegrationTestRunner({
               expect.arrayContaining(["S", "M"])
             )
           })
+        })
+      })
+
+      describe("createAndLinkProductOptionsToProductWorkflow", () => {
+        it("should create and link option values with update.add", async () => {
+          const workflow =
+            createAndLinkProductOptionsToProductWorkflow(appContainer)
+
+          const product = await service.createProducts({
+            title: "Exclusive Option Product",
+            shipping_profile_id: shippingProfile.id,
+            options: [
+              {
+                title: "Size",
+                values: ["S"],
+              },
+            ],
+          })
+
+          const option = product.options[0]
+          const existingValueId = option.values[0].id
+
+          await workflow.run({
+            input: {
+              product_id: product.id,
+              update: [
+                {
+                  product_option_id: option.id,
+                  add: [existingValueId, { value: "M" }], // this is a way to add a value to an existing option
+                },
+              ],
+            },
+          })
+
+          const [reloadedProduct] = await service.listProducts(
+            { id: [product.id] },
+            { relations: ["options.values"] }
+          )
+
+          const linkedValues = reloadedProduct.options[0].values.map(
+            (value) => value.value
+          )
+
+          expect(linkedValues).toHaveLength(2)
+          expect(linkedValues).toEqual(expect.arrayContaining(["S", "M"]))
+
+          const [reloadedOption] = await service.listProductOptions(
+            { id: [option.id] },
+            { relations: ["values"] }
+          )
+
+          const optionValues = reloadedOption.values.map((value) => value.value)
+          expect(optionValues).toHaveLength(2)
+          expect(optionValues).toEqual(expect.arrayContaining(["S", "M"]))
+        })
+
+        // todo: should we consider only allowing creation of new values for non-exclusive options with this product sepcific flow?
+        it("should create values for non-exclusive options", async () => {
+          const workflow =
+            createAndLinkProductOptionsToProductWorkflow(appContainer)
+
+          const product = await service.createProducts({
+            title: "Global Option Product",
+            shipping_profile_id: shippingProfile.id,
+          })
+
+          const option = await service.createProductOptions({
+            title: "Material",
+            is_exclusive: false,
+            values: ["Cotton"],
+          })
+
+          await workflow.run({
+            input: {
+              product_id: product.id,
+              add: [
+                {
+                  id: option.id,
+                  value_ids: [option.values[0].id],
+                },
+              ],
+              update: [
+                {
+                  product_option_id: option.id,
+                  add: [{ value: "Wool" }],
+                },
+              ],
+            },
+          })
+
+          const [reloadedOption] = await service.listProductOptions(
+            { id: [option.id] },
+            { relations: ["values"] }
+          )
+          expect(reloadedOption.values).toHaveLength(2)
+          expect(reloadedOption.values.map((value) => value.value)).toEqual(
+            expect.arrayContaining(["Cotton", "Wool"])
+          )
+
+          const [reloadedProduct] = await service.listProducts(
+            { id: [product.id] },
+            { relations: ["options.values"] }
+          )
+          const productOption = reloadedProduct.options.find(
+            (productOption) => productOption.id === option.id
+          )
+          expect(productOption?.values.map((value) => value.value)).toEqual(
+            expect.arrayContaining(["Cotton", "Wool"])
+          )
+        })
+
+        it("should merge created values when adding an exclusive option with value ids", async () => {
+          const workflow =
+            createAndLinkProductOptionsToProductWorkflow(appContainer)
+
+          const product = await service.createProducts({
+            title: "Merge Values Product",
+            shipping_profile_id: shippingProfile.id,
+          })
+
+          const option = await service.createProductOptions({
+            title: "Size",
+            is_exclusive: true,
+            values: ["S"],
+          })
+
+          await workflow.run({
+            input: {
+              product_id: product.id,
+              add: [
+                {
+                  id: option.id,
+                  value_ids: [option.values[0].id],
+                },
+                {
+                  // add new option
+                  title: "Material",
+                  is_exclusive: true,
+                  values: ["Cotton"],
+                },
+              ],
+              update: [
+                {
+                  product_option_id: option.id,
+                  add: [{ value: "M" }], // add new value for Size
+                },
+              ],
+            },
+          })
+
+          const [reloadedProduct] = await service.listProducts(
+            { id: [product.id] },
+            { relations: ["options.values"] }
+          )
+
+          const linkedOption = reloadedProduct.options.find(
+            (productOption) => productOption.id === option.id
+          )
+          const materialOption = reloadedProduct.options.find(
+            (productOption) => productOption.title === "Material"
+          )
+
+          const linkedValues = linkedOption?.values.map((value) => value.value)
+
+          expect(linkedOption).toBeTruthy()
+          expect(linkedValues).toHaveLength(2)
+          expect(linkedValues).toEqual(expect.arrayContaining(["S", "M"]))
+          expect(materialOption).toBeTruthy()
+          expect(materialOption?.values.map((value) => value.value)).toEqual(
+            expect.arrayContaining(["Cotton"])
+          )
         })
       })
     })

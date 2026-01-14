@@ -1840,9 +1840,10 @@ export type ProductOptionProductValueUpdate = {
   product_id: string
 
   /**
-   * The IDs of specific option values to add to the product option.
+   * The IDs of specific option values to add to the product option, or value
+   * objects to create and link.
    */
-  add?: string[]
+  add?: (string | { value: string })[]
 
   /**
    * The IDs of specific option values to remove from the product option.

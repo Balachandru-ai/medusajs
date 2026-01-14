@@ -1546,7 +1546,7 @@ export interface IProductModuleService extends IModuleService {
    * await productModuleService.updateProductOptionValuesOnProduct({
    *   product_id: "prod_123",
    *   product_option_id: "opt_123",
-   *   add: ["optval_1"],
+   *   add: ["optval_1", { value: "M" }],
    *   remove: ["optval_2"],
    * })
    */
@@ -1569,7 +1569,7 @@ export interface IProductModuleService extends IModuleService {
    *   {
    *     product_id: "prod_123",
    *     product_option_id: "opt_123",
-   *     add: ["optval_1"],
+   *     add: ["optval_1", { value: "M" }],
    *   },
    * ])
    */

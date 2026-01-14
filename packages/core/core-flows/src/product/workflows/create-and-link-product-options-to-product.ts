@@ -56,9 +56,17 @@ export type LinkProductOptionsToProductWorkflowInput = {
      */
     product_option_id: string
     /**
-     * The IDs of the product option values to add.
+     * The IDs of the product option values to add, or new values to create.
      */
-    add?: string[]
+    add?: Array<
+      | string
+      | {
+          /**
+           * The value to create on the product option.
+           */
+          value: string
+        }
+    >
     /**
      * The IDs of the product option values to remove.
      */
@@ -101,7 +109,12 @@ export const createAndLinkProductOptionsToProductWorkflowId =
  *     update: [
  *       {
  *         product_option_id: "opt_123",
- *         add: ["optval_3"],
+ *         add: [
+ *           // add existing value
+ *           "optval_3",
+ *           // add new value
+ *           { value: "optval_4" }
+ *         ],
  *         remove: ["optval_1"]
  *       }
  *     ]

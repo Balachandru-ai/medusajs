@@ -1,6 +1,7 @@
 import { HttpTypes } from "@medusajs/types"
 import { Button, Hint, Label, toast, Tooltip } from "@medusajs/ui"
 import { InformationCircle } from "@medusajs/icons"
+import { useMemo } from "react"
 import { useTranslation } from "react-i18next"
 import * as zod from "zod"
 
@@ -22,10 +23,44 @@ type ProductOptionsManageFormProps = {
   product: HttpTypes.AdminProduct
 }
 
+type ManageOption = Pick<
+  HttpTypes.AdminProductOption,
+  "id" | "title" | "is_exclusive" | "values"
+>
+
+type ManageOptionFormValue = {
+  id?: string
+  value: string
+}
+
+type ManageOptionFormOption = {
+  id?: string
+  title: string
+  is_exclusive?: boolean
+  values: ManageOptionFormValue[]
+}
+
 const ProductOptionsManageSchema = zod.object({
-  option_ids: zod.array(zod.string()),
-  option_values: zod.record(zod.array(zod.string())).optional(),
+  options: zod.array(
+    zod.object({
+      id: zod.string().optional(),
+      title: zod.string(),
+      is_exclusive: zod.boolean().optional(),
+      values: zod.array(
+        zod.object({
+          id: zod.string().optional(),
+          value: zod.string(),
+        })
+      ),
+    })
+  ),
 })
+
+const LOCAL_OPTION_PREFIX = "new_"
+
+const isLocalOptionId = (id?: string) => {
+  return !!id && id.startsWith(LOCAL_OPTION_PREFIX)
+}
 
 export const ProductOptionsManageForm = ({
   product,
@@ -39,30 +74,49 @@ export const ProductOptionsManageForm = ({
 
   const form = useExtendableForm({
     defaultValues: {
-      option_ids: productOptionIds,
-      option_values: (() => {
-        const initialValues: Record<string, string[]> = {}
-        product.options?.forEach((opt) => {
-          initialValues[opt.id] = opt.values?.map((v) => v.id) || []
-        })
-        return initialValues
-      })(),
+      options:
+        product.options?.map((option) => ({
+          id: option.id,
+          title: option.title,
+          is_exclusive: option.is_exclusive,
+          values:
+            option.values?.map((value) => ({
+              id: value.id,
+              value: value.value,
+            })) || [],
+        })) || [],
     },
     schema: ProductOptionsManageSchema,
     configs: configs,
     data: product,
   })
 
-  const selectedOptionIds = form.watch("option_ids") || []
-  const selectedOptionValues = form.watch("option_values") || {}
+  const formOptions = form.watch("options") || []
+  const selectedOptionIds = useMemo(
+    () =>
+      formOptions.map((option) => option.id).filter((id): id is string => !!id),
+    [formOptions]
+  )
+  const selectedExistingOptionIds = useMemo(
+    () => selectedOptionIds.filter((id) => !isLocalOptionId(id)),
+    [selectedOptionIds]
+  )
+  const optionIdsForQuery = useMemo(
+    () =>
+      Array.from(new Set([...productOptionIds, ...selectedExistingOptionIds])),
+    [productOptionIds, selectedExistingOptionIds]
+  )
 
   const { options: productOptionChoices, isLoading } = useComboboxData({
-    queryKey: productOptionsQueryKeys.list({ is_exclusive: false }),
+    queryKey: productOptionsQueryKeys.list({
+      is_exclusive: false,
+      id: optionIdsForQuery,
+    }),
     queryFn: (params) =>
       sdk.admin.productOption.list({
         ...params,
-        ...(productOptionIds.length
-          ? { $or: [{ is_exclusive: false }, { id: productOptionIds }] }
+        ...(optionIdsForQuery.length
+          ? { $or: [{ is_exclusive: false }, { id: optionIdsForQuery }] }
           : { is_exclusive: false }),
       } as HttpTypes.AdminProductOptionListParams),
     getOptions: (data) =>
@@ -72,100 +126,300 @@ export const ProductOptionsManageForm = ({
       })),
   })
 
-  const { product_options = [] } = useProductOptions(
+  const { product_options: fetchedOptions = [] } = useProductOptions(
     {
-      id: selectedOptionIds,
-      limit: selectedOptionIds.length,
+      id: selectedExistingOptionIds,
+      limit: selectedExistingOptionIds.length,
     },
     {
-      enabled: !!selectedOptionIds.length,
+      enabled: !!selectedExistingOptionIds.length,
     }
   )
+  const optionDetailsById = useMemo(() => {
+    const merged = new Map<string, ManageOption>()
+
+    product.options?.forEach((option) => {
+      merged.set(option.id, option)
+    })
+    fetchedOptions.forEach((option) => {
+      merged.set(option.id, option)
+    })
+
+    return merged
+  }, [fetchedOptions, product.options])
+
+  const optionChoices = useMemo(() => {
+    const merged = new Map<string, { label: string; value: string }>()
+
+    productOptionChoices.forEach((option) => {
+      merged.set(option.value, option)
+    })
+    formOptions
+      .filter((option) => isLocalOptionId(option.id))
+      .forEach((option) => {
+        if (option.id && !merged.has(option.id)) {
+          merged.set(option.id, { label: option.title, value: option.id })
+        }
+      })
+
+    return [...merged.values()]
+  }, [formOptions, productOptionChoices])
 
   const { mutateAsync, isPending } = useLinkProductOptions(product.id)
 
   const handleProductOptionSelect = (optionIds: string[]) => {
-    form.setValue("option_ids", optionIds)
+    const currentOptions = form.getValues("options") || []
+    const createdOptionIdsByTitle = new Map(
+      currentOptions
+        .filter((option) => isLocalOptionId(option.id))
+        .map((option) => [option.title.toLowerCase(), option.id])
+    )
+    const optionIdsByLabel = new Map(
+      optionChoices.map((option) => [option.label.toLowerCase(), option.value])
+    )
+
+    const normalizedOptionIds = Array.from(
+      new Set( // deduplicate if needed
+        optionIds.flatMap((optionId) => {
+          /**
+           * map label from the combobox input to the option id
+           */
+
+          if (optionIdsByLabel.has(optionId.toLowerCase())) {
+            return [optionIdsByLabel.get(optionId.toLowerCase())!]
+          }
+
+          if (createdOptionIdsByTitle.has(optionId.toLowerCase())) {
+            return [createdOptionIdsByTitle.get(optionId.toLowerCase())!]
+          }
+
+          return optionChoices.some((option) => option.value === optionId)
+            ? [optionId]
+            : []
+        })
+      )
+    )
+
+    const optionsById = new Map(
+      currentOptions
+        .filter(
+          (option): option is ManageOptionFormOption & { id: string } =>
+            !!option.id
+        )
+        .map((option) => [option.id, option])
+    )
+    const nextOptions: ManageOptionFormOption[] = normalizedOptionIds.flatMap(
+      (optionId) => {
+        const existingOption = optionsById.get(optionId)
+        if (existingOption) {
+          return [existingOption]
+        }
+
+        const optionDetails = optionDetailsById.get(optionId)
+        const optionChoice = optionChoices.find(
+          (option) => option.value === optionId
+        )
+
+        if (!optionDetails && !optionChoice) {
+          return []
+        }
+
+        return [
+          {
+            id: optionId,
+            title: optionDetails?.title ?? optionChoice?.label ?? "",
+            is_exclusive: optionDetails?.is_exclusive,
+            values: [],
+          },
+        ]
+      }
+    )
+
+    form.setValue("options", nextOptions)
   }
 
-  const handleValueChange = (optionId: string, valueIds: string[]) => {
-    if (!valueIds.length) {
+  const handleValueChange = (
+    option: ManageOptionFormOption,
+    optionDetails: ManageOption | undefined,
+    valueIds: string[]
+  ) => {
+    if (!valueIds.length || !option.id) {
       return
     }
 
-    const currentOptionValues = form.getValues("option_values") || {}
-    const updatedSelectedValues = {
-      ...currentOptionValues,
-      [optionId]: valueIds,
-    }
+    const isExclusive =
+      optionDetails?.is_exclusive ??
+      option.is_exclusive ??
+      isLocalOptionId(option.id)
+    const existingValueLabels = new Map(
+      (optionDetails?.values ?? []).map((value) => [value.id, value.value])
+    )
 
-    form.setValue("option_values", updatedSelectedValues)
+    const nextValues: ManageOptionFormValue[] = []
+    const seenExisting = new Set<string>()
+    const seenNew = new Set<string>()
+
+    valueIds.forEach((valueId) => {
+      if (existingValueLabels.has(valueId)) {
+        if (!seenExisting.has(valueId)) {
+          nextValues.push({
+            id: valueId,
+            value: existingValueLabels.get(valueId) || valueId,
+          })
+          seenExisting.add(valueId)
+        }
+        return
+      }
+
+      // we can create new values for exclusive options only
+      if (isExclusive) {
+        const normalizedValue = valueId.trim()
+        if (normalizedValue && !seenNew.has(normalizedValue)) {
+          nextValues.push({ value: normalizedValue })
+          seenNew.add(normalizedValue)
+        }
+      }
+    })
+
+    const currentOptions = form.getValues("options") || []
+
+    form.setValue(
+      "options",
+      currentOptions.map((entry) =>
+        entry.id === option.id ? { ...entry, values: nextValues } : entry
+      )
+    )
   }
 
   const handleSubmit = form.handleSubmit(async (data) => {
-    const currentOptionIds = product.options?.map((opt) => opt.id) || []
-    const newOptionIds = data.option_ids
+    const currentOptions = product.options || []
+    const currentOptionIds = new Set(currentOptions.map((opt) => opt.id))
+    const currentOptionsById = new Map(
+      currentOptions.map((option) => [option.id, option])
+    )
+    const submittedOptions = data.options || []
+    const submittedOptionIds = new Set(
+      submittedOptions
+        .map((option) => option.id)
+        .filter((id): id is string => !!id)
+    )
 
-    const optionsToAdd: (string | { id: string; value_ids: string[] })[] = []
+    const optionsToAdd: NonNullable<HttpTypes.AdminLinkProductOptions["add"]> =
+      []
     const optionsToRemove: string[] = []
-    const optionsToUpdate: Array<{
-      product_option_id: string
-      add?: string[]
-      remove?: string[]
-    }> = []
+    const optionsToUpdate: NonNullable<
+      HttpTypes.AdminLinkProductOptions["update"]
+    > = []
 
     // Check for completely removed options
     for (const currentId of currentOptionIds) {
-      if (!newOptionIds.includes(currentId)) {
+      if (!submittedOptionIds.has(currentId)) {
         optionsToRemove.push(currentId)
       }
     }
 
     // Check for new options or options with changed values
-    for (const newId of newOptionIds) {
-      const isNewOption = !currentOptionIds.includes(newId)
+    for (const option of submittedOptions) {
+      const optionId = option.id
+      const isLocalOption = isLocalOptionId(optionId)
+      const optionDetails = optionId
+        ? optionDetailsById.get(optionId)
+        : undefined
+      const isExclusive =
+        optionDetails?.is_exclusive ?? option.is_exclusive ?? isLocalOption
 
-      if (isNewOption) {
-        const optionValues = data.option_values?.[newId]
+      const existingValueIds = Array.from(
+        new Set(
+          option.values
+            .map((value) => value.id)
+            .filter((id): id is string => !!id)
+        )
+      )
+      const createdValueNames = isExclusive
+        ? Array.from(
+            new Set(
+              option.values
+                .filter((value) => !value.id)
+                .map((value) => value.value.trim())
+                .filter(Boolean)
+            )
+          )
+        : []
 
-        if (!optionValues) {
+      /**
+       * handle newly created options
+       */
+      if (!optionId || isLocalOption) {
+        const newOptionValues = Array.from(
+          new Set(
+            option.values.map((value) => value.value.trim()).filter(Boolean)
+          )
+        )
+        const newOptionRanks = Object.fromEntries(
+          newOptionValues.map((value, index) => [value, index])
+        )
+
+        if (!newOptionValues.length) {
           toast.error(t("products.options.manage.error.noValues"))
           return
         }
 
-        optionsToAdd.push(
-          data.option_values
-            ? {
-                id: newId,
-                value_ids: optionValues,
-              }
-            : newId
-        )
+        optionsToAdd.push({
+          title: option.title,
+          values: newOptionValues,
+          ranks: newOptionRanks,
+          is_exclusive: true,
+        })
+        continue
+      }
+
+      /**
+       * handle existing options not yet linked to the product
+       */
+      if (!currentOptionIds.has(optionId)) {
+        const newValueEntries = createdValueNames.map((value) => ({
+          value,
+        }))
+
+        if (!existingValueIds.length && !newValueEntries.length) {
+          toast.error(t("products.options.manage.error.noValues"))
+          return
+        }
+
+        optionsToAdd.push({
+          id: optionId,
+          value_ids: existingValueIds,
+        })
+
+        if (newValueEntries.length) {
+          optionsToUpdate.push({
+            product_option_id: optionId,
+            add: newValueEntries,
+          })
+        }
       } else {
-        const currentOption = product.options?.find((opt) => opt.id === newId)
+        const currentOption = currentOptionsById.get(optionId)
         const currentValueIds =
           currentOption?.values?.map((v) => v.id).sort() || []
-        const newValueIds = [...(data.option_values?.[newId] || [])].sort()
+        const newValueIds = [...existingValueIds].sort()
+        const newValueEntries = createdValueNames.map((value) => ({
+          value,
+        }))
 
-        const valuesChanged =
-          currentValueIds.length !== newValueIds.length ||
-          currentValueIds.some((id, index) => id !== newValueIds[index])
+        const valuesToAdd = newValueIds.filter(
+          (valueId) => !currentValueIds.includes(valueId)
+        )
+        const valuesToRemove = currentValueIds.filter(
+          (valueId) => !newValueIds.includes(valueId)
+        )
+        const addEntries = [...valuesToAdd, ...newValueEntries] // link new values to PPO and create new values if needed
 
-        if (valuesChanged) {
-          const valuesToAdd = newValueIds.filter(
-            (valueId) => !currentValueIds.includes(valueId)
-          )
-          const valuesToRemove = currentValueIds.filter(
-            (valueId) => !newValueIds.includes(valueId)
-          )
-
-          if (valuesToAdd.length || valuesToRemove.length) {
-            optionsToUpdate.push({
-              product_option_id: newId,
-              add: valuesToAdd.length ? valuesToAdd : undefined,
-              remove: valuesToRemove.length ? valuesToRemove : undefined,
-            })
-          }
+        if (addEntries.length || valuesToRemove.length) {
+          optionsToUpdate.push({
+            product_option_id: optionId,
+            add: addEntries.length ? addEntries : undefined,
+            remove: valuesToRemove.length ? valuesToRemove : undefined,
+          })
         }
       }
     }
@@ -199,7 +453,7 @@ export const ProductOptionsManageForm = ({
           <div className="flex h-full flex-col gap-y-4">
             <Form.Field
               control={form.control}
-              name="option_ids"
+              name="options"
               render={({ field }) => {
                 return (
                   <Form.Item>
@@ -209,12 +463,64 @@ export const ProductOptionsManageForm = ({
                     <Form.Hint>{t("products.options.manage.hint")}</Form.Hint>
                     <Form.Control>
                       <Combobox
-                        {...field}
+                        name={field.name}
+                        ref={field.ref}
                         value={selectedOptionIds}
                         onChange={(value) =>
                           handleProductOptionSelect(value as string[])
                         }
-                        options={productOptionChoices}
+                        onBlur={field.onBlur}
+                        options={optionChoices}
+                        onCreateOption={async (options) => {
+                          const optionTitle = Array.isArray(options)
+                            ? options[options.length - 1]?.trim()
+                            : options.trim()
+
+                          if (!optionTitle) {
+                            return
+                          }
+
+                          /**
+                           * Handle if the option already exists, don't create just assign
+                           */
+
+                          const existingOption = optionChoices.find(
+                            (option) =>
+                              option.label.toLowerCase() ===
+                              optionTitle.toLowerCase()
+                          )
+
+                          if (existingOption) {
+                            handleProductOptionSelect([
+                              ...new Set([
+                                ...selectedOptionIds,
+                                existingOption.value,
+                              ]),
+                            ])
+                            return
+                          }
+
+                          /**
+                           * Creation of the new options
+                           */
+
+                          const newOptionId = `${LOCAL_OPTION_PREFIX}${Math.random()
+                            .toString(36)
+                            .slice(2, 8)}`
+
+                          const createdOption: ManageOptionFormOption = {
+                            id: newOptionId,
+                            title: optionTitle,
+                            is_exclusive: true,
+                            values: [],
+                          }
+
+                          const currentOptions = form.getValues("options") || []
+                          form.setValue("options", [
+                            ...currentOptions,
+                            createdOption,
+                          ])
+                        }}
                         placeholder={t("products.options.manage.placeholder")}
                         disabled={isLoading}
                         displayMode="chips"
@@ -225,60 +531,96 @@ export const ProductOptionsManageForm = ({
                 )
               }}
             />
-            {selectedOptionIds.length > 0 && (
+            {formOptions.length > 0 && (
               <div className="flex flex-col gap-y-4">
                 <div className="flex flex-col">
                   <Label weight="plus">{t("fields.values")}</Label>
                   <Hint>{t("products.create.variants.selectValuesHint")}</Hint>
                 </div>
                 <div className="flex flex-col gap-y-3">
-                  {product_options
-                    .filter((option) => selectedOptionIds.includes(option.id))
-                    .map((option) => {
-                      const valueOptions =
-                        option.values
-                          ?.sort((a, b) => {
-                            const rankA = a.rank ?? Number.MAX_VALUE
-                            const rankB = b.rank ?? Number.MAX_VALUE
-                            return rankA - rankB
-                          })
-                          .map((v) => ({
-                            value: v.id,
-                            label: v.value,
-                          })) || []
+                  {formOptions.map((option) => {
+                    if (!option.id) {
+                      return null
+                    }
 
-                      return (
-                        <div key={option.id} className="flex flex-col gap-y-2">
-                          <Label
-                            className="flex items-center gap-x-1"
-                            size="small"
-                            weight="plus"
-                          >
-                            {option.title}
-                            {option.is_exclusive && (
-                              <Tooltip
-                                content={t(
-                                  "productOptions.manage.exclusiveOption"
-                                )}
-                              >
-                                <InformationCircle className="text-ui-fg-subtle pt-[1px]" />
-                              </Tooltip>
-                            )}
-                          </Label>
-                          <Combobox
-                            value={selectedOptionValues[option.id] || []}
-                            onChange={(value) =>
-                              handleValueChange(option.id, value as string[])
-                            }
-                            options={valueOptions}
-                            placeholder={t(
-                              "products.fields.options.variantionsPlaceholder"
-                            )}
-                            displayMode="chips"
-                          />
-                        </div>
+                    const optionDetails = optionDetailsById.get(option.id)
+                    const isExclusive =
+                      optionDetails?.is_exclusive ??
+                      option.is_exclusive ??
+                      isLocalOptionId(option.id)
+                    const valueOptions =
+                      optionDetails?.values
+                        ?.sort((a, b) => {
+                          const rankA = a.rank ?? Number.MAX_VALUE
+                          const rankB = b.rank ?? Number.MAX_VALUE
+                          return rankA - rankB
+                        })
+                        .map((value) => ({
+                          value: value.id,
+                          label: value.value,
+                        })) || []
+
+                    const selectedValues = option.values || []
+                    const valueOptionIds = new Set(
+                      valueOptions.map((value) => value.value)
+                    )
+                    const customValueOptions = selectedValues
+                      .filter(
+                        (value) => !value.id || !valueOptionIds.has(value.id)
                       )
-                    })}
+                      .map((value) => ({
+                        value: value.id ?? value.value,
+                        label: value.value,
+                      }))
+
+                    const mergedOptions = [
+                      ...new Map(
+                        [...valueOptions, ...customValueOptions].map(
+                          (value) => [value.value, value]
+                        )
+                      ).values(),
+                    ]
+                    const mergedValues = selectedValues.map(
+                      (value) => value.id ?? value.value
+                    )
+
+                    return (
+                      <div key={option.id} className="flex flex-col gap-y-2">
+                        <Label
+                          className="flex items-center gap-x-1"
+                          size="small"
+                          weight="plus"
+                        >
+                          {optionDetails?.title ?? option.title}
+                          {isExclusive && (
+                            <Tooltip
+                              content={t(
+                                "productOptions.manage.exclusiveOption"
+                              )}
+                            >
+                              <InformationCircle className="text-ui-fg-subtle pt-[1px]" />
+                            </Tooltip>
+                          )}
+                        </Label>
+                        <Combobox
+                          value={mergedValues}
+                          onChange={(value) =>
+                            handleValueChange(
+                              option,
+                              optionDetails,
+                              value as string[]
+                            )
+                          }
+                          onCreateOption={isExclusive ? () => {} : undefined}
+                          options={mergedOptions}
+                          placeholder={t(
+                            "products.fields.options.variantionsPlaceholder"
+                          )}
+                          displayMode="chips"
+                        />
+                      </div>
+                    )
+                  })}
                 </div>
               </div>
             )}

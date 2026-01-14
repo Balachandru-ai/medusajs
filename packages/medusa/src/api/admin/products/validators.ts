@@ -92,7 +92,18 @@ export type AdminUpdateProductOptionValuesType = z.infer<
 >
 export const AdminUpdateProductOptionValues = z.object({
   product_option_id: z.string(),
-  add: z.array(z.string()).optional(),
+  add: z
+    .array(
+      z.union([
+        z.string(),
+        z
+          .object({
+            value: z.string(),
+          })
+          .strict(),
+      ])
+    )
+    .optional(),
   remove: z.array(z.string()).optional(),
 })
 

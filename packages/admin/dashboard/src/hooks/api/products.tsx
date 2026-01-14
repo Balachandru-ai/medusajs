@@ -369,7 +369,7 @@ export const useLinkProductOptions = (
         queryKey: productsQueryKeys.detail(productId),
       })
       queryClient.invalidateQueries({
-        queryKey: productOptionsQueryKeys.lists(),
+        queryKey: productOptionsQueryKeys.all,
       })
 
       options?.onSuccess?.(data, variables, context)

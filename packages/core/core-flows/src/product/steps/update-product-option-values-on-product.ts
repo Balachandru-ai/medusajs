@@ -52,18 +52,33 @@ export const updateProductOptionValuesOnProductStep = createStep(
 
     await service.updateProductOptionValuesOnProduct(effectiveUpdates)
 
+    const updatedProducts = await service.listProducts(
+      { id: productIds },
+      { relations: ["options.values"] }
+    )
+
+    const updatedValueIdsByPairKey = new Map<string, Set<string>>()
+    for (const product of updatedProducts) {
+      for (const option of product.options ?? []) {
+        const valueIds = (option.values ?? []).map((value) => value.id)
+        updatedValueIdsByPairKey.set(
+          `${product.id}_${option.id}`,
+          new Set(valueIds)
+        )
+      }
+    }
+
     const compensation = effectiveUpdates
       .map((pair) => {
         const key = `${pair.product_id}_${pair.product_option_id}`
         const existingValueIds = existingValueIdsByPairKey.get(key) ?? new Set()
-        const requestedAdds = new Set(pair.add ?? [])
-        const requestedRemoves = new Set(pair.remove ?? [])
+        const updatedValueIds = updatedValueIdsByPairKey.get(key) ?? new Set()
 
-        const actualAdds = [...requestedAdds].filter(
+        const actualAdds = [...updatedValueIds].filter(
           (valueId) => !existingValueIds.has(valueId)
         )
-        const actualRemoves = [...requestedRemoves].filter((valueId) =>
-          existingValueIds.has(valueId)
+        const actualRemoves = [...existingValueIds].filter(
+          (valueId) => !updatedValueIds.has(valueId)
         )
 
         return {

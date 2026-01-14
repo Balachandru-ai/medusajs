@@ -1725,10 +1725,10 @@ export default class ProductModuleService
       string,
       InferEntityType<typeof ProductProductOption>
     >()
-    for (const ppo of existingProductOptions) {
+    existingProductOptions.forEach((ppo) => {
       const key = `${ppo.product_id}_${ppo.product_option_id}`
       existingPPOMap.set(key, ppo)
-    }
+    })
 
     const missingPairs = effectiveUpdates.filter((pair) => {
       const key = `${pair.product_id}_${pair.product_option_id}`
@@ -1757,6 +1757,12 @@ export default class ProductModuleService
       await this.validateOptionRemoval_(validationPairs, sharedContext)
     }
 
+    // if some values are passed as a create object - create those option values first and return array of value ids to assign to PPOs
+    const normalizedUpdates = await this.normalizeProductOptionValueUpdates_(
+      effectiveUpdates,
+      sharedContext
+    )
+
     const ppovToCreate: Array<{
       product_product_option_id: string
       product_option_value_id: string
@@ -1766,31 +1772,31 @@ export default class ProductModuleService
       product_option_value_id: string
     }> = []
 
-    for (const pair of effectiveUpdates) {
+    normalizedUpdates.forEach((pair) => {
       const key = `${pair.product_id}_${pair.product_option_id}`
       const existingPPO = existingPPOMap.get(key)!
       const existingValueIds = new Set(
         (existingPPO.values ?? []).map((value) => value.id)
       )
 
-      for (const valueId of new Set(pair.add ?? [])) {
+      Array.from(new Set(pair.add ?? [])).forEach((valueId) => {
         if (existingValueIds.has(valueId)) {
-          continue
+          return
         }
 
         ppovToCreate.push({
           product_product_option_id: existingPPO.id,
           product_option_value_id: valueId,
         })
-      }
+      })
 
-      for (const valueId of new Set(pair.remove ?? [])) {
+      Array.from(new Set(pair.remove ?? [])).forEach((valueId) => {
         ppovToDelete.push({
           product_product_option_id: existingPPO.id,
           product_option_value_id: valueId,
         })
-      }
-    }
+      })
+    })
 
     if (ppovToDelete.length) {
       await this.productProductOptionValueService_.delete(
@@ -1805,6 +1811,145 @@ export default class ProductModuleService
         sharedContext
       )
     }
+  }
+
+  protected async normalizeProductOptionValueUpdates_(
+    updates: ProductTypes.ProductOptionProductValueUpdate[],
+    sharedContext: Context
+  ): Promise<
+    Array<
+      Omit<ProductTypes.ProductOptionProductValueUpdate, "add"> & {
+        add?: string[]
+      }
+    >
+  > {
+    const valueNamesByOptionId = new Map<string, Set<string>>()
+    const existingAddIdsByIndex: Array<Set<string>> = []
+    const valueNamesByIndex: Array<Set<string>> = []
+
+    updates.forEach((pair, index) => {
+      const existingAddIds = new Set<string>()
+      const valueNames = new Set<string>()
+
+      const addEntries = pair.add ?? []
+
+      addEntries.forEach((valueEntry) => {
+        if (isString(valueEntry)) {
+          existingAddIds.add(valueEntry)
+          return
+        }
+
+        const normalizedValue = valueEntry.value.trim()
+        if (!normalizedValue) {
+          return
+        }
+
+        if (!valueNamesByOptionId.has(pair.product_option_id)) {
+          valueNamesByOptionId.set(pair.product_option_id, new Set())
+        }
+
+        valueNamesByOptionId.get(pair.product_option_id)!.add(normalizedValue)
+        valueNames.add(normalizedValue)
+      })
+
+      existingAddIdsByIndex[index] = existingAddIds
+      valueNamesByIndex[index] = valueNames
+    })
+
+    /*
+     * Return early if no new values need to be created
+     */
+
+    if (!valueNamesByOptionId.size) {
+      return updates.map((pair, index) => ({
+        ...pair,
+        add: existingAddIdsByIndex[index].size
+          ? [...existingAddIdsByIndex[index]]
+          : undefined,
+      }))
+    }
+
+    /*
+     * Create values for options for passed create objects
+     */
+
+    const optionIds = [...valueNamesByOptionId.keys()]
+    const options = await this.productOptionService_.list(
+      { id: optionIds },
+      { relations: ["values"] },
+      sharedContext
+    )
+
+    if (options.length !== optionIds.length) {
+      const existingIds = new Set(options.map((option) => option.id))
+      const missingId = optionIds.find((id) => !existingIds.has(id))
+
+      throw new MedusaError(
+        MedusaError.Types.INVALID_DATA,
+        `Cannot find product option with id: ${missingId}`
+      )
+    }
+
+    const optionsById = new Map(options.map((option) => [option.id, option]))
+    const updateOptionsInput: UpdateProductOptionInput[] = []
+
+    valueNamesByOptionId.forEach((valueNames, optionId) => {
+      const option = optionsById.get(optionId)
+      if (!option) {
+        return
+      }
+
+      const existingValueNames = new Set(
+        option.values?.map((value) => value.value) ?? []
+      )
+      const newValueNames = [...valueNames].filter(
+        (value) => !existingValueNames.has(value)
+      )
+
+      if (!newValueNames.length) {
+        return
+      }
+
+      updateOptionsInput.push({
+        id: optionId,
+        values: [...existingValueNames, ...newValueNames],
+      })
+    })
+
+    if (updateOptionsInput.length) {
+      // todo: we could consider just `upsert` here but `updateOptions` handles validation and rank
+      const updatedOptions = await this.updateOptions_(
+        updateOptionsInput,
+        sharedContext
+      )
+
+      updatedOptions.forEach((option) => optionsById.set(option.id, option))
+    }
+
+    const valueIdsByOptionId = new Map<string, Map<string, string>>(
+      [...optionsById.values()].map((option) => [
+        option.id,
+        new Map(option.values?.map((value) => [value.value, value.id]) ?? []),
+      ])
+    )
+
+    return updates.map((pair, index) => {
+      const addIds = new Set(existingAddIdsByIndex[index])
+      const valueMap = valueIdsByOptionId.get(pair.product_option_id)
+      const valueNames = valueNamesByIndex[index] ?? new Set()
+
+      valueNames.forEach((valueName) => {
+        const resolvedId = valueMap?.get(valueName)
+        if (resolvedId) {
+          addIds.add(resolvedId)
+        }
+      })
+
+      return {
+        ...pair,
+        add: addIds.size ? [...addIds] : undefined,
+      }
+    })
   }
 
   // @ts-expect-error
