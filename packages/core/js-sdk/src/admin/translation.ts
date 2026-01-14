@@ -162,6 +162,54 @@ export class Translation {
   }
 
   /**
+   * This method allows bulk operations on translation settings. It sends a request to the
+   * [Batch Translation Settings](https://docs.medusajs.com/api/admin#translations_posttranslationssettingsbatch)
+   * API route.
+   *
+   * @since 2.12.6
+   *
+   * @param body - The translation settings to create, update, or delete.
+   * @param headers - Headers to pass in the request.
+   * @returns The translation settings' details.
+   *
+   * @example
+   * sdk.admin.translation.batchSettings({
+   *   create: [
+   *     {
+   *       entity_type: "product",
+   *       fields: ["title", "description"],
+   *       is_active: true
+   *     }
+   *   ],
+   *   update: [
+   *     {
+   *       id: "trset_123",
+   *       fields: ["title", "description", "subtitle"],
+   *       is_active: true
+   *     }
+   *   ],
+   *   delete: ["trset_456"]
+   * })
+   * .then(({ created, updated, deleted }) => {
+   *   console.log(created, updated, deleted)
+   * })
+   * ```
+   */
+  async batchSettings(
+    body: HttpTypes.AdminBatchTranslationSettings,
+    headers?: ClientHeaders
+  ) {
+    return await this.client.fetch<HttpTypes.AdminBatchTranslationSettingsResponse>(
+      `/admin/translations/settings/batch`,
+      {
+        method: "POST",
+        headers,
+        body,
+      }
+    )
+  }
+
+  /**
    * This method retrieves a paginated list of entities for a given entity type with only their
    * translatable fields.
    * It sends a request to the
