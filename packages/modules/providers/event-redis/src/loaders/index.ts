@@ -40,7 +40,7 @@ export default async ({
     })
     logger?.info(`Connection to Redis in "event-redis" provider established`)
   } catch (err) {
-    logger?.error(
+    throw new Error(
       `An error occurred while connecting to Redis in provider "event-redis":${EOL} ${err}`
     )
   }

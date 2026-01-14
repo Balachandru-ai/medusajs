@@ -1,8 +1,4 @@
-import {
-  Constructor,
-  IEventProvider,
-  Logger,
-} from "@medusajs/framework/types"
+import { Constructor, IEventProvider, Logger } from "@medusajs/framework/types"
 import { MedusaError } from "@medusajs/framework/utils"
 import { EventProviderRegistrationPrefix } from "@types"
 
@@ -22,9 +18,7 @@ export default class EventProviderService {
       : (console as unknown as Logger)
   }
 
-  static getRegistrationIdentifier(
-    providerClass: Constructor<IEventProvider>
-  ) {
+  static getRegistrationIdentifier(providerClass: Constructor<IEventProvider>) {
     if (!(providerClass as any).identifier) {
       throw new MedusaError(
         MedusaError.Types.INVALID_ARGUMENT,

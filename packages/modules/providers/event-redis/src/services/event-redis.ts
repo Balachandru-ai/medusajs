@@ -1,4 +1,9 @@
-import { Event, Logger, Message } from "@medusajs/framework/types"
+import {
+  Event,
+  InternalModuleDeclaration,
+  Logger,
+  Message,
+} from "@medusajs/framework/types"
 import {
   AbstractEventProvider,
   EventPriority,
@@ -56,7 +61,8 @@ export class RedisEventProvider extends AbstractEventProvider<EventRedisProvider
 
   constructor(
     container: InjectedDependencies,
-    options: EventRedisProviderOptions = {}
+    options: EventRedisProviderOptions = {},
+    moduleDeclaration: InternalModuleDeclaration
   ) {
     super(container, options)
 
@@ -67,6 +73,8 @@ export class RedisEventProvider extends AbstractEventProvider<EventRedisProvider
     this.queueOptions_ = container.eventRedisQueueOptions ?? {}
     this.workerOptions_ = container.eventRedisWorkerOptions ?? {}
     this.jobOptions_ = container.eventRedisJobOptions ?? {}
+
+    this.isWorkerMode = moduleDeclaration.worker_mode !== "server"
 
     this.queue_ = new Queue(this.queueName_, {
       ...this.queueOptions_,
