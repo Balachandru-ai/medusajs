@@ -1,10 +1,6 @@
 import { MedusaContainer } from "@medusajs/framework/types"
-import {
-  ContainerRegistrationKeys,
-  FeatureFlag,
-  useCache,
-} from "@medusajs/framework/utils"
-import RbacFeatureFlag from "../../feature-flags/rbac"
+import { ContainerRegistrationKeys, useCache } from "@medusajs/framework/utils"
+import { FlagRouter } from "../feature-flags/flag-router"
 
 export type PermissionAction = {
   resource: string
@@ -48,8 +44,11 @@ export async function hasPermission(
 
   const roleIds = Array.isArray(roles) ? roles : [roles]
   const actionList = Array.isArray(actions) ? actions : [actions]
+  const ffRouter = container.resolve(
+    ContainerRegistrationKeys.FEATURE_FLAG_ROUTER
+  ) as FlagRouter
 
-  const isDisabled = !FeatureFlag.isFeatureEnabled(RbacFeatureFlag.key)
+  const isDisabled = !ffRouter.isFeatureEnabled("rbac")
   if (isDisabled || !roleIds?.length || !actionList?.length) {
     return true
   }
