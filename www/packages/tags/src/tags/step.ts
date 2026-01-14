@@ -184,6 +184,10 @@ export const step = [
     "path": "https://docs.medusajs.com/resources/references/medusa-workflows/steps/getTranslatedLineItemsStep"
   },
   {
+    "title": "getTranslatedShippingOptionsStep",
+    "path": "https://docs.medusajs.com/resources/references/medusa-workflows/steps/getTranslatedShippingOptionsStep"
+  },
+  {
     "title": "removeRemoteLinkStep",
     "path": "https://docs.medusajs.com/resources/references/medusa-workflows/steps/removeRemoteLinkStep"
   },
@@ -594,6 +598,10 @@ export const step = [
   {
     "title": "updateOrderShippingMethodsStep",
     "path": "https://docs.medusajs.com/resources/references/medusa-workflows/steps/updateOrderShippingMethodsStep"
+  },
+  {
+    "title": "updateOrderShippingMethodsTranslationsStep",
+    "path": "https://docs.medusajs.com/resources/references/medusa-workflows/steps/updateOrderShippingMethodsTranslationsStep"
   },
   {
     "title": "updateOrdersStep",
@@ -1070,6 +1078,10 @@ export const step = [
   {
     "title": "deleteProductsStep",
     "path": "https://docs.medusajs.com/resources/references/medusa-workflows/steps/deleteProductsStep"
+  },
+  {
+    "title": "dismissProductVariantsInventoryStep",
+    "path": "https://docs.medusajs.com/resources/references/medusa-workflows/steps/dismissProductVariantsInventoryStep"
   },
   {
     "title": "generateProductCsvStep",
