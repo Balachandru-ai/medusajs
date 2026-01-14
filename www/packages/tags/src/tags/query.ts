@@ -52,6 +52,10 @@ export const query = [
     "path": "https://docs.medusajs.com/resources/references/medusa-workflows/steps/useQueryGraphStep"
   },
   {
+    "title": "createDefaultsWorkflow",
+    "path": "https://docs.medusajs.com/resources/references/medusa-workflows/createDefaultsWorkflow"
+  },
+  {
     "title": "addDraftOrderItemsWorkflow",
     "path": "https://docs.medusajs.com/resources/references/medusa-workflows/addDraftOrderItemsWorkflow"
   },
@@ -108,6 +112,10 @@ export const query = [
     "path": "https://docs.medusajs.com/resources/references/medusa-workflows/updateDraftOrderShippingMethodWorkflow"
   },
   {
+    "title": "updateDraftOrderWorkflow",
+    "path": "https://docs.medusajs.com/resources/references/medusa-workflows/updateDraftOrderWorkflow"
+  },
+  {
     "title": "deleteInventoryItemWorkflow",
     "path": "https://docs.medusajs.com/resources/references/medusa-workflows/deleteInventoryItemWorkflow"
   },
@@ -118,6 +126,10 @@ export const query = [
   {
     "title": "exportOrdersStep",
     "path": "https://docs.medusajs.com/resources/references/medusa-workflows/steps/exportOrdersStep"
+  },
+  {
+    "title": "updateOrderShippingMethodsTranslationsStep",
+    "path": "https://docs.medusajs.com/resources/references/medusa-workflows/steps/updateOrderShippingMethodsTranslationsStep"
   },
   {
     "title": "beginOrderEditOrderWorkflow",
@@ -196,6 +208,14 @@ export const query = [
     "path": "https://docs.medusajs.com/resources/references/medusa-workflows/updateOrderEditItemQuantityWorkflow"
   },
   {
+    "title": "updateOrderWorkflow",
+    "path": "https://docs.medusajs.com/resources/references/medusa-workflows/updateOrderWorkflow"
+  },
+  {
+    "title": "dismissProductVariantsInventoryStep",
+    "path": "https://docs.medusajs.com/resources/references/medusa-workflows/steps/dismissProductVariantsInventoryStep"
+  },
+  {
     "title": "batchProductVariantsWorkflow",
     "path": "https://docs.medusajs.com/resources/references/medusa-workflows/batchProductVariantsWorkflow"
   },
@@ -206,6 +226,14 @@ export const query = [
   {
     "title": "deleteProductsWorkflow",
     "path": "https://docs.medusajs.com/resources/references/medusa-workflows/deleteProductsWorkflow"
+  },
+  {
+    "title": "updateProductVariantsWorkflow",
+    "path": "https://docs.medusajs.com/resources/references/medusa-workflows/updateProductVariantsWorkflow"
+  },
+  {
+    "title": "updateProductsWorkflow",
+    "path": "https://docs.medusajs.com/resources/references/medusa-workflows/updateProductsWorkflow"
   },
   {
     "title": "deleteShippingProfileWorkflow",
