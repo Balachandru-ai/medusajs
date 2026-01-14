@@ -3,9 +3,11 @@ import {
   validateAndTransformQuery,
 } from "@medusajs/framework"
 import { MiddlewareRoute } from "@medusajs/framework/http"
+import { PolicyOperation } from "@medusajs/framework/utils"
 import { DEFAULT_BATCH_ENDPOINTS_SIZE_LIMIT } from "../../../utils/middlewares"
 import { createBatchBody } from "../../utils/validators"
 import * as QueryConfig from "./query-config"
+import { Entities } from "./query-config"
 import {
   AdminCreatePromotion,
   AdminCreatePromotionRule,
@@ -19,6 +21,16 @@ import {
 } from "./validators"
 
 export const adminPromotionRoutesMiddlewares: MiddlewareRoute[] = [
+  {
+    method: ["ALL"],
+    matcher: "/admin/promotions/*",
+    policies: [
+      {
+        resource: Entities.promotion,
+        operation: PolicyOperation.read,
+      },
+    ],
+  },
   {
     method: ["GET"],
     matcher: "/admin/promotions",

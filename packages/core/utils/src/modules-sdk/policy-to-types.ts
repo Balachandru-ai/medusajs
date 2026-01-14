@@ -40,7 +40,7 @@ export async function generatePolicyTypes({
    * const productResource = PolicyResource.product // "product"
    * const apiKeyResource = PolicyResource.api_key // "api-key"
    */
-  export const Resource: {
+  export const PolicyResource: {
 ${Object.entries(PolicyResource)
   .map(([key, val]) => `    readonly ${key}: "${val}"`)
   .join("\n")}
@@ -55,7 +55,7 @@ ${Object.entries(PolicyResource)
    * 
    * const readOp = PolicyOperation.read // "read"
    */
-  export const Operation: {
+  export const PolicyOperation: {
 ${Object.entries(PolicyOperation)
   .map(([key, val]) => `    readonly ${key}: "${val}"`)
   .join("\n")}

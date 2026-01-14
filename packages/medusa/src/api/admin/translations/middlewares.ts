@@ -3,6 +3,8 @@ import {
   validateAndTransformBody,
   validateAndTransformQuery,
 } from "@medusajs/framework"
+import { DEFAULT_BATCH_ENDPOINTS_SIZE_LIMIT } from "../../../utils"
+import * as QueryConfig from "./query-config"
 import {
   AdminBatchTranslations,
   AdminGetTranslationsParams,
@@ -10,10 +12,12 @@ import {
   AdminTranslationSettingsParams,
   AdminTranslationStatistics,
 } from "./validators"
-import * as QueryConfig from "./query-config"
-import { DEFAULT_BATCH_ENDPOINTS_SIZE_LIMIT } from "../../../utils"
 
 export const adminTranslationsRoutesMiddlewares: MiddlewareRoute[] = [
+  {
+    method: ["ALL"],
+    matcher: "/admin/translations/*",
+  },
   {
     method: ["GET"],
     matcher: "/admin/translations",

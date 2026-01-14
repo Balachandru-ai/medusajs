@@ -3,7 +3,9 @@ import {
   validateAndTransformQuery,
 } from "@medusajs/framework"
 import { MiddlewareRoute } from "@medusajs/framework/http"
+import { PolicyOperation } from "@medusajs/framework/utils"
 import * as QueryConfig from "./query-config"
+import { Entities } from "./query-config"
 import {
   AdminAddDraftOrderItems,
   AdminAddDraftOrderPromotions,
@@ -20,6 +22,16 @@ import {
 } from "./validators"
 
 export const adminDraftOrderRoutesMiddlewares: MiddlewareRoute[] = [
+  {
+    method: ["ALL"],
+    matcher: "/admin/draft-orders/*",
+    policies: [
+      {
+        resource: Entities.order,
+        operation: PolicyOperation.read,
+      },
+    ],
+  },
   {
     method: ["GET"],
     matcher: "/admin/draft-orders",
@@ -96,6 +108,12 @@ export const adminDraftOrderRoutesMiddlewares: MiddlewareRoute[] = [
     method: ["DELETE"],
     matcher: "/admin/draft-orders/:id/edit/promotions",
     middlewares: [validateAndTransformBody(AdminRemoveDraftOrderPromotions)],
+    policies: [
+      {
+        resource: Entities.order,
+        operation: PolicyOperation.ALL,
+      },
+    ],
   },
   {
     method: ["POST"],

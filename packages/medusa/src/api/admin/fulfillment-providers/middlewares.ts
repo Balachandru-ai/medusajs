@@ -1,10 +1,21 @@
-import { MiddlewareRoute } from "@medusajs/framework/http"
-import { maybeApplyLinkFilter } from "@medusajs/framework/http"
 import { validateAndTransformQuery } from "@medusajs/framework"
+import { maybeApplyLinkFilter, MiddlewareRoute } from "@medusajs/framework/http"
+import { PolicyOperation } from "@medusajs/framework/utils"
 import * as QueryConfig from "./query-config"
+import { Entities } from "./query-config"
 import { AdminFulfillmentProvidersParams } from "./validators"
 
 export const adminFulfillmentProvidersRoutesMiddlewares: MiddlewareRoute[] = [
+  {
+    method: ["ALL"],
+    matcher: "/admin/fulfillment-providers/*",
+    policies: [
+      {
+        resource: Entities.fulfillment_provider,
+        operation: PolicyOperation.read,
+      },
+    ],
+  },
   {
     method: ["GET"],
     matcher: "/admin/fulfillment-providers",

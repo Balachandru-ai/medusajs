@@ -1,9 +1,11 @@
-import { MiddlewareRoute } from "@medusajs/framework/http"
 import {
   validateAndTransformBody,
   validateAndTransformQuery,
 } from "@medusajs/framework"
+import { MiddlewareRoute } from "@medusajs/framework/http"
+import { PolicyOperation } from "@medusajs/framework/utils"
 import * as QueryConfig from "./query-config"
+import { Entities } from "./query-config"
 import {
   AdminCreateFulfillmentSetServiceZonesSchema,
   AdminFulfillmentSetParams,
@@ -12,6 +14,16 @@ import {
 } from "./validators"
 
 export const adminFulfillmentSetsRoutesMiddlewares: MiddlewareRoute[] = [
+  {
+    method: ["ALL"],
+    matcher: "/admin/fulfillment-sets/*",
+    policies: [
+      {
+        resource: Entities.fulfillment_set,
+        operation: PolicyOperation.read,
+      },
+    ],
+  },
   {
     method: ["POST"],
     matcher: "/admin/fulfillment-sets/:id/service-zones",
@@ -32,11 +44,23 @@ export const adminFulfillmentSetsRoutesMiddlewares: MiddlewareRoute[] = [
         QueryConfig.retrieveTransformQueryConfig
       ),
     ],
+    policies: [
+      {
+        resource: Entities.fulfillment_set,
+        operation: PolicyOperation.delete,
+      },
+    ],
   },
   {
     method: ["DELETE"],
     matcher: "/admin/fulfillment-sets/:id",
     middlewares: [],
+    policies: [
+      {
+        resource: Entities.fulfillment_set,
+        operation: PolicyOperation.delete,
+      },
+    ],
   },
   {
     method: ["POST"],

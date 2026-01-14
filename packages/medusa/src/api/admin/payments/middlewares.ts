@@ -1,9 +1,11 @@
-import { MiddlewareRoute } from "@medusajs/framework/http"
 import {
   validateAndTransformBody,
   validateAndTransformQuery,
 } from "@medusajs/framework"
+import { MiddlewareRoute } from "@medusajs/framework/http"
+import { PolicyOperation } from "@medusajs/framework/utils"
 import * as queryConfig from "./query-config"
+import { Entities } from "./query-config"
 import {
   AdminCreatePaymentCapture,
   AdminCreatePaymentRefund,
@@ -13,6 +15,16 @@ import {
 } from "./validators"
 
 export const adminPaymentRoutesMiddlewares: MiddlewareRoute[] = [
+  {
+    method: ["ALL"],
+    matcher: "/admin/payments/*",
+    policies: [
+      {
+        resource: Entities.payment,
+        operation: PolicyOperation.read,
+      },
+    ],
+  },
   {
     method: ["GET"],
     matcher: "/admin/payments",

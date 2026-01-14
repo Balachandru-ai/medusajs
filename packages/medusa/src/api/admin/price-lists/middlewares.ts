@@ -3,9 +3,11 @@ import {
   validateAndTransformQuery,
 } from "@medusajs/framework"
 import { MiddlewareRoute } from "@medusajs/framework/http"
+import { PolicyOperation } from "@medusajs/framework/utils"
 import { DEFAULT_BATCH_ENDPOINTS_SIZE_LIMIT } from "../../../utils/middlewares"
 import { createBatchBody } from "../../utils/validators"
 import * as QueryConfig from "./query-config"
+import { Entities } from "./query-config"
 import {
   AdminCreatePriceList,
   AdminCreatePriceListPrice,
@@ -19,6 +21,16 @@ import {
 } from "./validators"
 
 export const adminPriceListsRoutesMiddlewares: MiddlewareRoute[] = [
+  {
+    method: ["ALL"],
+    matcher: "/admin/price-lists/*",
+    policies: [
+      {
+        resource: Entities.price_list,
+        operation: PolicyOperation.read,
+      },
+    ],
+  },
   {
     method: ["GET"],
     matcher: "/admin/price-lists",

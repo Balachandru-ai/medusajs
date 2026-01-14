@@ -1,10 +1,12 @@
-import { MiddlewareRoute } from "@medusajs/framework/http"
 import {
   validateAndTransformBody,
   validateAndTransformQuery,
 } from "@medusajs/framework"
+import { MiddlewareRoute } from "@medusajs/framework/http"
+import { PolicyOperation } from "@medusajs/framework/utils"
 import { createLinkBody } from "../../utils/validators"
 import * as QueryConfig from "./query-config"
+import { Entities } from "./query-config"
 import {
   AdminCreateCustomerGroup,
   AdminGetCustomerGroupParams,
@@ -13,6 +15,16 @@ import {
 } from "./validators"
 
 export const adminCustomerGroupRoutesMiddlewares: MiddlewareRoute[] = [
+  {
+    method: ["ALL"],
+    matcher: "/admin/customer-groups/*",
+    policies: [
+      {
+        resource: Entities.customer_group,
+        operation: PolicyOperation.read,
+      },
+    ],
+  },
   {
     method: ["GET"],
     matcher: "/admin/customer-groups",

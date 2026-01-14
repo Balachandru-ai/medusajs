@@ -1,10 +1,13 @@
 import * as QueryConfig from "./query-config"
+import { Entities } from "./query-config"
 
-import { MiddlewareRoute } from "@medusajs/framework/http"
 import {
   validateAndTransformBody,
   validateAndTransformQuery,
 } from "@medusajs/framework"
+import { MiddlewareRoute } from "@medusajs/framework/http"
+import { PolicyOperation } from "@medusajs/framework/utils"
+import { createLinkBody } from "../../utils/validators"
 import {
   AdminCreateApiKey,
   AdminGetApiKeyParams,
@@ -12,9 +15,18 @@ import {
   AdminRevokeApiKey,
   AdminUpdateApiKey,
 } from "./validators"
-import { createLinkBody } from "../../utils/validators"
 
 export const adminApiKeyRoutesMiddlewares: MiddlewareRoute[] = [
+  {
+    method: ["ALL"],
+    matcher: "/admin/api-keys/*",
+    policies: [
+      {
+        resource: Entities.api_key,
+        operation: PolicyOperation.read,
+      },
+    ],
+  },
   {
     method: ["GET"],
     matcher: "/admin/api-keys",
@@ -61,6 +73,12 @@ export const adminApiKeyRoutesMiddlewares: MiddlewareRoute[] = [
     method: ["DELETE"],
     matcher: "/admin/api-keys/:id",
     middlewares: [],
+    policies: [
+      {
+        resource: Entities.api_key,
+        operation: PolicyOperation.delete,
+      },
+    ],
   },
   {
     method: ["POST"],

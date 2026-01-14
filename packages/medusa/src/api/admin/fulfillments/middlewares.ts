@@ -1,9 +1,11 @@
-import { MiddlewareRoute } from "@medusajs/framework/http"
 import {
   validateAndTransformBody,
   validateAndTransformQuery,
 } from "@medusajs/framework"
+import { MiddlewareRoute } from "@medusajs/framework/http"
+import { PolicyOperation } from "@medusajs/framework/utils"
 import * as QueryConfig from "./query-config"
+import { Entities } from "./query-config"
 import {
   AdminCreateFulfillment,
   AdminCreateShipment,
@@ -11,6 +13,16 @@ import {
 } from "./validators"
 
 export const adminFulfillmentsRoutesMiddlewares: MiddlewareRoute[] = [
+  {
+    method: ["ALL"],
+    matcher: "/admin/fulfillments/*",
+    policies: [
+      {
+        resource: Entities.fulfillment,
+        operation: PolicyOperation.read,
+      },
+    ],
+  },
   {
     method: ["POST"],
     matcher: "/admin/fulfillments/:id/cancel",

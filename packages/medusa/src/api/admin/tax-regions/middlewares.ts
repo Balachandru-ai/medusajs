@@ -1,4 +1,5 @@
 import * as QueryConfig from "./query-config"
+import { Entities } from "./query-config"
 
 import {
   AdminCreateTaxRegion,
@@ -12,8 +13,19 @@ import {
   validateAndTransformQuery,
 } from "@medusajs/framework"
 import { MiddlewareRoute } from "@medusajs/framework/http"
+import { PolicyOperation } from "@medusajs/framework/utils"
 
 export const adminTaxRegionRoutesMiddlewares: MiddlewareRoute[] = [
+  {
+    method: ["ALL"],
+    matcher: "/admin/tax-regions/*",
+    policies: [
+      {
+        resource: Entities.tax_region,
+        operation: PolicyOperation.read,
+      },
+    ],
+  },
   {
     method: "POST",
     matcher: "/admin/tax-regions",

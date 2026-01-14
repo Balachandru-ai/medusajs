@@ -1,10 +1,12 @@
-import { MiddlewareRoute } from "@medusajs/framework/http"
 import {
   validateAndTransformBody,
   validateAndTransformQuery,
 } from "@medusajs/framework"
+import { MiddlewareRoute } from "@medusajs/framework/http"
+import { PolicyOperation } from "@medusajs/framework/utils"
 import { createLinkBody } from "../../utils/validators"
 import * as QueryConfig from "./query-config"
+import { Entities } from "./query-config"
 import {
   AdminCreateProductCategory,
   AdminProductCategoriesParams,
@@ -13,6 +15,16 @@ import {
 } from "./validators"
 
 export const adminProductCategoryRoutesMiddlewares: MiddlewareRoute[] = [
+  {
+    method: ["ALL"],
+    matcher: "/admin/product-categories/*",
+    policies: [
+      {
+        resource: Entities.product_category,
+        operation: PolicyOperation.read,
+      },
+    ],
+  },
   {
     method: ["GET"],
     matcher: "/admin/product-categories",

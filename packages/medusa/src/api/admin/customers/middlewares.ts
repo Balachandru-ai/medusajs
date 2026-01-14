@@ -1,4 +1,5 @@
 import * as QueryConfig from "./query-config"
+import { Entities } from "./query-config"
 
 import {
   AdminCreateCustomer,
@@ -16,9 +17,24 @@ import {
   validateAndTransformQuery,
 } from "@medusajs/framework"
 import { MiddlewareRoute } from "@medusajs/framework/http"
+import { PolicyOperation } from "@medusajs/framework/utils"
 import { createLinkBody } from "../../utils/validators"
 
 export const adminCustomerRoutesMiddlewares: MiddlewareRoute[] = [
+  {
+    method: ["ALL"],
+    matcher: "/admin/customers/*",
+    policies: [
+      {
+        resource: Entities.customer,
+        operation: PolicyOperation.read,
+      },
+      {
+        resource: Entities.customer_address,
+        operation: PolicyOperation.read,
+      },
+    ],
+  },
   {
     method: ["GET"],
     matcher: "/admin/customers",
@@ -101,6 +117,12 @@ export const adminCustomerRoutesMiddlewares: MiddlewareRoute[] = [
         AdminCustomerParams,
         QueryConfig.retrieveTransformQueryConfig
       ),
+    ],
+    policies: [
+      {
+        resource: Entities.customer_address,
+        operation: PolicyOperation.delete,
+      },
     ],
   },
   {

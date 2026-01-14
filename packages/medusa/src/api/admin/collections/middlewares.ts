@@ -1,18 +1,30 @@
-import * as QueryConfig from "./query-config"
-import { MiddlewareRoute } from "@medusajs/framework/http"
 import {
   validateAndTransformBody,
   validateAndTransformQuery,
 } from "@medusajs/framework"
+import { MiddlewareRoute } from "@medusajs/framework/http"
+import { PolicyOperation } from "@medusajs/framework/utils"
+import { createLinkBody } from "../../utils/validators"
+import * as QueryConfig from "./query-config"
+import { Entities } from "./query-config"
 import {
   AdminCreateCollection,
   AdminGetCollectionParams,
   AdminGetCollectionsParams,
   AdminUpdateCollection,
 } from "./validators"
-import { createLinkBody } from "../../utils/validators"
 
 export const adminCollectionRoutesMiddlewares: MiddlewareRoute[] = [
+  {
+    method: ["ALL"],
+    matcher: "/admin/collections/*",
+    policies: [
+      {
+        resource: Entities.product_collection,
+        operation: PolicyOperation.read,
+      },
+    ],
+  },
   {
     method: ["GET"],
     matcher: "/admin/collections",
@@ -59,6 +71,12 @@ export const adminCollectionRoutesMiddlewares: MiddlewareRoute[] = [
     method: ["DELETE"],
     matcher: "/admin/collections/:id",
     middlewares: [],
+    policies: [
+      {
+        resource: Entities.product_collection,
+        operation: PolicyOperation.delete,
+      },
+    ],
   },
   {
     method: ["POST"],

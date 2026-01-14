@@ -16,11 +16,15 @@ export interface definePoliciesExport {
 }
 
 declare global {
-  // eslint-disable-next-line no-var
-  var Resource: Record<string, string>
-  // eslint-disable-next-line no-var
-  var Operation: Record<string, string>
-  // eslint-disable-next-line no-var
+  var PolicyResource: Record<string, string>
+  var PolicyOperation: Record<string, string> & {
+    readonly read: "read"
+    readonly write: "write"
+    readonly update: "update"
+    readonly delete: "delete"
+    readonly "*": "*"
+    readonly ALL: "*"
+  }
   var Policy: Record<
     string,
     { resource: string; operation: string; description?: string }
@@ -38,7 +42,7 @@ global.PolicyResource ??= PolicyResource
  */
 const defaultOperations = ["read", "write", "update", "delete", "*"]
 
-export const PolicyOperation = global.PolicyOperation ?? {}
+export const PolicyOperation = global.PolicyOperation ?? { ALL: "*" }
 global.PolicyOperation ??= PolicyOperation
 
 for (const operation of defaultOperations) {
@@ -101,13 +105,14 @@ export function definePolicies(
   }
 
   for (const policy of policiesArray) {
-    policy.resource = policy.resource.toLowerCase()
-    policy.operation = policy.operation.toLowerCase()
-
     const resourceKey = toSnakeCase(policy.resource)
+    const operationKey = toSnakeCase(policy.operation)
+
+    policy.resource = resourceKey
+    policy.operation = operationKey
+
     PolicyResource[resourceKey] = policy.resource
 
-    const operationKey = toSnakeCase(policy.operation)
     PolicyOperation[operationKey] = policy.operation
 
     // Register in Policy object with name as key

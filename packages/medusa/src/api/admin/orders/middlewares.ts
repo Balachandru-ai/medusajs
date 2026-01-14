@@ -3,7 +3,9 @@ import {
   validateAndTransformQuery,
 } from "@medusajs/framework"
 import { MiddlewareRoute } from "@medusajs/framework/http"
+import { PolicyOperation } from "@medusajs/framework/utils"
 import * as QueryConfig from "./query-config"
+import { Entities } from "./query-config"
 import {
   AdminCancelOrderTransferRequest,
   AdminCompleteOrder,
@@ -22,6 +24,20 @@ import {
 } from "./validators"
 
 export const adminOrderRoutesMiddlewares: MiddlewareRoute[] = [
+  {
+    method: ["ALL"],
+    matcher: "/admin/orders/*",
+    policies: [
+      {
+        resource: Entities.order,
+        operation: PolicyOperation.read,
+      },
+      {
+        resource: Entities.order_item,
+        operation: PolicyOperation.read,
+      },
+    ],
+  },
   {
     method: ["GET"],
     matcher: "/admin/orders",

@@ -1,9 +1,11 @@
-import { MiddlewareRoute } from "@medusajs/framework/http"
 import {
   validateAndTransformBody,
   validateAndTransformQuery,
 } from "@medusajs/framework"
+import { MiddlewareRoute } from "@medusajs/framework/http"
+import { PolicyOperation } from "@medusajs/framework/utils"
 import * as queryConfig from "./query-config"
+import { Entities } from "./query-config"
 import {
   AdminCreatePaymentRefundReason,
   AdminGetRefundReasonParams,
@@ -12,6 +14,16 @@ import {
 } from "./validators"
 
 export const adminRefundReasonsRoutesMiddlewares: MiddlewareRoute[] = [
+  {
+    method: ["ALL"],
+    matcher: "/admin/refund-reasons/*",
+    policies: [
+      {
+        resource: Entities.refund_reason,
+        operation: PolicyOperation.read,
+      },
+    ],
+  },
   {
     method: ["GET"],
     matcher: "/admin/refund-reasons",
@@ -62,6 +74,12 @@ export const adminRefundReasonsRoutesMiddlewares: MiddlewareRoute[] = [
         AdminGetRefundReasonsParams,
         queryConfig.retrieveTransformQueryConfig
       ),
+    ],
+    policies: [
+      {
+        resource: Entities.refund_reason,
+        operation: PolicyOperation.delete,
+      },
     ],
   },
 ]

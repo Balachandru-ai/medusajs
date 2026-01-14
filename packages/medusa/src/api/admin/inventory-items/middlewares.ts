@@ -3,8 +3,10 @@ import {
   validateAndTransformQuery,
 } from "@medusajs/framework"
 import { MiddlewareRoute } from "@medusajs/framework/http"
+import { PolicyOperation } from "@medusajs/framework/utils"
 import { DEFAULT_BATCH_ENDPOINTS_SIZE_LIMIT } from "../../../utils/middlewares"
 import * as QueryConfig from "./query-config"
+import { Entities } from "./query-config"
 import {
   AdminBatchInventoryItemLevels,
   AdminBatchInventoryItemLocationsLevel,
@@ -19,6 +21,16 @@ import {
 } from "./validators"
 
 export const adminInventoryRoutesMiddlewares: MiddlewareRoute[] = [
+  {
+    method: ["ALL"],
+    matcher: "/admin/inventory-items/*",
+    policies: [
+      {
+        resource: Entities.inventory_item,
+        operation: PolicyOperation.read,
+      },
+    ],
+  },
   {
     method: ["GET"],
     matcher: "/admin/inventory-items",
@@ -57,6 +69,12 @@ export const adminInventoryRoutesMiddlewares: MiddlewareRoute[] = [
       sizeLimit: DEFAULT_BATCH_ENDPOINTS_SIZE_LIMIT,
     },
     middlewares: [validateAndTransformBody(AdminBatchInventoryItemLevels)],
+    policies: [
+      {
+        resource: Entities.inventory_item,
+        operation: PolicyOperation.ALL,
+      },
+    ],
   },
   {
     method: ["POST"],
@@ -65,6 +83,12 @@ export const adminInventoryRoutesMiddlewares: MiddlewareRoute[] = [
       sizeLimit: DEFAULT_BATCH_ENDPOINTS_SIZE_LIMIT,
     },
     middlewares: [validateAndTransformBody(AdminBatchInventoryItemLevels)],
+    policies: [
+      {
+        resource: Entities.inventory_item,
+        operation: PolicyOperation.ALL,
+      },
+    ],
   },
   {
     method: ["POST"],
@@ -111,6 +135,12 @@ export const adminInventoryRoutesMiddlewares: MiddlewareRoute[] = [
         QueryConfig.retrieveLocationLevelsTransformQueryConfig
       ),
     ],
+    policies: [
+      {
+        resource: Entities.inventory_item,
+        operation: PolicyOperation.ALL,
+      },
+    ],
   },
   {
     method: ["DELETE"],
@@ -120,6 +150,12 @@ export const adminInventoryRoutesMiddlewares: MiddlewareRoute[] = [
         AdminGetInventoryItemParams,
         QueryConfig.retrieveTransformQueryConfig
       ),
+    ],
+    policies: [
+      {
+        resource: Entities.inventory_item,
+        operation: PolicyOperation.delete,
+      },
     ],
   },
   {

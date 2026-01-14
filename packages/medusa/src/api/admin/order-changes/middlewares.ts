@@ -1,15 +1,27 @@
-import { MiddlewareRoute } from "@medusajs/framework/http"
 import {
   validateAndTransformBody,
   validateAndTransformQuery,
 } from "@medusajs/framework"
+import { MiddlewareRoute } from "@medusajs/framework/http"
+import { PolicyOperation } from "@medusajs/framework/utils"
 import * as QueryConfig from "./query-config"
+import { Entities } from "./query-config"
 import {
-  AdminPostOrderChangesReqSchema,
   AdminOrderChangeParams,
+  AdminPostOrderChangesReqSchema,
 } from "./validators"
 
 export const adminOrderChangesRoutesMiddlewares: MiddlewareRoute[] = [
+  {
+    method: ["ALL"],
+    matcher: "/admin/order-changes/*",
+    policies: [
+      {
+        resource: Entities.order_change,
+        operation: PolicyOperation.read,
+      },
+    ],
+  },
   {
     method: ["POST"],
     matcher: "/admin/order-changes/:id",

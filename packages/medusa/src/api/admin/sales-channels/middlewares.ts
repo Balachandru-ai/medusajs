@@ -1,10 +1,12 @@
-import { maybeApplyLinkFilter, MiddlewareRoute } from "@medusajs/framework/http"
 import {
   validateAndTransformBody,
   validateAndTransformQuery,
 } from "@medusajs/framework"
+import { maybeApplyLinkFilter, MiddlewareRoute } from "@medusajs/framework/http"
+import { PolicyOperation } from "@medusajs/framework/utils"
 import { createLinkBody } from "../../utils/validators"
 import * as QueryConfig from "./query-config"
+import { Entities } from "./query-config"
 import {
   AdminCreateSalesChannel,
   AdminGetSalesChannelParams,
@@ -13,6 +15,16 @@ import {
 } from "./validators"
 
 export const adminSalesChannelRoutesMiddlewares: MiddlewareRoute[] = [
+  {
+    method: ["ALL"],
+    matcher: "/admin/sales-channels/*",
+    policies: [
+      {
+        resource: Entities.sales_channel,
+        operation: PolicyOperation.read,
+      },
+    ],
+  },
   {
     method: ["GET"],
     matcher: "/admin/sales-channels",

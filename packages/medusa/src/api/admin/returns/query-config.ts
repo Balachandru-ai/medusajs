@@ -1,3 +1,7 @@
+export enum Entities {
+  return = "return",
+}
+
 export const defaultAdminReturnFields = [
   "id",
   "order_id",
@@ -27,6 +31,7 @@ export const defaultAdminDetailsReturnFields = [
 export const retrieveTransformQueryConfig = {
   defaults: defaultAdminDetailsReturnFields,
   isList: false,
+  entity: Entities.return,
 }
 
 export const listTransformQueryConfig = {

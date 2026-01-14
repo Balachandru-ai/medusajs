@@ -1,9 +1,11 @@
-import * as QueryConfig from "./query-config"
-import { MiddlewareRoute } from "@medusajs/framework/http"
 import {
   validateAndTransformBody,
   validateAndTransformQuery,
 } from "@medusajs/framework"
+import { MiddlewareRoute } from "@medusajs/framework/http"
+import { PolicyOperation } from "@medusajs/framework/utils"
+import * as QueryConfig from "./query-config"
+import { Entities } from "./query-config"
 import {
   AdminCreateProductTag,
   AdminGetProductTagParams,
@@ -12,6 +14,16 @@ import {
 } from "./validators"
 
 export const adminProductTagRoutesMiddlewares: MiddlewareRoute[] = [
+  {
+    method: ["ALL"],
+    matcher: "/admin/product-tags/*",
+    policies: [
+      {
+        resource: Entities.product_tag,
+        operation: PolicyOperation.read,
+      },
+    ],
+  },
   {
     method: ["GET"],
     matcher: "/admin/product-tags",
@@ -59,5 +71,11 @@ export const adminProductTagRoutesMiddlewares: MiddlewareRoute[] = [
     method: ["DELETE"],
     matcher: "/admin/product-tags/:id",
     middlewares: [],
+    policies: [
+      {
+        resource: Entities.product_tag,
+        operation: PolicyOperation.delete,
+      },
+    ],
   },
 ]

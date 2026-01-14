@@ -1,9 +1,11 @@
-import { MiddlewareRoute } from "@medusajs/framework/http"
 import {
   validateAndTransformBody,
   validateAndTransformQuery,
 } from "@medusajs/framework"
+import { MiddlewareRoute } from "@medusajs/framework/http"
+import { PolicyOperation } from "@medusajs/framework/utils"
 import {
+  Entities,
   listTransformQueryConfig,
   retrieveTransformQueryConfig,
 } from "./query-config"
@@ -15,6 +17,16 @@ import {
 } from "./validators"
 
 export const adminShippingProfilesMiddlewares: MiddlewareRoute[] = [
+  {
+    method: ["ALL"],
+    matcher: "/admin/shipping-profiles/*",
+    policies: [
+      {
+        resource: Entities.shipping_profile,
+        operation: PolicyOperation.read,
+      },
+    ],
+  },
   {
     method: ["POST"],
     matcher: "/admin/shipping-profiles",

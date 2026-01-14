@@ -1,3 +1,7 @@
+export enum Entities {
+  price_list = "price_list",
+}
+
 export enum PriceListRelations {
   PRICES = "prices",
 }
@@ -35,19 +39,23 @@ export const adminPriceListRemoteQueryFields = [
 export const retrivePriceListPriceQueryConfig = {
   defaults: adminPriceListPriceQueryFields,
   isList: false,
+  entity: Entities.price_list,
 }
 
 export const listPriceListPriceQueryConfig = {
   ...retrivePriceListPriceQueryConfig,
   isList: true,
+  entity: Entities.price_list,
 }
 
 export const retrivePriceListQueryConfig = {
   defaults: adminPriceListRemoteQueryFields,
   isList: false,
+  entity: Entities.price_list,
 }
 
 export const listPriceListQueryConfig = {
   ...retrivePriceListQueryConfig,
   isList: true,
+  entity: Entities.price_list,
 }
