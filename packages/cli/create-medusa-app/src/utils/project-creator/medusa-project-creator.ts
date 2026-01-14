@@ -75,32 +75,28 @@ export class MedusaProjectCreator
       title: "Setting up project...",
     })
 
-    try {
-      await runCloneRepo({
-        projectName: this.projectPath,
-        repoUrl: this.options.repoUrl ?? "",
+    await runCloneRepo({
+      projectName: this.projectPath,
+      repoUrl: this.options.repoUrl ?? "",
+      abortController: this.abortController,
+      spinner: this.spinner,
+      verbose: this.options.verbose,
+    })
+
+    this.factBoxOptions.interval = displayFactBox({
+      ...this.factBoxOptions,
+      message: "Created project directory",
+    })
+
+    if (installNextjs) {
+      this.nextjsDirectory = await installNextjsStarter({
+        directoryName: this.projectPath,
         abortController: this.abortController,
-        spinner: this.spinner,
+        factBoxOptions: this.factBoxOptions,
         verbose: this.options.verbose,
+        packageManager: this.packageManager,
+        version: this.options.version,
       })
-
-      this.factBoxOptions.interval = displayFactBox({
-        ...this.factBoxOptions,
-        message: "Created project directory",
-      })
-
-      if (installNextjs) {
-        this.nextjsDirectory = await installNextjsStarter({
-          directoryName: this.projectPath,
-          abortController: this.abortController,
-          factBoxOptions: this.factBoxOptions,
-          verbose: this.options.verbose,
-          processManager: this.processManager,
-          version: this.options.version,
-        })
-      }
-    } catch (e) {
-      throw e
     }
   }
 
@@ -177,6 +173,7 @@ export class MedusaProjectCreator
     startMedusa({
       directory: this.projectPath,
       abortController: this.abortController,
+      packageManager: this.packageManager,
     })
 
     if (this.nextjsDirectory) {
@@ -184,6 +181,7 @@ export class MedusaProjectCreator
         directory: this.nextjsDirectory,
         abortController: this.abortController,
         verbose: this.options.verbose,
+        packageManager: this.packageManager,
       })
     }
 
@@ -195,24 +193,27 @@ export class MedusaProjectCreator
   private async openBrowser(): Promise<void> {
     await waitOn({
       resources: ["http://localhost:9000/health"],
-    }).then(async () => {
+    }).then(async () =>
       open(
         this.inviteToken
           ? `http://localhost:9000/app/invite?token=${this.inviteToken}&first_run=true`
           : "http://localhost:9000/app"
       )
-    })
+    )
   }
 
-  private handleError(e: any): void {
+  private handleError(e: Error): void {
     if (isAbortError(e)) {
       process.exit()
     }
+
+    const showStack = e.message.includes("npm") || e.message.includes("yarn")
 
     this.spinner.stop()
     logMessage({
       message: `An error occurred: ${e}`,
       type: "error",
+      stack: showStack ? e.stack?.replace(e.toString(), "") : "",
     })
   }
 
