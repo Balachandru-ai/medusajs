@@ -70,8 +70,12 @@ export class ConfigManager {
    * @protected
    */
   protected buildHttpConfig(
-    projectConfig: Partial<ConfigModule["projectConfig"]>
+    projectConfig: Partial<ConfigModule["projectConfig"]>,
+    options?: {
+      throwOnError?: boolean
+    }
   ): ConfigModule["projectConfig"]["http"] {
+    const { throwOnError = true } = options ?? {}
     const http = (projectConfig.http ??
       {}) as ConfigModule["projectConfig"]["http"]
 
@@ -87,6 +91,7 @@ export class ConfigManager {
     http.jwtPublicKey = http?.jwtPublicKey ?? process.env.JWT_PUBLIC_KEY
 
     if (
+      throwOnError &&
       http?.jwtPublicKey &&
       ((http.jwtVerifyOptions && !http.jwtVerifyOptions.algorithms?.length) ||
         (http.jwtOptions && !http.jwtOptions.algorithm))
@@ -96,7 +101,7 @@ export class ConfigManager {
       )
     }
 
-    if (!http.jwtSecret) {
+    if (throwOnError && !http.jwtSecret) {
       this.rejectErrors(
         `http.jwtSecret not found.${
           this.#isProduction ? "" : "Using default 'supersecret'."
@@ -109,7 +114,7 @@ export class ConfigManager {
     http.cookieSecret = (projectConfig.http?.cookieSecret ??
       process.env.COOKIE_SECRET)!
 
-    if (!http.cookieSecret) {
+    if (throwOnError && !http.cookieSecret) {
       this.rejectErrors(
         `http.cookieSecret not found.${
           this.#isProduction ? "" : " Using default 'supersecret'."
@@ -128,7 +133,10 @@ export class ConfigManager {
    * @protected
    */
   protected normalizeProjectConfig(
-    config: Partial<ConfigModule>
+    config: Partial<ConfigModule>,
+    options?: {
+      throwOnError?: boolean
+    }
   ): ConfigModule["projectConfig"] {
     const projConfig = config?.projectConfig ?? {}
     const outputConfig = deepCopy(projConfig) as ConfigModule["projectConfig"]
@@ -140,7 +148,9 @@ export class ConfigManager {
       )
     }
 
-    outputConfig.http = this.buildHttpConfig(projConfig)
+    outputConfig.http = this.buildHttpConfig(projConfig, {
+      throwOnError: options?.throwOnError,
+    })
 
     let workerMode = outputConfig?.workerMode!
 
@@ -168,13 +178,17 @@ export class ConfigManager {
   loadConfig({
     projectConfig = {},
     baseDir,
+    throwOnError = true,
   }: {
     projectConfig: Partial<ConfigModule>
     baseDir: string
+    throwOnError?: boolean
   }): ConfigModule {
     this.#baseDir = baseDir
 
-    const normalizedProjectConfig = this.normalizeProjectConfig(projectConfig)
+    const normalizedProjectConfig = this.normalizeProjectConfig(projectConfig, {
+      throwOnError,
+    })
 
     this.#config = {
       projectConfig: normalizedProjectConfig,

@@ -28,19 +28,24 @@ container.register(
  */
 export async function configLoader(
   entryDirectory: string,
-  configFileName: string = "medusa-config"
+  configFileName: string = "medusa-config",
+  options?: {
+    throwOnError?: boolean
+  }
 ): Promise<ConfigModule> {
+  const { throwOnError = true } = options ?? {}
   const config = await getConfigFile<ConfigModule>(
     entryDirectory,
     configFileName
   )
 
-  if (config.error) {
+  if (config.error && !throwOnError) {
     handleConfigError(config.error)
   }
 
   return configManager.loadConfig({
     projectConfig: config.configModule!,
     baseDir: entryDirectory,
+    throwOnError,
   })
 }
