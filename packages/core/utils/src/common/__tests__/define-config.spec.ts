@@ -1114,6 +1114,9 @@ describe("defineConfig", function () {
           "event_bus": {
             "options": {
               "redisUrl": "redis://localhost:6379",
+              "workerOptions": {
+                "concurrency": 3,
+              },
             },
             "resolve": "@medusajs/medusa/event-bus-redis",
           },
@@ -1338,6 +1341,9 @@ describe("defineConfig", function () {
           "event_bus": {
             "options": {
               "redisUrl": "redis://localhost:6379",
+              "workerOptions": {
+                "concurrency": 3,
+              },
             },
             "resolve": "@medusajs/medusa/event-bus-redis",
           },
@@ -1578,6 +1584,9 @@ describe("defineConfig", function () {
           "event_bus": {
             "options": {
               "redisUrl": "redis://localhost:6379",
+              "workerOptions": {
+                "concurrency": 3,
+              },
             },
             "resolve": "@medusajs/medusa/event-bus-redis",
           },
