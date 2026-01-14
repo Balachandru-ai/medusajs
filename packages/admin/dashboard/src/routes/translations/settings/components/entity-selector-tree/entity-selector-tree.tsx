@@ -61,7 +61,6 @@ type EntitySelectorTreeProps = {
   searchQuery: string
   viewMode: ViewMode
   sortOrder: SortOrder
-  initialSelectedIds?: Set<string>
 }
 
 export const EntitySelectorTree = React.forwardRef<
@@ -223,6 +222,7 @@ export const EntitySelectorTree = React.forwardRef<
                   <SelectorRow
                     leftElement={
                       <button
+                        type="button"
                         onClick={() => hasFields && toggleExpand(entity.id)}
                         className={clx(
                           "flex h-5 w-5 items-center justify-center",
