@@ -87,7 +87,7 @@ export const validateRefundPaymentExceedsCapturedAmountStep = createStep(
 
     if (
       MathBN.gte(
-        MathBN.sub(totalRefundedAmount - capturedAmount),
+        MathBN.sub(totalRefundedAmount, capturedAmount),
         currencyEpsilon
       )
     ) {
