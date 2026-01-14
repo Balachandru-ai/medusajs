@@ -39,7 +39,7 @@ export async function configLoader(
     configFileName
   )
 
-  if (config.error && !throwOnError) {
+  if (config.error && throwOnError) {
     handleConfigError(config.error)
   }
 
