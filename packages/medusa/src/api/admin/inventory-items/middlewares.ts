@@ -61,6 +61,12 @@ export const adminInventoryRoutesMiddlewares: MiddlewareRoute[] = [
         QueryConfig.retrieveTransformQueryConfig
       ),
     ],
+    policies: [
+      {
+        resource: Entities.inventory_item,
+        operation: PolicyOperation.create,
+      },
+    ],
   },
   {
     method: ["POST"],
@@ -100,6 +106,12 @@ export const adminInventoryRoutesMiddlewares: MiddlewareRoute[] = [
         QueryConfig.retrieveTransformQueryConfig
       ),
     ],
+    policies: [
+      {
+        resource: Entities.inventory_item,
+        operation: PolicyOperation.update,
+      },
+    ],
   },
   {
     method: ["GET"],
@@ -120,6 +132,12 @@ export const adminInventoryRoutesMiddlewares: MiddlewareRoute[] = [
         AdminGetInventoryItemParams,
         QueryConfig.retrieveTransformQueryConfig
       ),
+    ],
+    policies: [
+      {
+        resource: Entities.inventory_item,
+        operation: PolicyOperation.create,
+      },
     ],
   },
   {
@@ -167,6 +185,12 @@ export const adminInventoryRoutesMiddlewares: MiddlewareRoute[] = [
         AdminGetInventoryItemParams,
         QueryConfig.retrieveTransformQueryConfig
       ),
+    ],
+    policies: [
+      {
+        resource: Entities.inventory_item,
+        operation: PolicyOperation.update,
+      },
     ],
   },
 ]

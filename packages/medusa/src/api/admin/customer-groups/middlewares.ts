@@ -55,6 +55,12 @@ export const adminCustomerGroupRoutesMiddlewares: MiddlewareRoute[] = [
         QueryConfig.retrieveTransformQueryConfig
       ),
     ],
+    policies: [
+      {
+        resource: Entities.customer_group,
+        operation: PolicyOperation.create,
+      },
+    ],
   },
   {
     method: ["POST"],
@@ -66,6 +72,12 @@ export const adminCustomerGroupRoutesMiddlewares: MiddlewareRoute[] = [
         QueryConfig.retrieveTransformQueryConfig
       ),
     ],
+    policies: [
+      {
+        resource: Entities.customer_group,
+        operation: PolicyOperation.update,
+      },
+    ],
   },
   {
     method: ["POST"],
@@ -76,6 +88,12 @@ export const adminCustomerGroupRoutesMiddlewares: MiddlewareRoute[] = [
         AdminGetCustomerGroupParams,
         QueryConfig.retrieveTransformQueryConfig
       ),
+    ],
+    policies: [
+      {
+        resource: Entities.customer_group,
+        operation: PolicyOperation.update,
+      },
     ],
   },
 ]

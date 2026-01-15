@@ -62,6 +62,12 @@ export const adminDraftOrderRoutesMiddlewares: MiddlewareRoute[] = [
         QueryConfig.retrieveTransformQueryConfig
       ),
     ],
+    policies: [
+      {
+        resource: Entities.order,
+        operation: PolicyOperation.create,
+      },
+    ],
   },
   {
     method: ["POST"],
@@ -73,6 +79,12 @@ export const adminDraftOrderRoutesMiddlewares: MiddlewareRoute[] = [
         QueryConfig.retrieveTransformQueryConfig
       ),
     ],
+    policies: [
+      {
+        resource: Entities.order,
+        operation: PolicyOperation.update,
+      },
+    ],
   },
   {
     method: ["POST"],
@@ -83,26 +95,56 @@ export const adminDraftOrderRoutesMiddlewares: MiddlewareRoute[] = [
         QueryConfig.retrieveTransformQueryConfig
       ),
     ],
+    policies: [
+      {
+        resource: Entities.order,
+        operation: PolicyOperation.update,
+      },
+    ],
   },
   {
     method: ["POST"],
     matcher: "/admin/draft-orders/:id/edit/items",
     middlewares: [validateAndTransformBody(AdminAddDraftOrderItems)],
+    policies: [
+      {
+        resource: Entities.order,
+        operation: PolicyOperation.update,
+      },
+    ],
   },
   {
     method: ["POST"],
     matcher: "/admin/draft-orders/:id/edit/items/item/:item_id",
     middlewares: [validateAndTransformBody(AdminUpdateDraftOrderItem)],
+    policies: [
+      {
+        resource: Entities.order,
+        operation: PolicyOperation.update,
+      },
+    ],
   },
   {
     method: ["POST"],
     matcher: "/admin/draft-orders/:id/edit/items/:action_id",
     middlewares: [validateAndTransformBody(AdminUpdateDraftOrderActionItem)],
+    policies: [
+      {
+        resource: Entities.order,
+        operation: PolicyOperation.update,
+      },
+    ],
   },
   {
     method: ["POST"],
     matcher: "/admin/draft-orders/:id/edit/promotions",
     middlewares: [validateAndTransformBody(AdminAddDraftOrderPromotions)],
+    policies: [
+      {
+        resource: Entities.order,
+        operation: PolicyOperation.update,
+      },
+    ],
   },
   {
     method: ["DELETE"],
@@ -119,6 +161,12 @@ export const adminDraftOrderRoutesMiddlewares: MiddlewareRoute[] = [
     method: ["POST"],
     matcher: "/admin/draft-orders/:id/edit/shipping-methods",
     middlewares: [validateAndTransformBody(AdminAddDraftOrderShippingMethod)],
+    policies: [
+      {
+        resource: Entities.order,
+        operation: PolicyOperation.update,
+      },
+    ],
   },
   {
     method: ["POST"],
@@ -126,12 +174,24 @@ export const adminDraftOrderRoutesMiddlewares: MiddlewareRoute[] = [
     middlewares: [
       validateAndTransformBody(AdminUpdateDraftOrderShippingMethod),
     ],
+    policies: [
+      {
+        resource: Entities.order,
+        operation: PolicyOperation.update,
+      },
+    ],
   },
   {
     method: ["POST"],
     matcher: "/admin/draft-orders/:id/edit/shipping-methods/:action_id",
     middlewares: [
       validateAndTransformBody(AdminUpdateDraftOrderActionShippingMethod),
+    ],
+    policies: [
+      {
+        resource: Entities.order,
+        operation: PolicyOperation.update,
+      },
     ],
   },
 ]

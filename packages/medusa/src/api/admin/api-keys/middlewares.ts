@@ -57,6 +57,12 @@ export const adminApiKeyRoutesMiddlewares: MiddlewareRoute[] = [
         QueryConfig.retrieveTransformQueryConfig
       ),
     ],
+    policies: [
+      {
+        resource: Entities.api_key,
+        operation: PolicyOperation.create,
+      },
+    ],
   },
   {
     method: ["POST"],
@@ -67,6 +73,12 @@ export const adminApiKeyRoutesMiddlewares: MiddlewareRoute[] = [
         AdminGetApiKeyParams,
         QueryConfig.retrieveTransformQueryConfig
       ),
+    ],
+    policies: [
+      {
+        resource: Entities.api_key,
+        operation: PolicyOperation.update,
+      },
     ],
   },
   {
@@ -90,6 +102,12 @@ export const adminApiKeyRoutesMiddlewares: MiddlewareRoute[] = [
         QueryConfig.retrieveTransformQueryConfig
       ),
     ],
+    policies: [
+      {
+        resource: Entities.api_key,
+        operation: PolicyOperation.update,
+      },
+    ],
   },
   {
     method: ["POST"],
@@ -100,6 +118,12 @@ export const adminApiKeyRoutesMiddlewares: MiddlewareRoute[] = [
         AdminGetApiKeyParams,
         QueryConfig.retrieveTransformQueryConfig
       ),
+    ],
+    policies: [
+      {
+        resource: Entities.api_key,
+        operation: PolicyOperation.update,
+      },
     ],
   },
 ]

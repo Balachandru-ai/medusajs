@@ -65,6 +65,12 @@ export const adminPaymentRoutesMiddlewares: MiddlewareRoute[] = [
         queryConfig.retrieveTransformQueryConfig
       ),
     ],
+    policies: [
+      {
+        resource: Entities.payment,
+        operation: PolicyOperation.update,
+      },
+    ],
   },
   {
     method: ["POST"],
@@ -75,6 +81,12 @@ export const adminPaymentRoutesMiddlewares: MiddlewareRoute[] = [
         AdminGetPaymentParams,
         queryConfig.retrieveTransformQueryConfig
       ),
+    ],
+    policies: [
+      {
+        resource: Entities.payment,
+        operation: PolicyOperation.create,
+      },
     ],
   },
 ]

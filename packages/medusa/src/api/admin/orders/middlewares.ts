@@ -57,6 +57,12 @@ export const adminOrderRoutesMiddlewares: MiddlewareRoute[] = [
         QueryConfig.exportTransformQueryConfig
       ),
     ],
+    policies: [
+      {
+        resource: Entities.order,
+        operation: PolicyOperation.read,
+      },
+    ],
   },
   {
     method: ["GET"],
@@ -77,6 +83,12 @@ export const adminOrderRoutesMiddlewares: MiddlewareRoute[] = [
         AdminGetOrdersOrderParams,
         QueryConfig.retrieveTransformQueryConfig
       ),
+    ],
+    policies: [
+      {
+        resource: Entities.order,
+        operation: PolicyOperation.update,
+      },
     ],
   },
   {
@@ -128,6 +140,12 @@ export const adminOrderRoutesMiddlewares: MiddlewareRoute[] = [
         QueryConfig.retrieveTransformQueryConfig
       ),
     ],
+    policies: [
+      {
+        resource: Entities.order,
+        operation: PolicyOperation.update,
+      },
+    ],
   },
   {
     method: ["POST"],
@@ -138,6 +156,12 @@ export const adminOrderRoutesMiddlewares: MiddlewareRoute[] = [
         AdminGetOrdersOrderParams,
         QueryConfig.retrieveTransformQueryConfig
       ),
+    ],
+    policies: [
+      {
+        resource: Entities.order,
+        operation: PolicyOperation.update,
+      },
     ],
   },
   {
@@ -150,6 +174,12 @@ export const adminOrderRoutesMiddlewares: MiddlewareRoute[] = [
         QueryConfig.retrieveTransformQueryConfig
       ),
     ],
+    policies: [
+      {
+        resource: Entities.order,
+        operation: PolicyOperation.update,
+      },
+    ],
   },
   {
     method: ["POST"],
@@ -160,6 +190,12 @@ export const adminOrderRoutesMiddlewares: MiddlewareRoute[] = [
         AdminGetOrdersOrderParams,
         QueryConfig.retrieveTransformQueryConfig
       ),
+    ],
+    policies: [
+      {
+        resource: Entities.order,
+        operation: PolicyOperation.create,
+      },
     ],
   },
   {
@@ -172,6 +208,12 @@ export const adminOrderRoutesMiddlewares: MiddlewareRoute[] = [
         QueryConfig.retrieveTransformQueryConfig
       ),
     ],
+    policies: [
+      {
+        resource: Entities.order,
+        operation: PolicyOperation.create,
+      },
+    ],
   },
   {
     method: ["POST"],
@@ -182,6 +224,12 @@ export const adminOrderRoutesMiddlewares: MiddlewareRoute[] = [
         AdminGetOrdersOrderParams,
         QueryConfig.retrieveTransformQueryConfig
       ),
+    ],
+    policies: [
+      {
+        resource: Entities.order,
+        operation: PolicyOperation.update,
+      },
     ],
   },
   {
@@ -194,6 +242,12 @@ export const adminOrderRoutesMiddlewares: MiddlewareRoute[] = [
         QueryConfig.retrieveTransformQueryConfig
       ),
     ],
+    policies: [
+      {
+        resource: Entities.order,
+        operation: PolicyOperation.update,
+      },
+    ],
   },
   {
     method: ["POST"],
@@ -204,6 +258,12 @@ export const adminOrderRoutesMiddlewares: MiddlewareRoute[] = [
         AdminGetOrdersOrderParams,
         QueryConfig.retrieveTransformQueryConfig
       ),
+    ],
+    policies: [
+      {
+        resource: Entities.order,
+        operation: PolicyOperation.update,
+      },
     ],
   },
   {
@@ -216,6 +276,12 @@ export const adminOrderRoutesMiddlewares: MiddlewareRoute[] = [
         QueryConfig.retrieveTransformQueryConfig
       ),
     ],
+    policies: [
+      {
+        resource: Entities.order,
+        operation: PolicyOperation.update,
+      },
+    ],
   },
   {
     method: ["POST"],
@@ -226,6 +292,12 @@ export const adminOrderRoutesMiddlewares: MiddlewareRoute[] = [
         AdminGetOrdersOrderParams,
         QueryConfig.retrieveTransformQueryConfig
       ),
+    ],
+    policies: [
+      {
+        resource: Entities.order,
+        operation: PolicyOperation.update,
+      },
     ],
   },
 ]

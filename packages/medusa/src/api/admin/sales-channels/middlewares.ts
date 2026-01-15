@@ -65,6 +65,12 @@ export const adminSalesChannelRoutesMiddlewares: MiddlewareRoute[] = [
         QueryConfig.retrieveTransformQueryConfig
       ),
     ],
+    policies: [
+      {
+        resource: Entities.sales_channel,
+        operation: PolicyOperation.create,
+      },
+    ],
   },
   {
     method: ["POST"],
@@ -75,6 +81,12 @@ export const adminSalesChannelRoutesMiddlewares: MiddlewareRoute[] = [
         AdminGetSalesChannelParams,
         QueryConfig.retrieveTransformQueryConfig
       ),
+    ],
+    policies: [
+      {
+        resource: Entities.sales_channel,
+        operation: PolicyOperation.update,
+      },
     ],
   },
   {
@@ -91,6 +103,12 @@ export const adminSalesChannelRoutesMiddlewares: MiddlewareRoute[] = [
         AdminGetSalesChannelParams,
         QueryConfig.retrieveTransformQueryConfig
       ),
+    ],
+    policies: [
+      {
+        resource: Entities.sales_channel,
+        operation: PolicyOperation.update,
+      },
     ],
   },
 ]

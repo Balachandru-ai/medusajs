@@ -132,7 +132,7 @@ export const adminProductRoutesMiddlewares: MiddlewareRoute[] = [
     policies: [
       {
         resource: Entities.product,
-        operation: PolicyOperation.ALL,
+        operation: [PolicyOperation.create, PolicyOperation.update],
       },
     ],
   },
@@ -194,7 +194,7 @@ export const adminProductRoutesMiddlewares: MiddlewareRoute[] = [
     policies: [
       {
         resource: Entities.product,
-        operation: PolicyOperation.delete,
+        operation: PolicyOperation.read,
       },
     ],
   },
@@ -218,6 +218,12 @@ export const adminProductRoutesMiddlewares: MiddlewareRoute[] = [
         QueryConfig.retrieveProductQueryConfig
       ),
     ],
+    policies: [
+      {
+        resource: Entities.product_variant,
+        operation: PolicyOperation.create,
+      },
+    ],
   },
   {
     method: ["POST"],
@@ -237,7 +243,11 @@ export const adminProductRoutesMiddlewares: MiddlewareRoute[] = [
     policies: [
       {
         resource: Entities.product_variant,
-        operation: PolicyOperation.ALL,
+        operation: [
+          PolicyOperation.create,
+          PolicyOperation.update,
+          PolicyOperation.delete,
+        ],
       },
     ],
   },
@@ -380,7 +390,11 @@ export const adminProductRoutesMiddlewares: MiddlewareRoute[] = [
     policies: [
       {
         resource: Entities.inventory_item,
-        operation: PolicyOperation.ALL,
+        operation: [
+          PolicyOperation.create,
+          PolicyOperation.update,
+          PolicyOperation.delete,
+        ],
       },
     ],
   },
@@ -394,6 +408,12 @@ export const adminProductRoutesMiddlewares: MiddlewareRoute[] = [
         QueryConfig.retrieveVariantConfig
       ),
     ],
+    policies: [
+      {
+        resource: Entities.inventory_item,
+        operation: PolicyOperation.create,
+      },
+    ],
   },
   {
     method: ["POST"],
@@ -405,6 +425,12 @@ export const adminProductRoutesMiddlewares: MiddlewareRoute[] = [
         AdminGetProductVariantParams,
         QueryConfig.retrieveVariantConfig
       ),
+    ],
+    policies: [
+      {
+        resource: Entities.inventory_item,
+        operation: PolicyOperation.update,
+      },
     ],
   },
   {

@@ -54,6 +54,12 @@ export const adminPricePreferencesRoutesMiddlewares: MiddlewareRoute[] = [
         QueryConfig.retrivePricePreferenceQueryConfig
       ),
     ],
+    policies: [
+      {
+        resource: Entities.price_preference,
+        operation: PolicyOperation.create,
+      },
+    ],
   },
   {
     method: ["POST"],
@@ -64,6 +70,12 @@ export const adminPricePreferencesRoutesMiddlewares: MiddlewareRoute[] = [
         AdminGetPricePreferenceParams,
         QueryConfig.retrivePricePreferenceQueryConfig
       ),
+    ],
+    policies: [
+      {
+        resource: Entities.price_preference,
+        operation: PolicyOperation.update,
+      },
     ],
   },
 ]
