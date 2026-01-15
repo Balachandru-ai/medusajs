@@ -434,7 +434,7 @@ Create the file `src/workflows/generate-product-feed.ts` with the following cont
 ```ts title="src/workflows/generate-product-feed.ts"
 import { createWorkflow, WorkflowResponse } from "@medusajs/framework/workflows-sdk"
 import { getProductFeedItemsStep } from "./steps/get-product-feed-items"
-import { buildProductFeedXmlStep } from "./steps/build-product-field-xml"
+import { buildProductFeedXmlStep } from "./steps/build-product-feed-xml"
 
 type GenerateProductFeedWorkflowInput = {
   currency_code: string
