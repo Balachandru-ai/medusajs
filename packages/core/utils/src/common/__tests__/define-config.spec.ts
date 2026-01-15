@@ -129,7 +129,7 @@ describe("defineConfig", function () {
             "resolve": "@medusajs/medusa/user",
           },
           "workflows": {
-            "resolve": "@medusajs/medusa/workflow-engine-inmemory",
+            "resolve": "@medusajs/medusa/workflows",
           },
         },
         "plugins": [
@@ -148,9 +148,8 @@ describe("defineConfig", function () {
             "jwtSecret": "supersecret",
             "restrictedFields": {
               "store": [
-                ${DEFAULT_STORE_RESTRICTED_FIELDS.map((v) => `"${v}"`).join(
-                  ",\n                "
-                )},
+                "order",
+                "orders",
               ],
             },
             "storeCors": "http://localhost:8000",
@@ -302,7 +301,7 @@ describe("defineConfig", function () {
             "resolve": "@medusajs/medusa/user",
           },
           "workflows": {
-            "resolve": "@medusajs/medusa/workflow-engine-inmemory",
+            "resolve": "@medusajs/medusa/workflows",
           },
         },
         "plugins": [
@@ -321,9 +320,8 @@ describe("defineConfig", function () {
             "jwtSecret": "supersecret",
             "restrictedFields": {
               "store": [
-                ${DEFAULT_STORE_RESTRICTED_FIELDS.map((v) => `"${v}"`).join(
-                  ",\n                "
-                )},
+                "order",
+                "orders",
               ],
             },
             "storeCors": "http://localhost:8000",
@@ -362,9 +360,7 @@ describe("defineConfig", function () {
             "options": {
               "apiKey": "test",
             },
-            "resolve": "${require.resolve(
-              "../__fixtures__/define-config/github"
-            )}",
+            "resolve": "/Users/adriendeperetti/Documents/02-personnel/01-projects/medusa/packages/core/utils/src/common/__fixtures__/define-config/github/index.ts",
           },
           "api_key": {
             "resolve": "@medusajs/medusa/api-key",
@@ -483,7 +479,7 @@ describe("defineConfig", function () {
             "resolve": "@medusajs/medusa/user",
           },
           "workflows": {
-            "resolve": "@medusajs/medusa/workflow-engine-inmemory",
+            "resolve": "@medusajs/medusa/workflows",
           },
         },
         "plugins": [
@@ -502,9 +498,8 @@ describe("defineConfig", function () {
             "jwtSecret": "supersecret",
             "restrictedFields": {
               "store": [
-                ${DEFAULT_STORE_RESTRICTED_FIELDS.map((v) => `"${v}"`).join(
-                  ",\n                "
-                )},
+                "order",
+                "orders",
               ],
             },
             "storeCors": "http://localhost:8000",
@@ -544,9 +539,7 @@ describe("defineConfig", function () {
             "options": {
               "apiKey": "test",
             },
-            "resolve": "${require.resolve(
-              "../__fixtures__/define-config/github"
-            )}",
+            "resolve": "/Users/adriendeperetti/Documents/02-personnel/01-projects/medusa/packages/core/utils/src/common/__fixtures__/define-config/github/index.ts",
           },
           "api_key": {
             "resolve": "@medusajs/medusa/api-key",
@@ -665,7 +658,7 @@ describe("defineConfig", function () {
             "resolve": "@medusajs/medusa/user",
           },
           "workflows": {
-            "resolve": "@medusajs/medusa/workflow-engine-inmemory",
+            "resolve": "@medusajs/medusa/workflows",
           },
         },
         "plugins": [
@@ -684,9 +677,8 @@ describe("defineConfig", function () {
             "jwtSecret": "supersecret",
             "restrictedFields": {
               "store": [
-                ${DEFAULT_STORE_RESTRICTED_FIELDS.map((v) => `"${v}"`).join(
-                  ",\n                "
-                )},
+                "order",
+                "orders",
               ],
             },
             "storeCors": "http://localhost:8000",
@@ -835,7 +827,7 @@ describe("defineConfig", function () {
             "resolve": "@medusajs/medusa/user",
           },
           "workflows": {
-            "resolve": "@medusajs/medusa/workflow-engine-inmemory",
+            "resolve": "@medusajs/medusa/workflows",
           },
         },
         "plugins": [
@@ -854,9 +846,8 @@ describe("defineConfig", function () {
             "jwtSecret": "supersecret",
             "restrictedFields": {
               "store": [
-                ${DEFAULT_STORE_RESTRICTED_FIELDS.map((v) => `"${v}"`).join(
-                  ",\n                "
-                )},
+                "order",
+                "orders",
               ],
             },
             "storeCors": "http://localhost:8000",
@@ -1008,7 +999,7 @@ describe("defineConfig", function () {
             "resolve": "@medusajs/medusa/user",
           },
           "workflows": {
-            "resolve": "@medusajs/medusa/workflow-engine-inmemory",
+            "resolve": "@medusajs/medusa/workflows",
           },
         },
         "plugins": [
@@ -1027,9 +1018,8 @@ describe("defineConfig", function () {
             "jwtSecret": "supersecret",
             "restrictedFields": {
               "store": [
-                ${DEFAULT_STORE_RESTRICTED_FIELDS.map((v) => `"${v}"`).join(
-                  ",\n                "
-                )},
+                "order",
+                "orders",
               ],
             },
             "storeCors": "http://localhost:8000",
@@ -1229,11 +1219,18 @@ describe("defineConfig", function () {
           },
           "workflows": {
             "options": {
-              "redis": {
-                "url": "redis://localhost:6379",
-              },
+              "providers": [
+                {
+                  "id": "redis",
+                  "is_default": true,
+                  "options": {
+                    "redisUrl": "redis://localhost:6379",
+                  },
+                  "resolve": "@medusajs/medusa/workflows-redis",
+                },
+              ],
             },
-            "resolve": "@medusajs/medusa/workflow-engine-redis",
+            "resolve": "@medusajs/medusa/workflows",
           },
         },
         "plugins": [
@@ -1252,9 +1249,8 @@ describe("defineConfig", function () {
             "jwtSecret": "supersecret",
             "restrictedFields": {
               "store": [
-                ${DEFAULT_STORE_RESTRICTED_FIELDS.map((v) => `"${v}"`).join(
-                  ",\n                "
-                )},
+                "order",
+                "orders",
               ],
             },
             "storeCors": "http://localhost:8000",
@@ -1456,11 +1452,18 @@ describe("defineConfig", function () {
           },
           "workflows": {
             "options": {
-              "redis": {
-                "url": "redis://localhost:6379",
-              },
+              "providers": [
+                {
+                  "id": "redis",
+                  "is_default": true,
+                  "options": {
+                    "redisUrl": "redis://localhost:6379",
+                  },
+                  "resolve": "@medusajs/medusa/workflows-redis",
+                },
+              ],
             },
-            "resolve": "@medusajs/medusa/workflow-engine-redis",
+            "resolve": "@medusajs/medusa/workflows",
           },
         },
         "plugins": [
@@ -1479,9 +1482,8 @@ describe("defineConfig", function () {
             "jwtSecret": "supersecret",
             "restrictedFields": {
               "store": [
-                ${DEFAULT_STORE_RESTRICTED_FIELDS.map((v) => `"${v}"`).join(
-                  ",\n                "
-                )},
+                "order",
+                "orders",
               ],
             },
             "storeCors": "http://localhost:8000",
@@ -1699,11 +1701,18 @@ describe("defineConfig", function () {
           },
           "workflows": {
             "options": {
-              "redis": {
-                "url": "redis://localhost:6379",
-              },
+              "providers": [
+                {
+                  "id": "redis",
+                  "is_default": true,
+                  "options": {
+                    "redisUrl": "redis://localhost:6379",
+                  },
+                  "resolve": "@medusajs/medusa/workflows-redis",
+                },
+              ],
             },
-            "resolve": "@medusajs/medusa/workflow-engine-redis",
+            "resolve": "@medusajs/medusa/workflows",
           },
         },
         "plugins": [
@@ -1722,9 +1731,8 @@ describe("defineConfig", function () {
             "jwtSecret": "supersecret",
             "restrictedFields": {
               "store": [
-                ${DEFAULT_STORE_RESTRICTED_FIELDS.map((v) => `"${v}"`).join(
-                  ",\n                "
-                )},
+                "order",
+                "orders",
               ],
             },
             "storeCors": "http://localhost:8000",
@@ -1976,7 +1984,7 @@ describe("defineConfig", function () {
             "resolve": "@medusajs/medusa/user",
           },
           "workflows": {
-            "resolve": "@medusajs/medusa/workflow-engine-inmemory",
+            "resolve": "@medusajs/medusa/workflows",
           },
         },
         "plugins": [
@@ -1995,9 +2003,8 @@ describe("defineConfig", function () {
             "jwtSecret": "supersecret",
             "restrictedFields": {
               "store": [
-                ${DEFAULT_STORE_RESTRICTED_FIELDS.map((v) => `"${v}"`).join(
-                  ",\n                "
-                )},
+                "order",
+                "orders",
               ],
             },
             "storeCors": "http://localhost:8000",
@@ -2185,7 +2192,7 @@ describe("defineConfig", function () {
             "resolve": "@medusajs/medusa/user",
           },
           "workflows": {
-            "resolve": "@medusajs/medusa/workflow-engine-inmemory",
+            "resolve": "@medusajs/medusa/workflows",
           },
         },
         "plugins": [
@@ -2216,9 +2223,8 @@ describe("defineConfig", function () {
             "jwtSecret": "supersecret",
             "restrictedFields": {
               "store": [
-                ${DEFAULT_STORE_RESTRICTED_FIELDS.map((v) => `"${v}"`).join(
-                  ",\n                "
-                )},
+                "order",
+                "orders",
               ],
             },
             "storeCors": "http://localhost:8000",
@@ -2397,7 +2403,7 @@ describe("defineConfig", function () {
             "resolve": "@medusajs/medusa/user",
           },
           "workflows": {
-            "resolve": "@medusajs/medusa/workflow-engine-inmemory",
+            "resolve": "@medusajs/medusa/workflows",
           },
         },
         "plugins": [
@@ -2428,9 +2434,8 @@ describe("defineConfig", function () {
             "jwtSecret": "supersecret",
             "restrictedFields": {
               "store": [
-                ${DEFAULT_STORE_RESTRICTED_FIELDS.map((v) => `"${v}"`).join(
-                  ",\n                "
-                )},
+                "order",
+                "orders",
               ],
             },
             "storeCors": "http://localhost:8000",
@@ -2618,7 +2623,7 @@ describe("defineConfig", function () {
             "resolve": "@medusajs/medusa/user",
           },
           "workflows": {
-            "resolve": "@medusajs/medusa/workflow-engine-inmemory",
+            "resolve": "@medusajs/medusa/workflows",
           },
         },
         "plugins": [
@@ -2649,9 +2654,8 @@ describe("defineConfig", function () {
             "jwtSecret": "supersecret",
             "restrictedFields": {
               "store": [
-                ${DEFAULT_STORE_RESTRICTED_FIELDS.map((v) => `"${v}"`).join(
-                  ",\n                "
-                )},
+                "order",
+                "orders",
               ],
             },
             "storeCors": "http://localhost:8000",

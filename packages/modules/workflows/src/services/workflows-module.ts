@@ -1,3 +1,4 @@
+import { SqlEntityManager } from "@medusajs/framework/mikro-orm/postgresql"
 import {
   Context,
   DAL,
@@ -21,10 +22,9 @@ import type {
   ReturnWorkflow,
   UnwrapWorkflowInputDataType,
 } from "@medusajs/framework/workflows-sdk"
-import { SqlEntityManager } from "@medusajs/framework/mikro-orm/postgresql"
 import { WorkflowExecution } from "@models"
-import { WorkflowOrchestratorService } from "./workflow-orchestrator"
 import { WorkflowOrchestratorCancelOptions } from "@types"
+import { WorkflowOrchestratorService } from "./workflow-orchestrator"
 
 type InjectedDependencies = {
   manager: SqlEntityManager
@@ -64,7 +64,8 @@ export class WorkflowsModuleService<
     this.baseRepository_ = baseRepository
     this.workflowExecutionService_ = workflowExecutionService
     this.workflowOrchestratorService_ = workflowOrchestratorService
-    this.workflowsProviderDisconnectHandler_ = workflowsProviderDisconnectHandler
+    this.workflowsProviderDisconnectHandler_ =
+      workflowsProviderDisconnectHandler
   }
 
   __hooks = {

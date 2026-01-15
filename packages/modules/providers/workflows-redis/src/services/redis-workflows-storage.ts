@@ -24,7 +24,13 @@ import {
   TransactionState,
   TransactionStepState,
 } from "@medusajs/framework/utils"
-import { Queue, QueueOptions, RepeatOptions, Worker, WorkerOptions } from "bullmq"
+import {
+  Queue,
+  QueueOptions,
+  RepeatOptions,
+  Worker,
+  WorkerOptions,
+} from "bullmq"
 import Redis from "ioredis"
 
 enum JobType {
@@ -154,7 +160,8 @@ export class RedisWorkflowsStorage
 
     this.__hooks = {
       onApplicationStart: this.onApplicationStart.bind(this),
-      onApplicationPrepareShutdown: this.onApplicationPrepareShutdown.bind(this),
+      onApplicationPrepareShutdown:
+        this.onApplicationPrepareShutdown.bind(this),
       onApplicationShutdown: this.onApplicationShutdown.bind(this),
     }
   }

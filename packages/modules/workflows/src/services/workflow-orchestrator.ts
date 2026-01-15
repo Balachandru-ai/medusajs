@@ -123,7 +123,10 @@ export class WorkflowOrchestratorService {
     this.#logger =
       this.container_.resolve("logger", { allowUnregistered: true }) ?? console
 
-    if (typeof (this.storage_ as any).setWorkflowOrchestratorService === "function") {
+    if (
+      typeof (this.storage_ as any).setWorkflowOrchestratorService ===
+      "function"
+    ) {
       ;(this.storage_ as any).setWorkflowOrchestratorService(this)
     }
 

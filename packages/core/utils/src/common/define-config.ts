@@ -45,9 +45,7 @@ export const DEFAULT_STORE_RESTRICTED_FIELDS = [
  * make an application work seamlessly, but still provide you the ability
  * to override configuration as needed.
  */
-export function defineConfig(
-  config?: InputConfigWithArrayModules
-): ConfigModule
+export function defineConfig(config?: InputConfigWithArrayModules): ConfigModule
 /**
  * @deprecated Use array-based modules configuration instead
  */

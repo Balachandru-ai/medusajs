@@ -1,11 +1,11 @@
+import { asClass, asValue } from "@medusajs/framework/awilix"
 import {
   InternalModuleDeclaration,
   LoaderOptions,
 } from "@medusajs/framework/types"
-import { asClass, asValue } from "@medusajs/framework/awilix"
 import Redis from "ioredis"
-import { WorkflowsRedisOptions } from "../types"
 import { RedisWorkflowsStorage } from "../services"
+import { WorkflowsRedisOptions } from "../types"
 
 export default async (
   { container, logger, options, dataLoaderOnly }: LoaderOptions,
