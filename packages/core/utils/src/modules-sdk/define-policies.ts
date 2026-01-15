@@ -15,26 +15,15 @@ export interface definePoliciesExport {
   policies: PolicyDefinition[]
 }
 
-declare global {
-  var PolicyResource: Record<string, string>
-  var PolicyOperation: Record<string, string> & {
-    readonly read: "read"
-    readonly write: "write"
-    readonly update: "update"
-    readonly delete: "delete"
-    readonly "*": "*"
-    readonly ALL: "*"
-  }
-  var Policy: Record<
-    string,
-    { resource: string; operation: string; description?: string }
-  >
-}
+// This will be overridden by the actual interface when medusa types are loaded
+type DefaultPolicyResources = Record<string, string>
 
 /**
  * Global registry for all unique resources.
  */
-export const PolicyResource = global.PolicyResource ?? {}
+export const PolicyResource: DefaultPolicyResources & Record<string, string> =
+  global.PolicyResource ?? {}
+
 global.PolicyResource ??= PolicyResource
 
 /**
@@ -42,7 +31,15 @@ global.PolicyResource ??= PolicyResource
  */
 const defaultOperations = ["read", "write", "update", "delete", "*"]
 
-export const PolicyOperation = global.PolicyOperation ?? { ALL: "*" }
+export const PolicyOperation: Record<string, string> & {
+  readonly read: "read"
+  readonly write: "write"
+  readonly update: "update"
+  readonly delete: "delete"
+  readonly "*": "*"
+  readonly ALL: "*"
+} = global.PolicyOperation ?? { ALL: "*" }
+
 global.PolicyOperation ??= PolicyOperation
 
 for (const operation of defaultOperations) {
@@ -50,7 +47,11 @@ for (const operation of defaultOperations) {
   PolicyOperation[operationKey] = operation
 }
 
-export const Policy = global.Policy ?? {}
+export const Policy: Record<
+  string,
+  { resource: string; operation: string; description?: string }
+> = global.Policy ?? {}
+
 global.Policy ??= Policy
 
 /**
