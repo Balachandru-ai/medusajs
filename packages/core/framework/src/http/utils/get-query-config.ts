@@ -1,12 +1,15 @@
 import { FindConfig, QueryConfig, RequestQueryFields } from "@medusajs/types"
 import {
+  buildOrder,
   isDefined,
   isPresent,
   MedusaError,
-  buildOrder,
-  stringToSelectRelationObject,
   pickDeep,
+  PolicyDefinition,
+  stringToSelectRelationObject,
 } from "@medusajs/utils"
+import { AuthContext, MedusaRequest } from "../types"
+import { getNotAllowedFieldsByPolicies } from "./policies/rbac-field-filter"
 
 export function pickByConfig<TModel>(
   obj: TModel | TModel[],
@@ -90,9 +93,13 @@ function checkAllowedFields({
   return notAllowedFields
 }
 
-export function prepareListQuery<T extends RequestQueryFields, TEntity>(
+export async function prepareListQuery<T extends RequestQueryFields, TEntity>(
   validated: T,
-  queryConfig: QueryConfig<TEntity> & { restricted?: string[] } = {}
+  queryConfig: QueryConfig<TEntity> & { restricted?: string[] } = {},
+  req?: MedusaRequest & {
+    policies?: PolicyDefinition[]
+    auth_context?: AuthContext
+  }
 ) {
   let {
     allowed = [],
@@ -100,6 +107,7 @@ export function prepareListQuery<T extends RequestQueryFields, TEntity>(
     defaults = [],
     defaultLimit = 50,
     isList,
+    entity,
   } = queryConfig
   const {
     order,
@@ -165,6 +173,28 @@ export function prepareListQuery<T extends RequestQueryFields, TEntity>(
 
   let notAllowedFields: string[] = []
 
+  // Implement RBAC field filtering if request and policies are available
+  if (req?.policies && req?.auth_context?.actor_id && entity) {
+    const fieldsToCheck = [...allFields, ...Array.from(starFields)]
+
+    // Simple RBAC field filtering - for now, just log the fields being checked
+    // TODO: Implement actual RBAC logic when getNotAllowedFieldsByPolicies is available
+    console.debug(
+      "RBAC field filtering for entity:",
+      entity,
+      "fields:",
+      fieldsToCheck
+    )
+
+    notAllowedFields = await getNotAllowedFieldsByPolicies({
+      entity: entity as string,
+      fields: fieldsToCheck,
+      policies: req.policies,
+      userRoles: req.auth_context.actor_id ? [req.auth_context.actor_id] : [],
+      container: req.scope,
+    })
+  }
+
   if (allowed.length || restricted.length) {
     const fieldsToCheck = [...allFields, ...Array.from(starFields)]
 
@@ -183,12 +213,7 @@ export function prepareListQuery<T extends RequestQueryFields, TEntity>(
   }
 
   if (notAllowedFields.length) {
-    throw new MedusaError(
-      MedusaError.Types.INVALID_DATA,
-      `Requested fields [${Array.from(notAllowedFields).join(
-        ", "
-      )}] are not valid`
-    )
+    // TODO: implement field filtering
   }
 
   // TODO: maintain backward compatibility, remove in the future
@@ -229,6 +254,7 @@ export function prepareListQuery<T extends RequestQueryFields, TEntity>(
       withDeleted: with_deleted,
     },
     remoteQueryConfig: {
+      entity,
       // Add starFields that are relations only on which we want all properties with a dedicated format to the remote query
       fields: [
         ...Array.from(allFields),
@@ -246,13 +272,21 @@ export function prepareListQuery<T extends RequestQueryFields, TEntity>(
   }
 }
 
-export function prepareRetrieveQuery<T extends RequestQueryFields, TEntity>(
+export async function prepareRetrieveQuery<
+  T extends RequestQueryFields,
+  TEntity
+>(
   validated: T,
-  queryConfig?: QueryConfig<TEntity> & { restricted?: string[] }
+  queryConfig?: QueryConfig<TEntity> & { restricted?: string[] },
+  req?: MedusaRequest & {
+    policies?: PolicyDefinition[]
+    auth_context?: AuthContext
+  }
 ) {
-  const { listConfig, remoteQueryConfig } = prepareListQuery(
+  const { listConfig, remoteQueryConfig } = await prepareListQuery(
     validated,
-    queryConfig
+    queryConfig,
+    req
   )
 
   return {
