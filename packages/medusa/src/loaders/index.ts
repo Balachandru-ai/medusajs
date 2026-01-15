@@ -134,10 +134,13 @@ export async function initializeContainer(
   rootDirectory: string,
   options?: {
     skipDbConnection?: boolean
+    throwOnError?: boolean
   }
 ): Promise<MedusaContainer> {
   await featureFlagsLoader(rootDirectory)
-  const configDir = await configLoader(rootDirectory, "medusa-config")
+  const configDir = await configLoader(rootDirectory, "medusa-config", {
+    throwOnError: options?.throwOnError,
+  })
   await featureFlagsLoader(join(__dirname, ".."))
 
   // Load policies from core medusa package and project root

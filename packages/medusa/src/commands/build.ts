@@ -12,6 +12,7 @@ export default async function build({
 }) {
   const container = await initializeContainer(directory, {
     skipDbConnection: true,
+    throwOnError: false,
   })
   const logger = container.resolve(ContainerRegistrationKeys.LOGGER)
 
