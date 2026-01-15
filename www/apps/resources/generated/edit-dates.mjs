@@ -107,7 +107,7 @@ export const generatedEditDates = {
   "app/medusa-cli/page.mdx": "2024-08-28T11:25:32.382Z",
   "app/medusa-container-resources/page.mdx": "2025-07-31T13:24:15.786Z",
   "app/medusa-workflows-reference/page.mdx": "2025-01-20T08:21:29.962Z",
-  "app/nextjs-starter/page.mdx": "2025-02-26T11:37:47.137Z",
+  "app/nextjs-starter/page.mdx": "2026-01-14T08:32:07.149Z",
   "app/recipes/b2b/page.mdx": "2025-05-20T07:51:40.718Z",
   "app/recipes/commerce-automation/page.mdx": "2025-05-20T07:51:40.719Z",
   "app/recipes/digital-products/examples/standard/page.mdx": "2025-11-28T09:43:09.959Z",
@@ -178,7 +178,7 @@ export const generatedEditDates = {
   "app/storefront-development/tips/page.mdx": "2025-12-09T13:33:33.997Z",
   "app/storefront-development/page.mdx": "2025-12-09T13:30:25.379Z",
   "app/troubleshooting/cors-errors/page.mdx": "2024-05-03T17:36:38+03:00",
-  "app/troubleshooting/create-medusa-app-errors/page.mdx": "2025-12-04T14:12:21.480Z",
+  "app/troubleshooting/create-medusa-app-errors/page.mdx": "2026-01-14T08:32:33.242Z",
   "app/troubleshooting/database-errors/page.mdx": "2025-12-04T14:14:46.745Z",
   "app/troubleshooting/eaddrinuse/page.mdx": "2024-05-03T17:36:38+03:00",
   "app/troubleshooting/errors-after-upgrading/page.mdx": "2025-12-04T14:08:49.980Z",
@@ -6936,5 +6936,6 @@ export const generatedEditDates = {
   "app/how-to-tutorials/how-to/admin/auth/page.mdx": "2025-12-30T06:35:28.828Z",
   "app/integrations/guides/okta/page.mdx": "2025-12-30T06:35:28.653Z",
   "app/nextjs-starter/guides/remove-country-code/page.mdx": "2025-12-30T10:28:10.072Z",
-  "app/commerce-modules/translation/custom-data-models/page.mdx": "2026-01-06T15:54:25.801Z"
+  "app/commerce-modules/translation/custom-data-models/page.mdx": "2026-01-06T15:54:25.801Z",
+  "app/troubleshooting/nextjs-node-25/page.mdx": "2026-01-14T08:34:00.550Z"
 }

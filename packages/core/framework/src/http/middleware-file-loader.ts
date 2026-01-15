@@ -130,6 +130,7 @@ export class MiddlewareFileLoader {
               handler: middleware,
               matcher: matcher,
               methods: route.methods,
+              policies: route.policies,
             })
           })
         }
