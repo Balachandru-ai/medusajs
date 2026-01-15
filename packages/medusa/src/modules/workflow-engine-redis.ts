@@ -12,6 +12,7 @@
  *          {
  *            resolve: "@medusajs/medusa/workflows-redis",
  *            id: "redis",
+ *            is_default: true,
  *            options: {
  *              redisUrl: process.env.REDIS_URL,
  *            },
