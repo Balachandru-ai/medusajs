@@ -3852,6 +3852,8 @@ __metadata:
     "@medusajs/user": 2.12.5
     "@medusajs/workflow-engine-inmemory": 2.12.5
     "@medusajs/workflow-engine-redis": 2.12.5
+    "@medusajs/workflows": 2.12.5
+    "@medusajs/workflows-redis": 2.12.5
     boxen: ^5.0.1
     chalk: ^4.1.2
     chokidar: ^4.0.3
@@ -4285,6 +4287,18 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@medusajs/workflows-redis@2.12.5, @medusajs/workflows-redis@workspace:packages/modules/providers/workflows-redis":
+  version: 0.0.0-use.local
+  resolution: "@medusajs/workflows-redis@workspace:packages/modules/providers/workflows-redis"
+  dependencies:
+    "@medusajs/framework": 2.12.5
+    bullmq: 5.13.0
+    ioredis: ^5.4.1
+  peerDependencies:
+    "@medusajs/framework": 2.12.5
+  languageName: unknown
+  linkType: soft
+
 "@medusajs/workflows-sdk@2.12.5, @medusajs/workflows-sdk@workspace:packages/core/workflows-sdk":
   version: 0.0.0-use.local
   resolution: "@medusajs/workflows-sdk@workspace:packages/core/workflows-sdk"
@@ -4295,6 +4309,19 @@ __metadata:
     "@medusajs/types": 2.12.5
     "@medusajs/utils": 2.12.5
     ulid: ^2.3.0
+  languageName: unknown
+  linkType: soft
+
+"@medusajs/workflows@2.12.5, @medusajs/workflows@workspace:packages/modules/workflows":
+  version: 0.0.0-use.local
+  resolution: "@medusajs/workflows@workspace:packages/modules/workflows"
+  dependencies:
+    "@medusajs/framework": 2.12.5
+    "@medusajs/test-utils": 2.12.5
+    cron-parser: ^4.9.0
+    ulid: ^2.3.0
+  peerDependencies:
+    "@medusajs/framework": 2.12.5
   languageName: unknown
   linkType: soft
 

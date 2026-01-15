@@ -271,9 +271,18 @@ function resolveModules(
   const cloudModules = [
     ...sharedModules,
     {
-      resolve: TEMPORARY_REDIS_MODULE_PACKAGE_NAMES[Modules.WORKFLOW_ENGINE],
+      resolve: MODULE_PACKAGE_NAMES[Modules.WORKFLOW_ENGINE],
       options: {
-        redis: { url: process.env.REDIS_URL },
+        providers: [
+          {
+            id: "redis",
+            resolve: "@medusajs/medusa/workflows-redis",
+            is_default: true,
+            options: {
+              redisUrl: process.env.REDIS_URL,
+            },
+          },
+        ],
       },
     },
     {

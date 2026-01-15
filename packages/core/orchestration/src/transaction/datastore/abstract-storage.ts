@@ -5,7 +5,15 @@ import {
 import { TransactionStep } from "../transaction-step"
 import { SchedulerOptions, TransactionOptions } from "../types"
 
+export type DistributedStorageHooks = {
+  onApplicationStart?: () => Promise<void>
+  onApplicationPrepareShutdown?: () => Promise<void>
+  onApplicationShutdown?: () => Promise<void>
+}
+
 export interface IDistributedSchedulerStorage {
+  __hooks?: DistributedStorageHooks
+
   schedule(
     jobDefinition: string | { jobId: string },
     schedulerOptions: SchedulerOptions
@@ -17,6 +25,8 @@ export interface IDistributedSchedulerStorage {
 }
 
 export interface IDistributedTransactionStorage {
+  __hooks?: DistributedStorageHooks
+
   get(
     key: string,
     options?: TransactionOptions & { isCancelling?: boolean }
