@@ -286,7 +286,7 @@ function resolveModules(
         providers: [
           {
             id: "redis",
-            resolve: "@medusajs/medusa/event-redis",
+            resolve: "@medusajs/medusa/events-redis",
             is_default: true,
             options: {
               redisUrl: process.env.REDIS_URL,

@@ -120,7 +120,7 @@ The code snippets in this section assume that your forked Medusa project and the
     "@medusajs/caching-redis": "file:../medusa/packages/modules/providers/caching-redis",
     "@medusajs/caching": "file:../medusa/packages/modules/caching",
     "@medusajs/translation": "file:../medusa/packages/modules/translation",
-    "@medusajs/event": "file:../medusa/packages/modules/event",
+    "@medusajs/events": "file:../medusa/packages/modules/events",
 }
 ```
 

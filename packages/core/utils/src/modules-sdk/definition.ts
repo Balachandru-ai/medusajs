@@ -38,7 +38,7 @@ export const MODULE_PACKAGE_NAMES = {
   [Modules.CACHE]: "@medusajs/medusa/cache-inmemory",
   [Modules.CART]: "@medusajs/medusa/cart",
   [Modules.CUSTOMER]: "@medusajs/medusa/customer",
-  [Modules.EVENT_BUS]: "@medusajs/medusa/event",
+  [Modules.EVENT_BUS]: "@medusajs/medusa/events",
   [Modules.INVENTORY]: "@medusajs/medusa/inventory",
   [Modules.LINK]: "@medusajs/medusa/link-modules",
   [Modules.PAYMENT]: "@medusajs/medusa/payment",

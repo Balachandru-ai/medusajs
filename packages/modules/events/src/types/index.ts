@@ -34,7 +34,7 @@ export type EventModuleOptions = Partial<ModuleServiceInitializeOptions> & {
 
 declare module "@medusajs/types" {
   interface ModuleOptions {
-    "@medusajs/event": EventModuleOptions
-    "@medusajs/medusa/event": EventModuleOptions
+    "@medusajs/events": EventModuleOptions
+    "@medusajs/medusa/events": EventModuleOptions
   }
 }

@@ -1,12 +1,12 @@
 {
-  "name": "@medusajs/event-redis",
+  "name": "@medusajs/events-redis",
   "version": "2.12.5",
-  "description": "Redis Event Provider for Medusa",
+  "description": "Redis Events Provider for Medusa",
   "main": "dist/index.js",
   "repository": {
     "type": "git",
     "url": "https://github.com/medusajs/medusa",
-    "directory": "packages/modules/providers/event-redis"
+    "directory": "packages/modules/providers/events-redis"
   },
   "files": [
     "dist",
@@ -39,6 +39,6 @@
   },
   "keywords": [
     "medusa-providers",
-    "medusa-providers-event"
+    "medusa-providers-events"
   ]
 }

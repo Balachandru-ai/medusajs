@@ -1,7 +1,8 @@
 ---
 "@medusajs/medusa": patch
 "@medusajs/test-utils": patch
-"@medusajs/event": patch
+"@medusajs/events": patch
+"@medusajs/events-redis": patch
 "@medusajs/types": patch
 "@medusajs/utils": patch
 ---

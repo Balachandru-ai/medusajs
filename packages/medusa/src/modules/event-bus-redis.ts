@@ -1,19 +1,19 @@
 /**
- * @deprecated Use `@medusajs/medusa/event` with `@medusajs/event-redis` provider instead.
+ * @deprecated Use `@medusajs/medusa/events` with `@medusajs/events-redis` provider instead.
  * This module will be removed in a future version.
  *
  * Migration guide:
- * - Replace `@medusajs/medusa/event-bus-redis` with `@medusajs/medusa/event`
+ * - Replace `@medusajs/medusa/event-bus-redis` with `@medusajs/medusa/events`
  * - Configure the Redis provider in your medusa-config.ts:
  *
  * ```ts
  * modules: [
  *   {
- *     resolve: "@medusajs/medusa/event",
+ *     resolve: "@medusajs/medusa/events",
  *     options: {
  *       providers: [
  *         {
- *           resolve: "@medusajs/event-redis",
+ *           resolve: "@medusajs/events-redis",
  *           id: "redis",
  *           is_default: true,
  *           options: {
@@ -30,7 +30,7 @@ import RedisEventBusModule from "@medusajs/event-bus-redis"
 
 console.warn(
   "[DEPRECATION WARNING] @medusajs/medusa/event-bus-redis is deprecated. " +
-    "Use @medusajs/medusa/event with @medusajs/event-redis provider instead. " +
+    "Use @medusajs/medusa/events with @medusajs/events-redis provider instead. " +
     "This module will be removed in a future version."
 )
 
