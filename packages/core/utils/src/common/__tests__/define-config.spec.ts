@@ -39,7 +39,7 @@ describe("defineConfig", function () {
             "resolve": "@medusajs/medusa/customer",
           },
           "event_bus": {
-            "resolve": "@medusajs/medusa/event",
+            "resolve": "@medusajs/medusa/events",
           },
           "file": {
             "options": {
@@ -212,7 +212,7 @@ describe("defineConfig", function () {
             "resolve": "@medusajs/medusa/customer",
           },
           "event_bus": {
-            "resolve": "@medusajs/medusa/event",
+            "resolve": "@medusajs/medusa/events",
           },
           "file": {
             "options": {
@@ -393,7 +393,7 @@ describe("defineConfig", function () {
             "resolve": "@medusajs/medusa/customer",
           },
           "event_bus": {
-            "resolve": "@medusajs/medusa/event",
+            "resolve": "@medusajs/medusa/events",
           },
           "file": {
             "options": {
@@ -575,7 +575,7 @@ describe("defineConfig", function () {
             "resolve": "@medusajs/medusa/customer",
           },
           "event_bus": {
-            "resolve": "@medusajs/medusa/event",
+            "resolve": "@medusajs/medusa/events",
           },
           "file": {
             "options": {
@@ -745,7 +745,7 @@ describe("defineConfig", function () {
             "resolve": "@medusajs/medusa/customer",
           },
           "event_bus": {
-            "resolve": "@medusajs/medusa/event",
+            "resolve": "@medusajs/medusa/events",
           },
           "file": {
             "options": {
@@ -918,7 +918,7 @@ describe("defineConfig", function () {
             "resolve": "@medusajs/medusa/customer",
           },
           "event_bus": {
-            "resolve": "@medusajs/medusa/event",
+            "resolve": "@medusajs/medusa/events",
           },
           "file": {
             "options": {
@@ -1123,11 +1123,11 @@ describe("defineConfig", function () {
                       "concurrency": 3,
                     },
                   },
-                  "resolve": "@medusajs/medusa/event-redis",
+                  "resolve": "@medusajs/medusa/events-redis",
                 },
               ],
             },
-            "resolve": "@medusajs/medusa/event",
+            "resolve": "@medusajs/medusa/events",
           },
           "file": {
             "options": {
@@ -1359,11 +1359,11 @@ describe("defineConfig", function () {
                       "concurrency": 3,
                     },
                   },
-                  "resolve": "@medusajs/medusa/event-redis",
+                  "resolve": "@medusajs/medusa/events-redis",
                 },
               ],
             },
-            "resolve": "@medusajs/medusa/event",
+            "resolve": "@medusajs/medusa/events",
           },
           "file": {
             "options": {
@@ -1611,11 +1611,11 @@ describe("defineConfig", function () {
                       "concurrency": 3,
                     },
                   },
-                  "resolve": "@medusajs/medusa/event-redis",
+                  "resolve": "@medusajs/medusa/events-redis",
                 },
               ],
             },
-            "resolve": "@medusajs/medusa/event",
+            "resolve": "@medusajs/medusa/events",
           },
           "file": {
             "options": {
@@ -1913,7 +1913,7 @@ describe("defineConfig", function () {
             "resolve": "@medusajs/medusa/customer",
           },
           "event_bus": {
-            "resolve": "@medusajs/medusa/event",
+            "resolve": "@medusajs/medusa/events",
           },
           "file": {
             "options": {
@@ -2107,7 +2107,7 @@ describe("defineConfig", function () {
             "resolve": "@medusajs/medusa/customer",
           },
           "event_bus": {
-            "resolve": "@medusajs/medusa/event",
+            "resolve": "@medusajs/medusa/events",
           },
           "file": {
             "options": {
@@ -2319,7 +2319,7 @@ describe("defineConfig", function () {
             "resolve": "@medusajs/medusa/customer",
           },
           "event_bus": {
-            "resolve": "@medusajs/medusa/event",
+            "resolve": "@medusajs/medusa/events",
           },
           "file": {
             "options": {
@@ -2540,7 +2540,7 @@ describe("defineConfig", function () {
             "resolve": "@medusajs/medusa/customer",
           },
           "event_bus": {
-            "resolve": "@medusajs/medusa/event",
+            "resolve": "@medusajs/medusa/events",
           },
           "file": {
             "options": {

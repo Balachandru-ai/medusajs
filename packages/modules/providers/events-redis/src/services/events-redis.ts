@@ -141,20 +141,6 @@ export class RedisEventProvider extends AbstractEventProvider<EventRedisProvider
   }
 
   /**
-   * Returns whether the provider supports event priority.
-   */
-  supportsPriority(): boolean {
-    return true
-  }
-
-  /**
-   * Returns whether the provider supports retry configuration.
-   */
-  supportsRetry(): boolean {
-    return true
-  }
-
-  /**
    * Build events for queue processing with priority handling.
    *
    * Priority levels (lower number = higher priority):
