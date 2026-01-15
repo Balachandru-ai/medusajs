@@ -2821,7 +2821,7 @@ export default class ProductModuleService
       allOptionIds.length
         ? this.productOptionService_.list(
             { id: allOptionIds },
-            {},
+            { relations: ["values", "products"] },
             sharedContext
           )
         : Promise.resolve([]),
