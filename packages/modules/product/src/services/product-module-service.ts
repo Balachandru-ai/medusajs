@@ -13,7 +13,6 @@ import {
   SoftDeleteReturn,
 } from "@medusajs/framework/types"
 import { CreateProductOptionDTO } from "@medusajs/types"
-import { SqlEntityManager } from "@medusajs/framework/mikro-orm/postgresql"
 import {
   Product,
   ProductCategory,
@@ -53,6 +52,7 @@ import {
   removeUndefined,
   toHandle,
 } from "@medusajs/framework/utils"
+import { EntityManager } from "@medusajs/framework/mikro-orm/core"
 import { ProductRepository } from "../repositories"
 import {
   UpdateCategoryInput,
@@ -2794,7 +2794,7 @@ export default class ProductModuleService
     // We have to do that manually because this method is bypassing the product service and goes
     // directly to the custom product repository
     const manager = (sharedContext.transactionManager ??
-      sharedContext.manager) as SqlEntityManager
+      sharedContext.manager) as EntityManager
     const subscriber = createMedusaMikroOrmEventSubscriber(
       ["updateProducts_"],
       this as unknown as ReturnType<typeof MedusaService<any>>
