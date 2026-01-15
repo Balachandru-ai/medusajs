@@ -9,7 +9,7 @@ import type {
 
 export type PolicyAction = {
   resource: string
-  operation: string
+  operation: string | string[]
 }
 
 /**

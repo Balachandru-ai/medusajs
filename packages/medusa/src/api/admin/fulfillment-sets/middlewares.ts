@@ -34,6 +34,12 @@ export const adminFulfillmentSetsRoutesMiddlewares: MiddlewareRoute[] = [
         QueryConfig.retrieveTransformQueryConfig
       ),
     ],
+    policies: [
+      {
+        resource: Entities.fulfillment_set,
+        operation: PolicyOperation.create,
+      },
+    ],
   },
   {
     method: ["DELETE"],
@@ -71,6 +77,12 @@ export const adminFulfillmentSetsRoutesMiddlewares: MiddlewareRoute[] = [
         AdminFulfillmentSetParams,
         QueryConfig.retrieveTransformQueryConfig
       ),
+    ],
+    policies: [
+      {
+        resource: Entities.fulfillment_set,
+        operation: PolicyOperation.update,
+      },
     ],
   },
   {

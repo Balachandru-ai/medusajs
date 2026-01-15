@@ -55,6 +55,12 @@ export const adminProductCategoryRoutesMiddlewares: MiddlewareRoute[] = [
         QueryConfig.retrieveProductCategoryConfig
       ),
     ],
+    policies: [
+      {
+        resource: Entities.product_category,
+        operation: PolicyOperation.create,
+      },
+    ],
   },
   {
     method: ["POST"],
@@ -65,6 +71,12 @@ export const adminProductCategoryRoutesMiddlewares: MiddlewareRoute[] = [
         AdminProductCategoryParams,
         QueryConfig.retrieveProductCategoryConfig
       ),
+    ],
+    policies: [
+      {
+        resource: Entities.product_category,
+        operation: PolicyOperation.update,
+      },
     ],
   },
   {
@@ -81,6 +93,12 @@ export const adminProductCategoryRoutesMiddlewares: MiddlewareRoute[] = [
         AdminProductCategoryParams,
         QueryConfig.retrieveProductCategoryConfig
       ),
+    ],
+    policies: [
+      {
+        resource: Entities.product_category,
+        operation: PolicyOperation.update,
+      },
     ],
   },
 ]

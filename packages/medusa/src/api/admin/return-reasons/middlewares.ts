@@ -54,6 +54,12 @@ export const adminReturnReasonRoutesMiddlewares: MiddlewareRoute[] = [
         QueryConfig.retrieveTransformQueryConfig
       ),
     ],
+    policies: [
+      {
+        resource: Entities.return_reason,
+        operation: PolicyOperation.create,
+      },
+    ],
   },
   {
     method: ["POST"],
@@ -64,6 +70,12 @@ export const adminReturnReasonRoutesMiddlewares: MiddlewareRoute[] = [
         AdminGetReturnReasonsReturnReasonParams,
         QueryConfig.retrieveTransformQueryConfig
       ),
+    ],
+    policies: [
+      {
+        resource: Entities.return_reason,
+        operation: PolicyOperation.update,
+      },
     ],
   },
   {

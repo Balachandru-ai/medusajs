@@ -54,6 +54,12 @@ export const adminRegionRoutesMiddlewares: MiddlewareRoute[] = [
         QueryConfig.retrieveTransformQueryConfig
       ),
     ],
+    policies: [
+      {
+        resource: Entities.region,
+        operation: PolicyOperation.create,
+      },
+    ],
   },
   {
     method: ["POST"],
@@ -64,6 +70,12 @@ export const adminRegionRoutesMiddlewares: MiddlewareRoute[] = [
         AdminGetRegionParams,
         QueryConfig.retrieveTransformQueryConfig
       ),
+    ],
+    policies: [
+      {
+        resource: Entities.region,
+        operation: PolicyOperation.update,
+      },
     ],
   },
 ]

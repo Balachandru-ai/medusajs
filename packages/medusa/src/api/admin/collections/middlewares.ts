@@ -55,6 +55,12 @@ export const adminCollectionRoutesMiddlewares: MiddlewareRoute[] = [
         QueryConfig.retrieveTransformQueryConfig
       ),
     ],
+    policies: [
+      {
+        resource: Entities.product_collection,
+        operation: PolicyOperation.create,
+      },
+    ],
   },
   {
     method: ["POST"],
@@ -65,6 +71,12 @@ export const adminCollectionRoutesMiddlewares: MiddlewareRoute[] = [
         AdminGetCollectionParams,
         QueryConfig.retrieveTransformQueryConfig
       ),
+    ],
+    policies: [
+      {
+        resource: Entities.product_collection,
+        operation: PolicyOperation.update,
+      },
     ],
   },
   {
@@ -87,6 +99,12 @@ export const adminCollectionRoutesMiddlewares: MiddlewareRoute[] = [
         AdminGetCollectionParams,
         QueryConfig.retrieveTransformQueryConfig
       ),
+    ],
+    policies: [
+      {
+        resource: Entities.product_collection,
+        operation: PolicyOperation.update,
+      },
     ],
   },
 ]

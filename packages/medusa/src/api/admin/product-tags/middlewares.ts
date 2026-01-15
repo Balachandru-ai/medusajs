@@ -55,6 +55,12 @@ export const adminProductTagRoutesMiddlewares: MiddlewareRoute[] = [
         QueryConfig.retrieveProductTagTransformQueryConfig
       ),
     ],
+    policies: [
+      {
+        resource: Entities.product_tag,
+        operation: PolicyOperation.create,
+      },
+    ],
   },
   {
     method: ["POST"],
@@ -65,6 +71,12 @@ export const adminProductTagRoutesMiddlewares: MiddlewareRoute[] = [
         AdminGetProductTagParams,
         QueryConfig.retrieveProductTagTransformQueryConfig
       ),
+    ],
+    policies: [
+      {
+        resource: Entities.product_tag,
+        operation: PolicyOperation.update,
+      },
     ],
   },
   {

@@ -4,7 +4,7 @@ import { FlagRouter } from "../feature-flags/flag-router"
 
 export type PermissionAction = {
   resource: string
-  operation: string
+  operation: string | string[]
 }
 
 /*
@@ -35,6 +35,12 @@ type RolePoliciesCache = Map<string, Map<string, Set<string>>>
  *   actions: { resource: 'product', operation: 'write' },
  *   container
  * })
+ *
+ * const canDeleteAndWrite = await hasPermission({
+ *   roles: ['role_123'],
+ *   actions: { resource: 'product', operation: ['delete', 'write'] },
+ *   container
+ * })
  * ```
  */
 export async function hasPermission(
@@ -56,26 +62,30 @@ export async function hasPermission(
   const rolePoliciesMap = await fetchRolePolicies(roleIds, container)
 
   for (const action of actionList) {
-    let hasAccess = false
+    // Handle multiple operations for a single resource (and)
+    const operations = Array.isArray(action.operation)
+      ? action.operation
+      : [action.operation]
 
-    for (const roleId of roleIds) {
-      const resourceMap = rolePoliciesMap.get(roleId)
-      if (!resourceMap) {
-        continue
+    for (const op of operations) {
+      let operationHasAccess = false
+
+      for (const roleId of roleIds) {
+        const resourceMap = rolePoliciesMap.get(roleId)
+        if (!resourceMap) {
+          continue
+        }
+
+        const allowedOps = resourceMap.get(action.resource)
+        if (allowedOps && (allowedOps.has(op) || allowedOps.has("*"))) {
+          operationHasAccess = true
+          break
+        }
       }
 
-      const operations = resourceMap.get(action.resource)
-      if (
-        operations &&
-        (operations.has(action.operation) || operations.has("*"))
-      ) {
-        hasAccess = true
-        break
+      if (!operationHasAccess) {
+        return false
       }
-    }
-
-    if (!hasAccess) {
-      return false
     }
   }
 

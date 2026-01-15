@@ -45,6 +45,12 @@ export const adminCampaignRoutesMiddlewares: MiddlewareRoute[] = [
         QueryConfig.retrieveTransformQueryConfig
       ),
     ],
+    policies: [
+      {
+        resource: Entities.campaign,
+        operation: PolicyOperation.create,
+      },
+    ],
   },
   {
     method: ["GET"],
@@ -66,6 +72,12 @@ export const adminCampaignRoutesMiddlewares: MiddlewareRoute[] = [
         QueryConfig.retrieveTransformQueryConfig
       ),
     ],
+    policies: [
+      {
+        resource: Entities.campaign,
+        operation: PolicyOperation.update,
+      },
+    ],
   },
   {
     method: ["POST"],
@@ -76,6 +88,12 @@ export const adminCampaignRoutesMiddlewares: MiddlewareRoute[] = [
         AdminGetCampaignParams,
         QueryConfig.retrieveTransformQueryConfig
       ),
+    ],
+    policies: [
+      {
+        resource: Entities.campaign,
+        operation: PolicyOperation.update,
+      },
     ],
   },
   {

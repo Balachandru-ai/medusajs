@@ -52,6 +52,12 @@ export const adminInviteRoutesMiddlewares: MiddlewareRoute[] = [
         QueryConfig.retrieveTransformQueryConfig
       ),
     ],
+    policies: [
+      {
+        resource: Entities.invite,
+        operation: PolicyOperation.create,
+      },
+    ],
   },
   {
     method: "POST",
@@ -65,6 +71,12 @@ export const adminInviteRoutesMiddlewares: MiddlewareRoute[] = [
         AdminGetInviteAcceptParams,
         QueryConfig.retrieveTransformQueryConfig
       ),
+    ],
+    policies: [
+      {
+        resource: Entities.invite,
+        operation: PolicyOperation.update,
+      },
     ],
   },
   {
@@ -98,6 +110,12 @@ export const adminInviteRoutesMiddlewares: MiddlewareRoute[] = [
         AdminGetInviteParams,
         QueryConfig.retrieveTransformQueryConfig
       ),
+    ],
+    policies: [
+      {
+        resource: Entities.invite,
+        operation: PolicyOperation.update,
+      },
     ],
   },
 ]
