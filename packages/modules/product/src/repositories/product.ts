@@ -430,4 +430,41 @@ export class ProductRepository extends DALUtils.mikroOrmBaseRepositoryFactory(
       ),
     }
   }
+
+  async getOptionValueIdsByProductIds(
+    productIds: string[],
+    context: Context = {}
+  ): Promise<Map<string, Set<string>>> {
+    const allowedValueIdsByProduct = new Map<string, Set<string>>()
+
+    if (!productIds.length) {
+      return allowedValueIdsByProduct
+    }
+
+    const knex = this.getActiveManager<SqlEntityManager>(context)
+      .getConnection()
+      .getKnex()
+
+    const rows = await knex("product_product_option_value as ppov")
+      .select("ppo.product_id", "ppov.product_option_value_id")
+      .innerJoin(
+        "product_product_option as ppo",
+        "ppo.id",
+        "ppov.product_product_option_id"
+      )
+      .whereIn("ppo.product_id", productIds)
+      .whereNull("ppo.deleted_at")
+      .whereNull("ppov.deleted_at")
+
+    rows.forEach((row) => {
+      if (!allowedValueIdsByProduct.has(row.product_id)) {
+        allowedValueIdsByProduct.set(row.product_id, new Set())
+      }
+      allowedValueIdsByProduct
+        .get(row.product_id)!
+        .add(row.product_option_value_id)
+    })
+
+    return allowedValueIdsByProduct
+  }
 }
