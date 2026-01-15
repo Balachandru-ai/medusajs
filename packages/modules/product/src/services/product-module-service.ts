@@ -2814,7 +2814,7 @@ export default class ProductModuleService
       this.productService_.list(
         { id: data.map((d) => d.id) },
         {
-          relations: ["options", "options.values", "tags"],
+          relations: ["options", "options.values", "options.products", "tags"],
         },
         sharedContext
       ),
