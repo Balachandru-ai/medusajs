@@ -447,13 +447,12 @@ export class ProductRepository extends DALUtils.mikroOrmBaseRepositoryFactory(
 
     const rows = await knex("product_product_option_value as ppov")
       .select("ppo.product_id", "ppov.product_option_value_id")
-      .innerJoin(
-        "product_product_option as ppo",
-        "ppo.id",
-        "ppov.product_product_option_id"
-      )
+      .innerJoin("product_product_option as ppo", function () {
+        this.on("ppo.id", "ppov.product_product_option_id").andOnNull(
+          "ppo.deleted_at"
+        )
+      })
       .whereIn("ppo.product_id", productIds)
-      .whereNull("ppo.deleted_at")
       .whereNull("ppov.deleted_at")
 
     rows.forEach((row) => {
