@@ -189,6 +189,9 @@ export const useBatchTranslationSettings = (
       queryClient.invalidateQueries({
         queryKey: translationSettingsQueryKeys.lists(),
       })
+      queryClient.invalidateQueries({
+        queryKey: translationStatisticsQueryKeys.lists(),
+      })
       options?.onSuccess?.(data, variables, context)
     },
     ...options,
