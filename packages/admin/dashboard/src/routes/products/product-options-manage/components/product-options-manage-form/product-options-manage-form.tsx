@@ -356,7 +356,7 @@ export const ProductOptionsManageForm = ({
           )
         )
         const newOptionRanks = Object.fromEntries(
-          newOptionValues.map((value, index) => [value, index])
+          newOptionValues.map((value, index) => [value, index + 1])
         )
 
         if (!newOptionValues.length) {

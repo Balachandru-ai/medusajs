@@ -33,7 +33,7 @@ export const EditProductOptionOrganize = ({
   })
 
   const items = useMemo<ValueItem[]>(() => {
-    if (!values || values.length === 0) {
+    if (!values?.length) {
       return []
     }
 
@@ -49,7 +49,7 @@ export const EditProductOptionOrganize = ({
   const handleChange = (newItems: ValueItem[]) => {
     const newRanks: Record<string, number> = {}
     newItems.forEach((item, index) => {
-      newRanks[item.value] = index
+      newRanks[item.value] = index + 1
     })
 
     form.setValue("value_ranks", newRanks, {
@@ -58,7 +58,7 @@ export const EditProductOptionOrganize = ({
     })
   }
 
-  if (!values || values.length === 0) {
+  if (!values?.length) {
     return null
   }
 

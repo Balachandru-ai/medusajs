@@ -44,7 +44,7 @@ export const CreateProductOptionOrganize = ({
   }
 
   const items = useMemo<ValueItem[]>(() => {
-    if (!values || values.length === 0) {
+    if (!values?.length) {
       return []
     }
 
@@ -61,7 +61,7 @@ export const CreateProductOptionOrganize = ({
     handleChange(items)
   }, [items.length])
 
-  if (!values || values.length === 0) {
+  if (!values?.length) {
     return null
   }
 
