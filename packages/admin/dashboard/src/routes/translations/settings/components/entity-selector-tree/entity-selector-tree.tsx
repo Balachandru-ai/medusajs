@@ -19,7 +19,8 @@ type ViewMode = "full" | "selected"
 type SortOrder = "asc" | "desc"
 
 type SelectorRowProps = {
-  leftElement: React.ReactNode
+  leftElement?: React.ReactNode
+  expandButton?: React.ReactNode
   checked: boolean | "indeterminate"
   onCheckedChange: () => void
   label: string
@@ -28,6 +29,7 @@ type SelectorRowProps = {
 
 const SelectorRow = ({
   leftElement,
+  expandButton,
   checked,
   onCheckedChange,
   label,
@@ -39,6 +41,7 @@ const SelectorRow = ({
     <div className={clx("flex items-center gap-x-2 px-2 py-1.5", className)}>
       {leftElement}
       <Checkbox checked={checked} onCheckedChange={onCheckedChange} />
+      {expandButton}
       <Text
         size="small"
         weight={isSelected ? "plus" : "regular"}
@@ -220,35 +223,33 @@ export const EntitySelectorTree = React.forwardRef<
               return (
                 <div key={entity.id}>
                   <SelectorRow
-                    leftElement={
-                      <button
-                        type="button"
-                        onClick={() => hasFields && toggleExpand(entity.id)}
-                        className={clx(
-                          "flex h-5 w-5 items-center justify-center",
-                          !hasFields && "invisible"
-                        )}
-                        disabled={!hasFields}
-                      >
-                        <TriangleRightMini
-                          className={clx(
-                            "text-ui-fg-muted transition-transform",
-                            isExpanded && "rotate-90"
-                          )}
-                        />
-                      </button>
-                    }
                     checked={selectionState}
                     onCheckedChange={() => toggleEntitySelection(entity)}
                     label={entity.name}
                     className="hover:bg-ui-bg-component-hover"
+                    expandButton={
+                      hasFields ? (
+                        <button
+                          type="button"
+                          onClick={() => toggleExpand(entity.id)}
+                          className="flex h-5 w-5 items-center justify-center"
+                        >
+                          <TriangleRightMini
+                            className={clx(
+                              "text-ui-fg-muted transition-transform",
+                              isExpanded && "rotate-90"
+                            )}
+                          />
+                        </button>
+                      ) : null
+                    }
                   />
 
                   {hasFields && isExpanded && (
                     <div className="relative">
                       <Divider
                         orientation="vertical"
-                        className="absolute bottom-0 left-[18px] top-0 z-10"
+                        className="absolute bottom-0 left-[2.87rem] top-0 z-10"
                       />
                       {entity.fields!.map((field) => {
                         const fieldKey = `${entity.id}.${field.id}`
@@ -257,7 +258,8 @@ export const EntitySelectorTree = React.forwardRef<
                         return (
                           <SelectorRow
                             key={field.id}
-                            leftElement={<div className="w-5" />}
+                            className="pl-3"
+                            leftElement={<div className="w-11" />}
                             checked={isFieldSelected}
                             onCheckedChange={() => {
                               toggleFieldSelection(entity.id, field.id)
