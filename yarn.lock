@@ -3575,6 +3575,8 @@ __metadata:
   resolution: "@medusajs/event-bus-redis@workspace:packages/modules/event-bus-redis"
   dependencies:
     "@medusajs/framework": 2.12.5
+    "@medusajs/types": 2.12.5
+    "@medusajs/utils": 2.12.5
     bullmq: 5.13.0
     ioredis: ^5.4.1
   peerDependencies:

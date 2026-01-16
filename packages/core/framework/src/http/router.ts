@@ -30,6 +30,7 @@ import { configManager } from "../config"
 import { MiddlewareFileLoader } from "./middleware-file-loader"
 import { applyLocale, authenticate, AuthType } from "./middlewares"
 import { createBodyParserMiddlewaresStack } from "./middlewares/bodyparser"
+import { wrapWithPoliciesCheck } from "./middlewares/check-permissions"
 import { ensurePublishableApiKeyMiddleware } from "./middlewares/ensure-publishable-api-key"
 import { errorHandler } from "./middlewares/error-handler"
 import { RoutesFinder } from "./routes-finder"
@@ -169,11 +170,18 @@ export class ApiLoader {
 
     if (!route.methods) {
       this.#logger.debug(`registering global middleware for ${route.matcher}`)
+
+      // Wrap with permission check if policies are defined
+      let handlerToUse = route.handler
+      if (route.policies) {
+        handlerToUse = wrapWithPoliciesCheck(route.handler, route.policies)
+      }
+
       const handler = ApiLoader.traceMiddleware
-        ? (ApiLoader.traceMiddleware(route.handler, {
+        ? (ApiLoader.traceMiddleware(handlerToUse, {
             route: route.matcher,
           }) as RequestHandler)
-        : (route.handler as RequestHandler)
+        : (handlerToUse as RequestHandler)
 
       this.#app.use(route.matcher, wrapHandler(handler))
       return
@@ -194,12 +202,18 @@ export class ApiLoader {
       this.#logger.debug(
         `registering route middleware ${method} ${route.matcher}`
       )
+
+      let handlerToUse = route.handler
+      if (route.policies) {
+        handlerToUse = wrapWithPoliciesCheck(route.handler, route.policies)
+      }
+
       const handler = ApiLoader.traceMiddleware
-        ? (ApiLoader.traceMiddleware(wrapHandler(route.handler), {
+        ? (ApiLoader.traceMiddleware(wrapHandler(handlerToUse), {
             route: route.matcher,
             method: method,
           }) as RequestHandler)
-        : wrapHandler(route.handler)
+        : wrapHandler(handlerToUse)
 
       this.#app[method.toLowerCase()](route.matcher, handler)
     })
