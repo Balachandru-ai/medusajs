@@ -1,4 +1,4 @@
-import z from "zod"
+import { z } from "@medusajs/deps/zod"
 import { MedusaError } from "@medusajs/utils"
 import { validateAndTransformQuery } from "../utils/validate-query"
 import { MedusaNextFunction, MedusaRequest, MedusaResponse } from "../types"

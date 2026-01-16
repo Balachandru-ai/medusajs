@@ -30,67 +30,8 @@ declare global {
 /**
  * Global registry for all unique resources.
  */
-const defaultResources = [
-  "api-key",
-  "campaign",
-  "claim",
-  "collection",
-  "currency",
-  "customer",
-  "customer-group",
-  "draft-order",
-  "exchange",
-  "fulfillment",
-  "fulfillment-provider",
-  "fulfillment-set",
-  "inventory",
-  "inventory-item",
-  "invite",
-  "locale",
-  "notification",
-  "order",
-  "order-change",
-  "order-edit",
-  "payment",
-  "payment-collection",
-  "payment-provider",
-  "price-list",
-  "price-preference",
-  "product",
-  "product-category",
-  "product-tag",
-  "product-type",
-  "product-variant",
-  "promotion",
-  "rbac",
-  "refund-reason",
-  "region",
-  "reservation",
-  "return",
-  "return-reason",
-  "sales-channel",
-  "shipping-option",
-  "shipping-option-type",
-  "shipping-profile",
-  "stock-location",
-  "store",
-  "tax",
-  "tax-provider",
-  "tax-rate",
-  "tax-region",
-  "translation",
-  "upload",
-  "user",
-  "workflow-execution",
-]
-
 export const PolicyResource = global.PolicyResource ?? {}
 global.PolicyResource ??= PolicyResource
-
-for (const resource of defaultResources) {
-  const resourceKey = toSnakeCase(resource)
-  PolicyResource[resourceKey] = resource
-}
 
 /**
  * Global registry for all unique operations.
