@@ -185,8 +185,8 @@ export const useBatchTranslationSettings = (
   return useMutation({
     mutationFn: (payload: HttpTypes.AdminBatchTranslationSettings) =>
       sdk.admin.translation.batchSettings(payload),
-    onSuccess: async (data, variables, context) => {
-      await queryClient.invalidateQueries({
+    onSuccess: (data, variables, context) => {
+      queryClient.invalidateQueries({
         queryKey: translationSettingsQueryKeys.lists(),
       })
       options?.onSuccess?.(data, variables, context)
