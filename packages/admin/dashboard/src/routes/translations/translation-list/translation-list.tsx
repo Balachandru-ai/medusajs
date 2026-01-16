@@ -32,7 +32,9 @@ export const TranslationList = () => {
     isPending: isTranslationSettingsPending,
     isError: isTranslationSettingsError,
     error: translationSettingsError,
-  } = useTranslationSettings()
+  } = useTranslationSettings({
+    is_active: true,
+  })
   const {
     statistics,
     isPending: isTranslationStatisticsPending,

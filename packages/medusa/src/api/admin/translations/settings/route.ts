@@ -37,10 +37,9 @@ export const GET = async (
       req.validatedQuery.entity_type
     )
 
-  const filters = req.validatedQuery.entity_type
-    ? { entity_type: req.validatedQuery.entity_type }
-    : {}
-  const settings = await translationService.listTranslationSettings(filters)
+  const settings = await translationService.listTranslationSettings(
+    req.filterableFields
+  )
   const settingsMap = new Map(
     settings.map((setting) => [setting.entity_type, setting])
   )
@@ -49,6 +48,10 @@ export const GET = async (
     translation_settings: Object.entries(translatableFields).reduce(
       (acc, [entityType, fields]) => {
         const setting = settingsMap.get(entityType)!
+        if (!setting) {
+          return acc
+        }
+
         acc[entityType] = {
           id: setting.id,
           fields: fields,

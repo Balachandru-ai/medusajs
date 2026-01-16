@@ -123,7 +123,7 @@ export class Translation {
    * It sends a request to the
    * [Get Translation Settings](https://docs.medusajs.com/api/admin#translations_gettranslationssettings) API route.
    *
-   * @param query - The query parameters which can optionally include the entity type to get the settings for.
+   * @param query - The query parameters which can optionally include the entity type to get the settings for and whether to get the settings for active/inactive entities only.
    * @param headers - Headers to pass in the request.
    * @returns The translation settings.
    *
@@ -143,6 +143,28 @@ export class Translation {
    *
    * ```ts
    * sdk.admin.translation.settings()
+   * .then(({ translation_settings }) => {
+   *   console.log(translation_settings)
+   * })
+   * ```
+   *
+   * To retrieve the settings for active entities only:
+   *
+   * ```ts
+   * sdk.admin.translation.settings({
+   *   is_active: true
+   * })
+   * .then(({ translation_settings }) => {
+   *   console.log(translation_settings)
+   * })
+   * ```
+   *
+   * To retrieve the settings for inactive entities only:
+   *
+   * ```ts
+   * sdk.admin.translation.settings({
+   *   is_active: false
+   * })
    * .then(({ translation_settings }) => {
    *   console.log(translation_settings)
    * })
