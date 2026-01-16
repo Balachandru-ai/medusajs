@@ -13,7 +13,6 @@ import {
   SoftDeleteReturn,
 } from "@medusajs/framework/types"
 import { CreateProductOptionDTO } from "@medusajs/types"
-import { EntityManager } from "@mikro-orm/core"
 import {
   Product,
   ProductCategory,
@@ -53,11 +52,13 @@ import {
   removeUndefined,
   toHandle,
 } from "@medusajs/framework/utils"
+import { EntityManager } from "@medusajs/framework/mikro-orm/core"
 import { ProductRepository } from "../repositories"
 import {
   UpdateCategoryInput,
   UpdateCollectionInput,
   UpdateProductInput,
+  FilterableProduct,
   UpdateProductOptionInput,
   UpdateProductVariantInput,
   UpdateTagInput,
@@ -224,6 +225,11 @@ export default class ProductModuleService
     @MedusaContext() sharedContext?: Context
   ): Promise<ProductTypes.ProductDTO> {
     const relationsSet = new Set(config?.relations ?? [])
+
+    relationsSet.delete("product_options")
+    relationsSet.delete("product_options.values")
+    relationsSet.delete("product_options.product_option")
+
     const shouldLoadVariantImages = relationsSet.has("variants.images")
     const shouldFilterOptionValues = relationsSet.has("options.values")
 
@@ -234,8 +240,7 @@ export default class ProductModuleService
 
     if (shouldFilterOptionValues) {
       relationsSet.add("options")
-      relationsSet.add("product_options")
-      relationsSet.add("product_options.values")
+      relationsSet.add("options.values")
     }
 
     const product = await this.productService_.retrieve(
@@ -255,11 +260,14 @@ export default class ProductModuleService
       )
     }
 
+    const serializedProduct =
+      await this.baseRepository_.serialize<ProductTypes.ProductDTO>(product)
+
     if (shouldFilterOptionValues) {
-      this.filterOptionValuesByProduct(product)
+      await this.filterOptionValues(serializedProduct, sharedContext)
     }
 
-    return this.baseRepository_.serialize<ProductTypes.ProductDTO>(product)
+    return serializedProduct
   }
 
   @InjectManager()
@@ -284,9 +292,10 @@ export default class ProductModuleService
     }
 
     const shouldFilterOptionValues = relationsSet.has("options.values")
+
     if (shouldFilterOptionValues) {
-      relationsSet.add("product_options")
-      relationsSet.add("product_options.values")
+      relationsSet.add("options")
+      relationsSet.add("options.values")
     }
 
     const products = await this.productService_.list(
@@ -310,11 +319,15 @@ export default class ProductModuleService
       }
     }
 
+    const serializedProducts = await this.baseRepository_.serialize<
+      ProductTypes.ProductDTO[]
+    >(products)
+
     if (shouldFilterOptionValues) {
-      this.filterOptionValuesByProducts(products)
+      await this.filterOptionValues(serializedProducts, sharedContext)
     }
 
-    return this.baseRepository_.serialize<ProductTypes.ProductDTO[]>(products)
+    return serializedProducts
   }
 
   @InjectManager()
@@ -337,7 +350,13 @@ export default class ProductModuleService
       config?.relations?.includes("options.values")
 
     // Ensure we load necessary relations
-    const relations = [...(config?.relations || [])]
+    let relations = [...(config?.relations || [])]
+    relations = relations.filter(
+      (relation) =>
+        relation !== "product_options" &&
+        relation !== "product_options.values" &&
+        relation !== "product_options.product_option"
+    )
     if (shouldLoadVariantImages) {
       if (!relations.includes("variants")) {
         relations.push("variants")
@@ -348,11 +367,11 @@ export default class ProductModuleService
     }
 
     if (shouldFilterOptionValues) {
-      if (!relations.includes("product_options")) {
-        relations.push("product_options")
+      if (!relations.includes("options")) {
+        relations.push("options")
       }
-      if (!relations.includes("product_options.values")) {
-        relations.push("product_options.values")
+      if (!relations.includes("options.values")) {
+        relations.push("options.values")
       }
     }
 
@@ -374,13 +393,14 @@ export default class ProductModuleService
       }
     }
 
-    if (shouldFilterOptionValues) {
-      this.filterOptionValuesByProducts(products)
-    }
-
     const serializedProducts = await this.baseRepository_.serialize<
       ProductTypes.ProductDTO[]
     >(products)
+
+    if (shouldFilterOptionValues) {
+      await this.filterOptionValues(serializedProducts, sharedContext)
+    }
+
     return [serializedProducts, count]
   }
 
@@ -2429,6 +2449,8 @@ export default class ProductModuleService
       ProductTypes.ProductDTO[]
     >(products)
 
+    await this.filterOptionValues(createdProducts, sharedContext)
+
     return Array.isArray(data) ? createdProducts : createdProducts[0]
   }
 
@@ -2518,6 +2540,8 @@ export default class ProductModuleService
     const updatedProducts = await this.baseRepository_.serialize<
       ProductTypes.ProductDTO[]
     >(products)
+
+    await this.filterOptionValues(updatedProducts, sharedContext)
 
     return isString(idOrSelector) ? updatedProducts[0] : updatedProducts
   }
@@ -2747,22 +2771,10 @@ export default class ProductModuleService
     const productsWithOptions = await this.productService_.list(
       { id: productIds },
       {
-        relations: [
-          "options",
-          "options.values",
-          "options.products",
-          "product_options",
-          "product_options.values",
-          "variants",
-          "images",
-          "tags",
-        ],
+        relations: ["options", "options.values", "variants", "images", "tags"],
       },
       sharedContext
     )
-
-    // Filter option values to only include those associated with each product
-    this.filterOptionValuesByProducts(productsWithOptions)
 
     const productIdOrder = new Map(productIds.map((id, index) => [id, index]))
 
@@ -2809,9 +2821,7 @@ export default class ProductModuleService
       allOptionIds.length
         ? this.productOptionService_.list(
             { id: allOptionIds },
-            {
-              relations: ["values", "products"],
-            },
+            { relations: ["values", "products"] },
             sharedContext
           )
         : Promise.resolve([]),
@@ -2864,8 +2874,6 @@ export default class ProductModuleService
         sharedContext
       )
     }
-
-    this.filterOptionValuesByProducts(updatedProducts)
 
     return updatedProducts
   }
@@ -3770,46 +3778,52 @@ export default class ProductModuleService
     }
   }
 
-  private filterOptionValuesByProducts(products: any[]): void {
-    for (const product of products) {
-      this.filterOptionValuesByProduct(product)
-    }
-  }
+  private async filterOptionValues(
+    products: FilterableProduct | FilterableProduct[],
+    sharedContext: Context = {}
+  ): Promise<void> {
+    const productsList = Array.isArray(products) ? products : [products]
 
-  private filterOptionValuesByProduct(product: any): void {
-    if (!product.options || !(product as any).product_options) {
+    if (!productsList.length) {
       return
     }
 
-    const productOptions = Array.isArray(product.product_options)
-      ? product.product_options
-      : (product.product_options as any)?.toArray?.() ?? []
+    const productsWithOptions = productsList.filter(
+      (product) => (product.options ?? []).length > 0
+    )
 
-    // Build a Set of value IDs that are actually associated with this product
-    const allowedValueIds = new Set<string>()
-
-    for (const productOption of productOptions) {
-      const values = Array.isArray(productOption.values)
-        ? productOption.values
-        : (productOption.values as any)?.toArray?.() ?? []
-
-      for (const value of values) {
-        allowedValueIds.add(value.id)
-      }
+    if (!productsWithOptions.length) {
+      return
     }
 
-    // Filter the values in each option to only include allowed ones
-    if (product.options) {
-      for (const option of product.options) {
-        if (option.values) {
-          option.values = option.values.filter((value: any) =>
-            allowedValueIds.has(value.id)
-          )
-        }
-      }
+    const productIds = productsWithOptions
+      .map((product) => product.id)
+      .filter((id): id is string => !!id)
+
+    if (!productIds.length) {
+      return
     }
 
-    delete product.product_options
+    const allowedValueIdsByProduct =
+      await this.productRepository_.getOptionValueIdsByProductIds(
+        productIds,
+        sharedContext
+      )
+
+    for (const product of productsWithOptions) {
+      const allowedValueIds =
+        allowedValueIdsByProduct.get(product.id) ?? new Set<string>()
+
+      const options = product.options ?? []
+
+      for (const option of options) {
+        const values = option.values ?? []
+
+        option.values = values.filter((value) => allowedValueIds.has(value.id))
+      }
+
+      product.options = options
+    }
   }
 
   private async buildVariantImagesFromProduct(
