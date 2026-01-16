@@ -26,6 +26,7 @@ const DEFAULT_IS_EXCLUSIVE_FILTER = JSON.stringify("false")
 export const ProductOptionListTable = () => {
   const { t } = useTranslation()
   const [urlSearchParams, setUrlSearchParams] = useSearchParams()
+  const navigate = useNavigate()
   const hasSetDefaultFilter = useRef(false)
 
   useEffect(() => {
@@ -56,6 +57,12 @@ export const ProductOptionListTable = () => {
 
   const filters = useProductOptionTableFilters()
   const columns = useColumns()
+  const handleCreate = useCallback(() => {
+    const params = urlSearchParams.toString()
+    navigate("create", {
+      state: params ? { restore_params: params } : undefined,
+    })
+  }, [navigate, urlSearchParams])
 
   if (isError) {
     throw error
@@ -85,7 +92,7 @@ export const ProductOptionListTable = () => {
         actions={[
           {
             label: t("actions.create"),
-            to: "create",
+            onClick: handleCreate,
           },
         ]}
         isLoading={isLoading}
