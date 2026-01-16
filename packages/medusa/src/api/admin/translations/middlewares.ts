@@ -2,9 +2,11 @@ import {
   MiddlewareRoute,
   validateAndTransformBody,
   validateAndTransformQuery,
-} from "@medusajs/framework"
+} from "@medusajs/framework/http"
+import { PolicyOperation } from "@medusajs/framework/utils"
 import { DEFAULT_BATCH_ENDPOINTS_SIZE_LIMIT } from "../../../utils"
 import * as QueryConfig from "./query-config"
+import { Entities } from "./query-config"
 import {
   AdminBatchTranslations,
   AdminBatchTranslationSettings,
@@ -18,6 +20,12 @@ export const adminTranslationsRoutesMiddlewares: MiddlewareRoute[] = [
   {
     method: ["ALL"],
     matcher: "/admin/translations/*",
+    policies: [
+      {
+        resource: Entities.translation,
+        operation: PolicyOperation.read,
+      },
+    ],
   },
   {
     method: ["GET"],
@@ -36,6 +44,16 @@ export const adminTranslationsRoutesMiddlewares: MiddlewareRoute[] = [
       sizeLimit: DEFAULT_BATCH_ENDPOINTS_SIZE_LIMIT,
     },
     middlewares: [validateAndTransformBody(AdminBatchTranslations)],
+    policies: [
+      {
+        resource: Entities.translation,
+        operation: PolicyOperation.create,
+      },
+      {
+        resource: Entities.translation,
+        operation: PolicyOperation.update,
+      },
+    ],
   },
   {
     method: ["GET"],
@@ -53,6 +71,16 @@ export const adminTranslationsRoutesMiddlewares: MiddlewareRoute[] = [
     method: ["POST"],
     matcher: "/admin/translations/settings/batch",
     middlewares: [validateAndTransformBody(AdminBatchTranslationSettings)],
+    policies: [
+      {
+        resource: Entities.translation_setting,
+        operation: PolicyOperation.create,
+      },
+      {
+        resource: Entities.translation_setting,
+        operation: PolicyOperation.update,
+      },
+    ],
   },
   {
     method: ["GET"],
