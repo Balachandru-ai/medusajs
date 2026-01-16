@@ -67,6 +67,14 @@ export const adminDraftOrderRoutesMiddlewares: MiddlewareRoute[] = [
         resource: Entities.order,
         operation: PolicyOperation.create,
       },
+      {
+        resource: Entities.order_item,
+        operation: PolicyOperation.create,
+      },
+      {
+        resource: Entities.customer,
+        operation: PolicyOperation.create,
+      },
     ],
   },
   {

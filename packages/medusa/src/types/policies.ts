@@ -36,6 +36,7 @@ export interface DefaultPolicyResources {
   price_list: "price_list"
   price_preference: "price_preference"
   prices: "prices"
+  price_set: "price_set"
   currency: "currency"
 
   // Product resources
@@ -55,10 +56,13 @@ export interface DefaultPolicyResources {
   // Region resources
   region: "region"
 
-  // Sales channel resources
-  sales_channel: "sales_channel"
+  // Store resources
   store: "store"
   store_locale: "store_locale"
+
+  // Translation resources
+  translation: "translation"
+  translation_settings: "translation_settings"
 
   // Shipping resources
   shipping_option: "shipping_option"

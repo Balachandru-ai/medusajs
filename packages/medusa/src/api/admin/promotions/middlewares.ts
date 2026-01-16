@@ -51,6 +51,12 @@ export const adminPromotionRoutesMiddlewares: MiddlewareRoute[] = [
         QueryConfig.retrieveTransformQueryConfig
       ),
     ],
+    policies: [
+      {
+        resource: Entities.promotion,
+        operation: PolicyOperation.create,
+      },
+    ],
   },
   {
     method: ["GET"],
@@ -71,6 +77,12 @@ export const adminPromotionRoutesMiddlewares: MiddlewareRoute[] = [
         AdminGetPromotionParams,
         QueryConfig.retrieveTransformQueryConfig
       ),
+    ],
+    policies: [
+      {
+        resource: Entities.promotion,
+        operation: PolicyOperation.update,
+      },
     ],
   },
   {
@@ -98,6 +110,12 @@ export const adminPromotionRoutesMiddlewares: MiddlewareRoute[] = [
         QueryConfig.retrieveRuleTransformQueryConfig
       ),
     ],
+    policies: [
+      {
+        resource: Entities.promotion,
+        operation: PolicyOperation.update,
+      },
+    ],
   },
   {
     method: ["POST"],
@@ -114,6 +132,12 @@ export const adminPromotionRoutesMiddlewares: MiddlewareRoute[] = [
         QueryConfig.retrieveRuleTransformQueryConfig
       ),
     ],
+    policies: [
+      {
+        resource: Entities.promotion,
+        operation: PolicyOperation.update,
+      },
+    ],
   },
   {
     method: ["POST"],
@@ -129,6 +153,12 @@ export const adminPromotionRoutesMiddlewares: MiddlewareRoute[] = [
         AdminGetPromotionRuleParams,
         QueryConfig.retrieveRuleTransformQueryConfig
       ),
+    ],
+    policies: [
+      {
+        resource: Entities.promotion,
+        operation: PolicyOperation.update,
+      },
     ],
   },
   {

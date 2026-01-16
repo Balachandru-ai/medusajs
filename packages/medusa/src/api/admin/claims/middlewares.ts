@@ -65,6 +65,12 @@ export const adminClaimRoutesMiddlewares: MiddlewareRoute[] = [
         QueryConfig.retrieveTransformQueryConfig
       ),
     ],
+    policies: [
+      {
+        resource: Entities.order_claim,
+        operation: PolicyOperation.create,
+      },
+    ],
   },
 
   {
@@ -77,6 +83,16 @@ export const adminClaimRoutesMiddlewares: MiddlewareRoute[] = [
         QueryConfig.retrieveTransformQueryConfig
       ),
     ],
+    policies: [
+      {
+        resource: Entities.order_claim,
+        operation: PolicyOperation.update,
+      },
+      {
+        resource: Entities.order_claim_item,
+        operation: PolicyOperation.create,
+      },
+    ],
   },
   {
     method: ["POST"],
@@ -87,6 +103,16 @@ export const adminClaimRoutesMiddlewares: MiddlewareRoute[] = [
         AdminGetOrdersOrderParams,
         QueryConfig.retrieveTransformQueryConfig
       ),
+    ],
+    policies: [
+      {
+        resource: Entities.order_claim,
+        operation: PolicyOperation.update,
+      },
+      {
+        resource: Entities.order_claim_item,
+        operation: PolicyOperation.update,
+      },
     ],
   },
   {
@@ -116,6 +142,16 @@ export const adminClaimRoutesMiddlewares: MiddlewareRoute[] = [
         QueryConfig.retrieveTransformQueryConfig
       ),
     ],
+    policies: [
+      {
+        resource: Entities.order_claim,
+        operation: PolicyOperation.update,
+      },
+      {
+        resource: Entities.order_claim_item,
+        operation: PolicyOperation.create,
+      },
+    ],
   },
   {
     method: ["POST"],
@@ -126,6 +162,16 @@ export const adminClaimRoutesMiddlewares: MiddlewareRoute[] = [
         AdminGetOrdersOrderParams,
         QueryConfig.retrieveTransformQueryConfig
       ),
+    ],
+    policies: [
+      {
+        resource: Entities.order_claim,
+        operation: PolicyOperation.update,
+      },
+      {
+        resource: Entities.order_claim_item,
+        operation: PolicyOperation.update,
+      },
     ],
   },
   {
@@ -154,6 +200,12 @@ export const adminClaimRoutesMiddlewares: MiddlewareRoute[] = [
         QueryConfig.retrieveTransformQueryConfig
       ),
     ],
+    policies: [
+      {
+        resource: Entities.order_claim,
+        operation: PolicyOperation.update,
+      },
+    ],
   },
   {
     method: ["POST"],
@@ -164,6 +216,12 @@ export const adminClaimRoutesMiddlewares: MiddlewareRoute[] = [
         AdminGetOrdersOrderParams,
         QueryConfig.retrieveTransformQueryConfig
       ),
+    ],
+    policies: [
+      {
+        resource: Entities.order_claim,
+        operation: PolicyOperation.update,
+      },
     ],
   },
   {
@@ -193,6 +251,16 @@ export const adminClaimRoutesMiddlewares: MiddlewareRoute[] = [
         QueryConfig.retrieveTransformQueryConfig
       ),
     ],
+    policies: [
+      {
+        resource: Entities.order_claim,
+        operation: PolicyOperation.update,
+      },
+      {
+        resource: Entities.order_claim_item,
+        operation: PolicyOperation.create,
+      },
+    ],
   },
   {
     method: ["POST"],
@@ -203,6 +271,16 @@ export const adminClaimRoutesMiddlewares: MiddlewareRoute[] = [
         AdminGetOrdersOrderParams,
         QueryConfig.retrieveTransformQueryConfig
       ),
+    ],
+    policies: [
+      {
+        resource: Entities.order_claim,
+        operation: PolicyOperation.update,
+      },
+      {
+        resource: Entities.order_claim_item,
+        operation: PolicyOperation.update,
+      },
     ],
   },
   {
@@ -231,6 +309,12 @@ export const adminClaimRoutesMiddlewares: MiddlewareRoute[] = [
         QueryConfig.retrieveTransformQueryConfig
       ),
     ],
+    policies: [
+      {
+        resource: Entities.order_claim,
+        operation: PolicyOperation.update,
+      },
+    ],
   },
   {
     method: ["POST"],
@@ -241,6 +325,12 @@ export const adminClaimRoutesMiddlewares: MiddlewareRoute[] = [
         AdminGetOrdersOrderParams,
         QueryConfig.retrieveTransformQueryConfig
       ),
+    ],
+    policies: [
+      {
+        resource: Entities.order_claim,
+        operation: PolicyOperation.update,
+      },
     ],
   },
   {
@@ -267,6 +357,12 @@ export const adminClaimRoutesMiddlewares: MiddlewareRoute[] = [
         AdminGetOrdersOrderParams,
         QueryConfig.retrieveTransformQueryConfig
       ),
+    ],
+    policies: [
+      {
+        resource: Entities.order_claim,
+        operation: PolicyOperation.update,
+      },
     ],
   },
   {
@@ -300,6 +396,12 @@ export const adminClaimRoutesMiddlewares: MiddlewareRoute[] = [
         AdminGetOrdersOrderParams,
         QueryConfig.retrieveTransformQueryConfig
       ),
+    ],
+    policies: [
+      {
+        resource: Entities.order_claim,
+        operation: PolicyOperation.update,
+      },
     ],
   },
 ]

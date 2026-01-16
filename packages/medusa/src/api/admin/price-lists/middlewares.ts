@@ -61,6 +61,12 @@ export const adminPriceListsRoutesMiddlewares: MiddlewareRoute[] = [
         QueryConfig.retrivePriceListQueryConfig
       ),
     ],
+    policies: [
+      {
+        resource: Entities.price_list,
+        operation: PolicyOperation.create,
+      },
+    ],
   },
   {
     method: ["POST"],
@@ -72,6 +78,12 @@ export const adminPriceListsRoutesMiddlewares: MiddlewareRoute[] = [
         QueryConfig.retrivePriceListQueryConfig
       ),
     ],
+    policies: [
+      {
+        resource: Entities.price_list,
+        operation: PolicyOperation.update,
+      },
+    ],
   },
   {
     method: ["POST"],
@@ -82,6 +94,12 @@ export const adminPriceListsRoutesMiddlewares: MiddlewareRoute[] = [
         AdminGetPriceListParams,
         QueryConfig.listPriceListQueryConfig
       ),
+    ],
+    policies: [
+      {
+        resource: Entities.price_list,
+        operation: PolicyOperation.update,
+      },
     ],
   },
   {
@@ -108,6 +126,12 @@ export const adminPriceListsRoutesMiddlewares: MiddlewareRoute[] = [
         AdminGetPriceListPriceParams,
         QueryConfig.listPriceListPriceQueryConfig
       ),
+    ],
+    policies: [
+      {
+        resource: Entities.price_list,
+        operation: PolicyOperation.update,
+      },
     ],
   },
 ]

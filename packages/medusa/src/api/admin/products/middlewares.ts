@@ -113,6 +113,36 @@ export const adminProductRoutesMiddlewares: MiddlewareRoute[] = [
         QueryConfig.retrieveProductQueryConfig
       ),
     ],
+    policies: [
+      {
+        resource: Entities.product,
+        operation: PolicyOperation.create,
+      },
+      {
+        resource: Entities.product_variant,
+        operation: PolicyOperation.create,
+      },
+      {
+        resource: Entities.product_option,
+        operation: PolicyOperation.create,
+      },
+      {
+        resource: Entities.inventory_item,
+        operation: PolicyOperation.create,
+      },
+      {
+        resource: Entities.price_set,
+        operation: PolicyOperation.create,
+      },
+      {
+        resource: Entities.price,
+        operation: PolicyOperation.create,
+      },
+      {
+        resource: Entities.sales_channel,
+        operation: PolicyOperation.update,
+      },
+    ],
   },
   {
     method: ["POST"],
