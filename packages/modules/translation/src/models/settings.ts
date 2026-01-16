@@ -18,6 +18,10 @@ const Settings = model
      * ["title", "description", "material"]
      */
     fields: model.json(),
+    /**
+     * Wether the entity translatable status is enabled.
+     */
+    is_active: model.boolean().default(true),
   })
   .indexes([
     {

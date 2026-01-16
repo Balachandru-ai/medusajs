@@ -28,6 +28,10 @@ export const workflow = [
     "path": "https://docs.medusajs.com/resources/references/medusa-workflows/generateResetPasswordTokenWorkflow"
   },
   {
+    "title": "setAuthAppMetadataWorkflow",
+    "path": "https://docs.medusajs.com/resources/references/medusa-workflows/setAuthAppMetadataWorkflow"
+  },
+  {
     "title": "addShippingMethodToCartWorkflow",
     "path": "https://docs.medusajs.com/resources/references/medusa-workflows/addShippingMethodToCartWorkflow"
   },
