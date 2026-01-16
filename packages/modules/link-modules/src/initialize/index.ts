@@ -35,7 +35,8 @@ export const initialize = async (
   pluginLinksDefinitions?: ModuleJoinerConfig[],
   injectedDependencies?: InitializeModuleInjectableDependencies,
   cwd?: string,
-  migrationOnly?: boolean
+  migrationOnly?: boolean,
+  schemaOnly?: boolean
 ): Promise<{ [link: string]: ILinkModule }> => {
   const allLinks = {}
   const modulesLoadedKeys = MedusaModule.getLoadedModules().map(
@@ -172,6 +173,7 @@ export const initialize = async (
         injectedDependencies,
         cwd,
         migrationOnly,
+        schemaOnly,
       })
 
       allLinks[serviceKey as string] = Object.values(loaded)[0]
