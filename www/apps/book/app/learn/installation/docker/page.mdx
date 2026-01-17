@@ -1,4 +1,4 @@
-import { 
+import {
   Prerequisites,
   CodeTabs,
   CodeTab
@@ -233,7 +233,7 @@ COPY . .
 EXPOSE 9000
 
 # Start with migrations and then the development server
-CMD ["./start.sh"]
+ENTRYPOINT ["./start.sh"]
 ```
   </CodeTab>
   <CodeTab value="npm" label="NPM">
@@ -257,7 +257,7 @@ COPY . .
 EXPOSE 9000
 
 # Start with migrations and then the development server
-CMD ["./start.sh"]
+ENTRYPOINT ["./start.sh"]
 ```
   </CodeTab>
 </CodeTabs>
@@ -383,7 +383,7 @@ module.exports = defineConfig({
           hmr: {
             ...config.server?.hmr,
             // HMR websocket port inside container
-            port: 5173, 
+            port: 5173,
             // Port browser connects to (exposed in docker-compose.yml)
             clientPort: 5173,
           },
