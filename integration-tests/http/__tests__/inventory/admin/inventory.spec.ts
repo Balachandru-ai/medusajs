@@ -1,4 +1,5 @@
 import { medusaIntegrationTestRunner } from "@medusajs/test-utils"
+import { Modules } from "@medusajs/utils"
 import {
   adminHeaders,
   createAdminUser,
@@ -274,6 +275,39 @@ medusaIntegrationTestRunner({
               deleted: [locationLevel2.id],
             })
           )
+        })
+
+        it("should not call listInventoryLevels when update array is empty", async () => {
+          const container = getContainer()
+          const inventoryService = container.resolve(Modules.INVENTORY)
+
+          const listInventoryLevelsSpy = jest.spyOn(
+            inventoryService,
+            "listInventoryLevels"
+          )
+
+          const result = await api.post(
+            `/admin/inventory-items/location-levels/batch`,
+            {
+              update: [],
+              create: [],
+              delete: [],
+            },
+            adminHeaders
+          )
+
+          expect(result.status).toEqual(200)
+          expect(result.data).toEqual(
+            expect.objectContaining({
+              created: [],
+              updated: [],
+              deleted: [],
+            })
+          )
+
+          expect(listInventoryLevelsSpy).not.toHaveBeenCalled()
+
+          listInventoryLevelsSpy.mockRestore()
         })
       })
 
