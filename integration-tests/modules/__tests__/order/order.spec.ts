@@ -531,6 +531,8 @@ medusaIntegrationTestRunner({
               },
             },
           ],
+          shipping_address_id: expect.any(String),
+          billing_address_id: expect.any(String),
           shipping_address: {
             id: expect.any(String),
             customer_id: null,
