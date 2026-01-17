@@ -178,7 +178,7 @@ export const DataTableRoot = <TData,>({
                             className={clx({
                               "bg-ui-bg-subtle sticky left-0 after:absolute after:inset-y-0 after:right-0 after:h-full after:w-px after:bg-transparent after:content-['']":
                                 isStickyHeader,
-                              "left-[68px]":
+                              "start-[68px]":
                                 isStickyHeader && hasSelect && !isSelectHeader,
                               "after:bg-ui-border-base":
                                 showStickyBorder &&
@@ -267,7 +267,7 @@ export const DataTableRoot = <TData,>({
                               isStickyCell,
                             "bg-ui-bg-subtle group-hover/row:bg-ui-bg-subtle-hover":
                               isOdd && isStickyCell,
-                            "left-[68px]": hasLeftOffset,
+                            "start-[68px]": hasLeftOffset,
                             "after:bg-ui-border-base":
                               showStickyBorder && isStickyCell && !isSelectCell,
                             "!bg-ui-bg-disabled !hover:bg-ui-bg-disabled":
