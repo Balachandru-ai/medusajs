@@ -154,6 +154,65 @@ medusaIntegrationTestRunner({
           }),
         ])
       })
+
+      it("should return shipping_address when pagination included", async () => {
+        const response = await api.get(
+          `/admin/orders?fields=+shipping_address.*&offset=0`,
+          adminHeaders
+        )
+
+        expect(response.data.orders).toHaveLength(1)
+        expect(response.data.orders[0].id).toEqual(order.id)
+        expect(response.data.orders[0].shipping_address).toBeDefined()
+        expect(response.data.orders[0].shipping_address.address_1).toEqual(
+          order.shipping_address.address_1
+        )
+        expect(response.data.orders[0].shipping_address.city).toEqual(
+          order.shipping_address.city
+        )
+      })
+
+      it("should return billing_address when pagination included", async () => {
+        const response = await api.get(
+          `/admin/orders?fields=+billing_address.*&offset=0`,
+          adminHeaders
+        )
+
+        expect(response.data.orders).toHaveLength(1)
+        expect(response.data.orders[0].id).toEqual(order.id)
+        expect(response.data.orders[0].billing_address).toBeDefined()
+        expect(response.data.orders[0].billing_address.address_1).toEqual(
+          order.billing_address.address_1
+        )
+        expect(response.data.orders[0].billing_address.city).toEqual(
+          order.billing_address.city
+        )
+      })
+
+      it("should return specific address fields when pagination included", async () => {
+        const response = await api.get(
+          `/admin/orders?fields=+shipping_address.address_1,+shipping_address.city,+billing_address.address_1,+billing_address.city&offset=0`,
+          adminHeaders
+        )
+
+        expect(response.data.orders).toHaveLength(1)
+        const responseOrder = response.data.orders[0]
+        expect(responseOrder.id).toEqual(order.id)
+        expect(responseOrder.shipping_address).toBeDefined()
+        expect(responseOrder.shipping_address.address_1).toEqual(
+          order.shipping_address.address_1
+        )
+        expect(responseOrder.shipping_address.city).toEqual(
+          order.shipping_address.city
+        )
+        expect(responseOrder.billing_address).toBeDefined()
+        expect(responseOrder.billing_address.address_1).toEqual(
+          order.billing_address.address_1
+        )
+        expect(responseOrder.billing_address.city).toEqual(
+          order.billing_address.city
+        )
+      })
     })
 
     describe("POST /orders/:id", () => {
