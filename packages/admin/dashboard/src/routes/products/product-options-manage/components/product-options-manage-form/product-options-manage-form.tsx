@@ -471,6 +471,7 @@ export const ProductOptionsManageForm = ({
                         }
                         onBlur={field.onBlur}
                         options={optionChoices}
+                        shouldAlwaysShowCreateOption
                         onCreateOption={async (options) => {
                           const optionTitle = Array.isArray(options)
                             ? options[options.length - 1]?.trim()
@@ -611,6 +612,7 @@ export const ProductOptionsManageForm = ({
                               value as string[]
                             )
                           }
+                          shouldAlwaysShowCreateOption
                           onCreateOption={isExclusive ? () => {} : undefined}
                           options={mergedOptions}
                           placeholder={t(
