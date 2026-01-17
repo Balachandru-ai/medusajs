@@ -4,6 +4,7 @@ import {
   adminHeaders,
   createAdminUser,
 } from "../../../../helpers/create-admin-user"
+import { updateInventoryItemsWorkflow } from "@medusajs/core-flows"
 
 jest.setTimeout(30000)
 
@@ -16,8 +17,11 @@ medusaIntegrationTestRunner({
     let stockLocation3
 
     let shippingProfile
+    let container
     beforeEach(async () => {
       await createAdminUser(dbConnection, adminHeaders, getContainer())
+
+      container = getContainer()
 
       shippingProfile = (
         await api.post(
@@ -1088,6 +1092,29 @@ medusaIntegrationTestRunner({
           ).data.variant
 
           expect(updatedVariant2.inventory_items).toHaveLength(0)
+        })
+      })
+
+      describe("workflows", () => {
+        describe("updateInventoryItemsWorkflow", () => {
+          it("should not call listInventoryItems when updates is empty", async () => {
+            const inventoryService = container.resolve(Modules.INVENTORY)
+            const listInventoryItemsSpy = jest.spyOn(
+              inventoryService,
+              "listInventoryItems"
+            )
+
+            const { result } = await updateInventoryItemsWorkflow(
+              container
+            ).run({
+              input: { updates: [] },
+            })
+
+            expect(result).toEqual([])
+            expect(listInventoryItemsSpy).not.toHaveBeenCalled()
+
+            listInventoryItemsSpy.mockRestore()
+          })
         })
       })
     })
