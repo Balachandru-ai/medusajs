@@ -16,7 +16,6 @@ import {
 
 export const adminSalesChannelRoutesMiddlewares: MiddlewareRoute[] = [
   {
-    method: ["ALL"],
     matcher: "/admin/sales-channels/*",
     policies: [
       {

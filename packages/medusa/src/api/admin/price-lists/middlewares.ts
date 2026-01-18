@@ -22,7 +22,6 @@ import {
 
 export const adminPriceListsRoutesMiddlewares: MiddlewareRoute[] = [
   {
-    method: ["ALL"],
     matcher: "/admin/price-lists/*",
     policies: [
       {

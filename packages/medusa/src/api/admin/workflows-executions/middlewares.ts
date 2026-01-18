@@ -17,7 +17,6 @@ import { PolicyOperation } from "@medusajs/framework/utils"
 
 export const adminWorkflowsExecutionsMiddlewares: MiddlewareRoute[] = [
   {
-    method: ["ALL"],
     matcher: "/admin/workflows-executions/*",
     policies: [
       {

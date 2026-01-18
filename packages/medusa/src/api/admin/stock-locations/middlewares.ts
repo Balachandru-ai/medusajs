@@ -17,7 +17,6 @@ import {
 
 export const adminStockLocationRoutesMiddlewares: MiddlewareRoute[] = [
   {
-    method: ["ALL"],
     matcher: "/admin/stock-locations/*",
     policies: [
       {

@@ -15,7 +15,6 @@ import {
 
 export const adminRefundReasonsRoutesMiddlewares: MiddlewareRoute[] = [
   {
-    method: ["ALL"],
     matcher: "/admin/refund-reasons/*",
     policies: [
       {

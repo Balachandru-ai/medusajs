@@ -23,7 +23,6 @@ import {
 
 export const adminExchangeRoutesMiddlewares: MiddlewareRoute[] = [
   {
-    method: ["ALL"],
     matcher: "/admin/exchanges/*",
     policies: [
       {

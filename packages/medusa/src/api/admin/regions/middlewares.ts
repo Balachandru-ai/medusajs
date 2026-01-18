@@ -15,7 +15,6 @@ import {
 
 export const adminRegionRoutesMiddlewares: MiddlewareRoute[] = [
   {
-    method: ["ALL"],
     matcher: "/admin/regions/*",
     policies: [
       {

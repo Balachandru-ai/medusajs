@@ -16,7 +16,6 @@ import {
 
 export const adminCollectionRoutesMiddlewares: MiddlewareRoute[] = [
   {
-    method: ["ALL"],
     matcher: "/admin/collections/*",
     policies: [
       {

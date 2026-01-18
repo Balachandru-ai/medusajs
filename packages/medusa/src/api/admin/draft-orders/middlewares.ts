@@ -23,7 +23,6 @@ import {
 
 export const adminDraftOrderRoutesMiddlewares: MiddlewareRoute[] = [
   {
-    method: ["ALL"],
     matcher: "/admin/draft-orders/*",
     policies: [
       {

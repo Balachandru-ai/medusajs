@@ -15,7 +15,6 @@ import {
 
 export const adminProductTagRoutesMiddlewares: MiddlewareRoute[] = [
   {
-    method: ["ALL"],
     matcher: "/admin/product-tags/*",
     policies: [
       {

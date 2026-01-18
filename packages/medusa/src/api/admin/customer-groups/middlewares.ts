@@ -16,7 +16,6 @@ import {
 
 export const adminCustomerGroupRoutesMiddlewares: MiddlewareRoute[] = [
   {
-    method: ["ALL"],
     matcher: "/admin/customer-groups/*",
     policies: [
       {

@@ -22,7 +22,6 @@ import {
 
 export const adminClaimRoutesMiddlewares: MiddlewareRoute[] = [
   {
-    method: ["ALL"],
     matcher: "/admin/claims/*",
     policies: [
       {

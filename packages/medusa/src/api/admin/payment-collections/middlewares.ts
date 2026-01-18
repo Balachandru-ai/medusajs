@@ -14,7 +14,6 @@ import {
 
 export const adminPaymentCollectionsMiddlewares: MiddlewareRoute[] = [
   {
-    method: ["ALL"],
     matcher: "/admin/payment-collections/*",
     policies: [
       {

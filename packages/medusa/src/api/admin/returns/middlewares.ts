@@ -24,7 +24,6 @@ import {
 
 export const adminReturnRoutesMiddlewares: MiddlewareRoute[] = [
   {
-    method: ["ALL"],
     matcher: "/admin/returns/*",
     policies: [
       {

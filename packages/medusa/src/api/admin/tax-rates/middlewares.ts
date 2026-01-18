@@ -18,7 +18,6 @@ import { MiddlewareRoute } from "@medusajs/framework/http"
 
 export const adminTaxRateRoutesMiddlewares: MiddlewareRoute[] = [
   {
-    method: ["ALL"],
     matcher: "/admin/tax-rates/*",
     policies: [
       {

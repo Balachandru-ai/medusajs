@@ -15,7 +15,6 @@ const upload = multer({ storage: multer.memoryStorage() })
 
 export const adminUploadRoutesMiddlewares: MiddlewareRoute[] = [
   {
-    method: ["ALL"],
     matcher: "/admin/uploads/*",
     policies: [
       {

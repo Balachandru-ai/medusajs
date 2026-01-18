@@ -22,7 +22,6 @@ import {
 
 export const adminInventoryRoutesMiddlewares: MiddlewareRoute[] = [
   {
-    method: ["ALL"],
     matcher: "/admin/inventory-items/*",
     policies: [
       {

@@ -15,7 +15,6 @@ import {
 
 export const adminPricePreferencesRoutesMiddlewares: MiddlewareRoute[] = [
   {
-    method: ["ALL"],
     matcher: "/admin/price-preferences/*",
     policies: [
       {
