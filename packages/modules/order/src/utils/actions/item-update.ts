@@ -27,7 +27,7 @@ OrderChangeProcessing.registerActionType(ChangeActionType.ITEM_UPDATE, {
     existing.quantity = currentQuantity
     existing.detail.quantity = currentQuantity
 
-    if (action.details.metadata) {
+    if (action.details.metadata !== undefined) {
       existing.detail.metadata = action.details.metadata
       existing.metadata = action.details.metadata
     }
