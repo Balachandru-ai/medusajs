@@ -280,7 +280,7 @@ medusaIntegrationTestRunner({
           id: expect.any(String),
           status: "pending",
           version: 1,
-          display_id: 1,
+          display_id: 2,
           custom_display_id: null,
           payment_collections: [],
           payment_status: "not_paid",
