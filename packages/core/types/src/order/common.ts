@@ -1147,7 +1147,7 @@ export interface OrderDTO {
   /**
    * The locale of the order.
    */
-  locale?: string | null
+  locale?: string
 
   /**
    * Holds custom data in key-value pairs.
