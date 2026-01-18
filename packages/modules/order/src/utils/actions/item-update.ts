@@ -27,6 +27,11 @@ OrderChangeProcessing.registerActionType(ChangeActionType.ITEM_UPDATE, {
     existing.quantity = currentQuantity
     existing.detail.quantity = currentQuantity
 
+    if (action.details.metadata) {
+      existing.detail.metadata = action.details.metadata
+      existing.metadata = action.details.metadata
+    }
+
     if (action.details.adjustments) {
       existing.adjustments = action.details.adjustments
     }
