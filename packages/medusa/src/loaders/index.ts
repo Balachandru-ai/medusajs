@@ -1,4 +1,5 @@
-import { container, MedusaAppLoader } from "@medusajs/framework"
+import { container, MedusaAppLoader, policiesLoader } from "@medusajs/framework"
+import { asValue } from "@medusajs/framework/awilix"
 import { configLoader } from "@medusajs/framework/config"
 import { pgConnectionLoader } from "@medusajs/framework/database"
 import { featureFlagsLoader } from "@medusajs/framework/feature-flags"
@@ -22,7 +23,6 @@ import {
   validateModuleName,
 } from "@medusajs/framework/utils"
 import { WorkflowLoader } from "@medusajs/framework/workflows"
-import { asValue } from "@medusajs/framework/awilix"
 import { Express, NextFunction, Request, Response } from "express"
 import { join } from "path"
 import requestIp from "request-ip"
@@ -134,10 +134,13 @@ export async function initializeContainer(
   rootDirectory: string,
   options?: {
     skipDbConnection?: boolean
+    throwOnError?: boolean
   }
 ): Promise<MedusaContainer> {
   await featureFlagsLoader(rootDirectory)
-  const configDir = await configLoader(rootDirectory, "medusa-config")
+  const configDir = await configLoader(rootDirectory, "medusa-config", {
+    throwOnError: options?.throwOnError,
+  })
   await featureFlagsLoader(join(__dirname, ".."))
 
   const customLogger = configDir.logger ?? defaultLogger
@@ -181,6 +184,12 @@ export default async ({
     join(plugin.resolve, "links")
   )
   await new LinkLoader(linksSourcePaths, logger).load()
+
+  // Load policies from project root and all plugins
+  await policiesLoader(rootDirectory)
+  for (const plugin of plugins) {
+    await policiesLoader(plugin.resolve)
+  }
 
   const {
     onApplicationStart,

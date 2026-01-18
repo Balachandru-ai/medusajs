@@ -8,9 +8,9 @@
  *   - type
  *   - options
  *   - images
- *   - length
  *   - title
  *   - status
+ *   - length
  *   - id
  *   - created_at
  *   - updated_at
