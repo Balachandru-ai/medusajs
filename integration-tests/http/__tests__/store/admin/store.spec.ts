@@ -69,7 +69,7 @@ medusaIntegrationTestRunner({
         })
       })
 
-      describe.only("workflows", () => {
+      describe("workflows", () => {
         describe("createStoresWorkflow", () => {
           it("should not call listPricePreferences when supported_currencies is empty", async () => {
             const priceService = container.resolve(Modules.PRICING)
