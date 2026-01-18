@@ -1,21 +1,52 @@
 import { ITranslationModuleService } from "@medusajs/framework/types"
-import { Module, Modules } from "@medusajs/framework/utils"
+import { DmlEntity, Module, Modules } from "@medusajs/framework/utils"
 import { moduleIntegrationTestRunner } from "@medusajs/test-utils"
 import TranslationModuleService from "@services/translation-module"
 import { createLocaleFixture, createTranslationFixture } from "../__fixtures__"
 
 jest.setTimeout(100000)
 
+// Set up the mock before module initialization
+let mockGetTranslatableEntities: jest.SpyInstance
+
 moduleIntegrationTestRunner<ITranslationModuleService>({
   moduleName: Modules.TRANSLATION,
+  hooks: {
+    beforeModuleInit: async () => {
+      mockGetTranslatableEntities = jest.spyOn(
+        DmlEntity,
+        "getTranslatableEntities"
+      )
+      mockGetTranslatableEntities.mockReturnValue([
+        {
+          entity: "Product",
+          fields: ["title", "description", "subtitle", "material"],
+        },
+        { entity: "ProductVariant", fields: ["title", "material"] },
+        { entity: "ProductCategory", fields: ["name"] },
+      ])
+    },
+  },
   testSuite: ({ service }) => {
     describe("Translation Module Service", () => {
+      beforeEach(async () => {
+        await service.__hooks?.onApplicationStart?.().catch(() => {})
+      })
+      afterAll(() => {
+        // Restore the mock after all tests complete
+        mockGetTranslatableEntities.mockRestore()
+      })
+
       it(`should export the appropriate linkable configuration`, () => {
         const linkable = Module(Modules.TRANSLATION, {
           service: TranslationModuleService,
         }).linkable
 
-        expect(Object.keys(linkable)).toEqual(["locale", "translation"])
+        expect(Object.keys(linkable)).toEqual([
+          "locale",
+          "translation",
+          "translationSettings",
+        ])
 
         Object.keys(linkable).forEach((key) => {
           delete linkable[key].toJSON
@@ -38,6 +69,15 @@ moduleIntegrationTestRunner<ITranslationModuleService>({
               primaryKey: "id",
               serviceName: "translation",
               field: "translation",
+            },
+          },
+          translationSettings: {
+            id: {
+              linkable: "translation_settings_id",
+              entity: "TranslationSettings",
+              primaryKey: "id",
+              serviceName: "translation",
+              field: "translationSettings",
             },
           },
         })
@@ -647,11 +687,83 @@ moduleIntegrationTestRunner<ITranslationModuleService>({
         })
       })
 
+      describe("Settings", () => {
+        describe("getTranslatableFields", () => {
+          it("should return all translatable fields from database", async () => {
+            const fields = await service.getTranslatableFields()
+
+            expect(fields).toHaveProperty("product")
+            expect(fields).toHaveProperty("product_variant")
+            expect(fields.product).toEqual(
+              expect.arrayContaining(["title", "description"])
+            )
+          })
+
+          it("should return translatable fields for a specific entity type", async () => {
+            const fields = await service.getTranslatableFields("product")
+
+            expect(Object.keys(fields)).toEqual(["product"])
+            expect(fields.product).toEqual(
+              expect.arrayContaining(["title", "description"])
+            )
+          })
+
+          it("should return empty object for unknown entity type", async () => {
+            const fields = await service.getTranslatableFields("unknown_entity")
+
+            expect(fields).toEqual({})
+          })
+        })
+
+        describe("listing translations filters by configured fields", () => {
+          it("should only return configured fields in translations", async () => {
+            await service.createTranslations({
+              reference_id: "prod_filter_1",
+              reference: "product",
+              locale_code: "en-US",
+              translations: {
+                title: "Product Title",
+                description: "Product Description",
+                unconfigured_field: "Should be filtered out",
+              },
+            })
+
+            const translations = await service.listTranslations({
+              reference_id: "prod_filter_1",
+            })
+
+            expect(translations).toHaveLength(1)
+            expect(translations[0].translations).toHaveProperty("title")
+            expect(translations[0].translations).toHaveProperty("description")
+            expect(translations[0].translations).not.toHaveProperty(
+              "unconfigured_field"
+            )
+          })
+
+          it("should return empty translations for unconfigured entity types", async () => {
+            await service.createTranslations({
+              reference_id: "unconfigured_1",
+              reference: "unconfigured_entity",
+              locale_code: "en-US",
+              translations: {
+                field1: "Value 1",
+                field2: "Value 2",
+              },
+            })
+
+            const translations = await service.listTranslations({
+              reference_id: "unconfigured_1",
+            })
+
+            expect(translations).toHaveLength(1)
+            expect(translations[0].translations).toEqual({})
+          })
+        })
+      })
+
       describe("Statistics", () => {
         describe("getStatistics", () => {
           it("should return statistics for a single entity type and locale", async () => {
-            // Create translations for 2 products with some fields filled
-            // Product has 4 translatable fields: title, description, material, subtitle
             await service.createTranslations([
               {
                 reference_id: "prod_stat_1",

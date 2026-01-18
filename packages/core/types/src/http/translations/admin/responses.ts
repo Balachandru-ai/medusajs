@@ -1,5 +1,5 @@
 import { PaginatedResponse } from "../../common"
-import { AdminTranslation } from "./entities"
+import { AdminTranslation, AdminTranslationSettings } from "./entities"
 
 export interface AdminTranslationsResponse {
   /**
@@ -98,4 +98,55 @@ export interface AdminTranslationSettingsResponse {
    * }
    */
   translatable_fields: Record<string, string[]>
+}
+
+export interface AdminBatchTranslationSettingsResponse {
+  /**
+   * The created settings.
+   */
+  created: AdminTranslationSettings[]
+  /**
+   * The updated settings.
+   */
+  updated: AdminTranslationSettings[]
+  /**
+   * The deleted settings.
+   */
+  deleted: {
+    ids: string[]
+    object: "translation_settings"
+    deleted: boolean
+  }
+}
+
+/**
+ * Response for translation entities endpoint.
+ * Returns paginated entities with only their translatable fields and all their translations.
+ */
+export interface AdminTranslationEntitiesResponse {
+  /**
+   * The list of entities with their translatable fields.
+   * Each entity contains only the fields configured as translatable
+   * for that entity type in the translation settings, plus all
+   * translations for all locales.
+   */
+  data: (Record<string, unknown> & {
+    id: string
+    translations: AdminTranslation[]
+  })[]
+
+  /**
+   * The total count of entities.
+   */
+  count: number
+
+  /**
+   * The offset of the current page.
+   */
+  offset: number
+
+  /**
+   * The limit of items per page.
+   */
+  limit: number
 }
