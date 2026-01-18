@@ -74,7 +74,8 @@ export const getAllProductsStep = createStep(
         entity: "product",
         filters: _filters,
         fields: data.select,
-        pagination: {
+        // If sales channel is specified, we already paginated
+        pagination: sales_channel_id ? undefined : {
           skip: page * pageSize,
           take: pageSize,
         },
