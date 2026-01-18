@@ -18,7 +18,6 @@ import {
 
 export const adminShippingProfilesMiddlewares: MiddlewareRoute[] = [
   {
-    method: ["ALL"],
     matcher: "/admin/shipping-profiles/*",
     policies: [
       {

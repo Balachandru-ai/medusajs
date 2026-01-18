@@ -7,7 +7,6 @@ import { AdminGetCurrenciesParams, AdminGetCurrencyParams } from "./validators"
 
 export const adminCurrencyRoutesMiddlewares: MiddlewareRoute[] = [
   {
-    method: ["ALL"],
     matcher: "/admin/currencies/*",
     policies: [
       {

@@ -21,7 +21,6 @@ import { authenticate } from "../../../utils/middlewares/authenticate-middleware
 // See https://medusacorp.slack.com/archives/C025KMS13SA/p1716455350491879 for details.
 export const adminInviteRoutesMiddlewares: MiddlewareRoute[] = [
   {
-    method: ["ALL"],
     matcher: "/admin/invites/*",
     policies: [
       {

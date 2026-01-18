@@ -18,7 +18,6 @@ import {
 
 export const adminTranslationsRoutesMiddlewares: MiddlewareRoute[] = [
   {
-    method: ["ALL"],
     matcher: "/admin/translations/*",
     policies: [
       {

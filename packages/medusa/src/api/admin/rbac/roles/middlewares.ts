@@ -18,7 +18,6 @@ import {
 
 export const adminRbacRoleRoutesMiddlewares: MiddlewareRoute[] = [
   {
-    method: ["ALL"],
     matcher: "/admin/rbac/roles/*",
     policies: [
       {

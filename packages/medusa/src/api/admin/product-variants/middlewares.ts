@@ -7,7 +7,6 @@ import { AdminGetProductVariantsParams } from "./validators"
 
 export const adminProductVariantRoutesMiddlewares: MiddlewareRoute[] = [
   {
-    method: ["ALL"],
     matcher: "/admin/product-variants/*",
     policies: [
       {

@@ -13,7 +13,6 @@ import {
 
 export const adminOrderChangesRoutesMiddlewares: MiddlewareRoute[] = [
   {
-    method: ["ALL"],
     matcher: "/admin/order-changes/*",
     policies: [
       {

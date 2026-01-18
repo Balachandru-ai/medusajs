@@ -14,7 +14,6 @@ import {
 
 export const adminFulfillmentsRoutesMiddlewares: MiddlewareRoute[] = [
   {
-    method: ["ALL"],
     matcher: "/admin/fulfillments/*",
     policies: [
       {

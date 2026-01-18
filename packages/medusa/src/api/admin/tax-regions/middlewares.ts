@@ -17,7 +17,6 @@ import { PolicyOperation } from "@medusajs/framework/utils"
 
 export const adminTaxRegionRoutesMiddlewares: MiddlewareRoute[] = [
   {
-    method: ["ALL"],
     matcher: "/admin/tax-regions/*",
     policies: [
       {

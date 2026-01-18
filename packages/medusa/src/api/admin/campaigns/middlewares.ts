@@ -16,7 +16,6 @@ import {
 
 export const adminCampaignRoutesMiddlewares: MiddlewareRoute[] = [
   {
-    method: ["ALL"],
     matcher: "/admin/campaigns/*",
     policies: [
       {

@@ -25,7 +25,6 @@ import {
 
 export const adminOrderRoutesMiddlewares: MiddlewareRoute[] = [
   {
-    method: ["ALL"],
     matcher: "/admin/orders/*",
     policies: [
       {

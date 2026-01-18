@@ -7,7 +7,6 @@ import { AdminGetLocaleParams, AdminGetLocalesParams } from "./validators"
 
 export const adminLocalesRoutesMiddlewares: MiddlewareRoute[] = [
   {
-    method: ["ALL"],
     matcher: "/admin/locales/*",
     policies: [
       {

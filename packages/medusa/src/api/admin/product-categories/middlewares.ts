@@ -16,7 +16,6 @@ import {
 
 export const adminProductCategoryRoutesMiddlewares: MiddlewareRoute[] = [
   {
-    method: ["ALL"],
     matcher: "/admin/product-categories/*",
     policies: [
       {

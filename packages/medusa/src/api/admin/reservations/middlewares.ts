@@ -16,7 +16,6 @@ import {
 
 export const adminReservationRoutesMiddlewares: MiddlewareRoute[] = [
   {
-    method: ["ALL"],
     matcher: "/admin/reservations/*",
     policies: [
       {

@@ -22,7 +22,6 @@ import { createLinkBody } from "../../utils/validators"
 
 export const adminCustomerRoutesMiddlewares: MiddlewareRoute[] = [
   {
-    method: ["ALL"],
     matcher: "/admin/customers/*",
     policies: [
       {

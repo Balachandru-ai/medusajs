@@ -42,7 +42,6 @@ const upload = multer({ storage: multer.memoryStorage() })
 
 export const adminProductRoutesMiddlewares: MiddlewareRoute[] = [
   {
-    method: ["ALL"],
     matcher: "/admin/products/*",
     policies: [
       {
@@ -52,7 +51,6 @@ export const adminProductRoutesMiddlewares: MiddlewareRoute[] = [
     ],
   },
   {
-    method: ["ALL"],
     matcher: "/admin/products/*/variants/*",
     policies: [
       {
@@ -62,7 +60,6 @@ export const adminProductRoutesMiddlewares: MiddlewareRoute[] = [
     ],
   },
   {
-    method: ["ALL"],
     matcher: "/admin/products/*/options/*",
     policies: [
       {
@@ -72,7 +69,6 @@ export const adminProductRoutesMiddlewares: MiddlewareRoute[] = [
     ],
   },
   {
-    method: ["ALL"],
     matcher: "/admin/products/*/variants/*/inventory-items/*",
     policies: [
       {

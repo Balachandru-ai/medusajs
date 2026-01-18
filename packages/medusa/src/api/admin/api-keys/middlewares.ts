@@ -18,7 +18,6 @@ import {
 
 export const adminApiKeyRoutesMiddlewares: MiddlewareRoute[] = [
   {
-    method: ["ALL"],
     matcher: "/admin/api-keys/*",
     policies: [
       {

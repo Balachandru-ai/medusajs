@@ -10,7 +10,6 @@ import {
 
 export const adminNotificationRoutesMiddlewares: MiddlewareRoute[] = [
   {
-    method: ["ALL"],
     matcher: "/admin/notifications/*",
     policies: [
       {

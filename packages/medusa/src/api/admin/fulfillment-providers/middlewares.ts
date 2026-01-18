@@ -7,7 +7,6 @@ import { AdminFulfillmentProvidersParams } from "./validators"
 
 export const adminFulfillmentProvidersRoutesMiddlewares: MiddlewareRoute[] = [
   {
-    method: ["ALL"],
     matcher: "/admin/fulfillment-providers/*",
     policies: [
       {

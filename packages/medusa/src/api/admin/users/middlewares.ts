@@ -17,7 +17,6 @@ import {
 // See https://medusacorp.slack.com/archives/C025KMS13SA/p1716455350491879 for details.
 export const adminUserRoutesMiddlewares: MiddlewareRoute[] = [
   {
-    method: ["ALL"],
     matcher: "/admin/users/*",
     policies: [
       {

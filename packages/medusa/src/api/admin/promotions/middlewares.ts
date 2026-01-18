@@ -22,7 +22,6 @@ import {
 
 export const adminPromotionRoutesMiddlewares: MiddlewareRoute[] = [
   {
-    method: ["ALL"],
     matcher: "/admin/promotions/*",
     policies: [
       {

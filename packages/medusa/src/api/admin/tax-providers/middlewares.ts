@@ -9,7 +9,6 @@ import { AdminGetTaxProvidersParams } from "./validators"
 
 export const adminTaxProviderRoutesMiddlewares: MiddlewareRoute[] = [
   {
-    method: ["ALL"],
     matcher: "/admin/tax-providers/*",
     policies: [
       {
