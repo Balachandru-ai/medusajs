@@ -4292,8 +4292,11 @@ __metadata:
   resolution: "@medusajs/workflows-redis@workspace:packages/modules/providers/workflows-redis"
   dependencies:
     "@medusajs/framework": 2.12.5
+    "@medusajs/test-utils": 2.12.5
+    "@medusajs/workflows": 2.12.5
     bullmq: 5.13.0
     ioredis: ^5.4.1
+    ulid: ^2.3.0
   peerDependencies:
     "@medusajs/framework": 2.12.5
   languageName: unknown
