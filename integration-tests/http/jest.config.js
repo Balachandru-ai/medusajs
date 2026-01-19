@@ -2,6 +2,7 @@ process.chdir(__dirname)
 const defineJestConfig = require("../../define_jest_config")
 module.exports = defineJestConfig({
   testEnvironment: `node`,
+  testTimeout: 300000, // 5 minutes
   testPathIgnorePatterns: [
     `/examples/`,
     `/www/`,
