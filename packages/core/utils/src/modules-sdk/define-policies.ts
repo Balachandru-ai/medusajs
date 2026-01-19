@@ -29,11 +29,11 @@ global.PolicyResource ??= PolicyResource
 /**
  * Global registry for all unique operations.
  */
-const defaultOperations = ["read", "write", "update", "delete", "*"]
+const defaultOperations = ["read", "create", "update", "delete", "*"]
 
 export const PolicyOperation: Record<string, string> & {
   readonly read: "read"
-  readonly write: "write"
+  readonly create: "create"
   readonly update: "update"
   readonly delete: "delete"
   readonly "*": "*"
@@ -76,9 +76,9 @@ global.Policy ??= Policy
  *     operation: "read"
  *   },
  *   {
- *     name: "WriteBrands",
+ *     name: "CreateBrands",
  *     resource: "brand",
- *     operation: "write"
+ *     operation: "create"
  *   }
  * ])
  * ```

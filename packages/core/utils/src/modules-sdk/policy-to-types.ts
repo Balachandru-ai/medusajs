@@ -64,7 +64,10 @@ ${resourceKeys
    */
   export const PolicyOperation: {
 ${operationKeys
-  .map((key) => `    readonly ${key}: "${PolicyOperation[key]}"`)
+  .map(
+    (key) =>
+      `    readonly ${key === "*" ? `"*"` : key}: "${PolicyOperation[key]}"`
+  )
   .join("\n")}
   }
 
