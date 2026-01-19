@@ -73,7 +73,7 @@ export const TranslationsEdit = () => {
           references={references}
           entityType={reference!}
           availableLocales={store?.supported_locales ?? []}
-          translatableFields={translation_settings[reference!].fields}
+          translatableFields={translation_settings[reference!]?.fields ?? []}
           fetchNextPage={fetchNextPage}
           hasNextPage={hasNextPage}
           isFetchingNextPage={isFetchingNextPage}
