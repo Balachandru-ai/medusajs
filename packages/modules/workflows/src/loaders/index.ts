@@ -1,1 +1,1 @@
-export { default as loadUtils } from "./utils"
+export { default as loadProviders } from "./providers"

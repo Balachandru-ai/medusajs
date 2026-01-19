@@ -7,6 +7,7 @@ import {
   IdempotencyKeyParts,
   InferEntityType,
   InternalModuleDeclaration,
+  IWorkflowEngineService,
   ModulesSdkTypes,
   WorkflowExecutionDTO,
   WorkflowsSdkTypes,
@@ -31,20 +32,21 @@ type InjectedDependencies = {
   baseRepository: DAL.RepositoryService
   workflowExecutionService: ModulesSdkTypes.IMedusaInternalService<any>
   workflowOrchestratorService: WorkflowOrchestratorService
-  workflowsProviderDisconnectHandler?: () => Promise<void>
 }
 
 export class WorkflowsModuleService<
-  TWorkflowExecution extends InferEntityType<
-    typeof WorkflowExecution
-  > = InferEntityType<typeof WorkflowExecution>
-> extends ModulesSdkUtils.MedusaService<{
-  WorkflowExecution: { dto: InferEntityType<typeof WorkflowExecution> }
-}>({ WorkflowExecution }) {
+    TWorkflowExecution extends InferEntityType<
+      typeof WorkflowExecution
+    > = InferEntityType<typeof WorkflowExecution>
+  >
+  extends ModulesSdkUtils.MedusaService<{
+    WorkflowExecution: { dto: InferEntityType<typeof WorkflowExecution> }
+  }>({ WorkflowExecution })
+  implements IWorkflowEngineService
+{
   protected baseRepository_: DAL.RepositoryService
   protected workflowExecutionService_: ModulesSdkTypes.IMedusaInternalService<TWorkflowExecution>
   protected workflowOrchestratorService_: WorkflowOrchestratorService
-  protected workflowsProviderDisconnectHandler_?: () => Promise<void>
   protected manager_: SqlEntityManager
 
   constructor(
@@ -53,7 +55,6 @@ export class WorkflowsModuleService<
       baseRepository,
       workflowExecutionService,
       workflowOrchestratorService,
-      workflowsProviderDisconnectHandler,
     }: InjectedDependencies,
     protected readonly moduleDeclaration: InternalModuleDeclaration
   ) {
@@ -64,22 +65,17 @@ export class WorkflowsModuleService<
     this.baseRepository_ = baseRepository
     this.workflowExecutionService_ = workflowExecutionService
     this.workflowOrchestratorService_ = workflowOrchestratorService
-    this.workflowsProviderDisconnectHandler_ =
-      workflowsProviderDisconnectHandler
   }
 
   __hooks = {
     onApplicationStart: async () => {
-      await this.workflowOrchestratorService_.onApplicationStart()
+      await this.workflowOrchestratorService_.__hooks?.onApplicationStart?.()
     },
     onApplicationPrepareShutdown: async () => {
-      await this.workflowOrchestratorService_.onApplicationPrepareShutdown()
+      await this.workflowOrchestratorService_.__hooks?.onApplicationPrepareShutdown?.()
     },
     onApplicationShutdown: async () => {
-      await this.workflowOrchestratorService_.onApplicationShutdown()
-      if (this.workflowsProviderDisconnectHandler_) {
-        await this.workflowsProviderDisconnectHandler_()
-      }
+      await this.workflowOrchestratorService_.__hooks?.onApplicationShutdown?.()
     },
   }
 

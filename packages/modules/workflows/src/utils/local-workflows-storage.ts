@@ -1,6 +1,5 @@
 import { raw } from "@medusajs/framework/mikro-orm/core"
 import {
-  DistributedStorageHooks,
   DistributedTransactionType,
   IDistributedSchedulerStorage,
   IDistributedTransactionStorage,
@@ -94,8 +93,6 @@ function parseNextExecution(
 export class LocalWorkflowsStorage
   implements IDistributedTransactionStorage, IDistributedSchedulerStorage
 {
-  __hooks: DistributedStorageHooks
-
   private workflowExecutionService_: ModulesSdkTypes.IMedusaInternalService<any>
   private logger_: Logger
   private workflowOrchestratorService_: any
@@ -126,11 +123,11 @@ export class LocalWorkflowsStorage
   }) {
     this.workflowExecutionService_ = workflowExecutionService
     this.logger_ = logger
+  }
 
-    this.__hooks = {
-      onApplicationStart: this.onApplicationStart.bind(this),
-      onApplicationShutdown: this.onApplicationShutdown.bind(this),
-    }
+  __hooks = {
+    onApplicationStart: this.onApplicationStart.bind(this),
+    onApplicationShutdown: this.onApplicationShutdown.bind(this),
   }
 
   private async onApplicationStart() {

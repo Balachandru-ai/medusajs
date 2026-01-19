@@ -11,8 +11,10 @@ import {
 import {
   ContainerLike,
   Context,
+  IWorkflowModuleOrchestratorService,
   Logger,
   MedusaContainer,
+  ModulesSdkTypes,
 } from "@medusajs/framework/types"
 import {
   isString,
@@ -101,7 +103,9 @@ type Subscribers = Map<WorkflowId, TransactionSubscribers>
 
 const AnySubscriber = "any"
 
-export class WorkflowOrchestratorService {
+export class WorkflowOrchestratorService
+  implements IWorkflowModuleOrchestratorService
+{
   private static subscribers: Subscribers = new Map()
   protected container_: MedusaContainer
   protected storage_: IDistributedTransactionStorage &
@@ -110,9 +114,11 @@ export class WorkflowOrchestratorService {
   readonly #logger: Logger
 
   constructor({
+    workflowExecutionService,
     workflowsStorage,
     sharedContainer,
   }: {
+    workflowExecutionService: ModulesSdkTypes.IMedusaInternalService<any>
     workflowsStorage: IDistributedTransactionStorage &
       IDistributedSchedulerStorage
     sharedContainer: MedusaContainer
@@ -123,26 +129,39 @@ export class WorkflowOrchestratorService {
     this.#logger =
       this.container_.resolve("logger", { allowUnregistered: true }) ?? console
 
-    if (
-      typeof (this.storage_ as any).setWorkflowOrchestratorService ===
-      "function"
-    ) {
-      ;(this.storage_ as any).setWorkflowOrchestratorService(this)
+    if (typeof this.storage_.setWorkflowOrchestratorService === "function") {
+      this.storage_.setWorkflowOrchestratorService(this)
+    }
+
+    if (typeof this.storage_.setWorkflowExecutionService === "function") {
+      this.storage_.setWorkflowExecutionService(workflowExecutionService)
     }
 
     DistributedTransaction.setStorage(this.storage_)
     WorkflowScheduler.setStorage(this.storage_)
   }
 
-  async onApplicationStart() {
+  __hooks = {
+    onApplicationStart: async () => {
+      await this.onApplicationStart()
+    },
+    onApplicationPrepareShutdown: async () => {
+      await this.onApplicationPrepareShutdown()
+    },
+    onApplicationShutdown: async () => {
+      await this.onApplicationShutdown()
+    },
+  }
+
+  private async onApplicationStart() {
     await this.storage_.__hooks?.onApplicationStart?.()
   }
 
-  async onApplicationPrepareShutdown() {
+  private async onApplicationPrepareShutdown() {
     await this.storage_.__hooks?.onApplicationPrepareShutdown?.()
   }
 
-  async onApplicationShutdown() {
+  private async onApplicationShutdown() {
     await this.storage_.__hooks?.onApplicationShutdown?.()
   }
 

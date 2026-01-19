@@ -733,7 +733,7 @@ async function runLoaders(
 
     return {
       error: new Error(
-        `Loaders for module ${resolution.definition.label} failed: ${err.message}`
+        `Loaders for module ${resolution.definition.label} failed: ${err.message}\n${err.stack}`
       ),
     }
   }

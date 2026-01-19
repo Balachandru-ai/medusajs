@@ -1,4 +1,8 @@
 import {
+  IWorkflowModuleOrchestratorService,
+  ModulesSdkTypes,
+} from "@medusajs/types"
+import {
   DistributedTransactionType,
   TransactionCheckpoint,
 } from "../distributed-transaction"
@@ -26,6 +30,14 @@ export interface IDistributedSchedulerStorage {
 
 export interface IDistributedTransactionStorage {
   __hooks?: DistributedStorageHooks
+
+  setWorkflowOrchestratorService?(
+    workflowOrchestratorService: IWorkflowModuleOrchestratorService
+  ): void
+
+  setWorkflowExecutionService?(
+    workflowExecutionService: ModulesSdkTypes.IMedusaInternalService<any>
+  ): void
 
   get(
     key: string,

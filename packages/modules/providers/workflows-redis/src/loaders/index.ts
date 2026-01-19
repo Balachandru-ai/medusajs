@@ -8,7 +8,7 @@ import { RedisWorkflowsStorage } from "../services"
 import { WorkflowsRedisOptions } from "../types"
 
 export default async (
-  { container, logger, options, dataLoaderOnly }: LoaderOptions,
+  { container, logger, options }: LoaderOptions,
   moduleDeclaration?: InternalModuleDeclaration
 ): Promise<void> => {
   const providerOptions = options as WorkflowsRedisOptions

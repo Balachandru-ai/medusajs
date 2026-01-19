@@ -66,11 +66,14 @@ const failedStates = new Set([
 export class RedisWorkflowsStorage
   implements IDistributedTransactionStorage, IDistributedSchedulerStorage
 {
+  static identifier = "redis-workflows-storage"
+
   __hooks: DistributedStorageHooks
 
   private workflowExecutionService_: ModulesSdkTypes.IMedusaInternalService<any>
   private logger_: Logger
   private workflowOrchestratorService_: any
+  private disconnectHandler_?: () => Promise<void>
 
   private redisClient: Redis
   private redisWorkerConnection: Redis
@@ -95,7 +98,6 @@ export class RedisWorkflowsStorage
   #isWorkerMode: boolean = false
 
   constructor({
-    workflowExecutionService,
     redisConnection,
     redisWorkerConnection,
     redisQueueName,
@@ -108,8 +110,8 @@ export class RedisWorkflowsStorage
     redisCleanerWorkerOptions,
     logger,
     isWorkerMode,
+    workflowsProviderDisconnectHandler,
   }: {
-    workflowExecutionService: ModulesSdkTypes.IMedusaInternalService<any>
     redisConnection: Redis
     redisWorkerConnection: Redis
     redisQueueName: string
@@ -122,14 +124,15 @@ export class RedisWorkflowsStorage
     redisCleanerWorkerOptions: Omit<WorkerOptions, "connection">
     logger: Logger
     isWorkerMode: boolean
+    workflowsProviderDisconnectHandler?: () => Promise<void>
   }) {
-    this.workflowExecutionService_ = workflowExecutionService
     this.logger_ = logger
     this.redisClient = redisConnection
     this.redisWorkerConnection = redisWorkerConnection
     this.cleanerQueueName = "workflows-cleaner"
     this.queueName = redisQueueName
     this.jobQueueName = redisJobQueueName
+    this.disconnectHandler_ = workflowsProviderDisconnectHandler
 
     // Store per-queue options
     this.mainQueueOptions_ = redisMainQueueOptions ?? {}
@@ -178,6 +181,11 @@ export class RedisWorkflowsStorage
     await this.queue?.close()
     await this.jobQueue?.close()
     await this.cleanerQueue_?.close()
+
+    // Disconnect Redis connections
+    if (this.disconnectHandler_) {
+      await this.disconnectHandler_()
+    }
   }
 
   private async onApplicationStart() {
@@ -280,6 +288,12 @@ export class RedisWorkflowsStorage
 
   setWorkflowOrchestratorService(workflowOrchestratorService) {
     this.workflowOrchestratorService_ = workflowOrchestratorService
+  }
+
+  setWorkflowExecutionService(
+    workflowExecutionService: ModulesSdkTypes.IMedusaInternalService<any>
+  ) {
+    this.workflowExecutionService_ = workflowExecutionService
   }
 
   private async ensureRedisConnection(): Promise<void> {
