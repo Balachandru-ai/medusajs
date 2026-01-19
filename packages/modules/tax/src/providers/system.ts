@@ -10,13 +10,13 @@ export default class SystemTaxService implements ITaxProvider {
   async getTaxLines(
     itemLines: TaxTypes.ItemTaxCalculationLine[],
     shippingLines: TaxTypes.ShippingTaxCalculationLine[],
-    _: TaxTypes.TaxCalculationContext
+    taxCalculationContext: TaxTypes.TaxCalculationContext
   ): Promise<(TaxTypes.ItemTaxLineDTO | TaxTypes.ShippingTaxLineDTO)[]> {
     let taxLines: (TaxTypes.ItemTaxLineDTO | TaxTypes.ShippingTaxLineDTO)[] =
       itemLines.flatMap((l) => {
         return l.rates.map((r) => ({
           rate_id: r.id,
-          rate: r.rate || 0,
+          rate: taxCalculationContext.vat_exempt ? 0 : r.rate || 0,
           name: r.name,
           code: r.code,
           line_item_id: l.line_item.id,
@@ -28,7 +28,7 @@ export default class SystemTaxService implements ITaxProvider {
       shippingLines.flatMap((l) => {
         return l.rates.map((r) => ({
           rate_id: r.id,
-          rate: r.rate || 0,
+          rate: taxCalculationContext.vat_exempt ? 0 : r.rate || 0,
           name: r.name,
           code: r.code,
           shipping_line_id: l.shipping_line.id,
