@@ -98,7 +98,7 @@ function normalizeTaxModuleContext(
       shipping_option_id: method.shipping_option_id,
       amount: method.amount,
     })),
-    vat_exempt: orderOrCart.metadata?.vat_exempt ?? false,
+    vat_exempt: orderOrCart.metadata?.vat_exempt === 'true',
   }
 }
 
