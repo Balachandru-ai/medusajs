@@ -11,14 +11,14 @@ describe("create-abort-controller", () => {
     let sigintListeners: Array<(...args: any[]) => void>
 
     beforeEach(() => {
-      processManager = new ProcessManager()
-      // Store existing listeners to restore later
+      // Store existing listeners BEFORE creating ProcessManager
       sigtermListeners = process.listeners("SIGTERM") as Array<
         (...args: any[]) => void
       >
       sigintListeners = process.listeners("SIGINT") as Array<
         (...args: any[]) => void
       >
+      processManager = new ProcessManager()
     })
 
     afterEach(() => {
