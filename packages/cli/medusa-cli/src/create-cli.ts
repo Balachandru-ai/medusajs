@@ -33,8 +33,11 @@ function buildLocalCommands(cli, isLocalProject) {
   }
 
   function resolveLocalCommand(command) {
-    if (!isLocalProject) {
-      cli.showHelp((s: string) => console.log(s))
+    if (!isLocalProject && command !== "new") {
+      console.error(
+        `The "${command}" command must be run inside a Medusa project. Make sure you are in the root directory of a Medusa project and try again.`
+      )
+      return
     }
 
     try {
@@ -49,9 +52,11 @@ function buildLocalCommands(cli, isLocalProject) {
   function getCommandHandler(command, handler) {
     return (argv) => {
       const localCmd = resolveLocalCommand(command)
-      const args = { ...argv, ...projectInfo, useYarn }
+      if (localCmd) {
+        const args = { ...argv, ...projectInfo, useYarn }
 
-      return handler ? handler(args, localCmd) : localCmd(args)
+        return handler ? handler(args, localCmd) : localCmd(args)
+      }
     }
   }
 
