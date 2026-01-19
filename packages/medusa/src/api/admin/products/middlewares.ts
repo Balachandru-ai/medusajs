@@ -220,7 +220,7 @@ export const adminProductRoutesMiddlewares: MiddlewareRoute[] = [
     policies: [
       {
         resource: Entities.product,
-        operation: PolicyOperation.read,
+        operation: PolicyOperation.delete,
       },
     ],
   },
