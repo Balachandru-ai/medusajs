@@ -4,7 +4,7 @@ import {
   createFindParams,
   createSelectParams,
 } from "../../utils/validators"
-import { z } from "zod"
+import { z } from "@medusajs/framework/zod"
 
 export const AdminGetTranslationParams = createSelectParams()
 
@@ -71,6 +71,27 @@ export type AdminTranslationSettingsParamsType = z.infer<
 export const AdminTranslationSettingsParams = z.object({
   entity_type: z.string().optional(),
 })
+
+const AdminUpdateTranslationSettings = z.object({
+  id: z.string(),
+  entity_type: z.string().optional(),
+  fields: z.array(z.string()).optional(),
+  is_active: z.boolean().optional(),
+})
+
+const AdminCreateTranslationSettings = z.object({
+  entity_type: z.string(),
+  fields: z.array(z.string()),
+  is_active: z.boolean().optional(),
+})
+
+export type AdminBatchTranslationSettingsType = z.infer<
+  typeof AdminBatchTranslationSettings
+>
+export const AdminBatchTranslationSettings = createBatchBody(
+  AdminCreateTranslationSettings,
+  AdminUpdateTranslationSettings
+)
 
 export type AdminTranslationEntitiesParamsType = z.infer<
   typeof AdminTranslationEntitiesParams

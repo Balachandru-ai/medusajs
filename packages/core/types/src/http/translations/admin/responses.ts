@@ -1,5 +1,5 @@
 import { PaginatedResponse } from "../../common"
-import { AdminTranslation } from "./entities"
+import { AdminTranslation, AdminTranslationSettings } from "./entities"
 
 export interface AdminTranslationsResponse {
   /**
@@ -98,6 +98,25 @@ export interface AdminTranslationSettingsResponse {
    * }
    */
   translatable_fields: Record<string, string[]>
+}
+
+export interface AdminBatchTranslationSettingsResponse {
+  /**
+   * The created settings.
+   */
+  created: AdminTranslationSettings[]
+  /**
+   * The updated settings.
+   */
+  updated: AdminTranslationSettings[]
+  /**
+   * The deleted settings.
+   */
+  deleted: {
+    ids: string[]
+    object: "translation_settings"
+    deleted: boolean
+  }
 }
 
 /**

@@ -38,10 +38,7 @@ export const validateUserPermissionsStep = createStep(
     })
 
     if (!users?.[0]?.rbac_roles || users[0].rbac_roles.length === 0) {
-      throw new MedusaError(
-        MedusaError.Types.UNAUTHORIZED,
-        `User does not have any roles assigned and cannot create roles or assign policies`
-      )
+      throw new MedusaError(MedusaError.Types.UNAUTHORIZED, "Unauthorized")
     }
 
     const operationMap = new Map()
@@ -79,18 +76,7 @@ export const validateUserPermissionsStep = createStep(
     }
 
     if (unauthorizedPolicies.length) {
-      const policyMap = new Map(
-        allUserPolicies.map((p) => [p.id, p.name || p.key])
-      )
-
-      const unauthorizedNames = unauthorizedPolicies
-        .map((id) => policyMap.get(id) || id)
-        .join(", ")
-
-      throw new MedusaError(
-        MedusaError.Types.UNAUTHORIZED,
-        `User does not have access to the following policies and cannot assign them: ${unauthorizedNames}`
-      )
+      throw new MedusaError(MedusaError.Types.UNAUTHORIZED, "Unauthorized")
     }
   }
 )
