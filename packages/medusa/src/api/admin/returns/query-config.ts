@@ -38,4 +38,5 @@ export const listTransformQueryConfig = {
   defaults: defaultAdminReturnFields,
   defaultLimit: 20,
   isList: true,
+  entity: Entities.return,
 }
