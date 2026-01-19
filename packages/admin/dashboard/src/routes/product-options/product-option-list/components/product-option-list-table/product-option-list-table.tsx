@@ -6,7 +6,7 @@ import {
 } from "@medusajs/ui"
 import { useTranslation } from "react-i18next"
 import { keepPreviousData } from "@tanstack/react-query"
-import { useCallback, useEffect, useMemo, useRef } from "react"
+import { useCallback, useEffect, useMemo, useState } from "react"
 import { HttpTypes } from "@medusajs/types"
 import { useNavigate, useSearchParams } from "react-router-dom"
 import { PencilSquare, Trash } from "@medusajs/icons"
@@ -16,8 +16,8 @@ import {
   useProductOptions,
 } from "../../../../../hooks/api/product-options"
 import { useProductOptionTableColumns } from "../../../../../hooks/table/columns/use-product-option-table-columns"
-import { useProductOptionTableFilters } from "../../../../../hooks/table/filters"
 import { useProductOptionTableQuery } from "../../../../../hooks/table/query/use-product-option-table-query"
+import { useProductOptionTableFilters } from "../../../../../hooks/table/filters"
 import { DataTable } from "../../../../../components/data-table"
 
 const PAGE_SIZE = 20
@@ -27,23 +27,23 @@ export const ProductOptionListTable = () => {
   const { t } = useTranslation()
   const [urlSearchParams, setUrlSearchParams] = useSearchParams()
   const navigate = useNavigate()
-  const hasSetDefaultFilter = useRef(false)
+  const hasExclusiveFilter = urlSearchParams.has("is_exclusive")
+  const [hasInitialized, setHasInitialized] = useState(hasExclusiveFilter)
 
   useEffect(() => {
-    if (hasSetDefaultFilter.current) {
+    if (hasInitialized) {
       return
     }
 
-    hasSetDefaultFilter.current = true
-
-    if (urlSearchParams.has("is_exclusive")) {
+    if (hasExclusiveFilter) {
+      setHasInitialized(true)
       return
     }
 
     const nextParams = new URLSearchParams(urlSearchParams)
     nextParams.set("is_exclusive", DEFAULT_IS_EXCLUSIVE_FILTER)
     setUrlSearchParams(nextParams, { replace: true })
-  }, [urlSearchParams, setUrlSearchParams])
+  }, [hasInitialized, hasExclusiveFilter, urlSearchParams, setUrlSearchParams])
 
   const { searchParams } = useProductOptionTableQuery({
     pageSize: PAGE_SIZE,
@@ -52,7 +52,7 @@ export const ProductOptionListTable = () => {
   const { product_options, count, isError, error, isLoading } =
     useProductOptions(searchParams, {
       placeholderData: keepPreviousData,
-      enabled: hasSetDefaultFilter.current,
+      enabled: hasInitialized,
     })
 
   const filters = useProductOptionTableFilters()
