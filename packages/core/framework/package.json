@@ -96,7 +96,7 @@
     "morgan": "^1.9.1",
     "path-to-regexp": "^8.2.0",
     "tsconfig-paths": "^4.2.0",
-    "zod-validation-error": "3.5.1"
+    "zod-validation-error": "5.0.0"
   },
   "peerDependencies": {
     "@aws-sdk/client-dynamodb": "^3.218.0",
