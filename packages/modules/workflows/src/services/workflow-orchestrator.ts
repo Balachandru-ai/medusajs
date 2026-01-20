@@ -18,6 +18,7 @@ import {
 } from "@medusajs/framework/types"
 import {
   ContainerRegistrationKeys,
+  createMedusaContainer,
   isString,
   MedusaError,
   promiseAll,
@@ -136,7 +137,7 @@ export class WorkflowOrchestratorService
     workflowExecutionService: ModulesSdkTypes.IMedusaInternalService<any>
   }) {
     const { workflowExecutionService } = cradle
-    this.container_ = cradle as unknown as MedusaContainer
+    this.container_ = createMedusaContainer(cradle)
     this.workflowExecutionService_ = workflowExecutionService
 
     this.#logger =
