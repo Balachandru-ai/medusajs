@@ -111,27 +111,11 @@ export class WorkflowOrchestratorService
   private static subscribers: Subscribers = new Map()
   protected container_: MedusaContainer
   protected cradle_: Record<string, any>
-  protected storage__: IDistributedTransactionStorage &
+  protected storage_: IDistributedTransactionStorage &
     IDistributedSchedulerStorage
   protected workflowExecutionService_: ModulesSdkTypes.IMedusaInternalService<any>
 
   readonly #logger: Logger
-
-  get storage_() {
-    if (this.storage__) {
-      return this.storage__
-    }
-
-    this.storage__ = this.cradle_[WORKFLOWS_STORAGE_REGISTRATION_KEY]
-    if (typeof this.storage__.setWorkflowOrchestratorService === "function") {
-      this.storage__.setWorkflowOrchestratorService(this)
-    }
-
-    if (typeof this.storage__.setWorkflowExecutionService === "function") {
-      this.storage__.setWorkflowExecutionService(this.workflowExecutionService_)
-    }
-    return this.storage__
-  }
 
   constructor(cradle: {
     sharedContainer: MedusaContainer
@@ -142,6 +126,18 @@ export class WorkflowOrchestratorService
     this.container_ = sharedContainer
     this.workflowExecutionService_ = workflowExecutionService
 
+    this.storage_ = this.cradle_[WORKFLOWS_STORAGE_REGISTRATION_KEY]
+    if (typeof this.storage_.setWorkflowOrchestratorService === "function") {
+      this.storage_.setWorkflowOrchestratorService(this)
+    }
+
+    if (typeof this.storage_.setWorkflowExecutionService === "function") {
+      this.storage_.setWorkflowExecutionService(this.workflowExecutionService_)
+    }
+
+    DistributedTransaction.setStorage(this.storage_)
+    WorkflowScheduler.setStorage(this.storage_)
+
     this.#logger =
       this.container_.resolve(ContainerRegistrationKeys.LOGGER, {
         allowUnregistered: true,
@@ -150,8 +146,6 @@ export class WorkflowOrchestratorService
 
   __hooks = {
     onApplicationStart: async () => {
-      DistributedTransaction.setStorage(this.storage_)
-      WorkflowScheduler.setStorage(this.storage_)
       await this.onApplicationStart()
     },
     onApplicationPrepareShutdown: async () => {
