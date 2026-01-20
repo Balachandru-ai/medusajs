@@ -6936,7 +6936,7 @@ export const generatedEditDates = {
   "app/how-to-tutorials/how-to/admin/auth/page.mdx": "2026-01-12T12:02:36.766Z",
   "app/integrations/guides/okta/page.mdx": "2026-01-12T12:02:36.772Z",
   "app/nextjs-starter/guides/remove-country-code/page.mdx": "2025-12-30T10:28:10.072Z",
-  "app/commerce-modules/translation/custom-data-models/page.mdx": "2026-01-06T15:54:25.801Z",
+  "app/commerce-modules/translation/custom-data-models/page.mdx": "2026-01-20T09:37:49.038Z",
   "app/commerce-modules/order/custom-display-id/page.mdx": "2026-01-12T12:16:58.730Z",
   "app/how-to-tutorials/tutorials/phone-auth/page.mdx": "2026-01-12T12:21:50.204Z",
   "app/infrastructure-modules/caching/guides/memcached/page.mdx": "2026-01-12T12:26:46.307Z",

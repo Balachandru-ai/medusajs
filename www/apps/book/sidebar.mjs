@@ -480,6 +480,11 @@ export const sidebars = [
                 path: "/learn/fundamentals/events-and-subscribers/emit-event",
                 title: "Emit Event",
               },
+              {
+                type: "link",
+                path: "/learn/fundamentals/events-and-subscribers/event-priority",
+                title: "Event Priority",
+              }
             ],
           },
           {

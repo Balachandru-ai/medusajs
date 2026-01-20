@@ -915,6 +915,16 @@ export const generatedSidebars = [
                 "children": [],
                 "chapterTitle": "3.8.2. Emit Event",
                 "number": "3.8.2."
+              },
+              {
+                "loaded": true,
+                "isPathHref": true,
+                "type": "link",
+                "path": "/learn/fundamentals/events-and-subscribers/event-priority",
+                "title": "Event Priority",
+                "children": [],
+                "chapterTitle": "3.8.3. Event Priority",
+                "number": "3.8.3."
               }
             ],
             "chapterTitle": "3.8. Events and Subscribers",
