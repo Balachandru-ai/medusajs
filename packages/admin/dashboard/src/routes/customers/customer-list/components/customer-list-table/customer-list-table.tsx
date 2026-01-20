@@ -1,4 +1,4 @@
-import { PencilSquare } from "@medusajs/icons"
+import { PencilSquare, Trash } from "@medusajs/icons"
 import { Button, Container, Heading } from "@medusajs/ui"
 import { keepPreviousData } from "@tanstack/react-query"
 import { createColumnHelper } from "@tanstack/react-table"
@@ -8,17 +8,20 @@ import { Link } from "react-router-dom"
 
 import { HttpTypes } from "@medusajs/types"
 import { ActionMenu } from "../../../../../components/common/action-menu"
+import { PermissionGuard } from "../../../../../components/common/permission-guard"
 import { _DataTable } from "../../../../../components/table/data-table"
 import { useCustomers } from "../../../../../hooks/api/customers"
 import { useCustomerTableColumns } from "../../../../../hooks/table/columns/use-customer-table-columns"
 import { useCustomerTableFilters } from "../../../../../hooks/table/filters/use-customer-table-filters"
 import { useCustomerTableQuery } from "../../../../../hooks/table/query/use-customer-table-query"
 import { useDataTable } from "../../../../../hooks/use-data-table"
+import { usePermissions } from "../../../../../providers/permissions-provider"
 
 const PAGE_SIZE = 20
 
 export const CustomerListTable = () => {
   const { t } = useTranslation()
+  const { can } = usePermissions()
 
   const { searchParams, raw } = useCustomerTableQuery({ pageSize: PAGE_SIZE })
   const { customers, count, isLoading, isError, error } = useCustomers(
@@ -50,11 +53,14 @@ export const CustomerListTable = () => {
     <Container className="divide-y p-0">
       <div className="flex items-center justify-between px-6 py-4">
         <Heading>{t("customers.domain")}</Heading>
-        <Link to="/customers/create">
-          <Button size="small" variant="secondary">
-            {t("actions.create")}
-          </Button>
-        </Link>
+        {/* Only show create button if user has customer:create permission */}
+        <PermissionGuard resource="customer" action="create">
+          <Link to="/customers/create">
+            <Button size="small" variant="secondary">
+              {t("actions.create")}
+            </Button>
+          </Link>
+        </PermissionGuard>
       </div>
       <_DataTable
         table={table}
@@ -88,18 +94,42 @@ const CustomerActions = ({
   customer: HttpTypes.AdminCustomer
 }) => {
   const { t } = useTranslation()
+  const { can } = usePermissions()
+
+  // Build actions based on permissions
+  const actions = []
+
+  // Edit action - requires customer:update permission
+  if (can("customer", "update")) {
+    actions.push({
+      icon: <PencilSquare />,
+      label: t("actions.edit"),
+      to: `/customers/${customer.id}/edit`,
+    })
+  }
+
+  // Delete action - requires customer:delete permission
+  if (can("customer", "delete")) {
+    actions.push({
+      icon: <Trash />,
+      label: t("actions.delete"),
+      onClick: () => {
+        // Handle delete - this would typically open a confirmation modal
+        console.log("Delete customer:", customer.id)
+      },
+    })
+  }
+
+  // Don't render ActionMenu if no actions are available
+  if (actions.length === 0) {
+    return null
+  }
 
   return (
     <ActionMenu
       groups={[
         {
-          actions: [
-            {
-              icon: <PencilSquare />,
-              label: t("actions.edit"),
-              to: `/customers/${customer.id}/edit`,
-            },
-          ],
+          actions,
         },
       ]}
     />

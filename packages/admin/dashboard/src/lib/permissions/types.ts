@@ -1,0 +1,146 @@
+/**
+ * Permission types for RBAC in the admin dashboard.
+ *
+ * Permissions follow the pattern: `{resource}:{action}`
+ * Examples:
+ *   - customer:read - Can view customers
+ *   - customer:create - Can create customers
+ *   - customer:manage - Full access (read + create + update + delete)
+ *   - customer:* - Wildcard, equivalent to manage
+ */
+
+/**
+ * Resources that can have permissions applied to them.
+ * These map to Medusa commerce domains.
+ */
+export type PermissionResource =
+  | "customer"
+  | "customer_group"
+  | "order"
+  | "product"
+  | "product_category"
+  | "product_collection"
+  | "product_tag"
+  | "product_type"
+  | "inventory"
+  | "reservation"
+  | "promotion"
+  | "campaign"
+  | "price_list"
+  | "region"
+  | "store"
+  | "user"
+  | "sales_channel"
+  | "stock_location"
+  | "shipping_profile"
+  | "shipping_option"
+  | "tax_region"
+  | "api_key"
+  | "return_reason"
+  | "refund_reason"
+  | "workflow"
+  | "translation"
+
+/**
+ * Actions that can be performed on resources.
+ */
+export type PermissionAction =
+  | "read" // View/list resources
+  | "create" // Create new resources
+  | "update" // Modify existing resources
+  | "delete" // Remove resources
+  | "manage" // Full access (read + create + update + delete)
+  | "*" // Wildcard, equivalent to manage
+
+/**
+ * A single permission string in the format "resource:action"
+ */
+export type Permission = `${PermissionResource}:${PermissionAction}`
+
+/**
+ * A policy represents the user's set of permissions.
+ * This is typically fetched from the backend.
+ */
+export interface UserPolicy {
+  /**
+   * Array of permission strings the user has been granted.
+   */
+  permissions: Permission[]
+}
+
+/**
+ * Permission check options for more complex scenarios.
+ */
+export interface PermissionCheckOptions {
+  /**
+   * If true, requires ALL permissions. If false (default), requires ANY permission.
+   */
+  requireAll?: boolean
+}
+
+/**
+ * Props for permission-related context and hooks.
+ */
+export interface PermissionsContextValue {
+  /**
+   * The user's current policy containing their permissions.
+   */
+  policy: UserPolicy | null
+  /**
+   * Whether the policy is currently being loaded.
+   */
+  isLoading: boolean
+  /**
+   * Check if the user has a specific permission.
+   */
+  hasPermission: (permission: Permission) => boolean
+  /**
+   * Check if the user has any of the specified permissions.
+   */
+  hasAnyPermission: (permissions: Permission[]) => boolean
+  /**
+   * Check if the user has all of the specified permissions.
+   */
+  hasAllPermissions: (permissions: Permission[]) => boolean
+  /**
+   * Check if user can perform an action on a resource.
+   */
+  can: (resource: PermissionResource, action: PermissionAction) => boolean
+}
+
+/**
+ * Route permission configuration for protecting routes.
+ */
+export interface RoutePermission {
+  /**
+   * Required permissions to access this route.
+   */
+  permissions: Permission[]
+  /**
+   * If true, requires ALL permissions. Default is ANY.
+   */
+  requireAll?: boolean
+  /**
+   * Optional redirect path when access is denied.
+   */
+  fallbackPath?: string
+}
+
+/**
+ * Navigation item with permission requirements.
+ */
+export interface PermissionedNavItem {
+  /**
+   * The navigation item's path.
+   */
+  to: string
+  /**
+   * Required permission to see this nav item.
+   */
+  permission?: Permission
+  /**
+   * Or multiple permissions with requireAll option.
+   */
+  permissions?: Permission[]
+  requireAll?: boolean
+}

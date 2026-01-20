@@ -13,6 +13,7 @@ import { useNavigate } from "react-router-dom"
 
 import { ActionMenu } from "../../../../../components/common/action-menu"
 import { useDeleteCustomer } from "../../../../../hooks/api/customers"
+import { useCustomerPermissions } from "../../../../../hooks/use-resource-permissions"
 
 type CustomerGeneralSectionProps = {
   customer: HttpTypes.AdminCustomer
@@ -24,6 +25,7 @@ export const CustomerGeneralSection = ({
   const { t } = useTranslation()
   const prompt = usePrompt()
   const navigate = useNavigate()
+  const { canUpdate, canDelete } = useCustomerPermissions()
 
   const { mutateAsync } = useDeleteCustomer(customer.id)
 
@@ -68,34 +70,42 @@ export const CustomerGeneralSection = ({
     })
   }
 
+  // Build actions based on permissions
+  const groups = []
+
+  // Edit action group
+  if (canUpdate) {
+    groups.push({
+      actions: [
+        {
+          label: t("actions.edit"),
+          icon: <PencilSquare />,
+          to: "edit",
+        },
+      ],
+    })
+  }
+
+  // Delete action group
+  if (canDelete) {
+    groups.push({
+      actions: [
+        {
+          label: t("actions.delete"),
+          icon: <Trash />,
+          onClick: handleDelete,
+        },
+      ],
+    })
+  }
+
   return (
     <Container className="divide-y p-0">
       <div className="flex items-center justify-between px-6 py-4">
         <Heading>{customer.email}</Heading>
         <div className="flex items-center gap-x-2">
           <StatusBadge color={statusColor}>{statusText}</StatusBadge>
-          <ActionMenu
-            groups={[
-              {
-                actions: [
-                  {
-                    label: t("actions.edit"),
-                    icon: <PencilSquare />,
-                    to: "edit",
-                  },
-                ],
-              },
-              {
-                actions: [
-                  {
-                    label: t("actions.delete"),
-                    icon: <Trash />,
-                    onClick: handleDelete,
-                  },
-                ],
-              },
-            ]}
-          />
+          {groups.length > 0 && <ActionMenu groups={groups} />}
         </div>
       </div>
       <div className="text-ui-fg-subtle grid grid-cols-2 items-center px-6 py-4">
