@@ -7,9 +7,11 @@ console.warn(
     "Use @medusajs/medusa/workflows instead."
 )
 
-import WorkflowsModule from "@medusajs/workflows"
+import WorkflowsModule from "@medusajs/workflow-engine-inmemory"
 
-export * from "@medusajs/workflows"
+export * from "@medusajs/workflow-engine-inmemory"
 
 export default WorkflowsModule
-export const discoveryPath = require.resolve("@medusajs/workflows")
+export const discoveryPath = require.resolve(
+  "@medusajs/workflow-engine-inmemory"
+)
