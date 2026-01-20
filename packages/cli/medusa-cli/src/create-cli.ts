@@ -592,6 +592,8 @@ function isLocalMedusaProject() {
     const { dependencies, devDependencies } = require(path.resolve(
       `./package.json`
     ))
+    // Draft order plugin can't have @medusajs/medusa as dependency,
+    // so we also check for @medusajs/cli 
     inMedusaProject = !!(
       (dependencies &&
         (dependencies["@medusajs/medusa"] || dependencies["@medusajs/cli"])) ||
