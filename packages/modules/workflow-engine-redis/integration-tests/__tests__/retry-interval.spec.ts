@@ -43,6 +43,10 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
         await TestDatabase.clearTables()
       })
 
+      afterAll(async () => {
+        await TestDatabase.disconnect()
+      })
+
       it("should properly retry sync step with retry interval after failures", async () => {
         // Configure step to succeed on 3rd attempt
         const attemptToSucceedOn = 3

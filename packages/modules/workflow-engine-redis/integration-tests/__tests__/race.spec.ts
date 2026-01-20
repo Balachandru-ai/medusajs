@@ -35,6 +35,10 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
         await TestDatabase.clearTables()
       })
 
+      afterAll(async () => {
+        await TestDatabase.disconnect()
+      })
+
       it("should manage saving multiple async steps in concurrency", async () => {
         const step0 = createStep(
           { name: "step0", async: true, backgroundExecution: true },

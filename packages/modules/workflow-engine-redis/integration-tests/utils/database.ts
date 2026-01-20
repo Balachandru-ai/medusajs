@@ -16,11 +16,15 @@ const redis = new Redis(redisUrl)
 
 interface TestDatabase {
   clearTables(): Promise<void>
+  disconnect(): Promise<void>
 }
 
 export const TestDatabase: TestDatabase = {
   clearTables: async () => {
     await cleanRedis()
+  },
+  disconnect: async () => {
+    await redis.quit()
   },
 }
 

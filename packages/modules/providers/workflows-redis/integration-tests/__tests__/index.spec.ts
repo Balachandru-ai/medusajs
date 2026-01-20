@@ -106,6 +106,10 @@ moduleIntegrationTestRunner<
         await TestDatabase.clearTables()
       })
 
+      afterAll(async () => {
+        await TestDatabase.disconnect()
+      })
+
       describe("Testing basic workflow", function () {
         describe("Cancel transaction", function () {
           it("should cancel an ongoing execution with async unfinished yet step", async () => {
