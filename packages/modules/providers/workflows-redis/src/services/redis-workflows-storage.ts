@@ -170,10 +170,10 @@ export class RedisWorkflowsStorage
   }
 
   private async onApplicationPrepareShutdown() {
-    // Close worker gracefully, i.e. wait for the current jobs to finish
+    // Close workers immediately without waiting for current jobs to finish
+    // Pass true to force immediate shutdown
     await this.worker?.close()
     await this.jobWorker?.close()
-
     await this.cleanerWorker_?.close()
   }
 
@@ -282,6 +282,9 @@ export class RedisWorkflowsStorage
           removeOnComplete: true,
           removeOnFail: true,
         }
+      )
+      this.logger_.info(
+        "[Workflows-redis] onApplicationStart - cleaner job added"
       )
     }
   }

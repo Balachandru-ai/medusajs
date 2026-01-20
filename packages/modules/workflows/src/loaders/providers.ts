@@ -1,4 +1,4 @@
-import { asClass } from "@medusajs/framework/awilix"
+import { aliasTo, asClass } from "@medusajs/framework/awilix"
 import { moduleProviderLoader } from "@medusajs/framework/modules-sdk"
 import {
   Constructor,
@@ -6,11 +6,14 @@ import {
   ModuleProvider,
   ModulesSdkTypes,
 } from "@medusajs/framework/types"
-import { ContainerRegistrationKeys } from "@medusajs/framework/utils"
+import {
+  ContainerRegistrationKeys,
+  getProviderRegistrationKey,
+} from "@medusajs/framework/utils"
 import { WorkflowOrchestratorService } from "@services"
 import { LocalWorkflowsStorage } from "../providers"
 
-const WORKFLOWS_STORAGE_REGISTRATION_KEY = "workflowsStorage"
+export const WORKFLOWS_STORAGE_REGISTRATION_KEY = "workflowsStorage"
 
 const registrationFn = async (
   klass: Constructor<any> & { identifier: string },
@@ -23,8 +26,13 @@ const registrationFn = async (
     throw new Error(`No "id" provided for workflows provider ${key}`)
   }
 
+  const regKey = getProviderRegistrationKey({
+    providerId: id,
+    providerIdentifier: key,
+  })
+
   container.register({
-    [WORKFLOWS_STORAGE_REGISTRATION_KEY]: asClass(klass).singleton(),
+    [WORKFLOWS_STORAGE_REGISTRATION_KEY]: aliasTo(regKey),
   })
 }
 
@@ -45,15 +53,18 @@ export default async ({
     workflowOrchestratorService: asClass(
       WorkflowOrchestratorService
     ).singleton(),
-    [WORKFLOWS_STORAGE_REGISTRATION_KEY]: asClass(
-      LocalWorkflowsStorage
-    ).singleton(),
   })
 
   if (!options?.providers?.length) {
     logger.info(
       `Workflows module: Using local in-memory storage (no providers configured).`
     )
+
+    container.register({
+      [WORKFLOWS_STORAGE_REGISTRATION_KEY]: asClass(
+        LocalWorkflowsStorage
+      ).singleton(),
+    })
     return
   }
 

@@ -17,6 +17,7 @@ import {
   ModulesSdkTypes,
 } from "@medusajs/framework/types"
 import {
+  ContainerRegistrationKeys,
   isString,
   MedusaError,
   promiseAll,
@@ -30,6 +31,7 @@ import {
 } from "@medusajs/framework/workflows-sdk"
 import { WorkflowOrchestratorCancelOptions } from "@types"
 import { ulid } from "ulid"
+import { WORKFLOWS_STORAGE_REGISTRATION_KEY } from "../loaders/providers"
 
 export type WorkflowOrchestratorRunOptions<T> = Omit<
   FlowRunOptions<T>,
@@ -108,41 +110,43 @@ export class WorkflowOrchestratorService
 {
   private static subscribers: Subscribers = new Map()
   protected container_: MedusaContainer
-  protected storage_: IDistributedTransactionStorage &
+  protected storage__: IDistributedTransactionStorage &
     IDistributedSchedulerStorage
+  protected workflowExecutionService_: ModulesSdkTypes.IMedusaInternalService<any>
 
   readonly #logger: Logger
 
-  constructor({
-    workflowExecutionService,
-    workflowsStorage,
-    sharedContainer,
-  }: {
-    workflowExecutionService: ModulesSdkTypes.IMedusaInternalService<any>
-    workflowsStorage: IDistributedTransactionStorage &
-      IDistributedSchedulerStorage
-    sharedContainer: MedusaContainer
-  }) {
-    this.container_ = sharedContainer
-    this.storage_ = workflowsStorage
+  get storage_() {
+    if (this.storage__) {
+      return this.storage__
+    }
 
-    this.#logger =
-      this.container_.resolve("logger", { allowUnregistered: true }) ?? console
-
+    this.storage__ = this.container_[WORKFLOWS_STORAGE_REGISTRATION_KEY]
     if (typeof this.storage_.setWorkflowOrchestratorService === "function") {
       this.storage_.setWorkflowOrchestratorService(this)
     }
 
     if (typeof this.storage_.setWorkflowExecutionService === "function") {
-      this.storage_.setWorkflowExecutionService(workflowExecutionService)
+      this.storage_.setWorkflowExecutionService(this.workflowExecutionService_)
     }
+    return this.storage_
+  }
 
-    DistributedTransaction.setStorage(this.storage_)
-    WorkflowScheduler.setStorage(this.storage_)
+  constructor(cradle: {
+    workflowExecutionService: ModulesSdkTypes.IMedusaInternalService<any>
+  }) {
+    const { workflowExecutionService } = cradle
+    this.container_ = cradle as unknown as MedusaContainer
+    this.workflowExecutionService_ = workflowExecutionService
+
+    this.#logger =
+      this.container_[ContainerRegistrationKeys.LOGGER] ?? (console as any)
   }
 
   __hooks = {
     onApplicationStart: async () => {
+      DistributedTransaction.setStorage(this.storage_)
+      WorkflowScheduler.setStorage(this.storage_)
       await this.onApplicationStart()
     },
     onApplicationPrepareShutdown: async () => {
