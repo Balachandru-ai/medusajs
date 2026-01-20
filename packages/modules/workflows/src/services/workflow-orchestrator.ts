@@ -18,7 +18,6 @@ import {
 } from "@medusajs/framework/types"
 import {
   ContainerRegistrationKeys,
-  createMedusaContainer,
   isString,
   MedusaError,
   promiseAll,
@@ -111,6 +110,7 @@ export class WorkflowOrchestratorService
 {
   private static subscribers: Subscribers = new Map()
   protected container_: MedusaContainer
+  protected cradle_: Record<string, any>
   protected storage__: IDistributedTransactionStorage &
     IDistributedSchedulerStorage
   protected workflowExecutionService_: ModulesSdkTypes.IMedusaInternalService<any>
@@ -122,26 +122,30 @@ export class WorkflowOrchestratorService
       return this.storage__
     }
 
-    this.storage__ = this.container_[WORKFLOWS_STORAGE_REGISTRATION_KEY]
-    if (typeof this.storage_.setWorkflowOrchestratorService === "function") {
-      this.storage_.setWorkflowOrchestratorService(this)
+    this.storage__ = this.cradle_[WORKFLOWS_STORAGE_REGISTRATION_KEY]
+    if (typeof this.storage__.setWorkflowOrchestratorService === "function") {
+      this.storage__.setWorkflowOrchestratorService(this)
     }
 
-    if (typeof this.storage_.setWorkflowExecutionService === "function") {
-      this.storage_.setWorkflowExecutionService(this.workflowExecutionService_)
+    if (typeof this.storage__.setWorkflowExecutionService === "function") {
+      this.storage__.setWorkflowExecutionService(this.workflowExecutionService_)
     }
-    return this.storage_
+    return this.storage__
   }
 
   constructor(cradle: {
+    sharedContainer: MedusaContainer
     workflowExecutionService: ModulesSdkTypes.IMedusaInternalService<any>
   }) {
-    const { workflowExecutionService } = cradle
-    this.container_ = createMedusaContainer(cradle)
+    const { sharedContainer, workflowExecutionService } = cradle
+    this.cradle_ = cradle
+    this.container_ = sharedContainer
     this.workflowExecutionService_ = workflowExecutionService
 
     this.#logger =
-      this.container_[ContainerRegistrationKeys.LOGGER] ?? (console as any)
+      this.container_.resolve(ContainerRegistrationKeys.LOGGER, {
+        allowUnregistered: true,
+      }) ?? (console as any)
   }
 
   __hooks = {
