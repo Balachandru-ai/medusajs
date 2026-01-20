@@ -1448,10 +1448,10 @@ export const generatedSidebars = [
                 "loaded": true,
                 "isPathHref": true,
                 "type": "link",
-                "title": "Replace Zod Imports (v2.12.6+)",
+                "title": "Replace Zod Imports (v2.13.0+)",
                 "path": "/learn/codemods/replace-zod-imports",
                 "children": [],
-                "chapterTitle": "10.3.2. Replace Zod Imports (v2.12.6+)",
+                "chapterTitle": "10.3.2. Replace Zod Imports (v2.13.0+)",
                 "number": "10.3.2."
               }
             ],

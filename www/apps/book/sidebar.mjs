@@ -764,7 +764,7 @@ export const sidebars = [
               },
               {
                 type: "link",
-                title: "Replace Zod Imports (v2.12.6+)",
+                title: "Replace Zod Imports (v2.13.0+)",
                 path: "/learn/codemods/replace-zod-imports",
               },
             ],
