@@ -6,7 +6,7 @@ import {
   checkAnyPermission,
   checkPermission,
   type Permission,
-  type PermissionAction,
+  type PermissionOperation,
   type PermissionResource,
   type PermissionsContextValue,
   type UserPolicy,
@@ -52,8 +52,8 @@ export const PermissionsProvider = ({
   )
 
   const can = useCallback(
-    (resource: PermissionResource, action: PermissionAction): boolean => {
-      return canUtil(policy, resource, action)
+    (resource: PermissionResource, operation: PermissionOperation): boolean => {
+      return canUtil(policy, resource, operation)
     },
     [policy]
   )

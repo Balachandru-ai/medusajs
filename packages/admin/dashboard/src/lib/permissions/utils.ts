@@ -1,67 +1,69 @@
-import { ACTION_IMPLICATIONS, ROUTE_PERMISSIONS } from "./constants"
+import { OPERATION_IMPLICATIONS, ROUTE_PERMISSIONS } from "./constants"
 import type {
   Permission,
-  PermissionAction,
+  PermissionOperation,
   PermissionResource,
   UserPolicy,
 } from "./types"
 
 /**
- * Parse a permission string into its resource and action components.
+ * Parse a permission string into its resource and operation components.
  *
- * @param permission - Permission string in format "resource:action"
- * @returns Object with resource and action, or null if invalid
+ * @param permission - Permission string in format "resource:operation"
+ * @returns Object with resource and operation, or null if invalid
  */
 export function parsePermission(permission: string): {
   resource: PermissionResource
-  action: PermissionAction
+  operation: PermissionOperation
 } | null {
   const parts = permission.split(":")
   if (parts.length !== 2) {
     return null
   }
 
-  const [resource, action] = parts
+  const [resource, operation] = parts
 
   return {
     resource: resource as PermissionResource,
-    action: action as PermissionAction,
+    operation: operation as PermissionOperation,
   }
 }
 
 /**
- * Build a permission string from resource and action.
+ * Build a permission string from resource and operation.
  *
  * @param resource - The permission resource
- * @param action - The permission action
+ * @param operation - The permission operation
  * @returns Permission string
  */
 export function buildPermission(
   resource: PermissionResource,
-  action: PermissionAction
+  operation: PermissionOperation
 ): Permission {
-  return `${resource}:${action}` as Permission
+  return `${resource}:${operation}` as Permission
 }
 
 /**
- * Check if an action is implied by another action.
- * For example, "manage" implies "read", "create", "update", "delete".
+ * Check if an operation is implied by another operation.
+ * For example, "*" (wildcard) implies "read", "create", "update", "delete".
  *
- * @param grantedAction - The action the user has
- * @param requiredAction - The action being checked
- * @returns True if granted action implies required action
+ * @param grantedOperation - The operation the user has
+ * @param requiredOperation - The operation being checked
+ * @returns True if granted operation implies required operation
  */
-export function actionImplies(
-  grantedAction: PermissionAction,
-  requiredAction: PermissionAction
+export function operationImplies(
+  grantedOperation: PermissionOperation,
+  requiredOperation: PermissionOperation
 ): boolean {
-  const impliedActions = ACTION_IMPLICATIONS[grantedAction] || [grantedAction]
-  return impliedActions.includes(requiredAction)
+  const impliedOperations = OPERATION_IMPLICATIONS[grantedOperation] || [
+    grantedOperation,
+  ]
+  return impliedOperations.includes(requiredOperation)
 }
 
 /**
  * Check if a user's policy grants a specific permission.
- * Handles wildcards and manage permissions.
+ * Handles wildcards (*) which grant all operations on a resource.
  *
  * @param policy - The user's policy
  * @param permission - The permission to check
@@ -71,7 +73,7 @@ export function checkPermission(
   policy: UserPolicy | null,
   permission: Permission
 ): boolean {
-  if (!policy || !policy.permissions || policy.permissions.length === 0) {
+  if (!policy?.permissions?.length) {
     return false
   }
 
@@ -80,23 +82,24 @@ export function checkPermission(
     return false
   }
 
-  const { resource: requiredResource, action: requiredAction } = parsed
+  const { resource: requiredResource, operation: requiredOperation } = parsed
 
   for (const granted of policy.permissions) {
-    const grantedParsed = parsePermission(granted)
+    const grantedParsed = parsePermission(granted) // TODO: update with another shape when API is connected
     if (!grantedParsed) {
       continue
     }
 
-    const { resource: grantedResource, action: grantedAction } = grantedParsed
+    const { resource: grantedResource, operation: grantedOperation } =
+      grantedParsed
 
     // Check if resources match
     if (grantedResource !== requiredResource) {
       continue
     }
 
-    // Check if action is granted (directly or via implication)
-    if (actionImplies(grantedAction, requiredAction)) {
+    // Check if operation is granted (directly or via implication)
+    if (operationImplies(grantedOperation, requiredOperation)) {
       return true
     }
   }
@@ -115,7 +118,7 @@ export function checkAnyPermission(
   policy: UserPolicy | null,
   permissions: Permission[]
 ): boolean {
-  if (!permissions || permissions.length === 0) {
+  if (!permissions?.length) {
     return true
   }
 
@@ -133,7 +136,7 @@ export function checkAllPermissions(
   policy: UserPolicy | null,
   permissions: Permission[]
 ): boolean {
-  if (!permissions || permissions.length === 0) {
+  if (!permissions?.length) {
     return true
   }
 
@@ -141,20 +144,20 @@ export function checkAllPermissions(
 }
 
 /**
- * Check if a user can perform an action on a resource.
+ * Check if a user can perform an operation on a resource.
  * Convenience function that builds the permission string internally.
  *
  * @param policy - The user's policy
  * @param resource - The resource to check
- * @param action - The action to check
- * @returns True if the action is allowed
+ * @param operation - The operation to check
+ * @returns True if the operation is allowed
  */
 export function can(
   policy: UserPolicy | null,
   resource: PermissionResource,
-  action: PermissionAction
+  operation: PermissionOperation
 ): boolean {
-  const permission = buildPermission(resource, action)
+  const permission = buildPermission(resource, operation)
   return checkPermission(policy, permission)
 }
 
@@ -167,7 +170,7 @@ export function can(
  */
 export function getRoutePermission(pathname: string): {
   resource: PermissionResource
-  action: PermissionAction
+  operation: PermissionOperation
 } | null {
   // First, try exact match
   if (ROUTE_PERMISSIONS[pathname]) {
@@ -230,12 +233,12 @@ export function canAccessRoute(
 ): boolean {
   const routePermission = getRoutePermission(pathname)
 
-  // If no permission is defined for this route, allow access
+  // allow access if no permission is defined for this route
   if (!routePermission) {
     return true
   }
 
-  return can(policy, routePermission.resource, routePermission.action)
+  return can(policy, routePermission.resource, routePermission.operation)
 }
 
 /**
@@ -247,14 +250,13 @@ export function canAccessRoute(
 export function getResourcePermissions(
   resource: PermissionResource
 ): Permission[] {
-  const actions: PermissionAction[] = [
+  const operations: PermissionOperation[] = [
     "read",
     "create",
     "update",
     "delete",
-    "manage",
   ]
-  return actions.map((action) => buildPermission(resource, action))
+  return operations.map((operation) => buildPermission(resource, operation))
 }
 
 /**

@@ -21,7 +21,7 @@ export const CustomerAddressSection = ({
   const { t } = useTranslation()
   const prompt = usePrompt()
   const navigate = useNavigate()
-  const { canUpdate, canDelete } = useCustomerPermissions()
+  const { canDelete } = useCustomerPermissions()
   const { mutateAsync: deleteAddress } = useDeleteCustomerAddress(customer.id)
 
   const addresses = customer.addresses ?? []
@@ -62,7 +62,7 @@ export const CustomerAddressSection = ({
       <div className="flex items-center justify-between px-6 py-4">
         <Heading level="h2">{t("addresses.title")}</Heading>
         {/* Only show add link if user has update permission */}
-        <PermissionGuard resource="customer" action="update">
+        <PermissionGuard resource="customer" operation="update">
           <Link to={`create-address`} className="text-ui-fg-muted text-xs">
             Add
           </Link>

@@ -3345,8 +3345,7 @@
       "read": "View",
       "create": "Create",
       "update": "Edit",
-      "delete": "Delete",
-      "manage": "Manage"
+      "delete": "Delete"
     }
   }
 }

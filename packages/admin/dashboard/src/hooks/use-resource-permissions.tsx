@@ -22,7 +22,7 @@ import { usePermissions } from "../providers/permissions-provider"
  * ```
  */
 export const useResourcePermissions = (resource: PermissionResource) => {
-  const { can, hasPermission, policy, isLoading } = usePermissions()
+  const { can, isLoading } = usePermissions()
 
   return useMemo(
     () => ({
@@ -47,15 +47,10 @@ export const useResourcePermissions = (resource: PermissionResource) => {
       canDelete: can(resource, "delete"),
 
       /**
-       * Whether the user has full management access to this resource.
+       * Check a specific operation on this resource.
        */
-      canManage: can(resource, "manage"),
-
-      /**
-       * Check a specific action on this resource.
-       */
-      can: (action: "read" | "create" | "update" | "delete" | "manage") =>
-        can(resource, action),
+      can: (operation: "read" | "create" | "update" | "delete") =>
+        can(resource, operation),
 
       /**
        * The resource being checked.
@@ -73,7 +68,6 @@ export const useResourcePermissions = (resource: PermissionResource) => {
 
 /**
  * Hook for checking customer-specific permissions.
- * Convenience wrapper around useResourcePermissions.
  */
 export const useCustomerPermissions = () => useResourcePermissions("customer")
 

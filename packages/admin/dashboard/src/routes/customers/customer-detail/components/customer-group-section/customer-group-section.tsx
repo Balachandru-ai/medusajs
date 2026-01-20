@@ -140,7 +140,7 @@ export const CustomerGroupSection = ({
       <div className="flex items-center justify-between px-6 py-4">
         <Heading level="h2">{t("customerGroups.domain")}</Heading>
         {/* Only show add button if user has update permission */}
-        <PermissionGuard resource="customer" action="update">
+        <PermissionGuard resource="customer" operation="update">
           <Link to={`/customers/${customer.id}/add-customer-groups`}>
             <Button variant="secondary" size="small">
               {t("general.add")}

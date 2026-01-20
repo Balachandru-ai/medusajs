@@ -1,12 +1,11 @@
 /**
  * Permission types for RBAC in the admin dashboard.
  *
- * Permissions follow the pattern: `{resource}:{action}`
+ * Permissions follow the pattern: `{resource}:{operation}`
  * Examples:
  *   - customer:read - Can view customers
  *   - customer:create - Can create customers
- *   - customer:manage - Full access (read + create + update + delete)
- *   - customer:* - Wildcard, equivalent to manage
+ *   - customer:* - Wildcard, full access (read + create + update + delete)
  */
 
 /**
@@ -42,24 +41,17 @@ export type PermissionResource =
   | "translation"
 
 /**
- * Actions that can be performed on resources.
+ * Operations that can be performed on resources.
  */
-export type PermissionAction =
-  | "read" // View/list resources
-  | "create" // Create new resources
-  | "update" // Modify existing resources
-  | "delete" // Remove resources
-  | "manage" // Full access (read + create + update + delete)
-  | "*" // Wildcard, equivalent to manage
+export type PermissionOperation = "read" | "create" | "update" | "delete" | "*"
 
 /**
- * A single permission string in the format "resource:action"
+ * A single permission string in the format "resource:operation"
  */
-export type Permission = `${PermissionResource}:${PermissionAction}`
+export type Permission = `${PermissionResource}:${PermissionOperation}`
 
 /**
  * A policy represents the user's set of permissions.
- * This is typically fetched from the backend.
  */
 export interface UserPolicy {
   /**
@@ -103,9 +95,9 @@ export interface PermissionsContextValue {
    */
   hasAllPermissions: (permissions: Permission[]) => boolean
   /**
-   * Check if user can perform an action on a resource.
+   * Check if user can perform an operation on a resource.
    */
-  can: (resource: PermissionResource, action: PermissionAction) => boolean
+  can: (resource: PermissionResource, operation: PermissionOperation) => boolean
 }
 
 /**

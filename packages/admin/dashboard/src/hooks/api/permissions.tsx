@@ -10,7 +10,7 @@ export const permissionsQueryKeys = {
 }
 
 /**
- * Response type for the permissions API.
+ * TEMP: permissions response type
  */
 export interface PermissionsResponse {
   policy: UserPolicy
@@ -42,16 +42,12 @@ export const useMyPermissions = (
   const { data, ...rest } = useQuery({
     queryKey: permissionsQueryKeys.me(),
     queryFn: async () => {
-      // TODO: Replace with actual SDK method when backend is implemented
-      // return sdk.admin.permissions.me()
+      // TODO: Replace with actual SDK
 
       // For now, return a mock response that grants all permissions
       // This should be replaced with the actual API call
       return getMockPermissions()
     },
-    // Permissions don't change often, cache for longer
-    staleTime: 5 * 60 * 1000, // 5 minutes
-    gcTime: 30 * 60 * 1000, // 30 minutes (formerly cacheTime)
     ...options,
   })
 
@@ -62,41 +58,43 @@ export const useMyPermissions = (
 }
 
 /**
- * Mock permissions for development/testing.
- * Replace this with actual API call when backend is ready.
+ * MOCK: permissions
  */
 function getMockPermissions(): PermissionsResponse {
   return {
     policy: {
       permissions: [
-        // Customer permissions - full access for demo
+        // Customer permissions - read only for demo
         "customer:read",
-        // "customer:create",
+        // Uncomment for full access:
+        "customer:create",
         // "customer:update",
         // "customer:delete",
-        // "customer:manage",
-        "customer_group:manage",
+        // Or use wildcard for full access:
+        // "customer:*",
+
+        "customer_group:*",
 
         // Order permissions - read only
         "order:read",
 
-        // Product permissions - full access
-        "product:manage",
-        "product_category:manage",
-        "product_collection:manage",
-        "product_tag:manage",
-        "product_type:manage",
+        // Product permissions - full access (wildcard)
+        "product:*",
+        "product_category:*",
+        "product_collection:*",
+        "product_tag:*",
+        "product_type:*",
 
-        // Inventory
-        "inventory:manage",
-        "reservation:manage",
+        // Inventory - full access
+        "inventory:*",
+        "reservation:*",
 
-        // Promotions
-        "promotion:manage",
-        "campaign:manage",
-        "price_list:manage",
+        // Promotions - full access
+        "promotion:*",
+        "campaign:*",
+        "price_list:*",
 
-        // Settings - limited access
+        // Settings - read only
         "region:read",
         "store:read",
         "user:read",
@@ -112,4 +110,3 @@ function getMockPermissions(): PermissionsResponse {
     },
   }
 }
-

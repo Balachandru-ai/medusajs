@@ -1,7 +1,6 @@
-// Types
 export type {
   Permission,
-  PermissionAction,
+  PermissionOperation,
   PermissionCheckOptions,
   PermissionedNavItem,
   PermissionResource,
@@ -10,18 +9,15 @@ export type {
   UserPolicy,
 } from "./types"
 
-// Constants
 export {
-  ACTION_IMPLICATIONS,
-  FULL_ACCESS_ACTIONS,
-  PERMISSION_ACTIONS,
+  OPERATION_IMPLICATIONS,
+  FULL_ACCESS_OPERATIONS,
   RESOURCE_ROUTE_MAP,
   ROUTE_PERMISSIONS,
 } from "./constants"
 
-// Utilities
 export {
-  actionImplies,
+  operationImplies,
   buildPermission,
   can,
   canAccessRoute,

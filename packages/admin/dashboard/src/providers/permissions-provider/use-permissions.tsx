@@ -11,7 +11,7 @@ import { PermissionsContext } from "./permissions-context"
  * ```tsx
  * const { can, hasPermission } = usePermissions()
  *
- * // Check using resource and action
+ * // Check using resource and operation
  * if (can("customer", "create")) {
  *   // Show create button
  * }

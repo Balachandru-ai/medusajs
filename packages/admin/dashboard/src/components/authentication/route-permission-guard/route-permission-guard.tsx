@@ -58,15 +58,14 @@ export const RoutePermissionGuard = ({
   const { policy, hasAnyPermission, hasAllPermissions, isLoading } =
     usePermissions()
 
-  // Don't block while loading
+  // Don't block while loading - TODO: reconsider this
   if (isLoading) {
     return <Outlet />
   }
 
   let hasAccess = false
 
-  if (permissions && permissions.length > 0) {
-    // Use explicit permissions
+  if (permissions?.length) {
     hasAccess = requireAll
       ? hasAllPermissions(permissions)
       : hasAnyPermission(permissions)
@@ -96,7 +95,7 @@ const AccessDenied = ({ pathname }: AccessDeniedProps) => {
   const routePermission = getRoutePermission(pathname)
 
   return (
-    <div className="flex min-h-screen items-center justify-center p-4 absolute top-0 left-0 right-0 bottom-0 bg-ui-bg-subtle">
+    <div className="bg-ui-bg-subtle absolute bottom-0 left-0 right-0 top-0 flex min-h-screen items-center justify-center p-4">
       <Container className="max-w-md">
         <div className="flex flex-col items-center gap-y-4 py-8 text-center">
           <div className="bg-ui-bg-subtle flex h-12 w-12 items-center justify-center rounded-full">
@@ -111,7 +110,7 @@ const AccessDenied = ({ pathname }: AccessDeniedProps) => {
           {routePermission && (
             <Text size="small" className="text-ui-fg-muted">
               {t("permissions.accessDenied.requiredPermission", {
-                permission: `${routePermission.resource}:${routePermission.action}`,
+                permission: `${routePermission.resource}:${routePermission.operation}`,
               })}
             </Text>
           )}

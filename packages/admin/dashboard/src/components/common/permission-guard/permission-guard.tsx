@@ -1,7 +1,7 @@
 import type { PropsWithChildren, ReactNode } from "react"
 import type {
   Permission,
-  PermissionAction,
+  PermissionOperation,
   PermissionResource,
 } from "../../../lib/permissions"
 import { usePermissions } from "../../../providers/permissions-provider"
@@ -29,7 +29,7 @@ interface PermissionGuardWithPermission extends BasePermissionGuardProps {
   permission: Permission
   permissions?: never
   resource?: never
-  action?: never
+  operation?: never
   requireAll?: never
 }
 
@@ -44,18 +44,18 @@ interface PermissionGuardWithPermissions extends BasePermissionGuardProps {
   requireAll?: boolean
   permission?: never
   resource?: never
-  action?: never
+  operation?: never
 }
 
-interface PermissionGuardWithResourceAction extends BasePermissionGuardProps {
+interface PermissionGuardWithResourceOperation extends BasePermissionGuardProps {
   /**
    * Resource to check permission for.
    */
   resource: PermissionResource
   /**
-   * Action to check permission for.
+   * Operation to check permission for.
    */
-  action: PermissionAction
+  operation: PermissionOperation
   permission?: never
   permissions?: never
   requireAll?: never
@@ -64,15 +64,15 @@ interface PermissionGuardWithResourceAction extends BasePermissionGuardProps {
 export type PermissionGuardProps =
   | PermissionGuardWithPermission
   | PermissionGuardWithPermissions
-  | PermissionGuardWithResourceAction
+  | PermissionGuardWithResourceOperation
 
 /**
  * Component that conditionally renders children based on user permissions.
  *
  * @example
  * ```tsx
- * // Using resource and action
- * <PermissionGuard resource="customer" action="create">
+ * // Using resource and operation
+ * <PermissionGuard resource="customer" operation="create">
  *   <Button>Create Customer</Button>
  * </PermissionGuard>
  *
@@ -97,7 +97,7 @@ export type PermissionGuardProps =
  * // With fallback
  * <PermissionGuard
  *   resource="customer"
- *   action="delete"
+ *   operation="delete"
  *   fallback={<Text>You don't have permission to delete customers</Text>}
  * >
  *   <DeleteButton />
@@ -126,8 +126,8 @@ export const PermissionGuard = ({
     hasAccess = props.requireAll
       ? hasAllPermissions(props.permissions)
       : hasAnyPermission(props.permissions)
-  } else if ("resource" in props && "action" in props) {
-    hasAccess = can(props.resource, props.action)
+  } else if ("resource" in props && "operation" in props) {
+    hasAccess = can(props.resource, props.operation)
   }
 
   if (!hasAccess) {
