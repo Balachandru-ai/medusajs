@@ -107,10 +107,10 @@ export const generatedEditDates = {
   "app/medusa-cli/page.mdx": "2026-01-12T12:27:34.035Z",
   "app/medusa-container-resources/page.mdx": "2025-07-31T13:24:15.786Z",
   "app/medusa-workflows-reference/page.mdx": "2025-01-20T08:21:29.962Z",
-  "app/nextjs-starter/page.mdx": "2026-01-12T12:27:44.756Z",
+  "app/nextjs-starter/page.mdx": "2026-01-14T08:32:07.149Z",
   "app/recipes/b2b/page.mdx": "2025-05-20T07:51:40.718Z",
   "app/recipes/commerce-automation/page.mdx": "2025-05-20T07:51:40.719Z",
-  "app/recipes/digital-products/examples/standard/page.mdx": "2026-01-12T12:54:05.690Z",
+  "app/recipes/digital-products/examples/standard/page.mdx": "2026-01-19T08:52:36.209Z",
   "app/recipes/digital-products/page.mdx": "2025-05-20T07:51:40.719Z",
   "app/recipes/ecommerce/page.mdx": "2026-01-12T12:29:04.829Z",
   "app/recipes/marketplace/examples/vendors/page.mdx": "2026-01-12T12:29:31.455Z",
@@ -178,7 +178,7 @@ export const generatedEditDates = {
   "app/storefront-development/tips/page.mdx": "2025-12-09T13:33:33.997Z",
   "app/storefront-development/page.mdx": "2025-12-09T13:30:25.379Z",
   "app/troubleshooting/cors-errors/page.mdx": "2024-05-03T17:36:38+03:00",
-  "app/troubleshooting/create-medusa-app-errors/page.mdx": "2025-12-04T14:12:21.480Z",
+  "app/troubleshooting/create-medusa-app-errors/page.mdx": "2026-01-14T08:32:33.242Z",
   "app/troubleshooting/database-errors/page.mdx": "2025-12-04T14:14:46.745Z",
   "app/troubleshooting/eaddrinuse/page.mdx": "2024-05-03T17:36:38+03:00",
   "app/troubleshooting/errors-after-upgrading/page.mdx": "2026-01-12T12:30:41.431Z",
@@ -6940,5 +6940,7 @@ export const generatedEditDates = {
   "app/commerce-modules/order/custom-display-id/page.mdx": "2026-01-12T12:16:58.730Z",
   "app/how-to-tutorials/tutorials/phone-auth/page.mdx": "2026-01-12T12:21:50.204Z",
   "app/infrastructure-modules/caching/guides/memcached/page.mdx": "2026-01-12T12:26:46.307Z",
-  "app/medusa-cli/commands/codemod/page.mdx": "2026-01-12T14:48:24.052Z"
+  "app/medusa-cli/commands/codemod/page.mdx": "2026-01-12T14:48:24.052Z",
+  "app/troubleshooting/nextjs-node-25/page.mdx": "2026-01-14T08:34:00.550Z",
+  "app/integrations/guides/paypal/page.mdx": "2026-01-19T08:52:36.209Z"
 }

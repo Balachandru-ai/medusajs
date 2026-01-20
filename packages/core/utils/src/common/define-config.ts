@@ -3,6 +3,8 @@ import {
   ConfigModule,
   InputConfig,
   InputConfigModules,
+  InputConfigWithArrayModules,
+  InputConfigWithObjectModules,
   InternalModuleDeclaration,
   MedusaCloudOptions,
 } from "@medusajs/types"
@@ -43,6 +45,15 @@ export const DEFAULT_STORE_RESTRICTED_FIELDS = [
  * make an application work seamlessly, but still provide you the ability
  * to override configuration as needed.
  */
+export function defineConfig(
+  config?: InputConfigWithArrayModules
+): ConfigModule
+/**
+ * @deprecated Use array-based modules configuration instead
+ */
+export function defineConfig(
+  config?: InputConfigWithObjectModules
+): ConfigModule
 export function defineConfig(config: InputConfig = {}): ConfigModule {
   const options = {
     isCloud: process.env.EXECUTION_CONTEXT === MEDUSA_CLOUD_EXECUTION_CONTEXT,
@@ -271,7 +282,10 @@ function resolveModules(
     },
     {
       resolve: TEMPORARY_REDIS_MODULE_PACKAGE_NAMES[Modules.EVENT_BUS],
-      options: { redisUrl: process.env.REDIS_URL },
+      options: {
+        redisUrl: process.env.REDIS_URL,
+        workerOptions: { concurrency: 3 },
+      },
     },
     {
       resolve: MODULE_PACKAGE_NAMES[Modules.LOCKING],
