@@ -1,6 +1,5 @@
 import { PropsWithChildren, useCallback, useMemo } from "react"
 import {
-  buildPermission,
   can as canUtil,
   checkAllPermissions,
   checkAnyPermission,
@@ -16,7 +15,6 @@ import { PermissionsContext } from "./permissions-context"
 interface PermissionsProviderProps extends PropsWithChildren {
   /**
    * The user's policy containing their permissions.
-   * This should be fetched from the backend and passed to the provider.
    */
   policy: UserPolicy | null
   /**
