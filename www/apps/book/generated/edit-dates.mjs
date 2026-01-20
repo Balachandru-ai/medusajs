@@ -121,7 +121,7 @@ export const generatedEditDates = {
   "app/learn/fundamentals/workflows/errors/page.mdx": "2025-04-25T14:26:25.000Z",
   "app/learn/fundamentals/api-routes/override/page.mdx": "2025-12-22T12:56:06.558Z",
   "app/learn/fundamentals/module-links/index/page.mdx": "2025-05-23T07:57:58.958Z",
-  "app/learn/fundamentals/module-links/index-module/page.mdx": "2026-01-06T15:53:03.957Z",
+  "app/learn/fundamentals/module-links/index-module/page.mdx": "2026-01-20T15:21:00.723Z",
   "app/learn/introduction/build-with-llms-ai/page.mdx": "2026-01-20T12:33:34.160Z",
   "app/learn/installation/docker/page.mdx": "2026-01-19T11:26:15.574Z",
   "app/learn/fundamentals/generated-types/page.mdx": "2026-01-06T06:38:15.719Z",
