@@ -35,7 +35,7 @@ export interface DefaultPolicyResources {
   // Pricing resources
   price_list: "price_list"
   price_preference: "price_preference"
-  prices: "prices"
+  price: "price"
   price_set: "price_set"
   currency: "currency"
 
@@ -86,8 +86,6 @@ export interface DefaultPolicyResources {
   user: "user"
   api_key: "api_key"
   invite: "invite"
-  role: "role"
-  permission: "permission"
 }
 
 export type DefaultResourceKey = keyof DefaultPolicyResources
