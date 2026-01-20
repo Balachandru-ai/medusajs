@@ -167,7 +167,7 @@ medusaIntegrationTestRunner({
 
       it("should return shipping_address when pagination included", async () => {
         const response = await api.get(
-          `/admin/orders?fields=+shipping_address.*&offset=0`,
+          `/admin/orders?fields=*shipping_address&offset=0`,
           adminHeaders
         )
 
@@ -182,9 +182,9 @@ medusaIntegrationTestRunner({
         )
       })
 
-      it("should return billing_address when pagination included", async () => {
+      it("should return billing_address when pagination included", async () => {        
         const response = await api.get(
-          `/admin/orders?fields=+billing_address.*&offset=0`,
+          `/admin/orders?fields=*billing_address&offset=0`,
           adminHeaders
         )
 

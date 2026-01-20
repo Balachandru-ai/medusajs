@@ -20,22 +20,6 @@ export const joinerConfig = defineJoinerConfig(Modules.ORDER, {
     claim_id: "OrderClaim",
     exchange_id: "OrderExchange",
   },
-  alias: [
-    {
-      name: ["shipping_address", "shipping_addresses"],
-      entity: "OrderAddress",
-      args: {
-        methodSuffix: "OrderAddresses",
-      },
-    },
-    {
-      name: ["billing_address", "billing_addresses"],
-      entity: "OrderAddress",
-      args: {
-        methodSuffix: "OrderAddresses",
-      },
-    },
-  ],
   models: [
     Order,
     OrderAddress,
