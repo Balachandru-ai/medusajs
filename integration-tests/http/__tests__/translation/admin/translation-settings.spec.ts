@@ -523,6 +523,81 @@ medusaIntegrationTestRunner({
           })
         })
       })
+
+      describe("GET /admin/translations/settings", () => {
+        beforeEach(async () => {
+          // Set up some translation settings for testing
+          await api.post(
+            "/admin/translations/settings/batch",
+            {
+              create: [
+                {
+                  entity_type: "product_variant",
+                  fields: ["title"],
+                  is_active: true,
+                },
+                {
+                  entity_type: "product_category",
+                  fields: ["name", "description"],
+                  is_active: true,
+                },
+                {
+                  entity_type: "product_collection",
+                  fields: ["title"],
+                  is_active: false,
+                },
+              ],
+            },
+            adminHeaders
+          )
+        })
+
+        it("should return all translation settings", async () => {
+          const response = await api.get(
+            "/admin/translations/settings",
+            adminHeaders
+          )
+
+          expect(response.status).toEqual(200)
+          expect(response.data.translation_settings).toEqual({
+            product_variant: expect.objectContaining({
+              id: expect.any(String),
+              fields: ["title"],
+              inactive_fields: ["material"],
+              is_active: true,
+            }),
+            product_category: expect.objectContaining({
+              id: expect.any(String),
+              fields: ["name", "description"],
+              inactive_fields: [],
+              is_active: true,
+            }),
+            product_collection: expect.objectContaining({
+              id: expect.any(String),
+              fields: [],
+              inactive_fields: ["title"],
+              is_active: false,
+            }),
+          })
+        })
+
+        it("should return translation settings for a specific entity type", async () => {
+          const response = await api.get(
+            "/admin/translations/settings?entity_type=product_variant",
+            adminHeaders
+          )
+
+          expect(response.status).toEqual(200)
+          expect(response.data.translation_settings).toEqual({
+            product_variant: expect.objectContaining({
+              id: expect.any(String),
+              fields: ["title"],
+              inactive_fields: ["material"],
+              is_active: true,
+            }),
+          })
+        })
+      })
     })
   },
 })
