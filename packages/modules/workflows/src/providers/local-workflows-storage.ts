@@ -167,6 +167,10 @@ export class LocalWorkflowsStorage
     this.workflowOrchestratorService_ = workflowOrchestratorService
   }
 
+  setWorkflowExecutionService(workflowExecutionService) {
+    this.workflowExecutionService_ = workflowExecutionService
+  }
+
   private createManagedTimer(
     callback: () => void | Promise<void>,
     delay: number

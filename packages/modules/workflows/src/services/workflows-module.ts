@@ -226,16 +226,15 @@ export class WorkflowsModuleService<
     },
     @MedusaContext() context: Context = {}
   ) {
-    const options_ = JSON.parse(JSON.stringify(options ?? {}))
-
     const { manager, transactionManager, ...restContext } = context
 
-    options_.context ??= restContext
+    options ??= {}
+    options.context ??= restContext
 
     return await this.workflowOrchestratorService_.setStepSuccess({
       idempotencyKey,
       stepResponse,
-      options: options_,
+      options,
     } as any)
   }
 
@@ -254,16 +253,15 @@ export class WorkflowsModuleService<
     },
     @MedusaContext() context: Context = {}
   ) {
-    const options_ = JSON.parse(JSON.stringify(options ?? {}))
-
     const { manager, transactionManager, ...restContext } = context
 
-    options_.context ??= restContext
+    options ??= {}
+    options.context ??= restContext
 
     return await this.workflowOrchestratorService_.setStepFailure({
       idempotencyKey,
       stepResponse,
-      options: options_,
+      options,
     } as any)
   }
 
@@ -278,15 +276,14 @@ export class WorkflowsModuleService<
     },
     @MedusaContext() context: Context = {}
   ) {
-    const options_ = JSON.parse(JSON.stringify(options ?? {}))
-
     const { manager, transactionManager, ...restContext } = context
 
-    options_.context ??= restContext
+    options ??= {}
+    options.context ??= restContext
 
     return await this.workflowOrchestratorService_.retryStep({
       idempotencyKey,
-      options: options_,
+      options,
     })
   }
 

@@ -1,21 +1,19 @@
-import { aliasTo, asClass, Lifetime } from "@medusajs/framework/awilix"
+import { asClass } from "@medusajs/framework/awilix"
 import { moduleProviderLoader } from "@medusajs/framework/modules-sdk"
 import {
+  Constructor,
   LoaderOptions,
   ModuleProvider,
   ModulesSdkTypes,
 } from "@medusajs/framework/types"
-import {
-  ContainerRegistrationKeys,
-  getProviderRegistrationKey,
-} from "@medusajs/framework/utils"
-import { LocalWorkflowsStorage } from "../utils"
+import { ContainerRegistrationKeys } from "@medusajs/framework/utils"
 import { WorkflowOrchestratorService } from "@services"
+import { LocalWorkflowsStorage } from "../providers"
 
 const WORKFLOWS_STORAGE_REGISTRATION_KEY = "workflowsStorage"
 
 const registrationFn = async (
-  klass: { identifier: string },
+  klass: Constructor<any> & { identifier: string },
   container: any,
   { id }: { id: string; options?: Record<string, unknown> }
 ) => {
@@ -25,15 +23,8 @@ const registrationFn = async (
     throw new Error(`No "id" provided for workflows provider ${key}`)
   }
 
-  const regKey = getProviderRegistrationKey({
-    providerId: id,
-    providerIdentifier: key,
-  })
-
-  // Provider service is registered by moduleProviderLoader via load-internal.ts.
-  // Create an alias for the storage registration key so the orchestrator can resolve it.
   container.register({
-    [WORKFLOWS_STORAGE_REGISTRATION_KEY]: aliasTo(regKey),
+    [WORKFLOWS_STORAGE_REGISTRATION_KEY]: asClass(klass).singleton(),
   })
 }
 
@@ -54,9 +45,9 @@ export default async ({
     workflowOrchestratorService: asClass(
       WorkflowOrchestratorService
     ).singleton(),
-    [WORKFLOWS_STORAGE_REGISTRATION_KEY]: asClass(LocalWorkflowsStorage, {
-      lifetime: Lifetime.SINGLETON,
-    }),
+    [WORKFLOWS_STORAGE_REGISTRATION_KEY]: asClass(
+      LocalWorkflowsStorage
+    ).singleton(),
   })
 
   if (!options?.providers?.length) {
