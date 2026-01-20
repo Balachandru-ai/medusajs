@@ -126,7 +126,7 @@ export class MiddlewareFileLoader {
 
         if (route.middlewares || route.policies) {
           const middlewares = route.middlewares ?? []
-          if (!route.middlewares?.length) {
+          if (route.policies && !route.middlewares?.length) {
             middlewares.push((_, __, next) => {
               next()
             })

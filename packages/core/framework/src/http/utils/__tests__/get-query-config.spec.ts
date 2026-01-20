@@ -220,9 +220,11 @@ describe("prepareListQuery", () => {
         allowed: ["id", "created_at", "title"],
       }
 
-      expect(await prepareListQuery(validated, queryConfig)).rejects.toThrow(
-        "Order field restricted_field is not valid"
-      )
+      const allowedFields = expect(
+        prepareListQuery(validated, queryConfig)
+      ).rejects.toThrow("Order field restricted_field is not valid")
+
+      await allowedFields
     })
 
     it("should allow order field when it is in allowed fields", async () => {
