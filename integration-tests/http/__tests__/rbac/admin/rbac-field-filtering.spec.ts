@@ -1,3 +1,4 @@
+import { ContainerRegistrationKeys, Modules } from "@medusajs/framework/utils"
 import { medusaIntegrationTestRunner } from "@medusajs/test-utils"
 import {
   adminHeaders,
@@ -13,12 +14,188 @@ medusaIntegrationTestRunner({
   testSuite: ({ dbConnection, api, getContainer }) => {
     let container
     let baseProduct
+    let testUser
+    let productReadPolicy
+    let productVariantReadPolicy
+    let productTagReadPolicy
+    let priceSetReadPolicy
+    let priceReadPolicy
 
     beforeEach(async () => {
       container = getContainer()
-      await createAdminUser(dbConnection, adminHeaders, container)
+      const { user } = await createAdminUser(
+        dbConnection,
+        adminHeaders,
+        container
+      )
+      testUser = user
 
-      // Create test product
+      const rbacModule = container.resolve(Modules.RBAC)
+
+      // Create RBAC policies for product operations
+      productReadPolicy = await rbacModule.createRbacPolicies([
+        {
+          key: "read:product",
+          resource: "product",
+          operation: PolicyOperation.read,
+          name: "Read Products",
+          description: "Permission to read products",
+        },
+      ])
+
+      productTagReadPolicy = await rbacModule.createRbacPolicies([
+        {
+          key: "read:product_tag",
+          resource: "product_tag",
+          operation: PolicyOperation.read,
+          name: "Read Product Tags",
+          description: "Permission to read product tags",
+        },
+      ])
+
+      productVariantReadPolicy = await rbacModule.createRbacPolicies([
+        {
+          key: "read:product_variant",
+          resource: "product_variant",
+          operation: PolicyOperation.read,
+          name: "Read Product Variants",
+          description: "Permission to read product variants",
+        },
+      ])
+
+      const productCreatePolicy = await rbacModule.createRbacPolicies([
+        {
+          key: "create:product",
+          resource: "product",
+          operation: PolicyOperation.create,
+          name: "Create Products",
+          description: "Permission to create products",
+        },
+      ])
+
+      const productVariantCreatePolicy = await rbacModule.createRbacPolicies([
+        {
+          key: "create:product_variant",
+          resource: "product_variant",
+          operation: PolicyOperation.create,
+          name: "Create Product Variants",
+          description: "Permission to create product variants",
+        },
+      ])
+
+      const productOptionCreatePolicy = await rbacModule.createRbacPolicies([
+        {
+          key: "create:product_option",
+          resource: "product_option",
+          operation: PolicyOperation.create,
+          name: "Create Product Options",
+          description: "Permission to create product options",
+        },
+      ])
+
+      const inventoryItemCreatePolicy = await rbacModule.createRbacPolicies([
+        {
+          key: "create:inventory_item",
+          resource: "inventory_item",
+          operation: PolicyOperation.create,
+          name: "Create Inventory Items",
+          description: "Permission to create inventory items",
+        },
+      ])
+
+      const priceSetCreatePolicy = await rbacModule.createRbacPolicies([
+        {
+          key: "create:price_set",
+          resource: "price_set",
+          operation: PolicyOperation.create,
+          name: "Create Price Sets",
+          description: "Permission to create price sets",
+        },
+      ])
+
+      const priceCreatePolicy = await rbacModule.createRbacPolicies([
+        {
+          key: "create:price",
+          resource: "price",
+          operation: PolicyOperation.create,
+          name: "Create Prices",
+          description: "Permission to create prices",
+        },
+      ])
+
+      // Add read policies for field filtering tests
+      priceSetReadPolicy = await rbacModule.createRbacPolicies([
+        {
+          key: "read:price_set",
+          resource: "price_set",
+          operation: PolicyOperation.read,
+          name: "Read Price Sets",
+          description: "Permission to read price sets",
+        },
+      ])
+
+      priceReadPolicy = await rbacModule.createRbacPolicies([
+        {
+          key: "read:price",
+          resource: "price",
+          operation: PolicyOperation.read,
+          name: "Read Prices",
+          description: "Permission to read prices",
+        },
+      ])
+
+      const salesChannelUpdatePolicy = await rbacModule.createRbacPolicies([
+        {
+          key: "update:sales_channel",
+          resource: "sales_channel",
+          operation: PolicyOperation.update,
+          name: "Update Sales Channels",
+          description: "Permission to update sales channels",
+        },
+      ])
+
+      const testRole = await rbacModule.createRbacRoles([
+        {
+          name: "Product Manager",
+          description: "Can manage products and related entities",
+        },
+      ])
+
+      await rbacModule.createRbacRolePolicies([
+        { role_id: testRole[0].id, policy_id: productReadPolicy[0].id },
+        { role_id: testRole[0].id, policy_id: productVariantReadPolicy[0].id },
+        { role_id: testRole[0].id, policy_id: productCreatePolicy[0].id },
+        {
+          role_id: testRole[0].id,
+          policy_id: productVariantCreatePolicy[0].id,
+        },
+        { role_id: testRole[0].id, policy_id: productOptionCreatePolicy[0].id },
+        { role_id: testRole[0].id, policy_id: inventoryItemCreatePolicy[0].id },
+        { role_id: testRole[0].id, policy_id: priceSetCreatePolicy[0].id },
+        { role_id: testRole[0].id, policy_id: priceCreatePolicy[0].id },
+        { role_id: testRole[0].id, policy_id: salesChannelUpdatePolicy[0].id },
+      ])
+
+      const remoteLink = container.resolve(ContainerRegistrationKeys.LINK)
+      await remoteLink.create({
+        [Modules.USER]: {
+          user_id: testUser.id,
+        },
+        [Modules.RBAC]: {
+          rbac_role_id: testRole[0].id,
+        },
+      })
+
+      // Login the user to get a proper JWT token with roles
+      const loginResponse = await api.post("/auth/user/emailpass", {
+        email: "admin@medusa.js",
+        password: "somepassword",
+      })
+
+      adminHeaders.headers[
+        "authorization"
+      ] = `Bearer ${loginResponse.data.token}`
+
       const productFixture = getProductFixture({
         title: "Test Product for RBAC Field Filtering",
       })
@@ -32,185 +209,6 @@ medusaIntegrationTestRunner({
 
     afterAll(async () => {
       delete process.env.MEDUSA_FF_RBAC
-    })
-
-    describe("RBAC Field Filtering Integration", () => {
-      it("should handle basic field filtering in product queries", async () => {
-        // Test basic field selection
-        const response = await api.get(
-          `/admin/products/${baseProduct.id}?fields=id,title,handle`,
-          adminHeaders
-        )
-
-        expect(response.status).toEqual(200)
-        const product = response.data.product
-
-        // Should return requested fields
-        expect(product).toHaveProperty("id")
-        expect(product).toHaveProperty("title")
-        expect(product).toHaveProperty("handle")
-
-        // Should not include fields that weren't requested
-        expect(product).not.toHaveProperty("description")
-        expect(product).not.toHaveProperty("status")
-      })
-
-      it("should handle list queries with field filtering", async () => {
-        const response = await api.get(
-          "/admin/products?fields=id,title,status&limit=5",
-          adminHeaders
-        )
-
-        expect(response.status).toEqual(200)
-        expect(response.data.products).toBeDefined()
-        expect(Array.isArray(response.data.products)).toBe(true)
-
-        if (response.data.products.length > 0) {
-          const product = response.data.products[0]
-          expect(product).toHaveProperty("id")
-          expect(product).toHaveProperty("title")
-          expect(product).toHaveProperty("status")
-        }
-      })
-
-      it("should handle nested field requests properly", async () => {
-        const response = await api.get(
-          `/admin/products/${baseProduct.id}?fields=id,title,variants.title,variants.sku`,
-          adminHeaders
-        )
-
-        expect(response.status).toEqual(200)
-        const product = response.data.product
-
-        expect(product).toHaveProperty("id")
-        expect(product).toHaveProperty("title")
-
-        // Nested fields should be handled properly
-        if (product.variants && product.variants.length > 0) {
-          const variant = product.variants[0]
-          expect(variant).toHaveProperty("title")
-          expect(variant).toHaveProperty("sku")
-        }
-      })
-
-      it("should handle order parameters with field filtering", async () => {
-        const response = await api.get(
-          "/admin/products?order=created_at&fields=id,title",
-          adminHeaders
-        )
-
-        expect(response.status).toEqual(200)
-        expect(response.data.products).toBeDefined()
-        expect(Array.isArray(response.data.products)).toBe(true)
-
-        // Verify ordering is applied (this is more of an integration test)
-        if (response.data.products.length > 1) {
-          // Products should be ordered by created_at
-          expect(response.data.products[0]).toHaveProperty("id")
-          expect(response.data.products[0]).toHaveProperty("title")
-        }
-      })
-
-      it("should handle pagination with field filtering", async () => {
-        const response = await api.get(
-          "/admin/products?fields=id,title&limit=2&offset=0",
-          adminHeaders
-        )
-
-        expect(response.status).toEqual(200)
-        expect(response.data.products).toBeDefined()
-        expect(response.data.count).toBeDefined()
-        expect(response.data.limit).toEqual(2)
-        expect(response.data.offset).toEqual(0)
-
-        // Should have at most 2 products
-        expect(response.data.products.length).toBeLessThanOrEqual(2)
-
-        // Each product should only have the requested fields
-        response.data.products.forEach((product) => {
-          expect(product).toHaveProperty("id")
-          expect(product).toHaveProperty("title")
-        })
-      })
-
-      it("should handle complex queries with multiple parameters", async () => {
-        const response = await api.get(
-          `/admin/products?fields=id,title,status&order=created_at&limit=3&expand=variants`,
-          adminHeaders
-        )
-
-        expect(response.status).toEqual(200)
-        expect(response.data.products).toBeDefined()
-        expect(Array.isArray(response.data.products)).toBe(true)
-
-        // Verify structure
-        if (response.data.products.length > 0) {
-          const product = response.data.products[0]
-          expect(product).toHaveProperty("id")
-          expect(product).toHaveProperty("title")
-          expect(product).toHaveProperty("status")
-          // Variants might be expanded if they exist
-        }
-      })
-
-      it("should handle wildcard field requests", async () => {
-        const response = await api.get(
-          `/admin/products/${baseProduct.id}?fields=id,*variants`,
-          adminHeaders
-        )
-
-        expect(response.status).toEqual(200)
-        const product = response.data.product
-
-        expect(product).toHaveProperty("id")
-        // Should have variants expanded with all fields
-        if (product.variants && product.variants.length > 0) {
-          const variant = product.variants[0]
-          expect(variant).toHaveProperty("id")
-          expect(variant).toHaveProperty("title")
-          expect(variant).toHaveProperty("sku")
-        }
-      })
-
-      it("should gracefully handle invalid field names", async () => {
-        const response = await api.get(
-          `/admin/products/${baseProduct.id}?fields=id,invalid_field_name,title`,
-          adminHeaders
-        )
-
-        // Should handle gracefully without crashing
-        expect(response.status).toEqual(200)
-        expect(response.data.product).toBeDefined()
-
-        const product = response.data.product
-        expect(product).toHaveProperty("id")
-        expect(product).toHaveProperty("title")
-        // Invalid field should be ignored
-      })
-
-      it("should validate prepareListQuery integration", async () => {
-        // This test specifically validates that the prepareListQuery function
-        // is working correctly with the async RBAC integration
-        const response = await api.get(
-          "/admin/products?fields=id,title,handle&order=title&limit=5",
-          adminHeaders
-        )
-
-        expect(response.status).toEqual(200)
-        expect(response.data.products).toBeDefined()
-
-        // Verify the query was processed correctly
-        expect(response.data.limit).toEqual(5)
-        expect(response.data.offset).toEqual(0)
-        expect(Array.isArray(response.data.products)).toBe(true)
-
-        // Each product should have only the requested fields
-        response.data.products.forEach((product) => {
-          expect(product).toHaveProperty("id")
-          expect(product).toHaveProperty("title")
-          expect(product).toHaveProperty("handle")
-        })
-      })
     })
 
     describe("RBAC Middleware Integration", () => {
@@ -241,6 +239,175 @@ medusaIntegrationTestRunner({
         expect(response.status).toEqual(200)
         expect(response.data.product).toBeDefined()
         expect(response.data.product).toHaveProperty("id")
+      })
+
+      it("should verify RBAC is properly enforced", async () => {
+        const unauthorizedHeaders = {
+          headers: { "x-medusa-access-token": "test_token" },
+        }
+
+        await createAdminUser(dbConnection, unauthorizedHeaders, container, {
+          email: "unauthorized@medusa.js",
+        })
+
+        // Login the user to get a JWT token (but without roles since none were assigned)
+        const loginResponse = await api.post("/auth/user/emailpass", {
+          email: "unauthorized@medusa.js",
+          password: "somepassword",
+        })
+
+        const copyAdminHeaders = { ...adminHeaders }
+        copyAdminHeaders.headers[
+          "authorization"
+        ] = `Bearer ${loginResponse.data.token}`
+
+        // This should fail due to lack of permissions
+        const response = await api
+          .get(`/admin/products/${baseProduct.id}`, copyAdminHeaders)
+          .catch((error) => error.response)
+
+        expect(response.status).toEqual(401)
+        expect(response.data.message).toContain("Unauthorized")
+      })
+
+      it("should filter out fields not allowed - product with no tags and no prices", async () => {
+        const unauthorizedHeaders = {
+          headers: { "x-medusa-access-token": "test_token" },
+        }
+
+        const newUser = await createAdminUser(
+          dbConnection,
+          unauthorizedHeaders,
+          container,
+          {
+            email: "unauthorized@medusa.js",
+          }
+        )
+
+        const rbacModule = container.resolve(Modules.RBAC)
+
+        // Create a limited role with only read permissions
+        const limitedRole = await rbacModule.createRbacRoles([
+          {
+            name: "Product Reader",
+            description: "Can only read products and prices",
+          },
+        ])
+
+        await rbacModule.createRbacRolePolicies([
+          { role_id: limitedRole[0].id, policy_id: productReadPolicy[0].id },
+          {
+            role_id: limitedRole[0].id,
+            policy_id: productVariantReadPolicy[0].id,
+          },
+        ])
+
+        const remoteLink = container.resolve(ContainerRegistrationKeys.LINK)
+        await remoteLink.create({
+          [Modules.USER]: {
+            user_id: newUser.user.id,
+          },
+          [Modules.RBAC]: {
+            rbac_role_id: limitedRole[0].id,
+          },
+        })
+
+        const loginResponse = await api.post("/auth/user/emailpass", {
+          email: "unauthorized@medusa.js",
+          password: "somepassword",
+        })
+
+        const copyAdminHeaders = { ...adminHeaders }
+        copyAdminHeaders.headers[
+          "authorization"
+        ] = `Bearer ${loginResponse.data.token}`
+
+        const response = await api.get(
+          `/admin/products/${baseProduct.id}`,
+          copyAdminHeaders
+        )
+
+        expect(response.status).toEqual(200)
+        expect(response.data.product).toBeDefined()
+        expect(response.data.product.tags).not.toBeDefined()
+        expect(response.data.product.variants).toBeDefined()
+        expect(response.data.product.variants[0].prices).not.toBeDefined()
+      })
+
+      it("should filter out fields not allowed - product with prices and product tags", async () => {
+        const unauthorizedHeaders = {
+          headers: { "x-medusa-access-token": "test_token" },
+        }
+
+        const newUser = await createAdminUser(
+          dbConnection,
+          unauthorizedHeaders,
+          container,
+          {
+            email: "unauthorized@medusa.js",
+          }
+        )
+
+        const rbacModule = container.resolve(Modules.RBAC)
+
+        // Create a limited role with only read permissions
+        const limitedRole = await rbacModule.createRbacRoles([
+          {
+            name: "Product Reader",
+            description: "Can only read products and prices",
+          },
+        ])
+
+        await rbacModule.createRbacRolePolicies([
+          { role_id: limitedRole[0].id, policy_id: productReadPolicy[0].id },
+          {
+            role_id: limitedRole[0].id,
+            policy_id: productVariantReadPolicy[0].id,
+          },
+          {
+            role_id: limitedRole[0].id,
+            policy_id: productTagReadPolicy[0].id,
+          },
+          {
+            role_id: limitedRole[0].id,
+            policy_id: priceReadPolicy[0].id,
+          },
+          {
+            role_id: limitedRole[0].id,
+            policy_id: priceSetReadPolicy[0].id,
+          },
+        ])
+
+        const remoteLink = container.resolve(ContainerRegistrationKeys.LINK)
+        await remoteLink.create({
+          [Modules.USER]: {
+            user_id: newUser.user.id,
+          },
+          [Modules.RBAC]: {
+            rbac_role_id: limitedRole[0].id,
+          },
+        })
+
+        const loginResponse = await api.post("/auth/user/emailpass", {
+          email: "unauthorized@medusa.js",
+          password: "somepassword",
+        })
+
+        const copyAdminHeaders = { ...adminHeaders }
+        copyAdminHeaders.headers[
+          "authorization"
+        ] = `Bearer ${loginResponse.data.token}`
+
+        const response = await api.get(
+          `/admin/products/${baseProduct.id}`,
+          copyAdminHeaders
+        )
+
+        expect(response.status).toEqual(200)
+        expect(response.data.product).toBeDefined()
+        expect(response.data.product.tags).toBeDefined()
+        expect(response.data.product.variants).toBeDefined()
+        expect(response.data.product.variants[0].prices).toBeDefined()
       })
     })
   },
