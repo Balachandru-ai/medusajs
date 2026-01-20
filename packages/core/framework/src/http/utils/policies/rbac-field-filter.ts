@@ -1,6 +1,10 @@
+import {
+  GraphQLUtils,
+  PolicyResource,
+  toSnakeCase,
+} from "@medusajs/framework/utils"
 import { MedusaModule } from "@medusajs/modules-sdk"
-import { MedusaContainer } from "@medusajs/types"
-import { GraphQLUtils, toSnakeCase } from "@medusajs/utils"
+import type { MedusaContainer } from "@medusajs/types"
 import { hasPermission } from "../../../policies/has-permission"
 
 /**
@@ -13,8 +17,30 @@ const baseGraphqlSchema = `
     scalar JSON
 `
 
-// Cache for the schema to avoid re-parsing the GraphQL
+const primitiveTypes = new Set([
+  "String",
+  "Int",
+  "Float",
+  "Boolean",
+  "ID",
+  "DateTime",
+  "JSON",
+])
+
+// Cache for the schema and entity mappings to avoid re-parsing the GraphQL
 let cachedSchema: GraphQLUtils.GraphQLSchema | null = null
+let cachedEntityMap: Map<string, EntityMapping> | null = null
+let cachedEntityAliasMap: Map<string, string> | null = null
+
+interface EntityMapping {
+  entityName: string
+  targetEntity: string
+  path: string[]
+}
+
+function isString(value: any): value is string {
+  return typeof value === "string"
+}
 
 /**
  * Makes a GraphQL schema executable
@@ -41,46 +67,46 @@ function getExecutableSchema(): GraphQLUtils.GraphQLSchema | null {
 }
 
 /**
- * Gets services entity map from joiner configs
+ * Builds entity alias map from joiner configs
+ * Maps all possible aliases (e.g., "variant", "variants") to canonical entity names (e.g., "ProductVariant")
  */
-function getServicesEntityMap(moduleJoinerConfigs: any[]): Record<string, any> {
-  const servicesEntityMap: Record<string, any> = {}
+function buildEntityAliasMap(): Map<string, string> {
+  const moduleJoinerConfigs = MedusaModule.getAllJoinerConfigs()
+  const aliasMap = new Map<string, string>()
 
   for (const config of moduleJoinerConfigs) {
-    if (!config?.serviceName || !config?.schema) {
+    if (!config.alias) {
       continue
     }
 
-    const schema = makeSchemaExecutable(config.schema)
-    if (!schema) {
-      continue
-    }
-
-    const entitiesMap = schema.getTypeMap()
-    Object.entries(entitiesMap).forEach(([entityName, entityValue]) => {
-      const entity = entityValue as any
-
-      if (
-        entity.astNode &&
-        entity.astNode.kind === GraphQLUtils.Kind.OBJECT_TYPE_DEFINITION &&
-        !entityName.startsWith("__") &&
-        !["Query", "Mutation", "Subscription"].includes(entityName)
-      ) {
-        servicesEntityMap[entityName] = entity
+    const aliases = Array.isArray(config.alias) ? config.alias : [config.alias]
+    for (const alias of aliases) {
+      const aliasNames = Array.isArray(alias.name) ? alias.name : [alias.name]
+      if (!alias.entity) {
+        continue
       }
-    })
+
+      const targetEntity = alias.entity
+      for (const aliasName of aliasNames) {
+        aliasMap.set(aliasName, targetEntity)
+      }
+    }
   }
 
-  return servicesEntityMap
+  return aliasMap
 }
 
 /**
- * Builds schema from filterable links
+ * Gets the entity alias map, building it if necessary
  */
-function buildSchemaFromFilterableLinks(
-  moduleJoinerConfigs: any[],
-  servicesEntityMap: Record<string, any>
-): string {
+function getEntityAliasMap(): Map<string, string> {
+  if (!cachedEntityAliasMap) {
+    cachedEntityAliasMap = buildEntityAliasMap()
+  }
+  return cachedEntityAliasMap
+}
+
+function getSchemaFromJoinerConfigs(moduleJoinerConfigs: any[]): string {
   const schemaParts: string[] = []
 
   for (const config of moduleJoinerConfigs) {
@@ -94,78 +120,226 @@ function buildSchemaFromFilterableLinks(
   return schemaParts.join("\n")
 }
 
+function buildCompleteEntityMap(): Map<string, EntityMapping> {
+  const moduleJoinerConfigs = MedusaModule.getAllJoinerConfigs()
+  const entityMap = new Map<string, EntityMapping>()
+
+  // base GraphQL schema
+  const schema = buildExecutableSchema()
+  if (!schema) {
+    return entityMap
+  }
+
+  const entitiesMap = schema.getTypeMap()
+
+  // Process each service configuration to build alias field mappings
+  for (const config of moduleJoinerConfigs) {
+    processServiceConfig(config, entitiesMap, entityMap)
+  }
+
+  return entityMap
+}
+
 /**
- * Builds executable schema from all joiner configs
+ * Processes a service configuration to extract field mappings
  */
-function buildExecutableSchema(): GraphQLUtils.GraphQLSchema | null {
-  try {
-    const moduleJoinerConfigs = MedusaModule.getAllJoinerConfigs()
-    const servicesEntityMap = getServicesEntityMap(moduleJoinerConfigs)
-    const filterableEntities = buildSchemaFromFilterableLinks(
-      moduleJoinerConfigs,
-      servicesEntityMap
-    )
+function processServiceConfig(
+  config: any,
+  entitiesMap: Record<string, any>,
+  entityMap: Map<string, EntityMapping>
+): void {
+  if (!config.extends) {
+    return
+  }
 
-    const augmentedSchema = baseGraphqlSchema + "\n" + filterableEntities
-    const executableSchema = makeSchemaExecutable(augmentedSchema)
+  for (const extend of config.extends) {
+    if (!entitiesMap[extend?.entity]) {
+      continue
+    }
 
-    return executableSchema || null
-  } catch (error) {
-    console.warn(
-      "Failed to build executable schema for RBAC field filtering:",
-      error
-    )
-    return null
+    const extendedFieldAlias = extend.fieldAlias || {}
+    if (Object.keys(extendedFieldAlias).length > 0) {
+      processFieldAliases(
+        extendedFieldAlias,
+        extend.entity,
+        entitiesMap,
+        entityMap
+      )
+    }
   }
 }
 
 /**
- * Gets the actual GraphQL entity name from a field path
- * e.g., "product.variants" -> "ProductVariant" (from GraphQL schema)
+ * Processes field aliases to build entity mappings
+ */
+function processFieldAliases(
+  fieldAlias: Record<string, any>,
+  baseEntity: string,
+  entitiesMap: Record<string, any>,
+  entityMap: Map<string, EntityMapping>
+): void {
+  for (const [aliasName, aliasConfig] of Object.entries(fieldAlias)) {
+    const aliasPath = isString(aliasConfig) ? aliasConfig : aliasConfig.path
+
+    if (!aliasPath) {
+      continue
+    }
+
+    // Build the complete path from base entity through alias path
+    const pathSegments = aliasPath.split(".")
+    let currentEntity = baseEntity
+    let finalEntity = baseEntity
+    let isValidPath = true
+
+    // Traverse the path to find the final entity
+    for (const segment of pathSegments) {
+      const entityMapping = findFieldInEntity(
+        currentEntity,
+        segment,
+        entitiesMap
+      )
+
+      if (!entityMapping) {
+        isValidPath = false
+        break
+      }
+
+      currentEntity = entityMapping.targetEntity
+      finalEntity = entityMapping.targetEntity
+    }
+
+    if (isValidPath) {
+      const fullPath = `${baseEntity}.${aliasName}`
+
+      entityMap.set(fullPath, {
+        entityName: aliasName,
+        targetEntity: finalEntity,
+        path: pathSegments,
+      })
+    }
+  }
+}
+
+/**
+ * Finds a field in an entity and returns its target entity
+ */
+function findFieldInEntity(
+  entityName: string,
+  fieldName: string,
+  entitiesMap: Record<string, any>
+): { targetEntity: string } | null {
+  const entity = entitiesMap[entityName] as any
+
+  if (!entity?.astNode?.fields) {
+    return null
+  }
+
+  for (const field of entity.astNode.fields) {
+    if (field.name?.value === fieldName) {
+      let type = field.type
+
+      while (type.type) {
+        type = type.type
+      }
+
+      const targetEntity = type.name?.value
+      if (targetEntity && !primitiveTypes.has(targetEntity)) {
+        return { targetEntity }
+      }
+    }
+  }
+
+  return null
+}
+
+/**
+ * Gets the complete entity map with all aliases resolved
+ */
+function getEntityMap(): Map<string, EntityMapping> {
+  if (!cachedEntityMap) {
+    cachedEntityMap = buildCompleteEntityMap()
+  }
+  return cachedEntityMap
+}
+
+/**
+ * Builds executable schema from all joiner configs
+ */
+function buildExecutableSchema(): GraphQLUtils.GraphQLSchema | null {
+  const moduleJoinerConfigs = MedusaModule.getAllJoinerConfigs()
+
+  const schemaFromJoinerConfigs =
+    getSchemaFromJoinerConfigs(moduleJoinerConfigs)
+
+  const augmentedSchema = baseGraphqlSchema + "\n" + schemaFromJoinerConfigs
+  const executableSchema = makeSchemaExecutable(augmentedSchema)
+
+  return executableSchema || null
+}
+
+/**
+ * Gets the actual GraphQL entity name from a field path using the complete entity map
+ * This now uses the pre-built entity map with all aliases resolved
+ * e.g., "product.variants.prices" -> "Price" (from resolved alias path)
  */
 function getActualEntityName(fieldPath: string): string | null {
   const schema = getExecutableSchema()
+
   if (!schema) {
     return null
   }
 
   const entitiesMap = schema.getTypeMap()
+  const entityMap = getEntityMap()
+  const entityAliasMap = getEntityAliasMap()
   const parts = fieldPath.split(".")
 
-  // Start with the base entity
-  let currentEntityName = parts[0]
-  let currentEntity = entitiesMap[currentEntityName] as any
+  const entryPoint = parts[0]!
+  const resolvedEntityName = entityAliasMap.get(entryPoint)
+
+  if (!resolvedEntityName) {
+    return null
+  }
+
+  let currentEntity = entitiesMap[resolvedEntityName] as any
+  let currentEntityName = resolvedEntityName
 
   if (!currentEntity) {
     return null
   }
 
-  // Navigate through the field path to get the final entity
   for (let i = 1; i < parts.length; i++) {
     const fieldName = parts[i]
 
-    if (!currentEntity.getFields) {
-      return null
-    }
+    const mappingKey = `${currentEntityName}.${fieldName}`
+    const entityMapping = entityMap.get(mappingKey)
 
-    const fields = currentEntity.getFields()
-    const field = fields[fieldName]
+    if (entityMapping) {
+      // field alias paths
+      const targetEntityName = entityMapping.targetEntity
+      currentEntityName = targetEntityName
+      currentEntity = entitiesMap[currentEntityName] as any
 
-    if (!field || !field.type) {
-      return null
-    }
+      if (!currentEntity) {
+        return null
+      }
+    } else {
+      const fieldResult = findFieldInEntity(
+        currentEntityName,
+        fieldName,
+        entitiesMap
+      )
 
-    // Get the base type name (unwrap non-null and list types)
-    let fieldType = field.type
-    while (fieldType.ofType) {
-      fieldType = fieldType.ofType
-    }
+      if (!fieldResult) {
+        return null
+      }
 
-    currentEntityName = fieldType.name
-    currentEntity = entitiesMap[currentEntityName] as any
+      currentEntityName = fieldResult.targetEntity
+      currentEntity = entitiesMap[currentEntityName] as any
 
-    if (!currentEntity) {
-      return null
+      if (!currentEntity) {
+        return null
+      }
     }
   }
 
@@ -174,7 +348,7 @@ function getActualEntityName(fieldPath: string): string | null {
 
 /**
  * Gets the normalized snake_case entity name for policy comparison
- * e.g., "product.variants" -> "product_variant"
+ * e.g., "product.variants" -> "product_variant", "Price" -> "price"
  */
 function getNormalizedEntityName(fieldPath: string): string | null {
   const actualEntityName = getActualEntityName(fieldPath)
@@ -187,7 +361,6 @@ function getNormalizedEntityName(fieldPath: string): string | null {
 
 /**
  * Checks policies against fields and returns not allowed fields
- * This function is designed to be called from prepareListQuery
  *
  * @param entity - The main entity (e.g., "product", "campaign")
  * @param fields - Array of field names to check
@@ -215,61 +388,42 @@ export async function getNotAllowedFieldsByPolicies({
     return notAllowedFields
   }
 
-  // Get the normalized entry point name for policy comparison
-  const normalizedentity = toSnakeCase(entity)
-
+  const pathAccessCache = new Map<string, boolean>()
   for (const field of fields) {
-    let fieldAllowed = false
+    const fullFieldPath = entity + "." + field
+    const pathSegments = fullFieldPath.split(".")
+    let fieldAllowed = true
 
-    // Handle star fields like "product.*" - these represent all fields of an entity
-    if (field.endsWith(".*")) {
-      const entityName = field.slice(0, -2) // Remove ".*" suffix
-      const normalizedEntityName = getNormalizedEntityName(entityName)
+    for (let i = 1; i <= pathSegments.length; i++) {
+      const currentPath = pathSegments.slice(0, i).join(".")
 
-      if (normalizedEntityName) {
-        // Check if user has permission to access this entity
-        const hasAccess = await hasPermission({
-          roles: userRoles,
-          actions: { resource: normalizedEntityName, operation: "read" },
-          container,
-        })
-
-        if (hasAccess) {
-          fieldAllowed = true
+      if (pathAccessCache.has(currentPath)) {
+        const cachedResult = pathAccessCache.get(currentPath)!
+        if (!cachedResult) {
+          notAllowedFields.push(field)
+          break
         }
-      } else {
-        // If we can't resolve the entity name, allow it by default
-        fieldAllowed = true
+        continue
       }
-    } else {
-      // Handle regular field paths
-      const fullFieldPath = entity + "." + field
 
-      // Get the actual entity name from the GraphQL schema
-      const normalizedEntityName = getNormalizedEntityName(fullFieldPath)
+      const entityNameResult = getNormalizedEntityName(currentPath)
 
-      if (normalizedEntityName) {
-        // Check if user has permission to access this entity
-        const hasAccess = await hasPermission({
-          roles: userRoles,
-          actions: { resource: normalizedEntityName, operation: "read" },
-          container,
-        })
+      if (!entityNameResult || !PolicyResource[entityNameResult]) {
+        pathAccessCache.set(currentPath, true)
+        continue
+      }
 
-        if (hasAccess) {
-          fieldAllowed = true
-        }
-      } else {
-        // If we can't resolve the entity name, check the entry point itself
-        const hasAccess = await hasPermission({
-          roles: userRoles,
-          actions: { resource: normalizedentity, operation: "read" },
-          container,
-        })
+      const hasAccess = await hasPermission({
+        roles: userRoles,
+        actions: { resource: entityNameResult, operation: "read" },
+        container,
+      })
 
-        if (hasAccess) {
-          fieldAllowed = true
-        }
+      pathAccessCache.set(currentPath, hasAccess)
+
+      if (!hasAccess) {
+        fieldAllowed = false
+        break
       }
     }
 

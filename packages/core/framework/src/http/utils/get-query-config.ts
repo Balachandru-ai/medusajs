@@ -173,24 +173,15 @@ export async function prepareListQuery<T extends RequestQueryFields, TEntity>(
 
   let notAllowedFields: string[] = []
 
-  // Implement RBAC field filtering if request and policies are available
-  if (req?.policies && req?.auth_context?.actor_id && entity) {
+  // RBAC field filtering if request and policies are available
+  if (req?.policies && entity) {
     const fieldsToCheck = [...allFields, ...Array.from(starFields)]
-
-    // Simple RBAC field filtering - for now, just log the fields being checked
-    // TODO: Implement actual RBAC logic when getNotAllowedFieldsByPolicies is available
-    console.debug(
-      "RBAC field filtering for entity:",
-      entity,
-      "fields:",
-      fieldsToCheck
-    )
 
     notAllowedFields = await getNotAllowedFieldsByPolicies({
       entity: entity as string,
       fields: fieldsToCheck,
       policies: req.policies,
-      userRoles: req.auth_context.actor_id ? [req.auth_context.actor_id] : [],
+      userRoles: (req.auth_context?.app_metadata?.roles as string[]) || [],
       container: req.scope,
     })
   }
@@ -199,21 +190,29 @@ export async function prepareListQuery<T extends RequestQueryFields, TEntity>(
     const fieldsToCheck = [...allFields, ...Array.from(starFields)]
 
     if (allowed.length) {
-      notAllowedFields = checkAllowedFields({
+      const customNotAllowedFields = checkAllowedFields({
         fields: fieldsToCheck,
         starFields,
         allowed,
       })
+
+      notAllowedFields = notAllowedFields.concat(customNotAllowedFields)
     } else if (restricted.length) {
-      notAllowedFields = checkRestrictedFields({
+      const customNotAllowedFields = checkRestrictedFields({
         fields: fieldsToCheck,
         restricted,
       })
+
+      notAllowedFields = notAllowedFields.concat(customNotAllowedFields)
     }
   }
 
   if (notAllowedFields.length) {
-    // TODO: implement field filtering
+    // Remove not allowed fields from request
+    notAllowedFields.forEach((field) => {
+      allFields.delete(field)
+      starFields.delete(field)
+    })
   }
 
   // TODO: maintain backward compatibility, remove in the future
