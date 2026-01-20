@@ -2,4 +2,4 @@
 "@medusajs/order": patch
 ---
 
-fix(order): include shipping/billing_address aliases in module joiner config
+fix(order): call `compensateRelationFieldsSelectionFromLoadStrategy` when `select-in` strategy is configured in order repository list methods
