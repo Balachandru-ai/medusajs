@@ -594,7 +594,11 @@ function isLocalMedusaProject() {
     ))
     inMedusaProject = !!(
       (dependencies && dependencies["@medusajs/medusa"]) ||
-      (devDependencies && devDependencies["@medusajs/medusa"])
+      (devDependencies && devDependencies["@medusajs/medusa"]) ||
+      // need it for plugin projects like draft order,
+      // which can't have @medusajs/medusa as dependency
+      (dependencies && dependencies["@medusajs/cli"]) ||
+      (devDependencies && devDependencies["@medusajs/cli"])
     )
   } catch (err) {
     // ignore
