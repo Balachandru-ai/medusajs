@@ -70,10 +70,8 @@ export const CustomerGeneralSection = ({
     })
   }
 
-  // Build actions based on permissions
   const groups = []
 
-  // Edit action group
   if (canUpdate) {
     groups.push({
       actions: [
@@ -86,7 +84,6 @@ export const CustomerGeneralSection = ({
     })
   }
 
-  // Delete action group
   if (canDelete) {
     groups.push({
       actions: [

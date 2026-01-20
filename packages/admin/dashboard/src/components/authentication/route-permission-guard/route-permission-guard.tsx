@@ -51,7 +51,7 @@ interface RoutePermissionGuardProps {
  */
 export const RoutePermissionGuard = ({
   permissions,
-  requireAll = false,
+  requireAll = false, // TODO: should be true by default ?
   redirectTo,
 }: RoutePermissionGuardProps) => {
   const location = useLocation()
@@ -75,6 +75,7 @@ export const RoutePermissionGuard = ({
   }
 
   if (!hasAccess) {
+    // TODO: maybe just show button instead of immidate redirect
     if (redirectTo) {
       return <Navigate to={redirectTo} replace />
     }

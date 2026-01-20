@@ -124,7 +124,6 @@ export const CustomerGroupSection = ({
     throw error
   }
 
-  // Only show remove command if user can update and has selections
   const commands = canUpdate
     ? [
         {
@@ -139,7 +138,6 @@ export const CustomerGroupSection = ({
     <Container className="divide-y p-0">
       <div className="flex items-center justify-between px-6 py-4">
         <Heading level="h2">{t("customerGroups.domain")}</Heading>
-        {/* Only show add button if user has update permission */}
         <PermissionGuard resource="customer" operation="update">
           <Link to={`/customers/${customer.id}/add-customer-groups`}>
             <Button variant="secondary" size="small">
@@ -208,18 +206,14 @@ const CustomerGroupRowActions = ({
     })
   }
 
-  // Build actions based on permissions
   const actions = []
 
-  // Note: Edit action navigates to customer group detail, which has its own permissions
-  // We show it here because viewing the group details requires customer_group:read
   actions.push({
     label: t("actions.edit"),
     icon: <PencilSquare />,
     to: `/customer-groups/${group.id}/edit`,
   })
 
-  // Remove action requires customer:update permission
   if (canUpdate) {
     actions.push({
       label: t("actions.remove"),
@@ -228,8 +222,7 @@ const CustomerGroupRowActions = ({
     })
   }
 
-  // Don't render ActionMenu if no actions
-  if (actions.length === 0) {
+  if (!actions.length) {
     return null
   }
 

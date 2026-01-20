@@ -1,4 +1,4 @@
-import { PencilSquare, Trash } from "@medusajs/icons"
+import { PencilSquare } from "@medusajs/icons"
 import { Button, Container, Heading } from "@medusajs/ui"
 import { keepPreviousData } from "@tanstack/react-query"
 import { createColumnHelper } from "@tanstack/react-table"
@@ -21,7 +21,6 @@ const PAGE_SIZE = 20
 
 export const CustomerListTable = () => {
   const { t } = useTranslation()
-  const { can } = usePermissions()
 
   const { searchParams, raw } = useCustomerTableQuery({ pageSize: PAGE_SIZE })
   const { customers, count, isLoading, isError, error } = useCustomers(
@@ -53,7 +52,6 @@ export const CustomerListTable = () => {
     <Container className="divide-y p-0">
       <div className="flex items-center justify-between px-6 py-4">
         <Heading>{t("customers.domain")}</Heading>
-        {/* Only show create button if user has customer:create permission */}
         <PermissionGuard resource="customer" operation="create">
           <Link to="/customers/create">
             <Button size="small" variant="secondary">
@@ -96,10 +94,8 @@ const CustomerActions = ({
   const { t } = useTranslation()
   const { can } = usePermissions()
 
-  // Build actions based on permissions
   const actions = []
 
-  // Edit action - requires customer:update permission
   if (can("customer", "update")) {
     actions.push({
       icon: <PencilSquare />,
@@ -108,20 +104,7 @@ const CustomerActions = ({
     })
   }
 
-  // Delete action - requires customer:delete permission
-  if (can("customer", "delete")) {
-    actions.push({
-      icon: <Trash />,
-      label: t("actions.delete"),
-      onClick: () => {
-        // Handle delete - this would typically open a confirmation modal
-        console.log("Delete customer:", customer.id)
-      },
-    })
-  }
-
-  // Don't render ActionMenu if no actions are available
-  if (actions.length === 0) {
+  if (!actions.length) {
     return null
   }
 
