@@ -82,6 +82,10 @@ export interface AdminTranslationSettings {
    */
   fields: string[]
   /**
+   * Fields that are available for translation but not currently active.
+   */
+  inactive_fields: string[]
+  /**
    * Whether the entity translatable status is enabled.
    */
   is_active: boolean

@@ -109,9 +109,7 @@ export interface AdminTranslationSettingsResponse {
    */
   translation_settings: Record<
     string,
-    Pick<AdminTranslationSettings, "id" | "fields" | "is_active"> & {
-      inactive_fields: string[]
-    }
+    AdminTranslationSettings
   >
 }
 

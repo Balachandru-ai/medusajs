@@ -3,7 +3,6 @@ import {
   MedusaResponse,
 } from "@medusajs/framework/http"
 import {
-  AdminTranslationSettings,
   HttpTypes,
   ITranslationModuleService,
 } from "@medusajs/framework/types"
@@ -32,10 +31,6 @@ export const GET = async (
   const translatableFields = await translationService.getTranslatableFields(
     req.validatedQuery.entity_type
   )
-  const inactiveTranslatableFields =
-    await translationService.getInactiveTranslatableFields(
-      req.validatedQuery.entity_type
-    )
 
   const settings = await translationService.listTranslationSettings(
     req.filterableFields
@@ -53,19 +48,12 @@ export const GET = async (
         }
 
         acc[entityType] = {
-          id: setting.id,
-          fields: fields,
-          inactive_fields: inactiveTranslatableFields[entityType],
-          is_active: setting.is_active,
+          ...setting,
+          fields,
         }
         return acc
       },
-      {} as Record<
-        string,
-        Pick<AdminTranslationSettings, "id" | "fields" | "is_active"> & {
-          inactive_fields: string[]
-        }
-      >
+      {}
     ),
   })
 }

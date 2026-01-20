@@ -5,6 +5,7 @@ import {
   CreateTranslationSettingsDTO,
   DAL,
   FilterableTranslationProps,
+  FilterableTranslationSettingsProps,
   FindConfig,
   ITranslationModuleService,
   LocaleDTO,
@@ -148,31 +149,6 @@ export default class TranslationModuleService
         : []
       return acc
     }, {} as Record<string, string[]>)
-  }
-
-  @InjectManager()
-  async getInactiveTranslatableFields(
-    entityType?: string,
-    @MedusaContext() sharedContext: Context = {}
-  ): Promise<Record<string, string[]>> {
-    const translatableFields = await this.getTranslatableFields(
-      entityType,
-      sharedContext
-    )
-    return Object.entries(translatableFields).reduce(
-      (acc, [entityType, fields]) => {
-        const entity = DmlEntity.getTranslatableEntities().find(
-          (entity) => toSnakeCase(entity.entity) === entityType
-        )
-        if (!entity) {
-          return acc
-        }
-
-        acc[entityType] = arrayDifference(entity.fields, fields)
-        return acc
-      },
-      {} as Record<string, string[]>
-    )
   }
 
   static prepareFilters(
@@ -491,6 +467,93 @@ export default class TranslationModuleService
 
     // @ts-expect-error TS can't match union type to overloads
     return await super.updateTranslationSettings(data, sharedContext)
+  }
+
+  @InjectManager()
+  // @ts-expect-error
+  async retrieveTranslationSettings(
+    id: string,
+    config: FindConfig<TranslationTypes.TranslationSettingsDTO> = {},
+    @MedusaContext() sharedContext: Context = {}
+  ): Promise<TranslationTypes.TranslationSettingsDTO> {
+    const setting = await this.settingsService_.retrieve(
+      id,
+      config,
+      sharedContext
+    )
+
+    const serialized =
+      await this.baseRepository_.serialize<TranslationTypes.TranslationSettingsDTO>(
+        setting
+      )  
+
+    return this.addInactiveFieldsToSettings_([serialized])[0]
+  }
+
+  @InjectManager()
+  // @ts-expect-error
+  async listTranslationSettings(
+    filters: FilterableTranslationSettingsProps = {},
+    config: FindConfig<TranslationTypes.TranslationSettingsDTO> = {},
+    @MedusaContext() sharedContext: Context = {}
+  ): Promise<TranslationTypes.TranslationSettingsDTO[]> {
+    const settings = await this.settingsService_.list(
+      filters,
+      config,
+      sharedContext
+    )
+
+    const serialized = await this.baseRepository_.serialize<
+      TranslationTypes.TranslationSettingsDTO[]
+    >(settings)
+
+    return this.addInactiveFieldsToSettings_(serialized)
+  }
+
+  @InjectManager()
+  // @ts-expect-error
+  async listAndCountTranslationSettings(
+    filters: FilterableTranslationSettingsProps = {},
+    config: FindConfig<TranslationTypes.TranslationSettingsDTO> = {},
+    @MedusaContext() sharedContext: Context = {}
+  ): Promise<[TranslationTypes.TranslationSettingsDTO[], number]> {
+    const [settings, count] = await this.settingsService_.listAndCount(
+      filters,
+      config,
+      sharedContext
+    )
+
+    const serialized = await this.baseRepository_.serialize<
+      TranslationTypes.TranslationSettingsDTO[]
+    >(settings)
+
+    return [this.addInactiveFieldsToSettings_(serialized), count]
+  }
+
+  /**
+   * Adds the inactive_fields virtual property to translation settings.
+   * This computes the difference between all translatable fields defined
+   * in the entity model and the active fields in the settings.
+   */
+  protected addInactiveFieldsToSettings_(
+    settings: TranslationTypes.TranslationSettingsDTO[]
+  ): TranslationTypes.TranslationSettingsDTO[] {
+    const translatableEntities = DmlEntity.getTranslatableEntities()
+    const translatableEntitiesMap = new Map(
+      translatableEntities.map((entity) => [toSnakeCase(entity.entity), entity])
+    )
+
+    return settings.map((setting) => {
+      const entity = translatableEntitiesMap.get(setting.entity_type)
+      const inactiveFields = entity
+        ? arrayDifference(entity.fields, setting.fields as unknown as string[])
+        : []
+
+      return {
+        ...setting,
+        inactive_fields: inactiveFields,
+      }
+    })
   }
 
   @InjectManager()
