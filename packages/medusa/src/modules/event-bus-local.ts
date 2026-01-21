@@ -8,10 +8,10 @@
  */
 import LocalEventBusModule from "@medusajs/event-bus-local"
 
-console.warn(
-  "[DEPRECATION WARNING] @medusajs/medusa/event-bus-local is deprecated. " +
-    "Use @medusajs/medusa/events instead. This module will be removed in a future version."
-)
+// console.warn(
+//   "[DEPRECATION WARNING] @medusajs/medusa/event-bus-local is deprecated. " +
+//     "Use @medusajs/medusa/events instead. This module will be removed in a future version."
+// )
 
 export * from "@medusajs/event-bus-local"
 export default LocalEventBusModule

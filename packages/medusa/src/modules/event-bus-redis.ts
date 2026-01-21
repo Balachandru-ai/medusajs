@@ -28,11 +28,11 @@
  */
 import RedisEventBusModule from "@medusajs/event-bus-redis"
 
-console.warn(
-  "[DEPRECATION WARNING] @medusajs/medusa/event-bus-redis is deprecated. " +
-    "Use @medusajs/medusa/events with @medusajs/events-redis provider instead. " +
-    "This module will be removed in a future version."
-)
+// console.warn(
+//   "[DEPRECATION WARNING] @medusajs/medusa/event-bus-redis is deprecated. " +
+//     "Use @medusajs/medusa/events with @medusajs/events-redis provider instead. " +
+//     "This module will be removed in a future version."
+// )
 
 export * from "@medusajs/event-bus-redis"
 
