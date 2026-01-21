@@ -1,4 +1,5 @@
 import {
+  DistributedNotifyOptions,
   DistributedTransaction,
   DistributedTransactionEvents,
   DistributedTransactionType,
@@ -66,23 +67,11 @@ type IdempotencyKeyParts = {
   action: "invoke" | "compensate"
 }
 
-type NotifyOptions = {
-  eventType: keyof DistributedTransactionEvents
-  isFlowAsync: boolean
-  workflowId: string
-  transactionId?: string
-  step?: TransactionStep
-  response?: unknown
-  result?: unknown
-  errors?: unknown[]
-  state?: TransactionState
-}
-
 type WorkflowId = string
 type TransactionId = string
 
 type SubscriberHandler = {
-  (input: NotifyOptions): void
+  (input: DistributedNotifyOptions): void
 } & {
   _id?: string
 }
@@ -660,6 +649,14 @@ export class WorkflowOrchestratorService
     const subscribers =
       WorkflowOrchestratorService.subscribers.get(workflowId) ?? new Map()
 
+    // Subscribe to distributed notifications when first subscriber is added
+    if (!WorkflowOrchestratorService.subscribers.has(workflowId)) {
+      this.storage_.notificationSubscriber?.subscribe(
+        workflowId,
+        this.handleDistributedNotification.bind(this)
+      )
+    }
+
     const handlerIndex = (handlers) => {
       return handlers.findIndex(
         (s) => s === subscriber || s._id === subscriberId
@@ -736,15 +733,42 @@ export class WorkflowOrchestratorService
 
     if (subscribers.size === 0) {
       WorkflowOrchestratorService.subscribers.delete(workflowId)
+      // Unsubscribe from distributed notifications when last subscriber is removed
+      this.storage_.notificationSubscriber?.unsubscribe(workflowId)
     }
   }
 
-  private async notify(options: NotifyOptions) {
-    // Process subscribers asynchronously to avoid blocking workflow execution
+  private handleDistributedNotification(
+    _workflowId: string,
+    data: DistributedNotifyOptions
+  ) {
+    // Process notifications from other instances
+    // Only process subscriber notifications, don't re-publish
+    setImmediate(() => this.processSubscriberNotifications(data))
+  }
+
+  private async notify(options: DistributedNotifyOptions) {
+    const { workflowId, isFlowAsync } = options
+
+    // Publish to other instances for async flows
+    if (isFlowAsync && this.storage_.notificationSubscriber) {
+      setImmediate(async () => {
+        try {
+          await this.storage_.notificationSubscriber!.publish(
+            workflowId,
+            options
+          )
+        } catch (error) {
+          this.#logger.error(`Failed to publish notification: ${error}`)
+        }
+      })
+    }
+
+    // Process local subscribers asynchronously to avoid blocking workflow execution
     setImmediate(() => this.processSubscriberNotifications(options))
   }
 
-  private async processSubscriberNotifications(options: NotifyOptions) {
+  private async processSubscriberNotifications(options: DistributedNotifyOptions) {
     const { workflowId, transactionId, eventType } = options
     const subscribers: TransactionSubscribers =
       WorkflowOrchestratorService.subscribers.get(workflowId) ?? new Map()

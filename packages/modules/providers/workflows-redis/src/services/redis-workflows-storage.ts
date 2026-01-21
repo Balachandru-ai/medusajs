@@ -1,5 +1,8 @@
 import { raw } from "@medusajs/framework/mikro-orm/core"
 import {
+  DistributedNotificationHandler,
+  DistributedNotificationSubscriber,
+  DistributedNotifyOptions,
   DistributedStorageHooks,
   DistributedTransactionType,
   IDistributedSchedulerStorage,
@@ -69,6 +72,7 @@ export class RedisWorkflowsStorage
   static identifier = "redis-workflows-storage"
 
   __hooks: DistributedStorageHooks
+  notificationSubscriber: DistributedNotificationSubscriber
 
   private workflowExecutionService_: ModulesSdkTypes.IMedusaInternalService<any>
   private logger_: Logger
@@ -77,6 +81,10 @@ export class RedisWorkflowsStorage
 
   private redisClient: Redis
   private redisWorkerConnection: Redis
+  private redisPublisher_: Redis
+  private redisSubscriber_: Redis
+  private notificationHandlers_: Map<string, DistributedNotificationHandler> =
+    new Map()
   private queueName: string
   private jobQueueName: string
   private queue: Queue
@@ -100,6 +108,8 @@ export class RedisWorkflowsStorage
   constructor({
     redisConnection,
     redisWorkerConnection,
+    redisPublisher,
+    redisSubscriber,
     redisQueueName,
     redisJobQueueName,
     redisMainQueueOptions,
@@ -114,6 +124,8 @@ export class RedisWorkflowsStorage
   }: {
     redisConnection: Redis
     redisWorkerConnection: Redis
+    redisPublisher: Redis
+    redisSubscriber: Redis
     redisQueueName: string
     redisJobQueueName: string
     redisMainQueueOptions: Omit<QueueOptions, "connection">
@@ -129,10 +141,14 @@ export class RedisWorkflowsStorage
     this.logger_ = logger
     this.redisClient = redisConnection
     this.redisWorkerConnection = redisWorkerConnection
+    this.redisPublisher_ = redisPublisher
+    this.redisSubscriber_ = redisSubscriber
     this.cleanerQueueName = "workflows-cleaner"
     this.queueName = redisQueueName
     this.jobQueueName = redisJobQueueName
     this.disconnectHandler_ = workflowsProviderDisconnectHandler
+
+    this.setupNotificationSubscriber()
 
     // Store per-queue options
     this.mainQueueOptions_ = redisMainQueueOptions ?? {}
@@ -167,6 +183,67 @@ export class RedisWorkflowsStorage
         this.onApplicationPrepareShutdown.bind(this),
       onApplicationShutdown: this.onApplicationShutdown.bind(this),
     }
+  }
+
+  private setupNotificationSubscriber() {
+    // Set up Redis message handler
+    this.redisSubscriber_.on("message", async (channel, message) => {
+      const workflowId = channel.replace("orchestrator:", "")
+      const handler = this.notificationHandlers_.get(workflowId)
+      if (!handler) {
+        return
+      }
+
+      try {
+        const data = JSON.parse(message)
+        handler(workflowId, data)
+      } catch (error) {
+        this.logger_.error(
+          `[Workflows-redis] Failed to process notification message: ${error}`
+        )
+      }
+    })
+
+    // Create the notification subscriber interface
+    this.notificationSubscriber = {
+      publish: async (
+        workflowId: string,
+        data: DistributedNotifyOptions
+      ): Promise<void> => {
+        try {
+          const channel = this.getChannelName(workflowId)
+          const message = JSON.stringify(data)
+          await this.redisPublisher_.publish(channel, message)
+        } catch (error) {
+          this.logger_.error(
+            `[Workflows-redis] Failed to publish notification: ${error}`
+          )
+        }
+      },
+
+      subscribe: (
+        workflowId: string,
+        handler: DistributedNotificationHandler
+      ): void => {
+        if (!this.notificationHandlers_.has(workflowId)) {
+          void this.redisSubscriber_.subscribe(this.getChannelName(workflowId))
+        }
+        this.notificationHandlers_.set(workflowId, handler)
+      },
+
+      unsubscribe: (workflowId: string): void => {
+        this.notificationHandlers_.delete(workflowId)
+        if (!this.notificationHandlers_.has(workflowId)) {
+          void this.redisSubscriber_.unsubscribe(
+            this.getChannelName(workflowId)
+          )
+        }
+      },
+    }
+  }
+
+  private getChannelName(workflowId: string): string {
+    return `orchestrator:${workflowId}`
   }
 
   private async onApplicationPrepareShutdown() {
@@ -283,7 +360,7 @@ export class RedisWorkflowsStorage
           removeOnFail: true,
         }
       )
-      this.logger_.info(
+      this.logger_.debug(
         "[Workflows-redis] onApplicationStart - cleaner job added"
       )
     }

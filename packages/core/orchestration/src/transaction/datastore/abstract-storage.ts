@@ -2,17 +2,45 @@ import {
   IWorkflowModuleOrchestratorService,
   ModulesSdkTypes,
 } from "@medusajs/types"
+import { TransactionState } from "@medusajs/utils"
 import {
   DistributedTransactionType,
   TransactionCheckpoint,
 } from "../distributed-transaction"
 import { TransactionStep } from "../transaction-step"
-import { SchedulerOptions, TransactionOptions } from "../types"
+import {
+  DistributedTransactionEvents,
+  SchedulerOptions,
+  TransactionOptions,
+} from "../types"
 
 export type DistributedStorageHooks = {
   onApplicationStart?: () => Promise<void>
   onApplicationPrepareShutdown?: () => Promise<void>
   onApplicationShutdown?: () => Promise<void>
+}
+
+export type DistributedNotifyOptions = {
+  eventType: keyof DistributedTransactionEvents
+  isFlowAsync: boolean
+  workflowId: string
+  transactionId?: string
+  step?: TransactionStep
+  response?: unknown
+  result?: unknown
+  errors?: unknown[]
+  state?: TransactionState
+}
+
+export type DistributedNotificationHandler = (
+  workflowId: string,
+  data: DistributedNotifyOptions
+) => void
+
+export type DistributedNotificationSubscriber = {
+  publish(workflowId: string, data: DistributedNotifyOptions): Promise<void>
+  subscribe(workflowId: string, handler: DistributedNotificationHandler): void
+  unsubscribe(workflowId: string): void
 }
 
 export interface IDistributedSchedulerStorage {
@@ -30,6 +58,7 @@ export interface IDistributedSchedulerStorage {
 
 export interface IDistributedTransactionStorage {
   __hooks?: DistributedStorageHooks
+  notificationSubscriber?: DistributedNotificationSubscriber
 
   setWorkflowOrchestratorService?(
     workflowOrchestratorService: IWorkflowModuleOrchestratorService
