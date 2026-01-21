@@ -3,7 +3,7 @@ import {
   InternalModuleDeclaration,
   LoaderOptions,
 } from "@medusajs/framework/types"
-import Redis from "ioredis"
+import Redis, { RedisOptions } from "ioredis"
 import { RedisWorkflowsStorage } from "../services"
 import { WorkflowsRedisOptions } from "../types"
 
@@ -145,15 +145,16 @@ export default async (
   })
 }
 
-async function getConnection(url, redisOptions) {
+async function getConnection(
+  url: string,
+  redisOptions?: RedisOptions
+): Promise<Redis> {
   const connection = new Redis(url, {
     lazyConnect: true,
     ...(redisOptions ?? {}),
   })
 
-  await new Promise(async (resolve) => {
-    await connection.connect(resolve)
-  })
+  await connection.connect()
 
   return connection
 }

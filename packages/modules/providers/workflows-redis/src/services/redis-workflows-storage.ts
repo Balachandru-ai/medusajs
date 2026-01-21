@@ -38,6 +38,7 @@ import {
   WorkerOptions,
 } from "bullmq"
 import Redis from "ioredis"
+import { ulid } from "ulid"
 
 enum JobType {
   SCHEDULE = "schedule",
@@ -209,7 +210,13 @@ export class RedisWorkflowsStorage
         handler: DistributedNotificationHandler
       ): void => {
         if (!this.notificationHandlers_.has(workflowId)) {
-          void this.redisSubscriber_.subscribe(this.getChannelName(workflowId))
+          this.redisSubscriber_
+            .subscribe(this.getChannelName(workflowId))
+            .catch((error) => {
+              this.logger_.error(
+                `[Workflows-redis] Failed to subscribe to workflow channel ${workflowId}: ${error}`
+              )
+            })
         }
         this.notificationHandlers_.set(workflowId, handler)
       },
@@ -217,9 +224,13 @@ export class RedisWorkflowsStorage
       unsubscribe: (workflowId: string): void => {
         this.notificationHandlers_.delete(workflowId)
         if (!this.notificationHandlers_.has(workflowId)) {
-          void this.redisSubscriber_.unsubscribe(
-            this.getChannelName(workflowId)
-          )
+          this.redisSubscriber_
+            .unsubscribe(this.getChannelName(workflowId))
+            .catch((error) => {
+              this.logger_.error(
+                `[Workflows-redis] Failed to unsubscribe from workflow channel ${workflowId}: ${error}`
+              )
+            })
         }
       },
     }
@@ -548,15 +559,18 @@ export class RedisWorkflowsStorage
      */
     const { retentionTime } = options ?? {}
 
-    let lockAcquired = false
+    let lockValue: string | null = null
 
     let storedData: TransactionCheckpoint | undefined
 
     if (data.flow._v) {
-      lockAcquired = await this.#acquireLock(key)
+      lockValue = await this.#acquireLock(key)
 
-      if (!lockAcquired) {
-        throw new Error("Lock not acquired")
+      if (!lockValue) {
+        throw new MedusaError(
+          MedusaError.Types.CONFLICT,
+          "Transaction storage lock could not be acquired"
+        )
       }
 
       storedData = await this.get(key, {
@@ -648,8 +662,8 @@ export class RedisWorkflowsStorage
 
       return data as TransactionCheckpoint
     } finally {
-      if (lockAcquired) {
-        await this.#releaseLock(key)
+      if (lockValue) {
+        await this.#releaseLock(key, lockValue)
       }
     }
   }
@@ -795,7 +809,8 @@ export class RedisWorkflowsStorage
       typeof jobDefinition === "string" ? jobDefinition : jobDefinition.jobId
 
     if ("cron" in schedulerOptions && "interval" in schedulerOptions) {
-      throw new Error(
+      throw new MedusaError(
+        MedusaError.Types.INVALID_DATA,
         `Unable to register a job with both scheduler options interval and cron.`
       )
     }
@@ -854,22 +869,46 @@ export class RedisWorkflowsStorage
     return `${key}:lock`
   }
 
-  async #acquireLock(key: string, ttlSeconds: number = 2): Promise<boolean> {
+  /**
+   * Acquire a distributed lock with ownership tracking.
+   *
+   * @param key - The key to lock
+   * @param ttlSeconds - Lock TTL in seconds (default: 5)
+   * @returns The unique lock value if acquired, null otherwise
+   */
+  async #acquireLock(
+    key: string,
+    ttlSeconds: number = 5
+  ): Promise<string | null> {
     const lockKey = this.#getLockKey(key)
+    const lockValue = ulid()
 
     const result = await this.redisClient.set(
       lockKey,
-      1,
+      lockValue,
       "EX",
       ttlSeconds,
       "NX"
     )
-    return result === "OK"
+    return result === "OK" ? lockValue : null
   }
 
-  async #releaseLock(key: string): Promise<void> {
+  /**
+   * Release a distributed lock only if we own it.
+   * Uses a Lua script for atomic check-and-delete.
+   *
+   * @param key - The key to unlock
+   * @param lockValue - The lock value that was returned from acquireLock
+   */
+  async #releaseLock(key: string, lockValue: string): Promise<void> {
     const lockKey = this.#getLockKey(key)
-    await this.redisClient.del(lockKey)
+    // Lua script: only delete if the lock value matches (we own it)
+    await this.redisClient.eval(
+      'if redis.call("get", KEYS[1]) == ARGV[1] then return redis.call("del", KEYS[1]) else return 0 end',
+      1,
+      lockKey,
+      lockValue
+    )
   }
 
   async clearExpiredExecutions() {

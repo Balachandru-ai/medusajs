@@ -25,7 +25,10 @@ import type {
 } from "@medusajs/framework/workflows-sdk"
 import { WorkflowExecution } from "@models"
 import { WorkflowOrchestratorCancelOptions } from "@types"
-import { WorkflowOrchestratorService } from "./workflow-orchestrator"
+import {
+  WorkflowOrchestratorRunOptions,
+  WorkflowOrchestratorService,
+} from "./workflow-orchestrator"
 
 type InjectedDependencies = {
   manager: SqlEntityManager
@@ -58,8 +61,8 @@ export class WorkflowsModuleService<
     }: InjectedDependencies,
     protected readonly moduleDeclaration: InternalModuleDeclaration
   ) {
-    // @ts-ignore
-    super(...arguments)
+    // @ts-expect-error - MedusaService expects the injected dependencies as first argument
+    super(arguments[0])
 
     this.manager_ = manager
     this.baseRepository_ = baseRepository
@@ -151,7 +154,7 @@ export class WorkflowsModuleService<
     > = {},
     @MedusaContext() context: Context = {}
   ) {
-    const options_ = JSON.parse(JSON.stringify(options ?? {}))
+    const { context: optionsContext, ...restOptions } = options ?? {}
 
     const {
       manager,
@@ -164,13 +167,13 @@ export class WorkflowsModuleService<
 
     let localPreventReleaseEvents = false
 
-    if (isDefined(options_.context?.preventReleaseEvents)) {
-      localPreventReleaseEvents = options_.context!.preventReleaseEvents!
+    if (isDefined(optionsContext?.preventReleaseEvents)) {
+      localPreventReleaseEvents = optionsContext!.preventReleaseEvents!
     } else {
       if (
         isDefined(context.eventGroupId) &&
-        isDefined(options_.context?.eventGroupId) &&
-        context.eventGroupId === options_.context?.eventGroupId
+        isDefined(optionsContext?.eventGroupId) &&
+        context.eventGroupId === optionsContext?.eventGroupId
       ) {
         localPreventReleaseEvents = true
       }
@@ -178,15 +181,15 @@ export class WorkflowsModuleService<
 
     let eventGroupId
 
-    if (options_.context?.eventGroupId) {
-      eventGroupId = options_.context.eventGroupId
+    if (optionsContext?.eventGroupId) {
+      eventGroupId = optionsContext.eventGroupId
     } else if (localPreventReleaseEvents && context.eventGroupId) {
       eventGroupId = context.eventGroupId
     }
 
-    options_.context = {
+    const mergedContext = {
       ...(restContext ?? {}),
-      ...(options_.context ?? {}),
+      ...(optionsContext ?? {}),
       eventGroupId,
       preventReleaseEvents: localPreventReleaseEvents,
     }
@@ -195,9 +198,12 @@ export class WorkflowsModuleService<
       TWorkflow extends ReturnWorkflow<any, any, any>
         ? UnwrapWorkflowInputDataType<TWorkflow>
         : unknown
-    >(workflowIdOrWorkflow, options_)
+    >(workflowIdOrWorkflow, {
+      ...restOptions,
+      context: mergedContext,
+    } as WorkflowOrchestratorRunOptions<any>)
 
-    return ret as any
+    return ret
   }
 
   @InjectSharedContext()

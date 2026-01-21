@@ -189,9 +189,7 @@ export class LocalWorkflowsStorage
           await res
         }
       } catch (error) {
-        this.logger_?.error?.(
-          `Error in managed timer callback: ${error}`
-        )
+        this.logger_?.error?.(`Error in managed timer callback: ${error}`)
       }
     }, delay)
 
@@ -275,7 +273,10 @@ export class LocalWorkflowsStorage
     options?: TransactionOptions
   ): Promise<TransactionCheckpoint> {
     if (this.isLocked.has(key)) {
-      throw new Error("Transaction storage is locked")
+      throw new MedusaError(
+        MedusaError.Types.CONFLICT,
+        "Transaction storage is locked"
+      )
     }
 
     this.isLocked.set(key, true)

@@ -313,11 +313,17 @@ export class WorkflowOrchestratorService
       : workflowIdOrWorkflow.getName()
 
     if (!workflowId) {
-      throw new Error("Workflow ID is required")
+      throw new MedusaError(
+        MedusaError.Types.INVALID_DATA,
+        "Workflow ID is required"
+      )
     }
 
     if (!transactionId) {
-      throw new Error("Transaction ID is required")
+      throw new MedusaError(
+        MedusaError.Types.INVALID_DATA,
+        "Transaction ID is required"
+      )
     }
 
     const exportedWorkflow = MedusaWorkflow.getWorkflow(workflowId)
@@ -343,7 +349,10 @@ export class WorkflowOrchestratorService
           },
         }
       }
-      throw new Error("Transaction not found")
+      throw new MedusaError(
+        MedusaError.Types.NOT_FOUND,
+        `Transaction with id "${transactionId}" not found for workflow "${workflowId}".`
+      )
     }
 
     const events: FlowRunOptions["events"] = this.buildWorkflowEvents({
@@ -409,18 +418,27 @@ export class WorkflowOrchestratorService
     context?: Context
   ): Promise<DistributedTransactionType> {
     if (!workflowId) {
-      throw new Error("Workflow ID is required")
+      throw new MedusaError(
+        MedusaError.Types.INVALID_DATA,
+        "Workflow ID is required"
+      )
     }
 
     if (!transactionId) {
-      throw new Error("TransactionId ID is required")
+      throw new MedusaError(
+        MedusaError.Types.INVALID_DATA,
+        "Transaction ID is required"
+      )
     }
 
     context ??= {}
 
     const exportedWorkflow: any = MedusaWorkflow.getWorkflow(workflowId)
     if (!exportedWorkflow) {
-      throw new Error(`Workflow with id "${workflowId}" not found.`)
+      throw new MedusaError(
+        MedusaError.Types.NOT_FOUND,
+        `Workflow with id "${workflowId}" not found.`
+      )
     }
 
     const flow = exportedWorkflow()
@@ -452,7 +470,10 @@ export class WorkflowOrchestratorService
 
     const exportedWorkflow: any = MedusaWorkflow.getWorkflow(workflowId)
     if (!exportedWorkflow) {
-      throw new Error(`Workflow with id "${workflowId}" not found.`)
+      throw new MedusaError(
+        MedusaError.Types.NOT_FOUND,
+        `Workflow with id "${workflowId}" not found.`
+      )
     }
 
     const events = this.buildWorkflowEvents({
@@ -521,7 +542,10 @@ export class WorkflowOrchestratorService
 
     const exportedWorkflow: any = MedusaWorkflow.getWorkflow(workflowId)
     if (!exportedWorkflow) {
-      throw new Error(`Workflow with id "${workflowId}" not found.`)
+      throw new MedusaError(
+        MedusaError.Types.NOT_FOUND,
+        `Workflow with id "${workflowId}" not found.`
+      )
     }
 
     const events = this.buildWorkflowEvents({
@@ -593,7 +617,10 @@ export class WorkflowOrchestratorService
 
     const exportedWorkflow: any = MedusaWorkflow.getWorkflow(workflowId)
     if (!exportedWorkflow) {
-      throw new Error(`Workflow with id "${workflowId}" not found.`)
+      throw new MedusaError(
+        MedusaError.Types.NOT_FOUND,
+        `Workflow with id "${workflowId}" not found.`
+      )
     }
 
     const events = this.buildWorkflowEvents({
@@ -640,6 +667,23 @@ export class WorkflowOrchestratorService
     return ret
   }
 
+  /**
+   * Subscribe to workflow execution events.
+   *
+   * **Important: Memory Leak Prevention**
+   *
+   * - Transaction-scoped subscribers (with `transactionId`) are automatically cleaned up
+   *   when the workflow finishes.
+   * - Workflow-scoped subscribers (without `transactionId`) are NOT automatically cleaned up.
+   *   You must explicitly call `unsubscribe()` when they are no longer needed to prevent
+   *   memory leaks in long-running applications.
+   *
+   * @param options - Subscription options
+   * @param options.workflowId - The workflow ID to subscribe to
+   * @param options.transactionId - Optional transaction ID to scope the subscription
+   * @param options.subscriber - The callback function to invoke on events
+   * @param options.subscriberId - Optional unique ID for the subscriber (for unsubscribing)
+   */
   subscribe({
     workflowId,
     transactionId,
@@ -761,13 +805,10 @@ export class WorkflowOrchestratorService
     if (isFlowAsync && this.storage_.notificationSubscriber) {
       setImmediate(async () => {
         try {
-          await this.storage_.notificationSubscriber!.publish(
-            workflowId,
-            {
-              ...options,
-              instanceId: this.instanceId,
-            } as DistributedNotifyOptions
-          )
+          await this.storage_.notificationSubscriber!.publish(workflowId, {
+            ...options,
+            instanceId: this.instanceId,
+          } as DistributedNotifyOptions)
         } catch (error) {
           this.#logger.error(`Failed to publish notification: ${error}`)
         }
@@ -778,7 +819,9 @@ export class WorkflowOrchestratorService
     setImmediate(() => this.processSubscriberNotifications(options))
   }
 
-  private async processSubscriberNotifications(options: DistributedNotifyOptions) {
+  private async processSubscriberNotifications(
+    options: DistributedNotifyOptions
+  ) {
     const { workflowId, transactionId, eventType } = options
     const subscribers: TransactionSubscribers =
       WorkflowOrchestratorService.subscribers.get(workflowId) ?? new Map()
@@ -963,7 +1006,11 @@ export class WorkflowOrchestratorService
           .getErrors(TransactionHandlerType.COMPENSATE)
           .filter((err) => err.action === stepName)
 
-        customEventHandlers?.onCompensateStepFailure?.({ step, transaction, errors })
+        customEventHandlers?.onCompensateStepFailure?.({
+          step,
+          transaction,
+          errors,
+        })
 
         await notify({
           eventType: "onCompensateStepFailure",
