@@ -1,4 +1,8 @@
-import { ContainerRegistrationKeys, Modules } from "@medusajs/framework/utils"
+import {
+  ContainerRegistrationKeys,
+  deduplicate,
+  Modules,
+} from "@medusajs/framework/utils"
 import { createStep, StepResponse } from "@medusajs/framework/workflows-sdk"
 import { FilterableProductProps } from "@medusajs/types"
 import { normalizeForExport } from "../helpers/normalize-for-export"
@@ -28,14 +32,13 @@ export const exportProductsStep = createStep(
     const query = container.resolve(ContainerRegistrationKeys.QUERY)
     const fileModule = container.resolve(Modules.FILE)
     const regionModule = container.resolve(Modules.REGION)
-    const logger = container.resolve(ContainerRegistrationKeys.LOGGER)
 
     const regions = await regionModule.listRegions(
       {},
       { select: ["id", "name", "currency_code"] }
     )
 
-    const filename = `${Date.now()}-products-export.csv`
+    const filename = `${Date.now()}-product-exports.csv`
     const { writeStream, promise, fileKey } = await fileModule.getUploadStream({
       filename,
       mimeType: "text/csv",
@@ -48,15 +51,12 @@ export const exportProductsStep = createStep(
     let page = 0
     let hasHeader = false
 
+    const fields = deduplicate(["id", "handle", ...input.select])
+
     while (true) {
-      logger.info(
-        `Exporting products page ${page} of ${pageSize} memory usage: ${
-          process.memoryUsage().heapUsed / 1024 / 1024
-        } MB`
-      )
       const { data: products } = await query.graph({
         entity: "product",
-        fields: input.select,
+        fields,
         filters: input.filter,
         pagination: {
           skip: page * pageSize,
@@ -68,23 +68,8 @@ export const exportProductsStep = createStep(
         break
       }
 
-      logger.info(
-        `Before normalization memory usage: ${
-          process.memoryUsage().heapUsed / 1024 / 1024
-        } MB`
-      )
       const normalizedProducts = normalizeForExport(products, { regions })
-      logger.info(
-        `After normalization memory usage: ${
-          process.memoryUsage().heapUsed / 1024 / 1024
-        } MB`
-      )
 
-      logger.info(
-        `Before csv conversion memory usage: ${
-          process.memoryUsage().heapUsed / 1024 / 1024
-        } MB`
-      )
       const batchCsv = json2csv(normalizedProducts, {
         prependHeader: !hasHeader,
         arrayIndexesAsKeys: true,
@@ -94,11 +79,6 @@ export const exportProductsStep = createStep(
         preventCsvInjection: true,
         emptyFieldValue: "",
       })
-      logger.info(
-        `After csv conversion memory usage: ${
-          process.memoryUsage().heapUsed / 1024 / 1024
-        } MB`
-      )
 
       const ok = writeStream.write((hasHeader ? "\n" : "") + batchCsv)
       if (!ok) {
@@ -113,12 +93,6 @@ export const exportProductsStep = createStep(
 
       page += 1
     }
-
-    logger.info(
-      `Before write stream end memory usage: ${
-        process.memoryUsage().heapUsed / 1024 / 1024
-      } MB`
-    )
 
     writeStream.end()
 
