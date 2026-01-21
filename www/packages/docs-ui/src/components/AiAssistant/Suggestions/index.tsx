@@ -40,9 +40,14 @@ export const AiAssistantSuggestions = (props: AiAssistantSuggestionsProps) => {
   return (
     <div {...props}>
       <span className="text-medusa-fg-muted text-compact-small px-docs_0.5 py-docs_0.75 block">
-        Ask any questions about Medusa. Get help with your development.
-        <br />
-        You can also use the{" "}
+        For assistance in your development, use{" "}
+        <Link
+          href={`${baseUrl}/learn/introduction/build-with-llms-ai#claude-code-plugins`}
+          variant="content"
+        >
+          Claude Code Plugins
+        </Link>{" "}
+        or{" "}
         <Link
           href={`${baseUrl}/learn/introduction/build-with-llms-ai#mcp-remote-server`}
           variant="content"
