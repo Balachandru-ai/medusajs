@@ -143,10 +143,36 @@ export default class TranslationModuleService
       sharedContext
     )
     return settings.reduce((acc, setting) => {
-      acc[toSnakeCase(setting.entity_type)] =
-        setting.fields as unknown as string[]
+      acc[setting.entity_type] = setting.is_active
+        ? (setting.fields as unknown as string[])
+        : []
       return acc
     }, {} as Record<string, string[]>)
+  }
+
+  @InjectManager()
+  async getInactiveTranslatableFields(
+    entityType?: string,
+    @MedusaContext() sharedContext: Context = {}
+  ): Promise<Record<string, string[]>> {
+    const translatableFields = await this.getTranslatableFields(
+      entityType,
+      sharedContext
+    )
+    return Object.entries(translatableFields).reduce(
+      (acc, [entityType, fields]) => {
+        const entity = DmlEntity.getTranslatableEntities().find(
+          (entity) => toSnakeCase(entity.entity) === entityType
+        )
+        if (!entity) {
+          return acc
+        }
+
+        acc[entityType] = arrayDifference(entity.fields, fields)
+        return acc
+      },
+      {} as Record<string, string[]>
+    )
   }
 
   static prepareFilters(
