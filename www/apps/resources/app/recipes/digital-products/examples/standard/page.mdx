@@ -583,10 +583,10 @@ In the compensation function, you delete the digital product medias.
 Finally, create the file `src/workflows/create-digital-product/index.ts` with the following content:
 
 export const createDpWorkflowHighlights = [
-  ["36", "createProductsWorkflow", "Create the Medusa product."],
-  ["42", "createDigitalProductStep", "Create the digital product."],
-  ["46", "createDigitalProductMediasStep", "Create the digital product's medias."],
-  ["60", "createRemoteLinkStep", "Link the digital product to the first variant of the product."],
+  ["34", "createProductsWorkflow", "Create the Medusa product."],
+  ["47", "createDigitalProductStep", "Create the digital product."],
+  ["51", "createDigitalProductMediasStep", "Create the digital product's medias."],
+  ["65", "createRemoteLinkStep", "Link the digital product to the first variant of the product."],
 ]
 
 ```ts title="src/workflows/create-digital-product/index.ts" highlights={createDpWorkflowHighlights} collapsibleLines="1-23" expandMoreLabel="Show Imports"
@@ -623,13 +623,18 @@ type CreateDigitalProductWorkflowInput = {
 const createDigitalProductWorkflow = createWorkflow(
   "create-digital-product",
   (input: CreateDigitalProductWorkflowInput) => {
-    const { medias, ...digitalProductData } = input.digital_product
-
     const product = createProductsWorkflow.runAsStep({
       input: {
         products: [input.product],
       },
     })
+
+    const digitalProductData = transform(
+      input,
+      (data) => ({
+        name: data.digital_product.name,
+      })
+    )
 
     const { digital_product } = createDigitalProductStep(
       digitalProductData
@@ -638,10 +643,10 @@ const createDigitalProductWorkflow = createWorkflow(
     const { digital_product_medias } = createDigitalProductMediasStep(
       transform({
         digital_product,
-        medias,
+        input,
       },
       (data) => ({
-        medias: data.medias.map((media) => ({
+        medias: data.input.digital_product.medias.map((media) => ({
           ...media,
           digital_product_id: data.digital_product.id,
         })),
@@ -658,12 +663,20 @@ const createDigitalProductWorkflow = createWorkflow(
       },
     }])
 
-    return new WorkflowResponse({
-      digital_product: {
-        ...digital_product,
-        medias: digital_product_medias,
+    const returnData = transform(
+      {
+        digital_product,
+        digital_product_medias,
       },
-    })
+      (data) => ({
+        digital_product: {
+          ...data.digital_product,
+          medias: data.digital_product_medias,
+        },
+      })
+    )
+
+    return new WorkflowResponse(returnData)
   }
 )
 
@@ -727,7 +740,7 @@ export const POST = async (
         medias: req.validatedBody.medias.map((media) => ({
           fileId: media.file_id,
           mimeType: media.mime_type,
-          ...media,
+          type: media.type,
         })) as Omit<CreateDigitalProductMediaInput, "digital_product_id">[],
       },
       product: {

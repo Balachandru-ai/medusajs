@@ -110,7 +110,7 @@ export const generatedEditDates = {
   "app/nextjs-starter/page.mdx": "2026-01-14T08:32:07.149Z",
   "app/recipes/b2b/page.mdx": "2025-05-20T07:51:40.718Z",
   "app/recipes/commerce-automation/page.mdx": "2025-05-20T07:51:40.719Z",
-  "app/recipes/digital-products/examples/standard/page.mdx": "2025-11-28T09:43:09.959Z",
+  "app/recipes/digital-products/examples/standard/page.mdx": "2026-01-19T08:52:36.209Z",
   "app/recipes/digital-products/page.mdx": "2025-05-20T07:51:40.719Z",
   "app/recipes/ecommerce/page.mdx": "2025-06-24T08:50:10.116Z",
   "app/recipes/marketplace/examples/vendors/page.mdx": "2025-11-28T10:09:41.993Z",
@@ -6937,5 +6937,6 @@ export const generatedEditDates = {
   "app/integrations/guides/okta/page.mdx": "2025-12-30T06:35:28.653Z",
   "app/nextjs-starter/guides/remove-country-code/page.mdx": "2025-12-30T10:28:10.072Z",
   "app/commerce-modules/translation/custom-data-models/page.mdx": "2026-01-06T15:54:25.801Z",
-  "app/troubleshooting/nextjs-node-25/page.mdx": "2026-01-14T08:34:00.550Z"
+  "app/troubleshooting/nextjs-node-25/page.mdx": "2026-01-14T08:34:00.550Z",
+  "app/integrations/guides/paypal/page.mdx": "2026-01-19T08:52:36.209Z"
 }
