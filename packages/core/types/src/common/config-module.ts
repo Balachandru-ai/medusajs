@@ -887,7 +887,7 @@ export type ProjectConfigOptions = {
      * This configuration specifies the supported authentication providers per actor type (such as `user`, `customer`, or any custom actors).
      * For example, you only want to allow SSO logins for `users`, while you want to allow email/password logins for `customers` to the storefront.
      *
-     * `authMethodsPerActor` is a a map where the actor type (eg. 'user') is the key, and the value is an array of supported auth provider IDs.
+     * `authMethodsPerActor` is a map where the actor type (eg. 'user') is the key, and the value is an array of supported auth provider IDs.
      *
      * @example
      * Some example values of common use cases:
