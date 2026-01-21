@@ -278,7 +278,7 @@ export class RedisWorkflowsStorage
       this.worker = new Worker(
         this.queueName,
         async (job) => {
-          if (this.logger_.shouldLog("debug")) {
+          if (this.logger_.shouldLog?.("debug") ?? true) {
             this.logger_.debug(
               `executing job ${job.name} from queue ${
                 this.queueName
@@ -310,7 +310,7 @@ export class RedisWorkflowsStorage
       this.jobWorker = new Worker(
         this.jobQueueName,
         async (job) => {
-          if (this.logger_.shouldLog("debug")) {
+          if (this.logger_.shouldLog?.("debug") ?? true) {
             this.logger_.debug(
               `executing scheduled job ${job.data.jobId} from queue ${
                 this.jobQueueName
