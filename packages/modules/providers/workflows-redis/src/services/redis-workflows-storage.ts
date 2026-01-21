@@ -852,7 +852,10 @@ export class RedisWorkflowsStorage
   }
 
   async removeAll(): Promise<void> {
-    return await this.removeAllRepeatableJobs(this.jobQueue!)
+    if (!this.jobQueue) {
+      return
+    }
+    return await this.removeAllRepeatableJobs(this.jobQueue)
   }
 
   private async removeAllRepeatableJobs(queue: Queue): Promise<void> {
