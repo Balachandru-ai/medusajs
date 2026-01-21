@@ -3,9 +3,7 @@ import { createStep, StepResponse } from "@medusajs/framework/workflows-sdk"
 import type {
   ComputeActionContext,
   OrderDTO,
-  OrderLineItemDTO,
   OrderPreviewDTO,
-  OrderShippingMethodDTO,
   ProductDTO,
   ShippingOptionDTO,
 } from "@medusajs/framework/types"
@@ -24,55 +22,43 @@ export interface PrepareOrderComputeActionContextStepInput {
   previewedOrder: OrderPreviewDTO
 }
 
-type ProductContextDTO = Pick<
+type ProductContext = Pick<
   ProductDTO,
   "id" | "collection_id" | "tags" | "categories" | "type_id"
 >
 
-type ComputeActionItem = NonNullable<ComputeActionContext["items"]>[number]
-type ComputeActionProductContext = NonNullable<ComputeActionItem["product"]>
-type ComputeActionAdjustmentLine = NonNullable<
-  ComputeActionItem["adjustments"]
->[number]
-type ComputeActionShippingOption = NonNullable<
-  NonNullable<
-    ComputeActionContext["shipping_methods"]
-  >[number]["shipping_option"]
->
-
-type ShippingOptionContextDTO = Pick<
+type ShippingOptionContext = Pick<
   ShippingOptionDTO,
   "id" | "shipping_option_type_id"
 >
 
-type OrderItemWithContext = OrderLineItemDTO & {
-  product?: ProductContextDTO
-}
-
-type OrderShippingMethodWithContext = OrderShippingMethodDTO & {
-  shipping_option?: ComputeActionShippingOption
-}
-
-type QueryGraphResult<T> = {
-  data?: T[]
+type Adjustment = {
+  id: string
+  code: string
 }
 
 const normalizeProductContext = (
-  product?: ProductContextDTO | { id: string }
-): ComputeActionProductContext | undefined => {
+  product?: ProductContext | { id: string }
+) => {
   if (!product) {
     return undefined
   }
 
-  const productData = product as Partial<ProductContextDTO>
+  const data = product as Partial<ProductContext>
 
   return {
     id: product.id,
-    collection_id: productData.collection_id ?? undefined,
-    tags: productData.tags ?? undefined,
-    categories: productData.categories ?? undefined,
-    type_id: productData.type_id ?? undefined,
+    collection_id: data.collection_id ?? undefined,
+    tags: data.tags ?? undefined,
+    categories: data.categories ?? undefined,
+    type_id: data.type_id ?? undefined,
   }
+}
+
+const filterAdjustments = (adjustments: any[] = []): Adjustment[] => {
+  return adjustments
+    .filter((adj) => adj?.id && adj?.code)
+    .map((adj) => ({ id: adj.id, code: adj.code }))
 }
 
 export const prepareOrderComputeActionContextStepId =
@@ -94,22 +80,25 @@ export const prepareOrderComputeActionContextStep = createStep(
   ): Promise<StepResponse<ComputeActionContext>> => {
     const query = container.resolve(ContainerRegistrationKeys.QUERY)
 
+    const items = previewedOrder.items ?? order.items ?? []
+    const shippingMethods =
+      previewedOrder.shipping_methods ?? order.shipping_methods ?? []
+
     const productIds = [
       ...new Set(
-        (previewedOrder.items ?? order.items ?? [])
-          .map((item) => item.product_id)
-          .filter((id): id is string => !!id)
+        items.map((item) => item.product_id).filter((id): id is string => !!id)
       ),
     ]
+
     const shippingOptionIds = [
       ...new Set(
-        (previewedOrder.shipping_methods ?? order.shipping_methods ?? [])
+        shippingMethods
           .map((method) => method.shipping_option_id)
           .filter((id): id is string => !!id)
       ),
     ]
 
-    const productsPromise: Promise<QueryGraphResult<ProductContextDTO>> =
+    const [productsResult, shippingOptionsResult] = await Promise.all([
       productIds.length
         ? query.graph({
           entity: "product",
@@ -122,85 +111,50 @@ export const prepareOrderComputeActionContextStep = createStep(
           ],
           filters: { id: productIds },
         })
-        : Promise.resolve({ data: [] })
-    const shippingOptionsPromise: Promise<
-      QueryGraphResult<ShippingOptionContextDTO>
-    > = shippingOptionIds.length
+        : { data: [] },
+      shippingOptionIds.length
         ? query.graph({
           entity: "shipping_option",
           fields: ["id", "shipping_option_type_id"],
           filters: { id: shippingOptionIds },
         })
-        : Promise.resolve({ data: [] })
-
-    const [productsResult, shippingOptionsResult] = await Promise.all([
-      productsPromise,
-      shippingOptionsPromise,
+        : { data: [] },
     ])
 
-    const products = productsResult.data ?? []
-    const shippingOptions = shippingOptionsResult.data ?? []
+    const products = (productsResult.data ?? []) as ProductContext[]
+    const shippingOptions = (shippingOptionsResult.data ??
+      []) as ShippingOptionContext[]
 
-    const productMap = new Map<string, ProductContextDTO>(
-      products.map((product) => [product.id, product])
-    )
-    const shippingOptionMap = new Map<string, ShippingOptionContextDTO>(
-      shippingOptions.map((option) => [option.id, option])
-    )
+    const productMap = new Map(products.map((p) => [p.id, p]))
+    const shippingOptionMap = new Map(shippingOptions.map((o) => [o.id, o]))
 
-    const itemsSource = (previewedOrder.items ??
-      order.items ??
-      []) as OrderItemWithContext[]
-    const items = itemsSource.map((item) => {
+    const computedItems = items.map((item) => {
       const product = normalizeProductContext(
-        item.product ??
-        (item.product_id ? productMap.get(item.product_id) : undefined)
+        (item as any).product ?? (item.product_id && productMap.get(item.product_id))
       )
-      const rawAdjustments = item.adjustments ?? []
-      const adjustments = rawAdjustments
-        .filter((adjustment) => !!adjustment?.code && adjustment?.id)
-        .map((adjustment) => ({
-          id: adjustment.id,
-          code: adjustment.code,
-        })) as ComputeActionAdjustmentLine[]
+
+      const adjustments = filterAdjustments(item.adjustments)
 
       return {
         ...item,
-        id: item.id,
-        quantity: item.quantity,
-        subtotal: item.subtotal,
-        original_total: item.original_total,
-        is_discountable: item.is_discountable,
         adjustments: adjustments.length ? adjustments : undefined,
-        product:
-          product ?? (item.product_id ? { id: item.product_id } : undefined),
+        product: product ?? (item.product_id ? { id: item.product_id } : undefined),
       }
     })
 
-    const shippingMethodsSource = (previewedOrder.shipping_methods ??
-      order.shipping_methods ??
-      []) as OrderShippingMethodWithContext[]
-    const shipping_methods = shippingMethodsSource.map((method) => {
+    const computedShippingMethods = shippingMethods.map((method) => {
       const shippingOption = method.shipping_option_id
         ? shippingOptionMap.get(method.shipping_option_id)
         : undefined
-      const rawAdjustments = method.adjustments ?? []
 
-      const adjustments = rawAdjustments
-        .filter((adjustment) => !!adjustment?.code && adjustment?.id)
-        .map((adjustment) => ({
-          id: adjustment.id,
-          code: adjustment.code,
-        })) as ComputeActionAdjustmentLine[]
+      const adjustments = filterAdjustments(method.adjustments)
+
       const shippingOptionTypeId =
-        method.shipping_option?.shipping_option_type_id ??
+        (method as any).shipping_option?.shipping_option_type_id ??
         shippingOption?.shipping_option_type_id
 
       return {
         ...method,
-        id: method.id,
-        subtotal: method.subtotal,
-        original_total: method.original_total,
         adjustments: adjustments.length ? adjustments : undefined,
         shipping_option: shippingOptionTypeId
           ? { shipping_option_type_id: shippingOptionTypeId }
@@ -208,72 +162,45 @@ export const prepareOrderComputeActionContextStep = createStep(
       }
     })
 
-    const previewCustomer = (
-      previewedOrder as {
-        customer?: ComputeActionContext["customer"]
-      }
-    ).customer
-    const orderCustomer = (
-      order as {
-        customer?: ComputeActionContext["customer"]
-      }
-    ).customer
-    const customerContext =
+    const previewCustomer = (previewedOrder as any).customer
+    const orderCustomer = (order as any).customer
+
+    const customer =
       previewCustomer?.id || orderCustomer?.id || order.customer_id
         ? {
           id: previewCustomer?.id ?? orderCustomer?.id ?? order.customer_id!,
           groups: (previewCustomer?.groups ?? orderCustomer?.groups)?.map(
-            (group) => ({
-              id: group.id,
-            })
+            (group: any) => ({ id: group.id })
           ),
         }
         : undefined
 
-    const previewRegion = (
-      previewedOrder as {
-        region?: ComputeActionContext["region"]
-      }
-    ).region
-    const orderRegion = (
-      order as {
-        region?: ComputeActionContext["region"]
-      }
-    ).region
-    const regionContext =
+    const previewRegion = (previewedOrder as any).region
+    const orderRegion = (order as any).region
+
+    const region =
       previewRegion?.id || orderRegion?.id || order.region_id
-        ? {
-          id: previewRegion?.id ?? orderRegion?.id ?? order.region_id!,
-        }
+        ? { id: previewRegion?.id ?? orderRegion?.id ?? order.region_id! }
         : undefined
 
     const shippingAddress =
-      (
-        previewedOrder as {
-          shipping_address?: ComputeActionContext["shipping_address"]
-        }
-      ).shipping_address ??
-      (
-        order as {
-          shipping_address?: ComputeActionContext["shipping_address"]
-        }
-      ).shipping_address
-    const shippingAddressContext = shippingAddress?.country_code
+      (previewedOrder as any).shipping_address ??
+      (order as any).shipping_address
+
+    const shipping_address = shippingAddress?.country_code
       ? { country_code: shippingAddress.country_code }
       : undefined
 
-    const computeActionContext: ComputeActionContext = {
+    return new StepResponse({
       currency_code: previewedOrder.currency_code ?? order.currency_code,
-      customer: customerContext,
-      region: regionContext,
-      shipping_address: shippingAddressContext,
+      customer,
+      region,
+      shipping_address,
       sales_channel_id:
         previewedOrder.sales_channel_id ?? order.sales_channel_id,
       email: previewedOrder.email ?? order.email,
-      items,
-      shipping_methods,
-    }
-
-    return new StepResponse(computeActionContext)
+      items: computedItems,
+      shipping_methods: computedShippingMethods,
+    })
   }
 )
