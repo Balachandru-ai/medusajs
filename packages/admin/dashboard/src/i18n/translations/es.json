@@ -24,6 +24,8 @@
     "tip": "Consejo",
     "error": "Error",
     "select": "Seleccionar",
+    "selectAll": "Seleccionar todo",
+    "fullList": "Lista completa",
     "selected": "Seleccionado",
     "enabled": "Habilitado",
     "disabled": "Deshabilitado",
@@ -326,6 +328,9 @@
   },
   "filters": {
     "sortLabel": "Ordenar",
+    "collapse": {
+      "all": "Colapsar todo"
+    },
     "filterLabel": "Filtrar",
     "searchLabel": "Buscar",
     "date": {
@@ -2460,8 +2465,13 @@
     "list": {
       "metrics": "{{translated}} de {{total}} traducciones"
     },
+    "settings": {
+      "header": "Administrar entidades traducibles",
+      "successToast": "Configuraciones actualizadas exitosamente"
+    },
     "actions": {
       "manage": "Gestionar traducciones",
+      "manageEntities": "Gestionar entidades",
       "manageLocales": "Gestionar idiomas"
     },
     "title": "Traducción de dominios",

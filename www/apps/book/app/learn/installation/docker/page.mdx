@@ -1,4 +1,4 @@
-import { 
+import {
   Prerequisites,
   CodeTabs,
   CodeTab
@@ -221,7 +221,7 @@ FROM node:20-alpine
 WORKDIR /server
 
 # Copy package files and yarn config
-COPY package.json yarn.lock .yarnrc.yml ./
+COPY package.json yarn.lock .yarnrc.yml .yarn/releases ./
 
 # Install all dependencies using yarn
 RUN yarn install
@@ -233,7 +233,7 @@ COPY . .
 EXPOSE 9000
 
 # Start with migrations and then the development server
-CMD ["./start.sh"]
+ENTRYPOINT ["./start.sh"]
 ```
   </CodeTab>
   <CodeTab value="npm" label="NPM">
@@ -257,7 +257,7 @@ COPY . .
 EXPOSE 9000
 
 # Start with migrations and then the development server
-CMD ["./start.sh"]
+ENTRYPOINT ["./start.sh"]
 ```
   </CodeTab>
 </CodeTabs>
@@ -369,9 +369,7 @@ module.exports = defineConfig({
   admin: {
     vite: (config) => {
       return {
-        ...config,
         server: {
-          ...config.server,
           host: "0.0.0.0",
           // Allow all hosts when running in Docker (development mode)
           // In production, this should be more restrictive
@@ -381,9 +379,8 @@ module.exports = defineConfig({
             "127.0.0.1",
           ],
           hmr: {
-            ...config.server?.hmr,
             // HMR websocket port inside container
-            port: 5173, 
+            port: 5173,
             // Port browser connects to (exposed in docker-compose.yml)
             clientPort: 5173,
           },
