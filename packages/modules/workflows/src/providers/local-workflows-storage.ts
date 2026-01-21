@@ -115,7 +115,11 @@ export class LocalWorkflowsStorage
     this.clearTimeout_ = setInterval(async () => {
       try {
         await this.clearExpiredExecutions()
-      } catch {}
+      } catch (error) {
+        this.logger_?.warn?.(
+          `Failed to clear expired workflow executions: ${error}`
+        )
+      }
     }, THIRTY_MINUTES_IN_MS)
   }
 
@@ -179,9 +183,15 @@ export class LocalWorkflowsStorage
   ): NodeJS.Timeout {
     const timer = setTimeout(async () => {
       this.pendingTimers.delete(timer)
-      const res = callback()
-      if (res instanceof Promise) {
-        await res
+      try {
+        const res = callback()
+        if (res instanceof Promise) {
+          await res
+        }
+      } catch (error) {
+        this.logger_?.error?.(
+          `Error in managed timer callback: ${error}`
+        )
       }
     }, delay)
 

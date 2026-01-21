@@ -108,7 +108,7 @@ export class WorkflowsModuleService<
       if (!Object.keys(filters_).length) {
         return textSearchFilters
       } else {
-        return { $and: [filters, textSearchFilters] }
+        return { $and: [filters_, textSearchFilters] }
       }
     }
 

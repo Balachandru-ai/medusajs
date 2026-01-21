@@ -963,7 +963,7 @@ export class WorkflowOrchestratorService
           .getErrors(TransactionHandlerType.COMPENSATE)
           .filter((err) => err.action === stepName)
 
-        customEventHandlers?.onStepFailure?.({ step, transaction, errors })
+        customEventHandlers?.onCompensateStepFailure?.({ step, transaction, errors })
 
         await notify({
           eventType: "onCompensateStepFailure",
