@@ -22,7 +22,6 @@ export const fieldsToComputeAdjustmentsForPreview = [
   "shipping_methods.adjustments.id",
   "shipping_methods.adjustments.code",
   "shipping_methods.shipping_option_id",
-  "shipping_methods.shipping_option.shipping_option_type_id",
   "promotions.id",
   "promotions.code",
 ]
