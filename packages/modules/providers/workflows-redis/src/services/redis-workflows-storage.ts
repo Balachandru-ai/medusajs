@@ -223,15 +223,13 @@ export class RedisWorkflowsStorage
 
       unsubscribe: (workflowId: string): void => {
         this.notificationHandlers_.delete(workflowId)
-        if (!this.notificationHandlers_.has(workflowId)) {
-          this.redisSubscriber_
-            .unsubscribe(this.getChannelName(workflowId))
-            .catch((error) => {
-              this.logger_.error(
-                `[Workflows-redis] Failed to unsubscribe from workflow channel ${workflowId}: ${error}`
-              )
-            })
-        }
+        this.redisSubscriber_
+          .unsubscribe(this.getChannelName(workflowId))
+          .catch((error) => {
+            this.logger_.error(
+              `[Workflows-redis] Failed to unsubscribe from workflow channel ${workflowId}: ${error}`
+            )
+          })
       },
     }
   }
