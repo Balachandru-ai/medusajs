@@ -1120,7 +1120,7 @@ describe("defineConfig", function () {
                   "options": {
                     "redisUrl": "redis://localhost:6379",
                     "workerOptions": {
-                      "concurrency": 3,
+                      "concurrency": 1,
                     },
                   },
                   "resolve": "@medusajs/medusa/events-redis",
@@ -1356,7 +1356,7 @@ describe("defineConfig", function () {
                   "options": {
                     "redisUrl": "redis://localhost:6379",
                     "workerOptions": {
-                      "concurrency": 3,
+                      "concurrency": 1,
                     },
                   },
                   "resolve": "@medusajs/medusa/events-redis",
@@ -1608,7 +1608,7 @@ describe("defineConfig", function () {
                   "options": {
                     "redisUrl": "redis://localhost:6379",
                     "workerOptions": {
-                      "concurrency": 3,
+                      "concurrency": 1,
                     },
                   },
                   "resolve": "@medusajs/medusa/events-redis",

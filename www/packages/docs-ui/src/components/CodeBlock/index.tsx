@@ -304,6 +304,9 @@ export const CodeBlock = ({
     track({
       event: {
         event: DocsTrackingEvents.CODE_BLOCK_COPY,
+        options: {
+          text: source.substring(0, 150),
+        },
       },
     })
   }
