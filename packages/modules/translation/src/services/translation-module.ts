@@ -489,8 +489,57 @@ export default class TranslationModuleService
 
     await this.validateSettings_(dataArray, sharedContext)
 
-    // @ts-expect-error TS can't match union type to overloads
-    return await super.updateTranslationSettings(data, sharedContext)
+    const updatedSettings = await super.updateTranslationSettings(
+      // @ts-expect-error TS can't match union type to overloads
+      data,
+      sharedContext
+    )
+
+    await Promise.all(
+      dataArray.map(async (setting) => {
+        const entityType = await this.resolveEntityType_(setting, sharedContext)
+
+        const translatableFields = (
+          await this.getTranslatableFields(entityType, sharedContext)
+        )[entityType]
+
+        const translations = await this.translationService_.list({
+          reference: entityType,
+        })
+
+        const toUpdate = translations.map((translation) => {
+          return {
+            id: translation.id,
+            translated_field_count: computeTranslatedFieldCount(
+              translation.translations,
+              translatableFields
+            ),
+          }
+        })
+
+        await this.translationService_.update(toUpdate)
+      })
+    )
+
+    return updatedSettings
+  }
+
+  @InjectManager()
+  protected async resolveEntityType_(
+    setting: CreateTranslationSettingsDTO | UpdateTranslationSettingsDTO,
+    @MedusaContext() sharedContext: Context = {}
+  ): Promise<string> {
+    let itemEntityType = setting.entity_type
+    if (!itemEntityType) {
+      const translationSetting = await this.retrieveTranslationSettings(
+        //@ts-expect-error - if no entity_type, we are on an update
+        setting.id,
+        { select: ["entity_type"] },
+        sharedContext
+      )
+      itemEntityType = translationSetting.entity_type
+    }
+    return itemEntityType
   }
 
   @InjectManager()
@@ -634,16 +683,7 @@ export default class TranslationModuleService
     }[] = []
 
     for (const item of dataToValidate) {
-      let itemEntityType = item.entity_type
-      if (!itemEntityType) {
-        const translationSetting = await this.retrieveTranslationSettings(
-          //@ts-expect-error - if no entity_type, we are on an update
-          item.id,
-          { select: ["entity_type"] },
-          sharedContext
-        )
-        itemEntityType = translationSetting.entity_type
-      }
+      const itemEntityType = await this.resolveEntityType_(item, sharedContext)
 
       const entity = translatableEntitiesMap.get(itemEntityType)
 
