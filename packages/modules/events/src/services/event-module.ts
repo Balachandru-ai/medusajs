@@ -19,7 +19,6 @@ type InjectedDependencies = {
 export default class EventModuleService implements IEventBusModuleService {
   protected providerService_: EventProviderService
   protected defaultProviderId: string
-  protected isWorkerMode: boolean = true
 
   constructor(
     container: InjectedDependencies,
@@ -27,7 +26,6 @@ export default class EventModuleService implements IEventBusModuleService {
   ) {
     this.providerService_ = container.eventProviderService
     this.defaultProviderId = container[EventDefaultProvider]
-    this.isWorkerMode = moduleDeclaration.worker_mode !== "server"
   }
 
   /**
@@ -39,7 +37,7 @@ export default class EventModuleService implements IEventBusModuleService {
       const providers = this.providerService_.listProviders()
       await Promise.all(
         providers.map((provider) =>
-          provider.__hooks?.onApplicationStart?.bind(provider)()
+          provider.__hooks?.onApplicationStart?.bind(provider)?.()
         )
       )
     },
@@ -47,7 +45,7 @@ export default class EventModuleService implements IEventBusModuleService {
       const providers = this.providerService_.listProviders()
       await Promise.all(
         providers.map((provider) =>
-          provider.__hooks?.onApplicationShutdown?.bind(provider)()
+          provider.__hooks?.onApplicationShutdown?.bind(provider)?.()
         )
       )
     },
@@ -55,7 +53,7 @@ export default class EventModuleService implements IEventBusModuleService {
       const providers = this.providerService_.listProviders()
       await Promise.all(
         providers.map((provider) =>
-          provider.__hooks?.onApplicationPrepareShutdown?.bind(provider)()
+          provider.__hooks?.onApplicationPrepareShutdown?.bind(provider)?.()
         )
       )
     },
