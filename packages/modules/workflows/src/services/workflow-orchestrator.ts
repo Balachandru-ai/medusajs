@@ -98,6 +98,7 @@ export class WorkflowOrchestratorService
   implements IWorkflowModuleOrchestratorService
 {
   private static subscribers: Subscribers = new Map()
+  private instanceId = ulid()
   protected container_: MedusaContainer
   protected cradle_: Record<string, any>
   protected storage_: IDistributedTransactionStorage &
@@ -740,8 +741,13 @@ export class WorkflowOrchestratorService
 
   private handleDistributedNotification(
     _workflowId: string,
-    data: DistributedNotifyOptions
+    data: DistributedNotifyOptions & { instanceId?: string }
   ) {
+    // Skip notifications from the same instance to avoid duplicate processing
+    if (data.instanceId === this.instanceId) {
+      return
+    }
+
     // Process notifications from other instances
     // Only process subscriber notifications, don't re-publish
     setImmediate(() => this.processSubscriberNotifications(data))
@@ -751,12 +757,16 @@ export class WorkflowOrchestratorService
     const { workflowId, isFlowAsync } = options
 
     // Publish to other instances for async flows
+    // Include instanceId so receiving instances can filter out self-notifications
     if (isFlowAsync && this.storage_.notificationSubscriber) {
       setImmediate(async () => {
         try {
           await this.storage_.notificationSubscriber!.publish(
             workflowId,
-            options
+            {
+              ...options,
+              instanceId: this.instanceId,
+            } as DistributedNotifyOptions
           )
         } catch (error) {
           this.#logger.error(`Failed to publish notification: ${error}`)
