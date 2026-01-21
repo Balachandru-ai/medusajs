@@ -927,12 +927,10 @@ medusaIntegrationTestRunner({
         )
         expect(untaggedItem?.adjustments?.length ?? 0).toBe(0)
         const taggedDiscountTotal = taggedItem?.discount_total ?? 0
-        const taxRate = taggedItem?.tax_lines?.[0]?.rate ?? 0
-        const expectedDiscountTotal = 5 * (1 + taxRate / 100)
-
-        expect(taggedDiscountTotal).toBeCloseTo(expectedDiscountTotal)
-        expect(preview.item_discount_total).toBeCloseTo(taggedDiscountTotal)
-        expect(preview.discount_total).toBeCloseTo(taggedDiscountTotal)
+        // 5 * (1 + taxRate / 100)
+        expect(taggedDiscountTotal).toBe(5.1)
+        expect(preview.item_discount_total).toBe(5.1)
+        expect(preview.discount_total).toBe(5.1)
         expect(untaggedItem?.discount_total ?? 0).toBe(0)
 
         const taggedOrderItem = order.items.find(
@@ -949,12 +947,8 @@ medusaIntegrationTestRunner({
           })
         )
         expect(untaggedOrderItem?.adjustments?.length ?? 0).toBe(0)
-        expect(order.item_discount_total).toBeCloseTo(
-          taggedOrderItem?.discount_total ?? 0
-        )
-        expect(order.discount_total).toBeCloseTo(
-          taggedOrderItem?.discount_total ?? 0
-        )
+        expect(order.item_discount_total).toBe(5.1)
+        expect(order.discount_total).toBe(5.1)
       })
     })
 
