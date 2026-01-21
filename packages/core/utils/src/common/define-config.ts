@@ -282,7 +282,7 @@ function resolveModules(
       resolve: TEMPORARY_REDIS_MODULE_PACKAGE_NAMES[Modules.EVENT_BUS],
       options: {
         redisUrl: process.env.REDIS_URL,
-        workerOptions: { concurrency: 3 },
+        workerOptions: { concurrency: 1 },
       },
     },
     {
