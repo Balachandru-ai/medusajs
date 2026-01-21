@@ -4,23 +4,9 @@ import {
   Modules,
 } from "@medusajs/framework/utils"
 import { createStep, StepResponse } from "@medusajs/framework/workflows-sdk"
-import { FilterableProductProps } from "@medusajs/types"
+import { WorkflowTypes } from "@medusajs/types"
 import { normalizeForExport } from "../helpers/normalize-for-export"
 import { json2csv } from "json-2-csv"
-
-export type ExportProductsStepInput = {
-  /**
-   * The fields to select. These fields will be passed to
-   * [Query](https://docs.medusajs.com/learn/fundamentals/module-links/query), so you can
-   * pass product properties or any relation names, including custom links.
-   */
-  select: string[]
-  /**
-   * The filters to select which products to export.
-   */
-  filter?: FilterableProductProps
-  batch_size?: number | string
-}
 
 export const exportProductsStepId = "export-products"
 
@@ -28,7 +14,10 @@ const DEFAULT_BATCH_SIZE = 50
 
 export const exportProductsStep = createStep(
   exportProductsStepId,
-  async (input: ExportProductsStepInput, { container }) => {
+  async (
+    input: WorkflowTypes.ProductWorkflow.ExportProductsDTO,
+    { container }
+  ) => {
     const query = container.resolve(ContainerRegistrationKeys.QUERY)
     const fileModule = container.resolve(Modules.FILE)
     const regionModule = container.resolve(Modules.REGION)
