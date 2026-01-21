@@ -61,7 +61,6 @@ export class WorkflowsModuleService<
     }: InjectedDependencies,
     protected readonly moduleDeclaration: InternalModuleDeclaration
   ) {
-    // @ts-expect-error - MedusaService expects the injected dependencies as first argument
     super(arguments[0])
 
     this.manager_ = manager
