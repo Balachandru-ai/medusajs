@@ -9,3 +9,4 @@ export default Module(Modules.WORKFLOW_ENGINE, {
 
 export * from "./services"
 export * from "./types"
+export * from "./utils"

@@ -1,12 +1,9 @@
-import { raw } from "@medusajs/framework/mikro-orm/core"
 import {
   DistributedTransactionType,
   IDistributedSchedulerStorage,
   IDistributedTransactionStorage,
   SchedulerOptions,
-  SkipCancelledExecutionError,
   SkipExecutionError,
-  SkipStepAlreadyFinishedError,
   TransactionCheckpoint,
   TransactionContext,
   TransactionFlow,
@@ -19,36 +16,19 @@ import {
   Logger,
   ModulesSdkTypes,
 } from "@medusajs/framework/types"
-import {
-  isPresent,
-  MedusaError,
-  TransactionState,
-  TransactionStepState,
-} from "@medusajs/framework/utils"
+import { MedusaError, TransactionState } from "@medusajs/framework/utils"
 import { type CronExpression, parseExpression } from "cron-parser"
 import { WorkflowExecution } from "../models/workflow-execution"
+import {
+  clearExpiredExecutions as clearExpiredExecutionsUtil,
+  deleteFromDb as deleteFromDbUtil,
+  failedStates,
+  finishedStates,
+  preventRaceConditionExecutionIfNecessary,
+  saveToDb as saveToDbUtil,
+} from "../utils"
 
 const THIRTY_MINUTES_IN_MS = 1000 * 60 * 30
-
-const doneStates = new Set([
-  TransactionStepState.DONE,
-  TransactionStepState.REVERTED,
-  TransactionStepState.FAILED,
-  TransactionStepState.SKIPPED,
-  TransactionStepState.SKIPPED_FAILURE,
-  TransactionStepState.TIMEOUT,
-])
-
-const finishedStates = new Set([
-  TransactionState.DONE,
-  TransactionState.FAILED,
-  TransactionState.REVERTED,
-])
-
-const failedStates = new Set([
-  TransactionState.FAILED,
-  TransactionState.REVERTED,
-])
 
 function calculateDelayFromExpression(expression: CronExpression): number {
   const nextTime = expression.next().getTime()
@@ -127,6 +107,7 @@ export class LocalWorkflowsStorage
 
   __hooks = {
     onApplicationStart: this.onApplicationStart.bind(this),
+    onApplicationPrepareShutdown: this.onApplicationPrepareShutdown.bind(this),
     onApplicationShutdown: this.onApplicationShutdown.bind(this),
   }
 
@@ -136,6 +117,27 @@ export class LocalWorkflowsStorage
         await this.clearExpiredExecutions()
       } catch {}
     }, THIRTY_MINUTES_IN_MS)
+  }
+
+  private async onApplicationPrepareShutdown() {
+    // Stop scheduled jobs from firing during shutdown
+    for (const job of this.scheduled.values()) {
+      clearTimeout(job.timer)
+    }
+
+    // Stop retry and timeout timers
+    for (const timer of this.retries.values()) {
+      clearTimeout(timer)
+    }
+
+    for (const timer of this.timeouts.values()) {
+      clearTimeout(timer)
+    }
+
+    // Stop pending timers
+    for (const timer of this.pendingTimers) {
+      clearTimeout(timer)
+    }
   }
 
   private async onApplicationShutdown() {
@@ -188,87 +190,11 @@ export class LocalWorkflowsStorage
   }
 
   private async saveToDb(data: TransactionCheckpoint, retentionTime?: number) {
-    const isNotStarted = data.flow.state === TransactionState.NOT_STARTED
-    const asyncVersion = data.flow._v
-    const isFinished = finishedStates.has(data.flow.state)
-    const isWaitingToCompensate =
-      data.flow.state === TransactionState.WAITING_TO_COMPENSATE
-
-    const isFlowInvoking = data.flow.state === TransactionState.INVOKING
-
-    const stepsArray = Object.values(data.flow.steps) as TransactionStep[]
-    let currentStep!: TransactionStep
-
-    const targetStates = isFlowInvoking
-      ? new Set([
-          TransactionStepState.INVOKING,
-          TransactionStepState.DONE,
-          TransactionStepState.FAILED,
-        ])
-      : new Set([TransactionStepState.COMPENSATING])
-
-    for (let i = stepsArray.length - 1; i >= 0; i--) {
-      const step = stepsArray[i]
-
-      if (step.id === "_root") {
-        break
-      }
-
-      const isTargetState = targetStates.has(step.invoke?.state)
-
-      if (isTargetState && !currentStep) {
-        currentStep = step
-        break
-      }
-    }
-
-    let shouldStoreCurrentSteps = false
-    if (currentStep) {
-      for (const step of stepsArray) {
-        if (step.id === "_root") {
-          continue
-        }
-
-        if (
-          step.depth === currentStep.depth &&
-          step?.definition?.store === true
-        ) {
-          shouldStoreCurrentSteps = true
-          break
-        }
-      }
-    }
-
-    if (
-      !(isNotStarted || isFinished || isWaitingToCompensate) &&
-      !shouldStoreCurrentSteps &&
-      !asyncVersion
-    ) {
-      return
-    }
-
-    await this.workflowExecutionService_.upsert([
-      {
-        workflow_id: data.flow.modelId,
-        transaction_id: data.flow.transactionId,
-        run_id: data.flow.runId,
-        execution: data.flow,
-        context: {
-          data: data.context,
-          errors: data.errors,
-        },
-        state: data.flow.state,
-        retention_time: retentionTime,
-      },
-    ])
+    await saveToDbUtil(this.workflowExecutionService_, data, retentionTime)
   }
 
   private async deleteFromDb(data: TransactionCheckpoint) {
-    await this.workflowExecutionService_.delete([
-      {
-        run_id: data.flow.runId,
-      },
-    ])
+    await deleteFromDbUtil(this.workflowExecutionService_, data)
   }
 
   async get(
@@ -353,10 +279,16 @@ export class LocalWorkflowsStorage
 
       const hasFinished = finishedStates.has(data.flow.state)
 
-      await this.#preventRaceConditionExecutionIfNecessary({
+      const cachedData = this.storage[key] as TransactionCheckpoint | undefined
+      await preventRaceConditionExecutionIfNecessary({
         data,
-        key,
         options,
+        cachedData,
+        getStoredData: () =>
+          this.get(key, {
+            ...options,
+            isCancelling: !!data.flow.cancelledAt,
+          } as TransactionOptions),
       })
 
       // Only store retention time if it's provided
@@ -416,89 +348,6 @@ export class LocalWorkflowsStorage
       return data
     } finally {
       this.isLocked.delete(key)
-    }
-  }
-
-  async #preventRaceConditionExecutionIfNecessary({
-    data,
-    key,
-    options,
-  }: {
-    data: TransactionCheckpoint
-    key: string
-    options?: TransactionOptions
-  }) {
-    const isInitialCheckpoint = [TransactionState.NOT_STARTED].includes(
-      data.flow.state
-    )
-    /**
-     * In case many execution can succeed simultaneously, we need to ensure that the latest
-     * execution does continue if a previous execution is considered finished
-     */
-    const currentFlow = data.flow
-
-    const rawData = this.storage[key]
-    let data_ = {} as TransactionCheckpoint
-    if (rawData) {
-      data_ = rawData as TransactionCheckpoint
-    } else {
-      const getOptions = {
-        ...options,
-        isCancelling: !!data.flow.cancelledAt,
-      } as Parameters<typeof this.get>[1]
-
-      data_ =
-        (await this.get(key, getOptions as TransactionOptions)) ??
-        ({ flow: {} } as TransactionCheckpoint)
-    }
-
-    const { flow: latestUpdatedFlow } = data_
-    if (options?.stepId) {
-      const stepId = options.stepId
-      const currentStep = data.flow.steps[stepId]
-      const latestStep = latestUpdatedFlow.steps?.[stepId]
-      if (latestStep && currentStep) {
-        const isCompensating = data.flow.state === TransactionState.COMPENSATING
-
-        const latestState = isCompensating
-          ? latestStep.compensate?.state
-          : latestStep.invoke?.state
-
-        const shouldSkip = doneStates.has(latestState)
-
-        if (shouldSkip) {
-          throw new SkipStepAlreadyFinishedError(
-            `Step ${stepId} already finished by another execution`
-          )
-        }
-      }
-    }
-
-    if (
-      !isInitialCheckpoint &&
-      !isPresent(latestUpdatedFlow) &&
-      !data.flow.metadata?.parentStepIdempotencyKey
-    ) {
-      /**
-       * the initial checkpoint expect no other checkpoint to have been stored.
-       * In case it is not the initial one and another checkpoint is trying to
-       * find if a concurrent execution has finished, we skip the execution.
-       * The already finished execution would have deleted the checkpoint already.
-       */
-      throw new SkipExecutionError("Already finished by another execution")
-    }
-
-    // Ensure that the latest execution was not cancelled, otherwise we skip the execution
-    const latestTransactionCancelledAt = latestUpdatedFlow.cancelledAt
-    const currentTransactionCancelledAt = currentFlow.cancelledAt
-
-    if (
-      !!latestTransactionCancelledAt &&
-      currentTransactionCancelledAt == null
-    ) {
-      throw new SkipCancelledExecutionError(
-        "Workflow execution has been cancelled during the execution"
-      )
     }
   }
 
@@ -751,23 +600,6 @@ export class LocalWorkflowsStorage
   }
 
   async clearExpiredExecutions(): Promise<void> {
-    await this.workflowExecutionService_.delete({
-      retention_time: {
-        $ne: null,
-      },
-      updated_at: {
-        $lte: raw(
-          (_alias) =>
-            `CURRENT_TIMESTAMP - (INTERVAL '1 second' * "retention_time")`
-        ),
-      },
-      state: {
-        $in: [
-          TransactionState.DONE,
-          TransactionState.FAILED,
-          TransactionState.REVERTED,
-        ],
-      },
-    })
+    await clearExpiredExecutionsUtil(this.workflowExecutionService_)
   }
 }

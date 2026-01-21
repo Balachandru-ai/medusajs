@@ -34,10 +34,10 @@
   "devDependencies": {
     "@medusajs/framework": "2.12.5",
     "@medusajs/test-utils": "2.12.5",
-    "@medusajs/workflows": "2.12.5",
     "ulid": "^2.3.0"
   },
   "dependencies": {
+    "@medusajs/workflows": "2.12.5",
     "bullmq": "5.13.0",
     "ioredis": "^5.4.1"
   },
