@@ -76,12 +76,12 @@ export const computeAdjustmentsForPreviewWorkflow = createWorkflow(
     const previewedOrder = previewOrderChangeStep(input.order.id)
 
     when(
-      { order: input.order },
-      ({ order }) =>
+      { order: input.order, orderChange: input.orderChange },
+      ({ order, orderChange }) =>
         /**
          * Compute adjustments only if the flag on the order change is true
          */
-        !!order.promotions.length && !!input.orderChange.carry_over_promotions
+        !!order.promotions.length && !!orderChange.carry_over_promotions
     ).then(() => {
       const actionsToComputeItemsInput = prepareOrderComputeActionContextStep({
         order: input.order,
