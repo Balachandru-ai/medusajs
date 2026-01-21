@@ -387,7 +387,7 @@ export class RedisWorkflowsStorage
         this.redisClient
           .connect()
           .then(() => {
-            this.logger_.info(
+            this.logger_.debug(
               "[Workflows-redis] Redis connection reestablished successfully"
             )
           })
@@ -412,7 +412,7 @@ export class RedisWorkflowsStorage
         this.redisWorkerConnection
           .connect()
           .then(() => {
-            this.logger_.info(
+            this.logger_.debug(
               "[Workflows-redis] Redis worker connection reestablished successfully"
             )
           })
