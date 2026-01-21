@@ -180,6 +180,7 @@ export const orderExchangeRequestItemReturnWorkflow = createWorkflow(
       entry_point: "orders",
       fields: [
         ...fieldsToComputeAdjustmentsForPreview,
+        "canceled_at",
         "status",
         "items.variant.manage_inventory",
         "items.variant.inventory_items.inventory_item_id",
