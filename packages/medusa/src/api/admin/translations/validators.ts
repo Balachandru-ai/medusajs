@@ -1,10 +1,13 @@
-import { applyAndAndOrOperators } from "../../utils/common-validators"
+import {
+  applyAndAndOrOperators,
+  booleanString,
+} from "../../utils/common-validators"
 import {
   createBatchBody,
   createFindParams,
   createSelectParams,
 } from "../../utils/validators"
-import { z } from "zod"
+import { z } from "@medusajs/framework/zod"
 
 export const AdminGetTranslationParams = createSelectParams()
 
@@ -64,3 +67,45 @@ export const AdminTranslationStatistics = z
       ? data.entity_types
       : [data.entity_types],
   }))
+
+export type AdminTranslationSettingsParamsType = z.infer<
+  typeof AdminTranslationSettingsParams
+>
+export const AdminTranslationSettingsParams = z.object({
+  entity_type: z.string().optional(),
+  is_active: booleanString().optional(),
+})
+
+const AdminUpdateTranslationSettings = z.object({
+  id: z.string(),
+  entity_type: z.string().optional(),
+  fields: z.array(z.string()).optional(),
+  is_active: z.boolean().optional(),
+})
+
+const AdminCreateTranslationSettings = z.object({
+  entity_type: z.string(),
+  fields: z.array(z.string()),
+  is_active: z.boolean().optional(),
+})
+
+export type AdminBatchTranslationSettingsType = z.infer<
+  typeof AdminBatchTranslationSettings
+>
+export const AdminBatchTranslationSettings = createBatchBody(
+  AdminCreateTranslationSettings,
+  AdminUpdateTranslationSettings
+)
+
+export type AdminTranslationEntitiesParamsType = z.infer<
+  typeof AdminTranslationEntitiesParams
+>
+export const AdminTranslationEntitiesParams = createFindParams({
+  limit: 20,
+  offset: 0,
+}).merge(
+  z.object({
+    type: z.string(),
+    id: z.union([z.string(), z.array(z.string())]).optional(),
+  })
+)

@@ -11,6 +11,7 @@
     "apply": "Aplicar",
     "range": "Rango",
     "search": "Buscar",
+    "original": "Original",
     "of": "de",
     "results": "resultados",
     "pages": "páginas",
@@ -23,6 +24,8 @@
     "tip": "Consejo",
     "error": "Error",
     "select": "Seleccionar",
+    "selectAll": "Seleccionar todo",
+    "fullList": "Lista completa",
     "selected": "Seleccionado",
     "enabled": "Habilitado",
     "disabled": "Deshabilitado",
@@ -33,6 +36,7 @@
     "modified": "Modificado",
     "added": "Agregado",
     "removed": "Eliminado",
+    "remaining": "Restantes",
     "admin": "Administrador",
     "store": "Tienda",
     "details": "Detalles",
@@ -120,7 +124,9 @@
   },
   "actions": {
     "save": "Guardar",
+    "saveChanges": "Guardar cambios",
     "saveAsDraft": "Guardar como borrador",
+    "saveAndClose": "Guardar y cerrar",
     "copy": "Copiar",
     "copied": "Copiado",
     "duplicate": "Duplicar",
@@ -322,6 +328,9 @@
   },
   "filters": {
     "sortLabel": "Ordenar",
+    "collapse": {
+      "all": "Colapsar todo"
+    },
     "filterLabel": "Filtrar",
     "searchLabel": "Buscar",
     "date": {
@@ -1500,6 +1509,14 @@
   },
   "draftOrders": {
     "domain": "Pedidos Borradores",
+    "list": {
+      "description": "Crea un nuevo pedido borrador para empezar.",
+      "noRecordsMessage": "No se encontraron pedidos borradores",
+      "filtered": {
+        "heading": "No se encontraron resultados",
+        "description": "No hay pedidos borradores que coincidan con los criterios de filtro."
+      }
+    },
     "deleteWarning": "Estás a punto de eliminar el pedido borrador {{id}}. Esta acción no puede deshacerse.",
     "paymentLinkLabel": "Enlace de pago",
     "cartIdLabel": "ID del carrito",
@@ -2442,6 +2459,46 @@
     "deleteUserWarning": "Estás a punto de eliminar al usuario {{name}}. Esta acción no puede deshacerse.",
     "deleteUserSuccess": "Usuario {{name}} eliminado correctamente",
     "invite": "Invitar"
+  },
+  "translations": {
+    "domain": "Traducciones",
+    "list": {
+      "metrics": "{{translated}} de {{total}} traducciones"
+    },
+    "settings": {
+      "header": "Administrar entidades traducibles",
+      "successToast": "Configuraciones actualizadas exitosamente"
+    },
+    "actions": {
+      "manage": "Gestionar traducciones",
+      "manageEntities": "Gestionar entidades",
+      "manageLocales": "Gestionar idiomas"
+    },
+    "title": "Traducción de dominios",
+    "subtitle": "Gestiona las traducciones de tus datos en Medusa",
+    "bulk": {
+      "header": "Editor de Traducciones en Masa",
+      "locale": "Idioma"
+    },
+    "edit": {
+      "successToast": "Traducciones actualizadas exitosamente",
+      "unsavedChanges": {
+        "title": "Traducciones sin guardar",
+        "description": "No pierdas tu trabajo. Tienes cambios que no han sido guardados aún"
+      }
+    },
+    "activeLocales": {
+      "heading": "Idiomas",
+      "subtitle": "Traducciones activas",
+      "noLocalesTip": "Configura al menos un lenguaje para empezar a traducir tu información",
+      "noLocalesTipConfigureAction": "Configurar"
+    },
+    "completion": {
+      "heading": "Textos traducidos",
+      "translated": "Traducidos",
+      "toTranslate": "Faltantes",
+      "footer": "Idiomas"
+    }
   },
   "store": {
     "domain": "Tienda",

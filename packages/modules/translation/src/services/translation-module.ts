@@ -2,6 +2,7 @@ import { raw } from "@medusajs/framework/mikro-orm/core"
 import {
   Context,
   CreateTranslationDTO,
+  CreateTranslationSettingsDTO,
   DAL,
   FilterableTranslationProps,
   FindConfig,
@@ -9,26 +10,34 @@ import {
   LocaleDTO,
   ModulesSdkTypes,
   TranslationTypes,
+  UpdateTranslationSettingsDTO,
 } from "@medusajs/framework/types"
 import { SqlEntityManager } from "@medusajs/framework/mikro-orm/postgresql"
 import {
+  arrayDifference,
+  DmlEntity,
   EmitEvents,
   InjectManager,
   MedusaContext,
   MedusaError,
+  MedusaErrorTypes,
   MedusaService,
   normalizeLocale,
+  toSnakeCase,
 } from "@medusajs/framework/utils"
 import Locale from "@models/locale"
 import Translation from "@models/translation"
+import Settings from "@models/settings"
 import { computeTranslatedFieldCount } from "@utils/compute-translated-field-count"
-import { TRANSLATABLE_FIELDS_CONFIG_KEY } from "@utils/constants"
+import { filterTranslationFields } from "@utils/filter-translation-fields"
 
 type InjectedDependencies = {
   baseRepository: DAL.RepositoryService
   translationService: ModulesSdkTypes.IMedusaInternalService<typeof Translation>
   localeService: ModulesSdkTypes.IMedusaInternalService<typeof Locale>
-  [TRANSLATABLE_FIELDS_CONFIG_KEY]: Record<string, string[]>
+  translationSettingsService: ModulesSdkTypes.IMedusaInternalService<
+    typeof Settings
+  >
 }
 
 export default class TranslationModuleService
@@ -39,9 +48,13 @@ export default class TranslationModuleService
     Translation: {
       dto: TranslationTypes.TranslationDTO
     }
+    TranslationSettings: {
+      dto: TranslationTypes.TranslationSettingsDTO
+    }
   }>({
     Locale,
     Translation,
+    TranslationSettings: Settings,
   })
   implements ITranslationModuleService
 {
@@ -52,20 +65,114 @@ export default class TranslationModuleService
   protected localeService_: ModulesSdkTypes.IMedusaInternalService<
     typeof Locale
   >
-
-  private readonly translatableFieldsConfig_: Record<string, string[]>
+  protected settingsService_: ModulesSdkTypes.IMedusaInternalService<
+    typeof Settings
+  >
 
   constructor({
     baseRepository,
     translationService,
     localeService,
-    translatableFieldsConfig,
+    translationSettingsService,
   }: InjectedDependencies) {
     super(...arguments)
     this.baseRepository_ = baseRepository
     this.translationService_ = translationService
     this.localeService_ = localeService
-    this.translatableFieldsConfig_ = translatableFieldsConfig
+    this.settingsService_ = translationSettingsService
+  }
+
+  __hooks = {
+    onApplicationStart: async () => {
+      return this.onApplicationStart_()
+    },
+  }
+
+  protected async onApplicationStart_() {
+    const translatableEntities = DmlEntity.getTranslatableEntities()
+    const translatableEntitiesSet = new Set(
+      translatableEntities.map((entity) => toSnakeCase(entity.entity))
+    )
+
+    const currentTranslationSettings = await this.settingsService_.list()
+    const currentTranslationSettingsSet = new Set(
+      currentTranslationSettings.map((setting) => setting.entity_type)
+    )
+
+    const settingsToUpsert: (
+      | CreateTranslationSettingsDTO
+      | UpdateTranslationSettingsDTO
+    )[] = []
+
+    for (const setting of currentTranslationSettings) {
+      if (
+        !translatableEntitiesSet.has(setting.entity_type) &&
+        setting.is_active
+      ) {
+        settingsToUpsert.push({
+          id: setting.id,
+          is_active: false,
+        })
+      }
+    }
+
+    for (const entity of translatableEntities) {
+      const snakeCaseEntityType = toSnakeCase(entity.entity)
+      const hasCurrentSettings =
+        currentTranslationSettingsSet.has(snakeCaseEntityType)
+      if (!hasCurrentSettings) {
+        settingsToUpsert.push({
+          entity_type: snakeCaseEntityType,
+          fields: entity.fields,
+        })
+      }
+    }
+
+    await this.settingsService_.upsert(settingsToUpsert)
+  }
+
+  @InjectManager()
+  async getTranslatableFields(
+    entityType?: string,
+    @MedusaContext() sharedContext: Context = {}
+  ): Promise<Record<string, string[]>> {
+    const filters = entityType ? { entity_type: entityType } : {}
+    const settings = await this.settingsService_.list(
+      filters,
+      {},
+      sharedContext
+    )
+    return settings.reduce((acc, setting) => {
+      acc[setting.entity_type] = setting.is_active
+        ? (setting.fields as unknown as string[])
+        : []
+      return acc
+    }, {} as Record<string, string[]>)
+  }
+
+  @InjectManager()
+  async getInactiveTranslatableFields(
+    entityType?: string,
+    @MedusaContext() sharedContext: Context = {}
+  ): Promise<Record<string, string[]>> {
+    const translatableFields = await this.getTranslatableFields(
+      entityType,
+      sharedContext
+    )
+    return Object.entries(translatableFields).reduce(
+      (acc, [entityType, fields]) => {
+        const entity = DmlEntity.getTranslatableEntities().find(
+          (entity) => toSnakeCase(entity.entity) === entityType
+        )
+        if (!entity) {
+          return acc
+        }
+
+        acc[entityType] = arrayDifference(entity.fields, fields)
+        return acc
+      },
+      {} as Record<string, string[]>
+    )
   }
 
   static prepareFilters(
@@ -85,22 +192,79 @@ export default class TranslationModuleService
 
   @InjectManager()
   // @ts-expect-error
+  async retrieveTranslation(
+    id: string,
+    config: FindConfig<TranslationTypes.TranslationDTO> = {},
+    @MedusaContext() sharedContext: Context = {}
+  ): Promise<TranslationTypes.TranslationDTO> {
+    const configWithReference =
+      TranslationModuleService.ensureReferenceFieldInConfig(config)
+
+    const result = await this.translationService_.retrieve(
+      id,
+      configWithReference,
+      sharedContext
+    )
+
+    const serialized =
+      await this.baseRepository_.serialize<TranslationTypes.TranslationDTO>(
+        result
+      )
+
+    const translatableFieldsConfig = await this.getTranslatableFields(
+      undefined,
+      sharedContext
+    )
+
+    return filterTranslationFields([serialized], translatableFieldsConfig)[0]
+  }
+
+  /**
+   * Ensures the 'reference' field is included in the select config.
+   * This is needed for filtering translations by translatable fields.
+   */
+  static ensureReferenceFieldInConfig(
+    config: FindConfig<TranslationTypes.TranslationDTO>
+  ): FindConfig<TranslationTypes.TranslationDTO> {
+    if (!config?.select?.length) {
+      return config
+    }
+
+    const select = config.select as string[]
+    if (!select.includes("reference")) {
+      return { ...config, select: [...select, "reference"] }
+    }
+
+    return config
+  }
+
+  @InjectManager()
+  // @ts-expect-error
   async listTranslations(
     filters: FilterableTranslationProps = {},
     config: FindConfig<TranslationTypes.TranslationDTO> = {},
     @MedusaContext() sharedContext: Context = {}
   ): Promise<TranslationTypes.TranslationDTO[]> {
     const preparedFilters = TranslationModuleService.prepareFilters(filters)
+    const configWithReference =
+      TranslationModuleService.ensureReferenceFieldInConfig(config)
 
     const results = await this.translationService_.list(
       preparedFilters,
-      config,
+      configWithReference,
       sharedContext
     )
 
-    return await this.baseRepository_.serialize<
+    const serialized = await this.baseRepository_.serialize<
       TranslationTypes.TranslationDTO[]
     >(results)
+
+    const translatableFieldsConfig = await this.getTranslatableFields(
+      undefined,
+      sharedContext
+    )
+
+    return filterTranslationFields(serialized, translatableFieldsConfig)
   }
 
   @InjectManager()
@@ -111,17 +275,26 @@ export default class TranslationModuleService
     @MedusaContext() sharedContext: Context = {}
   ): Promise<[TranslationTypes.TranslationDTO[], number]> {
     const preparedFilters = TranslationModuleService.prepareFilters(filters)
+    const configWithReference =
+      TranslationModuleService.ensureReferenceFieldInConfig(config)
 
     const [results, count] = await this.translationService_.listAndCount(
       preparedFilters,
-      config,
+      configWithReference,
+      sharedContext
+    )
+
+    const serialized = await this.baseRepository_.serialize<
+      TranslationTypes.TranslationDTO[]
+    >(results)
+
+    const translatableFieldsConfig = await this.getTranslatableFields(
+      undefined,
       sharedContext
     )
 
     return [
-      await this.baseRepository_.serialize<TranslationTypes.TranslationDTO[]>(
-        results
-      ),
+      filterTranslationFields(serialized, translatableFieldsConfig),
       count,
     ]
   }
@@ -183,12 +356,16 @@ export default class TranslationModuleService
     TranslationTypes.TranslationDTO | TranslationTypes.TranslationDTO[]
   > {
     const dataArray = Array.isArray(data) ? data : [data]
+    const translatableFieldsConfig = await this.getTranslatableFields(
+      undefined,
+      sharedContext
+    )
     const normalizedData = dataArray.map((translation) => ({
       ...translation,
       locale_code: normalizeLocale(translation.locale_code),
       translated_field_count: computeTranslatedFieldCount(
         translation.translations as Record<string, unknown>,
-        this.translatableFieldsConfig_[translation.reference]
+        translatableFieldsConfig[translation.reference]
       ),
     }))
 
@@ -248,6 +425,11 @@ export default class TranslationModuleService
         )
       }
 
+      const translatableFieldsConfig = await this.getTranslatableFields(
+        undefined,
+        sharedContext
+      )
+
       for (const update of dataArray) {
         if (update.translations) {
           const reference = update.reference || referenceMap[update.id]
@@ -257,7 +439,7 @@ export default class TranslationModuleService
             }
           ).translated_field_count = computeTranslatedFieldCount(
             update.translations as Record<string, unknown>,
-            this.translatableFieldsConfig_[reference] || []
+            translatableFieldsConfig[reference] || []
           )
         }
       }
@@ -275,11 +457,40 @@ export default class TranslationModuleService
     return Array.isArray(data) ? serialized : serialized[0]
   }
 
-  getTranslatableFields(entityType?: string): Record<string, string[]> {
-    if (entityType) {
-      return { [entityType]: this.translatableFieldsConfig_[entityType] }
-    }
-    return this.translatableFieldsConfig_
+  @InjectManager()
+  @EmitEvents()
+  // @ts-expect-error
+  async createTranslationSettings(
+    data: CreateTranslationSettingsDTO[] | CreateTranslationSettingsDTO,
+    @MedusaContext() sharedContext: Context = {}
+  ): Promise<
+    | TranslationTypes.TranslationSettingsDTO
+    | TranslationTypes.TranslationSettingsDTO[]
+  > {
+    const dataArray = Array.isArray(data) ? data : [data]
+
+    await this.validateSettings_(dataArray, sharedContext)
+
+    // @ts-expect-error TS can't match union type to overloads
+    return await super.createTranslationSettings(data, sharedContext)
+  }
+
+  @InjectManager()
+  @EmitEvents()
+  // @ts-expect-error
+  async updateTranslationSettings(
+    data: UpdateTranslationSettingsDTO | UpdateTranslationSettingsDTO[],
+    @MedusaContext() sharedContext: Context = {}
+  ): Promise<
+    | TranslationTypes.TranslationSettingsDTO[]
+    | TranslationTypes.TranslationSettingsDTO
+  > {
+    const dataArray = Array.isArray(data) ? data : [data]
+
+    await this.validateSettings_(dataArray, sharedContext)
+
+    // @ts-expect-error TS can't match union type to overloads
+    return await super.updateTranslationSettings(data, sharedContext)
   }
 
   @InjectManager()
@@ -309,11 +520,16 @@ export default class TranslationModuleService
       sharedContext.manager) as SqlEntityManager
     const knex = manager.getKnex()
 
+    const translatableFieldsConfig = await this.getTranslatableFields(
+      undefined,
+      sharedContext
+    )
+
     const result: TranslationTypes.TranslationStatisticsOutput = {}
     const entityTypes: string[] = []
 
     for (const entityType of Object.keys(entities)) {
-      const translatableFields = this.translatableFieldsConfig_[entityType]
+      const translatableFields = translatableFieldsConfig[entityType]
 
       if (!translatableFields || translatableFields.length === 0) {
         result[entityType] = {
@@ -352,7 +568,7 @@ export default class TranslationModuleService
     )
 
     for (const entityType of entityTypes) {
-      const translatableFields = this.translatableFieldsConfig_[entityType]
+      const translatableFields = translatableFieldsConfig[entityType]
       const fieldsPerEntity = translatableFields.length
       const entityCount = entities[entityType].count
       const expectedPerLocale = entityCount * fieldsPerEntity
@@ -391,5 +607,80 @@ export default class TranslationModuleService
     }
 
     return result
+  }
+
+  /**
+   * Validates the translation settings to create or update against the translatable entities and their translatable fields configuration.
+   * @param dataToValidate - The data to validate.
+   * @param sharedContext - A context used to share resources, such as transaction manager, between the application and the module.
+   */
+  @InjectManager()
+  protected async validateSettings_(
+    dataToValidate: (
+      | CreateTranslationSettingsDTO
+      | UpdateTranslationSettingsDTO
+    )[],
+    @MedusaContext() sharedContext: Context = {}
+  ) {
+    const translatableEntities = DmlEntity.getTranslatableEntities()
+    const translatableEntitiesMap = new Map(
+      translatableEntities.map((entity) => [toSnakeCase(entity.entity), entity])
+    )
+
+    const invalidSettings: {
+      entity_type: string
+      is_invalid_entity: boolean
+      invalidFields?: string[]
+    }[] = []
+
+    for (const item of dataToValidate) {
+      let itemEntityType = item.entity_type
+      if (!itemEntityType) {
+        const translationSetting = await this.retrieveTranslationSettings(
+          //@ts-expect-error - if no entity_type, we are on an update
+          item.id,
+          { select: ["entity_type"] },
+          sharedContext
+        )
+        itemEntityType = translationSetting.entity_type
+      }
+
+      const entity = translatableEntitiesMap.get(itemEntityType)
+
+      if (!entity) {
+        invalidSettings.push({
+          entity_type: itemEntityType,
+          is_invalid_entity: true,
+        })
+      } else {
+        const invalidFields = arrayDifference(item.fields ?? [], entity.fields)
+        if (invalidFields.length) {
+          invalidSettings.push({
+            entity_type: itemEntityType,
+            is_invalid_entity: false,
+            invalidFields,
+          })
+        }
+      }
+    }
+
+    if (invalidSettings.length) {
+      throw new MedusaError(
+        MedusaErrorTypes.INVALID_DATA,
+        "Invalid translation settings:\n" +
+          invalidSettings
+            .map(
+              (setting) =>
+                `- ${setting.entity_type} ${
+                  setting.is_invalid_entity
+                    ? "is not a translatable entity"
+                    : `doesn't have the following fields set as translatable: ${setting.invalidFields?.join(
+                        ", "
+                      )}`
+                }`
+            )
+            .join("\n")
+      )
+    }
   }
 }

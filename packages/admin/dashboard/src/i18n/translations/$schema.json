@@ -8,6 +8,9 @@
     "general": {
       "type": "object",
       "properties": {
+        "fullList": {
+          "type": "string"
+        },
         "ascending": {
           "type": "string"
         },
@@ -36,6 +39,9 @@
           "type": "string"
         },
         "search": {
+          "type": "string"
+        },
+        "original": {
           "type": "string"
         },
         "of": {
@@ -74,6 +80,9 @@
         "select": {
           "type": "string"
         },
+        "selectAll": {
+          "type": "string"
+        },
         "selected": {
           "type": "string"
         },
@@ -102,6 +111,9 @@
           "type": "string"
         },
         "removed": {
+          "type": "string"
+        },
+        "remaining": {
           "type": "string"
         },
         "admin": {
@@ -184,6 +196,7 @@
         "ascending",
         "descending",
         "add",
+        "fullList",
         "start",
         "end",
         "open",
@@ -191,6 +204,7 @@
         "apply",
         "range",
         "search",
+        "original",
         "of",
         "results",
         "pages",
@@ -203,6 +217,7 @@
         "tip",
         "error",
         "select",
+        "selectAll",
         "selected",
         "enabled",
         "disabled",
@@ -213,6 +228,7 @@
         "modified",
         "added",
         "removed",
+        "remaining",
         "admin",
         "store",
         "details",
@@ -381,6 +397,12 @@
         "save": {
           "type": "string"
         },
+        "saveChanges": {
+          "type": "string"
+        },
+        "saveAndClose": {
+          "type": "string"
+        },
         "saveAsDraft": {
           "type": "string"
         },
@@ -513,7 +535,9 @@
       },
       "required": [
         "save",
+        "saveChanges",
         "saveAsDraft",
+        "saveAndClose",
         "copy",
         "copied",
         "duplicate",
@@ -1168,6 +1192,16 @@
         "searchLabel": {
           "type": "string"
         },
+        "collapse": {
+          "type": "object",
+          "properties": {
+            "all": {
+              "type": "string"
+            }
+          },
+          "required": ["all"],
+          "additionalProperties": false
+        },
         "date": {
           "type": "object",
           "properties": {
@@ -1303,6 +1337,7 @@
         "sortLabel",
         "filterLabel",
         "searchLabel",
+        "collapse",
         "date",
         "compare",
         "sorting",
@@ -5844,6 +5879,32 @@
           "required": ["open", "completed"],
           "additionalProperties": false
         },
+        "list": {
+          "type": "object",
+          "properties": {
+            "description": {
+              "type": "string"
+            },
+            "noRecordsMessage": {
+              "type": "string"
+            },
+            "filtered": {
+              "type": "object",
+              "properties": {
+                "heading": {
+                  "type": "string"
+                },
+                "description": {
+                  "type": "string"
+                }
+              },
+              "required": ["heading", "description"],
+              "additionalProperties": false
+            }
+          },
+          "required": ["description", "noRecordsMessage", "filtered"],
+          "additionalProperties": false
+        },
         "create": {
           "type": "object",
           "properties": {
@@ -9328,6 +9389,136 @@
       ],
       "additionalProperties": false
     },
+    "translations": {
+      "type": "object",
+      "properties": {
+        "domain": {
+          "type": "string"
+        },
+        "subtitle": {
+          "type": "string"
+        },
+        "list": {
+          "type": "object",
+          "properties": {
+            "metrics": {
+              "type": "string"
+            }
+          },
+          "required": ["metrics"]
+        },
+        "settings": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "string"
+                },
+                "successToast": {
+                    "type": "string"
+                }
+            },
+            "required": ["header", "successToast"],
+            "additionalProperties": false
+        },
+        "actions": {
+          "type": "object",
+          "properties": {
+            "manageLocales": {
+              "type": "string"
+            },
+            "manageEntities": {
+              "type": "string"
+            },
+            "manage": {
+              "type": "string"
+            }
+          },
+          "required": ["manageLocales", "manageEntities", "manage"]
+        },
+        "edit": {
+          "type": "object",
+          "properties": {
+            "successToast": {
+              "type": "string"
+            },
+            "unsavedChanges": {
+              "type": "object",
+              "properties": {
+                "title": {
+                  "type": "string"
+                },
+                "description": {
+                  "type": "string"
+                }
+              },
+              "required": ["title", "description"]
+            }
+          },
+          "required": ["successToast", "unsavedChanges"]
+        },
+        "bulk": {
+          "type": "object",
+          "properties": {
+            "header": {
+              "type": "string"
+            },
+            "mainColumn": {
+              "type": "string"
+            }
+          },
+          "required": ["header"]
+        },
+        "activeLocales": {
+          "type": "object",
+          "properties": {
+            "heading": {
+              "type": "string"
+            },
+            "subtitle": {
+              "type": "string"
+            },
+            "noLocalesTip": {
+              "type": "string"
+            },
+            "noLocalesTipConfigureAction": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "heading",
+            "subtitle",
+            "noLocalesTip",
+            "noLocalesTipConfigureAction"
+          ]
+        },
+        "completion": {
+          "type": "object",
+          "properties": {
+            "heading": {
+              "type": "string"
+            },
+            "translated": {
+              "type": "string"
+            },
+            "toTranslate": {
+              "type": "string"
+            },
+            "footer": {
+              "type": "string"
+            }
+          },
+          "required": ["heading", "translated", "toTranslate", "footer"]
+        }
+      },
+      "required": [
+        "domain",
+        "actions",
+        "subtitle",
+        "bulk",
+        "completion",
+        "edit"
+      ]
+    },
     "store": {
       "type": "object",
       "properties": {
@@ -12120,6 +12311,26 @@
         "prompts"
       ],
       "additionalProperties": false
+    },
+    "auth": {
+      "type": "object",
+      "properties": {
+        "login": {
+          "type": "object",
+          "properties": {
+            "authenticationFailed": {
+              "type": "string"
+            },
+            "cloud": {
+              "type": "string"
+            }
+          },
+          "required": ["authenticationFailed", "cloud"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["login"],
+      "additionalProperties": false
     }
   },
   "required": [
@@ -12177,7 +12388,8 @@
     "labels",
     "fields",
     "dateTime",
-    "views"
+    "views",
+    "auth"
   ],
   "additionalProperties": false
 }
