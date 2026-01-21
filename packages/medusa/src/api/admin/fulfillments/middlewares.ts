@@ -31,6 +31,12 @@ export const adminFulfillmentsRoutesMiddlewares: MiddlewareRoute[] = [
         QueryConfig.retrieveTransformQueryConfig
       ),
     ],
+    policies: [
+      {
+        resource: Entities.fulfillment,
+        operation: PolicyOperation.update,
+      },
+    ],
   },
   {
     method: ["POST"],
@@ -42,6 +48,12 @@ export const adminFulfillmentsRoutesMiddlewares: MiddlewareRoute[] = [
         QueryConfig.retrieveTransformQueryConfig
       ),
     ],
+    policies: [
+      {
+        resource: Entities.fulfillment,
+        operation: PolicyOperation.create,
+      },
+    ],
   },
   {
     method: ["POST"],
@@ -52,6 +64,12 @@ export const adminFulfillmentsRoutesMiddlewares: MiddlewareRoute[] = [
         AdminFulfillmentParams,
         QueryConfig.retrieveTransformQueryConfig
       ),
+    ],
+    policies: [
+      {
+        resource: Entities.fulfillment,
+        operation: PolicyOperation.update,
+      },
     ],
   },
 ]

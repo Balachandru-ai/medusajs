@@ -89,6 +89,16 @@ export const adminCustomerRoutesMiddlewares: MiddlewareRoute[] = [
     ],
   },
   {
+    method: ["DELETE"],
+    matcher: "/admin/customers/:id",
+    policies: [
+      {
+        resource: Entities.customer,
+        operation: PolicyOperation.delete,
+      },
+    ],
+  },
+  {
     method: ["POST"],
     matcher: "/admin/customers/:id/addresses",
     middlewares: [

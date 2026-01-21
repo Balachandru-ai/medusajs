@@ -36,6 +36,12 @@ export const adminShippingProfilesMiddlewares: MiddlewareRoute[] = [
         retrieveTransformQueryConfig
       ),
     ],
+    policies: [
+      {
+        resource: Entities.shipping_profile,
+        operation: PolicyOperation.create,
+      },
+    ],
   },
   {
     method: ["GET"],
@@ -57,6 +63,12 @@ export const adminShippingProfilesMiddlewares: MiddlewareRoute[] = [
         retrieveTransformQueryConfig
       ),
     ],
+    policies: [
+      {
+        resource: Entities.shipping_profile,
+        operation: PolicyOperation.update,
+      },
+    ],
   },
   {
     method: ["GET"],
@@ -66,6 +78,17 @@ export const adminShippingProfilesMiddlewares: MiddlewareRoute[] = [
         AdminGetShippingProfileParams,
         retrieveTransformQueryConfig
       ),
+    ],
+  },
+  {
+    method: ["DELETE"],
+    matcher: "/admin/shipping-profiles/:id",
+    middlewares: [],
+    policies: [
+      {
+        resource: Entities.shipping_profile,
+        operation: PolicyOperation.delete,
+      },
     ],
   },
 ]

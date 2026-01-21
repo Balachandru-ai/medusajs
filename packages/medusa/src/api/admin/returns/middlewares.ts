@@ -62,6 +62,12 @@ export const adminReturnRoutesMiddlewares: MiddlewareRoute[] = [
         QueryConfig.retrieveTransformQueryConfig
       ),
     ],
+    policies: [
+      {
+        resource: Entities.return,
+        operation: PolicyOperation.update,
+      },
+    ],
   },
   {
     method: ["POST"],
@@ -72,6 +78,12 @@ export const adminReturnRoutesMiddlewares: MiddlewareRoute[] = [
         AdminGetOrdersOrderParams,
         QueryConfig.retrieveTransformQueryConfig
       ),
+    ],
+    policies: [
+      {
+        resource: Entities.return,
+        operation: PolicyOperation.create,
+      },
     ],
   },
   {
@@ -84,6 +96,12 @@ export const adminReturnRoutesMiddlewares: MiddlewareRoute[] = [
         QueryConfig.retrieveTransformQueryConfig
       ),
     ],
+    policies: [
+      {
+        resource: Entities.return,
+        operation: PolicyOperation.update,
+      },
+    ],
   },
   {
     method: ["POST"],
@@ -95,6 +113,12 @@ export const adminReturnRoutesMiddlewares: MiddlewareRoute[] = [
         QueryConfig.retrieveTransformQueryConfig
       ),
     ],
+    policies: [
+      {
+        resource: Entities.return,
+        operation: PolicyOperation.update,
+      },
+    ],
   },
   {
     method: ["DELETE"],
@@ -104,6 +128,12 @@ export const adminReturnRoutesMiddlewares: MiddlewareRoute[] = [
         AdminGetOrdersOrderParams,
         QueryConfig.retrieveTransformQueryConfig
       ),
+    ],
+    policies: [
+      {
+        resource: Entities.return,
+        operation: PolicyOperation.update,
+      },
     ],
   },
   {
@@ -116,6 +146,12 @@ export const adminReturnRoutesMiddlewares: MiddlewareRoute[] = [
         QueryConfig.retrieveTransformQueryConfig
       ),
     ],
+    policies: [
+      {
+        resource: Entities.return,
+        operation: PolicyOperation.update,
+      },
+    ],
   },
   {
     method: ["POST"],
@@ -127,6 +163,12 @@ export const adminReturnRoutesMiddlewares: MiddlewareRoute[] = [
         QueryConfig.retrieveTransformQueryConfig
       ),
     ],
+    policies: [
+      {
+        resource: Entities.return,
+        operation: PolicyOperation.update,
+      },
+    ],
   },
   {
     method: ["DELETE"],
@@ -136,6 +178,12 @@ export const adminReturnRoutesMiddlewares: MiddlewareRoute[] = [
         AdminGetOrdersOrderParams,
         QueryConfig.retrieveTransformQueryConfig
       ),
+    ],
+    policies: [
+      {
+        resource: Entities.return,
+        operation: PolicyOperation.update,
+      },
     ],
   },
   {
@@ -147,6 +195,12 @@ export const adminReturnRoutesMiddlewares: MiddlewareRoute[] = [
         AdminGetOrdersOrderParams,
         QueryConfig.retrieveTransformQueryConfig
       ),
+    ],
+    policies: [
+      {
+        resource: Entities.return,
+        operation: PolicyOperation.update,
+      },
     ],
   },
   {
@@ -159,11 +213,23 @@ export const adminReturnRoutesMiddlewares: MiddlewareRoute[] = [
         QueryConfig.retrieveTransformQueryConfig
       ),
     ],
+    policies: [
+      {
+        resource: Entities.return,
+        operation: PolicyOperation.update,
+      },
+    ],
   },
   {
     method: ["DELETE"],
     matcher: "/admin/returns/:id/request",
     middlewares: [],
+    policies: [
+      {
+        resource: Entities.return,
+        operation: PolicyOperation.delete,
+      },
+    ],
   },
   {
     method: ["POST"],
@@ -175,11 +241,23 @@ export const adminReturnRoutesMiddlewares: MiddlewareRoute[] = [
         QueryConfig.retrieveTransformQueryConfig
       ),
     ],
+    policies: [
+      {
+        resource: Entities.return,
+        operation: PolicyOperation.update,
+      },
+    ],
   },
   {
     method: ["DELETE"],
     matcher: "/admin/returns/:id/receive",
     middlewares: [],
+    policies: [
+      {
+        resource: Entities.return,
+        operation: PolicyOperation.update,
+      },
+    ],
   },
   {
     method: ["POST"],
@@ -190,6 +268,12 @@ export const adminReturnRoutesMiddlewares: MiddlewareRoute[] = [
         AdminGetOrdersOrderParams,
         QueryConfig.retrieveTransformQueryConfig
       ),
+    ],
+    policies: [
+      {
+        resource: Entities.return,
+        operation: PolicyOperation.update,
+      },
     ],
   },
   {
@@ -202,6 +286,12 @@ export const adminReturnRoutesMiddlewares: MiddlewareRoute[] = [
         QueryConfig.retrieveTransformQueryConfig
       ),
     ],
+    policies: [
+      {
+        resource: Entities.return,
+        operation: PolicyOperation.update,
+      },
+    ],
   },
   {
     method: ["POST"],
@@ -213,6 +303,12 @@ export const adminReturnRoutesMiddlewares: MiddlewareRoute[] = [
         QueryConfig.retrieveTransformQueryConfig
       ),
     ],
+    policies: [
+      {
+        resource: Entities.return,
+        operation: PolicyOperation.update,
+      },
+    ],
   },
   {
     method: ["DELETE"],
@@ -222,6 +318,12 @@ export const adminReturnRoutesMiddlewares: MiddlewareRoute[] = [
         AdminGetOrdersOrderParams,
         QueryConfig.retrieveTransformQueryConfig
       ),
+    ],
+    policies: [
+      {
+        resource: Entities.return,
+        operation: PolicyOperation.update,
+      },
     ],
   },
   {
@@ -234,6 +336,12 @@ export const adminReturnRoutesMiddlewares: MiddlewareRoute[] = [
         QueryConfig.retrieveTransformQueryConfig
       ),
     ],
+    policies: [
+      {
+        resource: Entities.return,
+        operation: PolicyOperation.update,
+      },
+    ],
   },
   {
     method: ["POST"],
@@ -245,6 +353,12 @@ export const adminReturnRoutesMiddlewares: MiddlewareRoute[] = [
         QueryConfig.retrieveTransformQueryConfig
       ),
     ],
+    policies: [
+      {
+        resource: Entities.return,
+        operation: PolicyOperation.update,
+      },
+    ],
   },
   {
     method: ["DELETE"],
@@ -254,6 +368,12 @@ export const adminReturnRoutesMiddlewares: MiddlewareRoute[] = [
         AdminGetOrdersOrderParams,
         QueryConfig.retrieveTransformQueryConfig
       ),
+    ],
+    policies: [
+      {
+        resource: Entities.return,
+        operation: PolicyOperation.update,
+      },
     ],
   },
 ]

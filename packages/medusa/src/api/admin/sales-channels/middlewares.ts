@@ -92,6 +92,12 @@ export const adminSalesChannelRoutesMiddlewares: MiddlewareRoute[] = [
     method: ["DELETE"],
     matcher: "/admin/sales-channels/:id",
     middlewares: [],
+    policies: [
+      {
+        resource: Entities.sales_channel,
+        operation: PolicyOperation.delete,
+      },
+    ],
   },
   {
     method: ["POST"],

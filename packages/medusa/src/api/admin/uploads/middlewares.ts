@@ -31,6 +31,12 @@ export const adminUploadRoutesMiddlewares: MiddlewareRoute[] = [
       upload.array("files"),
       validateAndTransformQuery(AdminGetUploadParams, retrieveUploadConfig),
     ],
+    policies: [
+      {
+        resource: Entities.file,
+        operation: PolicyOperation.create,
+      },
+    ],
   },
   {
     method: ["GET"],
@@ -54,5 +60,11 @@ export const adminUploadRoutesMiddlewares: MiddlewareRoute[] = [
     method: ["POST"],
     matcher: "/admin/uploads/presigned-urls",
     middlewares: [validateAndTransformBody(AdminUploadPreSignedUrl)],
+    policies: [
+      {
+        resource: Entities.file,
+        operation: PolicyOperation.create,
+      },
+    ],
   },
 ]

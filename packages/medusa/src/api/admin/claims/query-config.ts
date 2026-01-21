@@ -1,6 +1,5 @@
 export enum Entities {
   order_claim = "order_claim",
-  order_claim_item = "order_claim_item",
 }
 
 export const defaultAdminClaimFields = [

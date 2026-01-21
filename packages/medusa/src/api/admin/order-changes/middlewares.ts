@@ -31,5 +31,11 @@ export const adminOrderChangesRoutesMiddlewares: MiddlewareRoute[] = [
         QueryConfig.retrieveTransformQueryConfig
       ),
     ],
+    policies: [
+      {
+        resource: Entities.order_change,
+        operation: PolicyOperation.update,
+      },
+    ],
   },
 ]

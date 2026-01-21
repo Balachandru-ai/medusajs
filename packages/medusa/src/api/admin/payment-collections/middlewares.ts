@@ -32,6 +32,12 @@ export const adminPaymentCollectionsMiddlewares: MiddlewareRoute[] = [
         queryConfig.retrievePaymentCollectionTransformQueryConfig
       ),
     ],
+    policies: [
+      {
+        resource: Entities.payment_collection,
+        operation: PolicyOperation.create,
+      },
+    ],
   },
   {
     method: ["POST"],
@@ -43,10 +49,22 @@ export const adminPaymentCollectionsMiddlewares: MiddlewareRoute[] = [
         queryConfig.retrievePaymentCollectionTransformQueryConfig
       ),
     ],
+    policies: [
+      {
+        resource: Entities.payment_collection,
+        operation: PolicyOperation.update,
+      },
+    ],
   },
   {
     method: ["DELETE"],
     matcher: "/admin/payment-collections/:id",
     middlewares: [],
+    policies: [
+      {
+        resource: Entities.payment_collection,
+        operation: PolicyOperation.delete,
+      },
+    ],
   },
 ]

@@ -31,6 +31,15 @@ export const adminPriceListsRoutesMiddlewares: MiddlewareRoute[] = [
     ],
   },
   {
+    matcher: "/admin/price-lists/*/prices/*",
+    policies: [
+      {
+        resource: Entities.price,
+        operation: PolicyOperation.read,
+      },
+    ],
+  },
+  {
     method: ["GET"],
     matcher: "/admin/price-lists",
     middlewares: [
@@ -128,8 +137,8 @@ export const adminPriceListsRoutesMiddlewares: MiddlewareRoute[] = [
     ],
     policies: [
       {
-        resource: Entities.price_list,
-        operation: PolicyOperation.update,
+        resource: Entities.price,
+        operation: PolicyOperation.ALL,
       },
     ],
   },

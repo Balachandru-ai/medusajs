@@ -28,10 +28,6 @@ export const adminClaimRoutesMiddlewares: MiddlewareRoute[] = [
         resource: Entities.order_claim,
         operation: PolicyOperation.read,
       },
-      {
-        resource: Entities.order_claim_item,
-        operation: PolicyOperation.read,
-      },
     ],
   },
   {
@@ -87,10 +83,6 @@ export const adminClaimRoutesMiddlewares: MiddlewareRoute[] = [
         resource: Entities.order_claim,
         operation: PolicyOperation.update,
       },
-      {
-        resource: Entities.order_claim_item,
-        operation: PolicyOperation.create,
-      },
     ],
   },
   {
@@ -108,10 +100,6 @@ export const adminClaimRoutesMiddlewares: MiddlewareRoute[] = [
         resource: Entities.order_claim,
         operation: PolicyOperation.update,
       },
-      {
-        resource: Entities.order_claim_item,
-        operation: PolicyOperation.update,
-      },
     ],
   },
   {
@@ -125,8 +113,8 @@ export const adminClaimRoutesMiddlewares: MiddlewareRoute[] = [
     ],
     policies: [
       {
-        resource: Entities.order_claim_item,
-        operation: PolicyOperation.delete,
+        resource: Entities.order_claim,
+        operation: PolicyOperation.update,
       },
     ],
   },
@@ -168,7 +156,7 @@ export const adminClaimRoutesMiddlewares: MiddlewareRoute[] = [
         operation: PolicyOperation.update,
       },
       {
-        resource: Entities.order_claim_item,
+        resource: Entities.order_claim,
         operation: PolicyOperation.update,
       },
     ],
@@ -184,8 +172,8 @@ export const adminClaimRoutesMiddlewares: MiddlewareRoute[] = [
     ],
     policies: [
       {
-        resource: Entities.order_claim_item,
-        operation: PolicyOperation.delete,
+        resource: Entities.order_claim,
+        operation: PolicyOperation.update,
       },
     ],
   },
@@ -234,8 +222,8 @@ export const adminClaimRoutesMiddlewares: MiddlewareRoute[] = [
     ],
     policies: [
       {
-        resource: Entities.order_claim_item,
-        operation: PolicyOperation.delete,
+        resource: Entities.order_claim,
+        operation: PolicyOperation.update,
       },
     ],
   },
@@ -255,10 +243,6 @@ export const adminClaimRoutesMiddlewares: MiddlewareRoute[] = [
         resource: Entities.order_claim,
         operation: PolicyOperation.update,
       },
-      {
-        resource: Entities.order_claim_item,
-        operation: PolicyOperation.create,
-      },
     ],
   },
   {
@@ -277,7 +261,7 @@ export const adminClaimRoutesMiddlewares: MiddlewareRoute[] = [
         operation: PolicyOperation.update,
       },
       {
-        resource: Entities.order_claim_item,
+        resource: Entities.order_claim,
         operation: PolicyOperation.update,
       },
     ],
@@ -293,8 +277,8 @@ export const adminClaimRoutesMiddlewares: MiddlewareRoute[] = [
     ],
     policies: [
       {
-        resource: Entities.order_claim_item,
-        operation: PolicyOperation.delete,
+        resource: Entities.order_claim,
+        operation: PolicyOperation.update,
       },
     ],
   },
@@ -343,8 +327,8 @@ export const adminClaimRoutesMiddlewares: MiddlewareRoute[] = [
     ],
     policies: [
       {
-        resource: Entities.order_claim_item,
-        operation: PolicyOperation.delete,
+        resource: Entities.order_claim,
+        operation: PolicyOperation.update,
       },
     ],
   },

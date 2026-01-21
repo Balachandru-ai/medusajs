@@ -82,5 +82,11 @@ export const adminProductTypeRoutesMiddlewares: MiddlewareRoute[] = [
     method: ["DELETE"],
     matcher: "/admin/product-types/:id",
     middlewares: [],
+    policies: [
+      {
+        resource: Entities.product_type,
+        operation: PolicyOperation.delete,
+      },
+    ],
   },
 ]

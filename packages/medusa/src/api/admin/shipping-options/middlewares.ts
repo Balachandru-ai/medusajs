@@ -68,6 +68,12 @@ export const adminShippingOptionRoutesMiddlewares: MiddlewareRoute[] = [
         retrieveTransformQueryConfig
       ),
     ],
+    policies: [
+      {
+        resource: Entities.shipping_option,
+        operation: PolicyOperation.create,
+      },
+    ],
   },
   {
     method: ["POST"],
@@ -79,10 +85,22 @@ export const adminShippingOptionRoutesMiddlewares: MiddlewareRoute[] = [
         retrieveTransformQueryConfig
       ),
     ],
+    policies: [
+      {
+        resource: Entities.shipping_option,
+        operation: PolicyOperation.update,
+      },
+    ],
   },
   {
     method: ["DELETE"],
     matcher: "/admin/shipping-options/:id",
+    policies: [
+      {
+        resource: Entities.shipping_option,
+        operation: PolicyOperation.delete,
+      },
+    ],
   },
   {
     method: ["POST"],
@@ -101,6 +119,12 @@ export const adminShippingOptionRoutesMiddlewares: MiddlewareRoute[] = [
         AdminGetShippingOptionRuleParams,
         retrieveRuleTransformQueryConfig
       ),
+    ],
+    policies: [
+      {
+        resource: Entities.shipping_option,
+        operation: PolicyOperation.update,
+      },
     ],
   },
 ]

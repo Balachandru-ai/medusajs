@@ -77,4 +77,15 @@ export const adminPricePreferencesRoutesMiddlewares: MiddlewareRoute[] = [
       },
     ],
   },
+  {
+    method: ["DELETE"],
+    matcher: "/admin/price-preferences/:id",
+    middlewares: [],
+    policies: [
+      {
+        resource: Entities.price_preference,
+        operation: PolicyOperation.delete,
+      },
+    ],
+  },
 ]

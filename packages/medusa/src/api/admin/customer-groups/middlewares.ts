@@ -95,4 +95,14 @@ export const adminCustomerGroupRoutesMiddlewares: MiddlewareRoute[] = [
       },
     ],
   },
+  {
+    method: ["DELETE"],
+    matcher: "/admin/customer-groups/:id",
+    policies: [
+      {
+        resource: Entities.customer_group,
+        operation: PolicyOperation.delete,
+      },
+    ],
+  },
 ]

@@ -31,10 +31,6 @@ export const adminOrderRoutesMiddlewares: MiddlewareRoute[] = [
         resource: Entities.order,
         operation: PolicyOperation.read,
       },
-      {
-        resource: Entities.order_item,
-        operation: PolicyOperation.read,
-      },
     ],
   },
   {
@@ -192,7 +188,7 @@ export const adminOrderRoutesMiddlewares: MiddlewareRoute[] = [
     ],
     policies: [
       {
-        resource: Entities.order,
+        resource: Entities.credit_line,
         operation: PolicyOperation.create,
       },
     ],
@@ -209,7 +205,7 @@ export const adminOrderRoutesMiddlewares: MiddlewareRoute[] = [
     ],
     policies: [
       {
-        resource: Entities.order,
+        resource: Entities.fulfillment,
         operation: PolicyOperation.create,
       },
     ],
@@ -226,7 +222,7 @@ export const adminOrderRoutesMiddlewares: MiddlewareRoute[] = [
     ],
     policies: [
       {
-        resource: Entities.order,
+        resource: Entities.fulfillment,
         operation: PolicyOperation.update,
       },
     ],
@@ -243,7 +239,7 @@ export const adminOrderRoutesMiddlewares: MiddlewareRoute[] = [
     ],
     policies: [
       {
-        resource: Entities.order,
+        resource: Entities.fulfillment,
         operation: PolicyOperation.update,
       },
     ],
@@ -260,7 +256,7 @@ export const adminOrderRoutesMiddlewares: MiddlewareRoute[] = [
     ],
     policies: [
       {
-        resource: Entities.order,
+        resource: Entities.fulfillment,
         operation: PolicyOperation.update,
       },
     ],

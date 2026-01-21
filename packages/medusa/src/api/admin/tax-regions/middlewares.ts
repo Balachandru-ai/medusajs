@@ -35,6 +35,12 @@ export const adminTaxRegionRoutesMiddlewares: MiddlewareRoute[] = [
         QueryConfig.retrieveTransformQueryConfig
       ),
     ],
+    policies: [
+      {
+        resource: Entities.tax_region,
+        operation: PolicyOperation.create,
+      },
+    ],
   },
   {
     method: "POST",
@@ -45,6 +51,12 @@ export const adminTaxRegionRoutesMiddlewares: MiddlewareRoute[] = [
         AdminGetTaxRegionsParams,
         QueryConfig.retrieveTransformQueryConfig
       ),
+    ],
+    policies: [
+      {
+        resource: Entities.tax_region,
+        operation: PolicyOperation.update,
+      },
     ],
   },
   {
@@ -65,6 +77,17 @@ export const adminTaxRegionRoutesMiddlewares: MiddlewareRoute[] = [
         AdminGetTaxRegionParams,
         QueryConfig.retrieveTransformQueryConfig
       ),
+    ],
+  },
+  {
+    method: "DELETE",
+    matcher: "/admin/tax-regions/:id",
+    middlewares: [],
+    policies: [
+      {
+        resource: Entities.tax_region,
+        operation: PolicyOperation.delete,
+      },
     ],
   },
 ]
