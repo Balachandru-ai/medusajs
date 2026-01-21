@@ -50,7 +50,7 @@ export const MODULE_PACKAGE_NAMES = {
   [Modules.STOCK_LOCATION]: "@medusajs/medusa/stock-location",
   [Modules.TAX]: "@medusajs/medusa/tax",
   [Modules.USER]: "@medusajs/medusa/user",
-  [Modules.WORKFLOW_ENGINE]: "@medusajs/medusa/workflows",
+  [Modules.WORKFLOW_ENGINE]: "@medusajs/medusa/workflow-engine-inmemory",
   [Modules.REGION]: "@medusajs/medusa/region",
   [Modules.ORDER]: "@medusajs/medusa/order",
   [Modules.API_KEY]: "@medusajs/medusa/api-key",
@@ -78,6 +78,7 @@ export const TEMPORARY_REDIS_MODULE_PACKAGE_NAMES = {
   [Modules.EVENT_BUS]: "@medusajs/medusa/event-bus-redis",
   [Modules.CACHE]: "@medusajs/medusa/cache-redis",
   [Modules.LOCKING]: "@medusajs/medusa/locking-redis",
+  [Modules.WORKFLOW_ENGINE]: "@medusajs/medusa/workflow-engine-redis",
 }
 
 REVERSED_MODULE_PACKAGE_NAMES[
@@ -89,6 +90,9 @@ REVERSED_MODULE_PACKAGE_NAMES[
 REVERSED_MODULE_PACKAGE_NAMES[
   TEMPORARY_REDIS_MODULE_PACKAGE_NAMES[Modules.LOCKING]
 ] = Modules.LOCKING
+REVERSED_MODULE_PACKAGE_NAMES[
+  TEMPORARY_REDIS_MODULE_PACKAGE_NAMES[Modules.WORKFLOW_ENGINE]
+] = Modules.WORKFLOW_ENGINE
 
 // Backward compatibility aliases for deprecated workflow engine modules
 REVERSED_MODULE_PACKAGE_NAMES["@medusajs/medusa/workflow-engine-inmemory"] =
