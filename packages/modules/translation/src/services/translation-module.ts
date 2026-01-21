@@ -469,7 +469,11 @@ export default class TranslationModuleService
   > {
     const dataArray = Array.isArray(data) ? data : [data]
 
-    await this.validateSettings_(dataArray, sharedContext)
+    const normalizedData = await this.ensureEntityType_(
+      dataArray,
+      sharedContext
+    )
+    TranslationModuleService.validateSettings(normalizedData)
 
     // @ts-expect-error TS can't match union type to overloads
     return await super.createTranslationSettings(data, sharedContext)
@@ -487,7 +491,11 @@ export default class TranslationModuleService
   > {
     const dataArray = Array.isArray(data) ? data : [data]
 
-    await this.validateSettings_(dataArray, sharedContext)
+    const normalizedData = await this.ensureEntityType_(
+      dataArray,
+      sharedContext
+    )
+    TranslationModuleService.validateSettings(normalizedData)
 
     const updatedSettings = await super.updateTranslationSettings(
       // @ts-expect-error TS can't match union type to overloads
@@ -496,8 +504,8 @@ export default class TranslationModuleService
     )
 
     await Promise.all(
-      dataArray.map(async (setting) => {
-        const entityType = await this.resolveEntityType_(setting, sharedContext)
+      normalizedData.map(async (setting) => {
+        const entityType = setting.entity_type
 
         const translatableFields = (
           await this.getTranslatableFields(entityType, sharedContext)
@@ -661,15 +669,12 @@ export default class TranslationModuleService
   /**
    * Validates the translation settings to create or update against the translatable entities and their translatable fields configuration.
    * @param dataToValidate - The data to validate.
-   * @param sharedContext - A context used to share resources, such as transaction manager, between the application and the module.
    */
-  @InjectManager()
-  protected async validateSettings_(
+  static validateSettings(
     dataToValidate: (
       | CreateTranslationSettingsDTO
-      | UpdateTranslationSettingsDTO
-    )[],
-    @MedusaContext() sharedContext: Context = {}
+      | (UpdateTranslationSettingsDTO & { entity_type: string })
+    )[]
   ) {
     const translatableEntities = DmlEntity.getTranslatableEntities()
     const translatableEntitiesMap = new Map(
@@ -683,20 +688,19 @@ export default class TranslationModuleService
     }[] = []
 
     for (const item of dataToValidate) {
-      const itemEntityType = await this.resolveEntityType_(item, sharedContext)
-
-      const entity = translatableEntitiesMap.get(itemEntityType)
+      const entityType = item.entity_type
+      const entity = translatableEntitiesMap.get(entityType)
 
       if (!entity) {
         invalidSettings.push({
-          entity_type: itemEntityType,
+          entity_type: entityType,
           is_invalid_entity: true,
         })
       } else {
         const invalidFields = arrayDifference(item.fields ?? [], entity.fields)
         if (invalidFields.length) {
           invalidSettings.push({
-            entity_type: itemEntityType,
+            entity_type: entityType,
             is_invalid_entity: false,
             invalidFields,
           })
@@ -722,5 +726,28 @@ export default class TranslationModuleService
             .join("\n")
       )
     }
+  }
+
+  /**
+   * Ensures the entity type is set for the settings to be created or updated. This is useful for validation purposes and recomputing the translated field count.
+   * @param settings - The settings to ensure the entity type for.
+   * @param sharedContext - A context used to share resources, such as transaction manager, between the application and the module.
+   * @returns The settings with the entity type set.
+   */
+  protected async ensureEntityType_(
+    settings: (CreateTranslationSettingsDTO | UpdateTranslationSettingsDTO)[],
+    @MedusaContext() sharedContext: Context = {}
+  ): Promise<
+    (
+      | CreateTranslationSettingsDTO
+      | (UpdateTranslationSettingsDTO & { entity_type: string })
+    )[]
+  > {
+    return await Promise.all(
+      settings.map(async (setting) => {
+        const entityType = await this.resolveEntityType_(setting, sharedContext)
+        return { ...setting, entity_type: entityType }
+      })
+    )
   }
 }
