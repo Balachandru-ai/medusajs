@@ -54,6 +54,12 @@ export const adminReservationRoutesMiddlewares: MiddlewareRoute[] = [
         QueryConfig.retrieveTransformQueryConfig
       ),
     ],
+    policies: [
+      {
+        resource: Entities.reservation_item,
+        operation: PolicyOperation.create,
+      },
+    ],
   },
   {
     method: ["POST"],
@@ -64,6 +70,23 @@ export const adminReservationRoutesMiddlewares: MiddlewareRoute[] = [
         AdminGetReservationParams,
         QueryConfig.retrieveTransformQueryConfig
       ),
+    ],
+    policies: [
+      {
+        resource: Entities.reservation_item,
+        operation: PolicyOperation.update,
+      },
+    ],
+  },
+  {
+    method: ["DELETE"],
+    matcher: "/admin/reservations/:id",
+    middlewares: [],
+    policies: [
+      {
+        resource: Entities.reservation_item,
+        operation: PolicyOperation.delete,
+      },
     ],
   },
 ]

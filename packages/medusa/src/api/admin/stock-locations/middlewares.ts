@@ -97,7 +97,7 @@ export const adminStockLocationRoutesMiddlewares: MiddlewareRoute[] = [
     policies: [
       {
         resource: Entities.stock_location,
-        operation: PolicyOperation.create,
+        operation: PolicyOperation.update,
       },
     ],
   },
@@ -132,6 +132,17 @@ export const adminStockLocationRoutesMiddlewares: MiddlewareRoute[] = [
       {
         resource: Entities.stock_location,
         operation: PolicyOperation.update,
+      },
+    ],
+  },
+  {
+    method: ["DELETE"],
+    matcher: "/admin/stock-locations/:id",
+    middlewares: [],
+    policies: [
+      {
+        resource: Entities.stock_location,
+        operation: PolicyOperation.delete,
       },
     ],
   },

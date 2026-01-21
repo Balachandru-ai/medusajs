@@ -1,9 +1,6 @@
 export enum Entities {
   price_list = "price_list",
-}
-
-export enum PriceListRelations {
-  PRICES = "prices",
+  price = "price",
 }
 
 // Note: renamed to avoid referencing remoteQuery which is legacy

@@ -85,6 +85,17 @@ export const adminPromotionRoutesMiddlewares: MiddlewareRoute[] = [
     ],
   },
   {
+    method: ["DELETE"],
+    matcher: "/admin/promotions/:id",
+    middlewares: [],
+    policies: [
+      {
+        resource: Entities.promotion,
+        operation: PolicyOperation.delete,
+      },
+    ],
+  },
+  {
     method: ["GET"],
     matcher: "/admin/promotions/:id/:rule_type",
     middlewares: [

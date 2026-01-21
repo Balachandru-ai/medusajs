@@ -24,6 +24,15 @@ export const adminFulfillmentSetsRoutesMiddlewares: MiddlewareRoute[] = [
     ],
   },
   {
+    matcher: "/admin/fulfillment-sets/*/service-zones/*",
+    policies: [
+      {
+        resource: Entities.service_zone,
+        operation: PolicyOperation.read,
+      },
+    ],
+  },
+  {
     method: ["POST"],
     matcher: "/admin/fulfillment-sets/:id/service-zones",
     middlewares: [
@@ -36,6 +45,10 @@ export const adminFulfillmentSetsRoutesMiddlewares: MiddlewareRoute[] = [
     policies: [
       {
         resource: Entities.fulfillment_set,
+        operation: PolicyOperation.create,
+      },
+      {
+        resource: Entities.service_zone,
         operation: PolicyOperation.create,
       },
     ],
@@ -52,6 +65,10 @@ export const adminFulfillmentSetsRoutesMiddlewares: MiddlewareRoute[] = [
     policies: [
       {
         resource: Entities.fulfillment_set,
+        operation: PolicyOperation.update,
+      },
+      {
+        resource: Entities.service_zone,
         operation: PolicyOperation.delete,
       },
     ],
@@ -82,6 +99,10 @@ export const adminFulfillmentSetsRoutesMiddlewares: MiddlewareRoute[] = [
         resource: Entities.fulfillment_set,
         operation: PolicyOperation.update,
       },
+      {
+        resource: Entities.service_zone,
+        operation: PolicyOperation.update,
+      },
     ],
   },
   {
@@ -92,6 +113,12 @@ export const adminFulfillmentSetsRoutesMiddlewares: MiddlewareRoute[] = [
         AdminServiceZonesParams,
         QueryConfig.retrieveServiceZoneTransformQueryConfig
       ),
+    ],
+    policies: [
+      {
+        resource: Entities.service_zone,
+        operation: PolicyOperation.read,
+      },
     ],
   },
 ]

@@ -80,5 +80,11 @@ export const adminReturnReasonRoutesMiddlewares: MiddlewareRoute[] = [
   {
     method: ["DELETE"],
     matcher: "/admin/return-reasons/:id",
+    policies: [
+      {
+        resource: Entities.return_reason,
+        operation: PolicyOperation.delete,
+      },
+    ],
   },
 ]

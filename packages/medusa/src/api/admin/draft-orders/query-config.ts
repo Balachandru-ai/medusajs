@@ -1,13 +1,6 @@
 export enum Entities {
   order = "order",
-  order_item = "order_item",
   customer = "customer",
-  product_variant = "product_variant",
-  region = "region",
-  sales_channel = "sales_channel",
-  inventory_item = "inventory_item",
-  price_set = "price_set",
-  promotion = "promotion",
 }
 
 export const defaultAdminListOrderFields = [

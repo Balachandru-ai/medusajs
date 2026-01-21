@@ -77,4 +77,15 @@ export const adminRegionRoutesMiddlewares: MiddlewareRoute[] = [
       },
     ],
   },
+  {
+    method: ["DELETE"],
+    matcher: "/admin/regions/:id",
+    middlewares: [],
+    policies: [
+      {
+        resource: Entities.region,
+        operation: PolicyOperation.delete,
+      },
+    ],
+  },
 ]

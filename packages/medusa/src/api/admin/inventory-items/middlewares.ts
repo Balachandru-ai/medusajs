@@ -31,6 +31,15 @@ export const adminInventoryRoutesMiddlewares: MiddlewareRoute[] = [
     ],
   },
   {
+    matcher: "/admin/inventory-items/*/location-levels/*",
+    policies: [
+      {
+        resource: Entities.inventory_level,
+        operation: PolicyOperation.read,
+      },
+    ],
+  },
+  {
     method: ["GET"],
     matcher: "/admin/inventory-items",
     middlewares: [
@@ -134,7 +143,7 @@ export const adminInventoryRoutesMiddlewares: MiddlewareRoute[] = [
     ],
     policies: [
       {
-        resource: Entities.inventory_item,
+        resource: Entities.inventory_level,
         operation: PolicyOperation.create,
       },
     ],
@@ -154,7 +163,7 @@ export const adminInventoryRoutesMiddlewares: MiddlewareRoute[] = [
     ],
     policies: [
       {
-        resource: Entities.inventory_item,
+        resource: Entities.inventory_level,
         operation: PolicyOperation.ALL,
       },
     ],
@@ -170,7 +179,7 @@ export const adminInventoryRoutesMiddlewares: MiddlewareRoute[] = [
     ],
     policies: [
       {
-        resource: Entities.inventory_item,
+        resource: Entities.inventory_level,
         operation: PolicyOperation.delete,
       },
     ],
@@ -187,7 +196,7 @@ export const adminInventoryRoutesMiddlewares: MiddlewareRoute[] = [
     ],
     policies: [
       {
-        resource: Entities.inventory_item,
+        resource: Entities.inventory_level,
         operation: PolicyOperation.update,
       },
     ],

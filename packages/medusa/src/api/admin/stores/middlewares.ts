@@ -52,5 +52,11 @@ export const adminStoreRoutesMiddlewares: MiddlewareRoute[] = [
         QueryConfig.retrieveTransformQueryConfig
       ),
     ],
+    policies: [
+      {
+        resource: Entities.store,
+        operation: PolicyOperation.update,
+      },
+    ],
   },
 ]

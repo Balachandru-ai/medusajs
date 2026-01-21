@@ -53,6 +53,12 @@ export const adminShippingOptionTypeRoutesMiddlewares: MiddlewareRoute[] = [
         QueryConfig.retrieveShippingOptionTypeTransformQueryConfig
       ),
     ],
+    policies: [
+      {
+        resource: Entities.shipping_option_type,
+        operation: PolicyOperation.create,
+      },
+    ],
   },
   {
     method: ["POST"],
@@ -64,10 +70,22 @@ export const adminShippingOptionTypeRoutesMiddlewares: MiddlewareRoute[] = [
         QueryConfig.retrieveShippingOptionTypeTransformQueryConfig
       ),
     ],
+    policies: [
+      {
+        resource: Entities.shipping_option_type,
+        operation: PolicyOperation.update,
+      },
+    ],
   },
   {
     method: ["DELETE"],
     matcher: "/admin/shipping-option-types/:id",
     middlewares: [],
+    policies: [
+      {
+        resource: Entities.shipping_option_type,
+        operation: PolicyOperation.delete,
+      },
+    ],
   },
 ]

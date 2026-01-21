@@ -17,13 +17,12 @@ export interface DefaultPolicyResources {
 
   // Order resources
   order: "order"
-  order_item: "order_item"
   order_change: "order_change"
   order_claim: "order_claim"
-  order_claim_item: "order_claim_item"
   order_exchange: "order_exchange"
   return: "return"
   return_reason: "return_reason"
+  credit_line: "credit_line"
 
   // Payment resources
   payment: "payment"
@@ -31,6 +30,8 @@ export interface DefaultPolicyResources {
   payment_method: "payment_method"
   payment_session: "payment_session"
   refund_reason: "refund_reason"
+  capture: "capture"
+  refund: "refund"
 
   // Pricing resources
   price_list: "price_list"
@@ -71,6 +72,7 @@ export interface DefaultPolicyResources {
   fulfillment: "fulfillment"
   fulfillment_provider: "fulfillment_provider"
   fulfillment_set: "fulfillment_set"
+  service_zone: "service_zone"
 
   // System resources
   file: "file"

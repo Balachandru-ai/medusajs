@@ -80,5 +80,11 @@ export const adminUserRoutesMiddlewares: MiddlewareRoute[] = [
     method: ["DELETE"],
     matcher: "/admin/users/:id",
     middlewares: [authenticate("user", ["bearer", "session"])],
+    policies: [
+      {
+        resource: Entities.user,
+        operation: PolicyOperation.delete,
+      },
+    ],
   },
 ]
