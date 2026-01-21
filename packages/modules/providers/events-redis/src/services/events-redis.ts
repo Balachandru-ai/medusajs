@@ -309,11 +309,10 @@ export class RedisEventProvider extends AbstractEventProvider<EventRedisProvider
     // Extract the original messages from the job data structure
     groupedEvents.map((jobData) => {
       const { name, data } = jobData
-      const { metadata, ...restData } = data
       const message = {
         name: name,
-        data: restData,
-        metadata: metadata,
+        data: data.data,
+        metadata: data.metadata,
       }
       this.callInterceptors(message as any, {
         isGrouped: true,

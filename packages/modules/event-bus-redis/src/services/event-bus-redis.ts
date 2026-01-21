@@ -296,7 +296,7 @@ export default class RedisEventBusService extends AbstractEventBusModuleService 
     groupedEvents.map((jobData) => {
       const message = {
         name: jobData.name,
-        data: jobData.data,
+        data: jobData.data.data,
         metadata: jobData.data.metadata,
       }
       this.callInterceptors(message as any, {
