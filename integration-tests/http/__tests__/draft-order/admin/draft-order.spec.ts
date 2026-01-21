@@ -878,6 +878,18 @@ medusaIntegrationTestRunner({
           adminHeaders
         )
 
+        await api.post(
+          `/admin/draft-orders/${testDraftOrder.id}/edit/confirm`,
+          {},
+          adminHeaders
+        )
+
+        await api.post(
+          `/admin/draft-orders/${testDraftOrder.id}/edit`,
+          {},
+          adminHeaders
+        )
+
         const response = await api.post(
           `/admin/draft-orders/${testDraftOrder.id}/edit/promotions`,
           { promo_codes: [promotion.code] },
@@ -885,6 +897,19 @@ medusaIntegrationTestRunner({
         )
 
         expect(response.status).toBe(200)
+
+        await api.post(
+          `/admin/draft-orders/${testDraftOrder.id}/edit/confirm`,
+          {},
+          adminHeaders
+        )
+
+        const order = (
+          await api.get(
+            `/admin/draft-orders/${testDraftOrder.id}?fields=+discount_total,+item_discount_total,+items.discount_total,+items.discount_tax_total,+items.adjustments.*`,
+            adminHeaders
+          )
+        ).data.draft_order
 
         const preview = response.data.draft_order_preview
         const taggedItem = preview.items.find(
@@ -909,6 +934,27 @@ medusaIntegrationTestRunner({
         expect(preview.item_discount_total).toBeCloseTo(taggedDiscountTotal)
         expect(preview.discount_total).toBeCloseTo(taggedDiscountTotal)
         expect(untaggedItem?.discount_total ?? 0).toBe(0)
+
+        const taggedOrderItem = order.items.find(
+          (item) => item.product_id === taggedProduct.id
+        )
+        const untaggedOrderItem = order.items.find(
+          (item) => item.product_id === untaggedProduct.id
+        )
+
+        expect(taggedOrderItem?.adjustments?.length).toBe(1)
+        expect(taggedOrderItem?.adjustments?.[0]).toEqual(
+          expect.objectContaining({
+            code: promotion.code,
+          })
+        )
+        expect(untaggedOrderItem?.adjustments?.length ?? 0).toBe(0)
+        expect(order.item_discount_total).toBeCloseTo(
+          taggedOrderItem?.discount_total ?? 0
+        )
+        expect(order.discount_total).toBeCloseTo(
+          taggedOrderItem?.discount_total ?? 0
+        )
       })
     })
 
