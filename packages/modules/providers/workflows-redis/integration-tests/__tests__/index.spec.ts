@@ -1220,7 +1220,6 @@ moduleIntegrationTestRunner<
 
             expect(spy).toHaveBeenCalledTimes(1)
 
-            console.log(spy.mock.results)
             expect(spy).toHaveReturnedWith(
               expect.objectContaining({ output: { testValue: "test" } })
             )

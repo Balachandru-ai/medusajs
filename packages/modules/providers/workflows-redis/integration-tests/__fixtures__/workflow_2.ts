@@ -17,7 +17,6 @@ const step_1 = createStep(
       return
     }
 
-    console.log("reverted", compensateInput.compensate)
     return new StepResponse({
       reverted: true,
     })
