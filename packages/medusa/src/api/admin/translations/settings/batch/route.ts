@@ -6,7 +6,7 @@ import TranslationFeatureFlag from "../../../../../feature-flags/translation"
 import { AdminBatchTranslationSettingsType } from "../../validators"
 
 /**
- * @since 2.12.5
+ * @since 2.13.0
  * @featureFlag translation
  */
 export const POST = async (
