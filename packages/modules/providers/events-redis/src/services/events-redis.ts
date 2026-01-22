@@ -5,12 +5,18 @@ import {
   Message,
 } from "@medusajs/framework/types"
 import {
-  AbstractEventsProvider,
   EventPriority,
+  EventsUtils,
   isPresent,
   MedusaError,
   promiseAll,
 } from "@medusajs/framework/utils"
+import {
+  BullJob,
+  EmitOptions,
+  EventRedisProviderOptions,
+  Options,
+} from "@types"
 import {
   BulkJobOptions,
   Queue,
@@ -19,12 +25,6 @@ import {
   WorkerOptions,
 } from "bullmq"
 import { Redis } from "ioredis"
-import {
-  BullJob,
-  EmitOptions,
-  EventRedisProviderOptions,
-  Options,
-} from "@types"
 
 type InjectedDependencies = {
   logger: Logger
@@ -45,7 +45,7 @@ type IORedisEventType<T = unknown> = {
  * Redis-based event provider using BullMQ for reliable event processing.
  * Supports priority, retry, and distributed event handling.
  */
-export class RedisEventProvider extends AbstractEventsProvider<EventRedisProviderOptions> {
+export class RedisEventProvider extends EventsUtils.AbstractEventsProvider<EventRedisProviderOptions> {
   static identifier = "events-redis"
 
   protected readonly logger_: Logger
@@ -239,8 +239,9 @@ export class RedisEventProvider extends AbstractEventsProvider<EventRedisProvide
     const promises: Promise<unknown>[] = []
 
     if (eventsToEmit.length) {
-      eventsToEmit.map((eventData) =>
-        this.callInterceptors(eventData, { isGrouped: false })
+      eventsToEmit.map(
+        (eventData) =>
+          void this.callInterceptors(eventData, { isGrouped: false })
       )
 
       const wilcardSubscribers = this.eventToSubscribersMap.get("*") || []

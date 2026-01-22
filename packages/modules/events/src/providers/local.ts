@@ -5,7 +5,7 @@ import {
   Message,
   Subscriber,
 } from "@medusajs/framework/types"
-import { AbstractEventsProvider } from "@medusajs/framework/utils"
+import { EventsUtils } from "@medusajs/framework/utils"
 import { EventEmitter } from "events"
 import { setTimeout } from "timers/promises"
 
@@ -18,7 +18,7 @@ type StagingQueueType = Map<string, Message[]>
 const eventEmitter = new EventEmitter()
 eventEmitter.setMaxListeners(Infinity)
 
-export class LocalEventProvider extends AbstractEventsProvider {
+export class LocalEventProvider extends EventsUtils.AbstractEventsProvider {
   static identifier = "local"
 
   protected readonly logger_: Logger
@@ -69,7 +69,10 @@ export class LocalEventProvider extends AbstractEventsProvider {
     for (const eventData of normalizedEventsData) {
       await this.groupOrEmitEvent({
         ...eventData,
-        options,
+        options: {
+          ...options,
+          ...eventData.options,
+        },
       })
     }
   }
