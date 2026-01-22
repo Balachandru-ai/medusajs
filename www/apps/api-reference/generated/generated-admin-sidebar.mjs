@@ -623,6 +623,13 @@ const generatedgeneratedAdminSidebarSidebar = {
     },
     {
       "type": "category",
+      "title": "Rbac",
+      "children": [],
+      "loaded": false,
+      "showLoadingIfEmpty": true
+    },
+    {
+      "type": "category",
       "title": "Refund Reasons",
       "children": [
         {
