@@ -1,8 +1,8 @@
 /**
  * @oas [post] /admin/translations/settings/batch
  * operationId: PostTranslationsSettingsBatch
- * summary: Create Translation
- * description: Create a translation.
+ * summary: Manage Translation Settings
+ * description: Create, update, or delete multiple translation settings.
  * x-authenticated: true
  * security:
  *   - api_token: []

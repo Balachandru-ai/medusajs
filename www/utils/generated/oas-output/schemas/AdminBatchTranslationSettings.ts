@@ -1,7 +1,7 @@
 /**
  * @schema AdminBatchTranslationSettings
  * type: object
- * description: SUMMARY
+ * description: The translations to create, update, or delete in batch.
  * x-schemaName: AdminBatchTranslationSettings
  * properties:
  *   create:
