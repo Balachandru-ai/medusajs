@@ -12,7 +12,7 @@ import {
 } from "@medusajs/framework/workflows-sdk"
 import { useQueryGraphStep } from "../../common"
 import { getItemTaxLinesStep } from "../../tax/steps/get-item-tax-lines"
-import { setOrderTaxLinesForItemsStep } from "../steps"
+import { setOrderTaxLinesForItemsStep, updateOrdersStep } from "../steps"
 import { getTranslatedTaxLinesStep } from "../../common/steps/get-translated-tax-lines"
 
 const completeOrderFields = [
@@ -20,6 +20,7 @@ const completeOrderFields = [
   "currency_code",
   "email",
   "locale",
+  "metadata",
   "region.id",
   "region.automatic_taxes",
   "items.id",
@@ -72,6 +73,7 @@ const orderFields = [
   "currency_code",
   "email",
   "locale",
+  "metadata",
   "region.id",
   "region.automatic_taxes",
   "shipping_methods.tax_lines.id",
@@ -271,6 +273,25 @@ export const updateOrderTaxLinesWorkflow = createWorkflow(
     return new WorkflowResponse({
       itemTaxLines: taxLineItems.lineItemTaxLines,
       shippingTaxLines: taxLineItems.shippingMethodsTaxLines,
+    })
+
+    // Update order metadata with any sourceMetadata returned by tax providers
+    when("should-update-order-metadata", { taxLineItems }, ({ taxLineItems }) => {
+      return !!taxLineItems.sourceMetadata
+    }).then(() => {
+      const orderMetadataUpdate = transform(
+        { order, taxLineItems },
+        ({ order, taxLineItems }) => ({
+          selector: { id: order.id },
+          update: {
+            metadata: {
+              ...(order.metadata || {}),
+              ...taxLineItems.sourceMetadata,
+            },
+          },
+        })
+      )
+      updateOrdersStep(orderMetadataUpdate)
     })
   }
 )

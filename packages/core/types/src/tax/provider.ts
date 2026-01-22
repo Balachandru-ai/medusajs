@@ -5,6 +5,7 @@ import {
   TaxableShippingDTO,
   TaxCalculationContext,
   TaxRateDTO,
+  TaxLinesResult,
 } from "./common"
 
 /**
@@ -38,8 +39,8 @@ export type ItemTaxCalculationLine = {
 }
 
 /**
- * 
- * 
+ *
+ *
  * ### Identifier Property
  *
  * Each tax provider has a unique identifier defined in its class. The provider's ID
@@ -59,9 +60,9 @@ export type ItemTaxCalculationLine = {
  *
  * You can use the `constructor` of your Tax Module Provider's service to access the resources registered in the [Module Container](https://docs.medusajs.com/resources/medusa-container-resources#module-container-resources).
  *
- * You can also use the constructor to initialize your integration with the third-party provider. For example, if you use a client to connect to the third-party provider’s APIs, you can initialize it in the constructor and use it in other methods in the service.
+ * You can also use the constructor to initialize your integration with the third-party provider. For example, if you use a client to connect to the third-party provider's APIs, you can initialize it in the constructor and use it in other methods in the service.
  *
- * Additionally, if you’re creating your tax provider as a plugin or a module provider to be installed in any Medusa application and you want to access its options, you can access them in the second parameter of the constructor.
+ * Additionally, if you're creating your tax provider as a plugin or a module provider to be installed in any Medusa application and you want to access its options, you can access them in the second parameter of the constructor.
  *
  * For example:
  *
@@ -70,22 +71,22 @@ export type ItemTaxCalculationLine = {
  *   ITaxProvider,
  *   Logger
  * } from "@medusajs/framework/types"
- * 
+ *
  * type InjectedDependencies = {
  *   logger: Logger
  * }
- * 
+ *
  * type Options = {
  *   apiKey: string
  * }
- * 
+ *
  * export default class MyTaxProvider implements ITaxProvider {
  *   static identifier = "my-tax"
  *   protected logger_: Logger
  *   protected options_: Options
  *   // assuming you're initializing a client
  *   protected client
- * 
+ *
  *   constructor (
  *     { logger }: InjectedDependencies,
  *     options: Options
@@ -104,13 +105,13 @@ export type ItemTaxCalculationLine = {
 export interface ITaxProvider {
   /**
    * This method is used to retrieve the unique identifier of the tax provider.
-   * 
+   *
    * @return {string} The unique identifier of the tax provider.
-   * 
+   *
    * @example
    * export default class MyTaxProvider implements ITaxProvider {
    *   static identifier = "my-tax"
-   *   
+   *
    *   getIdentifier(): string {
    *     return MyTaxProvider.identifier
    *   }
@@ -119,16 +120,20 @@ export interface ITaxProvider {
   getIdentifier(): string
 
   /**
-   * This method is used to retrieve the tax lines of items and shipping methods. It's used during checkout 
+   * This method is used to retrieve the tax lines of items and shipping methods. It's used during checkout
    * when the `getTaxLines` method of the Tax Module's main service is called for a tax
    * region that uses this tax provider.
    *
    * @param {ItemTaxCalculationLine[]} itemLines - The line item lines to calculate taxes for.
    * @param {ShippingTaxCalculationLine[]} shippingLines - The shipping method lines to calculate taxes for.
    * @param {TaxCalculationContext} context - The context relevant and useful for the taxes calculation.
-   * @return {Promise<(ItemTaxLineDTO | ShippingTaxLineDTO)[]>} The list of calculated line item and shipping tax lines.
+   * @return {Promise<(ItemTaxLineDTO | ShippingTaxLineDTO)[] | TaxLinesResult>} The list of calculated line item and shipping tax lines.
    * If an item in the array has the `shipping_line_id` property, then it's a shipping tax line. Otherwise, if it has
    * the `line_item_id` property, then it's a line item tax line.
+   *
+   * Alternatively, you can return a {@link TaxLinesResult} object with `taxLines` and optional `sourceMetadata`.
+   * The `sourceMetadata` will be stored on the cart/order's metadata field, which is useful for storing
+   * calculation references (e.g., `calculation_id`) for later use during order completion.
    *
    * @example
    * An example of how this method is implemented in the `system` provider:
@@ -178,5 +183,5 @@ export interface ITaxProvider {
     itemLines: ItemTaxCalculationLine[],
     shippingLines: ShippingTaxCalculationLine[],
     context: TaxCalculationContext
-  ): Promise<(ItemTaxLineDTO | ShippingTaxLineDTO)[]>
+  ): Promise<(ItemTaxLineDTO | ShippingTaxLineDTO)[] | TaxLinesResult>
 }
