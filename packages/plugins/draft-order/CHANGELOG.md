@@ -1,5 +1,23 @@
 # @medusajs/draft-order
 
+## 2.12.6
+
+### Patch Changes
+
+- [#14478](https://github.com/medusajs/medusa/pull/14478) [`13476988763368b3b333fa5bc3f613e8eb174fdf`](https://github.com/medusajs/medusa/commit/13476988763368b3b333fa5bc3f613e8eb174fdf) Thanks [@adrien2p](https://github.com/adrien2p)! - Feat/enable event configuration in medusa config
+  enables event priority configuration through the Medusa config, allowing users to configure event processing options (like priority) for specific events at the module level.
+
+- [#14586](https://github.com/medusajs/medusa/pull/14586) [`3751b10337c056c3a61a4726046ebf4c31a3530b`](https://github.com/medusajs/medusa/commit/3751b10337c056c3a61a4726046ebf4c31a3530b) Thanks [@fPolic](https://github.com/fPolic)! - chore: bump RR minor version
+
+- Updated dependencies [[`42235825eeacd4554a5fb533feda5840175bee38`](https://github.com/medusajs/medusa/commit/42235825eeacd4554a5fb533feda5840175bee38), [`13476988763368b3b333fa5bc3f613e8eb174fdf`](https://github.com/medusajs/medusa/commit/13476988763368b3b333fa5bc3f613e8eb174fdf), [`a9b5797e2de093e26286808876262b724e26671a`](https://github.com/medusajs/medusa/commit/a9b5797e2de093e26286808876262b724e26671a), [`8890f284705a4843a57a3800820208f593689a2a`](https://github.com/medusajs/medusa/commit/8890f284705a4843a57a3800820208f593689a2a), [`7828f5ac791df6cb1af56595b6dcadbc4815d61f`](https://github.com/medusajs/medusa/commit/7828f5ac791df6cb1af56595b6dcadbc4815d61f), [`1ca3516a5cbb059ad79fe483cd8e1d6a7ebca23b`](https://github.com/medusajs/medusa/commit/1ca3516a5cbb059ad79fe483cd8e1d6a7ebca23b)]:
+  - @medusajs/cli@2.12.6
+  - @medusajs/framework@2.12.6
+  - @medusajs/js-sdk@2.12.6
+  - @medusajs/test-utils@2.12.6
+  - @medusajs/admin-sdk@2.12.6
+  - @medusajs/icons@2.12.6
+  - @medusajs/ui@4.0.34
+
 ## 2.12.5
 
 ### Patch Changes

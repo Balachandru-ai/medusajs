@@ -1,5 +1,16 @@
 # @medusajs/analytics-posthog
 
+## 2.12.6
+
+### Patch Changes
+
+- [#14562](https://github.com/medusajs/medusa/pull/14562) [`d5cea0e0c84539027e20cefc2007d53990933175`](https://github.com/medusajs/medusa/commit/d5cea0e0c84539027e20cefc2007d53990933175) Thanks [@peterlgh7](https://github.com/peterlgh7)! - fix validation in posthog-analytics identify
+
+- [#14562](https://github.com/medusajs/medusa/pull/14562) [`d5cea0e0c84539027e20cefc2007d53990933175`](https://github.com/medusajs/medusa/commit/d5cea0e0c84539027e20cefc2007d53990933175) Thanks [@peterlgh7](https://github.com/peterlgh7)! - await analytics provider method calls
+
+- Updated dependencies [[`13476988763368b3b333fa5bc3f613e8eb174fdf`](https://github.com/medusajs/medusa/commit/13476988763368b3b333fa5bc3f613e8eb174fdf), [`8890f284705a4843a57a3800820208f593689a2a`](https://github.com/medusajs/medusa/commit/8890f284705a4843a57a3800820208f593689a2a), [`1ca3516a5cbb059ad79fe483cd8e1d6a7ebca23b`](https://github.com/medusajs/medusa/commit/1ca3516a5cbb059ad79fe483cd8e1d6a7ebca23b)]:
+  - @medusajs/framework@2.12.6
+
 ## 2.12.5
 
 ### Patch Changes

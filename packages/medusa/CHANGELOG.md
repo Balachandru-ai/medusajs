@@ -1,5 +1,73 @@
 # Change Log
 
+## 2.12.6
+
+### Patch Changes
+
+- [#14541](https://github.com/medusajs/medusa/pull/14541) [`a9b5797e2de093e26286808876262b724e26671a`](https://github.com/medusajs/medusa/commit/a9b5797e2de093e26286808876262b724e26671a) Thanks [@NicolasGorga](https://github.com/NicolasGorga)! - feat(dashboard,translation,js-sdk,medusa,types): Translation settings management UI
+
+- [#14536](https://github.com/medusajs/medusa/pull/14536) [`d60ea7268a00f386f803f0f9e6ffeec4bced50bf`](https://github.com/medusajs/medusa/commit/d60ea7268a00f386f803f0f9e6ffeec4bced50bf) Thanks [@NicolasGorga](https://github.com/NicolasGorga)! - feat(translation,fulfillment,customer,product,region,tax,core-flows,medusa,types): Implement dynamic translation settings management
+
+- [#14540](https://github.com/medusajs/medusa/pull/14540) [`8890f284705a4843a57a3800820208f593689a2a`](https://github.com/medusajs/medusa/commit/8890f284705a4843a57a3800820208f593689a2a) Thanks [@adrien2p](https://github.com/adrien2p)! - feat(medusa): Prevent build command from throwing on missing config
+
+- [#14359](https://github.com/medusajs/medusa/pull/14359) [`cec8b8e428131d4743d6da98cd5fa0974b8ab9e1`](https://github.com/medusajs/medusa/commit/cec8b8e428131d4743d6da98cd5fa0974b8ab9e1) Thanks [@NicolasGorga](https://github.com/NicolasGorga)! - feat(core-flows,types,utils,medusa): Translate tax lines
+
+- [#14441](https://github.com/medusajs/medusa/pull/14441) [`1ca3516a5cbb059ad79fe483cd8e1d6a7ebca23b`](https://github.com/medusajs/medusa/commit/1ca3516a5cbb059ad79fe483cd8e1d6a7ebca23b) Thanks [@shahednasser](https://github.com/shahednasser)! - feat(deps,framework): add zod as framework dependency
+
+- Updated dependencies [[`d5cea0e0c84539027e20cefc2007d53990933175`](https://github.com/medusajs/medusa/commit/d5cea0e0c84539027e20cefc2007d53990933175), [`13476988763368b3b333fa5bc3f613e8eb174fdf`](https://github.com/medusajs/medusa/commit/13476988763368b3b333fa5bc3f613e8eb174fdf), [`514cc329f8fccd05a9497bf03fb27ba2de0265f4`](https://github.com/medusajs/medusa/commit/514cc329f8fccd05a9497bf03fb27ba2de0265f4), [`e91ce2ee4b0d15948d4021b2d74c1c9744ef0ae2`](https://github.com/medusajs/medusa/commit/e91ce2ee4b0d15948d4021b2d74c1c9744ef0ae2), [`dfb27a638d913916ee534ecb0a06ae30f6f8a9de`](https://github.com/medusajs/medusa/commit/dfb27a638d913916ee534ecb0a06ae30f6f8a9de), [`a9b5797e2de093e26286808876262b724e26671a`](https://github.com/medusajs/medusa/commit/a9b5797e2de093e26286808876262b724e26671a), [`d60ea7268a00f386f803f0f9e6ffeec4bced50bf`](https://github.com/medusajs/medusa/commit/d60ea7268a00f386f803f0f9e6ffeec4bced50bf), [`5c695b5d499519d153be7c925e865c227301097b`](https://github.com/medusajs/medusa/commit/5c695b5d499519d153be7c925e865c227301097b), [`8890f284705a4843a57a3800820208f593689a2a`](https://github.com/medusajs/medusa/commit/8890f284705a4843a57a3800820208f593689a2a), [`733026f96c23f01d1ceb2fb09f88aa2b9bb65841`](https://github.com/medusajs/medusa/commit/733026f96c23f01d1ceb2fb09f88aa2b9bb65841), [`cec8b8e428131d4743d6da98cd5fa0974b8ab9e1`](https://github.com/medusajs/medusa/commit/cec8b8e428131d4743d6da98cd5fa0974b8ab9e1), [`28fae96ceed68e2c15c3f27316c5b8601f06c478`](https://github.com/medusajs/medusa/commit/28fae96ceed68e2c15c3f27316c5b8601f06c478), [`3751b10337c056c3a61a4726046ebf4c31a3530b`](https://github.com/medusajs/medusa/commit/3751b10337c056c3a61a4726046ebf4c31a3530b), [`6cbbd033e4efdae5ea2a758b507bcc1a0fef26c2`](undefined), [`cbc9f3d059a65cc5ee26595e5cbccf7f05781e41`](https://github.com/medusajs/medusa/commit/cbc9f3d059a65cc5ee26595e5cbccf7f05781e41), [`7307a5e63fdf8ed6f0ff201a0383f0a0bbfc7002`](https://github.com/medusajs/medusa/commit/7307a5e63fdf8ed6f0ff201a0383f0a0bbfc7002), [`b615b71a8e4e273018a09528a8b61116fca6de8b`](https://github.com/medusajs/medusa/commit/b615b71a8e4e273018a09528a8b61116fca6de8b), [`d5cea0e0c84539027e20cefc2007d53990933175`](https://github.com/medusajs/medusa/commit/d5cea0e0c84539027e20cefc2007d53990933175), [`3df466dadde91b24f52504097c07e1ced4b2b8ff`](https://github.com/medusajs/medusa/commit/3df466dadde91b24f52504097c07e1ced4b2b8ff), [`89e6e3e5cbe96f1f64e2cdb33cc2e0d6a221f7a2`](https://github.com/medusajs/medusa/commit/89e6e3e5cbe96f1f64e2cdb33cc2e0d6a221f7a2), [`1ca3516a5cbb059ad79fe483cd8e1d6a7ebca23b`](https://github.com/medusajs/medusa/commit/1ca3516a5cbb059ad79fe483cd8e1d6a7ebca23b)]:
+  - @medusajs/analytics-posthog@2.12.6
+  - @medusajs/event-bus-redis@2.12.6
+  - @medusajs/draft-order@2.12.6
+  - @medusajs/framework@2.12.6
+  - @medusajs/translation@2.12.6
+  - @medusajs/core-flows@2.12.6
+  - @medusajs/fulfillment@2.12.6
+  - @medusajs/customer@2.12.6
+  - @medusajs/product@2.12.6
+  - @medusajs/region@2.12.6
+  - @medusajs/tax@2.12.6
+  - @medusajs/order@2.12.6
+  - @medusajs/analytics@2.12.6
+  - @medusajs/api-key@2.12.6
+  - @medusajs/auth@2.12.6
+  - @medusajs/cache-inmemory@2.12.6
+  - @medusajs/cache-redis@2.12.6
+  - @medusajs/caching@2.12.6
+  - @medusajs/cart@2.12.6
+  - @medusajs/currency@2.12.6
+  - @medusajs/event-bus-local@2.12.6
+  - @medusajs/file@2.12.6
+  - @medusajs/index@2.12.6
+  - @medusajs/inventory@2.12.6
+  - @medusajs/link-modules@2.12.6
+  - @medusajs/locking@2.12.6
+  - @medusajs/notification@2.12.6
+  - @medusajs/payment@2.12.6
+  - @medusajs/pricing@2.12.6
+  - @medusajs/promotion@2.12.6
+  - @medusajs/analytics-local@2.12.6
+  - @medusajs/auth-emailpass@2.12.6
+  - @medusajs/auth-github@2.12.6
+  - @medusajs/auth-google@2.12.6
+  - @medusajs/caching-redis@2.12.6
+  - @medusajs/file-local@2.12.6
+  - @medusajs/file-s3@2.12.6
+  - @medusajs/fulfillment-manual@2.12.6
+  - @medusajs/locking-postgres@2.12.6
+  - @medusajs/locking-redis@2.12.6
+  - @medusajs/notification-local@2.12.6
+  - @medusajs/notification-sendgrid@2.12.6
+  - @medusajs/payment-stripe@2.12.6
+  - @medusajs/sales-channel@2.12.6
+  - @medusajs/settings@2.12.6
+  - @medusajs/stock-location@2.12.6
+  - @medusajs/store@2.12.6
+  - @medusajs/user@2.12.6
+  - @medusajs/workflow-engine-inmemory@2.12.6
+  - @medusajs/workflow-engine-redis@2.12.6
+  - @medusajs/admin-bundler@2.12.6
+  - @medusajs/telemetry@2.12.6
+
 ## 2.12.5
 
 ### Patch Changes
