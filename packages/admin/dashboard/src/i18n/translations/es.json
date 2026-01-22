@@ -25,6 +25,7 @@
     "error": "Error",
     "select": "Seleccionar",
     "selectAll": "Seleccionar todo",
+    "unselectAll": "Desmarcar todo",
     "fullList": "Lista completa",
     "selected": "Seleccionado",
     "enabled": "Habilitado",
