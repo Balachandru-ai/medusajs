@@ -26,7 +26,7 @@ export const generatedEditDates = {
   "app/learn/fundamentals/workflows/add-workflow-hook/page.mdx": "2025-07-18T11:33:15.959Z",
   "app/learn/fundamentals/events-and-subscribers/data-payload/page.mdx": "2025-05-01T15:30:08.421Z",
   "app/learn/fundamentals/workflows/advanced-example/page.mdx": "2024-09-11T10:46:59.975Z",
-  "app/learn/fundamentals/events-and-subscribers/emit-event/page.mdx": "2025-11-26T13:00:24.625Z",
+  "app/learn/fundamentals/events-and-subscribers/emit-event/page.mdx": "2026-01-20T08:54:20.529Z",
   "app/learn/fundamentals/workflows/conditions/page.mdx": "2025-09-04T15:57:00.934Z",
   "app/learn/fundamentals/modules/module-link-directions/page.mdx": "2024-07-24T09:16:01+02:00",
   "app/learn/fundamentals/admin/page.mdx": "2025-11-26T10:47:12.412Z",
@@ -115,7 +115,7 @@ export const generatedEditDates = {
   "app/learn/configurations/ts-aliases/page.mdx": "2025-07-23T15:32:18.008Z",
   "app/learn/production/worker-mode/page.mdx": "2025-10-13T10:33:27.403Z",
   "app/learn/fundamentals/module-links/read-only/page.mdx": "2025-10-15T15:42:22.610Z",
-  "app/learn/fundamentals/data-models/properties/page.mdx": "2025-10-27T09:30:26.957Z",
+  "app/learn/fundamentals/data-models/properties/page.mdx": "2026-01-20T08:54:20.528Z",
   "app/learn/fundamentals/framework/page.mdx": "2025-06-26T14:26:22.120Z",
   "app/learn/fundamentals/api-routes/retrieve-custom-links/page.mdx": "2025-07-14T10:24:32.582Z",
   "app/learn/fundamentals/workflows/errors/page.mdx": "2025-04-25T14:26:25.000Z",
@@ -138,5 +138,8 @@ export const generatedEditDates = {
   "app/learn/fundamentals/admin/translations/page.mdx": "2025-12-16T13:56:21.400Z",
   "app/learn/configurations/medusa-config/asymmetric-encryption/page.mdx": "2025-10-31T09:53:38.607Z",
   "app/learn/best-practices/third-party-sync/page.mdx": "2025-12-03T11:48:58.209Z",
-  "app/learn/fundamentals/api-routes/localization/page.mdx": "2026-01-06T15:51:48.131Z"
+  "app/learn/fundamentals/api-routes/localization/page.mdx": "2026-01-06T15:51:48.131Z",
+  "app/learn/codemods/replace-zod-imports/page.mdx": "2026-01-12T13:51:52.324Z",
+  "app/learn/configurations/pnpm/page.mdx": "2026-01-12T13:39:17.549Z",
+  "app/learn/fundamentals/events-and-subscribers/event-priority/page.mdx": "2026-01-20T08:32:57.574Z"
 }
