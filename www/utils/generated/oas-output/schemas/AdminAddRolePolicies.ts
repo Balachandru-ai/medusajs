@@ -1,0 +1,18 @@
+/**
+ * @schema AdminAddRolePolicies
+ * type: object
+ * description: SUMMARY
+ * x-schemaName: AdminAddRolePolicies
+ * required:
+ *   - policies
+ * properties:
+ *   policies:
+ *     type: array
+ *     description: The rbac's policies.
+ *     items:
+ *       type: string
+ *       title: policies
+ *       description: The policy's policies.
+ * 
+*/
+

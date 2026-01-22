@@ -166,17 +166,7 @@
  *   "500":
  *     $ref: "#/components/responses/500_error"
  * x-workflow: createOrderShipmentWorkflow
- * x-events:
- *   - name: shipment.created
- *     payload: |-
- *       ```ts
- *       {
- *         id, // the ID of the fulfillment
- *         no_notification, // (boolean) whether to notify the customer
- *       }
- *       ```
- *     description: Emitted when a shipment is created for an order.
- *     deprecated: false
+ * x-events: []
  * 
 */
 

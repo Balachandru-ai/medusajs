@@ -78,16 +78,7 @@
  *   "500":
  *     $ref: "#/components/responses/500_error"
  * x-workflow: createProductTypesWorkflow
- * x-events:
- *   - name: product-type.created
- *     payload: |-
- *       ```ts
- *       {
- *         id, // The ID of the product type
- *       }
- *       ```
- *     description: Emitted when product types are created.
- *     deprecated: false
+ * x-events: []
  * 
 */
 

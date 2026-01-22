@@ -60,16 +60,7 @@
  *   "500":
  *     $ref: "#/components/responses/500_error"
  * x-workflow: deleteProductsWorkflow
- * x-events:
- *   - name: product.deleted
- *     payload: |-
- *       ```ts
- *       {
- *         id, // The ID of the product
- *       }
- *       ```
- *     description: Emitted when products are deleted.
- *     deprecated: false
+ * x-events: []
  * 
 */
 

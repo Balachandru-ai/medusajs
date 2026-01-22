@@ -79,16 +79,7 @@
  *   "500":
  *     $ref: "#/components/responses/500_error"
  * x-workflow: deleteProductVariantsWorkflow
- * x-events:
- *   - name: product-variant.deleted
- *     payload: |-
- *       ```ts
- *       {
- *         id, // The ID of the product variant
- *       }
- *       ```
- *     description: Emitted when product variants are deleted.
- *     deprecated: false
+ * x-events: []
  * 
 */
 

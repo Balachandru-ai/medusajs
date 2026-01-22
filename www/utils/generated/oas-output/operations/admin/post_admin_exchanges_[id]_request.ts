@@ -72,17 +72,7 @@
  *   "500":
  *     $ref: "#/components/responses/500_error"
  * x-workflow: confirmExchangeRequestWorkflow
- * x-events:
- *   - name: order.exchange_created
- *     payload: |-
- *       ```ts
- *       {
- *         order_id, // The ID of the order
- *         exchange_id, // The ID of the exchange
- *       }
- *       ```
- *     description: Emitted when an exchange is created for an order.
- *     deprecated: false
+ * x-events: []
  * 
 */
 

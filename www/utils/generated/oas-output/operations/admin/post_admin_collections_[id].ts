@@ -104,16 +104,7 @@
  *   "500":
  *     $ref: "#/components/responses/500_error"
  * x-workflow: updateCollectionsWorkflow
- * x-events:
- *   - name: product-collection.updated
- *     payload: |-
- *       ```ts
- *       {
- *         id, // The ID of the product collection
- *       }
- *       ```
- *     description: Emitted when product collections are updated.
- *     deprecated: false
+ * x-events: []
  * 
 */
 

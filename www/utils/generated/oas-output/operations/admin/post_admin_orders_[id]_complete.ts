@@ -86,16 +86,7 @@
  *   "500":
  *     $ref: "#/components/responses/500_error"
  * x-workflow: completeOrderWorkflow
- * x-events:
- *   - name: order.completed
- *     payload: |-
- *       ```ts
- *       {
- *         id, // The ID of the order
- *       }
- *       ```
- *     description: Emitted when orders are completed.
- *     deprecated: false
+ * x-events: []
  * 
 */
 

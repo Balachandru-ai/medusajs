@@ -136,17 +136,7 @@ post:
     '500':
       $ref: ../components/responses/500_error.yaml
   x-workflow: updateShippingOptionsWorkflow
-  x-events:
-    - name: shipping-option.updated
-      payload: |-
-        ```ts
-        {
-          id, // The ID of the shipping option
-        }
-        ```
-      description: Emitted when shipping options are updated.
-      deprecated: false
-      since: 2.12.4
+  x-events: []
 delete:
   operationId: DeleteShippingOptionsId
   summary: Delete a Shipping Option
@@ -194,14 +184,4 @@ delete:
     '500':
       $ref: ../components/responses/500_error.yaml
   x-workflow: deleteShippingOptionsWorkflow
-  x-events:
-    - name: shipping-option.deleted
-      payload: |-
-        ```ts
-        {
-          id, // The ID of the shipping option
-        }
-        ```
-      description: Emitted when shipping options are deleted.
-      deprecated: false
-      since: 2.12.4
+  x-events: []

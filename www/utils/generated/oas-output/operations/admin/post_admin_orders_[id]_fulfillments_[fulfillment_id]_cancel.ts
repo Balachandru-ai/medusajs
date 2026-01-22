@@ -91,18 +91,7 @@
  *   "500":
  *     $ref: "#/components/responses/500_error"
  * x-workflow: cancelOrderFulfillmentWorkflow
- * x-events:
- *   - name: order.fulfillment_canceled
- *     payload: |-
- *       ```ts
- *       {
- *         order_id, // The ID of the order
- *         fulfillment_id, // The ID of the fulfillment
- *         no_notification, // (boolean) Whether to notify the customer
- *       }
- *       ```
- *     description: Emitted when an order's fulfillment is canceled.
- *     deprecated: false
+ * x-events: []
  * 
 */
 

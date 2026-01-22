@@ -82,16 +82,7 @@
  *   "500":
  *     $ref: "#/components/responses/500_error"
  * x-workflow: markOrderFulfillmentAsDeliveredWorkflow
- * x-events:
- *   - name: delivery.created
- *     payload: |-
- *       ```ts
- *       {
- *         id, // the ID of the fulfillment
- *       }
- *       ```
- *     description: Emitted when a fulfillment is marked as delivered.
- *     deprecated: false
+ * x-events: []
  * 
 */
 

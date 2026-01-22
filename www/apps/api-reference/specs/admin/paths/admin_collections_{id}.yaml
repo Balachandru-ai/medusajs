@@ -158,16 +158,7 @@ post:
     '500':
       $ref: ../components/responses/500_error.yaml
   x-workflow: updateCollectionsWorkflow
-  x-events:
-    - name: product-collection.updated
-      payload: |-
-        ```ts
-        {
-          id, // The ID of the product collection
-        }
-        ```
-      description: Emitted when product collections are updated.
-      deprecated: false
+  x-events: []
 delete:
   operationId: DeleteCollectionsId
   summary: Delete a Collection
@@ -215,13 +206,4 @@ delete:
     '500':
       $ref: ../components/responses/500_error.yaml
   x-workflow: deleteCollectionsWorkflow
-  x-events:
-    - name: product-collection.deleted
-      payload: |-
-        ```ts
-        {
-          id, // The ID of the product collection
-        }
-        ```
-      description: Emitted when product collections are deleted.
-      deprecated: false
+  x-events: []

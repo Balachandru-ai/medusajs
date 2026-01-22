@@ -159,16 +159,7 @@ post:
     '500':
       $ref: ../components/responses/500_error.yaml
   x-workflow: updateProductOptionsWorkflow
-  x-events:
-    - name: product-option.updated
-      payload: |-
-        ```ts
-        {
-          id, // The ID of the product option
-        }
-        ```
-      description: Emitted when product options are updated.
-      deprecated: false
+  x-events: []
 delete:
   operationId: DeleteProductsIdOptionsOption_id
   summary: Delete an Option from Product
@@ -246,13 +237,4 @@ delete:
     '500':
       $ref: ../components/responses/500_error.yaml
   x-workflow: deleteProductOptionsWorkflow
-  x-events:
-    - name: product-option.deleted
-      payload: |-
-        ```ts
-        {
-          id, // The ID of the product option
-        }
-        ```
-      description: Emitted when product options are deleted.
-      deprecated: false
+  x-events: []

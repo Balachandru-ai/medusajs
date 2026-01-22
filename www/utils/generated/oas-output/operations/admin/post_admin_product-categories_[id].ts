@@ -108,16 +108,7 @@
  *   "500":
  *     $ref: "#/components/responses/500_error"
  * x-workflow: updateProductCategoriesWorkflow
- * x-events:
- *   - name: product-category.updated
- *     payload: |-
- *       ```ts
- *       {
- *         id, // The ID of the product category
- *       }
- *       ```
- *     description: Emitted when product categories are updated.
- *     deprecated: false
+ * x-events: []
  * 
 */
 

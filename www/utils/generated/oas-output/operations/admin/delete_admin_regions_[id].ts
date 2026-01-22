@@ -79,16 +79,7 @@
  *   "500":
  *     $ref: "#/components/responses/500_error"
  * x-workflow: deleteRegionsWorkflow
- * x-events:
- *   - name: region.deleted
- *     payload: |-
- *       ```ts
- *       {
- *         id, // The ID of the region
- *       }
- *       ```
- *     description: Emitted when regions are deleted.
- *     deprecated: false
+ * x-events: []
  * 
 */
 

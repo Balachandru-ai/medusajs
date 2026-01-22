@@ -67,21 +67,7 @@
  *     application/json:
  *       schema:
  *         $ref: "#/components/schemas/ResetPasswordRequest"
- * x-events:
- *   - name: auth.password_reset
- *     payload: |-
- *       ```ts
- *       {
- *         entity_id, // The identifier of the user or customer. For example, an email address.
- *         actor_type, // The type of actor. For example, "customer", "user", or custom.
- *         token, // The generated token.
- *         metadata, // Optional custom metadata passed from the request.
- *       }
- *       ```
- *     description: |-
- *       Emitted when a reset password token is generated. You can listen to this event
- *       to send a reset password email to the user or customer, for example.
- *     deprecated: false
+ * x-events: []
  * 
 */
 

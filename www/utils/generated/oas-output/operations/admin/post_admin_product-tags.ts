@@ -78,16 +78,7 @@
  *   "500":
  *     $ref: "#/components/responses/500_error"
  * x-workflow: createProductTagsWorkflow
- * x-events:
- *   - name: product-tag.created
- *     payload: |-
- *       ```ts
- *       {
- *         id, // The ID of the product tag
- *       }
- *       ```
- *     description: Emitted when product tags are created.
- *     deprecated: false
+ * x-events: []
  * 
 */
 

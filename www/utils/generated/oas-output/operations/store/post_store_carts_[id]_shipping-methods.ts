@@ -140,16 +140,7 @@
  *   "500":
  *     $ref: "#/components/responses/500_error"
  * x-workflow: addShippingMethodToCartWorkflow
- * x-events:
- *   - name: cart.updated
- *     payload: |-
- *       ```ts
- *       {
- *         id, // The ID of the cart
- *       }
- *       ```
- *     description: Emitted when a cart's details are updated.
- *     deprecated: false
+ * x-events: []
  * 
 */
 

@@ -1,0 +1,51 @@
+/**
+ * @schema AdminTranslationSettings
+ * type: object
+ * description: The created's details.
+ * x-schemaName: AdminTranslationSettings
+ * required:
+ *   - id
+ *   - created_at
+ *   - updated_at
+ *   - deleted_at
+ *   - entity_type
+ *   - fields
+ *   - is_active
+ * properties:
+ *   id:
+ *     type: string
+ *     title: id
+ *     description: The created's ID.
+ *   created_at:
+ *     type: string
+ *     format: date-time
+ *     title: created_at
+ *     description: The created's created at.
+ *   updated_at:
+ *     type: string
+ *     format: date-time
+ *     title: updated_at
+ *     description: The created's updated at.
+ *   deleted_at:
+ *     type: string
+ *     format: date-time
+ *     title: deleted_at
+ *     description: The created's deleted at.
+ *   entity_type:
+ *     type: string
+ *     title: entity_type
+ *     description: The created's entity type.
+ *   fields:
+ *     type: array
+ *     description: The created's fields.
+ *     items:
+ *       type: string
+ *       title: fields
+ *       description: The field's fields.
+ *   is_active:
+ *     type: boolean
+ *     title: is_active
+ *     description: The created's is active.
+ * 
+*/
+

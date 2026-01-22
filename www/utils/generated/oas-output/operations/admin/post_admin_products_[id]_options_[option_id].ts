@@ -98,16 +98,7 @@
  *   "500":
  *     $ref: "#/components/responses/500_error"
  * x-workflow: updateProductOptionsWorkflow
- * x-events:
- *   - name: product-option.updated
- *     payload: |-
- *       ```ts
- *       {
- *         id, // The ID of the product option
- *       }
- *       ```
- *     description: Emitted when product options are updated.
- *     deprecated: false
+ * x-events: []
  * 
 */
 

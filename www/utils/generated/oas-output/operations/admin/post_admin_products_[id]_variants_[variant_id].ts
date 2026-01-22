@@ -98,16 +98,7 @@
  *   "500":
  *     $ref: "#/components/responses/500_error"
  * x-workflow: updateProductVariantsWorkflow
- * x-events:
- *   - name: product-variant.updated
- *     payload: |-
- *       ```ts
- *       {
- *         id, // The ID of the product variant
- *       }
- *       ```
- *     description: Emitted when product variants are updated.
- *     deprecated: false
+ * x-events: []
  * 
 */
 

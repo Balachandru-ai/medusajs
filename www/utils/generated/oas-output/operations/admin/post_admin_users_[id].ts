@@ -84,16 +84,7 @@
  * security:
  *   - cookie_auth: []
  *   - jwt_token: []
- * x-events:
- *   - name: user.updated
- *     payload: |-
- *       ```ts
- *       {
- *         id, // The ID of the user
- *       }
- *       ```
- *     description: Emitted when users are updated.
- *     deprecated: false
+ * x-events: []
  * 
 */
 

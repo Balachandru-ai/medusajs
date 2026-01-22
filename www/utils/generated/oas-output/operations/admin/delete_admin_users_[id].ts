@@ -57,16 +57,7 @@
  * security:
  *   - cookie_auth: []
  *   - jwt_token: []
- * x-events:
- *   - name: user.deleted
- *     payload: |-
- *       ```ts
- *       {
- *         id, // The ID of the user
- *       }
- *       ```
- *     description: Emitted when users are deleted.
- *     deprecated: false
+ * x-events: []
  * 
 */
 

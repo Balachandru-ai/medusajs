@@ -479,6 +479,7 @@ tags:
       url: https://docs.medusajs.com/resources/commerce-modules/promotion/concepts
     x-associatedSchema:
       $ref: ./components/schemas/AdminPromotion.yaml
+  - name: Rbac
   - name: Refund Reasons
     description: >
       A refund reason is a possible reason used when issuing a refund to the
@@ -1108,6 +1109,18 @@ paths:
     $ref: paths/admin_promotions_{id}_target-rules_batch.yaml
   /admin/promotions/{id}/{rule_type}:
     $ref: paths/admin_promotions_{id}_{rule_type}.yaml
+  /admin/rbac/policies:
+    $ref: paths/admin_rbac_policies.yaml
+  /admin/rbac/policies/{id}:
+    $ref: paths/admin_rbac_policies_{id}.yaml
+  /admin/rbac/roles:
+    $ref: paths/admin_rbac_roles.yaml
+  /admin/rbac/roles/{id}:
+    $ref: paths/admin_rbac_roles_{id}.yaml
+  /admin/rbac/roles/{id}/policies:
+    $ref: paths/admin_rbac_roles_{id}_policies.yaml
+  /admin/rbac/roles/{id}/policies/{policy_id}:
+    $ref: paths/admin_rbac_roles_{id}_policies_{policy_id}.yaml
   /admin/refund-reasons:
     $ref: paths/admin_refund-reasons.yaml
   /admin/refund-reasons/{id}:
@@ -1216,6 +1229,8 @@ paths:
     $ref: paths/admin_translations_entities.yaml
   /admin/translations/settings:
     $ref: paths/admin_translations_settings.yaml
+  /admin/translations/settings/batch:
+    $ref: paths/admin_translations_settings_batch.yaml
   /admin/translations/statistics:
     $ref: paths/admin_translations_statistics.yaml
   /admin/uploads:

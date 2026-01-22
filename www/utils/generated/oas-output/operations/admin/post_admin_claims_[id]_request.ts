@@ -464,17 +464,7 @@
  *   "500":
  *     $ref: "#/components/responses/500_error"
  * x-workflow: confirmClaimRequestWorkflow
- * x-events:
- *   - name: order.claim_created
- *     payload: |-
- *       ```ts
- *       {
- *         order_id, // The ID of the order
- *         claim_id, // The ID of the claim
- *       }
- *       ```
- *     description: Emitted when a claim is created for an order.
- *     deprecated: false
+ * x-events: []
  * 
 */
 

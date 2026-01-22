@@ -134,16 +134,7 @@ post:
     '500':
       $ref: ../components/responses/500_error.yaml
   x-workflow: updateSalesChannelsWorkflow
-  x-events:
-    - name: sales-channel.updated
-      payload: |-
-        ```ts
-        {
-          id, // The ID of the sales channel
-        }
-        ```
-      description: Emitted when sales channels are updated.
-      deprecated: false
+  x-events: []
 delete:
   operationId: DeleteSalesChannelsId
   summary: Delete a Sales Channel
@@ -191,13 +182,4 @@ delete:
     '500':
       $ref: ../components/responses/500_error.yaml
   x-workflow: deleteSalesChannelsWorkflow
-  x-events:
-    - name: sales-channel.deleted
-      payload: |-
-        ```ts
-        {
-          id, // The ID of the sales channel
-        }
-        ```
-      description: Emitted when sales channels are deleted.
-      deprecated: false
+  x-events: []

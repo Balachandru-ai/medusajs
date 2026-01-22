@@ -60,18 +60,7 @@
  *   "500":
  *     $ref: "#/components/responses/500_error"
  * x-workflow: confirmOrderEditRequestWorkflow
- * x-events:
- *   - name: order-edit.confirmed
- *     payload: |-
- *       ```ts
- *       {
- *         order_id, // The ID of the order
- *         actions, // (array) The [actions](https://docs.medusajs.com/resources/references/fulfillment/interfaces/fulfillment.OrderChangeActionDTO) to edit the order
- *       }
- *       ```
- *     description: Emitted when an order edit request is confirmed.
- *     deprecated: false
- *     since: 2.8.0
+ * x-events: []
  * 
 */
 

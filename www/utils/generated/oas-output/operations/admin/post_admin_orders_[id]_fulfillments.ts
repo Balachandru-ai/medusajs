@@ -139,18 +139,7 @@
  *   "500":
  *     $ref: "#/components/responses/500_error"
  * x-workflow: createOrderFulfillmentWorkflow
- * x-events:
- *   - name: order.fulfillment_created
- *     payload: |-
- *       ```ts
- *       {
- *         order_id, // The ID of the order
- *         fulfillment_id, // The ID of the fulfillment
- *         no_notification, // (boolean) Whether to notify the customer
- *       }
- *       ```
- *     description: Emitted when a fulfillment is created for an order.
- *     deprecated: false
+ * x-events: []
  * 
 */
 

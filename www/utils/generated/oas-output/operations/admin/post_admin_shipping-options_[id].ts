@@ -79,17 +79,7 @@
  *   "500":
  *     $ref: "#/components/responses/500_error"
  * x-workflow: updateShippingOptionsWorkflow
- * x-events:
- *   - name: shipping-option.updated
- *     payload: |-
- *       ```ts
- *       {
- *         id, // The ID of the shipping option
- *       }
- *       ```
- *     description: Emitted when shipping options are updated.
- *     deprecated: false
- *     since: 2.12.4
+ * x-events: []
  * 
 */
 

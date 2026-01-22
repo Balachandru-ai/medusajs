@@ -88,18 +88,7 @@
  *   - api_token: []
  *   - cookie_auth: []
  *   - jwt_token: []
- * x-events:
- *   - name: invite.created
- *     payload: |-
- *       ```ts
- *       {
- *         id, // The ID of the invite
- *       }
- *       ```
- *     description: |-
- *       Emitted when invites are created. You can listen to this event
- *       to send an email to the invited users, for example.
- *     deprecated: false
+ * x-events: []
  * 
 */
 

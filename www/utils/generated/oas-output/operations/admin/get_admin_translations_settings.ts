@@ -15,6 +15,14 @@
  *       title: entity_type
  *       description: The entity to retrieve translation settings for.
  *       example: product
+ *   - name: is_active
+ *     in: query
+ *     description: The translation's is active.
+ *     required: false
+ *     schema:
+ *       type: boolean
+ *       title: is_active
+ *       description: The translation's is active.
  * security:
  *   - api_token: []
  *   - cookie_auth: []
@@ -36,8 +44,8 @@
  *       sdk.admin.translation.settings({
  *         entity_type: "product"
  *       })
- *       .then(({ translatable_fields }) => {
- *         console.log(translatable_fields)
+ *       .then(({ translation_settings }) => {
+ *         console.log(translation_settings)
  *       })
  *   - lang: Shell
  *     label: cURL

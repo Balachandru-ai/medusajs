@@ -84,16 +84,7 @@
  *   "500":
  *     $ref: "#/components/responses/500_error"
  * x-workflow: markPaymentCollectionAsPaid
- * x-events:
- *   - name: payment.captured
- *     payload: |-
- *       ```ts
- *       {
- *         id, // the ID of the payment
- *       }
- *       ```
- *     description: Emitted when a payment is captured.
- *     deprecated: false
+ * x-events: []
  * 
 */
 

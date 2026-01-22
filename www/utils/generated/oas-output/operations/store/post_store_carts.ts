@@ -113,16 +113,7 @@
  *   "500":
  *     $ref: "#/components/responses/500_error"
  * x-workflow: createCartWorkflow
- * x-events:
- *   - name: cart.created
- *     payload: |-
- *       ```ts
- *       {
- *         id, // The ID of the cart
- *       }
- *       ```
- *     description: Emitted when a cart is created.
- *     deprecated: false
+ * x-events: []
  * 
 */
 
