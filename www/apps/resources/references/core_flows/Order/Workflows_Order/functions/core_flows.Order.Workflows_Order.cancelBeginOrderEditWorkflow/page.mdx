@@ -27,7 +27,7 @@ If you use this workflow in another, you must acquire a lock before running it a
 
 :::
 
-<SourceCodeLink link="https://github.com/medusajs/medusa/blob/a960fb75c9f662372fd5cd623f883f9d6d8ad473/packages/core/core-flows/src/order/workflows/order-edit/cancel-begin-order-edit.ts#L101" />
+<SourceCodeLink link="https://github.com/medusajs/medusa/blob/139cbd632626ac4c52a534d725fcd86bacd32292/packages/core/core-flows/src/order/workflows/order-edit/cancel-begin-order-edit.ts#L101" />
 
 ## Examples
 
@@ -145,66 +145,3 @@ const myWorkflow = createWorkflow(
 ## Input
 
 <TypeList types={[{"name":"CancelBeginOrderEditWorkflowInput","type":"[CancelBeginOrderEditWorkflowInput](../../../../types/core_flows.CancelBeginOrderEditWorkflowInput/page.mdx)","optional":false,"defaultValue":"","description":"The data to cancel a requested order edit.","expandable":false,"children":[{"name":"order_id","type":"`string`","description":"The ID of the order to cancel the edit for.","optional":false,"defaultValue":"","expandable":false,"children":[]}]}]} expandUrl="https://docs.medusajs.com/learn/fundamentals/data-models/manage-relationships#retrieve-records-of-relation" openedLevel={1} sectionTitle="cancelBeginOrderEditWorkflow"/>
-
-## Emitted Events
-
-This section lists the events that are either triggered by the `emitEventStep` in the workflow, or by another workflow executed within this workflow.
-
-:::note
-
-The `emitEventStep` only emits the event after the workflow has finished successfully. So, even if it's executed in the middle of the workflow, it won't actually emit the event until the workflow has completed successfully. If the workflow fails, it won't emit the event at all.
-
-:::
-
-You can listen to these events in a subscriber, as explained in the [Subscribers](https://docs.medusajs.com/learn/fundamentals/events-and-subscribers) documentation.
-
-<Table>
-  <Table.Header>
-    <Table.Row>
-      <Table.HeaderCell>
-Event
-</Table.HeaderCell>
-      <Table.HeaderCell>
-Description
-</Table.HeaderCell>
-      <Table.HeaderCell>
-Payload
-</Table.HeaderCell>
-      <Table.HeaderCell>
-Action
-</Table.HeaderCell>
-    </Table.Row>
-  </Table.Header>
-  <Table.Body>
-    <Table.Row>
-      <Table.Cell>
-`order-edit.canceled`
-
-<Tooltip text="This event was added in version v2.8.0"><Badge variant="blue">v2.8.0</Badge></Tooltip>
-
-</Table.Cell>
-      <Table.Cell>
-Emitted when an order edit request is canceled.
-</Table.Cell>
-      <Table.Cell>
-```ts blockStyle="inline"
-{
-  order_id, // The ID of the order
-  actions, // (array) The [actions](https://docs.medusajs.com/resources/references/fulfillment/interfaces/fulfillment.OrderChangeActionDTO) to edit the order
-}
-```
-</Table.Cell>
-      <Table.Cell>
-<CopyGeneratedSnippetButton tooltipText="Copy subscriber for event" type="subscriber" options={{
-        event: "order-edit.canceled",
-        payload: `\`\`\`ts
-{
-  order_id, // The ID of the order
-  actions, // (array) The [actions](https://docs.medusajs.com/resources/references/fulfillment/interfaces/fulfillment.OrderChangeActionDTO) to edit the order
-}
-\`\`\``
-        }}/>
-</Table.Cell>
-    </Table.Row>
-  </Table.Body>
-</Table>

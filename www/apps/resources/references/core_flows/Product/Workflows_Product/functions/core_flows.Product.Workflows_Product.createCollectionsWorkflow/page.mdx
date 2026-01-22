@@ -22,7 +22,7 @@ allows you to create custom data models linked to the product collections.
 
 You can also use this workflow within your own custom workflows, allowing you to wrap custom logic around product-collection creation.
 
-<SourceCodeLink link="https://github.com/medusajs/medusa/blob/a960fb75c9f662372fd5cd623f883f9d6d8ad473/packages/core/core-flows/src/product/workflows/create-collections.ts#L54" />
+<SourceCodeLink link="https://github.com/medusajs/medusa/blob/139cbd632626ac4c52a534d725fcd86bacd32292/packages/core/core-flows/src/product/workflows/create-collections.ts#L54" />
 
 ## Examples
 
@@ -188,61 +188,3 @@ createCollectionsWorkflow.hooks.collectionsCreated(
 Handlers consuming this hook accept the following input.
 
 <TypeList types={[{"name":"input","type":"[input](../../../core_flows.Product.Workflows_Product/page.mdx#__type)","description":"The input data for the hook.","optional":false,"defaultValue":"","expandable":false,"children":[{"name":"collections","type":"[ProductCollectionDTO](../../../../../product/interfaces/product.ProductCollectionDTO/page.mdx)[]","description":"","optional":false,"defaultValue":"","expandable":false,"children":[{"name":"id","type":"`string`","description":"The ID of the product collection.","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"title","type":"`string`","description":"The title of the product collection.","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"handle","type":"`string`","description":"The handle of the product collection. The handle can be used to create slug URL paths.","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"created_at","type":"`string` \\| `Date`","description":"When the product collection was created.","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"updated_at","type":"`string` \\| `Date`","description":"When the product collection was updated.","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"metadata","type":"[MetadataType](../../../../../product/types/product.MetadataType/page.mdx)","description":"Holds custom data in key-value pairs.","optional":true,"defaultValue":"","expandable":false,"children":[]},{"name":"deleted_at","type":"`string` \\| `Date`","description":"When the product collection was deleted.","optional":true,"defaultValue":"","expandable":false,"children":[]},{"name":"products","type":"[ProductDTO](../../../../../product/interfaces/product.ProductDTO/page.mdx)[]","description":"The associated products.","optional":true,"defaultValue":"","expandable":true,"children":[]}]},{"name":"additional_data","type":"`Record<string, unknown> | undefined`","description":"Additional data that can be passed through the `additional_data` property in HTTP requests.\nLearn more in [this documentation](https://docs.medusajs.com/learn/fundamentals/api-routes/additional-data).","optional":false,"defaultValue":"","expandable":false,"children":[]}]}]} expandUrl="https://docs.medusajs.com/learn/fundamentals/data-models/manage-relationships#retrieve-records-of-relation" openedLevel={1} sectionTitle="collectionsCreated"/>
-
-## Emitted Events
-
-This section lists the events that are either triggered by the `emitEventStep` in the workflow, or by another workflow executed within this workflow.
-
-:::note
-
-The `emitEventStep` only emits the event after the workflow has finished successfully. So, even if it's executed in the middle of the workflow, it won't actually emit the event until the workflow has completed successfully. If the workflow fails, it won't emit the event at all.
-
-:::
-
-You can listen to these events in a subscriber, as explained in the [Subscribers](https://docs.medusajs.com/learn/fundamentals/events-and-subscribers) documentation.
-
-<Table>
-  <Table.Header>
-    <Table.Row>
-      <Table.HeaderCell>
-Event
-</Table.HeaderCell>
-      <Table.HeaderCell>
-Description
-</Table.HeaderCell>
-      <Table.HeaderCell>
-Payload
-</Table.HeaderCell>
-      <Table.HeaderCell>
-Action
-</Table.HeaderCell>
-    </Table.Row>
-  </Table.Header>
-  <Table.Body>
-    <Table.Row>
-      <Table.Cell>
-`product-collection.created`
-</Table.Cell>
-      <Table.Cell>
-Emitted when product collections are created.
-</Table.Cell>
-      <Table.Cell>
-```ts blockStyle="inline"
-{
-  id, // The ID of the product collection
-}
-```
-</Table.Cell>
-      <Table.Cell>
-<CopyGeneratedSnippetButton tooltipText="Copy subscriber for event" type="subscriber" options={{
-        event: "product-collection.created",
-        payload: `\`\`\`ts
-{
-  id, // The ID of the product collection
-}
-\`\`\``
-        }}/>
-</Table.Cell>
-    </Table.Row>
-  </Table.Body>
-</Table>

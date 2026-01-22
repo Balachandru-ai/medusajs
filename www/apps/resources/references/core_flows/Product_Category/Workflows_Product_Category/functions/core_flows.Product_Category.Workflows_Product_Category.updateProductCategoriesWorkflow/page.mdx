@@ -20,7 +20,7 @@ This workflow updates product categories matching specified filters. It's used b
 You can use this workflow within your customizations or your own custom workflows, allowing you to
 update product categories within your custom flows.
 
-<SourceCodeLink link="https://github.com/medusajs/medusa/blob/a960fb75c9f662372fd5cd623f883f9d6d8ad473/packages/core/core-flows/src/product-category/workflows/update-product-categories.ts#L46" />
+<SourceCodeLink link="https://github.com/medusajs/medusa/blob/139cbd632626ac4c52a534d725fcd86bacd32292/packages/core/core-flows/src/product-category/workflows/update-product-categories.ts#L46" />
 
 ## Examples
 
@@ -186,61 +186,3 @@ updateProductCategoriesWorkflow.hooks.categoriesUpdated(
 Handlers consuming this hook accept the following input.
 
 <TypeList types={[{"name":"input","type":"[input](../../../core_flows.Product_Category.Workflows_Product_Category/page.mdx#__type-2)","description":"The input data for the hook.","optional":false,"defaultValue":"","expandable":false,"children":[{"name":"categories","type":"[ProductCategoryDTO](../../../../../product/interfaces/product.ProductCategoryDTO/page.mdx)[]","description":"","optional":false,"defaultValue":"","expandable":false,"children":[{"name":"id","type":"`string`","description":"The ID of the product category.","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"name","type":"`string`","description":"The name of the product category.","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"description","type":"`string`","description":"The description of the product category.","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"handle","type":"`string`","description":"The handle of the product category. The handle can be used to create slug URL paths.","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"is_active","type":"`boolean`","description":"Whether the product category is active.","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"is_internal","type":"`boolean`","description":"Whether the product category is internal. This can be used to only show the product category to admins and hide it from customers.","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"rank","type":"`number`","description":"The ranking of the product category among sibling categories.","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"parent_category","type":"`null` \\| [ProductCategoryDTO](../../../../../product/interfaces/product.ProductCategoryDTO/page.mdx)","description":"The associated parent category.","optional":false,"defaultValue":"","expandable":true,"children":[]},{"name":"parent_category_id","type":"`null` \\| `string`","description":"The associated parent category id.","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"category_children","type":"[ProductCategoryDTO](../../../../../product/interfaces/product.ProductCategoryDTO/page.mdx)[]","description":"The associated child categories.","optional":false,"defaultValue":"","expandable":true,"children":[]},{"name":"products","type":"[ProductDTO](../../../../../product/interfaces/product.ProductDTO/page.mdx)[]","description":"The associated products.","optional":false,"defaultValue":"","expandable":true,"children":[]},{"name":"created_at","type":"`string` \\| `Date`","description":"When the product category was created.","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"updated_at","type":"`string` \\| `Date`","description":"When the product category was updated.","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"metadata","type":"[MetadataType](../../../../../product/types/product.MetadataType/page.mdx)","description":"The ranking of the product category among sibling categories.","optional":true,"defaultValue":"","expandable":false,"children":[]},{"name":"deleted_at","type":"`string` \\| `Date`","description":"When the product category was deleted.","optional":true,"defaultValue":"","expandable":false,"children":[]}]},{"name":"additional_data","type":"`Record<string, unknown> | undefined`","description":"Additional data that can be passed through the `additional_data` property in HTTP requests.\nLearn more in [this documentation](https://docs.medusajs.com/learn/fundamentals/api-routes/additional-data).","optional":false,"defaultValue":"","expandable":false,"children":[]}]}]} expandUrl="https://docs.medusajs.com/learn/fundamentals/data-models/manage-relationships#retrieve-records-of-relation" openedLevel={1} sectionTitle="categoriesUpdated"/>
-
-## Emitted Events
-
-This section lists the events that are either triggered by the `emitEventStep` in the workflow, or by another workflow executed within this workflow.
-
-:::note
-
-The `emitEventStep` only emits the event after the workflow has finished successfully. So, even if it's executed in the middle of the workflow, it won't actually emit the event until the workflow has completed successfully. If the workflow fails, it won't emit the event at all.
-
-:::
-
-You can listen to these events in a subscriber, as explained in the [Subscribers](https://docs.medusajs.com/learn/fundamentals/events-and-subscribers) documentation.
-
-<Table>
-  <Table.Header>
-    <Table.Row>
-      <Table.HeaderCell>
-Event
-</Table.HeaderCell>
-      <Table.HeaderCell>
-Description
-</Table.HeaderCell>
-      <Table.HeaderCell>
-Payload
-</Table.HeaderCell>
-      <Table.HeaderCell>
-Action
-</Table.HeaderCell>
-    </Table.Row>
-  </Table.Header>
-  <Table.Body>
-    <Table.Row>
-      <Table.Cell>
-`product-category.updated`
-</Table.Cell>
-      <Table.Cell>
-Emitted when product categories are updated.
-</Table.Cell>
-      <Table.Cell>
-```ts blockStyle="inline"
-{
-  id, // The ID of the product category
-}
-```
-</Table.Cell>
-      <Table.Cell>
-<CopyGeneratedSnippetButton tooltipText="Copy subscriber for event" type="subscriber" options={{
-        event: "product-category.updated",
-        payload: `\`\`\`ts
-{
-  id, // The ID of the product category
-}
-\`\`\``
-        }}/>
-</Table.Cell>
-    </Table.Row>
-  </Table.Body>
-</Table>

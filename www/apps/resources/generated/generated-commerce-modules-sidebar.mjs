@@ -17481,6 +17481,15 @@ const generatedgeneratedCommerceModulesSidebarSidebar = {
                       "loaded": true,
                       "isPathHref": true,
                       "type": "link",
+                      "path": "/references/translation/createTranslationSettings",
+                      "title": "createTranslationSettings",
+                      "description": "",
+                      "children": []
+                    },
+                    {
+                      "loaded": true,
+                      "isPathHref": true,
+                      "type": "link",
                       "path": "/references/translation/createTranslations",
                       "title": "createTranslations",
                       "description": "",
@@ -17499,8 +17508,26 @@ const generatedgeneratedCommerceModulesSidebarSidebar = {
                       "loaded": true,
                       "isPathHref": true,
                       "type": "link",
+                      "path": "/references/translation/deleteTranslationSettings",
+                      "title": "deleteTranslationSettings",
+                      "description": "",
+                      "children": []
+                    },
+                    {
+                      "loaded": true,
+                      "isPathHref": true,
+                      "type": "link",
                       "path": "/references/translation/deleteTranslations",
                       "title": "deleteTranslations",
+                      "description": "",
+                      "children": []
+                    },
+                    {
+                      "loaded": true,
+                      "isPathHref": true,
+                      "type": "link",
+                      "path": "/references/translation/getInactiveTranslatableFields",
+                      "title": "getInactiveTranslatableFields",
                       "description": "",
                       "children": []
                     },
@@ -17535,6 +17562,15 @@ const generatedgeneratedCommerceModulesSidebarSidebar = {
                       "loaded": true,
                       "isPathHref": true,
                       "type": "link",
+                      "path": "/references/translation/listAndCountTranslationSettings",
+                      "title": "listAndCountTranslationSettings",
+                      "description": "",
+                      "children": []
+                    },
+                    {
+                      "loaded": true,
+                      "isPathHref": true,
+                      "type": "link",
                       "path": "/references/translation/listAndCountTranslations",
                       "title": "listAndCountTranslations",
                       "description": "",
@@ -17546,6 +17582,15 @@ const generatedgeneratedCommerceModulesSidebarSidebar = {
                       "type": "link",
                       "path": "/references/translation/listLocales",
                       "title": "listLocales",
+                      "description": "",
+                      "children": []
+                    },
+                    {
+                      "loaded": true,
+                      "isPathHref": true,
+                      "type": "link",
+                      "path": "/references/translation/listTranslationSettings",
+                      "title": "listTranslationSettings",
                       "description": "",
                       "children": []
                     },
@@ -17598,6 +17643,15 @@ const generatedgeneratedCommerceModulesSidebarSidebar = {
                       "loaded": true,
                       "isPathHref": true,
                       "type": "link",
+                      "path": "/references/translation/retrieveTranslationSettings",
+                      "title": "retrieveTranslationSettings",
+                      "description": "",
+                      "children": []
+                    },
+                    {
+                      "loaded": true,
+                      "isPathHref": true,
+                      "type": "link",
                       "path": "/references/translation/softDeleteLocales",
                       "title": "softDeleteLocales",
                       "description": "",
@@ -17618,6 +17672,15 @@ const generatedgeneratedCommerceModulesSidebarSidebar = {
                       "type": "link",
                       "path": "/references/translation/updateLocales",
                       "title": "updateLocales",
+                      "description": "",
+                      "children": []
+                    },
+                    {
+                      "loaded": true,
+                      "isPathHref": true,
+                      "type": "link",
+                      "path": "/references/translation/updateTranslationSettings",
+                      "title": "updateTranslationSettings",
                       "description": "",
                       "children": []
                     },

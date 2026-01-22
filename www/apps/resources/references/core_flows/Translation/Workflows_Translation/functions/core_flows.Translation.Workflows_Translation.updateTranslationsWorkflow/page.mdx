@@ -3,7 +3,6 @@ slug: /references/medusa-workflows/updateTranslationsWorkflow
 sidebar_label: updateTranslationsWorkflow
 sidebar_description: Update translations.
 tags:
-  - query
   - translation
   - event bus
   - workflow
@@ -33,7 +32,7 @@ This is available starting from [Medusa v2.12.3](https://github.com/medusajs/med
 
 :::
 
-<SourceCodeLink link="https://github.com/medusajs/medusa/blob/a960fb75c9f662372fd5cd623f883f9d6d8ad473/packages/core/core-flows/src/translation/workflows/update-translations.ts#L59" />
+<SourceCodeLink link="https://github.com/medusajs/medusa/blob/139cbd632626ac4c52a534d725fcd86bacd32292/packages/core/core-flows/src/translation/workflows/update-translations.ts#L58" />
 
 ## Examples
 
@@ -261,7 +260,7 @@ const myWorkflow = createWorkflow(
 
 ## Steps
 
-<WorkflowDiagram workflow={{"name":"updateTranslationsWorkflow","steps":[{"type":"step","name":"validateTranslationsStep","description":"This step validates that the translations are supported by the store.","link":"../../../Steps_Translation/functions/core_flows.Translation.Steps_Translation.validateTranslationsStep/page.mdx","depth":1},{"type":"step","name":"updateTranslationsStep","description":"This step updates translations matching the specified filters or by ID.","link":"../../../Steps_Translation/functions/core_flows.Translation.Steps_Translation.updateTranslationsStep/page.mdx","depth":2},{"type":"step","name":"emitEventStep","description":"This step emits an event, which you can listen to in a [subscriber](https://docs.medusajs.com/learn/fundamentals/events-and-subscribers). You can pass data to the\nsubscriber by including it in the `data` property.\n\nThe event is only emitted after the workflow has finished successfully. So, even if it's executed in the middle of the workflow, it won't actually emit the event until the workflow has completed successfully. \nIf the workflow fails, it won't emit the event at all.","link":"../../../../Common/Steps_Common/functions/core_flows.Common.Steps_Common.emitEventStep/page.mdx","depth":3}]}} />
+<WorkflowDiagram workflow={{"name":"updateTranslationsWorkflow","steps":[{"type":"step","name":"updateTranslationsStep","description":"This step updates translations matching the specified filters or by ID.","link":"../../../Steps_Translation/functions/core_flows.Translation.Steps_Translation.updateTranslationsStep/page.mdx","depth":1},{"type":"step","name":"emitEventStep","description":"This step emits an event, which you can listen to in a [subscriber](https://docs.medusajs.com/learn/fundamentals/events-and-subscribers). You can pass data to the\nsubscriber by including it in the `data` property.\n\nThe event is only emitted after the workflow has finished successfully. So, even if it's executed in the middle of the workflow, it won't actually emit the event until the workflow has completed successfully. \nIf the workflow fails, it won't emit the event at all.","link":"../../../../Common/Steps_Common/functions/core_flows.Common.Steps_Common.emitEventStep/page.mdx","depth":2}]}} />
 
 ## Input
 
@@ -270,64 +269,3 @@ const myWorkflow = createWorkflow(
 ## Output
 
 <TypeList types={[{"name":"TranslationDTO[]","type":"[TranslationDTO](../../../../../translation/interfaces/translation.TranslationDTO/page.mdx)[]","optional":false,"defaultValue":"","description":"","expandable":false,"children":[{"name":"id","type":"`string`","description":"The ID of the translation.","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"reference_id","type":"`string`","description":"The ID of the entity being translated.","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"reference","type":"`string`","description":"The type of entity being translated (e.g., \"product\", \"product\\_variant\").","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"locale_code","type":"`string`","description":"The BCP 47 language tag code for this translation (e.g., \"en-US\", \"fr-FR\").","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"translations","type":"`Record<string, unknown>`","description":"The translated fields as key-value pairs.","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"created_at","type":"`string` \\| `Date`","description":"The date and time the translation was created.","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"updated_at","type":"`string` \\| `Date`","description":"The date and time the translation was last updated.","optional":false,"defaultValue":"","expandable":false,"children":[]},{"name":"deleted_at","type":"`null` \\| `string` \\| `Date`","description":"The date and time the translation was deleted.","optional":false,"defaultValue":"","expandable":false,"children":[]}]}]} expandUrl="https://docs.medusajs.com/learn/fundamentals/data-models/manage-relationships#retrieve-records-of-relation" openedLevel={1} sectionTitle="updateTranslationsWorkflow"/>
-
-## Emitted Events
-
-This section lists the events that are either triggered by the `emitEventStep` in the workflow, or by another workflow executed within this workflow.
-
-:::note
-
-The `emitEventStep` only emits the event after the workflow has finished successfully. So, even if it's executed in the middle of the workflow, it won't actually emit the event until the workflow has completed successfully. If the workflow fails, it won't emit the event at all.
-
-:::
-
-You can listen to these events in a subscriber, as explained in the [Subscribers](https://docs.medusajs.com/learn/fundamentals/events-and-subscribers) documentation.
-
-<Table>
-  <Table.Header>
-    <Table.Row>
-      <Table.HeaderCell>
-Event
-</Table.HeaderCell>
-      <Table.HeaderCell>
-Description
-</Table.HeaderCell>
-      <Table.HeaderCell>
-Payload
-</Table.HeaderCell>
-      <Table.HeaderCell>
-Action
-</Table.HeaderCell>
-    </Table.Row>
-  </Table.Header>
-  <Table.Body>
-    <Table.Row>
-      <Table.Cell>
-`translation.updated`
-
-<Tooltip text="This event was added in version v2.12.3"><Badge variant="blue">v2.12.3</Badge></Tooltip>
-
-</Table.Cell>
-      <Table.Cell>
-Emitted when translations are updated.
-</Table.Cell>
-      <Table.Cell>
-```ts blockStyle="inline"
-{
-  id, // The ID of the translation
-}
-```
-</Table.Cell>
-      <Table.Cell>
-<CopyGeneratedSnippetButton tooltipText="Copy subscriber for event" type="subscriber" options={{
-        event: "translation.updated",
-        payload: `\`\`\`ts
-{
-  id, // The ID of the translation
-}
-\`\`\``
-        }}/>
-</Table.Cell>
-    </Table.Row>
-  </Table.Body>
-</Table>
