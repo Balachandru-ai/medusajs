@@ -30,6 +30,7 @@ export type CodeBlockMetaFields = {
   hasTabs?: boolean
   npm2yarn?: boolean
   npx2yarn?: boolean
+  npx2yarnExec?: boolean
   highlights?: string[][]
   apiTesting?: boolean
   testApiMethod?: ApiMethod
@@ -304,6 +305,9 @@ export const CodeBlock = ({
     track({
       event: {
         event: DocsTrackingEvents.CODE_BLOCK_COPY,
+        options: {
+          text: source.substring(0, 150),
+        },
       },
     })
   }
