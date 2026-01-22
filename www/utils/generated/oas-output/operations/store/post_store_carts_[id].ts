@@ -123,7 +123,27 @@
  *   "500":
  *     $ref: "#/components/responses/500_error"
  * x-workflow: updateCartWorkflow
- * x-events: []
+ * x-events:
+ *   - name: cart.updated
+ *     payload: |-
+ *       ```ts
+ *       {
+ *         id, // The ID of the cart
+ *       }
+ *       ```
+ *     description: Emitted when a cart's details are updated.
+ *     deprecated: false
+ *   - name: cart.region_updated
+ *     payload: |-
+ *       ```ts
+ *       {
+ *         id, // The ID of the cart
+ *       }
+ *       ```
+ *     description: |-
+ *       Emitted when the cart's region is updated. This
+ *       event is emitted alongside the `cart.updated` event.
+ *     deprecated: false
  * 
 */
 

@@ -83,7 +83,16 @@
  *   "500":
  *     $ref: "#/components/responses/500_error"
  * x-workflow: updateRegionsWorkflow
- * x-events: []
+ * x-events:
+ *   - name: region.updated
+ *     payload: |-
+ *       ```ts
+ *       {
+ *         id, // The ID of the region
+ *       }
+ *       ```
+ *     description: Emitted when regions are updated.
+ *     deprecated: false
  * 
 */
 

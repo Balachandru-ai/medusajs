@@ -128,7 +128,16 @@
  * security:
  *   - cookie_auth: []
  *   - jwt_token: []
- * x-events: []
+ * x-events:
+ *   - name: customer.created
+ *     payload: |-
+ *       ```ts
+ *       {
+ *         id, // The ID of the customer
+ *       }
+ *       ```
+ *     description: Emitted when a customer is created.
+ *     deprecated: false
  * 
 */
 

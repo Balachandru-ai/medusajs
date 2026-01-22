@@ -77,7 +77,16 @@
  *   "500":
  *     $ref: "#/components/responses/500_error"
  * x-workflow: refundPaymentWorkflow
- * x-events: []
+ * x-events:
+ *   - name: payment.refunded
+ *     payload: |-
+ *       ```ts
+ *       {
+ *         id, // the ID of the payment
+ *       }
+ *       ```
+ *     description: Emitted when a payment is refunded.
+ *     deprecated: false
  * 
 */
 

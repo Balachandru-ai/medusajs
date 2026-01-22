@@ -100,7 +100,43 @@
  *   "500":
  *     $ref: "#/components/responses/500_error"
  * x-workflow: batchProductsWorkflow
- * x-events: []
+ * x-events:
+ *   - name: product-variant.created
+ *     payload: |-
+ *       ```ts
+ *       {
+ *         id, // The ID of the product variant
+ *       }
+ *       ```
+ *     description: Emitted when product variants are created.
+ *     deprecated: false
+ *   - name: product.updated
+ *     payload: |-
+ *       ```ts
+ *       {
+ *         id, // The ID of the product
+ *       }
+ *       ```
+ *     description: Emitted when products are updated.
+ *     deprecated: false
+ *   - name: product.created
+ *     payload: |-
+ *       ```ts
+ *       {
+ *         id, // The ID of the product
+ *       }
+ *       ```
+ *     description: Emitted when products are created.
+ *     deprecated: false
+ *   - name: product.deleted
+ *     payload: |-
+ *       ```ts
+ *       {
+ *         id, // The ID of the product
+ *       }
+ *       ```
+ *     description: Emitted when products are deleted.
+ *     deprecated: false
  * 
 */
 

@@ -4,7 +4,6 @@
  * summary: List Rbac
  * description: Retrieve a list of rbac. The rbac can be filtered by fields such as `id`. The rbac can also be sorted or paginated.
  * x-authenticated: true
- * parameters: []
  * security:
  *   - api_token: []
  *   - cookie_auth: []

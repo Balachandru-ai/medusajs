@@ -82,7 +82,16 @@
  *   "500":
  *     $ref: "#/components/responses/500_error"
  * x-workflow: deleteProductOptionsWorkflow
- * x-events: []
+ * x-events:
+ *   - name: product-option.deleted
+ *     payload: |-
+ *       ```ts
+ *       {
+ *         id, // The ID of the product option
+ *       }
+ *       ```
+ *     description: Emitted when product options are deleted.
+ *     deprecated: false
  * 
 */
 

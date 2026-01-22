@@ -166,7 +166,37 @@
  *   "500":
  *     $ref: "#/components/responses/500_error"
  * x-workflow: batchTranslationsWorkflow
- * x-events: []
+ * x-events:
+ *   - name: translation.created
+ *     payload: |-
+ *       ```ts
+ *       {
+ *         id, // The ID of the translation
+ *       }
+ *       ```
+ *     description: Emitted when translations are created.
+ *     deprecated: false
+ *     since: 2.12.3
+ *   - name: translation.updated
+ *     payload: |-
+ *       ```ts
+ *       {
+ *         id, // The ID of the translation
+ *       }
+ *       ```
+ *     description: Emitted when translations are updated.
+ *     deprecated: false
+ *     since: 2.12.3
+ *   - name: translation.deleted
+ *     payload: |-
+ *       ```ts
+ *       {
+ *         id, // The ID of the translation
+ *       }
+ *       ```
+ *     description: Emitted when translations are deleted.
+ *     deprecated: false
+ *     since: 2.12.3
  * x-since: 2.12.3
  * x-featureFlag: translation
  * 

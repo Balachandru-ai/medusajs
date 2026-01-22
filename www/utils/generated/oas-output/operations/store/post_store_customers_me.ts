@@ -117,7 +117,16 @@
  *   "500":
  *     $ref: "#/components/responses/500_error"
  * x-workflow: updateCustomersWorkflow
- * x-events: []
+ * x-events:
+ *   - name: customer.updated
+ *     payload: |-
+ *       ```ts
+ *       {
+ *         id, // The ID of the customer
+ *       }
+ *       ```
+ *     description: Emitted when a customer is updated.
+ *     deprecated: false
  * 
 */
 

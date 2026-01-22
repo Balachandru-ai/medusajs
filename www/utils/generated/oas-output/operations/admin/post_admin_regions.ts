@@ -80,7 +80,16 @@
  *   "500":
  *     $ref: "#/components/responses/500_error"
  * x-workflow: createRegionsWorkflow
- * x-events: []
+ * x-events:
+ *   - name: region.created
+ *     payload: |-
+ *       ```ts
+ *       {
+ *         id, // The ID of the region
+ *       }
+ *       ```
+ *     description: Emitted when regions are created.
+ *     deprecated: false
  * 
 */
 

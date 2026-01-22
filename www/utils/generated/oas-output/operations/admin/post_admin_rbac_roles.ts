@@ -4,7 +4,6 @@
  * summary: Create Rbac
  * description: Create a rbac.
  * x-authenticated: true
- * parameters: []
  * security:
  *   - api_token: []
  *   - cookie_auth: []

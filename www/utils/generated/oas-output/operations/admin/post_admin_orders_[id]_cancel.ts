@@ -80,7 +80,16 @@
  *   "500":
  *     $ref: "#/components/responses/500_error"
  * x-workflow: cancelOrderWorkflow
- * x-events: []
+ * x-events:
+ *   - name: order.canceled
+ *     payload: |-
+ *       ```ts
+ *       {
+ *         id, // The ID of the order
+ *       }
+ *       ```
+ *     description: Emitted when an order is canceld.
+ *     deprecated: false
  * 
 */
 

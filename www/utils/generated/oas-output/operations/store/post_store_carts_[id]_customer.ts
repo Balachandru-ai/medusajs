@@ -121,7 +121,18 @@
  *   "500":
  *     $ref: "#/components/responses/500_error"
  * x-workflow: transferCartCustomerWorkflow
- * x-events: []
+ * x-events:
+ *   - name: cart.customer_transferred
+ *     payload: |-
+ *       ```ts
+ *       {
+ *         id, // The ID of the cart
+ *         customer_id, // The ID of the customer
+ *       }
+ *       ```
+ *     description: Emitted when the customer in the cart is transferred.
+ *     deprecated: false
+ *     since: 2.8.0
  * 
 */
 

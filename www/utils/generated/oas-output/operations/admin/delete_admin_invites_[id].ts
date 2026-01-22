@@ -77,7 +77,16 @@
  *   - api_token: []
  *   - cookie_auth: []
  *   - jwt_token: []
- * x-events: []
+ * x-events:
+ *   - name: invite.deleted
+ *     payload: |-
+ *       ```ts
+ *       {
+ *         id, // The ID of the invite
+ *       }
+ *       ```
+ *     description: Emitted when invites are deleted.
+ *     deprecated: false
  * 
 */
 

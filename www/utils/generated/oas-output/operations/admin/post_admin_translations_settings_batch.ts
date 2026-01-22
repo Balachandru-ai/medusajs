@@ -4,7 +4,6 @@
  * summary: Create Translation
  * description: Create a translation.
  * x-authenticated: true
- * parameters: []
  * security:
  *   - api_token: []
  *   - cookie_auth: []

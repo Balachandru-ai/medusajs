@@ -84,7 +84,27 @@
  *   "500":
  *     $ref: "#/components/responses/500_error"
  * x-workflow: createAndCompleteReturnOrderWorkflow
- * x-events: []
+ * x-events:
+ *   - name: order.return_requested
+ *     payload: |-
+ *       ```ts
+ *       {
+ *         order_id, // The ID of the order
+ *         return_id, // The ID of the return
+ *       }
+ *       ```
+ *     description: Emitted when a return request is confirmed.
+ *     deprecated: false
+ *   - name: order.return_received
+ *     payload: |-
+ *       ```ts
+ *       {
+ *         order_id, // The ID of the order
+ *         return_id, // The ID of the return
+ *       }
+ *       ```
+ *     description: Emitted when a return is marked as received.
+ *     deprecated: false
  * x-since: 2.8.0
  * 
 */

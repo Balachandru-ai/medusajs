@@ -88,7 +88,19 @@
  *   "500":
  *     $ref: "#/components/responses/500_error"
  * x-workflow: requestOrderTransferWorkflow
- * x-events: []
+ * x-events:
+ *   - name: order.transfer_requested
+ *     payload: |-
+ *       ```ts
+ *       {
+ *         id, // The ID of the order
+ *         order_change_id, // The ID of the order change created for the transfer
+ *       }
+ *       ```
+ *     description: |-
+ *       Emitted when an order is requested to be transferred to
+ *       another customer.
+ *     deprecated: false
  * 
 */
 

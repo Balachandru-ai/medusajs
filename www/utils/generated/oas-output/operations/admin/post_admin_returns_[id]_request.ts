@@ -80,7 +80,17 @@
  *   "500":
  *     $ref: "#/components/responses/500_error"
  * x-workflow: confirmReturnRequestWorkflow
- * x-events: []
+ * x-events:
+ *   - name: order.return_requested
+ *     payload: |-
+ *       ```ts
+ *       {
+ *         order_id, // The ID of the order
+ *         return_id, // The ID of the return
+ *       }
+ *       ```
+ *     description: Emitted when a return request is confirmed.
+ *     deprecated: false
  * 
 */
 

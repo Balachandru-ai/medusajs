@@ -4,7 +4,6 @@
  * summary: Create Auth
  * description: Create a auth.
  * x-authenticated: false
- * parameters: []
  * x-codeSamples:
  *   - lang: Shell
  *     label: cURL
@@ -27,7 +26,16 @@
  *   "500":
  *     $ref: "#/components/responses/500_error"
  * x-workflow: createUserAccountWorkflow
- * x-events: []
+ * x-events:
+ *   - name: user.created
+ *     payload: |-
+ *       ```ts
+ *       {
+ *         id, // The ID of the user
+ *       }
+ *       ```
+ *     description: Emitted when users are created.
+ *     deprecated: false
  * 
 */
 

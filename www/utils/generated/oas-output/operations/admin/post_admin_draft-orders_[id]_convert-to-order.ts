@@ -61,7 +61,18 @@
  *   "500":
  *     $ref: "#/components/responses/500_error"
  * x-workflow: convertDraftOrderWorkflow
- * x-events: []
+ * x-events:
+ *   - name: order.placed
+ *     payload: |-
+ *       ```ts
+ *       {
+ *         id, // The ID of the order
+ *       }
+ *       ```
+ *     description: |-
+ *       Emitted when an order is placed, or when a draft order is converted to an
+ *       order.
+ *     deprecated: false
  * requestBody:
  *   content:
  *     application/json:

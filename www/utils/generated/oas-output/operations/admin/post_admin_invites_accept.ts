@@ -91,7 +91,25 @@
  * security:
  *   - cookie_auth: []
  *   - jwt_token: []
- * x-events: []
+ * x-events:
+ *   - name: user.created
+ *     payload: |-
+ *       ```ts
+ *       {
+ *         id, // The ID of the user
+ *       }
+ *       ```
+ *     description: Emitted when users are created.
+ *     deprecated: false
+ *   - name: invite.accepted
+ *     payload: |-
+ *       ```ts
+ *       {
+ *         id, // The ID of the invite
+ *       }
+ *       ```
+ *     description: Emitted when an invite is accepted.
+ *     deprecated: false
  * 
 */
 

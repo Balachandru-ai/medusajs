@@ -78,7 +78,16 @@
  *   "500":
  *     $ref: "#/components/responses/500_error"
  * x-workflow: removeCustomerAccountWorkflow
- * x-events: []
+ * x-events:
+ *   - name: customer.deleted
+ *     payload: |-
+ *       ```ts
+ *       {
+ *         id, // The ID of the customer
+ *       }
+ *       ```
+ *     description: Emitted when a customer is deleted.
+ *     deprecated: false
  * 
 */
 

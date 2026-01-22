@@ -76,7 +76,16 @@
  *   "500":
  *     $ref: "#/components/responses/500_error"
  * x-workflow: archiveOrderWorkflow
- * x-events: []
+ * x-events:
+ *   - name: order.archived
+ *     payload: |-
+ *       ```ts
+ *       {
+ *         id, // The ID of the order
+ *       }
+ *       ```
+ *     description: Emitted when an order is archived.
+ *     deprecated: false
  * 
 */
 

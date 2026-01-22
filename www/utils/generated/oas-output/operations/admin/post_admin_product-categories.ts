@@ -103,7 +103,16 @@
  *   "500":
  *     $ref: "#/components/responses/500_error"
  * x-workflow: createProductCategoriesWorkflow
- * x-events: []
+ * x-events:
+ *   - name: product-category.created
+ *     payload: |-
+ *       ```ts
+ *       {
+ *         id, // The ID of the product category
+ *       }
+ *       ```
+ *     description: Emitted when product categories are created.
+ *     deprecated: false
  * 
 */
 

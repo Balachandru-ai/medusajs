@@ -4,7 +4,6 @@
  * summary: List Auth
  * description: Retrieve a list of auth. The auth can be filtered by fields such as `id`. The auth can also be sorted or paginated.
  * x-authenticated: false
- * parameters: []
  * x-codeSamples:
  *   - lang: Shell
  *     label: cURL

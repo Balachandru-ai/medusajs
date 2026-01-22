@@ -82,7 +82,17 @@
  *   "500":
  *     $ref: "#/components/responses/500_error"
  * x-workflow: createShippingOptionTypesWorkflow
- * x-events: []
+ * x-events:
+ *   - name: shipping-option-type.created
+ *     payload: |-
+ *       ```ts
+ *       {
+ *         id, // The ID of the shipping option type
+ *       }
+ *       ```
+ *     description: Emitted when shipping option types are created.
+ *     deprecated: false
+ *     since: 2.10.0
  * x-since: 2.10.0
  * 
 */
