@@ -497,57 +497,41 @@ export default class TranslationModuleService
     )
     TranslationModuleService.validateSettings(normalizedData)
 
-    const updatedSettings = await super.updateTranslationSettings(
-      // @ts-expect-error TS can't match union type to overloads
+    const updatedSettings = await this.settingsService_.update(
       data,
       sharedContext
     )
 
-    await Promise.all(
-      normalizedData.map(async (setting) => {
-        const entityType = setting.entity_type
+    const entityTypes = [
+      ...new Set(normalizedData.map((setting) => setting.entity_type)),
+    ]
 
-        const translatableFields = (
-          await this.getTranslatableFields(entityType, sharedContext)
-        )[entityType]
-
-        const translations = await this.translationService_.list({
-          reference: entityType,
-        })
-
-        const toUpdate = translations.map((translation) => {
-          return {
-            id: translation.id,
-            translated_field_count: computeTranslatedFieldCount(
-              translation.translations,
-              translatableFields
-            ),
-          }
-        })
-
-        await this.translationService_.update(toUpdate)
-      })
+    const translatableFieldsConfig = await this.getTranslatableFields(
+      undefined,
+      sharedContext
     )
 
-    return updatedSettings
-  }
+    const translations = await this.translationService_.list({
+      reference: entityTypes,
+    })
 
-  @InjectManager()
-  protected async resolveEntityType_(
-    setting: CreateTranslationSettingsDTO | UpdateTranslationSettingsDTO,
-    @MedusaContext() sharedContext: Context = {}
-  ): Promise<string> {
-    let itemEntityType = setting.entity_type
-    if (!itemEntityType) {
-      const translationSetting = await this.retrieveTranslationSettings(
-        //@ts-expect-error - if no entity_type, we are on an update
-        setting.id,
-        { select: ["entity_type"] },
-        sharedContext
-      )
-      itemEntityType = translationSetting.entity_type
+    const toUpdate = translations.map((translation) => ({
+      id: translation.id,
+      translated_field_count: computeTranslatedFieldCount(
+        translation.translations,
+        translatableFieldsConfig[translation.reference] ?? []
+      ),
+    }))
+
+    if (toUpdate.length) {
+      await this.translationService_.update(toUpdate, sharedContext)
     }
-    return itemEntityType
+
+    const serialized = await this.baseRepository_.serialize<
+      TranslationTypes.TranslationSettingsDTO[]
+    >(updatedSettings)
+
+    return Array.isArray(data) ? serialized : serialized[0]
   }
 
   @InjectManager()
@@ -743,11 +727,28 @@ export default class TranslationModuleService
       | (UpdateTranslationSettingsDTO & { entity_type: string })
     )[]
   > {
-    return await Promise.all(
-      settings.map(async (setting) => {
-        const entityType = await this.resolveEntityType_(setting, sharedContext)
-        return { ...setting, entity_type: entityType }
-      })
-    )
+    const idsNeedingResolution = settings
+      .filter((setting) => !setting.entity_type && "id" in setting)
+      .map((setting) => (setting as UpdateTranslationSettingsDTO).id)
+
+    let entityTypeMap: Record<string, string> = {}
+
+    if (idsNeedingResolution.length) {
+      const existingSettings = await this.settingsService_.list(
+        { id: idsNeedingResolution },
+        { select: ["id", "entity_type"] },
+        sharedContext
+      )
+      entityTypeMap = Object.fromEntries(
+        existingSettings.map((s) => [s.id, s.entity_type])
+      )
+    }
+
+    return settings.map((setting) => {
+      const entityType =
+        setting.entity_type ||
+        entityTypeMap[(setting as UpdateTranslationSettingsDTO).id]
+      return { ...setting, entity_type: entityType }
+    })
   }
 }
