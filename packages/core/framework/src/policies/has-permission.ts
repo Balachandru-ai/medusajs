@@ -76,7 +76,10 @@ export async function hasPermission(
           continue
         }
 
-        const allowedOps = resourceMap.get(action.resource)
+        const allowedOps = new Set([
+          ...(resourceMap.get(action.resource) || []),
+          ...(resourceMap.get("*") || []),
+        ])
         if (allowedOps && (allowedOps.has(op) || allowedOps.has("*"))) {
           operationHasAccess = true
           break

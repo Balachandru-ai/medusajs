@@ -409,6 +409,124 @@ medusaIntegrationTestRunner({
         expect(response.data.product.variants).toBeDefined()
         expect(response.data.product.variants[0].prices).toBeDefined()
       })
+
+      it("should allow super admin with wildcard permissions to perform all product operations", async () => {
+        const unauthorizedHeaders = {
+          headers: { "x-medusa-access-token": "test_token" },
+        }
+
+        const superAdminUser = await createAdminUser(
+          dbConnection,
+          unauthorizedHeaders,
+          container,
+          {
+            email: "superadmin@medusa.js",
+          }
+        )
+
+        const rbacModule = container.resolve(Modules.RBAC)
+
+        // Create super admin role with wildcard permissions
+        const superAdminRole = await rbacModule.createRbacRoles([
+          {
+            name: "Super Admin",
+            description:
+              "Super admin role with full access to all resources and operations",
+          },
+        ])
+
+        // Create wildcard policy for all resources and operations
+        const wildcardPolicy = await rbacModule.createRbacPolicies([
+          {
+            key: "*:*",
+            resource: "*",
+            operation: "*",
+            description:
+              "Wildcard policy for super admin access to all resources and operations",
+          },
+        ])
+
+        // Assign wildcard policy to super admin role
+        await rbacModule.createRbacRolePolicies([
+          { role_id: superAdminRole[0].id, policy_id: wildcardPolicy[0].id },
+        ])
+
+        // Link super admin role to user
+        const remoteLink = container.resolve(ContainerRegistrationKeys.LINK)
+        await remoteLink.create({
+          [Modules.USER]: {
+            user_id: superAdminUser.user.id,
+          },
+          [Modules.RBAC]: {
+            rbac_role_id: superAdminRole[0].id,
+          },
+        })
+
+        // Login the super admin user
+        const loginResponse = await api.post("/auth/user/emailpass", {
+          email: "superadmin@medusa.js",
+          password: "somepassword",
+        })
+
+        const superAdminHeaders = { ...adminHeaders }
+        superAdminHeaders.headers[
+          "authorization"
+        ] = `Bearer ${loginResponse.data.token}`
+
+        // Test READ operation - should succeed
+        const readResponse = await api.get(
+          `/admin/products/${baseProduct.id}`,
+          superAdminHeaders
+        )
+        expect(readResponse.status).toEqual(200)
+        expect(readResponse.data.product).toBeDefined()
+        expect(readResponse.data.product.tags).toBeDefined()
+        expect(readResponse.data.product.variants).toBeDefined()
+        expect(readResponse.data.product.variants[0].prices).toBeDefined()
+
+        // Test CREATE operation - should succeed
+        const createProductData = getProductFixture({
+          title: "Super Admin Test Product",
+        })
+        const createResponse = await api.post(
+          "/admin/products",
+          createProductData,
+          superAdminHeaders
+        )
+        expect(createResponse.status).toEqual(200)
+        expect(createResponse.data.product).toBeDefined()
+        expect(createResponse.data.product.title).toEqual(
+          "Super Admin Test Product"
+        )
+
+        const createdProductId = createResponse.data.product.id
+
+        // Test UPDATE operation - should succeed
+        const updateResponse = await api.post(
+          `/admin/products/${createdProductId}`,
+          { title: "Updated Super Admin Test Product" },
+          superAdminHeaders
+        )
+        expect(updateResponse.status).toEqual(200)
+        expect(updateResponse.data.product.title).toEqual(
+          "Updated Super Admin Test Product"
+        )
+
+        // Test DELETE operation - should succeed
+        const deleteResponse = await api.delete(
+          `/admin/products/${createdProductId}`,
+          superAdminHeaders
+        )
+        expect(deleteResponse.status).toEqual(200)
+        expect(deleteResponse.data.id).toEqual(createdProductId)
+        expect(deleteResponse.data.deleted).toEqual(true)
+
+        // Verify the product is actually deleted
+        const verifyDeleteResponse = await api
+          .get(`/admin/products/${createdProductId}`, superAdminHeaders)
+          .catch((error) => error.response)
+        expect(verifyDeleteResponse.status).toEqual(404)
+      })
     })
   },
 })
