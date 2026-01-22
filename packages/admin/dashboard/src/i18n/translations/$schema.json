@@ -80,6 +80,9 @@
         "select": {
           "type": "string"
         },
+        "unselectAll": {
+          "type": "string"
+        },
         "selectAll": {
           "type": "string"
         },
@@ -218,6 +221,7 @@
         "error",
         "select",
         "selectAll",
+        "unselectAll",
         "selected",
         "enabled",
         "disabled",
