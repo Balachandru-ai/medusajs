@@ -11,7 +11,7 @@ import { EventDefaultProvider } from "@types"
 import EventsProviderService from "./event-provider"
 
 type InjectedDependencies = {
-  eventProviderService: EventsProviderService
+  eventsProviderService: EventsProviderService
   logger?: Logger
   [EventDefaultProvider]: string
 }
@@ -26,7 +26,7 @@ export default class EventsModuleService
     container: InjectedDependencies,
     protected readonly moduleDeclaration: InternalModuleDeclaration
   ) {
-    this.providerService_ = container.eventProviderService
+    this.providerService_ = container.eventsProviderService
     this.defaultProviderId = container[EventDefaultProvider]
   }
 
