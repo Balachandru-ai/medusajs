@@ -146,6 +146,10 @@ export const BatchTranslationSettingsForm = ({
     return selected
   }, [translation_settings])
 
+  const inactiveEntities = useMemo(() => {
+    return entities.filter((entity) => !entity.selected)
+  }, [entities])
+
   const form = useForm<zod.infer<typeof BatchTranslationSettingsSchema>>({
     defaultValues: {
       selectedFields: initialSelectedIds,
@@ -159,8 +163,8 @@ export const BatchTranslationSettingsForm = ({
     })
   }
 
-  const handleSelectAll = () => {
-    treeRef.current?.selectAll()
+  const handleSelectAllToggle = (selected: boolean) => {
+    treeRef.current?.selectAllToggle(selected)
   }
 
   const handleCollapseAll = () => {
@@ -206,7 +210,8 @@ export const BatchTranslationSettingsForm = ({
               onSearchChange={setSearchQuery}
               viewMode={viewMode}
               onViewModeChange={setViewMode}
-              onSelectAll={handleSelectAll}
+              onSelectAllToggle={handleSelectAllToggle}
+              initialAllSelected={inactiveEntities.length === 0}
               onSortToggle={handleSortToggle}
               onCollapseAll={handleCollapseAll}
             />
