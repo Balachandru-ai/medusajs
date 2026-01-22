@@ -169,7 +169,7 @@ function setValueToggleableNumber(
   const currentValue = field
     .split(".")
     .reduce((obj, key) => obj?.[key], currentValues)
-  const { disabledToggle } = currentValue
+  const { disabledToggle } = currentValue || {}
 
   const normalizeQuantity = (value: number | string | null | undefined) => {
     if (disabledToggle && value === "") {
@@ -196,9 +196,10 @@ function setValueToggleableNumber(
   fieldParts.reduce((curr, key: string, index) => {
     if (index === fieldParts.length - 1) {
       curr[key] = {
-        ...currentValues,
+        ...(currentValue || {}),
         quantity,
         checked,
+        disabledToggle: disabledToggle ?? false,
       }
     }
     curr[key] ??= {}
