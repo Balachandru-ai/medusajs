@@ -43110,7 +43110,7 @@ paths:
               properties:
                 create:
                   type: array
-                  description: The The associations to create between product variants and inventory items.
+                  description: The associations to create between product variants and inventory items.
                   items:
                     type: object
                     description: The associations to create between a product variant and an inventory item.
@@ -64512,7 +64512,7 @@ paths:
       operationId: GetTranslationsSettings
       summary: List Translation Settings
       x-sidebar-summary: List Settings
-      description: Retrieve the list of translatable fields for all entities, such as products and collections.
+      description: Retrieve the list of translatable fields for all entities, such as products and collections. You can also filter the results by entity type or active entities.
       x-authenticated: true
       parameters:
         - name: entity_type
@@ -64524,6 +64524,14 @@ paths:
             title: entity_type
             description: The entity to retrieve translation settings for.
             example: product
+        - name: is_active
+          in: query
+          description: Filter resources by whether translations is activated for them or not. If not provided, all resources are returned.
+          required: false
+          schema:
+            type: boolean
+            title: is_active
+            description: Filter resources by whether translations is activated for them or not. If not provided, all resources are returned.
       security:
         - api_token: []
         - cookie_auth: []
@@ -64545,8 +64553,8 @@ paths:
             sdk.admin.translation.settings({
               entity_type: "product"
             })
-            .then(({ translatable_fields }) => {
-              console.log(translatable_fields)
+            .then(({ translation_settings }) => {
+              console.log(translation_settings)
             })
         - lang: Shell
           label: cURL
@@ -64575,6 +64583,86 @@ paths:
         '500':
           $ref: '#/components/responses/500_error'
       x-since: 2.12.3
+      x-featureFlag: translation
+  /admin/translations/settings/batch:
+    post:
+      operationId: PostTranslationsSettingsBatch
+      summary: Manage Translation Settings
+      description: Create, update, or delete multiple translation settings.
+      x-authenticated: true
+      security:
+        - api_token: []
+        - cookie_auth: []
+        - jwt_token: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AdminBatchTranslationSettings'
+      x-codeSamples:
+        - lang: JavaScript
+          label: JS SDK
+          source: |-
+            import Medusa from "@medusajs/js-sdk"
+
+            export const sdk = new Medusa({
+              baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+              debug: import.meta.env.DEV,
+              auth: {
+                type: "session",
+              },
+            })
+
+            sdk.admin.translation.batchSettings({
+              create: [
+                {
+                  entity_type: "product",
+                  fields: ["title", "description"],
+                  is_active: true
+                }
+              ],
+              update: [
+                {
+                  id: "trset_123",
+                  fields: ["title", "description", "subtitle"],
+                  is_active: true
+                }
+              ],
+              delete: ["trset_456"]
+            })
+            .then(({ created, updated, deleted }) => {
+              console.log(created, updated, deleted)
+            })
+            ```
+        - lang: Shell
+          label: cURL
+          source: |-
+            curl -X POST '{backend_url}/admin/translations/settings/batch' \
+            -H 'Authorization: Bearer {access_token}'
+      tags:
+        - Translations
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminBatchTranslationSettingsResponse'
+        '400':
+          $ref: '#/components/responses/400_error'
+        '401':
+          $ref: '#/components/responses/unauthorized'
+        '404':
+          $ref: '#/components/responses/not_found_error'
+        '409':
+          $ref: '#/components/responses/invalid_state_error'
+        '422':
+          $ref: '#/components/responses/invalid_request_error'
+        '500':
+          $ref: '#/components/responses/500_error'
+      x-workflow: batchTranslationSettingsWorkflow
+      x-events: []
+      x-since: 2.13.0
       x-featureFlag: translation
   /admin/translations/statistics:
     get:
@@ -68756,6 +68844,70 @@ components:
               type: boolean
               title: deleted
               description: Whether the product variants were deleted.
+    AdminBatchTranslationSettings:
+      type: object
+      description: The translation settings to create, update, or delete in batch.
+      x-schemaName: AdminBatchTranslationSettings
+      properties:
+        create:
+          type: array
+          description: The translation settings to create.
+          items:
+            $ref: '#/components/schemas/AdminCreateTranslationSettings'
+        update:
+          type: array
+          description: The translation settings to update.
+          items:
+            $ref: '#/components/schemas/AdminUpdateTranslationSettings'
+        delete:
+          type: array
+          description: The translation settings to delete.
+          items:
+            type: string
+            title: delete
+            description: The IDs of the translation settings to delete.
+    AdminBatchTranslationSettingsResponse:
+      type: object
+      description: The result of managing the translation settings in batch.
+      x-schemaName: AdminBatchTranslationSettingsResponse
+      required:
+        - created
+        - updated
+        - deleted
+      properties:
+        created:
+          type: array
+          description: The created translation settings.
+          items:
+            $ref: '#/components/schemas/AdminTranslationSettings'
+        updated:
+          type: array
+          description: The updated translation settings.
+          items:
+            $ref: '#/components/schemas/AdminTranslationSettings'
+        deleted:
+          type: object
+          description: The deletion result.
+          required:
+            - ids
+            - object
+            - deleted
+          properties:
+            ids:
+              type: array
+              description: The IDs of the deleted translation settings.
+              items:
+                type: string
+                title: ids
+                description: The ID of a deleted translation settings.
+            object:
+              type: string
+              title: object
+              description: The type of object deleted.
+            deleted:
+              type: boolean
+              title: deleted
+              description: Whether the deletion was successful.
     AdminBatchUpdateInventoryItemsLocationLevels:
       type: object
       description: The details of an inventory level to update.
@@ -71469,6 +71621,31 @@ components:
           type: string
           title: provider_id
           description: The ID of the tax provider used to calculate the tax rate in this tax region.
+    AdminCreateTranslationSettings:
+      type: object
+      description: The translation settings to create.
+      x-schemaName: AdminCreateTranslationSettings
+      required:
+        - entity_type
+        - fields
+      properties:
+        entity_type:
+          type: string
+          title: entity_type
+          description: The entity type to create the translation settings for.
+          example: product
+        fields:
+          type: array
+          description: The fields to support translations for.
+          items:
+            type: string
+            title: fields
+            description: A field to support translations for.
+            example: title
+        is_active:
+          type: boolean
+          title: is_active
+          description: Whether translations are active for the given entity type.
     AdminCreateVariantInventoryItem:
       type: object
       description: The details of the variant-inventory item association.
@@ -81630,20 +81807,64 @@ components:
           type: number
           title: limit
           description: The maximum number of items returned in the response.
+    AdminTranslationSettings:
+      type: object
+      description: The translation settings details.
+      x-schemaName: AdminTranslationSettings
+      required:
+        - id
+        - created_at
+        - updated_at
+        - deleted_at
+        - entity_type
+        - fields
+        - is_active
+      properties:
+        id:
+          type: string
+          title: id
+          description: The ID of the translation settings.
+        created_at:
+          type: string
+          format: date-time
+          title: created_at
+          description: The date the translation settings was created.
+        updated_at:
+          type: string
+          format: date-time
+          title: updated_at
+          description: The date the translation settings was updated.
+        deleted_at:
+          type: string
+          format: date-time
+          title: deleted_at
+          description: The date the translation settings was deleted.
+        entity_type:
+          type: string
+          title: entity_type
+          description: The entity type the translation settings are for.
+          example: product
+        fields:
+          type: array
+          description: The fields supported for translations.
+          items:
+            type: string
+            title: fields
+            description: A field supported for translations.
+        is_active:
+          type: boolean
+          title: is_active
+          description: Whether translations are active for the given entity type.
     AdminTranslationSettingsResponse:
       type: object
       description: The translation settings' details.
       x-schemaName: AdminTranslationSettingsResponse
       required:
-        - translatable_fields
+        - translation_settings
       properties:
-        translatable_fields:
+        translation_settings:
           type: object
-          description: Key-value pairs of translatable fields for different entities. Each key is an entity type, and the value is an array of fields that can be translated for that entity.
-          example:
-            product:
-              - title
-              - description
+          description: The translation settings details.
     AdminTranslationStatisticsResponse:
       type: object
       description: The translation statistics details.
@@ -83297,6 +83518,32 @@ components:
           type: string
           title: provider_id
           description: The ID of the tax provider to use when calculating taxes for this tax region.
+    AdminUpdateTranslationSettings:
+      type: object
+      description: The translation settings to update.
+      x-schemaName: AdminUpdateTranslationSettings
+      required:
+        - id
+      properties:
+        id:
+          type: string
+          title: id
+          description: The ID of the translation settings to update.
+        entity_type:
+          type: string
+          title: entity_type
+          description: The entity type to update the translation settings for.
+        fields:
+          type: array
+          description: The fields to update translations for.
+          items:
+            type: string
+            title: fields
+            description: A field to update translations for.
+        is_active:
+          type: boolean
+          title: is_active
+          description: Whether translations are active for the given entity type.
     AdminUpdateUser:
       type: object
       description: The properties to update in a user.
