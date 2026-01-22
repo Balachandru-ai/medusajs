@@ -134,7 +134,16 @@ post:
     '500':
       $ref: ../components/responses/500_error.yaml
   x-workflow: updateRegionsWorkflow
-  x-events: []
+  x-events:
+    - name: region.updated
+      payload: |-
+        ```ts
+        {
+          id, // The ID of the region
+        }
+        ```
+      description: Emitted when regions are updated.
+      deprecated: false
 delete:
   operationId: DeleteRegionsId
   summary: Delete a Region
@@ -201,4 +210,13 @@ delete:
     '500':
       $ref: ../components/responses/500_error.yaml
   x-workflow: deleteRegionsWorkflow
-  x-events: []
+  x-events:
+    - name: region.deleted
+      payload: |-
+        ```ts
+        {
+          id, // The ID of the region
+        }
+        ```
+      description: Emitted when regions are deleted.
+      deprecated: false

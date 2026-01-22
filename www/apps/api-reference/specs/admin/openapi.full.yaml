@@ -358,7 +358,6 @@ tags:
       url: https://docs.medusajs.com/resources/commerce-modules/promotion/concepts
     x-associatedSchema:
       $ref: '#/components/schemas/AdminPromotion'
-  - name: Rbac
   - name: Refund Reasons
     description: |
       A refund reason is a possible reason used when issuing a refund to the customer, such as when returning an item and refunding the customer.
@@ -8842,7 +8841,17 @@ paths:
         '500':
           $ref: '#/components/responses/500_error'
       x-workflow: confirmClaimRequestWorkflow
-      x-events: []
+      x-events:
+        - name: order.claim_created
+          payload: |-
+            ```ts
+            {
+              order_id, // The ID of the order
+              claim_id, // The ID of the claim
+            }
+            ```
+          description: Emitted when a claim is created for an order.
+          deprecated: false
     delete:
       operationId: DeleteClaimsIdRequest
       summary: Cancel Claim Request
@@ -9874,7 +9883,16 @@ paths:
         '500':
           $ref: '#/components/responses/500_error'
       x-workflow: createCollectionsWorkflow
-      x-events: []
+      x-events:
+        - name: product-collection.created
+          payload: |-
+            ```ts
+            {
+              id, // The ID of the product collection
+            }
+            ```
+          description: Emitted when product collections are created.
+          deprecated: false
   /admin/collections/{id}:
     get:
       operationId: GetCollectionsId
@@ -10049,7 +10067,16 @@ paths:
         '500':
           $ref: '#/components/responses/500_error'
       x-workflow: updateCollectionsWorkflow
-      x-events: []
+      x-events:
+        - name: product-collection.updated
+          payload: |-
+            ```ts
+            {
+              id, // The ID of the product collection
+            }
+            ```
+          description: Emitted when product collections are updated.
+          deprecated: false
     delete:
       operationId: DeleteCollectionsId
       summary: Delete a Collection
@@ -10111,7 +10138,16 @@ paths:
         '500':
           $ref: '#/components/responses/500_error'
       x-workflow: deleteCollectionsWorkflow
-      x-events: []
+      x-events:
+        - name: product-collection.deleted
+          payload: |-
+            ```ts
+            {
+              id, // The ID of the product collection
+            }
+            ```
+          description: Emitted when product collections are deleted.
+          deprecated: false
   /admin/collections/{id}/products:
     post:
       operationId: PostCollectionsIdProducts
@@ -15251,7 +15287,16 @@ paths:
         '500':
           $ref: '#/components/responses/500_error'
       x-workflow: createCustomersWorkflow
-      x-events: []
+      x-events:
+        - name: customer.created
+          payload: |-
+            ```ts
+            {
+              id, // The ID of the customer
+            }
+            ```
+          description: Emitted when a customer is created.
+          deprecated: false
   /admin/customers/{id}:
     get:
       operationId: GetCustomersId
@@ -15451,7 +15496,16 @@ paths:
         '500':
           $ref: '#/components/responses/500_error'
       x-workflow: updateCustomersWorkflow
-      x-events: []
+      x-events:
+        - name: customer.updated
+          payload: |-
+            ```ts
+            {
+              id, // The ID of the customer
+            }
+            ```
+          description: Emitted when a customer is updated.
+          deprecated: false
     delete:
       operationId: DeleteCustomersId
       summary: Delete a Customer
@@ -15531,7 +15585,16 @@ paths:
         '500':
           $ref: '#/components/responses/500_error'
       x-workflow: removeCustomerAccountWorkflow
-      x-events: []
+      x-events:
+        - name: customer.deleted
+          payload: |-
+            ```ts
+            {
+              id, // The ID of the customer
+            }
+            ```
+          description: Emitted when a customer is deleted.
+          deprecated: false
   /admin/customers/{id}/addresses:
     get:
       operationId: GetCustomersIdAddresses
@@ -18439,7 +18502,18 @@ paths:
         '500':
           $ref: '#/components/responses/500_error'
       x-workflow: updateDraftOrderWorkflow
-      x-events: []
+      x-events:
+        - name: order.updated
+          payload: |-
+            ```ts
+            {
+              id, // The ID of the order
+            }
+            ```
+          description: |-
+            Emitted when the details of an order or draft order is updated. This
+            doesn't include updates made by an edit.
+          deprecated: false
     delete:
       operationId: DeleteDraftOrdersId
       summary: Delete a Draft Order
@@ -18562,7 +18636,18 @@ paths:
         '500':
           $ref: '#/components/responses/500_error'
       x-workflow: convertDraftOrderWorkflow
-      x-events: []
+      x-events:
+        - name: order.placed
+          payload: |-
+            ```ts
+            {
+              id, // The ID of the order
+            }
+            ```
+          description: |-
+            Emitted when an order is placed, or when a draft order is converted to an
+            order.
+          deprecated: false
       requestBody:
         content:
           application/json:
@@ -21790,7 +21875,17 @@ paths:
         '500':
           $ref: '#/components/responses/500_error'
       x-workflow: confirmExchangeRequestWorkflow
-      x-events: []
+      x-events:
+        - name: order.exchange_created
+          payload: |-
+            ```ts
+            {
+              order_id, // The ID of the order
+              exchange_id, // The ID of the exchange
+            }
+            ```
+          description: Emitted when an exchange is created for an order.
+          deprecated: false
     delete:
       operationId: DeleteExchangesIdRequest
       summary: Cancel Exchange Request
@@ -25590,7 +25685,18 @@ paths:
         - api_token: []
         - cookie_auth: []
         - jwt_token: []
-      x-events: []
+      x-events:
+        - name: invite.created
+          payload: |-
+            ```ts
+            {
+              id, // The ID of the invite
+            }
+            ```
+          description: |-
+            Emitted when invites are created. You can listen to this event
+            to send an email to the invited users, for example.
+          deprecated: false
   /admin/invites/accept:
     post:
       operationId: PostInvitesAccept
@@ -25683,7 +25789,25 @@ paths:
       security:
         - cookie_auth: []
         - jwt_token: []
-      x-events: []
+      x-events:
+        - name: user.created
+          payload: |-
+            ```ts
+            {
+              id, // The ID of the user
+            }
+            ```
+          description: Emitted when users are created.
+          deprecated: false
+        - name: invite.accepted
+          payload: |-
+            ```ts
+            {
+              id, // The ID of the invite
+            }
+            ```
+          description: Emitted when an invite is accepted.
+          deprecated: false
   /admin/invites/{id}:
     get:
       operationId: GetInvitesId
@@ -25831,7 +25955,16 @@ paths:
         - api_token: []
         - cookie_auth: []
         - jwt_token: []
-      x-events: []
+      x-events:
+        - name: invite.deleted
+          payload: |-
+            ```ts
+            {
+              id, // The ID of the invite
+            }
+            ```
+          description: Emitted when invites are deleted.
+          deprecated: false
   /admin/invites/{id}/resend:
     post:
       operationId: PostInvitesIdResend
@@ -25902,7 +26035,19 @@ paths:
         - api_token: []
         - cookie_auth: []
         - jwt_token: []
-      x-events: []
+      x-events:
+        - name: invite.resent
+          payload: |-
+            ```ts
+            {
+              id, // The ID of the invite
+            }
+            ```
+          description: |-
+            Emitted when invites should be resent because their token was
+            refreshed. You can listen to this event to send an email to the invited users,
+            for example.
+          deprecated: false
   /admin/locales:
     get:
       operationId: GetLocales
@@ -27394,7 +27539,18 @@ paths:
         '500':
           $ref: '#/components/responses/500_error'
       x-workflow: cancelBeginOrderEditWorkflow
-      x-events: []
+      x-events:
+        - name: order-edit.canceled
+          payload: |-
+            ```ts
+            {
+              order_id, // The ID of the order
+              actions, // (array) The [actions](https://docs.medusajs.com/resources/references/fulfillment/interfaces/fulfillment.OrderChangeActionDTO) to edit the order
+            }
+            ```
+          description: Emitted when an order edit request is canceled.
+          deprecated: false
+          since: 2.8.0
   /admin/order-edits/{id}/confirm:
     post:
       operationId: PostOrderEditsIdConfirm
@@ -27457,7 +27613,18 @@ paths:
         '500':
           $ref: '#/components/responses/500_error'
       x-workflow: confirmOrderEditRequestWorkflow
-      x-events: []
+      x-events:
+        - name: order-edit.confirmed
+          payload: |-
+            ```ts
+            {
+              order_id, // The ID of the order
+              actions, // (array) The [actions](https://docs.medusajs.com/resources/references/fulfillment/interfaces/fulfillment.OrderChangeActionDTO) to edit the order
+            }
+            ```
+          description: Emitted when an order edit request is confirmed.
+          deprecated: false
+          since: 2.8.0
   /admin/order-edits/{id}/items:
     post:
       operationId: PostOrderEditsIdItems
@@ -27842,7 +28009,18 @@ paths:
         '500':
           $ref: '#/components/responses/500_error'
       x-workflow: requestOrderEditRequestWorkflow
-      x-events: []
+      x-events:
+        - name: order-edit.requested
+          payload: |-
+            ```ts
+            {
+              order_id, // The ID of the order
+              actions, // (array) The [actions](https://docs.medusajs.com/resources/references/fulfillment/interfaces/fulfillment.OrderChangeActionDTO) to edit the order
+            }
+            ```
+          description: Emitted when an order edit is requested.
+          deprecated: false
+          since: 2.8.0
   /admin/order-edits/{id}/shipping-method:
     post:
       operationId: PostOrderEditsIdShippingMethod
@@ -29359,7 +29537,18 @@ paths:
         '500':
           $ref: '#/components/responses/500_error'
       x-workflow: updateOrderWorkflow
-      x-events: []
+      x-events:
+        - name: order.updated
+          payload: |-
+            ```ts
+            {
+              id, // The ID of the order
+            }
+            ```
+          description: |-
+            Emitted when the details of an order or draft order is updated. This
+            doesn't include updates made by an edit.
+          deprecated: false
   /admin/orders/{id}/archive:
     post:
       operationId: PostOrdersIdArchive
@@ -29436,7 +29625,16 @@ paths:
         '500':
           $ref: '#/components/responses/500_error'
       x-workflow: archiveOrderWorkflow
-      x-events: []
+      x-events:
+        - name: order.archived
+          payload: |-
+            ```ts
+            {
+              id, // The ID of the order
+            }
+            ```
+          description: Emitted when an order is archived.
+          deprecated: false
   /admin/orders/{id}/cancel:
     post:
       operationId: PostOrdersIdCancel
@@ -29517,7 +29715,16 @@ paths:
         '500':
           $ref: '#/components/responses/500_error'
       x-workflow: cancelOrderWorkflow
-      x-events: []
+      x-events:
+        - name: order.canceled
+          payload: |-
+            ```ts
+            {
+              id, // The ID of the order
+            }
+            ```
+          description: Emitted when an order is canceld.
+          deprecated: false
   /admin/orders/{id}/changes:
     get:
       operationId: GetOrdersIdChanges
@@ -30486,7 +30693,16 @@ paths:
         '500':
           $ref: '#/components/responses/500_error'
       x-workflow: completeOrderWorkflow
-      x-events: []
+      x-events:
+        - name: order.completed
+          payload: |-
+            ```ts
+            {
+              id, // The ID of the order
+            }
+            ```
+          description: Emitted when orders are completed.
+          deprecated: false
   /admin/orders/{id}/credit-lines:
     post:
       operationId: PostOrdersIdCreditLines
@@ -30721,7 +30937,18 @@ paths:
         '500':
           $ref: '#/components/responses/500_error'
       x-workflow: createOrderFulfillmentWorkflow
-      x-events: []
+      x-events:
+        - name: order.fulfillment_created
+          payload: |-
+            ```ts
+            {
+              order_id, // The ID of the order
+              fulfillment_id, // The ID of the fulfillment
+              no_notification, // (boolean) Whether to notify the customer
+            }
+            ```
+          description: Emitted when a fulfillment is created for an order.
+          deprecated: false
   /admin/orders/{id}/fulfillments/{fulfillment_id}/cancel:
     post:
       operationId: PostOrdersIdFulfillmentsFulfillment_idCancel
@@ -30815,7 +31042,18 @@ paths:
         '500':
           $ref: '#/components/responses/500_error'
       x-workflow: cancelOrderFulfillmentWorkflow
-      x-events: []
+      x-events:
+        - name: order.fulfillment_canceled
+          payload: |-
+            ```ts
+            {
+              order_id, // The ID of the order
+              fulfillment_id, // The ID of the fulfillment
+              no_notification, // (boolean) Whether to notify the customer
+            }
+            ```
+          description: Emitted when an order's fulfillment is canceled.
+          deprecated: false
   /admin/orders/{id}/fulfillments/{fulfillment_id}/mark-as-delivered:
     post:
       operationId: PostOrdersIdFulfillmentsFulfillment_idMarkAsDelivered
@@ -30899,7 +31137,16 @@ paths:
         '500':
           $ref: '#/components/responses/500_error'
       x-workflow: markOrderFulfillmentAsDeliveredWorkflow
-      x-events: []
+      x-events:
+        - name: delivery.created
+          payload: |-
+            ```ts
+            {
+              id, // the ID of the fulfillment
+            }
+            ```
+          description: Emitted when a fulfillment is marked as delivered.
+          deprecated: false
   /admin/orders/{id}/fulfillments/{fulfillment_id}/shipments:
     post:
       operationId: PostOrdersIdFulfillmentsFulfillment_idShipments
@@ -31066,7 +31313,17 @@ paths:
         '500':
           $ref: '#/components/responses/500_error'
       x-workflow: createOrderShipmentWorkflow
-      x-events: []
+      x-events:
+        - name: shipment.created
+          payload: |-
+            ```ts
+            {
+              id, // the ID of the fulfillment
+              no_notification, // (boolean) whether to notify the customer
+            }
+            ```
+          description: Emitted when a shipment is created for an order.
+          deprecated: false
   /admin/orders/{id}/line-items:
     get:
       operationId: GetOrdersIdLineItems
@@ -31415,7 +31672,19 @@ paths:
         '500':
           $ref: '#/components/responses/500_error'
       x-workflow: requestOrderTransferWorkflow
-      x-events: []
+      x-events:
+        - name: order.transfer_requested
+          payload: |-
+            ```ts
+            {
+              id, // The ID of the order
+              order_change_id, // The ID of the order change created for the transfer
+            }
+            ```
+          description: |-
+            Emitted when an order is requested to be transferred to
+            another customer.
+          deprecated: false
   /admin/orders/{id}/transfer/cancel:
     post:
       operationId: PostOrdersIdTransferCancel
@@ -31718,7 +31987,16 @@ paths:
         '500':
           $ref: '#/components/responses/500_error'
       x-workflow: markPaymentCollectionAsPaid
-      x-events: []
+      x-events:
+        - name: payment.captured
+          payload: |-
+            ```ts
+            {
+              id, // the ID of the payment
+            }
+            ```
+          description: Emitted when a payment is captured.
+          deprecated: false
   /admin/payments:
     get:
       operationId: GetPayments
@@ -32581,7 +32859,16 @@ paths:
         '500':
           $ref: '#/components/responses/500_error'
       x-workflow: capturePaymentWorkflow
-      x-events: []
+      x-events:
+        - name: payment.captured
+          payload: |-
+            ```ts
+            {
+              id, // the ID of the payment
+            }
+            ```
+          description: Emitted when a payment is captured.
+          deprecated: false
   /admin/payments/{id}/refund:
     post:
       operationId: PostPaymentsIdRefund
@@ -32659,7 +32946,16 @@ paths:
         '500':
           $ref: '#/components/responses/500_error'
       x-workflow: refundPaymentWorkflow
-      x-events: []
+      x-events:
+        - name: payment.refunded
+          payload: |-
+            ```ts
+            {
+              id, // the ID of the payment
+            }
+            ```
+          description: Emitted when a payment is refunded.
+          deprecated: false
   /admin/plugins:
     get:
       operationId: GetPlugins
@@ -35237,7 +35533,16 @@ paths:
         '500':
           $ref: '#/components/responses/500_error'
       x-workflow: createProductCategoriesWorkflow
-      x-events: []
+      x-events:
+        - name: product-category.created
+          payload: |-
+            ```ts
+            {
+              id, // The ID of the product category
+            }
+            ```
+          description: Emitted when product categories are created.
+          deprecated: false
   /admin/product-categories/{id}:
     get:
       operationId: GetProductCategoriesId
@@ -36272,7 +36577,16 @@ paths:
         '500':
           $ref: '#/components/responses/500_error'
       x-workflow: updateProductCategoriesWorkflow
-      x-events: []
+      x-events:
+        - name: product-category.updated
+          payload: |-
+            ```ts
+            {
+              id, // The ID of the product category
+            }
+            ```
+          description: Emitted when product categories are updated.
+          deprecated: false
     delete:
       operationId: DeleteProductCategoriesId
       summary: Delete a Product Category
@@ -36334,7 +36648,16 @@ paths:
         '500':
           $ref: '#/components/responses/500_error'
       x-workflow: deleteProductCategoriesWorkflow
-      x-events: []
+      x-events:
+        - name: product-category.deleted
+          payload: |-
+            ```ts
+            {
+              id, // The ID of the product category
+            }
+            ```
+          description: Emitted when product categories are deleted.
+          deprecated: false
   /admin/product-categories/{id}/products:
     post:
       operationId: PostProductCategoriesIdProducts
@@ -37025,7 +37348,16 @@ paths:
         '500':
           $ref: '#/components/responses/500_error'
       x-workflow: createProductTagsWorkflow
-      x-events: []
+      x-events:
+        - name: product-tag.created
+          payload: |-
+            ```ts
+            {
+              id, // The ID of the product tag
+            }
+            ```
+          description: Emitted when product tags are created.
+          deprecated: false
   /admin/product-tags/{id}:
     get:
       operationId: GetProductTagsId
@@ -37179,7 +37511,16 @@ paths:
         '500':
           $ref: '#/components/responses/500_error'
       x-workflow: updateProductTagsWorkflow
-      x-events: []
+      x-events:
+        - name: product-tag.updated
+          payload: |-
+            ```ts
+            {
+              id, // The ID of the product tag
+            }
+            ```
+          description: Emitted when product tags are updated.
+          deprecated: false
     delete:
       operationId: DeleteProductTagsId
       summary: Delete a Product Tag
@@ -37241,7 +37582,16 @@ paths:
         '500':
           $ref: '#/components/responses/500_error'
       x-workflow: deleteProductTagsWorkflow
-      x-events: []
+      x-events:
+        - name: product-tag.deleted
+          payload: |-
+            ```ts
+            {
+              id, // The ID of the product tag
+            }
+            ```
+          description: Emitted when product tags are deleted.
+          deprecated: false
   /admin/product-types:
     get:
       operationId: GetProductTypes
@@ -37834,7 +38184,16 @@ paths:
         '500':
           $ref: '#/components/responses/500_error'
       x-workflow: createProductTypesWorkflow
-      x-events: []
+      x-events:
+        - name: product-type.created
+          payload: |-
+            ```ts
+            {
+              id, // The ID of the product type
+            }
+            ```
+          description: Emitted when product types are created.
+          deprecated: false
   /admin/product-types/{id}:
     get:
       operationId: GetProductTypesId
@@ -37988,7 +38347,16 @@ paths:
         '500':
           $ref: '#/components/responses/500_error'
       x-workflow: updateProductTypesWorkflow
-      x-events: []
+      x-events:
+        - name: product-type.updated
+          payload: |-
+            ```ts
+            {
+              id, // The ID of the product type
+            }
+            ```
+          description: Emitted when product types are updated.
+          deprecated: false
     delete:
       operationId: DeleteProductTypesId
       summary: Delete a Product Type
@@ -38050,7 +38418,16 @@ paths:
         '500':
           $ref: '#/components/responses/500_error'
       x-workflow: deleteProductTypesWorkflow
-      x-events: []
+      x-events:
+        - name: product-type.deleted
+          payload: |-
+            ```ts
+            {
+              id, // The ID of the product type
+            }
+            ```
+          description: Emitted when product types are deleted.
+          deprecated: false
   /admin/product-variants:
     get:
       operationId: GetProductVariants
@@ -39850,7 +40227,25 @@ paths:
         '500':
           $ref: '#/components/responses/500_error'
       x-workflow: createProductsWorkflow
-      x-events: []
+      x-events:
+        - name: product-variant.created
+          payload: |-
+            ```ts
+            {
+              id, // The ID of the product variant
+            }
+            ```
+          description: Emitted when product variants are created.
+          deprecated: false
+        - name: product.created
+          payload: |-
+            ```ts
+            {
+              id, // The ID of the product
+            }
+            ```
+          description: Emitted when products are created.
+          deprecated: false
   /admin/products/batch:
     post:
       operationId: PostProductsBatch
@@ -39951,7 +40346,43 @@ paths:
         '500':
           $ref: '#/components/responses/500_error'
       x-workflow: batchProductsWorkflow
-      x-events: []
+      x-events:
+        - name: product-variant.created
+          payload: |-
+            ```ts
+            {
+              id, // The ID of the product variant
+            }
+            ```
+          description: Emitted when product variants are created.
+          deprecated: false
+        - name: product.updated
+          payload: |-
+            ```ts
+            {
+              id, // The ID of the product
+            }
+            ```
+          description: Emitted when products are updated.
+          deprecated: false
+        - name: product.created
+          payload: |-
+            ```ts
+            {
+              id, // The ID of the product
+            }
+            ```
+          description: Emitted when products are created.
+          deprecated: false
+        - name: product.deleted
+          payload: |-
+            ```ts
+            {
+              id, // The ID of the product
+            }
+            ```
+          description: Emitted when products are deleted.
+          deprecated: false
   /admin/products/export:
     post:
       operationId: PostProductsExport
@@ -40692,7 +41123,43 @@ paths:
         '500':
           $ref: '#/components/responses/500_error'
       x-workflow: importProductsWorkflow
-      x-events: []
+      x-events:
+        - name: product-variant.created
+          payload: |-
+            ```ts
+            {
+              id, // The ID of the product variant
+            }
+            ```
+          description: Emitted when product variants are created.
+          deprecated: false
+        - name: product.updated
+          payload: |-
+            ```ts
+            {
+              id, // The ID of the product
+            }
+            ```
+          description: Emitted when products are updated.
+          deprecated: false
+        - name: product.created
+          payload: |-
+            ```ts
+            {
+              id, // The ID of the product
+            }
+            ```
+          description: Emitted when products are created.
+          deprecated: false
+        - name: product.deleted
+          payload: |-
+            ```ts
+            {
+              id, // The ID of the product
+            }
+            ```
+          description: Emitted when products are deleted.
+          deprecated: false
       deprecated: true
       x-deprecated_message: use `POST /admin/products/imports` instead.
   /admin/products/import/{transaction_id}/confirm:
@@ -41041,7 +41508,16 @@ paths:
         '500':
           $ref: '#/components/responses/500_error'
       x-workflow: updateProductsWorkflow
-      x-events: []
+      x-events:
+        - name: product.updated
+          payload: |-
+            ```ts
+            {
+              id, // The ID of the product
+            }
+            ```
+          description: Emitted when products are updated.
+          deprecated: false
     delete:
       operationId: DeleteProductsId
       summary: Delete a Product
@@ -41103,7 +41579,16 @@ paths:
         '500':
           $ref: '#/components/responses/500_error'
       x-workflow: deleteProductsWorkflow
-      x-events: []
+      x-events:
+        - name: product.deleted
+          payload: |-
+            ```ts
+            {
+              id, // The ID of the product
+            }
+            ```
+          description: Emitted when products are deleted.
+          deprecated: false
   /admin/products/{id}/images/{image_id}/variants/batch:
     post:
       operationId: PostProductsIdImagesImage_idVariantsBatch
@@ -41478,7 +41963,16 @@ paths:
         '500':
           $ref: '#/components/responses/500_error'
       x-workflow: createProductOptionsWorkflow
-      x-events: []
+      x-events:
+        - name: product-option.created
+          payload: |-
+            ```ts
+            {
+              id, // The ID of the product option
+            }
+            ```
+          description: Emitted when product options are created.
+          deprecated: false
   /admin/products/{id}/options/{option_id}:
     get:
       operationId: GetProductsIdOptionsOption_id
@@ -41657,7 +42151,16 @@ paths:
         '500':
           $ref: '#/components/responses/500_error'
       x-workflow: updateProductOptionsWorkflow
-      x-events: []
+      x-events:
+        - name: product-option.updated
+          payload: |-
+            ```ts
+            {
+              id, // The ID of the product option
+            }
+            ```
+          description: Emitted when product options are updated.
+          deprecated: false
     delete:
       operationId: DeleteProductsIdOptionsOption_id
       summary: Delete an Option from Product
@@ -41739,7 +42242,16 @@ paths:
         '500':
           $ref: '#/components/responses/500_error'
       x-workflow: deleteProductOptionsWorkflow
-      x-events: []
+      x-events:
+        - name: product-option.deleted
+          payload: |-
+            ```ts
+            {
+              id, // The ID of the product option
+            }
+            ```
+          description: Emitted when product options are deleted.
+          deprecated: false
   /admin/products/{id}/variants:
     get:
       operationId: GetProductsIdVariants
@@ -42438,7 +42950,16 @@ paths:
         '500':
           $ref: '#/components/responses/500_error'
       x-workflow: createProductVariantsWorkflow
-      x-events: []
+      x-events:
+        - name: product-variant.created
+          payload: |-
+            ```ts
+            {
+              id, // The ID of the product variant
+            }
+            ```
+          description: Emitted when product variants are created.
+          deprecated: false
   /admin/products/{id}/variants/batch:
     post:
       operationId: PostProductsIdVariantsBatch
@@ -42534,7 +43055,34 @@ paths:
         '500':
           $ref: '#/components/responses/500_error'
       x-workflow: batchProductVariantsWorkflow
-      x-events: []
+      x-events:
+        - name: product-variant.updated
+          payload: |-
+            ```ts
+            {
+              id, // The ID of the product variant
+            }
+            ```
+          description: Emitted when product variants are updated.
+          deprecated: false
+        - name: product-variant.created
+          payload: |-
+            ```ts
+            {
+              id, // The ID of the product variant
+            }
+            ```
+          description: Emitted when product variants are created.
+          deprecated: false
+        - name: product-variant.deleted
+          payload: |-
+            ```ts
+            {
+              id, // The ID of the product variant
+            }
+            ```
+          description: Emitted when product variants are deleted.
+          deprecated: false
   /admin/products/{id}/variants/inventory-items/batch:
     post:
       operationId: PostProductsIdVariantsInventoryItemsBatch
@@ -42872,7 +43420,16 @@ paths:
         '500':
           $ref: '#/components/responses/500_error'
       x-workflow: updateProductVariantsWorkflow
-      x-events: []
+      x-events:
+        - name: product-variant.updated
+          payload: |-
+            ```ts
+            {
+              id, // The ID of the product variant
+            }
+            ```
+          description: Emitted when product variants are updated.
+          deprecated: false
     delete:
       operationId: DeleteProductsIdVariantsVariant_id
       summary: Delete Product Variant
@@ -42951,7 +43508,16 @@ paths:
         '500':
           $ref: '#/components/responses/500_error'
       x-workflow: deleteProductVariantsWorkflow
-      x-events: []
+      x-events:
+        - name: product-variant.deleted
+          payload: |-
+            ```ts
+            {
+              id, // The ID of the product variant
+            }
+            ```
+          description: Emitted when product variants are deleted.
+          deprecated: false
   /admin/products/{id}/variants/{variant_id}/images/batch:
     post:
       operationId: PostProductsIdVariantsVariant_idImagesBatch
@@ -45521,558 +46087,6 @@ paths:
           $ref: '#/components/responses/invalid_request_error'
         '500':
           $ref: '#/components/responses/500_error'
-  /admin/rbac/policies:
-    get:
-      operationId: GetRbacPolicies
-      summary: List Rbac
-      description: Retrieve a list of rbac. The rbac can be filtered by fields such as `id`. The rbac can also be sorted or paginated.
-      x-authenticated: true
-      parameters: []
-      security:
-        - api_token: []
-        - cookie_auth: []
-        - jwt_token: []
-      x-codeSamples:
-        - lang: Shell
-          label: cURL
-          source: |-
-            curl '{backend_url}/admin/rbac/policies' \
-            -H 'Authorization: Bearer {access_token}'
-      tags:
-        - Rbac
-      responses:
-        '200':
-          description: OK
-        '400':
-          $ref: '#/components/responses/400_error'
-        '401':
-          $ref: '#/components/responses/unauthorized'
-        '404':
-          $ref: '#/components/responses/not_found_error'
-        '409':
-          $ref: '#/components/responses/invalid_state_error'
-        '422':
-          $ref: '#/components/responses/invalid_request_error'
-        '500':
-          $ref: '#/components/responses/500_error'
-    post:
-      operationId: PostRbacPolicies
-      summary: Create Rbac
-      description: Create a rbac.
-      x-authenticated: true
-      parameters: []
-      security:
-        - api_token: []
-        - cookie_auth: []
-        - jwt_token: []
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/AdminCreateRbacPolicy'
-      x-codeSamples:
-        - lang: Shell
-          label: cURL
-          source: |-
-            curl -X POST '{backend_url}/admin/rbac/policies' \
-            -H 'Authorization: Bearer {access_token}' \
-            -H 'Content-Type: application/json' \
-            --data-raw '{
-              "key": "{value}",
-              "resource": "{value}",
-              "operation": "{value}"
-            }'
-      tags:
-        - Rbac
-      responses:
-        '200':
-          description: OK
-        '400':
-          $ref: '#/components/responses/400_error'
-        '401':
-          $ref: '#/components/responses/unauthorized'
-        '404':
-          $ref: '#/components/responses/not_found_error'
-        '409':
-          $ref: '#/components/responses/invalid_state_error'
-        '422':
-          $ref: '#/components/responses/invalid_request_error'
-        '500':
-          $ref: '#/components/responses/500_error'
-      x-workflow: createRbacPoliciesWorkflow
-      x-events: []
-  /admin/rbac/policies/{id}:
-    get:
-      operationId: GetRbacPoliciesId
-      summary: List Policies
-      description: Retrieve a list of policies in a rbac. The policies can be filtered by fields like FILTER FIELDS. The policies can also be paginated.
-      x-authenticated: true
-      parameters:
-        - name: id
-          in: path
-          description: The rbac's ID.
-          required: true
-          schema:
-            type: string
-      security:
-        - api_token: []
-        - cookie_auth: []
-        - jwt_token: []
-      x-codeSamples:
-        - lang: Shell
-          label: cURL
-          source: |-
-            curl '{backend_url}/admin/rbac/policies/{id}' \
-            -H 'Authorization: Bearer {access_token}'
-      tags:
-        - Rbac
-      responses:
-        '200':
-          description: OK
-        '400':
-          $ref: '#/components/responses/400_error'
-        '401':
-          $ref: '#/components/responses/unauthorized'
-        '404':
-          $ref: '#/components/responses/not_found_error'
-        '409':
-          $ref: '#/components/responses/invalid_state_error'
-        '422':
-          $ref: '#/components/responses/invalid_request_error'
-        '500':
-          $ref: '#/components/responses/500_error'
-    post:
-      operationId: PostRbacPoliciesId
-      summary: Add Policy to Rbac
-      description: Add a Policy to a rbac
-      x-authenticated: true
-      parameters:
-        - name: id
-          in: path
-          description: The rbac's ID.
-          required: true
-          schema:
-            type: string
-      security:
-        - api_token: []
-        - cookie_auth: []
-        - jwt_token: []
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/AdminUpdateRbacPolicy'
-      x-codeSamples:
-        - lang: Shell
-          label: cURL
-          source: |-
-            curl -X POST '{backend_url}/admin/rbac/policies/{id}' \
-            -H 'Authorization: Bearer {access_token}'
-      tags:
-        - Rbac
-      responses:
-        '200':
-          description: OK
-        '400':
-          $ref: '#/components/responses/400_error'
-        '401':
-          $ref: '#/components/responses/unauthorized'
-        '404':
-          $ref: '#/components/responses/not_found_error'
-        '409':
-          $ref: '#/components/responses/invalid_state_error'
-        '422':
-          $ref: '#/components/responses/invalid_request_error'
-        '500':
-          $ref: '#/components/responses/500_error'
-      x-workflow: updateRbacPoliciesWorkflow
-      x-events: []
-    delete:
-      operationId: DeleteRbacPoliciesId
-      summary: Remove Policy from Rbac
-      description: Remove a Policy from a rbac.
-      x-authenticated: true
-      parameters:
-        - name: id
-          in: path
-          description: The rbac's ID.
-          required: true
-          schema:
-            type: string
-      security:
-        - api_token: []
-        - cookie_auth: []
-        - jwt_token: []
-      x-codeSamples:
-        - lang: Shell
-          label: cURL
-          source: |-
-            curl -X DELETE '{backend_url}/admin/rbac/policies/{id}' \
-            -H 'Authorization: Bearer {access_token}'
-      tags:
-        - Rbac
-      responses:
-        '200':
-          description: OK
-        '400':
-          $ref: '#/components/responses/400_error'
-        '401':
-          $ref: '#/components/responses/unauthorized'
-        '404':
-          $ref: '#/components/responses/not_found_error'
-        '409':
-          $ref: '#/components/responses/invalid_state_error'
-        '422':
-          $ref: '#/components/responses/invalid_request_error'
-        '500':
-          $ref: '#/components/responses/500_error'
-      x-workflow: deleteRbacPoliciesWorkflow
-      x-events: []
-  /admin/rbac/roles:
-    get:
-      operationId: GetRbacRoles
-      summary: List Rbac
-      description: Retrieve a list of rbac. The rbac can be filtered by fields such as `id`. The rbac can also be sorted or paginated.
-      x-authenticated: true
-      parameters: []
-      security:
-        - api_token: []
-        - cookie_auth: []
-        - jwt_token: []
-      x-codeSamples:
-        - lang: Shell
-          label: cURL
-          source: |-
-            curl '{backend_url}/admin/rbac/roles' \
-            -H 'Authorization: Bearer {access_token}'
-      tags:
-        - Rbac
-      responses:
-        '200':
-          description: OK
-        '400':
-          $ref: '#/components/responses/400_error'
-        '401':
-          $ref: '#/components/responses/unauthorized'
-        '404':
-          $ref: '#/components/responses/not_found_error'
-        '409':
-          $ref: '#/components/responses/invalid_state_error'
-        '422':
-          $ref: '#/components/responses/invalid_request_error'
-        '500':
-          $ref: '#/components/responses/500_error'
-    post:
-      operationId: PostRbacRoles
-      summary: Create Rbac
-      description: Create a rbac.
-      x-authenticated: true
-      parameters: []
-      security:
-        - api_token: []
-        - cookie_auth: []
-        - jwt_token: []
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/AdminCreateRbacRole'
-      x-codeSamples:
-        - lang: Shell
-          label: cURL
-          source: |-
-            curl -X POST '{backend_url}/admin/rbac/roles' \
-            -H 'Authorization: Bearer {access_token}' \
-            -H 'Content-Type: application/json' \
-            --data-raw '{
-              "name": "Connie"
-            }'
-      tags:
-        - Rbac
-      responses:
-        '200':
-          description: OK
-        '400':
-          $ref: '#/components/responses/400_error'
-        '401':
-          $ref: '#/components/responses/unauthorized'
-        '404':
-          $ref: '#/components/responses/not_found_error'
-        '409':
-          $ref: '#/components/responses/invalid_state_error'
-        '422':
-          $ref: '#/components/responses/invalid_request_error'
-        '500':
-          $ref: '#/components/responses/500_error'
-      x-workflow: createRbacRolesWorkflow
-      x-events: []
-  /admin/rbac/roles/{id}:
-    get:
-      operationId: GetRbacRolesId
-      summary: List Roles
-      description: Retrieve a list of roles in a rbac. The roles can be filtered by fields like FILTER FIELDS. The roles can also be paginated.
-      x-authenticated: true
-      parameters:
-        - name: id
-          in: path
-          description: The rbac's ID.
-          required: true
-          schema:
-            type: string
-      security:
-        - api_token: []
-        - cookie_auth: []
-        - jwt_token: []
-      x-codeSamples:
-        - lang: Shell
-          label: cURL
-          source: |-
-            curl '{backend_url}/admin/rbac/roles/{id}' \
-            -H 'Authorization: Bearer {access_token}'
-      tags:
-        - Rbac
-      responses:
-        '200':
-          description: OK
-        '400':
-          $ref: '#/components/responses/400_error'
-        '401':
-          $ref: '#/components/responses/unauthorized'
-        '404':
-          $ref: '#/components/responses/not_found_error'
-        '409':
-          $ref: '#/components/responses/invalid_state_error'
-        '422':
-          $ref: '#/components/responses/invalid_request_error'
-        '500':
-          $ref: '#/components/responses/500_error'
-    post:
-      operationId: PostRbacRolesId
-      summary: Add Role to Rbac
-      description: Add a Role to a rbac
-      x-authenticated: true
-      parameters:
-        - name: id
-          in: path
-          description: The rbac's ID.
-          required: true
-          schema:
-            type: string
-      security:
-        - api_token: []
-        - cookie_auth: []
-        - jwt_token: []
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/AdminUpdateRbacRole'
-      x-codeSamples:
-        - lang: Shell
-          label: cURL
-          source: |-
-            curl -X POST '{backend_url}/admin/rbac/roles/{id}' \
-            -H 'Authorization: Bearer {access_token}'
-      tags:
-        - Rbac
-      responses:
-        '200':
-          description: OK
-        '400':
-          $ref: '#/components/responses/400_error'
-        '401':
-          $ref: '#/components/responses/unauthorized'
-        '404':
-          $ref: '#/components/responses/not_found_error'
-        '409':
-          $ref: '#/components/responses/invalid_state_error'
-        '422':
-          $ref: '#/components/responses/invalid_request_error'
-        '500':
-          $ref: '#/components/responses/500_error'
-      x-workflow: updateRbacRolesWorkflow
-      x-events: []
-    delete:
-      operationId: DeleteRbacRolesId
-      summary: Remove Role from Rbac
-      description: Remove a Role from a rbac.
-      x-authenticated: true
-      parameters:
-        - name: id
-          in: path
-          description: The rbac's ID.
-          required: true
-          schema:
-            type: string
-      security:
-        - api_token: []
-        - cookie_auth: []
-        - jwt_token: []
-      x-codeSamples:
-        - lang: Shell
-          label: cURL
-          source: |-
-            curl -X DELETE '{backend_url}/admin/rbac/roles/{id}' \
-            -H 'Authorization: Bearer {access_token}'
-      tags:
-        - Rbac
-      responses:
-        '200':
-          description: OK
-        '400':
-          $ref: '#/components/responses/400_error'
-        '401':
-          $ref: '#/components/responses/unauthorized'
-        '404':
-          $ref: '#/components/responses/not_found_error'
-        '409':
-          $ref: '#/components/responses/invalid_state_error'
-        '422':
-          $ref: '#/components/responses/invalid_request_error'
-        '500':
-          $ref: '#/components/responses/500_error'
-      x-workflow: deleteRbacRolesWorkflow
-      x-events: []
-  /admin/rbac/roles/{id}/policies:
-    get:
-      operationId: GetRbacRolesIdPolicies
-      summary: List Policies
-      description: Retrieve a list of policies in a rbac. The policies can be filtered by fields like FILTER FIELDS. The policies can also be paginated.
-      x-authenticated: true
-      parameters:
-        - name: id
-          in: path
-          description: The rbac's ID.
-          required: true
-          schema:
-            type: string
-      security:
-        - api_token: []
-        - cookie_auth: []
-        - jwt_token: []
-      x-codeSamples:
-        - lang: Shell
-          label: cURL
-          source: |-
-            curl '{backend_url}/admin/rbac/roles/{id}/policies' \
-            -H 'Authorization: Bearer {access_token}'
-      tags:
-        - Rbac
-      responses:
-        '200':
-          description: OK
-        '400':
-          $ref: '#/components/responses/400_error'
-        '401':
-          $ref: '#/components/responses/unauthorized'
-        '404':
-          $ref: '#/components/responses/not_found_error'
-        '409':
-          $ref: '#/components/responses/invalid_state_error'
-        '422':
-          $ref: '#/components/responses/invalid_request_error'
-        '500':
-          $ref: '#/components/responses/500_error'
-    post:
-      operationId: PostRbacRolesIdPolicies
-      summary: Add Policy to Rbac
-      description: Add a Policy to a rbac
-      x-authenticated: true
-      parameters:
-        - name: id
-          in: path
-          description: The rbac's ID.
-          required: true
-          schema:
-            type: string
-      security:
-        - api_token: []
-        - cookie_auth: []
-        - jwt_token: []
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/AdminAddRolePolicies'
-      x-codeSamples:
-        - lang: Shell
-          label: cURL
-          source: |-
-            curl -X POST '{backend_url}/admin/rbac/roles/{id}/policies' \
-            -H 'Authorization: Bearer {access_token}' \
-            -H 'Content-Type: application/json' \
-            --data-raw '{
-              "policies": [
-                "{value}"
-              ]
-            }'
-      tags:
-        - Rbac
-      responses:
-        '200':
-          description: OK
-        '400':
-          $ref: '#/components/responses/400_error'
-        '401':
-          $ref: '#/components/responses/unauthorized'
-        '404':
-          $ref: '#/components/responses/not_found_error'
-        '409':
-          $ref: '#/components/responses/invalid_state_error'
-        '422':
-          $ref: '#/components/responses/invalid_request_error'
-        '500':
-          $ref: '#/components/responses/500_error'
-      x-workflow: createRbacRolePoliciesWorkflow
-      x-events: []
-  /admin/rbac/roles/{id}/policies/{policy_id}:
-    delete:
-      operationId: DeleteRbacRolesIdPoliciesPolicy_id
-      summary: Remove Policy from Rbac
-      description: Remove a Policy from a rbac.
-      x-authenticated: true
-      parameters:
-        - name: id
-          in: path
-          description: The rbac's ID.
-          required: true
-          schema:
-            type: string
-        - name: policy_id
-          in: path
-          description: The rbac's policy id.
-          required: true
-          schema:
-            type: string
-      security:
-        - api_token: []
-        - cookie_auth: []
-        - jwt_token: []
-      x-codeSamples:
-        - lang: Shell
-          label: cURL
-          source: |-
-            curl -X DELETE '{backend_url}/admin/rbac/roles/{id}/policies/{policy_id}' \
-            -H 'Authorization: Bearer {access_token}'
-      tags:
-        - Rbac
-      responses:
-        '200':
-          description: OK
-        '400':
-          $ref: '#/components/responses/400_error'
-        '401':
-          $ref: '#/components/responses/unauthorized'
-        '404':
-          $ref: '#/components/responses/not_found_error'
-        '409':
-          $ref: '#/components/responses/invalid_state_error'
-        '422':
-          $ref: '#/components/responses/invalid_request_error'
-        '500':
-          $ref: '#/components/responses/500_error'
-      x-workflow: deleteRbacRolePoliciesWorkflow
-      x-events: []
   /admin/refund-reasons:
     get:
       operationId: GetRefundReasons
@@ -47179,7 +47193,16 @@ paths:
         '500':
           $ref: '#/components/responses/500_error'
       x-workflow: createRegionsWorkflow
-      x-events: []
+      x-events:
+        - name: region.created
+          payload: |-
+            ```ts
+            {
+              id, // The ID of the region
+            }
+            ```
+          description: Emitted when regions are created.
+          deprecated: false
   /admin/regions/{id}:
     get:
       operationId: GetRegionsId
@@ -47333,7 +47356,16 @@ paths:
         '500':
           $ref: '#/components/responses/500_error'
       x-workflow: updateRegionsWorkflow
-      x-events: []
+      x-events:
+        - name: region.updated
+          payload: |-
+            ```ts
+            {
+              id, // The ID of the region
+            }
+            ```
+          description: Emitted when regions are updated.
+          deprecated: false
     delete:
       operationId: DeleteRegionsId
       summary: Delete a Region
@@ -47414,7 +47446,16 @@ paths:
         '500':
           $ref: '#/components/responses/500_error'
       x-workflow: deleteRegionsWorkflow
-      x-events: []
+      x-events:
+        - name: region.deleted
+          payload: |-
+            ```ts
+            {
+              id, // The ID of the region
+            }
+            ```
+          description: Emitted when regions are deleted.
+          deprecated: false
   /admin/reservations:
     get:
       operationId: GetReservations
@@ -52427,7 +52468,17 @@ paths:
         '500':
           $ref: '#/components/responses/500_error'
       x-workflow: confirmReturnReceiveWorkflow
-      x-events: []
+      x-events:
+        - name: order.return_received
+          payload: |-
+            ```ts
+            {
+              order_id, // The ID of the order
+              return_id, // The ID of the return
+            }
+            ```
+          description: Emitted when a return is marked as received.
+          deprecated: false
   /admin/returns/{id}/request:
     post:
       operationId: PostReturnsIdRequest
@@ -52508,7 +52559,17 @@ paths:
         '500':
           $ref: '#/components/responses/500_error'
       x-workflow: confirmReturnRequestWorkflow
-      x-events: []
+      x-events:
+        - name: order.return_requested
+          payload: |-
+            ```ts
+            {
+              order_id, // The ID of the order
+              return_id, // The ID of the return
+            }
+            ```
+          description: Emitted when a return request is confirmed.
+          deprecated: false
     delete:
       operationId: DeleteReturnsIdRequest
       summary: Cancel Return Request
@@ -55117,7 +55178,16 @@ paths:
         '500':
           $ref: '#/components/responses/500_error'
       x-workflow: createSalesChannelsWorkflow
-      x-events: []
+      x-events:
+        - name: sales-channel.created
+          payload: |-
+            ```ts
+            {
+              id, // The ID of the sales channel
+            }
+            ```
+          description: Emitted when sales channels are created.
+          deprecated: false
   /admin/sales-channels/{id}:
     get:
       operationId: GetSalesChannelsId
@@ -55275,7 +55345,16 @@ paths:
         '500':
           $ref: '#/components/responses/500_error'
       x-workflow: updateSalesChannelsWorkflow
-      x-events: []
+      x-events:
+        - name: sales-channel.updated
+          payload: |-
+            ```ts
+            {
+              id, // The ID of the sales channel
+            }
+            ```
+          description: Emitted when sales channels are updated.
+          deprecated: false
     delete:
       operationId: DeleteSalesChannelsId
       summary: Delete a Sales Channel
@@ -55337,7 +55416,16 @@ paths:
         '500':
           $ref: '#/components/responses/500_error'
       x-workflow: deleteSalesChannelsWorkflow
-      x-events: []
+      x-events:
+        - name: sales-channel.deleted
+          payload: |-
+            ```ts
+            {
+              id, // The ID of the sales channel
+            }
+            ```
+          description: Emitted when sales channels are deleted.
+          deprecated: false
   /admin/sales-channels/{id}/products:
     post:
       operationId: PostSalesChannelsIdProducts
@@ -56039,7 +56127,17 @@ paths:
         '500':
           $ref: '#/components/responses/500_error'
       x-workflow: createShippingOptionTypesWorkflow
-      x-events: []
+      x-events:
+        - name: shipping-option-type.created
+          payload: |-
+            ```ts
+            {
+              id, // The ID of the shipping option type
+            }
+            ```
+          description: Emitted when shipping option types are created.
+          deprecated: false
+          since: 2.10.0
       x-since: 2.10.0
   /admin/shipping-option-types/{id}:
     get:
@@ -56197,7 +56295,17 @@ paths:
         '500':
           $ref: '#/components/responses/500_error'
       x-workflow: updateShippingOptionTypesWorkflow
-      x-events: []
+      x-events:
+        - name: shipping-option-type.updated
+          payload: |-
+            ```ts
+            {
+              id, // The ID of the shipping option type
+            }
+            ```
+          description: Emitted when shipping option types are updated.
+          deprecated: false
+          since: 2.10.0
       x-since: 2.10.0
     delete:
       operationId: DeleteShippingOptionTypesId
@@ -56261,7 +56369,17 @@ paths:
         '500':
           $ref: '#/components/responses/500_error'
       x-workflow: deleteShippingOptionTypesWorkflow
-      x-events: []
+      x-events:
+        - name: shipping-option-type.deleted
+          payload: |-
+            ```ts
+            {
+              id, // The ID of the shipping option type
+            }
+            ```
+          description: Emitted when shipping option types are deleted.
+          deprecated: false
+          since: 2.10.0
       x-since: 2.10.0
   /admin/shipping-options:
     get:
@@ -56951,7 +57069,17 @@ paths:
         '500':
           $ref: '#/components/responses/500_error'
       x-workflow: createShippingOptionsWorkflow
-      x-events: []
+      x-events:
+        - name: shipping-option.created
+          payload: |-
+            ```ts
+            {
+              id, // The ID of the shipping option
+            }
+            ```
+          description: Emitted when shipping options are created.
+          deprecated: false
+          since: 2.12.4
   /admin/shipping-options/{id}:
     get:
       operationId: GetShippingOptionsId
@@ -57104,7 +57232,17 @@ paths:
         '500':
           $ref: '#/components/responses/500_error'
       x-workflow: updateShippingOptionsWorkflow
-      x-events: []
+      x-events:
+        - name: shipping-option.updated
+          payload: |-
+            ```ts
+            {
+              id, // The ID of the shipping option
+            }
+            ```
+          description: Emitted when shipping options are updated.
+          deprecated: false
+          since: 2.12.4
     delete:
       operationId: DeleteShippingOptionsId
       summary: Delete a Shipping Option
@@ -57166,7 +57304,17 @@ paths:
         '500':
           $ref: '#/components/responses/500_error'
       x-workflow: deleteShippingOptionsWorkflow
-      x-events: []
+      x-events:
+        - name: shipping-option.deleted
+          payload: |-
+            ```ts
+            {
+              id, // The ID of the shipping option
+            }
+            ```
+          description: Emitted when shipping options are deleted.
+          deprecated: false
+          since: 2.12.4
   /admin/shipping-options/{id}/rules/batch:
     post:
       operationId: PostShippingOptionsIdRulesBatch
@@ -64196,7 +64344,37 @@ paths:
         '500':
           $ref: '#/components/responses/500_error'
       x-workflow: batchTranslationsWorkflow
-      x-events: []
+      x-events:
+        - name: translation.created
+          payload: |-
+            ```ts
+            {
+              id, // The ID of the translation
+            }
+            ```
+          description: Emitted when translations are created.
+          deprecated: false
+          since: 2.12.3
+        - name: translation.updated
+          payload: |-
+            ```ts
+            {
+              id, // The ID of the translation
+            }
+            ```
+          description: Emitted when translations are updated.
+          deprecated: false
+          since: 2.12.3
+        - name: translation.deleted
+          payload: |-
+            ```ts
+            {
+              id, // The ID of the translation
+            }
+            ```
+          description: Emitted when translations are deleted.
+          deprecated: false
+          since: 2.12.3
       x-since: 2.12.3
       x-featureFlag: translation
   /admin/translations/entities:
@@ -64334,7 +64512,7 @@ paths:
       operationId: GetTranslationsSettings
       summary: List Translation Settings
       x-sidebar-summary: List Settings
-      description: Retrieve the list of translatable fields for all entities, such as products and collections.
+      description: Retrieve the list of translatable fields for all entities, such as products and collections. You can also filter the results by entity type or active entities.
       x-authenticated: true
       parameters:
         - name: entity_type
@@ -64348,12 +64526,12 @@ paths:
             example: product
         - name: is_active
           in: query
-          description: The translation's is active.
+          description: Filter resources by whether translations is activated for them or not. If not provided, all resources are returned.
           required: false
           schema:
             type: boolean
             title: is_active
-            description: The translation's is active.
+            description: Filter resources by whether translations is activated for them or not. If not provided, all resources are returned.
       security:
         - api_token: []
         - cookie_auth: []
@@ -64409,10 +64587,9 @@ paths:
   /admin/translations/settings/batch:
     post:
       operationId: PostTranslationsSettingsBatch
-      summary: Create Translation
-      description: Create a translation.
+      summary: Manage Translation Settings
+      description: Create, update, or delete multiple translation settings.
       x-authenticated: true
-      parameters: []
       security:
         - api_token: []
         - cookie_auth: []
@@ -65620,7 +65797,16 @@ paths:
       security:
         - cookie_auth: []
         - jwt_token: []
-      x-events: []
+      x-events:
+        - name: user.updated
+          payload: |-
+            ```ts
+            {
+              id, // The ID of the user
+            }
+            ```
+          description: Emitted when users are updated.
+          deprecated: false
     delete:
       operationId: DeleteUsersId
       summary: Delete a User
@@ -65679,7 +65865,16 @@ paths:
       security:
         - cookie_auth: []
         - jwt_token: []
-      x-events: []
+      x-events:
+        - name: user.deleted
+          payload: |-
+            ```ts
+            {
+              id, // The ID of the user
+            }
+            ```
+          description: Emitted when users are deleted.
+          deprecated: false
   /admin/views/{entity}/columns:
     get:
       operationId: GetViewsEntityColumns
@@ -68156,20 +68351,6 @@ components:
           externalDocs:
             url: https://docs.medusajs.com/api/admin#manage-metadata
             description: Learn how to manage metadata
-    AdminAddRolePolicies:
-      type: object
-      description: SUMMARY
-      x-schemaName: AdminAddRolePolicies
-      required:
-        - policies
-      properties:
-        policies:
-          type: array
-          description: The rbac's policies.
-          items:
-            type: string
-            title: policies
-            description: The policy's policies.
     AdminApiKey:
       type: object
       description: The API key's details.
@@ -68665,24 +68846,29 @@ components:
               description: Whether the product variants were deleted.
     AdminBatchTranslationSettings:
       type: object
-      description: SUMMARY
+      description: The translation settings to create, update, or delete in batch.
       x-schemaName: AdminBatchTranslationSettings
       properties:
         create:
           type: array
-          description: The translation's create.
-          items: {}
+          description: The translation settings to create.
+          items:
+            $ref: '#/components/schemas/AdminCreateTranslationSettings'
         update:
           type: array
-          description: The translation's update.
-          items: {}
+          description: The translation settings to update.
+          items:
+            $ref: '#/components/schemas/AdminUpdateTranslationSettings'
         delete:
           type: array
-          description: The translation's delete.
-          items: {}
+          description: The translation settings to delete.
+          items:
+            type: string
+            title: delete
+            description: The IDs of the translation settings to delete.
     AdminBatchTranslationSettingsResponse:
       type: object
-      description: SUMMARY
+      description: The result of managing the translation settings in batch.
       x-schemaName: AdminBatchTranslationSettingsResponse
       required:
         - created
@@ -68691,17 +68877,17 @@ components:
       properties:
         created:
           type: array
-          description: The translation's created.
+          description: The created translation settings.
           items:
             $ref: '#/components/schemas/AdminTranslationSettings'
         updated:
           type: array
-          description: The translation's updated.
+          description: The updated translation settings.
           items:
             $ref: '#/components/schemas/AdminTranslationSettings'
         deleted:
           type: object
-          description: SUMMARY
+          description: The deletion result.
           required:
             - ids
             - object
@@ -68709,19 +68895,19 @@ components:
           properties:
             ids:
               type: array
-              description: The deleted's ids.
+              description: The IDs of the deleted translation settings.
               items:
                 type: string
                 title: ids
-                description: The id's ids.
+                description: The ID of a deleted translation settings.
             object:
               type: string
               title: object
-              description: SUMMARY
+              description: The type of object deleted.
             deleted:
               type: boolean
               title: deleted
-              description: SUMMARY
+              description: Whether the deletion was successful.
     AdminBatchUpdateInventoryItemsLocationLevels:
       type: object
       description: The details of an inventory level to update.
@@ -71000,60 +71186,6 @@ components:
                 title: values
                 description: An attribute value.
                 example: prod_123
-    AdminCreateRbacPolicy:
-      type: object
-      description: SUMMARY
-      x-schemaName: AdminCreateRbacPolicy
-      required:
-        - key
-        - resource
-        - operation
-      properties:
-        key:
-          type: string
-          title: key
-          description: The rbac's key.
-        resource:
-          type: string
-          title: resource
-          description: The rbac's resource.
-        operation:
-          type: string
-          title: operation
-          description: The rbac's operation.
-        metadata:
-          type: object
-          description: The rbac's metadata.
-        name:
-          type: string
-          title: name
-          description: The rbac's name.
-        description:
-          type: string
-          title: description
-          description: The rbac's description.
-    AdminCreateRbacRole:
-      type: object
-      description: SUMMARY
-      x-schemaName: AdminCreateRbacRole
-      required:
-        - name
-      properties:
-        name:
-          type: string
-          title: name
-          description: The rbac's name.
-        metadata:
-          type: object
-          description: The rbac's metadata.
-        description:
-          type: string
-          title: description
-          description: The rbac's description.
-        parent_id:
-          type: string
-          title: parent_id
-          description: The rbac's parent id.
     AdminCreateRefundReason:
       type: object
       description: The refund reason's details.
@@ -71489,6 +71621,31 @@ components:
           type: string
           title: provider_id
           description: The ID of the tax provider used to calculate the tax rate in this tax region.
+    AdminCreateTranslationSettings:
+      type: object
+      description: The translation settings to create.
+      x-schemaName: AdminCreateTranslationSettings
+      required:
+        - entity_type
+        - fields
+      properties:
+        entity_type:
+          type: string
+          title: entity_type
+          description: The entity type to create the translation settings for.
+          example: product
+        fields:
+          type: array
+          description: The fields to support translations for.
+          items:
+            type: string
+            title: fields
+            description: A field to support translations for.
+            example: title
+        is_active:
+          type: boolean
+          title: is_active
+          description: Whether translations are active for the given entity type.
     AdminCreateVariantInventoryItem:
       type: object
       description: The details of the variant-inventory item association.
@@ -81624,9 +81781,7 @@ components:
           items:
             allOf:
               - type: object
-                description: The datum's data.
-              - type: object
-                description: The datum's data.
+                description: The entity's data.
                 required:
                   - id
                   - translations
@@ -81634,58 +81789,12 @@ components:
                   id:
                     type: string
                     title: id
-                    description: The datum's ID.
+                    description: The entity's ID.
                   translations:
                     type: array
-                    description: The datum's translations.
+                    description: The entity's translations.
                     items:
-                      type: object
-                      description: The translation's translations.
-                      x-schemaName: AdminTranslation
-                      required:
-                        - id
-                        - reference_id
-                        - reference
-                        - locale_code
-                        - translations
-                        - created_at
-                        - updated_at
-                        - deleted_at
-                      properties:
-                        id:
-                          type: string
-                          title: id
-                          description: The translation's ID.
-                        reference_id:
-                          type: string
-                          title: reference_id
-                          description: The translation's reference id.
-                        reference:
-                          type: string
-                          title: reference
-                          description: The translation's reference.
-                        locale_code:
-                          type: string
-                          title: locale_code
-                          description: The translation's locale code.
-                        translations:
-                          type: object
-                          description: The translation's translations.
-                        created_at:
-                          type: string
-                          format: date-time
-                          title: created_at
-                          description: The translation's created at.
-                        updated_at:
-                          type: string
-                          format: date-time
-                          title: updated_at
-                          description: The translation's updated at.
-                        deleted_at:
-                          type: string
-                          format: date-time
-                          title: deleted_at
-                          description: The translation's deleted at.
+                      $ref: '#/components/schemas/AdminTranslation'
         count:
           type: number
           title: count
@@ -81700,7 +81809,7 @@ components:
           description: The maximum number of items returned in the response.
     AdminTranslationSettings:
       type: object
-      description: The created's details.
+      description: The translation settings details.
       x-schemaName: AdminTranslationSettings
       required:
         - id
@@ -81714,37 +81823,38 @@ components:
         id:
           type: string
           title: id
-          description: The created's ID.
+          description: The ID of the translation settings.
         created_at:
           type: string
           format: date-time
           title: created_at
-          description: The created's created at.
+          description: The date the translation settings was created.
         updated_at:
           type: string
           format: date-time
           title: updated_at
-          description: The created's updated at.
+          description: The date the translation settings was updated.
         deleted_at:
           type: string
           format: date-time
           title: deleted_at
-          description: The created's deleted at.
+          description: The date the translation settings was deleted.
         entity_type:
           type: string
           title: entity_type
-          description: The created's entity type.
+          description: The entity type the translation settings are for.
+          example: product
         fields:
           type: array
-          description: The created's fields.
+          description: The fields supported for translations.
           items:
             type: string
             title: fields
-            description: The field's fields.
+            description: A field supported for translations.
         is_active:
           type: boolean
           title: is_active
-          description: The created's is active.
+          description: Whether translations are active for the given entity type.
     AdminTranslationSettingsResponse:
       type: object
       description: The translation settings' details.
@@ -81754,7 +81864,7 @@ components:
       properties:
         translation_settings:
           type: object
-          description: The translation's translation settings.
+          description: The translation settings details.
     AdminTranslationStatisticsResponse:
       type: object
       description: The translation statistics details.
@@ -82768,54 +82878,6 @@ components:
                 description: An attribute value.
                 example: prod_123
       x-schemaName: AdminUpdatePromotionRule
-    AdminUpdateRbacPolicy:
-      type: object
-      description: SUMMARY
-      x-schemaName: AdminUpdateRbacPolicy
-      properties:
-        metadata:
-          type: object
-          description: The rbac's metadata.
-        name:
-          type: string
-          title: name
-          description: The rbac's name.
-        description:
-          type: string
-          title: description
-          description: The rbac's description.
-        key:
-          type: string
-          title: key
-          description: The rbac's key.
-        resource:
-          type: string
-          title: resource
-          description: The rbac's resource.
-        operation:
-          type: string
-          title: operation
-          description: The rbac's operation.
-    AdminUpdateRbacRole:
-      type: object
-      description: SUMMARY
-      x-schemaName: AdminUpdateRbacRole
-      properties:
-        metadata:
-          type: object
-          description: The rbac's metadata.
-        name:
-          type: string
-          title: name
-          description: The rbac's name.
-        description:
-          type: string
-          title: description
-          description: The rbac's description.
-        parent_id:
-          type: string
-          title: parent_id
-          description: The rbac's parent id.
     AdminUpdateRefundReason:
       type: object
       description: The properties to update in the refund reason.
@@ -83456,6 +83518,32 @@ components:
           type: string
           title: provider_id
           description: The ID of the tax provider to use when calculating taxes for this tax region.
+    AdminUpdateTranslationSettings:
+      type: object
+      description: The translation settings to update.
+      x-schemaName: AdminUpdateTranslationSettings
+      required:
+        - id
+      properties:
+        id:
+          type: string
+          title: id
+          description: The ID of the translation settings to update.
+        entity_type:
+          type: string
+          title: entity_type
+          description: The entity type to update the translation settings for.
+        fields:
+          type: array
+          description: The fields to update translations for.
+          items:
+            type: string
+            title: fields
+            description: A field to update translations for.
+        is_active:
+          type: boolean
+          title: is_active
+          description: Whether translations are active for the given entity type.
     AdminUpdateUser:
       type: object
       description: The properties to update in a user.

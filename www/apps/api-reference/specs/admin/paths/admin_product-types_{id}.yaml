@@ -134,7 +134,16 @@ post:
     '500':
       $ref: ../components/responses/500_error.yaml
   x-workflow: updateProductTypesWorkflow
-  x-events: []
+  x-events:
+    - name: product-type.updated
+      payload: |-
+        ```ts
+        {
+          id, // The ID of the product type
+        }
+        ```
+      description: Emitted when product types are updated.
+      deprecated: false
 delete:
   operationId: DeleteProductTypesId
   summary: Delete a Product Type
@@ -182,4 +191,13 @@ delete:
     '500':
       $ref: ../components/responses/500_error.yaml
   x-workflow: deleteProductTypesWorkflow
-  x-events: []
+  x-events:
+    - name: product-type.deleted
+      payload: |-
+        ```ts
+        {
+          id, // The ID of the product type
+        }
+        ```
+      description: Emitted when product types are deleted.
+      deprecated: false

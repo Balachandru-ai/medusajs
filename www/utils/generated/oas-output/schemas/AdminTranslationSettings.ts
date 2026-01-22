@@ -1,7 +1,7 @@
 /**
  * @schema AdminTranslationSettings
  * type: object
- * description: The created's details.
+ * description: The translation settings details.
  * x-schemaName: AdminTranslationSettings
  * required:
  *   - id
@@ -15,37 +15,38 @@
  *   id:
  *     type: string
  *     title: id
- *     description: The created's ID.
+ *     description: The ID of the translation settings.
  *   created_at:
  *     type: string
  *     format: date-time
  *     title: created_at
- *     description: The created's created at.
+ *     description: The date the translation settings was created.
  *   updated_at:
  *     type: string
  *     format: date-time
  *     title: updated_at
- *     description: The created's updated at.
+ *     description: The date the translation settings was updated.
  *   deleted_at:
  *     type: string
  *     format: date-time
  *     title: deleted_at
- *     description: The created's deleted at.
+ *     description: The date the translation settings was deleted.
  *   entity_type:
  *     type: string
  *     title: entity_type
- *     description: The created's entity type.
+ *     description: The entity type the translation settings are for.
+ *     example: product
  *   fields:
  *     type: array
- *     description: The created's fields.
+ *     description: The fields supported for translations.
  *     items:
  *       type: string
  *       title: fields
- *       description: The field's fields.
+ *       description: A field supported for translations.
  *   is_active:
  *     type: boolean
  *     title: is_active
- *     description: The created's is active.
+ *     description: Whether translations are active for the given entity type.
  * 
 */
 

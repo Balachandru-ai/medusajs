@@ -1,7 +1,7 @@
 /**
  * @schema AdminBatchTranslationSettingsResponse
  * type: object
- * description: SUMMARY
+ * description: The result of managing the translation settings in batch.
  * x-schemaName: AdminBatchTranslationSettingsResponse
  * required:
  *   - created
@@ -10,17 +10,17 @@
  * properties:
  *   created:
  *     type: array
- *     description: The translation's created.
+ *     description: The created translation settings.
  *     items:
  *       $ref: "#/components/schemas/AdminTranslationSettings"
  *   updated:
  *     type: array
- *     description: The translation's updated.
+ *     description: The updated translation settings.
  *     items:
  *       $ref: "#/components/schemas/AdminTranslationSettings"
  *   deleted:
  *     type: object
- *     description: SUMMARY
+ *     description: The deletion result.
  *     required:
  *       - ids
  *       - object
@@ -28,19 +28,19 @@
  *     properties:
  *       ids:
  *         type: array
- *         description: The deleted's ids.
+ *         description: The IDs of the deleted translation settings.
  *         items:
  *           type: string
  *           title: ids
- *           description: The id's ids.
+ *           description: The ID of a deleted translation settings.
  *       object:
  *         type: string
  *         title: object
- *         description: SUMMARY
+ *         description: The type of object deleted.
  *       deleted:
  *         type: boolean
  *         title: deleted
- *         description: SUMMARY
+ *         description: Whether the deletion was successful.
  * 
 */
 

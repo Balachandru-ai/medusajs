@@ -194,7 +194,16 @@ post:
     '500':
       $ref: ../components/responses/500_error.yaml
   x-workflow: updateCustomersWorkflow
-  x-events: []
+  x-events:
+    - name: customer.updated
+      payload: |-
+        ```ts
+        {
+          id, // The ID of the customer
+        }
+        ```
+      description: Emitted when a customer is updated.
+      deprecated: false
 delete:
   operationId: DeleteCustomersId
   summary: Delete a Customer
@@ -260,4 +269,13 @@ delete:
     '500':
       $ref: ../components/responses/500_error.yaml
   x-workflow: removeCustomerAccountWorkflow
-  x-events: []
+  x-events:
+    - name: customer.deleted
+      payload: |-
+        ```ts
+        {
+          id, // The ID of the customer
+        }
+        ```
+      description: Emitted when a customer is deleted.
+      deprecated: false

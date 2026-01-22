@@ -965,7 +965,16 @@ paths:
         '500':
           $ref: '#/components/responses/500_error'
       x-workflow: createCartWorkflow
-      x-events: []
+      x-events:
+        - name: cart.created
+          payload: |-
+            ```ts
+            {
+              id, // The ID of the cart
+            }
+            ```
+          description: Emitted when a cart is created.
+          deprecated: false
   /store/carts/{id}:
     get:
       operationId: GetCartsId
@@ -1185,7 +1194,27 @@ paths:
         '500':
           $ref: '#/components/responses/500_error'
       x-workflow: updateCartWorkflow
-      x-events: []
+      x-events:
+        - name: cart.updated
+          payload: |-
+            ```ts
+            {
+              id, // The ID of the cart
+            }
+            ```
+          description: Emitted when a cart's details are updated.
+          deprecated: false
+        - name: cart.region_updated
+          payload: |-
+            ```ts
+            {
+              id, // The ID of the cart
+            }
+            ```
+          description: |-
+            Emitted when the cart's region is updated. This
+            event is emitted alongside the `cart.updated` event.
+          deprecated: false
   /store/carts/{id}/complete:
     post:
       operationId: PostCartsIdComplete
@@ -1343,7 +1372,18 @@ paths:
         '500':
           $ref: '#/components/responses/500_error'
       x-workflow: completeCartWorkflow
-      x-events: []
+      x-events:
+        - name: order.placed
+          payload: |-
+            ```ts
+            {
+              id, // The ID of the order
+            }
+            ```
+          description: |-
+            Emitted when an order is placed, or when a draft order is converted to an
+            order.
+          deprecated: false
   /store/carts/{id}/customer:
     post:
       operationId: PostCartsIdCustomer
@@ -1466,7 +1506,18 @@ paths:
         '500':
           $ref: '#/components/responses/500_error'
       x-workflow: transferCartCustomerWorkflow
-      x-events: []
+      x-events:
+        - name: cart.customer_transferred
+          payload: |-
+            ```ts
+            {
+              id, // The ID of the cart
+              customer_id, // The ID of the customer
+            }
+            ```
+          description: Emitted when the customer in the cart is transferred.
+          deprecated: false
+          since: 2.8.0
   /store/carts/{id}/gift-cards:
     post:
       operationId: PostCartsIdGiftCards
@@ -1760,7 +1811,16 @@ paths:
         '500':
           $ref: '#/components/responses/500_error'
       x-workflow: addToCartWorkflow
-      x-events: []
+      x-events:
+        - name: cart.updated
+          payload: |-
+            ```ts
+            {
+              id, // The ID of the cart
+            }
+            ```
+          description: Emitted when a cart's details are updated.
+          deprecated: false
   /store/carts/{id}/line-items/{line_id}:
     post:
       operationId: PostCartsIdLineItemsLine_id
@@ -1906,7 +1966,16 @@ paths:
         '500':
           $ref: '#/components/responses/500_error'
       x-workflow: updateLineItemInCartWorkflow
-      x-events: []
+      x-events:
+        - name: cart.updated
+          payload: |-
+            ```ts
+            {
+              id, // The ID of the cart
+            }
+            ```
+          description: Emitted when a cart's details are updated.
+          deprecated: false
     delete:
       operationId: DeleteCartsIdLineItemsLine_id
       summary: Remove Line Item from Cart
@@ -2046,7 +2115,16 @@ paths:
         '500':
           $ref: '#/components/responses/500_error'
       x-workflow: deleteLineItemsWorkflow
-      x-events: []
+      x-events:
+        - name: cart.updated
+          payload: |-
+            ```ts
+            {
+              id, // The ID of the cart
+            }
+            ```
+          description: Emitted when a cart's details are updated.
+          deprecated: false
   /store/carts/{id}/promotions:
     post:
       operationId: PostCartsIdPromotions
@@ -2379,7 +2457,16 @@ paths:
         '500':
           $ref: '#/components/responses/500_error'
       x-workflow: addShippingMethodToCartWorkflow
-      x-events: []
+      x-events:
+        - name: cart.updated
+          payload: |-
+            ```ts
+            {
+              id, // The ID of the cart
+            }
+            ```
+          description: Emitted when a cart's details are updated.
+          deprecated: false
   /store/carts/{id}/store-credits:
     post:
       operationId: PostCartsIdStoreCredits
@@ -3689,7 +3776,16 @@ paths:
       security:
         - cookie_auth: []
         - jwt_token: []
-      x-events: []
+      x-events:
+        - name: customer.created
+          payload: |-
+            ```ts
+            {
+              id, // The ID of the customer
+            }
+            ```
+          description: Emitted when a customer is created.
+          deprecated: false
   /store/customers/me:
     get:
       operationId: GetCustomersMe
@@ -3907,7 +4003,16 @@ paths:
         '500':
           $ref: '#/components/responses/500_error'
       x-workflow: updateCustomersWorkflow
-      x-events: []
+      x-events:
+        - name: customer.updated
+          payload: |-
+            ```ts
+            {
+              id, // The ID of the customer
+            }
+            ```
+          description: Emitted when a customer is updated.
+          deprecated: false
   /store/customers/me/addresses:
     get:
       operationId: GetCustomersMeAddresses
@@ -9887,7 +9992,27 @@ paths:
         '500':
           $ref: '#/components/responses/500_error'
       x-workflow: createAndCompleteReturnOrderWorkflow
-      x-events: []
+      x-events:
+        - name: order.return_requested
+          payload: |-
+            ```ts
+            {
+              order_id, // The ID of the order
+              return_id, // The ID of the return
+            }
+            ```
+          description: Emitted when a return request is confirmed.
+          deprecated: false
+        - name: order.return_received
+          payload: |-
+            ```ts
+            {
+              order_id, // The ID of the order
+              return_id, // The ID of the return
+            }
+            ```
+          description: Emitted when a return is marked as received.
+          deprecated: false
       x-since: 2.8.0
   /store/shipping-options:
     get:
@@ -10940,20 +11065,6 @@ components:
           externalDocs:
             url: https://docs.medusajs.com/api/admin#manage-metadata
             description: Learn how to manage metadata
-    AdminAddRolePolicies:
-      type: object
-      description: SUMMARY
-      x-schemaName: AdminAddRolePolicies
-      required:
-        - policies
-      properties:
-        policies:
-          type: array
-          description: The rbac's policies.
-          items:
-            type: string
-            title: policies
-            description: The policy's policies.
     AdminApiKey:
       type: object
       description: The API key's details.
@@ -11449,24 +11560,29 @@ components:
               description: Whether the product variants were deleted.
     AdminBatchTranslationSettings:
       type: object
-      description: SUMMARY
+      description: The translation settings to create, update, or delete in batch.
       x-schemaName: AdminBatchTranslationSettings
       properties:
         create:
           type: array
-          description: The translation's create.
-          items: {}
+          description: The translation settings to create.
+          items:
+            $ref: '#/components/schemas/AdminCreateTranslationSettings'
         update:
           type: array
-          description: The translation's update.
-          items: {}
+          description: The translation settings to update.
+          items:
+            $ref: '#/components/schemas/AdminUpdateTranslationSettings'
         delete:
           type: array
-          description: The translation's delete.
-          items: {}
+          description: The translation settings to delete.
+          items:
+            type: string
+            title: delete
+            description: The IDs of the translation settings to delete.
     AdminBatchTranslationSettingsResponse:
       type: object
-      description: SUMMARY
+      description: The result of managing the translation settings in batch.
       x-schemaName: AdminBatchTranslationSettingsResponse
       required:
         - created
@@ -11475,17 +11591,17 @@ components:
       properties:
         created:
           type: array
-          description: The translation's created.
+          description: The created translation settings.
           items:
             $ref: '#/components/schemas/AdminTranslationSettings'
         updated:
           type: array
-          description: The translation's updated.
+          description: The updated translation settings.
           items:
             $ref: '#/components/schemas/AdminTranslationSettings'
         deleted:
           type: object
-          description: SUMMARY
+          description: The deletion result.
           required:
             - ids
             - object
@@ -11493,19 +11609,19 @@ components:
           properties:
             ids:
               type: array
-              description: The deleted's ids.
+              description: The IDs of the deleted translation settings.
               items:
                 type: string
                 title: ids
-                description: The id's ids.
+                description: The ID of a deleted translation settings.
             object:
               type: string
               title: object
-              description: SUMMARY
+              description: The type of object deleted.
             deleted:
               type: boolean
               title: deleted
-              description: SUMMARY
+              description: Whether the deletion was successful.
     AdminBatchUpdateInventoryItemsLocationLevels:
       type: object
       description: The details of an inventory level to update.
@@ -13784,60 +13900,6 @@ components:
                 title: values
                 description: An attribute value.
                 example: prod_123
-    AdminCreateRbacPolicy:
-      type: object
-      description: SUMMARY
-      x-schemaName: AdminCreateRbacPolicy
-      required:
-        - key
-        - resource
-        - operation
-      properties:
-        key:
-          type: string
-          title: key
-          description: The rbac's key.
-        resource:
-          type: string
-          title: resource
-          description: The rbac's resource.
-        operation:
-          type: string
-          title: operation
-          description: The rbac's operation.
-        metadata:
-          type: object
-          description: The rbac's metadata.
-        name:
-          type: string
-          title: name
-          description: The rbac's name.
-        description:
-          type: string
-          title: description
-          description: The rbac's description.
-    AdminCreateRbacRole:
-      type: object
-      description: SUMMARY
-      x-schemaName: AdminCreateRbacRole
-      required:
-        - name
-      properties:
-        name:
-          type: string
-          title: name
-          description: The rbac's name.
-        metadata:
-          type: object
-          description: The rbac's metadata.
-        description:
-          type: string
-          title: description
-          description: The rbac's description.
-        parent_id:
-          type: string
-          title: parent_id
-          description: The rbac's parent id.
     AdminCreateRefundReason:
       type: object
       description: The refund reason's details.
@@ -14273,6 +14335,31 @@ components:
           type: string
           title: provider_id
           description: The ID of the tax provider used to calculate the tax rate in this tax region.
+    AdminCreateTranslationSettings:
+      type: object
+      description: The translation settings to create.
+      x-schemaName: AdminCreateTranslationSettings
+      required:
+        - entity_type
+        - fields
+      properties:
+        entity_type:
+          type: string
+          title: entity_type
+          description: The entity type to create the translation settings for.
+          example: product
+        fields:
+          type: array
+          description: The fields to support translations for.
+          items:
+            type: string
+            title: fields
+            description: A field to support translations for.
+            example: title
+        is_active:
+          type: boolean
+          title: is_active
+          description: Whether translations are active for the given entity type.
     AdminCreateVariantInventoryItem:
       type: object
       description: The details of the variant-inventory item association.
@@ -24408,9 +24495,7 @@ components:
           items:
             allOf:
               - type: object
-                description: The datum's data.
-              - type: object
-                description: The datum's data.
+                description: The entity's data.
                 required:
                   - id
                   - translations
@@ -24418,58 +24503,12 @@ components:
                   id:
                     type: string
                     title: id
-                    description: The datum's ID.
+                    description: The entity's ID.
                   translations:
                     type: array
-                    description: The datum's translations.
+                    description: The entity's translations.
                     items:
-                      type: object
-                      description: The translation's translations.
-                      x-schemaName: AdminTranslation
-                      required:
-                        - id
-                        - reference_id
-                        - reference
-                        - locale_code
-                        - translations
-                        - created_at
-                        - updated_at
-                        - deleted_at
-                      properties:
-                        id:
-                          type: string
-                          title: id
-                          description: The translation's ID.
-                        reference_id:
-                          type: string
-                          title: reference_id
-                          description: The translation's reference id.
-                        reference:
-                          type: string
-                          title: reference
-                          description: The translation's reference.
-                        locale_code:
-                          type: string
-                          title: locale_code
-                          description: The translation's locale code.
-                        translations:
-                          type: object
-                          description: The translation's translations.
-                        created_at:
-                          type: string
-                          format: date-time
-                          title: created_at
-                          description: The translation's created at.
-                        updated_at:
-                          type: string
-                          format: date-time
-                          title: updated_at
-                          description: The translation's updated at.
-                        deleted_at:
-                          type: string
-                          format: date-time
-                          title: deleted_at
-                          description: The translation's deleted at.
+                      $ref: '#/components/schemas/AdminTranslation'
         count:
           type: number
           title: count
@@ -24484,7 +24523,7 @@ components:
           description: The maximum number of items returned in the response.
     AdminTranslationSettings:
       type: object
-      description: The created's details.
+      description: The translation settings details.
       x-schemaName: AdminTranslationSettings
       required:
         - id
@@ -24498,37 +24537,38 @@ components:
         id:
           type: string
           title: id
-          description: The created's ID.
+          description: The ID of the translation settings.
         created_at:
           type: string
           format: date-time
           title: created_at
-          description: The created's created at.
+          description: The date the translation settings was created.
         updated_at:
           type: string
           format: date-time
           title: updated_at
-          description: The created's updated at.
+          description: The date the translation settings was updated.
         deleted_at:
           type: string
           format: date-time
           title: deleted_at
-          description: The created's deleted at.
+          description: The date the translation settings was deleted.
         entity_type:
           type: string
           title: entity_type
-          description: The created's entity type.
+          description: The entity type the translation settings are for.
+          example: product
         fields:
           type: array
-          description: The created's fields.
+          description: The fields supported for translations.
           items:
             type: string
             title: fields
-            description: The field's fields.
+            description: A field supported for translations.
         is_active:
           type: boolean
           title: is_active
-          description: The created's is active.
+          description: Whether translations are active for the given entity type.
     AdminTranslationSettingsResponse:
       type: object
       description: The translation settings' details.
@@ -24538,7 +24578,7 @@ components:
       properties:
         translation_settings:
           type: object
-          description: The translation's translation settings.
+          description: The translation settings details.
     AdminTranslationStatisticsResponse:
       type: object
       description: The translation statistics details.
@@ -25552,54 +25592,6 @@ components:
                 description: An attribute value.
                 example: prod_123
       x-schemaName: AdminUpdatePromotionRule
-    AdminUpdateRbacPolicy:
-      type: object
-      description: SUMMARY
-      x-schemaName: AdminUpdateRbacPolicy
-      properties:
-        metadata:
-          type: object
-          description: The rbac's metadata.
-        name:
-          type: string
-          title: name
-          description: The rbac's name.
-        description:
-          type: string
-          title: description
-          description: The rbac's description.
-        key:
-          type: string
-          title: key
-          description: The rbac's key.
-        resource:
-          type: string
-          title: resource
-          description: The rbac's resource.
-        operation:
-          type: string
-          title: operation
-          description: The rbac's operation.
-    AdminUpdateRbacRole:
-      type: object
-      description: SUMMARY
-      x-schemaName: AdminUpdateRbacRole
-      properties:
-        metadata:
-          type: object
-          description: The rbac's metadata.
-        name:
-          type: string
-          title: name
-          description: The rbac's name.
-        description:
-          type: string
-          title: description
-          description: The rbac's description.
-        parent_id:
-          type: string
-          title: parent_id
-          description: The rbac's parent id.
     AdminUpdateRefundReason:
       type: object
       description: The properties to update in the refund reason.
@@ -26240,6 +26232,32 @@ components:
           type: string
           title: provider_id
           description: The ID of the tax provider to use when calculating taxes for this tax region.
+    AdminUpdateTranslationSettings:
+      type: object
+      description: The translation settings to update.
+      x-schemaName: AdminUpdateTranslationSettings
+      required:
+        - id
+      properties:
+        id:
+          type: string
+          title: id
+          description: The ID of the translation settings to update.
+        entity_type:
+          type: string
+          title: entity_type
+          description: The entity type to update the translation settings for.
+        fields:
+          type: array
+          description: The fields to update translations for.
+          items:
+            type: string
+            title: fields
+            description: A field to update translations for.
+        is_active:
+          type: boolean
+          title: is_active
+          description: Whether translations are active for the given entity type.
     AdminUpdateUser:
       type: object
       description: The properties to update in a user.

@@ -134,7 +134,16 @@ post:
     '500':
       $ref: ../components/responses/500_error.yaml
   x-workflow: updateProductTagsWorkflow
-  x-events: []
+  x-events:
+    - name: product-tag.updated
+      payload: |-
+        ```ts
+        {
+          id, // The ID of the product tag
+        }
+        ```
+      description: Emitted when product tags are updated.
+      deprecated: false
 delete:
   operationId: DeleteProductTagsId
   summary: Delete a Product Tag
@@ -182,4 +191,13 @@ delete:
     '500':
       $ref: ../components/responses/500_error.yaml
   x-workflow: deleteProductTagsWorkflow
-  x-events: []
+  x-events:
+    - name: product-tag.deleted
+      payload: |-
+        ```ts
+        {
+          id, // The ID of the product tag
+        }
+        ```
+      description: Emitted when product tags are deleted.
+      deprecated: false

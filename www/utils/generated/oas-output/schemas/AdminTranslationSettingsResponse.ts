@@ -8,7 +8,7 @@
  * properties:
  *   translation_settings:
  *     type: object
- *     description: The translation's translation settings.
+ *     description: The translation settings details.
  * 
 */
 
