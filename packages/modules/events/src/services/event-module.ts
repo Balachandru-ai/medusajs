@@ -95,8 +95,10 @@ export default class EventsModuleService
   ): this {
     // Subscribe to all providers to ensure the subscriber receives events
     // regardless of which provider emits them
-    const provider = this.getProvider()
-    provider.subscribe(eventName, subscriber, context)
+    const providers = this.providerService_.listProviders()
+    for (const provider of providers) {
+      provider.subscribe(eventName, subscriber, context)
+    }
     return this
   }
 
@@ -113,8 +115,12 @@ export default class EventsModuleService
     subscriber: Subscriber,
     context?: SubscriberContext
   ): this {
-    const provider = this.getProvider()
-    provider.unsubscribe(eventName, subscriber, context)
+    // Unsubscribe from all providers to ensure the subscriber is removed
+    // regardless of which provider it was registered on
+    const providers = this.providerService_.listProviders()
+    for (const provider of providers) {
+      provider.unsubscribe(eventName, subscriber, context)
+    }
     return this
   }
 
@@ -149,8 +155,12 @@ export default class EventsModuleService
    * @returns The instance of the Event Module
    */
   addInterceptor(interceptor: InterceptorSubscriber): this {
-    const provider = this.getProvider()
-    provider.addInterceptor?.(interceptor)
+    // Add interceptor to all providers to ensure it intercepts events
+    // regardless of which provider emits them
+    const providers = this.providerService_.listProviders()
+    for (const provider of providers) {
+      provider.addInterceptor?.(interceptor)
+    }
     return this
   }
 
@@ -161,8 +171,11 @@ export default class EventsModuleService
    * @returns The instance of the Event Module
    */
   removeInterceptor(interceptor: InterceptorSubscriber): this {
-    const provider = this.getProvider()
-    provider.removeInterceptor?.(interceptor)
+    // Remove interceptor from all providers
+    const providers = this.providerService_.listProviders()
+    for (const provider of providers) {
+      provider.removeInterceptor?.(interceptor)
+    }
     return this
   }
 }
