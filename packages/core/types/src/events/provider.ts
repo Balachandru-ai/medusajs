@@ -17,7 +17,7 @@ import {
  * #### Example
  *
  * ```ts
- * import { IEventProvider } from "@medusajs/framework/types"
+ * import { IEventsProvider } from "@medusajs/framework/types"
  * import { Logger } from "@medusajs/framework/types"
  *
  * type InjectedDependencies = {
@@ -28,7 +28,7 @@ import {
  *   url: string
  * }
  *
- * class MyEventProviderService implements IEventProvider {
+ * class MyEventProviderService implements IEventsProvider {
  *   static identifier = "my-event"
  *   protected logger_: Logger
  *   protected options_: Options
@@ -55,13 +55,13 @@ import {
  * For example:
  *
  * ```ts
- * class MyEventProviderService implements IEventProvider {
+ * class MyEventProviderService implements IEventsProvider {
  *   static identifier = "my-event"
  *   // ...
  * }
  * ```
  */
-export interface IEventProvider {
+export interface IEventsProvider {
   __hooks?: {
     onApplicationStart?: () => Promise<void>
     onApplicationShutdown?: () => Promise<void>
@@ -83,7 +83,7 @@ export interface IEventProvider {
    *
    * @example
    * ```ts
-   * class MyEventProviderService implements IEventProvider {
+   * class MyEventProviderService implements IEventsProvider {
    *   // ...
    *   async emit<T>(
    *     data: Message<T> | Message<T>[],
@@ -112,7 +112,7 @@ export interface IEventProvider {
    *
    * @example
    * ```ts
-   * class MyEventProviderService implements IEventProvider {
+   * class MyEventProviderService implements IEventsProvider {
    *   // ...
    *   subscribe(
    *     eventName: string | symbol,
@@ -141,7 +141,7 @@ export interface IEventProvider {
    *
    * @example
    * ```ts
-   * class MyEventProviderService implements IEventProvider {
+   * class MyEventProviderService implements IEventsProvider {
    *   // ...
    *   unsubscribe(
    *     eventName: string | symbol,
@@ -168,7 +168,7 @@ export interface IEventProvider {
    *
    * @example
    * ```ts
-   * class MyEventProviderService implements IEventProvider {
+   * class MyEventProviderService implements IEventsProvider {
    *   // ...
    *   async releaseGroupedEvents(eventGroupId: string): Promise<void> {
    *     // retrieve grouped events and emit them
@@ -188,7 +188,7 @@ export interface IEventProvider {
    *
    * @example
    * ```ts
-   * class MyEventProviderService implements IEventProvider {
+   * class MyEventProviderService implements IEventsProvider {
    *   // ...
    *   async clearGroupedEvents(
    *     eventGroupId: string,

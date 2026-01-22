@@ -1,23 +1,25 @@
 import {
-  IEventBusModuleService,
-  InternalModuleDeclaration,
+  EventsTypes,
   InterceptorSubscriber,
+  InternalModuleDeclaration,
   Logger,
   Message,
   Subscriber,
   SubscriberContext,
 } from "@medusajs/framework/types"
 import { EventDefaultProvider } from "@types"
-import EventProviderService from "./event-provider"
+import EventsProviderService from "./event-provider"
 
 type InjectedDependencies = {
-  eventProviderService: EventProviderService
+  eventProviderService: EventsProviderService
   logger?: Logger
   [EventDefaultProvider]: string
 }
 
-export default class EventModuleService implements IEventBusModuleService {
-  protected providerService_: EventProviderService
+export default class EventsModuleService
+  implements EventsTypes.IEventsModuleService
+{
+  protected providerService_: EventsProviderService
   protected defaultProviderId: string
 
   constructor(

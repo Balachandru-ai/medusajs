@@ -5,7 +5,7 @@ import {
   Message,
 } from "@medusajs/framework/types"
 import {
-  AbstractEventProvider,
+  AbstractEventsProvider,
   EventPriority,
   isPresent,
   MedusaError,
@@ -45,7 +45,7 @@ type IORedisEventType<T = unknown> = {
  * Redis-based event provider using BullMQ for reliable event processing.
  * Supports priority, retry, and distributed event handling.
  */
-export class RedisEventProvider extends AbstractEventProvider<EventRedisProviderOptions> {
+export class RedisEventProvider extends AbstractEventsProvider<EventRedisProviderOptions> {
   static identifier = "events-redis"
 
   protected readonly logger_: Logger

@@ -1,4 +1,4 @@
-import { IEventProvider } from "@medusajs/types"
+import { EventsTypes } from "@medusajs/types"
 import { EventEmitter } from "events"
 
 type EventBus =
@@ -8,7 +8,7 @@ type EventBus =
   | {
       getProvider: (
         id: string
-      ) => IEventProvider & { eventEmitter_: EventEmitter }
+      ) => EventsTypes.IEventsProvider & { eventEmitter_: EventEmitter }
     }
 
 type WaitSubscribersExecutionOptions = {

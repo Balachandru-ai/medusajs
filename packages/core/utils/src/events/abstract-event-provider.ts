@@ -1,6 +1,6 @@
 import {
   EventBusTypes,
-  IEventProvider,
+  EventsTypes,
   InterceptorSubscriber,
   Logger,
 } from "@medusajs/types"
@@ -14,9 +14,9 @@ import { ulid } from "ulid"
  *
  * @example
  * ```ts
- * import { AbstractEventProvider } from "@medusajs/framework/utils"
+ * import { AbstractEventsProvider } from "@medusajs/framework/utils"
  *
- * class MyEventProvider extends AbstractEventProvider {
+ * class MyEventProvider extends AbstractEventsProvider {
  *   static identifier = "my-event-provider"
  *
  *   async emit<T>(data, options): Promise<void> {
@@ -33,8 +33,8 @@ import { ulid } from "ulid"
  * }
  * ```
  */
-export abstract class AbstractEventProvider<TConfig = Record<string, unknown>>
-  implements IEventProvider
+export abstract class AbstractEventsProvider<TConfig = Record<string, unknown>>
+  implements EventsTypes.IEventsProvider
 {
   /**
    * Each event provider has a unique identifier defined in its class.
@@ -43,7 +43,7 @@ export abstract class AbstractEventProvider<TConfig = Record<string, unknown>>
    *
    * @example
    * ```ts
-   * class MyEventProvider extends AbstractEventProvider {
+   * class MyEventProvider extends AbstractEventsProvider {
    *   static identifier = "my-event"
    *   // ...
    * }
@@ -74,7 +74,7 @@ export abstract class AbstractEventProvider<TConfig = Record<string, unknown>>
    *
    * @example
    * ```ts
-   * class MyEventProvider extends AbstractEventProvider<Options> {
+   * class MyEventProvider extends AbstractEventsProvider<Options> {
    *   static validateOptions(options: Record<any, any>) {
    *     if (!options.redisUrl) {
    *       throw new MedusaError(
@@ -124,7 +124,7 @@ export abstract class AbstractEventProvider<TConfig = Record<string, unknown>>
    *
    * @example
    * ```ts
-   * import { AbstractEventProvider } from "@medusajs/framework/utils"
+   * import { AbstractEventsProvider } from "@medusajs/framework/utils"
    * import { Logger } from "@medusajs/framework/types"
    *
    * type Options = {
@@ -135,7 +135,7 @@ export abstract class AbstractEventProvider<TConfig = Record<string, unknown>>
    *   logger: Logger
    * }
    *
-   * class MyEventProvider extends AbstractEventProvider<Options> {
+   * class MyEventProvider extends AbstractEventsProvider<Options> {
    *   protected logger_: Logger
    *   protected options_: Options
    *
@@ -177,7 +177,7 @@ export abstract class AbstractEventProvider<TConfig = Record<string, unknown>>
    * @ignore
    */
   public getIdentifier(): string {
-    const ctr = this.constructor as typeof AbstractEventProvider
+    const ctr = this.constructor as typeof AbstractEventsProvider
 
     if (!ctr.identifier) {
       throw new Error(`Missing static property "identifier".`)

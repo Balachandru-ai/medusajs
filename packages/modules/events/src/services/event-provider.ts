@@ -1,13 +1,13 @@
-import { Constructor, IEventProvider, Logger } from "@medusajs/framework/types"
+import { Constructor, EventsTypes, Logger } from "@medusajs/framework/types"
 import { MedusaError } from "@medusajs/framework/utils"
 import { EventProviderRegistrationPrefix } from "@types"
 
 type InjectedDependencies = {
-  [key: `ep_${string}`]: IEventProvider
+  [key: `ep_${string}`]: EventsTypes.IEventsProvider
   logger?: Logger
 }
 
-export default class EventProviderService {
+export default class EventsProviderService {
   protected __container__: InjectedDependencies
   #logger: Logger
 
@@ -18,7 +18,9 @@ export default class EventProviderService {
       : (console as unknown as Logger)
   }
 
-  static getRegistrationIdentifier(providerClass: Constructor<IEventProvider>) {
+  static getRegistrationIdentifier(
+    providerClass: Constructor<EventsTypes.IEventsProvider>
+  ) {
     if (!(providerClass as any).identifier) {
       throw new MedusaError(
         MedusaError.Types.INVALID_ARGUMENT,
@@ -28,7 +30,9 @@ export default class EventProviderService {
     return `${(providerClass as any).identifier}`
   }
 
-  public retrieveProviderRegistration(providerId: string): IEventProvider {
+  public retrieveProviderRegistration(
+    providerId: string
+  ): EventsTypes.IEventsProvider {
     try {
       return this.__container__[
         `${EventProviderRegistrationPrefix}${providerId}`
@@ -56,8 +60,8 @@ Please make sure that the provider is registered in the container and it is conf
    * List all registered event providers.
    * Used by the module service to forward lifecycle hooks to providers.
    */
-  public listProviders(): IEventProvider[] {
-    const providers: IEventProvider[] = []
+  public listProviders(): EventsTypes.IEventsProvider[] {
+    const providers: EventsTypes.IEventsProvider[] = []
 
     for (const key of Object.keys(this.__container__)) {
       if (key.startsWith(EventProviderRegistrationPrefix)) {
