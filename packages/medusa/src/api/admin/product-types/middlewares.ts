@@ -1,9 +1,11 @@
-import * as QueryConfig from "./query-config"
-import { MiddlewareRoute } from "@medusajs/framework/http"
 import {
   validateAndTransformBody,
   validateAndTransformQuery,
 } from "@medusajs/framework"
+import { MiddlewareRoute } from "@medusajs/framework/http"
+import { PolicyOperation } from "@medusajs/framework/utils"
+import * as QueryConfig from "./query-config"
+import { Entities } from "./query-config"
 import {
   AdminCreateProductType,
   AdminGetProductTypeParams,
@@ -12,6 +14,15 @@ import {
 } from "./validators"
 
 export const adminProductTypeRoutesMiddlewares: MiddlewareRoute[] = [
+  {
+    matcher: "/admin/product-types/*",
+    policies: [
+      {
+        resource: Entities.product_type,
+        operation: PolicyOperation.read,
+      },
+    ],
+  },
   {
     method: ["GET"],
     matcher: "/admin/product-types",
@@ -43,6 +54,12 @@ export const adminProductTypeRoutesMiddlewares: MiddlewareRoute[] = [
         QueryConfig.retrieveProductTypeTransformQueryConfig
       ),
     ],
+    policies: [
+      {
+        resource: Entities.product_type,
+        operation: PolicyOperation.create,
+      },
+    ],
   },
   {
     method: ["POST"],
@@ -54,10 +71,22 @@ export const adminProductTypeRoutesMiddlewares: MiddlewareRoute[] = [
         QueryConfig.retrieveProductTypeTransformQueryConfig
       ),
     ],
+    policies: [
+      {
+        resource: Entities.product_type,
+        operation: PolicyOperation.update,
+      },
+    ],
   },
   {
     method: ["DELETE"],
     matcher: "/admin/product-types/:id",
     middlewares: [],
+    policies: [
+      {
+        resource: Entities.product_type,
+        operation: PolicyOperation.delete,
+      },
+    ],
   },
 ]
