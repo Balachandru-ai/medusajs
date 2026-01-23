@@ -1,4 +1,4 @@
-import { pluralize } from "../plurailze"
+import { pluralize } from "../pluralize"
 
 describe("pluralize", function () {
   it("should pluralize any words", function () {
