@@ -9,6 +9,7 @@ import { getProductFixture } from "../../../../helpers/fixtures"
 jest.setTimeout(60000)
 
 process.env.MEDUSA_FF_RBAC = "true"
+process.env.MEDUSA_FF_RBAC_FILTER_FIELDS = "true"
 
 medusaIntegrationTestRunner({
   testSuite: ({ dbConnection, api, getContainer }) => {
@@ -329,9 +330,22 @@ medusaIntegrationTestRunner({
 
         expect(response.status).toEqual(200)
         expect(response.data.product).toBeDefined()
+
+        // Verify that restricted fields are properly filtered out
         expect(response.data.product.tags).not.toBeDefined()
         expect(response.data.product.variants).toBeDefined()
         expect(response.data.product.variants[0].prices).not.toBeDefined()
+
+        expect(response.data.product.id).toBeDefined()
+        expect(response.data.product.title).toBeDefined()
+        expect(response.data.product.status).toBeDefined()
+        expect(response.data.product.variants).toEqual(expect.any(Array))
+        expect(response.data.product.variants[0].id).toBeDefined()
+        expect(response.data.product.variants[0].title).toBeDefined()
+
+        expect(response.data.product.variants[0].prices).toBeUndefined()
+        expect(response.data.product.variants[0]).not.toHaveProperty("prices")
+        expect(response.data.product).not.toHaveProperty("tags")
       })
 
       it("should filter out fields not allowed - product with prices and product tags", async () => {
@@ -405,9 +419,23 @@ medusaIntegrationTestRunner({
 
         expect(response.status).toEqual(200)
         expect(response.data.product).toBeDefined()
+
+        // With full permissions, all fields should be present
         expect(response.data.product.tags).toBeDefined()
         expect(response.data.product.variants).toBeDefined()
         expect(response.data.product.variants[0].prices).toBeDefined()
+
+        expect(response.data.product.tags).toEqual(expect.any(Array))
+        expect(response.data.product.variants[0].prices).toEqual(
+          expect.any(Array)
+        )
+        expect(response.data.product.variants[0].prices.length).toBeGreaterThan(
+          0
+        )
+        expect(response.data.product.variants[0].prices[0].amount).toBeDefined()
+        expect(
+          response.data.product.variants[0].prices[0].currency_code
+        ).toBeDefined()
       })
 
       it("should allow super admin with wildcard permissions to perform all product operations", async () => {

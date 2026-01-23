@@ -1,6 +1,7 @@
 import { FindConfig, QueryConfig, RequestQueryFields } from "@medusajs/types"
 import {
   buildOrder,
+  FeatureFlag,
   isDefined,
   isPresent,
   MedusaError,
@@ -61,9 +62,12 @@ export async function prepareListQuery<T extends RequestQueryFields, TEntity>(
   const parsedFields = FieldParser.parse(fields, defaults as string[])
   const { fields: allFields, starFields } = parsedFields
 
+  const rbacFilterFieldsFeatureFlag =
+    FeatureFlag.isFeatureEnabled("rbac_filter_fields")
+
   const filters: IFieldFilter[] = []
 
-  if (req?.policies && entity) {
+  if (req?.policies && entity && rbacFilterFieldsFeatureFlag) {
     filters.push(
       new RBACFieldFilter({
         policies: req.policies,
@@ -86,7 +90,7 @@ export async function prepareListQuery<T extends RequestQueryFields, TEntity>(
   )
   const notAllowedFields = [...new Set(notAllowedArrays.flat())]
 
-  if (notAllowedFields.length) {
+  if (notAllowedFields.length && rbacFilterFieldsFeatureFlag) {
     notAllowedFields.forEach((field) => {
       allFields.delete(field)
       starFields.delete(field)
