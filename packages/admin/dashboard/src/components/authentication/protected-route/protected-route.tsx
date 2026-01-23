@@ -7,10 +7,12 @@ import { SearchProvider } from "../../../providers/search-provider"
 import { SidebarProvider } from "../../../providers/sidebar-provider"
 
 export const ProtectedRoute = () => {
-  const { user, isLoading: isLoadingUser } = useMe({
-    fields: "rbac_roles.*,rbac_roles.policies.*",
-  })
-  console.log("user", user)
+  // const { user, isLoading: isLoadingUser } = useMe({
+  //   fields: "rbac_roles.*,rbac_roles.policies.*",
+  // })
+
+  const { user, isLoading: isLoadingUser } = useMe()
+
   const { policy, isLoading: isLoadingPermissions } = useMyPermissions()
   const location = useLocation()
 
