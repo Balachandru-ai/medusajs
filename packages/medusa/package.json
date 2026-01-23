@@ -94,6 +94,7 @@
     "@medusajs/pricing": "2.13.0",
     "@medusajs/product": "2.13.0",
     "@medusajs/promotion": "2.13.0",
+    "@medusajs/rbac": "2.13.0",
     "@medusajs/region": "2.13.0",
     "@medusajs/sales-channel": "2.13.0",
     "@medusajs/settings": "2.13.0",

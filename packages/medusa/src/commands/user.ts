@@ -1,4 +1,8 @@
-import { ContainerRegistrationKeys, Modules } from "@medusajs/framework/utils"
+import {
+  ContainerRegistrationKeys,
+  FeatureFlag,
+  Modules,
+} from "@medusajs/framework/utils"
 import { track } from "@medusajs/telemetry"
 import express from "express"
 import loaders from "../loaders"
@@ -25,6 +29,7 @@ export default async function ({
 
     const userService = container.resolve(Modules.USER)
     const authService = container.resolve(Modules.AUTH)
+    const workflowService = container.resolve(Modules.WORKFLOW_ENGINE)
 
     const provider = "emailpass"
 
@@ -35,7 +40,42 @@ export default async function ({
       Invite token: ${invite.token}
       Open the invite in Medusa Admin at: [your-admin-url]/invite?token=${invite.token}`)
     } else {
-      const user = await userService.createUsers({ email })
+      // Check if RBAC is enabled and get super admin role
+      let userRoles: string[] = []
+      const rbacEnabled = FeatureFlag.isFeatureEnabled("rbac")
+
+      if (rbacEnabled) {
+        try {
+          const rbacService = container.resolve(Modules.RBAC)
+          const superAdminRoles = await rbacService.listRbacRoles({
+            id: "role_super_admin",
+          })
+
+          if (superAdminRoles.length > 0) {
+            userRoles = [superAdminRoles[0].id]
+            logger.info("Assigning super admin role to user.")
+          }
+        } catch (error) {
+          logger.warn("Could not assign super admin role: " + error.message)
+        }
+      }
+
+      // Use workflow to create user with roles
+      const { result: users } = await workflowService.run(
+        "create-users-workflow",
+        {
+          input: {
+            users: [
+              {
+                email,
+                roles: userRoles,
+              },
+            ],
+          },
+        }
+      )
+
+      const user = users[0]
 
       const { authIdentity, error } = await authService.register(provider, {
         body: {
@@ -57,7 +97,10 @@ export default async function ({
         },
       })
 
-      logger.info("User created successfully.")
+      logger.info(
+        "User created successfully." +
+          (userRoles.length > 0 ? " Super admin role assigned." : "")
+      )
     }
   } catch (err) {
     console.error(err)

@@ -1,3 +1,4 @@
+import { createUsersWorkflow } from "@medusajs/core-flows"
 import { ContainerRegistrationKeys, Modules } from "@medusajs/framework/utils"
 import { medusaIntegrationTestRunner } from "@medusajs/test-utils"
 import {
@@ -331,6 +332,49 @@ medusaIntegrationTestRunner({
             adminHeaders
           )
           editorRole = editor.data.role
+        })
+
+        it("should create a user with roles using workflow", async () => {
+          // Create a user with roles using the workflow
+          const { result } = await createUsersWorkflow(container).run({
+            input: {
+              users: [
+                {
+                  email: "test-user@example.com",
+                  first_name: "Test",
+                  last_name: "User",
+                  roles: [viewerRole.id, editorRole.id],
+                },
+              ],
+            },
+          })
+
+          expect(result).toHaveLength(1)
+          const createdUser = result[0]
+          expect(createdUser.email).toEqual("test-user@example.com")
+          expect(createdUser.first_name).toEqual("Test")
+          expect(createdUser.last_name).toEqual("User")
+
+          const remoteLink = container.resolve(ContainerRegistrationKeys.LINK)
+          const linkService = remoteLink.getLinkModule(
+            Modules.USER,
+            "user_id",
+            Modules.RBAC,
+            "rbac_role_id"
+          )
+
+          const userRoles = await linkService.list({
+            user_id: createdUser.id,
+          })
+
+          expect(userRoles).toHaveLength(2)
+          expect(userRoles.map((link) => link.rbac_role_id)).toEqual(
+            expect.arrayContaining([viewerRole.id, editorRole.id])
+          )
+
+          const userModule = container.resolve(Modules.USER)
+          const retrievedUser = await userModule.retrieveUser(createdUser.id)
+          expect(retrievedUser.email).toEqual("test-user@example.com")
         })
 
         it("should add policies to a role", async () => {

@@ -6,6 +6,7 @@ import {
 } from "@medusajs/framework/types"
 import {
   InjectManager,
+  InjectTransactionManager,
   MedusaContext,
   MedusaService,
   Policy,
@@ -13,7 +14,9 @@ import {
 } from "@medusajs/framework/utils"
 import {
   CreateRbacRoleParentDTO,
+  InferEntityType,
   IRbacModuleService,
+  ModulesSdkTypes,
   RbacRoleParentDTO,
   UpdateRbacRoleParentDTO,
 } from "@medusajs/types"
@@ -22,6 +25,15 @@ import { RbacRepository } from "../repositories"
 
 type InjectedDependencies = {
   rbacRepository: RbacRepository
+  rbacRolePolicyService: ModulesSdkTypes.IMedusaInternalService<
+    InferEntityType<typeof RbacRolePolicy>
+  >
+  rbacRoleService: ModulesSdkTypes.IMedusaInternalService<
+    InferEntityType<typeof RbacRole>
+  >
+  rbacPolicyService: ModulesSdkTypes.IMedusaInternalService<
+    InferEntityType<typeof RbacPolicy>
+  >
 }
 
 export default class RbacModuleService
@@ -34,11 +46,28 @@ export default class RbacModuleService
   implements IRbacModuleService
 {
   protected readonly rbacRepository_: RbacRepository
+  protected readonly rbacRolePolicyService: ModulesSdkTypes.IMedusaInternalService<
+    InferEntityType<typeof RbacRolePolicy>
+  >
+  protected readonly rbacRoleService: ModulesSdkTypes.IMedusaInternalService<
+    InferEntityType<typeof RbacRole>
+  >
+  protected readonly rbacPolicyService: ModulesSdkTypes.IMedusaInternalService<
+    InferEntityType<typeof RbacPolicy>
+  >
 
-  constructor({ rbacRepository }: InjectedDependencies) {
+  constructor({
+    rbacRepository,
+    rbacRoleService,
+    rbacPolicyService,
+    rbacRolePolicyService,
+  }: InjectedDependencies) {
     // @ts-ignore
     super(...arguments)
     this.rbacRepository_ = rbacRepository
+    this.rbacRolePolicyService = rbacRolePolicyService
+    this.rbacRoleService = rbacRoleService
+    this.rbacPolicyService = rbacPolicyService
   }
 
   __hooks = {
@@ -51,7 +80,7 @@ export default class RbacModuleService
     await this.syncRegisteredPolicies()
   }
 
-  @InjectManager()
+  @InjectTransactionManager()
   private async syncRegisteredPolicies(
     @MedusaContext() sharedContext: Context = {}
   ): Promise<void> {
@@ -82,6 +111,10 @@ export default class RbacModuleService
 
     // Process registered policies
     for (const registeredPolicy of registeredPolicies) {
+      if (registeredPolicy.key === "*" && registeredPolicy.operation === "*") {
+        continue
+      }
+
       const existing = existingPoliciesMap.get(registeredPolicy.key)
 
       const hasChanges =
@@ -110,7 +143,10 @@ export default class RbacModuleService
     }
 
     const policiesToSoftDelete = existingPolicies
-      .filter((p) => !p.deleted_at && !registeredKeys.includes(p.key))
+      .filter(
+        (p) =>
+          !p.deleted_at && !registeredKeys.includes(p.key) && p.key !== "*:*"
+      )
       .map((p) => p.id)
 
     // First restore any soft-deleted policies
@@ -120,11 +156,11 @@ export default class RbacModuleService
 
     await promiseAll([
       policiesToCreate.length > 0 &&
-        this.createRbacPolicies(policiesToCreate, sharedContext),
+        this.rbacPolicyService.create(policiesToCreate, sharedContext),
       policiesToUpdate.length > 0 &&
-        this.updateRbacPolicies(policiesToUpdate, sharedContext),
+        this.rbacPolicyService.upsert(policiesToUpdate, sharedContext),
       policiesToSoftDelete.length > 0 &&
-        this.softDeleteRbacPolicies(policiesToSoftDelete, {}, sharedContext),
+        this.rbacPolicyService.softDelete(policiesToSoftDelete, sharedContext),
     ])
   }
 

@@ -8,6 +8,7 @@ import {
 import {
   ApiKeyType,
   ContainerRegistrationKeys,
+  FeatureFlag,
   Modules,
   PUBLISHABLE_KEY_HEADER,
 } from "@medusajs/framework/utils"
@@ -23,17 +24,33 @@ export const createAdminUser = async (
   dbConnection,
   adminHeaders,
   container?,
-  options?: { email?: string }
+  options?: { email?: string; roles?: string[] }
 ) => {
   const appContainer = container ?? getContainer()!
   const email = options?.email ?? "admin@medusa.js"
 
   const userModule: IUserModuleService = appContainer.resolve(Modules.USER)
   const authModule: IAuthModuleService = appContainer.resolve(Modules.AUTH)
+
+  const rbacEnabled = FeatureFlag.isFeatureEnabled("rbac")
+
+  let userRoles = options?.roles
+
+  // If RBAC is enabled and no roles provided, assign super admin role
+  if (rbacEnabled && !userRoles) {
+    const rbacModule = appContainer.resolve(Modules.RBAC)
+    const superAdminRoles = await rbacModule.listRbacRoles({
+      id: "role_super_admin",
+    })
+
+    userRoles = [superAdminRoles[0].id]
+  }
+
   const user = await userModule.createUsers({
     first_name: "Admin",
     last_name: "User",
     email,
+    roles: userRoles,
   })
 
   const hashConfig = { logN: 15, r: 8, p: 1 }
