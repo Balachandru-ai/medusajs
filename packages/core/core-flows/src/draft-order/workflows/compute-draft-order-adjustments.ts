@@ -7,8 +7,6 @@ import {
   WorkflowResponse,
 } from "@medusajs/framework/workflows-sdk"
 import type {
-  ComputeActionContext,
-  ComputeActionShippingLine,
   OrderChangeDTO,
   OrderDTO,
   PromotionDTO,
@@ -24,6 +22,7 @@ import { draftOrderFieldsForRefreshSteps } from "../utils/fields"
 import { useRemoteQueryStep } from "../../common"
 import { acquireLockStep, releaseLockStep } from "../../locking"
 import { deleteOrderChangeActionsStep } from "../../order/steps/delete-order-change-actions"
+import { prepareOrderComputeActionContextStep } from "../../order/workflows/order-edit/utils/prepare-order-compute-action-context"
 
 export const computeDraftOrderAdjustmentsWorkflowId =
   "compute-draft-order-adjustments"
@@ -146,21 +145,10 @@ export const computeDraftOrderAdjustmentsWorkflow = createWorkflow(
           .filter((p) => p !== undefined)
       })
 
-      const actionsToComputeContext = transform(
-        { previewedOrder, order },
-        ({ previewedOrder, order }) => {
-          return {
-            currency_code: order.currency_code,
-            items: previewedOrder.items.map((item) => ({
-              ...item,
-              // Buy-Get promotions rely on the product ID, so we need to manually set it before refreshing adjustments
-              product: { id: item.product_id },
-            })),
-            shipping_methods:
-              previewedOrder.shipping_methods as unknown as ComputeActionShippingLine[],
-          } as ComputeActionContext
-        }
-      )
+      const actionsToComputeItemsInput = prepareOrderComputeActionContextStep({
+          order,
+          previewedOrder,
+        })
 
       const actions = getActionsToComputeFromPromotionsStep({
         computeActionContext: actionsToComputeContext,

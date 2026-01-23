@@ -1216,6 +1216,8 @@ paths:
     $ref: paths/admin_translations_entities.yaml
   /admin/translations/settings:
     $ref: paths/admin_translations_settings.yaml
+  /admin/translations/settings/batch:
+    $ref: paths/admin_translations_settings_batch.yaml
   /admin/translations/statistics:
     $ref: paths/admin_translations_statistics.yaml
   /admin/uploads:

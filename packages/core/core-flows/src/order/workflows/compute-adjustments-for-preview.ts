@@ -1,10 +1,4 @@
-import {
-  ComputeActionContext,
-  ComputeActionShippingLine,
-  OrderChangeDTO,
-  OrderDTO,
-  PromotionDTO,
-} from "@medusajs/framework/types"
+import { OrderChangeDTO, OrderDTO, PromotionDTO } from "@medusajs/framework/types"
 import { ChangeActionType } from "@medusajs/framework/utils"
 import {
   createWorkflow,
@@ -22,6 +16,7 @@ import {
   deleteOrderChangeActionsStep,
   listOrderChangeActionsByTypeStep,
 } from "../steps"
+import { prepareOrderComputeActionContextStep } from "./order-edit/utils/prepare-order-compute-action-context"
 
 /**
  * The data to compute adjustments for an order edit, exchange, claim, or return.
@@ -81,28 +76,17 @@ export const computeAdjustmentsForPreviewWorkflow = createWorkflow(
     const previewedOrder = previewOrderChangeStep(input.order.id)
 
     when(
-      { order: input.order },
-      ({ order }) =>
+      { order: input.order, orderChange: input.orderChange },
+      ({ order, orderChange }) =>
         /**
          * Compute adjustments only if the flag on the order change is true
          */
-        !!order.promotions.length && !!input.orderChange.carry_over_promotions
+        !!order.promotions.length && !!orderChange.carry_over_promotions
     ).then(() => {
-      const actionsToComputeContext = transform(
-        { previewedOrder, order: input.order },
-        ({ previewedOrder, order }) => {
-          return {
-            currency_code: order.currency_code,
-            items: previewedOrder.items.map((item) => ({
-              ...item,
-              // Buy-Get promotions rely on the product ID, so we need to manually set it before refreshing adjustments
-              product: { id: item.product_id },
-            })),
-            shipping_methods:
-              previewedOrder.shipping_methods as unknown as ComputeActionShippingLine[],
-          } as ComputeActionContext
-        }
-      )
+      const actionsToComputeItemsInput = prepareOrderComputeActionContextStep({
+        order: input.order,
+        previewedOrder,
+      })
 
       const orderPromotions = transform({ order: input.order }, ({ order }) => {
         return order.promotions
