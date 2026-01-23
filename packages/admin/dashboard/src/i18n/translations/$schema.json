@@ -8,6 +8,9 @@
     "general": {
       "type": "object",
       "properties": {
+        "fullList": {
+          "type": "string"
+        },
         "ascending": {
           "type": "string"
         },
@@ -75,6 +78,12 @@
           "type": "string"
         },
         "select": {
+          "type": "string"
+        },
+        "unselectAll": {
+          "type": "string"
+        },
+        "selectAll": {
           "type": "string"
         },
         "selected": {
@@ -199,6 +208,7 @@
         "ascending",
         "descending",
         "add",
+        "fullList",
         "start",
         "end",
         "open",
@@ -219,6 +229,8 @@
         "tip",
         "error",
         "select",
+        "selectAll",
+        "unselectAll",
         "selected",
         "enabled",
         "disabled",
@@ -1204,6 +1216,16 @@
         "searchLabel": {
           "type": "string"
         },
+        "collapse": {
+          "type": "object",
+          "properties": {
+            "all": {
+              "type": "string"
+            }
+          },
+          "required": ["all"],
+          "additionalProperties": false
+        },
         "date": {
           "type": "object",
           "properties": {
@@ -1339,6 +1361,7 @@
         "sortLabel",
         "filterLabel",
         "searchLabel",
+        "collapse",
         "date",
         "compare",
         "sorting",
@@ -9616,6 +9639,34 @@
           },
           "required": ["metrics"],
           "additionalProperties": false
+        },
+        "settings": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "string"
+                },
+                "successToast": {
+                    "type": "string"
+                }
+            },
+            "required": ["header", "successToast"],
+            "additionalProperties": false
+        },
+        "actions": {
+          "type": "object",
+          "properties": {
+            "manageLocales": {
+              "type": "string"
+            },
+            "manageEntities": {
+              "type": "string"
+            },
+            "manage": {
+              "type": "string"
+            }
+          },
+          "required": ["manageLocales", "manageEntities", "manage"]
         },
         "edit": {
           "type": "object",

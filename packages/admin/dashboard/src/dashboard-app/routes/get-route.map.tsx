@@ -1903,6 +1903,12 @@ export function getRouteMap({
                   path: "",
                   lazy: () =>
                     import("../../routes/translations/translation-list"),
+                  children: [
+                    {
+                      path: "settings",
+                      lazy: () => import("../../routes/translations/settings"),
+                    },
+                  ],
                 },
                 {
                   path: "edit",
