@@ -289,6 +289,12 @@ export const useCreateProduct = (
       queryClient.invalidateQueries({
         queryKey: inventoryItemsQueryKeys.lists(),
       })
+
+      // users can create product exclusive options on product create
+      queryClient.invalidateQueries({
+        queryKey: productOptionsQueryKeys.lists(),
+      })
+
       options?.onSuccess?.(data, variables, context)
     },
     ...options,
@@ -337,6 +343,10 @@ export const useDeleteProduct = (
       queryClient.invalidateQueries({ queryKey: productsQueryKeys.lists() })
       queryClient.invalidateQueries({ queryKey: productsQueryKeys.detail(id) })
 
+      queryClient.invalidateQueries({
+        queryKey: productOptionsQueryKeys.lists(),
+      })
+
       options?.onSuccess?.(data, variables, context)
     },
     ...options,
@@ -359,7 +369,7 @@ export const useLinkProductOptions = (
         queryKey: productsQueryKeys.detail(productId),
       })
       queryClient.invalidateQueries({
-        queryKey: productOptionsQueryKeys.lists(),
+        queryKey: productOptionsQueryKeys.all,
       })
 
       options?.onSuccess?.(data, variables, context)

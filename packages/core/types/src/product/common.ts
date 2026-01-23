@@ -554,7 +554,7 @@ export interface ProductOptionDTO {
   title: string
   /**
    * Whether the product option is exclusive to a product or shared across products.
-   * 
+   *
    * @since 2.13.0
    */
   is_exclusive: boolean
@@ -586,6 +586,26 @@ export interface ProductOptionDTO {
    * When the product option was deleted.
    */
   deleted_at?: string | Date
+}
+
+/**
+ * @interface
+ *
+ * The product <> product option link's data.
+ */
+export interface ProductProductOptionDTO {
+  /**
+   * The ID of the product product option link.
+   */
+  id: string
+  /**
+   * The associated product.
+   */
+  product_id: string
+  /**
+   * The associated product option.
+   */
+  product_option_id: string
 }
 
 /**
@@ -740,7 +760,7 @@ export interface FilterableProductProps
 
   /**
    * Filters on a product's options.
-   * 
+   *
    * @since 2.13.0
    */
   options?: {
@@ -766,13 +786,13 @@ export interface FilterableProductProps
   type_id?: string | string[] | OperatorMap<string | string[]>
   /**
    * Filter a product by the ID of the associated option
-   * 
+   *
    * @since 2.13.0
    */
   option_id?: string | string[] | OperatorMap<string | string[]>
   /**
    * Filter a product by the IDs of the associated option values.
-   * 
+   *
    * @since 2.13.0
    */
   option_value_id?: string | string[]
@@ -871,7 +891,7 @@ export interface FilterableProductOptionProps
   title?: string | string[]
   /**
    * Filter the product options by whether they are exclusive to a product or shared across products.
-   * 
+   *
    * @since 2.13.0
    */
   is_exclusive?: boolean
@@ -1243,19 +1263,19 @@ export interface CreateProductOptionDTO {
   values: string[]
   /**
    * The rank for each option value. The key is the option value, and the value is the rank.
-   * 
+   *
    * @since 2.13.0
    */
   ranks?: Record<string, number>
   /**
    * Whether the product option is exclusive to a product or shared across products.
-   * 
+   *
    * @since 2.13.0
    */
   is_exclusive?: boolean
   /**
    * The metadata of the product option.
-   * 
+   *
    * @since 2.13.0
    */
   metadata?: MetadataType
@@ -1268,7 +1288,7 @@ export interface CreateProductOptionValueDTO {
   value: string
   /**
    * The rank of the product option value among other option values.
-   * 
+   *
    * @since 2.13.0
    */
   rank?: number
@@ -1303,9 +1323,9 @@ export interface UpdateProductOptionDTO {
   values?: string[]
   /**
    * The rank for each option value. The key is the option value, and the value is the rank.
-   * 
+   *
    * @since 2.13.0
-   * 
+   *
    * @example
    * {
    *   "Small": 1,
@@ -1316,13 +1336,13 @@ export interface UpdateProductOptionDTO {
   ranks?: Record<string, number>
   /**
    * Whether the product option is exclusive to a product or shared across products.
-   * 
+   *
    * @since 2.13.0
    */
   is_exclusive?: boolean
   /**
    * The metadata of the product option.
-   * 
+   *
    * @since 2.13.0
    */
   metadata?: MetadataType
@@ -1801,4 +1821,32 @@ export type ProductOptionProductPair = {
    * The IDs of specific option values to link. If not provided, all values will be linked.
    */
   product_option_value_ids?: string[]
+}
+
+/**
+ * @interface
+ *
+ * The details to update option values linked to a product's option.
+ */
+export type ProductOptionProductValueUpdate = {
+  /**
+   * The product option's ID.
+   */
+  product_option_id: string
+
+  /**
+   * The product's ID.
+   */
+  product_id: string
+
+  /**
+   * The IDs of specific option values to add to the product option, or value
+   * objects to create and link.
+   */
+  add?: (string | { value: string })[]
+
+  /**
+   * The IDs of specific option values to remove from the product option.
+   */
+  remove?: string[]
 }

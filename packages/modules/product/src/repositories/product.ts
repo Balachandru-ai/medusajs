@@ -294,4 +294,176 @@ export class ProductRepository extends DALUtils.mikroOrmBaseRepositoryFactory(
 
     return resultMap
   }
+
+  /**
+   * Checks if product options can be deleted.
+   * An option cannot be deleted if there are non-deleted products using it.
+   *
+   * @param optionIds - Array of option IDs to check
+   * @param context - The context
+   * @returns true if all options can be deleted, false if any cannot be deleted
+   */
+  async canDeleteProductOption(
+    optionIds: string[],
+    context: Context = {}
+  ): Promise<boolean> {
+    if (!optionIds.length) {
+      return true
+    }
+
+    const manager = this.getActiveManager<SqlEntityManager>(context)
+    const connection = manager.getConnection()
+    const knex = connection.getKnex()
+
+    const blockingOptions = await knex
+      .select("ppo.product_option_id")
+      .from("product_product_option as ppo")
+      .innerJoin("product as p", "p.id", "ppo.product_id")
+      .innerJoin("product_option as po", "po.id", "ppo.product_option_id")
+      .whereIn("ppo.product_option_id", optionIds)
+      .whereNull("ppo.deleted_at")
+      .whereNull("p.deleted_at") // <- allow soft deleting an option that is associated with a soft deleted product
+      .whereNull("po.deleted_at")
+      .limit(1)
+
+    return !blockingOptions.length
+  }
+
+  /**
+   * Checks whether product options can be assigned to products.
+   *
+   * Returns conflicting option ids if:
+   *    - the option is already assigned to that product
+   *    - the option is exclusive and is assigned to another product
+   *    - the input has duplicate assignments for the same product and option
+   *
+   * @param pairs - Array of { productId, optionId } pairs to check
+   * @param context - The context
+   * @throws if the input contains duplicate product/option assignments
+   */
+  async canAssignProductOptionToProduct(
+    pairs: Array<{ productId: string; optionId: string }> = [],
+    context: Context = {}
+  ): Promise<{
+    exclusiveOptionIds: string[]
+    alreadyLinkedOptionIds: string[]
+  }> {
+    if (!pairs.length) {
+      return { exclusiveOptionIds: [], alreadyLinkedOptionIds: [] }
+    }
+
+    const pairKeys = new Set<string>()
+    const duplicateKeys: string[] = []
+    for (const pair of pairs) {
+      const key = `${pair.productId}_${pair.optionId}`
+      if (pairKeys.has(key)) {
+        duplicateKeys.push(key)
+      } else {
+        pairKeys.add(key)
+      }
+    }
+
+    if (duplicateKeys.length) {
+      throw new MedusaError(
+        MedusaError.Types.INVALID_DATA,
+        `Duplicate product option assignments are not allowed; remove duplicate pairs: ${duplicateKeys.join(
+          ", "
+        )}`
+      )
+    }
+
+    const optionToProductIds = new Map<string, Set<string>>()
+
+    pairs.forEach((pair) => {
+      const productIds = optionToProductIds.get(pair.optionId) ?? new Set()
+      productIds.add(pair.productId)
+      optionToProductIds.set(pair.optionId, productIds)
+    })
+
+    const optionIds = [...optionToProductIds.keys()]
+
+    const manager = this.getActiveManager<SqlEntityManager>(context)
+    const connection = manager.getConnection()
+    const knex = connection.getKnex()
+
+    const pairPlaceholders = pairs.map(() => "(?, ?)").join(", ")
+    const pairBindings = pairs.flatMap((p) => [p.productId, p.optionId])
+
+    const { rows: alreadyLinkedRows } = await knex.raw(
+      `SELECT DISTINCT product_option_id as option_id
+       FROM product_product_option
+       WHERE (product_id, product_option_id) IN (${pairPlaceholders})`,
+      pairBindings
+    )
+
+    const alreadyLinkedOptionIds = alreadyLinkedRows.map(
+      (row: { option_id: string }) => row.option_id
+    )
+
+    const { rows: exclusiveConflictRows } = await knex.raw(
+      `WITH input_pairs(product_id, option_id) AS (VALUES ${pairPlaceholders})
+       SELECT DISTINCT po.id as option_id
+       FROM product_option po
+       WHERE po.is_exclusive = true
+         AND po.id IN (SELECT option_id FROM input_pairs)
+         AND (
+           (SELECT COUNT(DISTINCT ip.product_id) FROM input_pairs ip WHERE ip.option_id = po.id) > 1
+           OR EXISTS (
+             SELECT 1 FROM product_product_option ppo
+             WHERE ppo.product_option_id = po.id
+               AND ppo.product_id NOT IN (SELECT ip.product_id FROM input_pairs ip WHERE ip.option_id = po.id)
+           )
+         )`,
+      pairBindings
+    )
+
+    const exclusiveOptionIds = exclusiveConflictRows.map(
+      (row: { option_id: string }) => row.option_id
+    )
+
+    return {
+      exclusiveOptionIds: optionIds.filter((id) =>
+        exclusiveOptionIds.includes(id)
+      ),
+      alreadyLinkedOptionIds: optionIds.filter((id) =>
+        alreadyLinkedOptionIds.includes(id)
+      ),
+    }
+  }
+
+  async getOptionValueIdsByProductIds(
+    productIds: string[],
+    context: Context = {}
+  ): Promise<Map<string, Set<string>>> {
+    const allowedValueIdsByProduct = new Map<string, Set<string>>()
+
+    if (!productIds.length) {
+      return allowedValueIdsByProduct
+    }
+
+    const knex = this.getActiveManager<SqlEntityManager>(context)
+      .getConnection()
+      .getKnex()
+
+    const rows = await knex("product_product_option_value as ppov")
+      .select("ppo.product_id", "ppov.product_option_value_id")
+      .innerJoin("product_product_option as ppo", function () {
+        this.on("ppo.id", "ppov.product_product_option_id").andOnNull(
+          "ppo.deleted_at"
+        )
+      })
+      .whereIn("ppo.product_id", productIds)
+      .whereNull("ppov.deleted_at")
+
+    rows.forEach((row) => {
+      if (!allowedValueIdsByProduct.has(row.product_id)) {
+        allowedValueIdsByProduct.set(row.product_id, new Set())
+      }
+      allowedValueIdsByProduct
+        .get(row.product_id)!
+        .add(row.product_option_value_id)
+    })
+
+    return allowedValueIdsByProduct
+  }
 }

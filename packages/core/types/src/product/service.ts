@@ -21,6 +21,7 @@ import {
   ProductDTO,
   ProductOptionDTO,
   ProductOptionProductPair,
+  ProductOptionProductValueUpdate,
   ProductOptionValueDTO,
   ProductTagDTO,
   ProductTypeDTO,
@@ -1529,6 +1530,51 @@ export interface IProductModuleService extends IModuleService {
    */
   removeProductOptionFromProduct(
     productOptionProductPairs: ProductOptionProductPair[],
+    sharedContext?: Context
+  ): Promise<void>
+
+  /**
+   * This method updates product option values linked to a product option for a product.
+   *
+   * @param {ProductOptionProductValueUpdate} update - The details of the product option values to add or remove.
+   * @param {Context} sharedContext - A context used to share resources, such as transaction manager, between the application and the module.
+   * @returns {Promise<void>} Resolves when the product option values are updated successfully.
+   *
+   * @since 2.13.0
+   *
+   * @example
+   * await productModuleService.updateProductOptionValuesOnProduct({
+   *   product_id: "prod_123",
+   *   product_option_id: "opt_123",
+   *   add: ["optval_1", { value: "M" }],
+   *   remove: ["optval_2"],
+   * })
+   */
+  updateProductOptionValuesOnProduct(
+    update: ProductOptionProductValueUpdate,
+    sharedContext?: Context
+  ): Promise<void>
+
+  /**
+   * This method updates product option values linked to product options for products.
+   *
+   * @param {ProductOptionProductValueUpdate[]} updates - A list of items, each being the details of the product option values to add or remove.
+   * @param {Context} sharedContext - A context used to share resources, such as transaction manager, between the application and the module.
+   * @returns {Promise<void>} Resolves when the product option values are updated successfully.
+   *
+   * @since 2.13.0
+   *
+   * @example
+   * await productModuleService.updateProductOptionValuesOnProduct([
+   *   {
+   *     product_id: "prod_123",
+   *     product_option_id: "opt_123",
+   *     add: ["optval_1", { value: "M" }],
+   *   },
+   * ])
+   */
+  updateProductOptionValuesOnProduct(
+    updates: ProductOptionProductValueUpdate[],
     sharedContext?: Context
   ): Promise<void>
 

@@ -40,6 +40,7 @@
     "remaining": "Left",
     "admin": "Admin",
     "store": "Store",
+    "rank": "Rank",
     "details": "Details",
     "items_one": "{{count}} item",
     "items_other": "{{count}} items",
@@ -725,7 +726,10 @@
         "description": "Associate or disassociate product options from this product.",
         "label": "Product Options",
         "hint": "Select which options should be associated to this product.",
-        "placeholder": "Select options"
+        "placeholder": "Select options",
+        "error": {
+          "noValues": "Please select at least one value for the added option(s)."
+        }
       },
       "deleteWarning": "You are about to delete the product option: {{title}}. This action cannot be undone."
     },
@@ -880,7 +884,7 @@
       "successToast": "Product option \"{{title}}\" was successfully created.",
       "tabs": {
         "details": "Details",
-        "organize": "Organize"
+        "organize": "Organize rankings"
       }
     },
     "manage": {

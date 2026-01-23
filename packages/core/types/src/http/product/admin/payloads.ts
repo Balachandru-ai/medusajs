@@ -470,7 +470,7 @@ export interface AdminUpdateProduct {
   }[]
   /**
    * The IDs of the associated product options.
-   * 
+   *
    * @since 2.13.0
    */
   option_ids?: string[]
@@ -541,9 +541,9 @@ export interface AdminCreateProductOption {
   /**
    * The rank for each option value. The keys are the option values,
    * and the values are their respective ranks.
-   * 
+   *
    * @since 2.13.0
-   * 
+   *
    * @example
    * {
    *   "Small": 1,
@@ -555,7 +555,7 @@ export interface AdminCreateProductOption {
   /**
    * Whether the option is exclusive to a specific product,
    * or can be shared across multiple products.
-   * 
+   *
    * @since 2.13.0
    */
   is_exclusive?: boolean
@@ -573,9 +573,9 @@ export interface AdminUpdateProductOption {
   /**
    * The rank for each option value. The keys are the option values,
    * and the values are their respective ranks.
-   * 
+   *
    * @since 2.13.0
-   * 
+   *
    * @example
    * {
    *   "Small": 1,
@@ -587,7 +587,7 @@ export interface AdminUpdateProductOption {
   /**
    * Whether the option is exclusive to a specific product,
    * or can be shared across multiple products.
-   * 
+   *
    * @since 2.13.0
    */
   is_exclusive?: boolean
@@ -713,10 +713,25 @@ export interface AdminLinkProductOptionWithValues {
   value_ids: string[]
 }
 
+export interface AdminUpdateProductOptionValues {
+  /**
+   * The ID of the product option to update values for.
+   */
+  product_option_id: string
+  /**
+   * The IDs of specific option values to add or new values to create.
+   */
+  add?: (string | { value: string })[]
+  /**
+   * The IDs of specific option values to remove.
+   */
+  remove?: string[]
+}
+
 export interface AdminLinkProductOptions {
   /**
    * The list of options to add to the product. You can pass either:
-   * 
+   *
    * 1. The ID of an existing product option as a string.
    * 2. An object with `id` and `value_ids` to add an existing product option with specific values. This
    * is useful when you want to associate only specific option values of an option to the product.
@@ -727,4 +742,8 @@ export interface AdminLinkProductOptions {
    * The list of options to remove from the product.
    */
   remove?: string[]
+  /**
+   * The list of product option value updates for existing product options.
+   */
+  update?: AdminUpdateProductOptionValues[]
 }

@@ -125,6 +125,9 @@
         "store": {
           "type": "string"
         },
+        "rank": {
+          "type": "string"
+        },
         "details": {
           "type": "string"
         },
@@ -241,6 +244,7 @@
         "remaining",
         "admin",
         "store",
+        "rank",
         "details",
         "items_one",
         "items_other",
@@ -412,10 +416,10 @@
         "saveChanges": {
           "type": "string"
         },
-        "saveAndClose": {
+        "saveAsDraft": {
           "type": "string"
         },
-        "saveAsDraft": {
+        "saveAndClose": {
           "type": "string"
         },
         "copy": {
@@ -2728,6 +2732,16 @@
                 },
                 "placeholder": {
                   "type": "string"
+                },
+                "error": {
+                  "type": "object",
+                  "properties": {
+                    "noValues": {
+                      "type": "string"
+                    }
+                  },
+                  "required": ["noValues"],
+                  "additionalProperties": false
                 }
               },
               "required": [
@@ -2735,7 +2749,8 @@
                 "description",
                 "label",
                 "hint",
-                "placeholder"
+                "placeholder",
+                "error"
               ],
               "additionalProperties": false
             },
@@ -6082,32 +6097,6 @@
           "required": ["open", "completed"],
           "additionalProperties": false
         },
-        "list": {
-          "type": "object",
-          "properties": {
-            "description": {
-              "type": "string"
-            },
-            "noRecordsMessage": {
-              "type": "string"
-            },
-            "filtered": {
-              "type": "object",
-              "properties": {
-                "heading": {
-                  "type": "string"
-                },
-                "description": {
-                  "type": "string"
-                }
-              },
-              "required": ["heading", "description"],
-              "additionalProperties": false
-            }
-          },
-          "required": ["description", "noRecordsMessage", "filtered"],
-          "additionalProperties": false
-        },
         "create": {
           "type": "object",
           "properties": {
@@ -6200,6 +6189,32 @@
           ],
           "additionalProperties": false
         },
+        "list": {
+          "type": "object",
+          "properties": {
+            "noRecordsMessage": {
+              "type": "string"
+            },
+            "description": {
+              "type": "string"
+            },
+            "filtered": {
+              "type": "object",
+              "properties": {
+                "heading": {
+                  "type": "string"
+                },
+                "description": {
+                  "type": "string"
+                }
+              },
+              "required": ["heading", "description"],
+              "additionalProperties": false
+            }
+          },
+          "required": ["noRecordsMessage", "description", "filtered"],
+          "additionalProperties": false
+        },
         "validation": {
           "type": "object",
           "properties": {
@@ -6229,6 +6244,7 @@
         "markAsPaid",
         "status",
         "create",
+        "list",
         "validation"
       ],
       "additionalProperties": false
@@ -9598,6 +9614,19 @@
         "domain": {
           "type": "string"
         },
+        "actions": {
+          "type": "object",
+          "properties": {
+            "manage": {
+              "type": "string"
+            },
+            "manageLocales": {
+              "type": "string"
+            }
+          },
+          "required": ["manage", "manageLocales"],
+          "additionalProperties": false
+        },
         "subtitle": {
           "type": "string"
         },
@@ -9608,7 +9637,8 @@
               "type": "string"
             }
           },
-          "required": ["metrics"]
+          "required": ["metrics"],
+          "additionalProperties": false
         },
         "settings": {
             "type": "object",
@@ -9654,10 +9684,12 @@
                   "type": "string"
                 }
               },
-              "required": ["title", "description"]
+              "required": ["title", "description"],
+              "additionalProperties": false
             }
           },
-          "required": ["successToast", "unsavedChanges"]
+          "required": ["successToast", "unsavedChanges"],
+          "additionalProperties": false
         },
         "bulk": {
           "type": "object",
@@ -9669,7 +9701,8 @@
               "type": "string"
             }
           },
-          "required": ["header"]
+          "required": ["header", "mainColumn"],
+          "additionalProperties": false
         },
         "activeLocales": {
           "type": "object",
@@ -9692,7 +9725,8 @@
             "subtitle",
             "noLocalesTip",
             "noLocalesTipConfigureAction"
-          ]
+          ],
+          "additionalProperties": false
         },
         "completion": {
           "type": "object",
@@ -9710,17 +9744,21 @@
               "type": "string"
             }
           },
-          "required": ["heading", "translated", "toTranslate", "footer"]
+          "required": ["heading", "translated", "toTranslate", "footer"],
+          "additionalProperties": false
         }
       },
       "required": [
         "domain",
         "actions",
         "subtitle",
+        "list",
+        "edit",
         "bulk",
-        "completion",
-        "edit"
-      ]
+        "activeLocales",
+        "completion"
+      ],
+      "additionalProperties": false
     },
     "store": {
       "type": "object",
@@ -12570,6 +12608,7 @@
     "priceLists",
     "profile",
     "users",
+    "translations",
     "store",
     "regions",
     "taxes",

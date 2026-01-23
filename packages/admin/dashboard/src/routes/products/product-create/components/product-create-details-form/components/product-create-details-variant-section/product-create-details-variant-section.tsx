@@ -513,17 +513,17 @@ export const ProductCreateVariantsSection = ({
                           onChange={(value) =>
                             handleValueChange(opt.id!, value as string[])
                           }
-                          onCreateOption={async (values) => {
-                            const newValueName =
-                              values[values.length - 1]?.trim()
-                            if (newValueName && opt.id) {
-                              const currentValueIds = opt.value_ids || []
-                              handleValueChange(opt.id, [
-                                ...currentValueIds,
-                                newValueName,
-                              ])
-                            }
-                          }}
+                          // onCreateOption={async (values) => {
+                          //   const newValueName =
+                          //     values[values.length - 1]?.trim()
+                          //   if (newValueName && opt.id) {
+                          //     const currentValueIds = opt.value_ids || []
+                          //     handleValueChange(opt.id, [
+                          //       ...currentValueIds,
+                          //       newValueName,
+                          //     ])
+                          //   }
+                          // }}
                           options={valueOptions}
                           placeholder={t(
                             "products.fields.options.variantionsPlaceholder"

@@ -343,7 +343,7 @@ export const adminProductRoutesMiddlewares: MiddlewareRoute[] = [
   },
   {
     method: ["POST"],
-    matcher: "/admin/products/:id/options",
+    matcher: "/admin/products/:id/options/batch",
     middlewares: [
       validateAndTransformBody(AdminLinkProductOptions),
       validateAndTransformQuery(

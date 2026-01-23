@@ -56,6 +56,7 @@ interface ComboboxProps<T extends Value = Value>
   fetchNextPage?: () => void
   isFetchingNextPage?: boolean
   onCreateOption?: (value: string) => void
+  shouldAlwaysShowCreateOption?: boolean
   noResultsPlaceholder?: ReactNode
   allowClear?: boolean
   forceHideInput?: boolean // always hide input -> used for singe value select that don't have query/filter
@@ -74,6 +75,7 @@ const ComboboxImpl = <T extends Value = string>(
     fetchNextPage,
     isFetchingNextPage,
     onCreateOption,
+    shouldAlwaysShowCreateOption,
     noResultsPlaceholder,
     allowClear,
     forceHideInput,
@@ -235,6 +237,15 @@ const ComboboxImpl = <T extends Value = string>(
   const results = useMemo(() => {
     return isSearchControlled ? options : matches
   }, [matches, options, isSearchControlled])
+
+  const normalizedSearchValue = searchValue?.trim() ?? ""
+  const hasLabelMatch =
+    !!normalizedSearchValue.length &&
+    options.some(
+      (option) =>
+        option.label.trim().toLowerCase() ===
+        normalizedSearchValue.toLowerCase()
+    )
 
   return (
     <PrimitiveComboboxProvider
@@ -488,22 +499,31 @@ const ComboboxImpl = <T extends Value = string>(
               </Text>
             </div>
           ))}
-        {!results.length && onCreateOption && (
-          <Fragment>
-            <PrimitiveSeparator className="bg-ui-border-base -mx-1" />
-            <PrimitiveComboboxItem
-              value={uncontrolledSearchValue}
-              focusOnHover
-              setValueOnClick={false}
-              className="transition-fg bg-ui-bg-base data-[active-item=true]:bg-ui-bg-base-hover group mt-1 flex cursor-pointer items-center gap-x-2 rounded-[4px] px-2 py-1.5"
-            >
-              <PlusMini className="text-ui-fg-subtle" />
-              <Text size="small" leading="compact">
-                {t("actions.create")} &quot;{searchValue}&quot;
-              </Text>
-            </PrimitiveComboboxItem>
-          </Fragment>
-        )}
+        {(!results.length ||
+          (shouldAlwaysShowCreateOption && normalizedSearchValue.length > 0)) &&
+          onCreateOption && (
+            <Fragment>
+              <PrimitiveSeparator className="bg-ui-border-base -mx-1" />
+              <PrimitiveComboboxItem
+                value={uncontrolledSearchValue}
+                focusOnHover
+                setValueOnClick={false}
+                disabled={hasLabelMatch}
+                className={clx(
+                  "transition-fg bg-ui-bg-base data-[active-item=true]:bg-ui-bg-base-hover group mt-1 flex cursor-pointer items-center gap-x-2 rounded-[4px] px-2 py-1.5",
+                  {
+                    "text-ui-fg-disabled bg-ui-bg-component cursor-not-allowed":
+                      hasLabelMatch,
+                  }
+                )}
+              >
+                <PlusMini className="text-ui-fg-subtle" />
+                <Text size="small" leading="compact">
+                  {t("actions.create")} &quot;{searchValue}&quot;
+                </Text>
+              </PrimitiveComboboxItem>
+            </Fragment>
+          )}
       </PrimitiveComboboxPopover>
     </PrimitiveComboboxProvider>
   )

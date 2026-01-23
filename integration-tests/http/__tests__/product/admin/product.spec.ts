@@ -2935,7 +2935,7 @@ medusaIntegrationTestRunner({
         })
       })
 
-      describe("POST /admin/products/:id/options", () => {
+      describe("POST /admin/products/:id/options/batch", () => {
         let colorOption
         let sizeOption
 
@@ -2963,7 +2963,7 @@ medusaIntegrationTestRunner({
           }
 
           const response = await api.post(
-            `/admin/products/${baseProduct.id}/options`,
+            `/admin/products/${baseProduct.id}/options/batch`,
             payload,
             adminHeaders
           )
@@ -2990,7 +2990,7 @@ medusaIntegrationTestRunner({
 
         it("should unlink existing options from product", async () => {
           let response = await api.post(
-            `/admin/products/${baseProduct.id}/options`,
+            `/admin/products/${baseProduct.id}/options/batch`,
             {
               add: [colorOption.id, sizeOption.id],
             },
@@ -3005,7 +3005,7 @@ medusaIntegrationTestRunner({
           }
 
           response = await api.post(
-            `/admin/products/${baseProduct.id}/options`,
+            `/admin/products/${baseProduct.id}/options/batch`,
             payload,
             adminHeaders
           )
@@ -3024,7 +3024,7 @@ medusaIntegrationTestRunner({
           }
 
           const response = await api.post(
-            `/admin/products/${baseProduct.id}/options`,
+            `/admin/products/${baseProduct.id}/options/batch`,
             payload,
             adminHeaders
           )

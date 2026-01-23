@@ -336,7 +336,7 @@ export interface BaseProductOptionValue {
   value: string
   /**
    * The value's rank among other option values.
-   * 
+   *
    * @since 2.13.0
    */
   rank?: number
@@ -407,13 +407,13 @@ export interface BaseProductListParams
   type_id?: string | string[]
   /**
    * Filter by the product's option(s).
-   * 
+   *
    * @since 2.13.0
    */
   option_id?: string | string[]
   /**
    * Filter by the product's option value(s).
-   * 
+   *
    * @since 2.13.0
    */
   option_value_id?: string | string[]
@@ -450,6 +450,10 @@ export interface BaseProductOptionListParams
    * A query or keywords to search the searchable fields by.
    */
   q?: string
+  /**
+   * Filter by the option's id(s).
+   */
+  id?: string | string[]
   /**
    * Filter by the option's title(s).
    */
@@ -489,7 +493,7 @@ export interface BaseProductOptionParams
   title?: string | string[]
   /**
    * Filter by whether the option is exclusive to a product or global.
-   * 
+   *
    * @since 2.13.0
    */
   is_exclusive?: boolean

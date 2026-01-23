@@ -95,7 +95,7 @@ export const NavItem = ({
   translationNs,
 }: INavItem) => {
   const { t } = useTranslation(translationNs as any)
-  const { pathname } = useLocation()
+  const { pathname, search } = useLocation()
   const [open, setOpen] = useState(getIsOpen(to, items, pathname))
 
   // Use translation if translationNs is provided, otherwise use label as-is
@@ -130,13 +130,24 @@ export const NavItem = ({
     [type, pathname]
   )
 
+  const getLinkTarget = useCallback(
+    (target: string) => {
+      if (pathname === target && search) {
+        return { pathname: target, search }
+      }
+
+      return target
+    },
+    [pathname, search]
+  )
+
   const isSetting = type === "setting"
 
   return (
     <div className="px-3">
       <NavItemTooltip to={to}>
         <NavLink
-          to={to}
+          to={getLinkTarget(to)}
           end={items?.some((i) => i.to === pathname)}
           state={
             from
@@ -182,7 +193,7 @@ export const NavItem = ({
                 <li className="flex w-full items-center gap-x-1 lg:hidden">
                   <NavItemTooltip to={to}>
                     <NavLink
-                      to={to}
+                      to={getLinkTarget(to)}
                       end
                       className={({ isActive }) => {
                         return clx(
@@ -209,7 +220,7 @@ export const NavItem = ({
                     <li key={item.to} className="flex h-7 items-center">
                       <NavItemTooltip to={item.to}>
                         <NavLink
-                          to={item.to}
+                          to={getLinkTarget(item.to)}
                           end
                           className={({ isActive }) => {
                             return clx(
