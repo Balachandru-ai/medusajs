@@ -48,7 +48,8 @@ export const POST = async (
       {},
       {
         defaults: defaultStoreCartFields,
-      }
+      },
+      req as MedusaRequest
     )
     const cart = await refetchCart(
       cart_id,
