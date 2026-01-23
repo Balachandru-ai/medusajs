@@ -1,7 +1,7 @@
 {
   "$schema": "./$schema.json",
   "general": {
-    "fullList": "Full list",
+    "fullList": "All",
     "ascending": "Ascending",
     "descending": "Descending",
     "add": "Add",
@@ -26,6 +26,7 @@
     "error": "Error",
     "select": "Select",
     "selectAll": "Select all",
+    "unselectAll": "Unselect all",
     "selected": "Selected",
     "enabled": "Enabled",
     "disabled": "Disabled",

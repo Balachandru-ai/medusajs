@@ -29,6 +29,10 @@ export async function generatePolicyTypes({
 
   const fileSystem = new FileSystem(outputDir)
   const fileName = "policy-bindings.d.ts"
+
+  const resourceKeys = Object.keys(PolicyResource).sort()
+  const operationKeys = Object.keys(PolicyOperation).sort()
+
   const fileContents = `declare module '@medusajs/framework/utils' {
   /**
    * RBAC Resource registry with lowercase keys for type-safe access.
@@ -38,11 +42,12 @@ export async function generatePolicyTypes({
    * import { PolicyResource } from '@medusajs/framework/utils'
    * 
    * const productResource = PolicyResource.product // "product"
-   * const apiKeyResource = PolicyResource.api_key // "api-key"
+   * const apiKeyResource = PolicyResource.api_key // "api_key"
+   * const customResource = PolicyResource.custom_plugin // "custom_plugin"
    */
-  export const Resource: {
-${Object.entries(PolicyResource)
-  .map(([key, val]) => `    readonly ${key}: "${val}"`)
+  export const PolicyResource: {
+${resourceKeys
+  .map((key) => `    readonly ${key}: "${PolicyResource[key]}"`)
   .join("\n")}
   }
 
@@ -54,10 +59,15 @@ ${Object.entries(PolicyResource)
    * import { PolicyOperation } from '@medusajs/framework/utils'
    * 
    * const readOp = PolicyOperation.read // "read"
+   * const writeOp = PolicyOperation.write // "write"
+   * const allOp = PolicyOperation.ALL // "*"
    */
-  export const Operation: {
-${Object.entries(PolicyOperation)
-  .map(([key, val]) => `    readonly ${key}: "${val}"`)
+  export const PolicyOperation: {
+${operationKeys
+  .map(
+    (key) =>
+      `    readonly ${key === "*" ? `"*"` : key}: "${PolicyOperation[key]}"`
+  )
   .join("\n")}
   }
 

@@ -105,7 +105,6 @@ export class Translation {
    * .then(({ created, updated, deleted }) => {
    *   console.log(created, updated, deleted)
    * })
-   * ```
    */
   async batch(body: HttpTypes.AdminBatchTranslations, headers?: ClientHeaders) {
     return await this.client.fetch<HttpTypes.AdminTranslationsBatchResponse>(
