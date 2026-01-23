@@ -1,11 +1,14 @@
 import {
   GraphQLUtils,
+  PolicyDefinition,
   PolicyResource,
+  promiseAll,
   toSnakeCase,
 } from "@medusajs/framework/utils"
 import { MedusaModule } from "@medusajs/modules-sdk"
 import type { MedusaContainer } from "@medusajs/types"
 import { hasPermission } from "../../../policies/has-permission"
+import { FieldFilterContext, IFieldFilter } from "../field-filtering/index"
 
 /**
  * Base GraphQL schema with common scalars
@@ -36,6 +39,11 @@ interface EntityMapping {
   entityName: string
   targetEntity: string
   path: string[]
+}
+
+interface PathInfo {
+  path: string
+  entityName: string | null
 }
 
 function isString(value: any): value is string {
@@ -360,77 +368,119 @@ function getNormalizedEntityName(fieldPath: string): string | null {
 }
 
 /**
- * Checks policies against fields and returns not allowed fields
- *
- * @param entity - The main entity (e.g., "product", "campaign")
- * @param fields - Array of field names to check
- * @param policies - Array of policy objects with resource and operation
- * @param userRoles - User roles for permission checking
- * @param container - MedusaContainer for permission checking
- * @returns Array of field names that are not allowed by policies
+ * Collects all unique entity paths that need permission checks
+ * This avoids duplicate permission checks for shared path prefixes
  */
-export async function getNotAllowedFieldsByPolicies({
-  entity,
-  fields,
-  policies,
-  userRoles,
-  container,
-}: {
-  entity: string
+function collectUniqueEntityPaths(
+  entity: string,
   fields: string[]
-  policies: Array<{ resource: string; operation: string }>
-  userRoles: string[]
-  container: MedusaContainer
-}): Promise<string[]> {
-  const notAllowedFields: string[] = []
+): Map<string, PathInfo> {
+  const uniquePaths = new Map<string, PathInfo>()
 
-  if (!fields.length || !policies.length) {
-    return notAllowedFields
-  }
-
-  const pathAccessCache = new Map<string, boolean>()
   for (const field of fields) {
     const fullFieldPath = entity + "." + field
     const pathSegments = fullFieldPath.split(".")
-    let fieldAllowed = true
 
-    for (let i = 1; i <= pathSegments.length; i++) {
-      const currentPath = pathSegments.slice(0, i).join(".")
+    // Build paths incrementally using string concatenation (more efficient than slice + join)
+    let currentPath = ""
+    for (let i = 0; i < pathSegments.length; i++) {
+      currentPath =
+        i === 0 ? pathSegments[i] : currentPath + "." + pathSegments[i]
 
-      if (pathAccessCache.has(currentPath)) {
-        const cachedResult = pathAccessCache.get(currentPath)!
-        if (!cachedResult) {
-          notAllowedFields.push(field)
-          break
-        }
-        continue
+      if (!uniquePaths.has(currentPath)) {
+        const entityName = getNormalizedEntityName(currentPath)
+        uniquePaths.set(currentPath, { path: currentPath, entityName })
       }
-
-      const entityNameResult = getNormalizedEntityName(currentPath)
-
-      if (!entityNameResult || !PolicyResource[entityNameResult]) {
-        pathAccessCache.set(currentPath, true)
-        continue
-      }
-
-      const hasAccess = await hasPermission({
-        roles: userRoles,
-        actions: { resource: entityNameResult, operation: "read" },
-        container,
-      })
-
-      pathAccessCache.set(currentPath, hasAccess)
-
-      if (!hasAccess) {
-        fieldAllowed = false
-        break
-      }
-    }
-
-    if (!fieldAllowed) {
-      notAllowedFields.push(field)
     }
   }
 
-  return notAllowedFields
+  return uniquePaths
+}
+
+/**
+ * RBAC Field Filter using the Strategy pattern
+ * Optimized for parallel permission checks
+ */
+export class RBACFieldFilter implements IFieldFilter {
+  private policies: PolicyDefinition[]
+  private userRoles: string[]
+  private container: MedusaContainer
+
+  constructor({
+    policies,
+    userRoles,
+    container,
+  }: {
+    policies: PolicyDefinition[]
+    userRoles: string[]
+    container: MedusaContainer
+  }) {
+    this.policies = policies
+    this.userRoles = userRoles
+    this.container = container
+  }
+
+  async getNotAllowedFields(context: FieldFilterContext): Promise<string[]> {
+    const { entity, parsedFields } = context
+    const { fields, starFields } = parsedFields
+    const fieldsToCheck = [...fields, ...Array.from(starFields)]
+
+    if (!fieldsToCheck.length || !this.policies.length) {
+      return []
+    }
+
+    const uniquePaths = collectUniqueEntityPaths(entity, fieldsToCheck)
+
+    const pathsNeedingCheck: { path: string; entityName: string }[] = []
+    for (const [path, info] of uniquePaths) {
+      if (info.entityName && PolicyResource[info.entityName]) {
+        pathsNeedingCheck.push({ path, entityName: info.entityName })
+      }
+    }
+
+    const permissionResults = await promiseAll(
+      pathsNeedingCheck.map(async ({ path, entityName }) => {
+        const hasAccess = await hasPermission({
+          roles: this.userRoles,
+          actions: { resource: entityName, operation: "read" },
+          container: this.container,
+        })
+        return { path, hasAccess }
+      })
+    )
+
+    const accessMap = new Map<string, boolean>()
+    for (const result of permissionResults) {
+      accessMap.set(result.path, result.hasAccess)
+    }
+
+    const notAllowedFields: string[] = []
+    for (const field of fieldsToCheck) {
+      const fullFieldPath = entity + "." + field
+      const pathSegments = fullFieldPath.split(".")
+
+      let currentPath = ""
+      let fieldAllowed = true
+
+      for (let i = 0; i < pathSegments.length; i++) {
+        currentPath =
+          i === 0 ? pathSegments[i] : currentPath + "." + pathSegments[i]
+
+        // Check if this path was in our permission check results
+        if (accessMap.has(currentPath)) {
+          const hasAccess = accessMap.get(currentPath)!
+          if (!hasAccess) {
+            fieldAllowed = false
+            break
+          }
+        }
+      }
+
+      if (!fieldAllowed) {
+        notAllowedFields.push(field)
+      }
+    }
+
+    return notAllowedFields
+  }
 }
