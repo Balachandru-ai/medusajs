@@ -153,6 +153,7 @@ const useAuthCallback = (searchParams: URLSearchParams) => {
 
       navigate("/")
     } catch (error) {
+      console.error("Error in useAuthCallback:", error)
       toast.error(t("auth.login.authenticationFailed"))
       // Navigate to /login without query string cause otherwise a failed callback would get stuck on the spinner.
       // There's no point in using the query string anyway because the callback would just fail again.
