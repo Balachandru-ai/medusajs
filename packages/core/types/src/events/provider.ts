@@ -107,7 +107,7 @@ export interface IEventsProvider {
    *
    * @param eventName - The name of the event to subscribe to.
    * @param subscriber - The subscriber function to execute when the event is emitted.
-   * @param context - The context of the subscriber.
+   * @param context - The context of the subscriber containing the subscriberId.
    * @returns The provider instance for chaining.
    *
    * @example
@@ -117,7 +117,7 @@ export interface IEventsProvider {
    *   subscribe(
    *     eventName: string | symbol,
    *     subscriber: Subscriber,
-   *     context?: SubscriberContext
+   *     context: SubscriberContext
    *   ): this {
    *     // register subscriber for the event
    *     return this
@@ -128,7 +128,7 @@ export interface IEventsProvider {
   subscribe(
     eventName: string | symbol,
     subscriber: Subscriber,
-    context?: SubscriberContext
+    context: SubscriberContext
   ): this
 
   /**

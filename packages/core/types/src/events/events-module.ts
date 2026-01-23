@@ -68,11 +68,18 @@ export interface IEventsModuleService {
    * where you need to explicitly group, release and clear events upon lifecycle events of a transaction.
    *
    * @param eventGroupId - The ID of the event group.
+   * @param options - Additional options for the event.
+   * @param options.provider - The provider to release grouped events from. If not provided, the default provider is used.
    *
    * @example
    * await eventModuleService.releaseGroupedEvents("group_123")
    */
-  releaseGroupedEvents(eventGroupId: string): Promise<void>
+  releaseGroupedEvents(
+    eventGroupId: string,
+    options?: {
+      provider?: string
+    }
+  ): Promise<void>
   /**
    * This method removes all events in the specified group. Grouped events are useful when you have distributed transactions
    * where you need to explicitly group, release and clear events upon lifecycle events of a transaction.
@@ -81,6 +88,7 @@ export interface IEventsModuleService {
    * @param options - Additional options for the event.
    * @param options.eventNames - The names of the events to clear. If not provided, The group will
    * be entirely cleared.
+   * @param options.provider - The provider to clear grouped events from. If not provided, the default provider is used.
    *
    * @example
    * await eventModuleService.clearGroupedEvents("group_123")
@@ -89,6 +97,7 @@ export interface IEventsModuleService {
     eventGroupId: string,
     options?: {
       eventNames?: string[]
+      provider?: string
     }
   ): Promise<void>
 

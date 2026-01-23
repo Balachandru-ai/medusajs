@@ -9,6 +9,7 @@ import {
 } from "@medusajs/framework/types"
 import { EventDefaultProvider } from "@types"
 import EventsProviderService from "./event-provider"
+import { ulid } from "ulid"
 
 type InjectedDependencies = {
   eventsProviderService: EventsProviderService
@@ -93,11 +94,13 @@ export default class EventsModuleService
     subscriber: Subscriber,
     context?: SubscriberContext
   ): this {
-    // Subscribe to all providers to ensure the subscriber receives events
-    // regardless of which provider emits them
+    const subscriberId =
+      context?.subscriberId ?? `${eventName.toString()}-${ulid()}`
+    const subscriberContext: SubscriberContext = { subscriberId }
+
     const providers = this.providerService_.listProviders()
     for (const provider of providers) {
-      provider.subscribe(eventName, subscriber, context)
+      provider.subscribe(eventName, subscriber, subscriberContext)
     }
     return this
   }
@@ -115,8 +118,6 @@ export default class EventsModuleService
     subscriber: Subscriber,
     context?: SubscriberContext
   ): this {
-    // Unsubscribe from all providers to ensure the subscriber is removed
-    // regardless of which provider it was registered on
     const providers = this.providerService_.listProviders()
     for (const provider of providers) {
       provider.unsubscribe(eventName, subscriber, context)
@@ -128,9 +129,13 @@ export default class EventsModuleService
    * This method emits all events in the specified group.
    *
    * @param eventGroupId - The ID of the event group.
+   * @param options - Additional options for the event.
    */
-  async releaseGroupedEvents(eventGroupId: string): Promise<void> {
-    const provider = this.getProvider()
+  async releaseGroupedEvents(
+    eventGroupId: string,
+    options?: { provider?: string }
+  ): Promise<void> {
+    const provider = this.getProvider(options?.provider)
     return provider.releaseGroupedEvents(eventGroupId)
   }
 
@@ -142,9 +147,9 @@ export default class EventsModuleService
    */
   async clearGroupedEvents(
     eventGroupId: string,
-    options?: { eventNames?: string[] }
+    options?: { eventNames?: string[]; provider?: string }
   ): Promise<void> {
-    const provider = this.getProvider()
+    const provider = this.getProvider(options?.provider)
     return provider.clearGroupedEvents(eventGroupId, options)
   }
 
@@ -155,8 +160,6 @@ export default class EventsModuleService
    * @returns The instance of the Event Module
    */
   addInterceptor(interceptor: InterceptorSubscriber): this {
-    // Add interceptor to all providers to ensure it intercepts events
-    // regardless of which provider emits them
     const providers = this.providerService_.listProviders()
     for (const provider of providers) {
       provider.addInterceptor?.(interceptor)
@@ -171,7 +174,6 @@ export default class EventsModuleService
    * @returns The instance of the Event Module
    */
   removeInterceptor(interceptor: InterceptorSubscriber): this {
-    // Remove interceptor from all providers
     const providers = this.providerService_.listProviders()
     for (const provider of providers) {
       provider.removeInterceptor?.(interceptor)

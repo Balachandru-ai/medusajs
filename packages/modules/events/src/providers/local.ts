@@ -187,12 +187,11 @@ export class LocalEventsProvider extends EventsUtils.AbstractEventsProvider {
   subscribe(
     event: string | symbol,
     subscriber: Subscriber,
-    context?: EventBusTypes.SubscriberContext
+    context: EventBusTypes.SubscriberContext
   ): this {
     super.subscribe(event, subscriber, context)
 
-    const subscriberId =
-      context?.subscriberId ?? (subscriber as any).subscriberId
+    const { subscriberId } = context
 
     const wrappedSubscriber = async (data: Event) => {
       try {
@@ -204,9 +203,7 @@ export class LocalEventsProvider extends EventsUtils.AbstractEventsProvider {
       }
     }
 
-    if (subscriberId) {
-      ;(wrappedSubscriber as any).subscriberId = subscriberId
-    }
+    ;(wrappedSubscriber as any).subscriberId = subscriberId
 
     this.eventEmitter_.on(event, wrappedSubscriber)
 

@@ -4,7 +4,6 @@ import {
   InterceptorSubscriber,
   Logger,
 } from "@medusajs/types"
-import { ulid } from "ulid"
 
 /**
  * Abstract base class for event providers.
@@ -255,20 +254,20 @@ export abstract class AbstractEventsProvider<TConfig = Record<string, unknown>>
    *
    * @param eventName - The name of the event to subscribe to.
    * @param subscriber - The subscriber function to execute when the event is emitted.
-   * @param context - The context of the subscriber.
+   * @param context - The context of the subscriber containing the subscriberId.
    * @returns The provider instance for chaining.
    */
   public subscribe(
     eventName: string | symbol,
     subscriber: EventBusTypes.Subscriber,
-    context?: EventBusTypes.SubscriberContext
+    context: EventBusTypes.SubscriberContext
   ): this {
     if (typeof subscriber !== `function`) {
       throw new Error("Subscriber must be a function")
     }
 
     const event = eventName.toString()
-    const subscriberId = context?.subscriberId ?? `${event}-${ulid()}`
+    const { subscriberId } = context
 
     ;(subscriber as any).subscriberId = subscriberId
 
