@@ -3,9 +3,11 @@ import {
   validateAndTransformQuery,
 } from "@medusajs/framework"
 import { MiddlewareRoute } from "@medusajs/framework/http"
+import { PolicyOperation } from "@medusajs/framework/utils"
 import { DEFAULT_BATCH_ENDPOINTS_SIZE_LIMIT } from "../../../utils/middlewares"
 import { createBatchBody } from "../../utils/validators"
 import * as QueryConfig from "./query-config"
+import { Entities } from "./query-config"
 import {
   AdminCreatePriceList,
   AdminCreatePriceListPrice,
@@ -19,6 +21,24 @@ import {
 } from "./validators"
 
 export const adminPriceListsRoutesMiddlewares: MiddlewareRoute[] = [
+  {
+    matcher: "/admin/price-lists/*",
+    policies: [
+      {
+        resource: Entities.price_list,
+        operation: PolicyOperation.read,
+      },
+    ],
+  },
+  {
+    matcher: "/admin/price-lists/*/prices/*",
+    policies: [
+      {
+        resource: Entities.price,
+        operation: PolicyOperation.read,
+      },
+    ],
+  },
   {
     method: ["GET"],
     matcher: "/admin/price-lists",
@@ -49,6 +69,12 @@ export const adminPriceListsRoutesMiddlewares: MiddlewareRoute[] = [
         QueryConfig.retrivePriceListQueryConfig
       ),
     ],
+    policies: [
+      {
+        resource: Entities.price_list,
+        operation: PolicyOperation.create,
+      },
+    ],
   },
   {
     method: ["POST"],
@@ -60,6 +86,12 @@ export const adminPriceListsRoutesMiddlewares: MiddlewareRoute[] = [
         QueryConfig.retrivePriceListQueryConfig
       ),
     ],
+    policies: [
+      {
+        resource: Entities.price_list,
+        operation: PolicyOperation.update,
+      },
+    ],
   },
   {
     method: ["POST"],
@@ -70,6 +102,12 @@ export const adminPriceListsRoutesMiddlewares: MiddlewareRoute[] = [
         AdminGetPriceListParams,
         QueryConfig.listPriceListQueryConfig
       ),
+    ],
+    policies: [
+      {
+        resource: Entities.price_list,
+        operation: PolicyOperation.update,
+      },
     ],
   },
   {
@@ -96,6 +134,12 @@ export const adminPriceListsRoutesMiddlewares: MiddlewareRoute[] = [
         AdminGetPriceListPriceParams,
         QueryConfig.listPriceListPriceQueryConfig
       ),
+    ],
+    policies: [
+      {
+        resource: Entities.price,
+        operation: PolicyOperation.ALL,
+      },
     ],
   },
 ]

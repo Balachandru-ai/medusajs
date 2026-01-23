@@ -1,6 +1,7 @@
 {
   "$schema": "./$schema.json",
   "general": {
+    "fullList": "All",
     "ascending": "Ascending",
     "descending": "Descending",
     "add": "Add",
@@ -24,6 +25,8 @@
     "tip": "Tip",
     "error": "Error",
     "select": "Select",
+    "selectAll": "Select all",
+    "unselectAll": "Unselect all",
     "selected": "Selected",
     "enabled": "Enabled",
     "disabled": "Disabled",
@@ -311,6 +314,9 @@
   },
   "filters": {
     "sortLabel": "Sort",
+    "collapse": {
+      "all": "Collapse all"
+    },
     "filterLabel": "Filter",
     "searchLabel": "Search",
     "date": {
@@ -2573,8 +2579,13 @@
   },
   "translations": {
     "domain": "Translations",
+    "settings": {
+      "header": "Manage translatable entities",
+      "successToast": "Settings updated successfully"
+    },
     "actions": {
       "manage": "Manage translations",
+      "manageEntities": "Manage entities",
       "manageLocales": "Manage locales"
     },
     "subtitle": "Manage translations of your data in Medusa",
