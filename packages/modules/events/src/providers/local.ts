@@ -18,7 +18,7 @@ type StagingQueueType = Map<string, Message[]>
 const eventEmitter = new EventEmitter()
 eventEmitter.setMaxListeners(Infinity)
 
-export class LocalEventProvider extends EventsUtils.AbstractEventsProvider {
+export class LocalEventsProvider extends EventsUtils.AbstractEventsProvider {
   static identifier = "local"
 
   protected readonly logger_: Logger

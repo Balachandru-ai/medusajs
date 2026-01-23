@@ -45,7 +45,7 @@ type IORedisEventType<T = unknown> = {
  * Redis-based event provider using BullMQ for reliable event processing.
  * Supports priority, retry, and distributed event handling.
  */
-export class RedisEventProvider extends EventsUtils.AbstractEventsProvider<EventRedisProviderOptions> {
+export class RedisEventsProvider extends EventsUtils.AbstractEventsProvider<EventRedisProviderOptions> {
   static identifier = "events-redis"
 
   protected readonly logger_: Logger

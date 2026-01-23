@@ -20,7 +20,7 @@ import {
   asFunction,
   asValue,
 } from "@medusajs/framework/awilix"
-import { LocalEventProvider } from "../providers/local"
+import { LocalEventsProvider } from "../providers/local"
 
 const registrationFn = async (klass, container, { id }) => {
   const key = EventProviderService.getRegistrationIdentifier(klass)
@@ -57,18 +57,18 @@ export default async ({
 
   // LocalEventProvider - default built-in provider
   container.register({
-    [EventProviderRegistrationPrefix + LocalEventProvider.identifier]:
-      asFunction((cradle) => new LocalEventProvider(cradle), {
+    [EventProviderRegistrationPrefix + LocalEventsProvider.identifier]:
+      asFunction((cradle) => new LocalEventsProvider(cradle), {
         lifetime: Lifetime.SINGLETON,
       }),
   })
   container.registerAdd(
     EventIdentifiersRegistrationName,
-    asValue(LocalEventProvider.identifier)
+    asValue(LocalEventsProvider.identifier)
   )
   container.register(
     EventDefaultProvider,
-    asValue(LocalEventProvider.identifier)
+    asValue(LocalEventsProvider.identifier)
   )
 
   // Load other providers
