@@ -3,21 +3,23 @@ import {
   validateAndTransformQuery,
 } from "@medusajs/framework"
 import { maybeApplyLinkFilter, MiddlewareRoute } from "@medusajs/framework/http"
-import { FeatureFlag } from "@medusajs/framework/utils"
+import { FeatureFlag, PolicyOperation } from "@medusajs/framework/utils"
 import multer from "multer"
 import IndexEngineFeatureFlag from "../../../feature-flags/index-engine"
 import { DEFAULT_BATCH_ENDPOINTS_SIZE_LIMIT } from "../../../utils/middlewares"
 import { createBatchBody } from "../../utils/validators"
+import { AdminGetProductVariantsParams } from "../product-variants/validators"
 import * as QueryConfig from "./query-config"
+import { Entities } from "./query-config"
 import { maybeApplyPriceListsFilter } from "./utils"
 import {
   AdminBatchCreateVariantInventoryItem,
   AdminBatchDeleteVariantInventoryItem,
   AdminBatchImageVariant,
-  AdminBatchVariantImages,
   AdminBatchUpdateProduct,
   AdminBatchUpdateProductVariant,
   AdminBatchUpdateVariantInventoryItem,
+  AdminBatchVariantImages,
   AdminCreateProduct,
   AdminCreateProductOption,
   AdminCreateProductVariant,
@@ -35,11 +37,46 @@ import {
   CreateProduct,
   CreateProductVariant,
 } from "./validators"
-import { AdminGetProductVariantsParams } from "../product-variants/validators"
 
 const upload = multer({ storage: multer.memoryStorage() })
 
 export const adminProductRoutesMiddlewares: MiddlewareRoute[] = [
+  {
+    matcher: "/admin/products/*",
+    policies: [
+      {
+        resource: Entities.product,
+        operation: PolicyOperation.read,
+      },
+    ],
+  },
+  {
+    matcher: "/admin/products/*/variants/*",
+    policies: [
+      {
+        resource: Entities.product_variant,
+        operation: PolicyOperation.read,
+      },
+    ],
+  },
+  {
+    matcher: "/admin/products/*/options/*",
+    policies: [
+      {
+        resource: Entities.product_option,
+        operation: PolicyOperation.read,
+      },
+    ],
+  },
+  {
+    matcher: "/admin/products/*/variants/*/inventory-items/*",
+    policies: [
+      {
+        resource: Entities.inventory_item,
+        operation: PolicyOperation.read,
+      },
+    ],
+  },
   {
     method: ["GET"],
     matcher: "/admin/products",
@@ -72,6 +109,36 @@ export const adminProductRoutesMiddlewares: MiddlewareRoute[] = [
         QueryConfig.retrieveProductQueryConfig
       ),
     ],
+    policies: [
+      {
+        resource: Entities.product,
+        operation: PolicyOperation.create,
+      },
+      {
+        resource: Entities.product_variant,
+        operation: PolicyOperation.create,
+      },
+      {
+        resource: Entities.product_option,
+        operation: PolicyOperation.create,
+      },
+      {
+        resource: Entities.inventory_item,
+        operation: PolicyOperation.create,
+      },
+      {
+        resource: Entities.price_set,
+        operation: PolicyOperation.create,
+      },
+      {
+        resource: Entities.price,
+        operation: PolicyOperation.create,
+      },
+      {
+        resource: Entities.sales_channel,
+        operation: PolicyOperation.update,
+      },
+    ],
   },
   {
     method: ["POST"],
@@ -87,6 +154,12 @@ export const adminProductRoutesMiddlewares: MiddlewareRoute[] = [
         AdminGetProductParams,
         QueryConfig.retrieveProductQueryConfig
       ),
+    ],
+    policies: [
+      {
+        resource: Entities.product,
+        operation: [PolicyOperation.create, PolicyOperation.update],
+      },
     ],
   },
   {
@@ -144,6 +217,12 @@ export const adminProductRoutesMiddlewares: MiddlewareRoute[] = [
         QueryConfig.retrieveProductQueryConfig
       ),
     ],
+    policies: [
+      {
+        resource: Entities.product,
+        operation: PolicyOperation.delete,
+      },
+    ],
   },
   {
     method: ["GET"],
@@ -165,6 +244,12 @@ export const adminProductRoutesMiddlewares: MiddlewareRoute[] = [
         QueryConfig.retrieveProductQueryConfig
       ),
     ],
+    policies: [
+      {
+        resource: Entities.product_variant,
+        operation: PolicyOperation.create,
+      },
+    ],
   },
   {
     method: ["POST"],
@@ -180,6 +265,16 @@ export const adminProductRoutesMiddlewares: MiddlewareRoute[] = [
         AdminGetProductVariantParams,
         QueryConfig.retrieveVariantConfig
       ),
+    ],
+    policies: [
+      {
+        resource: Entities.product_variant,
+        operation: [
+          PolicyOperation.create,
+          PolicyOperation.update,
+          PolicyOperation.delete,
+        ],
+      },
     ],
   },
   {
@@ -228,6 +323,12 @@ export const adminProductRoutesMiddlewares: MiddlewareRoute[] = [
         AdminGetProductParams,
         QueryConfig.retrieveProductQueryConfig
       ),
+    ],
+    policies: [
+      {
+        resource: Entities.product_variant,
+        operation: PolicyOperation.delete,
+      },
     ],
   },
 
@@ -284,6 +385,12 @@ export const adminProductRoutesMiddlewares: MiddlewareRoute[] = [
         QueryConfig.retrieveProductQueryConfig
       ),
     ],
+    policies: [
+      {
+        resource: Entities.product_option,
+        operation: PolicyOperation.delete,
+      },
+    ],
   },
 
   // Variant inventory item endpoints
@@ -306,6 +413,16 @@ export const adminProductRoutesMiddlewares: MiddlewareRoute[] = [
         QueryConfig.retrieveVariantConfig
       ),
     ],
+    policies: [
+      {
+        resource: Entities.inventory_item,
+        operation: [
+          PolicyOperation.create,
+          PolicyOperation.update,
+          PolicyOperation.delete,
+        ],
+      },
+    ],
   },
   {
     method: ["POST"],
@@ -316,6 +433,12 @@ export const adminProductRoutesMiddlewares: MiddlewareRoute[] = [
         AdminGetProductVariantParams,
         QueryConfig.retrieveVariantConfig
       ),
+    ],
+    policies: [
+      {
+        resource: Entities.inventory_item,
+        operation: PolicyOperation.create,
+      },
     ],
   },
   {
@@ -329,6 +452,12 @@ export const adminProductRoutesMiddlewares: MiddlewareRoute[] = [
         QueryConfig.retrieveVariantConfig
       ),
     ],
+    policies: [
+      {
+        resource: Entities.inventory_item,
+        operation: PolicyOperation.update,
+      },
+    ],
   },
   {
     method: ["DELETE"],
@@ -339,6 +468,12 @@ export const adminProductRoutesMiddlewares: MiddlewareRoute[] = [
         AdminGetProductVariantParams,
         QueryConfig.retrieveVariantConfig
       ),
+    ],
+    policies: [
+      {
+        resource: Entities.inventory_item,
+        operation: PolicyOperation.delete,
+      },
     ],
   },
 ]
