@@ -14,4 +14,8 @@ export interface ExportProductsDTO {
    * The filters to select which products to export.
    */
   filter?: FilterableProductProps & { sales_channel_id?: string | string[] }
+  /**
+   * The batch size to use for querying products.
+   */
+  batch_size?: number | string
 }

@@ -1,5 +1,5 @@
 import { Constructor, Context, DAL } from "@medusajs/framework/types"
-import { toMikroORMEntity } from "@medusajs/framework/utils"
+import { MikroOrmBaseRepository, toMikroORMEntity } from "@medusajs/framework/utils"
 import { LoadStrategy } from "@medusajs/framework/mikro-orm/core"
 import { Order, OrderClaim, OrderLineItemAdjustment } from "@models"
 
@@ -103,6 +103,12 @@ export function setFindMethods<T>(klass: Constructor<T>, entity: any) {
 
     config.where ??= {}
 
+    if (strategy === LoadStrategy.SELECT_IN) {
+      MikroOrmBaseRepository.compensateRelationFieldsSelectionFromLoadStrategy({
+        findOptions: config,
+      })
+    }
+
     const result = await manager.find(this.entity, config.where, config.options)
 
     if (loadAdjustments) {
@@ -196,6 +202,12 @@ export function setFindMethods<T>(klass: Constructor<T>, entity: any) {
 
     if (!config.options.orderBy) {
       config.options.orderBy = { id: "ASC" }
+    }
+
+    if (strategy === LoadStrategy.SELECT_IN) {
+      MikroOrmBaseRepository.compensateRelationFieldsSelectionFromLoadStrategy({
+        findOptions: config,
+      })
     }
 
     const [result, count] = await manager.findAndCount(
