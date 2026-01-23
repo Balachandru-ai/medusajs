@@ -58,31 +58,9 @@ vi.mock("next/link", () => ({
   ),
 }))
 
-vi.mock("@/components/BorderedIcon", () => ({
-  BorderedIcon: ({
-    icon,
-    iconWrapperClassName,
-    wrapperClassName,
-    iconWidth,
-    iconHeight,
-    ...props
-  }: {
-    icon: string
-    iconWrapperClassName?: string
-    wrapperClassName?: string
-    iconWidth?: number
-    iconHeight?: number
-    [key: string]: unknown
-  }) => (
-    <div
-      data-testid="bordered-icon"
-      data-icon={icon}
-      data-wrapper-class={wrapperClassName}
-      data-icon-width={iconWidth}
-      data-icon-height={iconHeight}
-      className={iconWrapperClassName}
-      {...props}
-    />
+vi.mock("@/components/Icons", () => ({
+  ColoredMedusaIcon: ({ variant }: { variant?: string }) => (
+    <svg data-testid="logo-icon" data-variant={variant} />
   ),
 }))
 

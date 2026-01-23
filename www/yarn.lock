@@ -6743,11 +6743,13 @@ __metadata:
     eslint: ^9.13.0
     eslint-plugin-prettier: ^5.2.1
     eslint-plugin-react-hooks: ^5.0.0
+    loops: ^6.0.1
     next: 15.3.8
     postcss: ^8
     posthog-js: ^1.298.1
     react: 19.2.3
     react-dom: 19.2.3
+    react-transition-group: ^4.4.5
     rehype-mdx-code-props: ^2.0.0
     rehype-slug: ^6.0.0
     remark-frontmatter: ^5.0.0
@@ -11610,6 +11612,13 @@ __metadata:
   version: 3.1.0
   resolution: "longest-streak@npm:3.1.0"
   checksum: 7c2f02d0454b52834d1bcedef79c557bd295ee71fdabb02d041ff3aa9da48a90b5df7c0409156dedbc4df9b65da18742652aaea4759d6ece01f08971af6a7eaa
+  languageName: node
+  linkType: hard
+
+"loops@npm:^6.0.1":
+  version: 6.0.1
+  resolution: "loops@npm:6.0.1"
+  checksum: ae1231a9fa210eacaac562f573c69ea13225f89be8cb59231e3eb962a5cc6f6bf4875992fea940a762c40e56cf852675949fc590b940743ba6be413a663b3710
   languageName: node
   linkType: hard
 

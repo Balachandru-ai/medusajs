@@ -196,6 +196,8 @@ module.exports = {
           alphas: {
             alpha: {
               250: "var(--docs-alphas-alpha-250)",
+              6: "var(--docs-alphas-alpha-6)",
+              16: "var(--docs-alphas-alpha-16)",
             }
           }
         },
@@ -280,8 +282,18 @@ module.exports = {
         "subtle-code-fade-right-to-left-dark": `linear-gradient(90deg, #30303380, #303033)`,
         "border-dotted":
           "linear-gradient(90deg,var(--docs-border-strong) 1px,transparent 1px)",
+        "border-dotted-disabled":
+          "linear-gradient(90deg,var(--docs-fg-disabled) 1px,transparent 1px)",
+        "border-dotted-disabled-vertical":
+          "linear-gradient(180deg,var(--docs-fg-disabled) 1px,transparent 1px)",
         "ai-assistant-bottom":
           "linear-gradient(180deg, rgba(255, 255, 255, 0.00) 0%, var(--docs-bg-base) 100%)",
+        "bg-stripes": "url('/images/bg-stripes.png')",
+        "bg-stripes-dark": "url('/images/bg-stripes-dark.png')",
+        "bg-stripes-subtle": "url('/images/bg-stripes-subtle.png')",
+        "bg-stripes-subtle-dark": "url('/images/bg-stripes-subtle-dark.png')",
+        "bg-bloom-callout": "linear-gradient(90deg, var(--docs-tags-orange-bg) 0%, var(--docs-tags-red-bg) 33%, var(--docs-tags-purple-bg) 66%, var(--docs-tags-blue-bg) 100%)",
+        "bg-bloom-callout-text": "linear-gradient(90deg, var(--docs-tags-orange-text) 0%, var(--docs-tags-red-text) 33%, var(--docs-tags-purple-text) 66%, var(--docs-tags-blue-text) 100%)",
       },
       screens: {
         xs: "568px",
@@ -342,6 +354,13 @@ module.exports = {
         xl: "1419px",
       },
       fontSize: {
+        display: [
+          "44px",
+          {
+            lineHeight: "110%",
+            fontWeight: "500",
+          }
+        ],
         h1: [
           "24px",
           {
@@ -524,6 +543,27 @@ module.exports = {
             fontWeight: "400",
           },
         ],
+        "code-paragraph-xsmall-plus": [
+          "12px",
+          {
+            lineHeight: "160%",
+            fontWeight: "500",
+          }
+        ],
+        "code-paragraph-xsmall": [
+          "12px",
+          {
+            lineHeight: "160%",
+            fontWeight: "400",
+          }
+        ],
+        "code-paragraph-2xsmall": [
+          "11px",
+          {
+            lineHeight: "160%",
+            fontWeight: "400",
+          }
+        ]
       },
       keyframes: {
         fadeIn: {
@@ -854,7 +894,8 @@ module.exports = {
           },
           ".code-block-highlight-light": {
             "*::selection": {
-              "background-color": "var(--docs-bg-highlight) !important",
+              "background-color": "var(--docs-code-subtle-highlight-bg) !important",
+              color: "var(--docs-code-subtle-highlight-text)",
             },
           },
           ".badge": {

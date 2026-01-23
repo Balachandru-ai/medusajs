@@ -1,6 +1,5 @@
 import clsx from "clsx"
 import React, { useMemo } from "react"
-import { AiAssistantIcon } from "../../Icons/AiAssistant"
 import { CodeMdx, CodeMdxProps } from "../../CodeMdx"
 import { DotsLoading } from "../../Loading/Dots"
 import { MarkdownContent } from "../../MarkdownContent"
@@ -37,11 +36,6 @@ export const AiAssistantThreadItem = ({ item }: AiAssistantThreadItemProps) => {
         item.type === "answer" && "!pr-[20px]"
       )}
     >
-      {item.type !== "question" && (
-        <span className="w-[20px] block">
-          <AiAssistantIcon />
-        </span>
-      )}
       <div
         className={clsx(
           "txt-small text-medusa-fg-base",

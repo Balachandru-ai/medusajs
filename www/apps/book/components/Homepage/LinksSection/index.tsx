@@ -1,97 +1,96 @@
 import clsx from "clsx"
-import { Link } from "docs-ui"
+import { HeadlineTags, ShadedBlock } from "docs-ui"
+import Link from "next/link"
 
 const HomepageLinksSection = () => {
-  const sections: SectionProps[] = [
+  const links: {
+    tag: string
+    links: {
+      text: string
+      link: string
+    }[]
+  }[] = [
     {
-      title: "Customize Medusa Application",
+      tag: "Customize Medusa Application",
       links: [
         {
-          href: "/learn/installation",
+          link: "/learn/installation",
           text: "Create your first application",
         },
         {
-          href: "https://docs.medusajs.com/cloud/sign-up",
+          link: "https://docs.medusajs.com/cloud/sign-up",
           text: "Deploy to Medusa Cloud",
         },
         {
-          href: "https://docs.medusajs.com/resources/integrations",
+          link: "https://docs.medusajs.com/resources/integrations",
           text: "Browse third-party integrations",
         },
       ],
     },
     {
-      title: "Admin Development",
+      tag: "Admin Development",
       links: [
         {
-          href: "/learn/fundamentals/admin/widgets",
+          link: "/learn/fundamentals/admin/widgets",
           text: "Build a UI Widget",
         },
         {
-          href: "/learn/fundamentals/admin/ui-routes",
+          link: "/learn/fundamentals/admin/ui-routes",
           text: "Add a UI Route",
         },
         {
-          href: "https://docs.medusajs.com/ui",
+          link: "https://docs.medusajs.com/ui",
           text: "Browse the UI component library",
         },
       ],
     },
     {
-      title: "Storefront Development",
+      tag: "Storefront Development",
       links: [
         {
-          href: "https://docs.medusajs.com/resources/nextjs-starter",
+          link: "https://docs.medusajs.com/resources/nextjs-starter",
           text: "Explore our storefront starter",
         },
         {
-          href: "https://docs.medusajs.com/resources/storefront-development",
+          link: "https://docs.medusajs.com/resources/storefront-development",
           text: "Build a custom storefront",
         },
         {
-          href: "https://docs.medusajs.com/ui",
+          link: "https://docs.medusajs.com/ui",
           text: "Browse the UI component library",
         },
       ],
     },
   ]
-  return (
-    <div
-      className={clsx(
-        "hidden lg:block py-4 w-full",
-        "border-y border-medusa-border-base xl:mx-auto"
-      )}
-    >
-      <div className="flex gap-4 flex-wrap xl:mx-auto xl:max-w-[1136px] w-full px-4 xl:px-0">
-        {sections.map((section, index) => (
-          <Section {...section} key={index} />
-        ))}
-      </div>
-    </div>
-  )
-}
 
-type SectionProps = {
-  title: string
-  links: {
-    text: string
-    href: string
-  }[]
-}
-
-const Section = ({ title, links }: SectionProps) => {
   return (
-    <div className="flex flex-col gap-0.5 flex-1">
-      <h3 className="text-h3 text-medusa-fg-base">{title}</h3>
-      {links.map((link, index) => (
-        <Link
+    <div className="w-full flex gap-0 flex-col md:flex-row md:min-h-[320px] border-b border-medusa-border-base">
+      {links.map((section, index) => (
+        <div
           key={index}
-          className="text-compact-small-plus"
-          href={link.href}
-          prefetch={false}
+          className={clsx(
+            "p-2 flex justify-between flex-col w-full md:w-1/3 gap-2",
+            "border-b border-medusa-border-base md:border-b-0",
+            index !== links.length - 1 && "md:border-r"
+          )}
         >
-          {link.text}
-        </Link>
+          <HeadlineTags tags={[section.tag]} className="!justify-start" />
+          <div className="flex flex-col gap-0.75">
+            {section.links.map((link, linkIndex) => (
+              <div className="flex gap-0.75" key={linkIndex}>
+                <ShadedBlock className="!w-2 min-h-2" />
+                <Link
+                  href={link.link}
+                  className={clsx(
+                    "flex-1 text-medusa-fg-base text-h2 hover:underline hover:text-medusa-fg-interactive"
+                  )}
+                >
+                  {link.text}
+                </Link>
+              </div>
+            ))}
+          </div>
+        </div>
       ))}
     </div>
   )

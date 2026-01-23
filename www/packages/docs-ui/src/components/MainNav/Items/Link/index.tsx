@@ -21,11 +21,8 @@ export const MainNavItemLink = ({
   return (
     <LinkButton
       href={item.link}
-      className={clsx(
-        isActive && "text-medusa-fg-base",
-        !isActive && "text-medusa-fg-muted hover:text-medusa-fg-subtle",
-        className
-      )}
+      className={clsx(className)}
+      variant={isActive ? "base" : "subtle"}
     >
       {item.title}
       {icon}
