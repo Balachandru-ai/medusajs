@@ -425,7 +425,7 @@ export class RBACFieldFilter implements IFieldFilter {
     const { fields, starFields } = parsedFields
     const fieldsToCheck = [...fields, ...Array.from(starFields)]
 
-    if (!fieldsToCheck.length || !this.policies.length) {
+    if (!fieldsToCheck.length || !this.policies.length || !entity) {
       return []
     }
 
