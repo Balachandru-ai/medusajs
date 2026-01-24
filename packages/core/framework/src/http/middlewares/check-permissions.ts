@@ -9,7 +9,7 @@ import type {
 
 export type PolicyAction = {
   resource: string
-  operation: string
+  operation: string | string[]
 }
 
 /**
@@ -28,7 +28,7 @@ async function checkPermissions(
 
   const authContext = req.auth_context
   // Get roles from JWT token's app_metadata
-  const roleIds = (authContext.app_metadata?.roles as string[]) || []
+  const roleIds = (authContext?.app_metadata?.roles as string[]) || []
 
   if (!roleIds.length) {
     throw new MedusaError(MedusaError.Types.UNAUTHORIZED, "Unauthorized")
