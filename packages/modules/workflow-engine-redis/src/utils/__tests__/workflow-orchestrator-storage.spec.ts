@@ -36,6 +36,7 @@ const baseModuleDeps = {
   redisWorkerConnection: redisMock,
   redisQueueName: "medusa-workflows",
   redisJobQueueName: "medusa-workflows-jobs",
+  redisCleanerQueueName: "medusa-workflows-cleaner",
   logger: loggerMock,
   isWorkerMode: true,
 }
@@ -65,7 +66,7 @@ describe("RedisDistributedTransactionStorage", () => {
         connection: redisMock,
       })
 
-      expect(Queue).toHaveBeenCalledWith("workflows-cleaner", {
+      expect(Queue).toHaveBeenCalledWith("medusa-workflows-cleaner", {
         connection: redisMock,
       })
 
@@ -138,7 +139,7 @@ describe("RedisDistributedTransactionStorage", () => {
         redisCleanerWorkerOptions: {},
       })
 
-      expect(Queue).toHaveBeenCalledWith("workflows-cleaner", {
+      expect(Queue).toHaveBeenCalledWith("medusa-workflows-cleaner", {
         ...cleanerQueueOptions,
         connection: redisMock,
       })
@@ -171,7 +172,7 @@ describe("RedisDistributedTransactionStorage", () => {
         connection: redisMock,
       })
 
-      expect(Queue).toHaveBeenNthCalledWith(3, "workflows-cleaner", {
+      expect(Queue).toHaveBeenNthCalledWith(3, "medusa-workflows-cleaner", {
         ...cleanerQueueOptions,
         connection: redisMock,
       })
@@ -243,7 +244,7 @@ describe("RedisDistributedTransactionStorage", () => {
       )
 
       expect(Worker).toHaveBeenCalledWith(
-        "workflows-cleaner",
+        "medusa-workflows-cleaner",
         expect.any(Function),
         {
           ...cleanerWorkerOptions,
@@ -290,7 +291,7 @@ describe("RedisDistributedTransactionStorage", () => {
 
       expect(Worker).toHaveBeenNthCalledWith(
         3,
-        "workflows-cleaner",
+        "medusa-workflows-cleaner",
         expect.any(Function),
         expect.objectContaining({ concurrency: 1 })
       )

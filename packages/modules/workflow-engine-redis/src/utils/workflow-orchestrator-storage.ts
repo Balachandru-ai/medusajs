@@ -91,6 +91,7 @@ export class RedisDistributedTransactionStorage
     redisWorkerConnection,
     redisQueueName,
     redisJobQueueName,
+    redisCleanerQueueName,
     redisMainQueueOptions,
     redisMainWorkerOptions,
     redisJobQueueOptions,
@@ -105,6 +106,7 @@ export class RedisDistributedTransactionStorage
     redisWorkerConnection: Redis
     redisQueueName: string
     redisJobQueueName: string
+    redisCleanerQueueName: string
     redisMainQueueOptions: Omit<QueueOptions, "connection">
     redisMainWorkerOptions: Omit<WorkerOptions, "connection">
     redisJobQueueOptions: Omit<QueueOptions, "connection">
@@ -118,7 +120,7 @@ export class RedisDistributedTransactionStorage
     this.logger_ = logger
     this.redisClient = redisConnection
     this.redisWorkerConnection = redisWorkerConnection
-    this.cleanerQueueName = "workflows-cleaner"
+    this.cleanerQueueName = redisCleanerQueueName ?? "medusa-workflows-cleaner"
     this.queueName = redisQueueName
     this.jobQueueName = redisJobQueueName
 

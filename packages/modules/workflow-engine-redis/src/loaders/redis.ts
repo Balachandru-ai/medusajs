@@ -17,6 +17,7 @@ export default async (
     redisOptions: newRedisOptions,
     jobQueueName,
     queueName,
+    cleanerQueueName,
     // Shared options
     queueOptions,
     workerOptions,
@@ -57,6 +58,7 @@ export default async (
 
   const queueName_ = queueName ?? "medusa-workflows"
   const jobQueueName_ = jobQueueName ?? "medusa-workflows-jobs"
+  const cleanerQueueName_ = cleanerQueueName ?? "medusa-workflows-cleaner"
 
   // Resolve per-queue options by merging shared defaults with per-queue overrides
   const resolvedMainQueueOptions = {
@@ -125,6 +127,7 @@ export default async (
     redisSubscriber: asValue(redisSubscriber),
     redisQueueName: asValue(queueName_),
     redisJobQueueName: asValue(jobQueueName_),
+    redisCleanerQueueName: asValue(cleanerQueueName_),
     // Per-queue resolved options
     redisMainQueueOptions: asValue(resolvedMainQueueOptions),
     redisMainWorkerOptions: asValue(resolvedMainWorkerOptions),

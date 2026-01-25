@@ -67,6 +67,12 @@ export type RedisWorkflowsOptions = {
   jobQueueName?: string
 
   /**
+   * Name for the cleaner queue that handles periodic cleanup of expired workflow executions.
+   * @default "medusa-workflows-cleaner"
+   */
+  cleanerQueueName?: string
+
+  /**
    * Redis client options
    * @deprecated Use `redisOptions` instead for consistency with other modules
    */
