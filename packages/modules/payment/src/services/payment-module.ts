@@ -887,8 +887,8 @@ export default class PaymentModuleService
     )
 
     if (
-      MathBN.gte(
-        MathBN.sub(totalRefundedAmount, capturedAmount),
+      MathBN.lt(
+        MathBN.sub(capturedAmount, totalRefundedAmount),
         currencyEpsilon
       )
     ) {
