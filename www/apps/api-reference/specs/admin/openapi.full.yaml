@@ -358,6 +358,7 @@ tags:
       url: https://docs.medusajs.com/resources/commerce-modules/promotion/concepts
     x-associatedSchema:
       $ref: '#/components/schemas/AdminPromotion'
+  - name: Rbac
   - name: Refund Reasons
     description: |
       A refund reason is a possible reason used when issuing a refund to the customer, such as when returning an item and refunding the customer.
@@ -46087,6 +46088,558 @@ paths:
           $ref: '#/components/responses/invalid_request_error'
         '500':
           $ref: '#/components/responses/500_error'
+  /admin/rbac/policies:
+    get:
+      operationId: GetRbacPolicies
+      summary: List Rbac
+      description: Retrieve a list of rbac. The rbac can be filtered by fields such as `id`. The rbac can also be sorted or paginated.
+      x-authenticated: true
+      parameters: []
+      security:
+        - api_token: []
+        - cookie_auth: []
+        - jwt_token: []
+      x-codeSamples:
+        - lang: Shell
+          label: cURL
+          source: |-
+            curl '{backend_url}/admin/rbac/policies' \
+            -H 'Authorization: Bearer {access_token}'
+      tags:
+        - Rbac
+      responses:
+        '200':
+          description: OK
+        '400':
+          $ref: '#/components/responses/400_error'
+        '401':
+          $ref: '#/components/responses/unauthorized'
+        '404':
+          $ref: '#/components/responses/not_found_error'
+        '409':
+          $ref: '#/components/responses/invalid_state_error'
+        '422':
+          $ref: '#/components/responses/invalid_request_error'
+        '500':
+          $ref: '#/components/responses/500_error'
+    post:
+      operationId: PostRbacPolicies
+      summary: Create Rbac
+      description: Create a rbac.
+      x-authenticated: true
+      parameters: []
+      security:
+        - api_token: []
+        - cookie_auth: []
+        - jwt_token: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AdminCreateRbacPolicy'
+      x-codeSamples:
+        - lang: Shell
+          label: cURL
+          source: |-
+            curl -X POST '{backend_url}/admin/rbac/policies' \
+            -H 'Authorization: Bearer {access_token}' \
+            -H 'Content-Type: application/json' \
+            --data-raw '{
+              "key": "{value}",
+              "resource": "{value}",
+              "operation": "{value}"
+            }'
+      tags:
+        - Rbac
+      responses:
+        '200':
+          description: OK
+        '400':
+          $ref: '#/components/responses/400_error'
+        '401':
+          $ref: '#/components/responses/unauthorized'
+        '404':
+          $ref: '#/components/responses/not_found_error'
+        '409':
+          $ref: '#/components/responses/invalid_state_error'
+        '422':
+          $ref: '#/components/responses/invalid_request_error'
+        '500':
+          $ref: '#/components/responses/500_error'
+      x-workflow: createRbacPoliciesWorkflow
+      x-events: []
+  /admin/rbac/policies/{id}:
+    get:
+      operationId: GetRbacPoliciesId
+      summary: List Policies
+      description: Retrieve a list of policies in a rbac. The policies can be filtered by fields like FILTER FIELDS. The policies can also be paginated.
+      x-authenticated: true
+      parameters:
+        - name: id
+          in: path
+          description: The rbac's ID.
+          required: true
+          schema:
+            type: string
+      security:
+        - api_token: []
+        - cookie_auth: []
+        - jwt_token: []
+      x-codeSamples:
+        - lang: Shell
+          label: cURL
+          source: |-
+            curl '{backend_url}/admin/rbac/policies/{id}' \
+            -H 'Authorization: Bearer {access_token}'
+      tags:
+        - Rbac
+      responses:
+        '200':
+          description: OK
+        '400':
+          $ref: '#/components/responses/400_error'
+        '401':
+          $ref: '#/components/responses/unauthorized'
+        '404':
+          $ref: '#/components/responses/not_found_error'
+        '409':
+          $ref: '#/components/responses/invalid_state_error'
+        '422':
+          $ref: '#/components/responses/invalid_request_error'
+        '500':
+          $ref: '#/components/responses/500_error'
+    post:
+      operationId: PostRbacPoliciesId
+      summary: Add Policy to Rbac
+      description: Add a Policy to a rbac
+      x-authenticated: true
+      parameters:
+        - name: id
+          in: path
+          description: The rbac's ID.
+          required: true
+          schema:
+            type: string
+      security:
+        - api_token: []
+        - cookie_auth: []
+        - jwt_token: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AdminUpdateRbacPolicy'
+      x-codeSamples:
+        - lang: Shell
+          label: cURL
+          source: |-
+            curl -X POST '{backend_url}/admin/rbac/policies/{id}' \
+            -H 'Authorization: Bearer {access_token}'
+      tags:
+        - Rbac
+      responses:
+        '200':
+          description: OK
+        '400':
+          $ref: '#/components/responses/400_error'
+        '401':
+          $ref: '#/components/responses/unauthorized'
+        '404':
+          $ref: '#/components/responses/not_found_error'
+        '409':
+          $ref: '#/components/responses/invalid_state_error'
+        '422':
+          $ref: '#/components/responses/invalid_request_error'
+        '500':
+          $ref: '#/components/responses/500_error'
+      x-workflow: updateRbacPoliciesWorkflow
+      x-events: []
+    delete:
+      operationId: DeleteRbacPoliciesId
+      summary: Remove Policy from Rbac
+      description: Remove a Policy from a rbac.
+      x-authenticated: true
+      parameters:
+        - name: id
+          in: path
+          description: The rbac's ID.
+          required: true
+          schema:
+            type: string
+      security:
+        - api_token: []
+        - cookie_auth: []
+        - jwt_token: []
+      x-codeSamples:
+        - lang: Shell
+          label: cURL
+          source: |-
+            curl -X DELETE '{backend_url}/admin/rbac/policies/{id}' \
+            -H 'Authorization: Bearer {access_token}'
+      tags:
+        - Rbac
+      responses:
+        '200':
+          description: OK
+        '400':
+          $ref: '#/components/responses/400_error'
+        '401':
+          $ref: '#/components/responses/unauthorized'
+        '404':
+          $ref: '#/components/responses/not_found_error'
+        '409':
+          $ref: '#/components/responses/invalid_state_error'
+        '422':
+          $ref: '#/components/responses/invalid_request_error'
+        '500':
+          $ref: '#/components/responses/500_error'
+      x-workflow: deleteRbacPoliciesWorkflow
+      x-events: []
+  /admin/rbac/roles:
+    get:
+      operationId: GetRbacRoles
+      summary: List Rbac
+      description: Retrieve a list of rbac. The rbac can be filtered by fields such as `id`. The rbac can also be sorted or paginated.
+      x-authenticated: true
+      parameters: []
+      security:
+        - api_token: []
+        - cookie_auth: []
+        - jwt_token: []
+      x-codeSamples:
+        - lang: Shell
+          label: cURL
+          source: |-
+            curl '{backend_url}/admin/rbac/roles' \
+            -H 'Authorization: Bearer {access_token}'
+      tags:
+        - Rbac
+      responses:
+        '200':
+          description: OK
+        '400':
+          $ref: '#/components/responses/400_error'
+        '401':
+          $ref: '#/components/responses/unauthorized'
+        '404':
+          $ref: '#/components/responses/not_found_error'
+        '409':
+          $ref: '#/components/responses/invalid_state_error'
+        '422':
+          $ref: '#/components/responses/invalid_request_error'
+        '500':
+          $ref: '#/components/responses/500_error'
+    post:
+      operationId: PostRbacRoles
+      summary: Create Rbac
+      description: Create a rbac.
+      x-authenticated: true
+      parameters: []
+      security:
+        - api_token: []
+        - cookie_auth: []
+        - jwt_token: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AdminCreateRbacRole'
+      x-codeSamples:
+        - lang: Shell
+          label: cURL
+          source: |-
+            curl -X POST '{backend_url}/admin/rbac/roles' \
+            -H 'Authorization: Bearer {access_token}' \
+            -H 'Content-Type: application/json' \
+            --data-raw '{
+              "name": "Ruthie"
+            }'
+      tags:
+        - Rbac
+      responses:
+        '200':
+          description: OK
+        '400':
+          $ref: '#/components/responses/400_error'
+        '401':
+          $ref: '#/components/responses/unauthorized'
+        '404':
+          $ref: '#/components/responses/not_found_error'
+        '409':
+          $ref: '#/components/responses/invalid_state_error'
+        '422':
+          $ref: '#/components/responses/invalid_request_error'
+        '500':
+          $ref: '#/components/responses/500_error'
+      x-workflow: createRbacRolesWorkflow
+      x-events: []
+  /admin/rbac/roles/{id}:
+    get:
+      operationId: GetRbacRolesId
+      summary: List Roles
+      description: Retrieve a list of roles in a rbac. The roles can be filtered by fields like FILTER FIELDS. The roles can also be paginated.
+      x-authenticated: true
+      parameters:
+        - name: id
+          in: path
+          description: The rbac's ID.
+          required: true
+          schema:
+            type: string
+      security:
+        - api_token: []
+        - cookie_auth: []
+        - jwt_token: []
+      x-codeSamples:
+        - lang: Shell
+          label: cURL
+          source: |-
+            curl '{backend_url}/admin/rbac/roles/{id}' \
+            -H 'Authorization: Bearer {access_token}'
+      tags:
+        - Rbac
+      responses:
+        '200':
+          description: OK
+        '400':
+          $ref: '#/components/responses/400_error'
+        '401':
+          $ref: '#/components/responses/unauthorized'
+        '404':
+          $ref: '#/components/responses/not_found_error'
+        '409':
+          $ref: '#/components/responses/invalid_state_error'
+        '422':
+          $ref: '#/components/responses/invalid_request_error'
+        '500':
+          $ref: '#/components/responses/500_error'
+    post:
+      operationId: PostRbacRolesId
+      summary: Add Role to Rbac
+      description: Add a Role to a rbac
+      x-authenticated: true
+      parameters:
+        - name: id
+          in: path
+          description: The rbac's ID.
+          required: true
+          schema:
+            type: string
+      security:
+        - api_token: []
+        - cookie_auth: []
+        - jwt_token: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AdminUpdateRbacRole'
+      x-codeSamples:
+        - lang: Shell
+          label: cURL
+          source: |-
+            curl -X POST '{backend_url}/admin/rbac/roles/{id}' \
+            -H 'Authorization: Bearer {access_token}'
+      tags:
+        - Rbac
+      responses:
+        '200':
+          description: OK
+        '400':
+          $ref: '#/components/responses/400_error'
+        '401':
+          $ref: '#/components/responses/unauthorized'
+        '404':
+          $ref: '#/components/responses/not_found_error'
+        '409':
+          $ref: '#/components/responses/invalid_state_error'
+        '422':
+          $ref: '#/components/responses/invalid_request_error'
+        '500':
+          $ref: '#/components/responses/500_error'
+      x-workflow: updateRbacRolesWorkflow
+      x-events: []
+    delete:
+      operationId: DeleteRbacRolesId
+      summary: Remove Role from Rbac
+      description: Remove a Role from a rbac.
+      x-authenticated: true
+      parameters:
+        - name: id
+          in: path
+          description: The rbac's ID.
+          required: true
+          schema:
+            type: string
+      security:
+        - api_token: []
+        - cookie_auth: []
+        - jwt_token: []
+      x-codeSamples:
+        - lang: Shell
+          label: cURL
+          source: |-
+            curl -X DELETE '{backend_url}/admin/rbac/roles/{id}' \
+            -H 'Authorization: Bearer {access_token}'
+      tags:
+        - Rbac
+      responses:
+        '200':
+          description: OK
+        '400':
+          $ref: '#/components/responses/400_error'
+        '401':
+          $ref: '#/components/responses/unauthorized'
+        '404':
+          $ref: '#/components/responses/not_found_error'
+        '409':
+          $ref: '#/components/responses/invalid_state_error'
+        '422':
+          $ref: '#/components/responses/invalid_request_error'
+        '500':
+          $ref: '#/components/responses/500_error'
+      x-workflow: deleteRbacRolesWorkflow
+      x-events: []
+  /admin/rbac/roles/{id}/policies:
+    get:
+      operationId: GetRbacRolesIdPolicies
+      summary: List Policies
+      description: Retrieve a list of policies in a rbac. The policies can be filtered by fields like FILTER FIELDS. The policies can also be paginated.
+      x-authenticated: true
+      parameters:
+        - name: id
+          in: path
+          description: The rbac's ID.
+          required: true
+          schema:
+            type: string
+      security:
+        - api_token: []
+        - cookie_auth: []
+        - jwt_token: []
+      x-codeSamples:
+        - lang: Shell
+          label: cURL
+          source: |-
+            curl '{backend_url}/admin/rbac/roles/{id}/policies' \
+            -H 'Authorization: Bearer {access_token}'
+      tags:
+        - Rbac
+      responses:
+        '200':
+          description: OK
+        '400':
+          $ref: '#/components/responses/400_error'
+        '401':
+          $ref: '#/components/responses/unauthorized'
+        '404':
+          $ref: '#/components/responses/not_found_error'
+        '409':
+          $ref: '#/components/responses/invalid_state_error'
+        '422':
+          $ref: '#/components/responses/invalid_request_error'
+        '500':
+          $ref: '#/components/responses/500_error'
+    post:
+      operationId: PostRbacRolesIdPolicies
+      summary: Add Policy to Rbac
+      description: Add a Policy to a rbac
+      x-authenticated: true
+      parameters:
+        - name: id
+          in: path
+          description: The rbac's ID.
+          required: true
+          schema:
+            type: string
+      security:
+        - api_token: []
+        - cookie_auth: []
+        - jwt_token: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AdminAddRolePolicies'
+      x-codeSamples:
+        - lang: Shell
+          label: cURL
+          source: |-
+            curl -X POST '{backend_url}/admin/rbac/roles/{id}/policies' \
+            -H 'Authorization: Bearer {access_token}' \
+            -H 'Content-Type: application/json' \
+            --data-raw '{
+              "policies": [
+                "{value}"
+              ]
+            }'
+      tags:
+        - Rbac
+      responses:
+        '200':
+          description: OK
+        '400':
+          $ref: '#/components/responses/400_error'
+        '401':
+          $ref: '#/components/responses/unauthorized'
+        '404':
+          $ref: '#/components/responses/not_found_error'
+        '409':
+          $ref: '#/components/responses/invalid_state_error'
+        '422':
+          $ref: '#/components/responses/invalid_request_error'
+        '500':
+          $ref: '#/components/responses/500_error'
+      x-workflow: createRbacRolePoliciesWorkflow
+      x-events: []
+  /admin/rbac/roles/{id}/policies/{policy_id}:
+    delete:
+      operationId: DeleteRbacRolesIdPoliciesPolicy_id
+      summary: Remove Policy from Rbac
+      description: Remove a Policy from a rbac.
+      x-authenticated: true
+      parameters:
+        - name: id
+          in: path
+          description: The rbac's ID.
+          required: true
+          schema:
+            type: string
+        - name: policy_id
+          in: path
+          description: The rbac's policy id.
+          required: true
+          schema:
+            type: string
+      security:
+        - api_token: []
+        - cookie_auth: []
+        - jwt_token: []
+      x-codeSamples:
+        - lang: Shell
+          label: cURL
+          source: |-
+            curl -X DELETE '{backend_url}/admin/rbac/roles/{id}/policies/{policy_id}' \
+            -H 'Authorization: Bearer {access_token}'
+      tags:
+        - Rbac
+      responses:
+        '200':
+          description: OK
+        '400':
+          $ref: '#/components/responses/400_error'
+        '401':
+          $ref: '#/components/responses/unauthorized'
+        '404':
+          $ref: '#/components/responses/not_found_error'
+        '409':
+          $ref: '#/components/responses/invalid_state_error'
+        '422':
+          $ref: '#/components/responses/invalid_request_error'
+        '500':
+          $ref: '#/components/responses/500_error'
+      x-workflow: deleteRbacRolePoliciesWorkflow
+      x-events: []
   /admin/refund-reasons:
     get:
       operationId: GetRefundReasons
@@ -64302,7 +64855,6 @@ paths:
             .then(({ created, updated, deleted }) => {
               console.log(created, updated, deleted)
             })
-            ```
         - lang: Shell
           label: cURL
           source: |-
@@ -68351,6 +68903,20 @@ components:
           externalDocs:
             url: https://docs.medusajs.com/api/admin#manage-metadata
             description: Learn how to manage metadata
+    AdminAddRolePolicies:
+      type: object
+      description: SUMMARY
+      x-schemaName: AdminAddRolePolicies
+      required:
+        - policies
+      properties:
+        policies:
+          type: array
+          description: The rbac's policies.
+          items:
+            type: string
+            title: policies
+            description: The policy's policies.
     AdminApiKey:
       type: object
       description: The API key's details.
@@ -71186,6 +71752,60 @@ components:
                 title: values
                 description: An attribute value.
                 example: prod_123
+    AdminCreateRbacPolicy:
+      type: object
+      description: SUMMARY
+      x-schemaName: AdminCreateRbacPolicy
+      required:
+        - key
+        - resource
+        - operation
+      properties:
+        key:
+          type: string
+          title: key
+          description: The rbac's key.
+        resource:
+          type: string
+          title: resource
+          description: The rbac's resource.
+        operation:
+          type: string
+          title: operation
+          description: The rbac's operation.
+        metadata:
+          type: object
+          description: The rbac's metadata.
+        name:
+          type: string
+          title: name
+          description: The rbac's name.
+        description:
+          type: string
+          title: description
+          description: The rbac's description.
+    AdminCreateRbacRole:
+      type: object
+      description: SUMMARY
+      x-schemaName: AdminCreateRbacRole
+      required:
+        - name
+      properties:
+        name:
+          type: string
+          title: name
+          description: The rbac's name.
+        metadata:
+          type: object
+          description: The rbac's metadata.
+        description:
+          type: string
+          title: description
+          description: The rbac's description.
+        parent_id:
+          type: string
+          title: parent_id
+          description: The rbac's parent id.
     AdminCreateRefundReason:
       type: object
       description: The refund reason's details.
@@ -81781,7 +82401,9 @@ components:
           items:
             allOf:
               - type: object
-                description: The entity's data.
+                description: The datum's data.
+              - type: object
+                description: The datum's data.
                 required:
                   - id
                   - translations
@@ -81789,12 +82411,58 @@ components:
                   id:
                     type: string
                     title: id
-                    description: The entity's ID.
+                    description: The datum's ID.
                   translations:
                     type: array
-                    description: The entity's translations.
+                    description: The datum's translations.
                     items:
-                      $ref: '#/components/schemas/AdminTranslation'
+                      type: object
+                      description: The translation's translations.
+                      x-schemaName: AdminTranslation
+                      required:
+                        - id
+                        - reference_id
+                        - reference
+                        - locale_code
+                        - translations
+                        - created_at
+                        - updated_at
+                        - deleted_at
+                      properties:
+                        id:
+                          type: string
+                          title: id
+                          description: The translation's ID.
+                        reference_id:
+                          type: string
+                          title: reference_id
+                          description: The translation's reference id.
+                        reference:
+                          type: string
+                          title: reference
+                          description: The translation's reference.
+                        locale_code:
+                          type: string
+                          title: locale_code
+                          description: The translation's locale code.
+                        translations:
+                          type: object
+                          description: The translation's translations.
+                        created_at:
+                          type: string
+                          format: date-time
+                          title: created_at
+                          description: The translation's created at.
+                        updated_at:
+                          type: string
+                          format: date-time
+                          title: updated_at
+                          description: The translation's updated at.
+                        deleted_at:
+                          type: string
+                          format: date-time
+                          title: deleted_at
+                          description: The translation's deleted at.
         count:
           type: number
           title: count
@@ -82878,6 +83546,54 @@ components:
                 description: An attribute value.
                 example: prod_123
       x-schemaName: AdminUpdatePromotionRule
+    AdminUpdateRbacPolicy:
+      type: object
+      description: SUMMARY
+      x-schemaName: AdminUpdateRbacPolicy
+      properties:
+        metadata:
+          type: object
+          description: The rbac's metadata.
+        name:
+          type: string
+          title: name
+          description: The rbac's name.
+        description:
+          type: string
+          title: description
+          description: The rbac's description.
+        key:
+          type: string
+          title: key
+          description: The rbac's key.
+        resource:
+          type: string
+          title: resource
+          description: The rbac's resource.
+        operation:
+          type: string
+          title: operation
+          description: The rbac's operation.
+    AdminUpdateRbacRole:
+      type: object
+      description: SUMMARY
+      x-schemaName: AdminUpdateRbacRole
+      properties:
+        metadata:
+          type: object
+          description: The rbac's metadata.
+        name:
+          type: string
+          title: name
+          description: The rbac's name.
+        description:
+          type: string
+          title: description
+          description: The rbac's description.
+        parent_id:
+          type: string
+          title: parent_id
+          description: The rbac's parent id.
     AdminUpdateRefundReason:
       type: object
       description: The properties to update in the refund reason.
