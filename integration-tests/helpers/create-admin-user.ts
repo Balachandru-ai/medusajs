@@ -65,7 +65,6 @@ export const createAdminUser = async (
       },
     }))
 
-    console.log(links)
     await link.create(links)
   }
 
