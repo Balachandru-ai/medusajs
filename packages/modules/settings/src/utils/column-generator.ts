@@ -1,0 +1,420 @@
+import { HttpTypes } from "@medusajs/framework/types"
+import { GraphQLObjectType, isEnumType, isScalarType } from "@medusajs/framework/utils"
+import {
+  EntityDiscoveryService,
+  DiscoveredEntity,
+  SchemaTypeMap,
+  getUnderlyingType,
+  isArrayField,
+  isSingleRelationship,
+} from "./entity-discovery"
+import {
+  inferRenderMode,
+  inferDataType,
+  RenderMode,
+  ColumnDataType,
+} from "./render-mode-mapper"
+import {
+  buildFilterConfig,
+  shouldExcludeField,
+  FieldFilterRules,
+} from "./filter-rules"
+import {
+  getRelationshipFilterConfig,
+  shouldHaveRelationshipFilter,
+} from "./relationship-filters"
+import {
+  ComputedColumnDefinition,
+  getComputedColumnRegistry,
+} from "./computed-columns"
+import {
+  EntityOverride,
+  getEntityOverride,
+  getFieldFilterRules,
+  getDefaultVisibleFields,
+  getFieldOrdering,
+  getAdditionalTypes,
+} from "./entity-overrides"
+
+// Re-export the AdminColumn type from types for convenience
+export type AdminColumn = HttpTypes.AdminColumn
+
+/**
+ * Property label data for customizing column names.
+ */
+export interface PropertyLabel {
+  id: string
+  entity: string
+  property: string
+  label: string
+  description?: string | null
+}
+
+/**
+ * Format a field name to display name.
+ */
+function formatFieldName(fieldName: string): string {
+  return fieldName
+    .replace(/_/g, " ")
+    .replace(/([A-Z])/g, " $1")
+    .replace(/^\s+/, "")
+    .split(" ")
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+    .join(" ")
+}
+
+/**
+ * Generate columns for an entity using the entity discovery service.
+ */
+export function generateEntityColumns(
+  entityDiscovery: EntityDiscoveryService,
+  entityKey: string,
+  propertyLabels?: Map<string, PropertyLabel>,
+  customOverride?: EntityOverride
+): AdminColumn[] | null {
+  if (!entityDiscovery.isInitialized()) {
+    return null
+  }
+
+  const entity = entityDiscovery.getEntity(entityKey)
+  if (!entity) {
+    return null
+  }
+
+  const override = customOverride || getEntityOverride(entity.name)
+  const filterRules = getFieldFilterRules(entity.name)
+  const defaultVisibleFields = getDefaultVisibleFields(entity.name)
+  const fieldOrdering = getFieldOrdering(entity.name)
+  const additionalTypes = getAdditionalTypes(entity.name)
+
+  const schemaTypeMap = entityDiscovery.getSchemaTypeMap()
+  const columns: AdminColumn[] = []
+  const processedFields = new Set<string>()
+
+  // Process main entity type
+  processEntityType(
+    schemaTypeMap,
+    entity.graphqlType,
+    entity,
+    columns,
+    processedFields,
+    filterRules,
+    defaultVisibleFields,
+    fieldOrdering,
+    propertyLabels
+  )
+
+  // Process additional types (e.g., OrderDetail for Order)
+  for (const additionalType of additionalTypes) {
+    const type = schemaTypeMap[additionalType] as GraphQLObjectType | undefined
+    if (type && type.getFields) {
+      processEntityType(
+        schemaTypeMap,
+        additionalType,
+        entity,
+        columns,
+        processedFields,
+        filterRules,
+        defaultVisibleFields,
+        fieldOrdering,
+        propertyLabels
+      )
+    }
+  }
+
+  // Add computed columns
+  const computedColumnRegistry = getComputedColumnRegistry()
+  const computedColumns = computedColumnRegistry.getForEntity(entity.name)
+
+  for (const computed of computedColumns) {
+    const columnId = computed.id
+    if (processedFields.has(columnId)) {
+      continue
+    }
+
+    const label = propertyLabels?.get(columnId)
+    const hasCustomLabel = !!label
+
+    columns.push({
+      id: columnId,
+      name: label?.label || computed.name,
+      description: label?.description || computed.description,
+      field: columnId,
+      sortable: false,
+      hideable: true,
+      default_visible:
+        computed.defaultVisible ||
+        defaultVisibleFields.includes(columnId),
+      data_type: "string",
+      semantic_type: "computed",
+      context: "display",
+      computed: {
+        type: computed.renderMode,
+        required_fields: computed.requiredFields,
+        optional_fields: computed.optionalFields || [],
+      },
+      render_mode: computed.renderMode,
+      default_order: fieldOrdering[columnId] || 850,
+      category: "computed",
+      filter: { enabled: false },
+      source: { module: entity.module, entity: entity.name },
+      custom_label: hasCustomLabel,
+      label_id: label?.id,
+    })
+  }
+
+  // Sort columns by default_order
+  columns.sort((a, b) => (a.default_order || 1000) - (b.default_order || 1000))
+
+  return columns
+}
+
+/**
+ * Process a GraphQL type and add columns.
+ */
+function processEntityType(
+  schemaTypeMap: SchemaTypeMap,
+  typeName: string,
+  entity: DiscoveredEntity,
+  columns: AdminColumn[],
+  processedFields: Set<string>,
+  filterRules: FieldFilterRules,
+  defaultVisibleFields: string[],
+  fieldOrdering: Record<string, number>,
+  propertyLabels?: Map<string, PropertyLabel>,
+  parentPath: string = ""
+): void {
+  const type = schemaTypeMap[typeName] as GraphQLObjectType | undefined
+  if (!type || !type.getFields) {
+    return
+  }
+
+  const fields = type.getFields()
+
+  for (const [fieldName, fieldDef] of Object.entries(fields)) {
+    const fullPath = parentPath ? `${parentPath}.${fieldName}` : fieldName
+
+    // Skip if already processed
+    if (processedFields.has(fullPath)) {
+      continue
+    }
+
+    // Skip excluded fields
+    if (shouldExcludeField(fieldName, filterRules)) {
+      continue
+    }
+
+    const fieldType = (fieldDef as any).type
+    const underlyingType = getUnderlyingType(fieldType)
+    const isArray = isArrayField(fieldType)
+
+    // Handle scalar and enum types
+    if (isScalarType(underlyingType) || isEnumType(underlyingType)) {
+      const graphqlTypeName = underlyingType.name
+      const dataType = inferDataType(graphqlTypeName, fieldName)
+      const { renderMode, semanticType } = inferRenderMode(
+        fieldName,
+        graphqlTypeName
+      )
+
+      const label = propertyLabels?.get(fullPath)
+      const hasCustomLabel = !!label
+
+      processedFields.add(fullPath)
+
+      columns.push({
+        id: fullPath,
+        name: label?.label || formatFieldName(fieldName),
+        description: label?.description || undefined,
+        field: fullPath,
+        sortable: !parentPath, // Only top-level fields are sortable
+        hideable: true,
+        default_visible: defaultVisibleFields.includes(fullPath),
+        data_type: dataType,
+        semantic_type: semanticType,
+        context: "both",
+        render_mode: renderMode,
+        default_order: fieldOrdering[fullPath] || 900,
+        category: parentPath ? "relationship" : "field",
+        filter: buildFilterConfig(
+          fieldName,
+          dataType,
+          false,
+          semanticType,
+          isEnumType(underlyingType)
+            ? underlyingType.getValues().map((v: any) => v.value)
+            : undefined
+        ),
+        source: { module: entity.module, entity: entity.name },
+        custom_label: hasCustomLabel,
+        label_id: label?.id,
+      })
+    }
+    // Handle single relationships (many-to-one, one-to-one)
+    else if (
+      isSingleRelationship(fieldType) &&
+      underlyingType instanceof GraphQLObjectType
+    ) {
+      // Process nested fields with dot notation (one level deep)
+      if (!parentPath) {
+        const relatedTypeName = underlyingType.name
+        const shouldIncludeRelationship = shouldHaveRelationshipFilter(
+          relatedTypeName
+        )
+
+        // Get a few key fields from the related entity
+        const relatedFields = underlyingType.getFields()
+        const keyFields = ["name", "title", "email", "code", "value"]
+
+        for (const keyField of keyFields) {
+          if (relatedFields[keyField]) {
+            const nestedPath = `${fieldName}.${keyField}`
+            const nestedFieldType = (relatedFields[keyField] as any).type
+            const nestedUnderlyingType = getUnderlyingType(nestedFieldType)
+
+            if (
+              isScalarType(nestedUnderlyingType) &&
+              !processedFields.has(nestedPath)
+            ) {
+              const graphqlTypeName = nestedUnderlyingType.name
+              const dataType = inferDataType(graphqlTypeName, keyField)
+              const { renderMode, semanticType } = inferRenderMode(
+                keyField,
+                graphqlTypeName
+              )
+
+              const label = propertyLabels?.get(nestedPath)
+              const hasCustomLabel = !!label
+
+              processedFields.add(nestedPath)
+
+              const filter = buildFilterConfig(
+                keyField,
+                dataType,
+                false,
+                semanticType
+              )
+
+              // Add relationship filter config if applicable
+              if (shouldIncludeRelationship && keyField === "id") {
+                const relationshipFilter = getRelationshipFilterConfig(
+                  entity.name,
+                  fieldName,
+                  relatedTypeName,
+                  false
+                )
+                if (relationshipFilter) {
+                  ;(filter as any).relationship = relationshipFilter
+                }
+              }
+
+              columns.push({
+                id: nestedPath,
+                name:
+                  label?.label ||
+                  `${formatFieldName(fieldName)} ${formatFieldName(keyField)}`,
+                description: label?.description || undefined,
+                field: nestedPath,
+                sortable: false,
+                hideable: true,
+                default_visible: defaultVisibleFields.includes(nestedPath),
+                data_type: dataType,
+                semantic_type: semanticType,
+                context: "both",
+                render_mode: renderMode,
+                default_order: fieldOrdering[nestedPath] || 950,
+                category: "relationship",
+                filter,
+                source: { module: entity.module, entity: entity.name },
+                custom_label: hasCustomLabel,
+                label_id: label?.id,
+              })
+
+              // Only include the first matching key field
+              break
+            }
+          }
+        }
+      }
+    }
+    // Handle array relationships for relationship filter dropdowns
+    else if (isArray && underlyingType instanceof GraphQLObjectType) {
+      const relatedTypeName = underlyingType.name
+
+      // Add a relationship filter if this is a filterable entity
+      if (shouldHaveRelationshipFilter(relatedTypeName) && !parentPath) {
+        const relationshipFilter = getRelationshipFilterConfig(
+          entity.name,
+          fieldName,
+          relatedTypeName,
+          true
+        )
+
+        if (relationshipFilter) {
+          const label = propertyLabels?.get(fieldName)
+          const hasCustomLabel = !!label
+
+          // Add as a virtual filterable column
+          columns.push({
+            id: `${fieldName}_filter`,
+            name: label?.label || formatFieldName(fieldName),
+            description: label?.description || undefined,
+            field: `${fieldName}.id`,
+            sortable: false,
+            hideable: true,
+            default_visible: false,
+            data_type: "string",
+            semantic_type: "relationship",
+            context: "filter",
+            render_mode: "text",
+            default_order: 980,
+            category: "relationship",
+            filter: {
+              enabled: true,
+              operators: ["in"],
+              relationship: relationshipFilter,
+            },
+            source: { module: entity.module, entity: entity.name },
+            custom_label: hasCustomLabel,
+            label_id: label?.id,
+          })
+        }
+      }
+    }
+  }
+}
+
+/**
+ * Convert a computed column definition to an AdminColumn.
+ */
+export function computedColumnToAdminColumn(
+  column: ComputedColumnDefinition,
+  entity: DiscoveredEntity,
+  defaultOrder: number = 850,
+  label?: PropertyLabel
+): AdminColumn {
+  return {
+    id: column.id,
+    name: label?.label || column.name,
+    description: label?.description || column.description,
+    field: column.id,
+    sortable: false,
+    hideable: true,
+    default_visible: column.defaultVisible ?? false,
+    data_type: "string",
+    semantic_type: "computed",
+    context: "display",
+    computed: {
+      type: column.renderMode,
+      required_fields: column.requiredFields,
+      optional_fields: column.optionalFields || [],
+    },
+    render_mode: column.renderMode,
+    default_order: defaultOrder,
+    category: "computed",
+    filter: { enabled: false },
+    source: { module: entity.module, entity: entity.name },
+    custom_label: !!label,
+    label_id: label?.id,
+  }
+}
