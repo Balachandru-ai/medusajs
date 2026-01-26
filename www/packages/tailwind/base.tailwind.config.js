@@ -290,8 +290,6 @@ module.exports = {
           "linear-gradient(180deg, rgba(255, 255, 255, 0.00) 0%, var(--docs-bg-base) 100%)",
         "bg-stripes": "url('/images/bg-stripes.png')",
         "bg-stripes-dark": "url('/images/bg-stripes-dark.png')",
-        "bg-stripes-subtle": "url('/images/bg-stripes-subtle.png')",
-        "bg-stripes-subtle-dark": "url('/images/bg-stripes-subtle-dark.png')",
         "bg-bloom-callout": "linear-gradient(90deg, var(--docs-tags-orange-bg) 0%, var(--docs-tags-red-bg) 33%, var(--docs-tags-purple-bg) 66%, var(--docs-tags-blue-bg) 100%)",
         "bg-bloom-callout-text": "linear-gradient(90deg, var(--docs-tags-orange-text) 0%, var(--docs-tags-red-text) 33%, var(--docs-tags-purple-text) 66%, var(--docs-tags-blue-text) 100%)",
       },

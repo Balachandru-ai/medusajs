@@ -455,7 +455,7 @@ const CodeSection = ({ tab }: CodeSectionProps) => {
         "w-full lg:w-1/2 p-2 flex flex-col gap-2 justify-center bg-medusa-bg-component relative"
       )}
     >
-      <ShadedBlock variant="subtle" className="!h-2" />
+      <ShadedBlock className="!h-2" />
       <CodeBlock
         {...tab.code}
         noCopy={true}
@@ -468,7 +468,7 @@ const CodeSection = ({ tab }: CodeSectionProps) => {
         animateTokenHighlights
         blockStyle="subtle"
       />
-      <ShadedBlock variant="subtle" className="!h-2" />
+      <ShadedBlock className="!h-2" />
       <HeadlineTags
         tags={[
           tab.textSection.link.title,
