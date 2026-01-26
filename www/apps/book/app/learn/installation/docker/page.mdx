@@ -261,7 +261,7 @@ FROM node:20-alpine
 WORKDIR /server
 
 # Install pnpm globally
-RUN npm install -g pnpm
+RUN npm install pnpm -g
 
 # Copy package files and yarn config
 COPY package.json pnpm-lock.yaml* ./
