@@ -1,5 +1,30 @@
 # @medusajs/ui
 
+## 4.1.1
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @medusajs/icons@2.13.1
+
+## 4.1.0
+
+### Minor Changes
+
+- [`a31e72c31c5235240cead2d04e39e5927688eec7`](https://github.com/medusajs/medusa/commit/a31e72c31c5235240cead2d04e39e5927688eec7) Thanks [@olivermrbl](https://github.com/olivermrbl)! - chore: Minor bump
+
+### Patch Changes
+
+- Updated dependencies [[`a31e72c31c5235240cead2d04e39e5927688eec7`](https://github.com/medusajs/medusa/commit/a31e72c31c5235240cead2d04e39e5927688eec7)]:
+  - @medusajs/icons@2.13.0
+
+## 4.0.34
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @medusajs/icons@2.12.6
+
 ## 4.0.33
 
 ### Patch Changes
