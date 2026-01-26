@@ -101,6 +101,10 @@ describe("defineConfig", function () {
           "promotion": {
             "resolve": "@medusajs/medusa/promotion",
           },
+          "rbac": {
+            "disable": true,
+            "resolve": "@medusajs/medusa/rbac",
+          },
           "region": {
             "resolve": "@medusajs/medusa/region",
           },
@@ -118,6 +122,10 @@ describe("defineConfig", function () {
           },
           "tax": {
             "resolve": "@medusajs/medusa/tax",
+          },
+          "translation": {
+            "disable": true,
+            "resolve": "@medusajs/medusa/translation",
           },
           "user": {
             "options": {
@@ -148,9 +156,8 @@ describe("defineConfig", function () {
             "jwtSecret": "supersecret",
             "restrictedFields": {
               "store": [
-                ${DEFAULT_STORE_RESTRICTED_FIELDS.map((v) => `"${v}"`).join(
-                  ",\n                "
-                )},
+                "order",
+                "orders",
               ],
             },
             "storeCors": "http://localhost:8000",
@@ -274,6 +281,10 @@ describe("defineConfig", function () {
           "promotion": {
             "resolve": "@medusajs/medusa/promotion",
           },
+          "rbac": {
+            "disable": true,
+            "resolve": "@medusajs/medusa/rbac",
+          },
           "region": {
             "resolve": "@medusajs/medusa/region",
           },
@@ -291,6 +302,10 @@ describe("defineConfig", function () {
           },
           "tax": {
             "resolve": "@medusajs/medusa/tax",
+          },
+          "translation": {
+            "disable": true,
+            "resolve": "@medusajs/medusa/translation",
           },
           "user": {
             "options": {
@@ -321,9 +336,8 @@ describe("defineConfig", function () {
             "jwtSecret": "supersecret",
             "restrictedFields": {
               "store": [
-                ${DEFAULT_STORE_RESTRICTED_FIELDS.map((v) => `"${v}"`).join(
-                  ",\n                "
-                )},
+                "order",
+                "orders",
               ],
             },
             "storeCors": "http://localhost:8000",
@@ -362,9 +376,7 @@ describe("defineConfig", function () {
             "options": {
               "apiKey": "test",
             },
-            "resolve": "${require.resolve(
-              "../__fixtures__/define-config/github"
-            )}",
+            "resolve": "/Users/carlos/dev/medusa/packages/core/utils/src/common/__fixtures__/define-config/github/index.ts",
           },
           "api_key": {
             "resolve": "@medusajs/medusa/api-key",
@@ -455,6 +467,10 @@ describe("defineConfig", function () {
           "promotion": {
             "resolve": "@medusajs/medusa/promotion",
           },
+          "rbac": {
+            "disable": true,
+            "resolve": "@medusajs/medusa/rbac",
+          },
           "region": {
             "resolve": "@medusajs/medusa/region",
           },
@@ -472,6 +488,10 @@ describe("defineConfig", function () {
           },
           "tax": {
             "resolve": "@medusajs/medusa/tax",
+          },
+          "translation": {
+            "disable": true,
+            "resolve": "@medusajs/medusa/translation",
           },
           "user": {
             "options": {
@@ -502,9 +522,8 @@ describe("defineConfig", function () {
             "jwtSecret": "supersecret",
             "restrictedFields": {
               "store": [
-                ${DEFAULT_STORE_RESTRICTED_FIELDS.map((v) => `"${v}"`).join(
-                  ",\n                "
-                )},
+                "order",
+                "orders",
               ],
             },
             "storeCors": "http://localhost:8000",
@@ -544,9 +563,7 @@ describe("defineConfig", function () {
             "options": {
               "apiKey": "test",
             },
-            "resolve": "${require.resolve(
-              "../__fixtures__/define-config/github"
-            )}",
+            "resolve": "/Users/carlos/dev/medusa/packages/core/utils/src/common/__fixtures__/define-config/github/index.ts",
           },
           "api_key": {
             "resolve": "@medusajs/medusa/api-key",
@@ -637,6 +654,10 @@ describe("defineConfig", function () {
           "promotion": {
             "resolve": "@medusajs/medusa/promotion",
           },
+          "rbac": {
+            "disable": true,
+            "resolve": "@medusajs/medusa/rbac",
+          },
           "region": {
             "resolve": "@medusajs/medusa/region",
           },
@@ -654,6 +675,10 @@ describe("defineConfig", function () {
           },
           "tax": {
             "resolve": "@medusajs/medusa/tax",
+          },
+          "translation": {
+            "disable": true,
+            "resolve": "@medusajs/medusa/translation",
           },
           "user": {
             "options": {
@@ -684,9 +709,8 @@ describe("defineConfig", function () {
             "jwtSecret": "supersecret",
             "restrictedFields": {
               "store": [
-                ${DEFAULT_STORE_RESTRICTED_FIELDS.map((v) => `"${v}"`).join(
-                  ",\n                "
-                )},
+                "order",
+                "orders",
               ],
             },
             "storeCors": "http://localhost:8000",
@@ -807,6 +831,10 @@ describe("defineConfig", function () {
           "promotion": {
             "resolve": "@medusajs/medusa/promotion",
           },
+          "rbac": {
+            "disable": true,
+            "resolve": "@medusajs/medusa/rbac",
+          },
           "region": {
             "resolve": "@medusajs/medusa/region",
           },
@@ -824,6 +852,10 @@ describe("defineConfig", function () {
           },
           "tax": {
             "resolve": "@medusajs/medusa/tax",
+          },
+          "translation": {
+            "disable": true,
+            "resolve": "@medusajs/medusa/translation",
           },
           "user": {
             "options": {
@@ -854,9 +886,8 @@ describe("defineConfig", function () {
             "jwtSecret": "supersecret",
             "restrictedFields": {
               "store": [
-                ${DEFAULT_STORE_RESTRICTED_FIELDS.map((v) => `"${v}"`).join(
-                  ",\n                "
-                )},
+                "order",
+                "orders",
               ],
             },
             "storeCors": "http://localhost:8000",
@@ -980,6 +1011,10 @@ describe("defineConfig", function () {
           "promotion": {
             "resolve": "@medusajs/medusa/promotion",
           },
+          "rbac": {
+            "disable": true,
+            "resolve": "@medusajs/medusa/rbac",
+          },
           "region": {
             "resolve": "@medusajs/medusa/region",
           },
@@ -997,6 +1032,10 @@ describe("defineConfig", function () {
           },
           "tax": {
             "resolve": "@medusajs/medusa/tax",
+          },
+          "translation": {
+            "disable": true,
+            "resolve": "@medusajs/medusa/translation",
           },
           "user": {
             "options": {
@@ -1027,9 +1066,8 @@ describe("defineConfig", function () {
             "jwtSecret": "supersecret",
             "restrictedFields": {
               "store": [
-                ${DEFAULT_STORE_RESTRICTED_FIELDS.map((v) => `"${v}"`).join(
-                  ",\n                "
-                )},
+                "order",
+                "orders",
               ],
             },
             "storeCors": "http://localhost:8000",
@@ -1200,6 +1238,10 @@ describe("defineConfig", function () {
           "promotion": {
             "resolve": "@medusajs/medusa/promotion",
           },
+          "rbac": {
+            "disable": true,
+            "resolve": "@medusajs/medusa/rbac",
+          },
           "region": {
             "resolve": "@medusajs/medusa/region",
           },
@@ -1217,6 +1259,10 @@ describe("defineConfig", function () {
           },
           "tax": {
             "resolve": "@medusajs/medusa/tax",
+          },
+          "translation": {
+            "disable": true,
+            "resolve": "@medusajs/medusa/translation",
           },
           "user": {
             "options": {
@@ -1252,9 +1298,8 @@ describe("defineConfig", function () {
             "jwtSecret": "supersecret",
             "restrictedFields": {
               "store": [
-                ${DEFAULT_STORE_RESTRICTED_FIELDS.map((v) => `"${v}"`).join(
-                  ",\n                "
-                )},
+                "order",
+                "orders",
               ],
             },
             "storeCors": "http://localhost:8000",
@@ -1427,6 +1472,10 @@ describe("defineConfig", function () {
           "promotion": {
             "resolve": "@medusajs/medusa/promotion",
           },
+          "rbac": {
+            "disable": true,
+            "resolve": "@medusajs/medusa/rbac",
+          },
           "region": {
             "resolve": "@medusajs/medusa/region",
           },
@@ -1444,6 +1493,10 @@ describe("defineConfig", function () {
           },
           "tax": {
             "resolve": "@medusajs/medusa/tax",
+          },
+          "translation": {
+            "disable": true,
+            "resolve": "@medusajs/medusa/translation",
           },
           "user": {
             "options": {
@@ -1479,9 +1532,8 @@ describe("defineConfig", function () {
             "jwtSecret": "supersecret",
             "restrictedFields": {
               "store": [
-                ${DEFAULT_STORE_RESTRICTED_FIELDS.map((v) => `"${v}"`).join(
-                  ",\n                "
-                )},
+                "order",
+                "orders",
               ],
             },
             "storeCors": "http://localhost:8000",
@@ -1670,6 +1722,10 @@ describe("defineConfig", function () {
           "promotion": {
             "resolve": "@medusajs/medusa/promotion",
           },
+          "rbac": {
+            "disable": true,
+            "resolve": "@medusajs/medusa/rbac",
+          },
           "region": {
             "resolve": "@medusajs/medusa/region",
           },
@@ -1687,6 +1743,10 @@ describe("defineConfig", function () {
           },
           "tax": {
             "resolve": "@medusajs/medusa/tax",
+          },
+          "translation": {
+            "disable": true,
+            "resolve": "@medusajs/medusa/translation",
           },
           "user": {
             "options": {
@@ -1722,9 +1782,8 @@ describe("defineConfig", function () {
             "jwtSecret": "supersecret",
             "restrictedFields": {
               "store": [
-                ${DEFAULT_STORE_RESTRICTED_FIELDS.map((v) => `"${v}"`).join(
-                  ",\n                "
-                )},
+                "order",
+                "orders",
               ],
             },
             "storeCors": "http://localhost:8000",
@@ -1948,6 +2007,10 @@ describe("defineConfig", function () {
           "promotion": {
             "resolve": "@medusajs/medusa/promotion",
           },
+          "rbac": {
+            "disable": true,
+            "resolve": "@medusajs/medusa/rbac",
+          },
           "region": {
             "resolve": "@medusajs/medusa/region",
           },
@@ -1965,6 +2028,10 @@ describe("defineConfig", function () {
           },
           "tax": {
             "resolve": "@medusajs/medusa/tax",
+          },
+          "translation": {
+            "disable": true,
+            "resolve": "@medusajs/medusa/translation",
           },
           "user": {
             "options": {
@@ -1995,9 +2062,8 @@ describe("defineConfig", function () {
             "jwtSecret": "supersecret",
             "restrictedFields": {
               "store": [
-                ${DEFAULT_STORE_RESTRICTED_FIELDS.map((v) => `"${v}"`).join(
-                  ",\n                "
-                )},
+                "order",
+                "orders",
               ],
             },
             "storeCors": "http://localhost:8000",
@@ -2157,6 +2223,10 @@ describe("defineConfig", function () {
           "promotion": {
             "resolve": "@medusajs/medusa/promotion",
           },
+          "rbac": {
+            "disable": true,
+            "resolve": "@medusajs/medusa/rbac",
+          },
           "region": {
             "resolve": "@medusajs/medusa/region",
           },
@@ -2174,6 +2244,10 @@ describe("defineConfig", function () {
           },
           "tax": {
             "resolve": "@medusajs/medusa/tax",
+          },
+          "translation": {
+            "disable": true,
+            "resolve": "@medusajs/medusa/translation",
           },
           "user": {
             "options": {
@@ -2216,9 +2290,8 @@ describe("defineConfig", function () {
             "jwtSecret": "supersecret",
             "restrictedFields": {
               "store": [
-                ${DEFAULT_STORE_RESTRICTED_FIELDS.map((v) => `"${v}"`).join(
-                  ",\n                "
-                )},
+                "order",
+                "orders",
               ],
             },
             "storeCors": "http://localhost:8000",
@@ -2369,6 +2442,10 @@ describe("defineConfig", function () {
           "promotion": {
             "resolve": "@medusajs/medusa/promotion",
           },
+          "rbac": {
+            "disable": true,
+            "resolve": "@medusajs/medusa/rbac",
+          },
           "region": {
             "resolve": "@medusajs/medusa/region",
           },
@@ -2386,6 +2463,10 @@ describe("defineConfig", function () {
           },
           "tax": {
             "resolve": "@medusajs/medusa/tax",
+          },
+          "translation": {
+            "disable": true,
+            "resolve": "@medusajs/medusa/translation",
           },
           "user": {
             "options": {
@@ -2428,9 +2509,8 @@ describe("defineConfig", function () {
             "jwtSecret": "supersecret",
             "restrictedFields": {
               "store": [
-                ${DEFAULT_STORE_RESTRICTED_FIELDS.map((v) => `"${v}"`).join(
-                  ",\n                "
-                )},
+                "order",
+                "orders",
               ],
             },
             "storeCors": "http://localhost:8000",
@@ -2590,6 +2670,10 @@ describe("defineConfig", function () {
           "promotion": {
             "resolve": "@medusajs/medusa/promotion",
           },
+          "rbac": {
+            "disable": true,
+            "resolve": "@medusajs/medusa/rbac",
+          },
           "region": {
             "resolve": "@medusajs/medusa/region",
           },
@@ -2607,6 +2691,10 @@ describe("defineConfig", function () {
           },
           "tax": {
             "resolve": "@medusajs/medusa/tax",
+          },
+          "translation": {
+            "disable": true,
+            "resolve": "@medusajs/medusa/translation",
           },
           "user": {
             "options": {
@@ -2649,9 +2737,8 @@ describe("defineConfig", function () {
             "jwtSecret": "supersecret",
             "restrictedFields": {
               "store": [
-                ${DEFAULT_STORE_RESTRICTED_FIELDS.map((v) => `"${v}"`).join(
-                  ",\n                "
-                )},
+                "order",
+                "orders",
               ],
             },
             "storeCors": "http://localhost:8000",
