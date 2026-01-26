@@ -215,7 +215,7 @@ export class RedisEventsProvider extends EventsUtils.AbstractEventsProvider<Even
   ): Promise<void> {
     let eventsDataArray = Array.isArray(eventsData) ? eventsData : [eventsData]
 
-    const { groupedEventsTTL = 600 } = options
+    const { groupedEventsTTL = 600 } = { ...options }
     delete options.groupedEventsTTL
 
     const eventsToEmit = eventsDataArray.filter(
