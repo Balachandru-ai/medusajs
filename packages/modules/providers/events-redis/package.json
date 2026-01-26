@@ -1,6 +1,6 @@
 {
   "name": "@medusajs/events-redis",
-  "version": "2.13.0",
+  "version": "2.13.1",
   "description": "Redis Events Provider for Medusa",
   "main": "dist/index.js",
   "repository": {

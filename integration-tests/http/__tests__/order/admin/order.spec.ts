@@ -22,6 +22,7 @@ import {
 
 jest.setTimeout(300000)
 
+
 medusaIntegrationTestRunner({
   testSuite: ({ dbConnection, getContainer, api }) => {
     let order,
@@ -127,6 +128,31 @@ medusaIntegrationTestRunner({
         expect(response.data.orders).toEqual([])
       })
 
+      it("should return the total in list same as the total in the order detail", async () => {
+        /**
+         * Ensure both loading strategies return same data for calculation
+         */
+
+        const detailResponse = await api.get(
+          `/admin/orders/${order.id}`,
+          adminHeaders
+        )
+        const expectedTotal = detailResponse.data.order.total
+
+        const listResponse = await api.get(
+          `/admin/orders?fields=id,status,total`,
+          adminHeaders
+        )
+
+        const listedOrder = listResponse.data.orders.find(
+          (listed) => listed.id === order.id
+        )
+
+        expect(listedOrder).toBeTruthy()
+        expect(listedOrder.total).toBeGreaterThan(0)
+        expect(listedOrder.total).toBe(expectedTotal)
+      })
+
       it("should search orders by billing address", async () => {
         let response = await api.get(
           `/admin/orders?fields=+billing_address.address_1,+billing_address.address_2`,
@@ -182,7 +208,7 @@ medusaIntegrationTestRunner({
         )
       })
 
-      it("should return billing_address when pagination included", async () => {        
+      it("should return billing_address when pagination included", async () => {
         const response = await api.get(
           `/admin/orders?fields=*billing_address&offset=0`,
           adminHeaders
@@ -1936,8 +1962,7 @@ medusaIntegrationTestRunner({
 
         // cancel the fulfillment
         await api.post(
-          `/admin/orders/${tabletOrder.id}/fulfillments/${
-            fulOrder2.fulfillments.find((f) => !f.canceled_at).id
+          `/admin/orders/${tabletOrder.id}/fulfillments/${fulOrder2.fulfillments.find((f) => !f.canceled_at).id
           }/cancel`,
           {},
           adminHeaders
@@ -2330,8 +2355,7 @@ medusaIntegrationTestRunner({
 
         // 7. cancel the entire fulfillment once again
         await api.post(
-          `/admin/orders/${fulOrderFull.id}/fulfillments/${
-            fulOrderFull.fulfillments.find((f) => !f.canceled_at)!.id
+          `/admin/orders/${fulOrderFull.id}/fulfillments/${fulOrderFull.fulfillments.find((f) => !f.canceled_at)!.id
           }/cancel?fields=*fulfillments,*fulfillments.items`,
           {},
           adminHeaders
@@ -2835,8 +2859,7 @@ medusaIntegrationTestRunner({
 
         // cancel the fulfillment for the entire order
         await api.post(
-          `/admin/orders/${bottleOrder.id}/fulfillments/${
-            fulOrder3.fulfillments.find((f) => !f.canceled_at)!.id
+          `/admin/orders/${bottleOrder.id}/fulfillments/${fulOrder3.fulfillments.find((f) => !f.canceled_at)!.id
           }/cancel`,
           {},
           adminHeaders
