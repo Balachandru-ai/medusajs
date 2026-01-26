@@ -45,18 +45,14 @@ export default async function ({
       const rbacEnabled = FeatureFlag.isFeatureEnabled("rbac")
 
       if (rbacEnabled) {
-        try {
-          const rbacService = container.resolve(Modules.RBAC)
-          const superAdminRoles = await rbacService.listRbacRoles({
-            id: "role_super_admin",
-          })
+        const rbacService = container.resolve(Modules.RBAC)
+        const superAdminRoles = await rbacService.listRbacRoles({
+          id: "role_super_admin",
+        })
 
-          if (superAdminRoles.length > 0) {
-            userRoles = [superAdminRoles[0].id]
-            logger.info("Assigning super admin role to user.")
-          }
-        } catch (error) {
-          logger.warn("Could not assign super admin role: " + error.message)
+        if (superAdminRoles.length > 0) {
+          userRoles = [superAdminRoles[0].id]
+          logger.info("Assigning super admin role to user.")
         }
       }
 

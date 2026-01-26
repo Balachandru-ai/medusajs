@@ -36,6 +36,8 @@ type InjectedDependencies = {
   >
 }
 
+const SUPER_ADMIN_KEY = "*:*"
+
 export default class RbacModuleService
   extends MedusaService({
     RbacRole,
@@ -145,7 +147,9 @@ export default class RbacModuleService
     const policiesToSoftDelete = existingPolicies
       .filter(
         (p) =>
-          !p.deleted_at && !registeredKeys.includes(p.key) && p.key !== "*:*"
+          !p.deleted_at &&
+          !registeredKeys.includes(p.key) &&
+          p.key !== SUPER_ADMIN_KEY
       )
       .map((p) => p.id)
 

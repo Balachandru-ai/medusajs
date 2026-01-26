@@ -9,10 +9,10 @@ import {
   ApiKeyType,
   ContainerRegistrationKeys,
   FeatureFlag,
+  generateJwtToken,
   Modules,
   PUBLISHABLE_KEY_HEADER,
 } from "@medusajs/framework/utils"
-import jwt from "jsonwebtoken"
 import Scrypt from "scrypt-kdf"
 import { getContainer } from "../environment-helpers/use-container"
 
@@ -50,8 +50,24 @@ export const createAdminUser = async (
     first_name: "Admin",
     last_name: "User",
     email,
-    roles: userRoles,
   })
+
+  // Link user to RBAC roles
+  if (rbacEnabled && userRoles?.length) {
+    const link = appContainer.resolve(ContainerRegistrationKeys.LINK)
+
+    const links = userRoles.map((role_id) => ({
+      [Modules.USER]: {
+        user_id: user.id,
+      },
+      [Modules.RBAC]: {
+        rbac_role_id: role_id,
+      },
+    }))
+
+    console.log(links)
+    await link.create(links)
+  }
 
   const hashConfig = { logN: 15, r: 8, p: 1 }
   const passwordHash = await Scrypt.kdf("somepassword", hashConfig)
@@ -74,16 +90,20 @@ export const createAdminUser = async (
   const config = container.resolve(ContainerRegistrationKeys.CONFIG_MODULE)
   const { projectConfig } = config
   const { jwtSecret, jwtOptions } = projectConfig.http
-  const token = jwt.sign(
+  const token = generateJwtToken(
     {
       actor_id: user.id,
       actor_type: "user",
       auth_identity_id: authIdentity.id,
+      app_metadata: {
+        user: user.id,
+        roles: userRoles,
+      },
     },
-    jwtSecret,
     {
+      secret: jwtSecret,
       expiresIn: "1d",
-      ...jwtOptions,
+      jwtOptions,
     }
   )
 

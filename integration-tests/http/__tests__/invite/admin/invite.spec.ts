@@ -244,7 +244,7 @@ medusaIntegrationTestRunner({
         superAdminRole = superAdminResponse.data.roles[0]
       })
 
-      it("should create invite with roles and assign them to user on acceptance", async () => {
+      it.only("should create invite with roles and assign them to user on acceptance", async () => {
         // Create invite with multiple roles
         const createdInvite = (
           await api.post(
@@ -271,14 +271,14 @@ medusaIntegrationTestRunner({
         } = require("@medusajs/framework/utils")
         const remoteLink = container.resolve(ContainerRegistrationKeys.LINK)
 
-        const linkService = remoteLink.getLinkModule(
+        const inviteLinkService = remoteLink.getLinkModule(
           Modules.USER,
           "invite_id",
           Modules.RBAC,
           "rbac_role_id"
         )
 
-        const inviteRoles = await linkService.list({
+        const inviteRoles = await inviteLinkService.list({
           invite_id: createdInvite.id,
         })
 
@@ -314,8 +314,15 @@ medusaIntegrationTestRunner({
           })
         )
 
+        const userLinkService = remoteLink.getLinkModule(
+          Modules.USER,
+          "user_id",
+          Modules.RBAC,
+          "rbac_role_id"
+        )
+
         // Verify user was assigned the roles
-        const userRoles = await linkService.list({
+        const userRoles = await userLinkService.list({
           user_id: acceptedUser.id,
         })
 

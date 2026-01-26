@@ -31,5 +31,3 @@ export const GET = async (
     limit: metadata.take,
   })
 }
-
-export const AUTHENTICATE = false
