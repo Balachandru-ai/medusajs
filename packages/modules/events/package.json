@@ -28,10 +28,10 @@
     "test:integration": "../../../node_modules/.bin/jest --passWithNoTests --forceExit --testPathPattern=\"integration-tests/__tests__/.*\\.spec\\.ts\""
   },
   "devDependencies": {
-    "@medusajs/framework": "2.13.0",
-    "@medusajs/test-utils": "2.13.0"
+    "@medusajs/framework": "2.13.1",
+    "@medusajs/test-utils": "2.13.1"
   },
   "peerDependencies": {
-    "@medusajs/framework": "2.13.0"
+    "@medusajs/framework": "2.13.1"
   }
 }
