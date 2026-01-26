@@ -21,9 +21,15 @@ In this chapter, you'll learn how you can use AI assistants and LLMs effectively
 
 ## Claude Code Plugins
 
-Medusa provides [Claude Code plugins](https://github.com/medusajs/medusa-claude-plugins) to assist you in learning and building with Medusa.
+Medusa provides [Claude Code plugins](https://github.com/medusajs/medusa-agent-skills) to assist you in learning and building with Medusa.
 
 If you use Claude Code, our team recommends installing these plugins to enhance your development experience with Medusa.
+
+<Note>
+
+For usage with other AI tools, see the [Use Claude Code Plugins with Other AI Tools](#use-claude-code-plugins-with-other-ai-tools) section.
+
+</Note>
 
 <Table>
   <Table.Header>
@@ -71,7 +77,7 @@ If you want assistance in your Medusa development and you use Claude Code, insta
 
 ```bash
 claude # start claude code
-/plugin marketplace add medusajs/medusa-claude-plugins
+/plugin marketplace add medusajs/medusa-agent-skills
 /plugin install medusa-dev@medusa
 ```
 
@@ -135,7 +141,7 @@ If you're a Medusa beginner and use Claude Code, install the `learn-medusa` plug
 
 ```bash
 claude # start claude code
-/plugin marketplace add medusajs/medusa-claude-plugins
+/plugin marketplace add medusajs/medusa-agent-skills
 /plugin install learn-medusa@medusa
 ```
 
@@ -161,33 +167,32 @@ By the end, you'll have a solid understanding of Medusa's architecture and how t
 
 ### Use Claude Code Plugins with Other AI Tools
 
-The Claude Code plugins include skills, MCP server configurations, and commands. These features are also available in other AI tools like Cursor.
+The Claude Code plugins include skills and MCP server configurations. These features are also available in other AI tools like Cursor.
 
-So, if you don't use Claude Code, you can use the assets in the plugins either by copying them manually or using the [skills](https://skills.sh/) command.
+So, if you don't use Claude Code, you can install the skills with the [skills](https://skills.sh/) command, or copy the plugin's assets manually to your AI tool's configuration directories.
 
 #### Copy with Skills Command
 
 To use the skills with other AI tools like Cursor, you can use the [skills](https://skills.sh/) command. Run the following command in your Medusa project directory:
 
 ```bash npx2yarn
-npx skills add medusajs/medusa-claude-plugins
+npx skills add medusajs/medusa-agent-skills
 ```
 
 You'll be prompted to select which skills you want to add and what AI tool you want to add them to. The command will copy the necessary files to your AI tool's configuration directories.
 
-The `skills` command only copies skill files. So, if you want to use the MCP server configurations and commands, you'll need to copy them manually as explained in the next section.
+The `skills` command only copies skill files. So, if you want to use the MCP server configurations, you'll need to copy them manually as explained in the next section.
 
 #### Copy Manually
 
-You can also copy the skills, MCP server configurations, and commands manually to your AI tool's configuration directories. This is useful if your AI tool is not supported by the skills command, or you want to copy everything, not just specific skills.
+You can also copy the skills and MCP server configurations manually to your AI tool's configuration directories. This is useful if your AI tool is not supported by the skills command, or you want to copy everything, not just specific skills.
 
-To do this, refer to the documentation of your AI tool on where to place skills, MCP server configurations, and commands. Then, copy the relevant files from the [medusa-claude-plugins repository](https://github.com/medusajs/medusa-claude-plugins) to those directories.
+To do this, refer to the documentation of your AI tool on where to place skills and MCP server configurations. Then, copy the relevant files from the [medusa-agent-skills repository](https://github.com/medusajs/medusa-agent-skills) to those directories.
 
 For example, if you're using Cursor and you want to use the `medusa-dev` plugin, you can:
 
-1. Copy the [skills directories](https://github.com/medusajs/medusa-claude-plugins/tree/main/plugins/medusa-dev/skills) to the `.cursor/skills` directory of your Medusa project.
+1. Copy the [skills directories](https://github.com/medusajs/medusa-agent-skills/tree/main/plugins/medusa-dev/skills) to the `.cursor/skills` directory of your Medusa project.
 2. Add the [MCP server configuration](#mcp-remote-server) to the `.cursor/mcp.json` file of your Medusa project.
-3. Add the [commands](https://github.com/medusajs/medusa-claude-plugins/tree/main/plugins/medusa-dev/commands) to the `.cursor/commands` directory of your Medusa project.
 
 You can then use these skills, MCP server, and commands in Cursor to assist you in your Medusa development.
 
