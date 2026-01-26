@@ -1,5 +1,14 @@
 # @medusajs/order
 
+## 2.13.1
+
+### Patch Changes
+
+- [#14629](https://github.com/medusajs/medusa/pull/14629) [`4021571067d33fdd415456fc538ee0035ccd0753`](https://github.com/medusajs/medusa/commit/4021571067d33fdd415456fc538ee0035ccd0753) Thanks [@fPolic](https://github.com/fPolic)! - fix(order): load order items data correctly with select in strategy
+
+- Updated dependencies []:
+  - @medusajs/framework@2.13.1
+
 ## 2.13.0
 
 ### Minor Changes
