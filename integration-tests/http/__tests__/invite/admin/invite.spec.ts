@@ -244,7 +244,7 @@ medusaIntegrationTestRunner({
         superAdminRole = superAdminResponse.data.roles[0]
       })
 
-      it.only("should create invite with roles and assign them to user on acceptance", async () => {
+      it("should create invite with roles and assign them to user on acceptance", async () => {
         // Create invite with multiple roles
         const createdInvite = (
           await api.post(
