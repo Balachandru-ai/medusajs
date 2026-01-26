@@ -1,5 +1,5 @@
 import { MedusaError } from "@medusajs/utils"
-import { hasPermission } from "../../utils/has-permission"
+import { hasPermission } from "../../policies/has-permission"
 import type {
   AuthenticatedMedusaRequest,
   MedusaNextFunction,

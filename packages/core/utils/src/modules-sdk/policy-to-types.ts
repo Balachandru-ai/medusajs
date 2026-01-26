@@ -59,7 +59,7 @@ ${resourceKeys
    * import { PolicyOperation } from '@medusajs/framework/utils'
    * 
    * const readOp = PolicyOperation.read // "read"
-   * const writeOp = PolicyOperation.write // "write"
+   * const writeOp = PolicyOperation.create // "create"
    * const allOp = PolicyOperation.ALL // "*"
    */
   export const PolicyOperation: {
