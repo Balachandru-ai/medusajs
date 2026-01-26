@@ -1,13 +1,18 @@
 import { ExclamationCircle } from "@medusajs/icons"
 import { Container, Heading, Text } from "@medusajs/ui"
+import { useMemo } from "react"
 import { useTranslation } from "react-i18next"
 import { Navigate, Outlet, useLocation } from "react-router-dom"
 import {
+  buildPermission,
   canAccessRoute,
   getRoutePermission,
   type Permission,
 } from "../../../lib/permissions"
-import { usePermissions } from "../../../providers/permissions-provider"
+import {
+  usePermissions,
+  useRegisterPermissions,
+} from "../../../providers/permissions-provider"
 
 interface RoutePermissionGuardProps {
   /**
@@ -57,6 +62,21 @@ export const RoutePermissionGuard = ({
   const location = useLocation()
   const { policy, hasAnyPermission, hasAllPermissions, isLoading } =
     usePermissions()
+  const inferredPermission = useMemo(
+    () => getRoutePermission(location.pathname),
+    [location.pathname]
+  )
+
+  const requiredPermissions = permissions?.length
+    ? permissions
+    : inferredPermission
+      ? [buildPermission(inferredPermission.resource, inferredPermission.operation)]
+      : null
+
+  useRegisterPermissions(requiredPermissions, {
+    requireAll: permissions?.length ? requireAll : false,
+    source: "route",
+  })
 
   // Don't block while loading - TODO: reconsider this
   if (isLoading) {

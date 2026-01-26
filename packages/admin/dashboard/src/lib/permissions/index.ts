@@ -4,7 +4,9 @@ export type {
   PermissionCheckOptions,
   PermissionedNavItem,
   PermissionResource,
+  PermissionRequirement,
   PermissionsContextValue,
+  PermissionsRequirementsContextValue,
   RoutePermission,
   UserPolicy,
 } from "./types"

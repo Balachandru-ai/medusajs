@@ -12367,6 +12367,28 @@
           "required": ["title", "description", "requiredPermission"],
           "additionalProperties": false
         },
+        "requiredPermissions": {
+          "type": "object",
+          "properties": {
+            "title": {
+              "type": "string"
+            },
+            "none": {
+              "type": "string"
+            },
+            "anyOf": {
+              "type": "string"
+            },
+            "allOf": {
+              "type": "string"
+            },
+            "source": {
+              "type": "string"
+            }
+          },
+          "required": ["title", "none", "anyOf", "allOf", "source"],
+          "additionalProperties": false
+        },
         "resources": {
           "type": "object",
           "properties": {
@@ -12499,7 +12521,7 @@
           "additionalProperties": false
         }
       },
-      "required": ["accessDenied", "resources", "actions"],
+      "required": ["accessDenied", "requiredPermissions", "resources", "actions"],
       "additionalProperties": false
     }
   },

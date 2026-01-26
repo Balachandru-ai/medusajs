@@ -3314,6 +3314,13 @@
       "description": "You don't have permission to access this page.",
       "requiredPermission": "Required permission: {{permission}}"
     },
+    "requiredPermissions": {
+      "title": "Required permissions",
+      "none": "No permissions declared in this view.",
+      "anyOf": "Any of",
+      "allOf": "All of",
+      "source": "Source: {{source}}"
+    },
     "resources": {
       "customer": "Customer",
       "customer_group": "Customer Group",

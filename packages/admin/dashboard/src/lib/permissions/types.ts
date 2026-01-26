@@ -71,6 +71,24 @@ export interface PermissionCheckOptions {
 }
 
 /**
+ * Required permissions descriptor for a subtree or component.
+ */
+export interface PermissionRequirement {
+  /**
+   * Permissions required for the subtree/component.
+   */
+  permissions: Permission[]
+  /**
+   * If true, requires ALL permissions. Default is ANY.
+   */
+  requireAll?: boolean
+  /**
+   * Optional source label for debugging or display.
+   */
+  source?: string
+}
+
+/**
  * Props for permission-related context and hooks.
  */
 export interface PermissionsContextValue {
@@ -98,6 +116,27 @@ export interface PermissionsContextValue {
    * Check if user can perform an operation on a resource.
    */
   can: (resource: PermissionResource, operation: PermissionOperation) => boolean
+}
+
+/**
+ * Context value for required permissions collection.
+ */
+export interface PermissionsRequirementsContextValue {
+  /**
+   * Collected permission requirements for the current subtree.
+   */
+  requiredPermissions: PermissionRequirement[]
+  /**
+   * Register required permissions for the current subtree.
+   */
+  registerRequiredPermissions: (
+    id: string,
+    requirement: PermissionRequirement
+  ) => void
+  /**
+   * Unregister required permissions for the current subtree.
+   */
+  unregisterRequiredPermissions: (id: string) => void
 }
 
 /**
