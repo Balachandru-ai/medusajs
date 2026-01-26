@@ -100,9 +100,14 @@ medusaIntegrationTestRunner({
           const response = await api.get("/admin/rbac/roles", adminHeaders)
 
           expect(response.status).toEqual(200)
-          expect(response.data.count).toEqual(3)
+          // 4 roles: Super Admin  + 3 created in beforeEach
+          expect(response.data.count).toEqual(4)
           expect(response.data.roles).toEqual(
             expect.arrayContaining([
+              expect.objectContaining({
+                id: "role_super_admin",
+                name: "Super Admin",
+              }),
               expect.objectContaining({
                 name: "Viewer",
                 description: "Can view resources",
