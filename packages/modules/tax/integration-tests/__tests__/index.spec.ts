@@ -1,8 +1,65 @@
-import { ITaxModuleService } from "@medusajs/framework/types"
+import {
+  ITaxModuleService,
+  ITaxProvider,
+  TaxTypes,
+} from "@medusajs/framework/types"
 import { Module, Modules, toMikroORMEntity } from "@medusajs/framework/utils"
 import { moduleIntegrationTestRunner } from "@medusajs/test-utils"
 import { TaxModuleService } from "@services"
 import { setupTaxStructure } from "../utils/setup-tax-structure"
+
+/**
+ * Mock tax provider that returns TaxLinesResult with sourceMetadata.
+ * Used to test that the tax module properly handles providers that
+ * return the new TaxLinesResult format.
+ */
+class MockMetadataProvider implements ITaxProvider {
+  static identifier = "mock-metadata"
+
+  getIdentifier() {
+    return MockMetadataProvider.identifier
+  }
+
+  async getTaxLines(
+    itemLines: TaxTypes.ItemTaxCalculationLine[],
+    shippingLines: TaxTypes.ShippingTaxCalculationLine[],
+    _context: TaxTypes.TaxCalculationContext
+  ): Promise<TaxTypes.TaxLinesResult> {
+    const taxLines: (TaxTypes.ItemTaxLineDTO | TaxTypes.ShippingTaxLineDTO)[] =
+      []
+
+    for (const itemLine of itemLines) {
+      taxLines.push({
+        rate_id: itemLine.rates[0]?.id,
+        rate: 10,
+        name: "Mock Tax",
+        code: "MOCK",
+        line_item_id: itemLine.line_item.id,
+        provider_id: `tp_${this.getIdentifier()}`,
+      })
+    }
+
+    for (const shippingLine of shippingLines) {
+      taxLines.push({
+        rate_id: shippingLine.rates[0]?.id,
+        rate: 5,
+        name: "Mock Shipping Tax",
+        code: "MOCK_SHIP",
+        shipping_line_id: shippingLine.shipping_line.id,
+        provider_id: `tp_${this.getIdentifier()}`,
+      })
+    }
+
+    return {
+      taxLines,
+      sourceMetadata: {
+        mock_calculation_id: "calc_123",
+        mock_provider: "mock-metadata",
+        mock_timestamp: new Date().toISOString(),
+      },
+    }
+  }
+}
 
 jest.setTimeout(30000)
 
@@ -1182,6 +1239,153 @@ moduleIntegrationTestRunner<ITaxModuleService>({
         const providerService = service.getProvider("tp_system")
         expect(providerService).toBeDefined()
         expect(providerService.getIdentifier()).toEqual("system")
+      })
+
+      describe("TaxLinesResult with sourceMetadata", () => {
+        it("should return array when provider returns array (backward compatibility)", async () => {
+          // The system provider returns arrays, not TaxLinesResult
+          // This test verifies backward compatibility
+          await service.createTaxRegions({
+            country_code: "US",
+            provider_id: "tp_system",
+            default_tax_rate: {
+              name: "Default Rate",
+              rate: 10,
+              code: "DEFAULT",
+            },
+          })
+
+          const item = {
+            id: "item_test",
+            product_id: "product_123",
+            quantity: 1,
+          }
+
+          const calculationContext = {
+            address: {
+              country_code: "US",
+            },
+          }
+
+          const result = await service.getTaxLines([item], calculationContext)
+
+          // The system provider returns an array, not TaxLinesResult
+          expect(Array.isArray(result)).toBe(true)
+          expect(result).toEqual([
+            expect.objectContaining({
+              rate: 10,
+              code: "DEFAULT",
+              name: "Default Rate",
+              line_item_id: "item_test",
+            }),
+          ])
+        })
+      })
+    })
+  },
+})
+
+/**
+ * Separate test runner for testing TaxLinesResult with a mock provider.
+ * This requires injecting a custom provider into the container.
+ */
+moduleIntegrationTestRunner<ITaxModuleService>({
+  moduleName: Modules.TAX,
+  injectedDependencies: {
+    tp_mock_metadata: new MockMetadataProvider(),
+  },
+  testSuite: ({ service }) => {
+    describe("TaxModuleService - TaxLinesResult", function () {
+      it("should return TaxLinesResult when provider returns metadata", async () => {
+        // Create a region that uses our mock provider
+        await service.createTaxRegions({
+          country_code: "DE",
+          provider_id: "tp_mock_metadata",
+          default_tax_rate: {
+            name: "Mock Rate",
+            rate: 10,
+            code: "MOCK",
+          },
+        })
+
+        const item = {
+          id: "item_test",
+          product_id: "product_123",
+          quantity: 1,
+        }
+
+        const calculationContext = {
+          address: {
+            country_code: "DE",
+          },
+        }
+
+        const result = await service.getTaxLines([item], calculationContext)
+
+        // The mock provider returns TaxLinesResult with sourceMetadata
+        expect(Array.isArray(result)).toBe(false)
+        expect(result).toHaveProperty("taxLines")
+        expect(result).toHaveProperty("sourceMetadata")
+
+        const taxLinesResult = result as TaxTypes.TaxLinesResult
+        expect(taxLinesResult.taxLines).toEqual([
+          expect.objectContaining({
+            rate: 10,
+            code: "MOCK",
+            name: "Mock Tax",
+            line_item_id: "item_test",
+            provider_id: "tp_mock_metadata",
+          }),
+        ])
+        expect(taxLinesResult.sourceMetadata).toEqual(
+          expect.objectContaining({
+            mock_calculation_id: "calc_123",
+            mock_provider: "mock-metadata",
+          })
+        )
+      })
+
+      it("should return TaxLinesResult with shipping tax lines", async () => {
+        await service.createTaxRegions({
+          country_code: "FR",
+          provider_id: "tp_mock_metadata",
+          default_tax_rate: {
+            name: "Mock Rate",
+            rate: 5,
+            code: "MOCK",
+          },
+        })
+
+        const shippingItem = {
+          id: "shipping_test",
+          shipping_option_id: "so_123",
+        }
+
+        const calculationContext = {
+          address: {
+            country_code: "FR",
+          },
+        }
+
+        const result = await service.getTaxLines(
+          [shippingItem],
+          calculationContext
+        )
+
+        expect(Array.isArray(result)).toBe(false)
+        expect(result).toHaveProperty("taxLines")
+        expect(result).toHaveProperty("sourceMetadata")
+
+        const taxLinesResult = result as TaxTypes.TaxLinesResult
+        expect(taxLinesResult.taxLines).toEqual([
+          expect.objectContaining({
+            rate: 5,
+            code: "MOCK_SHIP",
+            name: "Mock Shipping Tax",
+            shipping_line_id: "shipping_test",
+            provider_id: "tp_mock_metadata",
+          }),
+        ])
       })
     })
   },

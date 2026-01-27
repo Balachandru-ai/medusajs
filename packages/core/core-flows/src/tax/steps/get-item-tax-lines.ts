@@ -215,7 +215,10 @@ export const getItemTaxLinesStep = createStep(
       return new StepResponse(stepResponseData)
     }
 
-    // Collect metadata from providers to pass through to the workflow
+    // Collect metadata from providers to pass through to the workflow.
+    // Note: If both item and shipping tax calculations return metadata with the same keys,
+    // the shipping metadata will take precedence (merged last). Providers should use
+    // namespaced keys (e.g., 'taxjar_calculation_id') to avoid collisions.
     let collectedMetadata: Record<string, unknown> = {}
 
     if (items.length) {

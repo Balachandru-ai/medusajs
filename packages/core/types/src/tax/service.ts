@@ -11,6 +11,7 @@ import {
   TaxableItemDTO,
   TaxableShippingDTO,
   TaxCalculationContext,
+  TaxLinesResult,
   TaxProviderDTO,
   TaxRateDTO,
   TaxRateRuleDTO,
@@ -801,7 +802,7 @@ export interface ITaxModuleService extends IModuleService {
     items: (TaxableItemDTO | TaxableShippingDTO)[],
     calculationContext: TaxCalculationContext,
     sharedContext?: Context
-  ): Promise<(ItemTaxLineDTO | ShippingTaxLineDTO)[]>
+  ): Promise<(ItemTaxLineDTO | ShippingTaxLineDTO)[] | TaxLinesResult>
 
   /**
    * This method soft deletes tax raes by their IDs.
