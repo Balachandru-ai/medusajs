@@ -26,7 +26,6 @@ export const deletePropertyLabelsStep = createStep(
       Modules.SETTINGS
     )
 
-    // Get the current state for compensation
     const existing = await service.listPropertyLabels({
       id: data.ids,
     })
@@ -44,7 +43,6 @@ export const deletePropertyLabelsStep = createStep(
       Modules.SETTINGS
     )
 
-    // Restore the deleted labels
     await service.createPropertyLabels(
       previousLabels.map((label) => ({
         entity: label.entity,

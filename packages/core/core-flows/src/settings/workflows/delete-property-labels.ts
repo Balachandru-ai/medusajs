@@ -17,7 +17,9 @@ export const deletePropertyLabelsWorkflowId = "delete-property-labels"
  */
 export const deletePropertyLabelsWorkflow = createWorkflow(
   deletePropertyLabelsWorkflowId,
-  (input: WorkflowData<DeletePropertyLabelsWorkflowInput>): WorkflowResponse<void> => {
+  (
+    input: WorkflowData<DeletePropertyLabelsWorkflowInput>
+  ): WorkflowResponse<void> => {
     deletePropertyLabelsStep(input)
 
     return new WorkflowResponse(void 0)

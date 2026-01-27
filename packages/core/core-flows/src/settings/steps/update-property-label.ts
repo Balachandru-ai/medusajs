@@ -26,7 +26,10 @@ export const updatePropertyLabelsStep = createStep(
     data: UpdatePropertyLabelsStepInput,
     { container }
   ): Promise<
-    StepResponse<SettingsTypes.PropertyLabelDTO[], UpdatePropertyLabelsCompensateData>
+    StepResponse<
+      SettingsTypes.PropertyLabelDTO[],
+      UpdatePropertyLabelsCompensateData
+    >
   > => {
     if (!data.property_labels?.length) {
       return new StepResponse([], { previous: [] })
@@ -36,7 +39,6 @@ export const updatePropertyLabelsStep = createStep(
       Modules.SETTINGS
     )
 
-    // Get current state for compensation
     const ids = data.property_labels.map((p) => p.id)
     const existing = await service.listPropertyLabels({ id: ids })
 
@@ -46,7 +48,6 @@ export const updatePropertyLabelsStep = createStep(
       description: e.description,
     }))
 
-    // Update using the array format expected by MedusaService
     const updated = await service.updatePropertyLabels(data.property_labels)
 
     return new StepResponse(updated, { previous })
@@ -60,7 +61,6 @@ export const updatePropertyLabelsStep = createStep(
       Modules.SETTINGS
     )
 
-    // Restore previous values
     const restoreData = compensateData.previous.map((prev) => ({
       id: prev.id,
       label: prev.label,

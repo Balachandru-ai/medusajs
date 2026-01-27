@@ -1,3 +1,4 @@
+import { batchPropertyLabelsWorkflow } from "@medusajs/core-flows"
 import {
   AuthenticatedMedusaRequest,
   MedusaResponse,
@@ -5,7 +6,6 @@ import {
 import { HttpTypes } from "@medusajs/framework/types"
 import { ContainerRegistrationKeys } from "@medusajs/framework/utils"
 import { AdminBatchPropertyLabelsType } from "../validators"
-import { batchPropertyLabelsWorkflow } from "@medusajs/core-flows"
 
 /**
  * Batch create, update, and delete property labels.
@@ -36,30 +36,21 @@ export const POST = async (
     },
   })
 
-  // Refetch created and updated records
-  const createdIds = result.created.map((r) => r.id)
-  const updatedIds = result.updated.map((r) => r.id)
+  const createdIds = new Set(result.created.map((r) => r.id))
+  const updatedIds = new Set(result.updated.map((r) => r.id))
 
   let createdLabels: HttpTypes.AdminPropertyLabel[] = []
   let updatedLabels: HttpTypes.AdminPropertyLabel[] = []
 
-  if (createdIds.length > 0) {
-    const { data } = await query.graph({
-      entity: "property_label",
-      fields: req.queryConfig.fields,
-      filters: { id: createdIds },
-    })
-    createdLabels = data
-  }
+  const ids = Array.from(new Set([...createdIds, ...updatedIds]))
+  const { data } = await query.graph({
+    entity: "property_label",
+    fields: req.queryConfig.fields,
+    filters: { id: ids },
+  })
 
-  if (updatedIds.length > 0) {
-    const { data } = await query.graph({
-      entity: "property_label",
-      fields: req.queryConfig.fields,
-      filters: { id: updatedIds },
-    })
-    updatedLabels = data
-  }
+  createdLabels = data.filter((l) => createdIds.has(l.id))
+  updatedLabels = data.filter((l) => updatedIds.has(l.id))
 
   res.status(200).json({
     created: createdLabels,

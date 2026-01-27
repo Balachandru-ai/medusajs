@@ -1,11 +1,14 @@
+import { createPropertyLabelsWorkflow } from "@medusajs/core-flows"
 import {
   AuthenticatedMedusaRequest,
   MedusaResponse,
 } from "@medusajs/framework/http"
 import { HttpTypes } from "@medusajs/framework/types"
 import { ContainerRegistrationKeys } from "@medusajs/framework/utils"
-import { AdminCreatePropertyLabelType, AdminPropertyLabelListParamsType } from "./validators"
-import { createPropertyLabelsWorkflow } from "@medusajs/core-flows"
+import {
+  AdminCreatePropertyLabelType,
+  AdminPropertyLabelListParamsType,
+} from "./validators"
 
 /**
  * List property labels.

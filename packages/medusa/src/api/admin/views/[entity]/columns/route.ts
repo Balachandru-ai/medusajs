@@ -1,8 +1,8 @@
-import { HttpTypes, SettingsTypes } from "@medusajs/framework/types"
 import {
   AuthenticatedMedusaRequest,
   MedusaResponse,
 } from "@medusajs/framework/http"
+import { HttpTypes, SettingsTypes } from "@medusajs/framework/types"
 import { MedusaError, Modules } from "@medusajs/framework/utils"
 
 /**
@@ -36,7 +36,9 @@ export const GET = async (
 
     throw new MedusaError(
       MedusaError.Types.INVALID_DATA,
-      `Unsupported entity: ${entity}. Available entities include: ${entityNames.join(", ")}${availableEntities.length > 10 ? "..." : ""}`
+      `Unsupported entity: ${entity}. Available entities include: ${entityNames.join(
+        ", "
+      )}${availableEntities.length > 10 ? "..." : ""}`
     )
   }
 

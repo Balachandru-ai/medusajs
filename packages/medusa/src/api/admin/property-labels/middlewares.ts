@@ -1,17 +1,17 @@
 import {
+  MiddlewareRoute,
   validateAndTransformBody,
   validateAndTransformQuery,
 } from "@medusajs/framework/http"
-import { MiddlewareRoute } from "@medusajs/framework/http"
+import { ensureViewConfigurationsEnabled } from "../views/[entity]/configurations/middleware"
 import * as QueryConfig from "./query-config"
 import {
-  AdminPropertyLabelParams,
-  AdminPropertyLabelListParams,
-  AdminCreatePropertyLabel,
-  AdminUpdatePropertyLabel,
   AdminBatchPropertyLabels,
+  AdminCreatePropertyLabel,
+  AdminPropertyLabelListParams,
+  AdminPropertyLabelParams,
+  AdminUpdatePropertyLabel,
 } from "./validators"
-import { ensureViewConfigurationsEnabled } from "../views/[entity]/configurations/middleware"
 
 export const adminPropertyLabelsMiddlewares: MiddlewareRoute[] = [
   // List property labels

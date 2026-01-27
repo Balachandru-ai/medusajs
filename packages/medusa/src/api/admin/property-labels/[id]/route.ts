@@ -1,4 +1,8 @@
 import {
+  deletePropertyLabelsWorkflow,
+  updatePropertyLabelsWorkflow,
+} from "@medusajs/core-flows"
+import {
   AuthenticatedMedusaRequest,
   MedusaResponse,
 } from "@medusajs/framework/http"
@@ -8,10 +12,6 @@ import {
   MedusaError,
 } from "@medusajs/framework/utils"
 import { AdminUpdatePropertyLabelType } from "../validators"
-import {
-  updatePropertyLabelsWorkflow,
-  deletePropertyLabelsWorkflow,
-} from "@medusajs/core-flows"
 
 /**
  * Get a property label by ID.

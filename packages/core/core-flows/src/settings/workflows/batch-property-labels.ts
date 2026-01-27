@@ -12,8 +12,8 @@ import {
   when,
 } from "@medusajs/framework/workflows-sdk"
 import { createPropertyLabelsWorkflow } from "./create-property-label"
-import { updatePropertyLabelsWorkflow } from "./update-property-label"
 import { deletePropertyLabelsWorkflow } from "./delete-property-labels"
+import { updatePropertyLabelsWorkflow } from "./update-property-label"
 
 /**
  * Input type for creating a property label in batch.
