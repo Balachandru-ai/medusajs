@@ -1,4 +1,7 @@
-import { validateAndTransformBody, validateAndTransformQuery } from "@medusajs/framework"
+import {
+  validateAndTransformBody,
+  validateAndTransformQuery,
+} from "@medusajs/framework"
 import { MiddlewareRoute } from "@medusajs/framework/http"
 import * as QueryConfig from "./query-config"
 import {
@@ -32,6 +35,10 @@ export const viewConfigurationRoutesMiddlewares: MiddlewareRoute[] = [
     method: ["POST"],
     matcher: "/admin/views/:entity/configurations",
     middlewares: [
+      validateAndTransformQuery(
+        AdminGetViewConfigurationParams,
+        QueryConfig.retrieveViewConfiguration
+      ),
       validateAndTransformBody(AdminCreateViewConfiguration),
     ],
   },
@@ -48,9 +55,7 @@ export const viewConfigurationRoutesMiddlewares: MiddlewareRoute[] = [
   {
     method: ["POST"],
     matcher: "/admin/views/:entity/configurations/:id",
-    middlewares: [
-      validateAndTransformBody(AdminUpdateViewConfiguration),
-    ],
+    middlewares: [validateAndTransformBody(AdminUpdateViewConfiguration)],
   },
   {
     method: ["GET"],
@@ -65,8 +70,6 @@ export const viewConfigurationRoutesMiddlewares: MiddlewareRoute[] = [
   {
     method: ["POST"],
     matcher: "/admin/views/:entity/configurations/active",
-    middlewares: [
-      validateAndTransformBody(AdminSetActiveViewConfiguration),
-    ],
+    middlewares: [validateAndTransformBody(AdminSetActiveViewConfiguration)],
   },
 ]
