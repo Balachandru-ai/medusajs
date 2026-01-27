@@ -13,7 +13,7 @@ import {
 import { useQueryGraphStep } from "../../common"
 import { acquireLockStep, releaseLockStep } from "../../locking"
 import { getItemTaxLinesStep } from "../../tax/steps/get-item-tax-lines"
-import { setTaxLinesForItemsStep, validateCartStep, updateCartsStep } from "../steps"
+import { setTaxLinesForItemsStep, updateCartTaxMetadataStep, validateCartStep } from "../steps"
 import { getTranslatedTaxLinesStep } from "../../common/steps/get-translated-tax-lines"
 
 const cartFields = [
@@ -183,19 +183,12 @@ export const updateTaxLinesWorkflow = createWorkflow(
     when("should-update-cart-metadata", { taxLineItems }, ({ taxLineItems }) => {
       return !!taxLineItems.sourceMetadata
     }).then(() => {
-      const cartMetadataUpdate = transform(
-        { cart, taxLineItems },
-        ({ cart, taxLineItems }) => [
-          {
-            id: cart.id,
-            metadata: {
-              ...(cart.metadata || {}),
-              ...taxLineItems.sourceMetadata,
-            },
-          },
-        ]
+      updateCartTaxMetadataStep(
+        transform({ cart, taxLineItems }, ({ cart, taxLineItems }) => ({
+          cart_id: cart.id,
+          sourceMetadata: taxLineItems.sourceMetadata as Record<string, unknown>,
+        }))
       )
-      updateCartsStep(cartMetadataUpdate)
     })
 
     releaseLockStep({
