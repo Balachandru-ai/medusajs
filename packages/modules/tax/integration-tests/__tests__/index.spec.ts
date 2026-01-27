@@ -14,7 +14,7 @@ import { setupTaxStructure } from "../utils/setup-tax-structure"
  * return the new TaxLinesResult format.
  */
 class MockMetadataProvider implements ITaxProvider {
-  static identifier = "mock-metadata"
+  static identifier = "mock_metadata"
 
   getIdentifier() {
     return MockMetadataProvider.identifier
@@ -54,7 +54,7 @@ class MockMetadataProvider implements ITaxProvider {
       taxLines,
       sourceMetadata: {
         mock_calculation_id: "calc_123",
-        mock_provider: "mock-metadata",
+        mock_provider: "mock_metadata",
         mock_timestamp: new Date().toISOString(),
       },
     }
@@ -1340,7 +1340,7 @@ moduleIntegrationTestRunner<ITaxModuleService>({
         expect(taxLinesResult.sourceMetadata).toEqual(
           expect.objectContaining({
             mock_calculation_id: "calc_123",
-            mock_provider: "mock-metadata",
+            mock_provider: "mock_metadata",
           })
         )
       })
