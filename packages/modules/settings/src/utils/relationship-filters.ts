@@ -3,7 +3,12 @@
  * Configures dropdown filters for relationship fields.
  */
 
-import { pluralize } from "@medusajs/framework/utils"
+import {
+  GraphQLObjectType,
+  isScalarType,
+  pluralize,
+} from "@medusajs/framework/utils"
+import { SchemaTypeMap, getUnderlyingType } from "./entity-discovery"
 
 /**
  * Configuration for a relationship filter.
@@ -125,13 +130,6 @@ export const RELATIONSHIP_FILTER_OVERRIDES: Record<
   ],
   Order: [
     {
-      field: "sales_channel",
-      relatedEntity: "SalesChannel",
-      valueField: "id",
-      displayField: "name",
-      multiple: false,
-    },
-    {
       field: "region",
       relatedEntity: "Region",
       valueField: "id",
@@ -151,9 +149,58 @@ export const RELATIONSHIP_FILTER_OVERRIDES: Record<
 }
 
 /**
- * Common display fields to look for when auto-detecting.
+ * Preferred display field names, in order of priority.
+ * Used when inferring the display field from the schema.
  */
-const DISPLAY_FIELD_CANDIDATES = ["name", "title", "value", "label", "email"]
+const PREFERRED_DISPLAY_FIELDS = [
+  "name",
+  "title",
+  "value",
+  "label",
+  "email",
+  "display_id",
+  "display_name",
+]
+
+/**
+ * Infer the best display field from an entity's GraphQL type.
+ * Looks for string fields, preferring known display field names.
+ */
+function inferDisplayField(
+  relatedEntityName: string,
+  schemaTypeMap?: SchemaTypeMap
+): string {
+  const defaultField = "name"
+
+  if (!schemaTypeMap) {
+    return defaultField
+  }
+
+  const relatedType = schemaTypeMap[relatedEntityName]
+  if (!relatedType || !(relatedType instanceof GraphQLObjectType)) {
+    return defaultField
+  }
+
+  const fields = relatedType.getFields()
+  const stringFields: string[] = []
+
+  for (const [fieldName, fieldDef] of Object.entries(fields)) {
+    const fieldType = (fieldDef as any).type
+    const underlyingType = getUnderlyingType(fieldType)
+
+    // Check if it's a String scalar (not ID)
+    if (isScalarType(underlyingType) && underlyingType.name === "String") {
+      stringFields.push(fieldName)
+    }
+  }
+
+  // Return the first preferred field that exists, or the first string field
+  const preferredMatch = PREFERRED_DISPLAY_FIELDS.find((pf) =>
+    stringFields.includes(pf)
+  )
+
+  return preferredMatch ?? stringFields[0] ?? defaultField
+}
 
 /**
  * Get the relationship filter configuration for a field.
@@ -162,7 +209,8 @@ export function getRelationshipFilterConfig(
   entityName: string,
   fieldName: string,
   relatedEntityName: string,
-  isMultiple: boolean
+  isMultiple: boolean,
+  schemaTypeMap?: SchemaTypeMap
 ): RelationshipFilterConfig | null {
   // Check if we have a predefined configuration
   const entityOverrides = RELATIONSHIP_FILTER_OVERRIDES[entityName]
@@ -180,9 +228,8 @@ export function getRelationshipFilterConfig(
     }
   }
 
-  // Auto-generate configuration
-  // Use "name" as the default display field, falling back to "title" or "value"
-  const displayField = DISPLAY_FIELD_CANDIDATES[0] // Default to "name"
+  // Auto-generate configuration with inferred display field
+  const displayField = inferDisplayField(relatedEntityName, schemaTypeMap)
 
   return {
     entity: relatedEntityName,

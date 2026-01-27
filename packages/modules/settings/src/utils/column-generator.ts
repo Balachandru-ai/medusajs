@@ -298,7 +298,8 @@ function processEntityType(
                   entity.name,
                   fieldName,
                   relatedTypeName,
-                  false
+                  false,
+                  schemaTypeMap
                 )
                 if (relationshipFilter) {
                   ;(filter as any).relationship = relationshipFilter
@@ -344,7 +345,8 @@ function processEntityType(
           entity.name,
           fieldName,
           relatedTypeName,
-          true
+          true,
+          schemaTypeMap
         )
 
         if (relationshipFilter) {
