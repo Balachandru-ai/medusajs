@@ -20,7 +20,7 @@ export const adminPropertyLabelsMiddlewares: MiddlewareRoute[] = [
     middlewares: [
       validateAndTransformQuery(
         AdminPropertyLabelListParams,
-        QueryConfig.defaultPropertyLabelFields
+        QueryConfig.listTransformQueryConfig
       ),
     ],
   },
@@ -32,7 +32,7 @@ export const adminPropertyLabelsMiddlewares: MiddlewareRoute[] = [
       validateAndTransformBody(AdminCreatePropertyLabel),
       validateAndTransformQuery(
         AdminPropertyLabelParams,
-        QueryConfig.defaultPropertyLabelFields
+        QueryConfig.retrieveTransformQueryConfig
       ),
     ],
   },
@@ -43,7 +43,7 @@ export const adminPropertyLabelsMiddlewares: MiddlewareRoute[] = [
     middlewares: [
       validateAndTransformQuery(
         AdminPropertyLabelParams,
-        QueryConfig.defaultPropertyLabelFields
+        QueryConfig.retrieveTransformQueryConfig
       ),
     ],
   },
@@ -55,7 +55,7 @@ export const adminPropertyLabelsMiddlewares: MiddlewareRoute[] = [
       validateAndTransformBody(AdminUpdatePropertyLabel),
       validateAndTransformQuery(
         AdminPropertyLabelParams,
-        QueryConfig.defaultPropertyLabelFields
+        QueryConfig.retrieveTransformQueryConfig
       ),
     ],
   },
@@ -73,7 +73,7 @@ export const adminPropertyLabelsMiddlewares: MiddlewareRoute[] = [
       validateAndTransformBody(AdminBatchPropertyLabels),
       validateAndTransformQuery(
         AdminPropertyLabelParams,
-        QueryConfig.defaultPropertyLabelFields
+        QueryConfig.retrieveTransformQueryConfig
       ),
     ],
   },

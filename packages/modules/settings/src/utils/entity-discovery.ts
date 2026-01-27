@@ -8,6 +8,7 @@ import {
   print,
   graphqlSchemaToFields,
 } from "@medusajs/framework/utils"
+import { pluralize } from "@medusajs/framework/utils"
 
 /**
  * Joiner config interface (subset of what we need).
@@ -21,62 +22,14 @@ export interface JoinerConfig {
 }
 
 /**
- * Maps common singular entity names to their plural route forms.
- */
-const SINGULAR_TO_PLURAL: Record<string, string> = {
-  Order: "orders",
-  Product: "products",
-  Customer: "customers",
-  User: "users",
-  Region: "regions",
-  SalesChannel: "sales-channels",
-  Cart: "carts",
-  Promotion: "promotions",
-  Campaign: "campaigns",
-  Collection: "collections",
-  ProductCategory: "product-categories",
-  ProductTag: "product-tags",
-  ProductType: "product-types",
-  Inventory: "inventory",
-  StockLocation: "stock-locations",
-  Fulfillment: "fulfillments",
-  Payment: "payments",
-  Refund: "refunds",
-  Return: "returns",
-  Exchange: "exchanges",
-  Claim: "claims",
-  TaxRate: "tax-rates",
-  TaxRegion: "tax-regions",
-  ShippingOption: "shipping-options",
-  ShippingProfile: "shipping-profiles",
-  PriceList: "price-lists",
-  ApiKey: "api-keys",
-  Notification: "notifications",
-  Invite: "invites",
-  Reservation: "reservations",
-}
-
-/**
  * Convert PascalCase to kebab-case with pluralization.
  */
 function toKebabCasePlural(name: string): string {
-  // Check if we have a known mapping
-  if (SINGULAR_TO_PLURAL[name]) {
-    return SINGULAR_TO_PLURAL[name]
-  }
-
-  // Convert PascalCase to kebab-case
   const kebab = name
-    .replace(/([A-Z])/g, (match, offset) =>
-      offset > 0 ? `-${match}` : match
-    )
+    .replace(/([A-Z])/g, (match, offset) => (offset > 0 ? `-${match}` : match))
     .toLowerCase()
 
-  // Simple pluralization (add 's' unless ending in 'y' -> 'ies')
-  if (kebab.endsWith("y")) {
-    return kebab.slice(0, -1) + "ies"
-  }
-  return kebab + "s"
+  return pluralize(kebab)
 }
 
 /**
@@ -348,10 +301,7 @@ export class EntityDiscoveryService {
   /**
    * Get entity info for the API response.
    */
-  getEntityInfo(
-    entity: DiscoveredEntity,
-    hasOverrides: boolean
-  ): EntityInfo {
+  getEntityInfo(entity: DiscoveredEntity, hasOverrides: boolean): EntityInfo {
     const schemaTypeMap = this.getSchemaTypeMap()
     const entityType = schemaTypeMap[entity.graphqlType] as
       | GraphQLObjectType

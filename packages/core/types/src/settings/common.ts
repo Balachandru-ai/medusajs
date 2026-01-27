@@ -1,4 +1,5 @@
 import { BaseFilterable, OperatorMap } from "../dal"
+import { AdminColumn } from "../http/view-configuration/admin/columns"
 
 /**
  * The view configuration data model.
@@ -242,3 +243,5 @@ export interface PropertyLabelFilterableFields
    */
   property?: string | string[] | OperatorMap<string>
 }
+
+export interface ViewConfigurationColumnDTO extends AdminColumn {}

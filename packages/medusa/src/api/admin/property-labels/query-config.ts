@@ -1,4 +1,8 @@
-export const propertyLabelFields = [
+export enum Entities {
+  property_label = "property_label",
+}
+
+export const defaultPropertyLabelFields = [
   "id",
   "entity",
   "property",
@@ -8,4 +12,13 @@ export const propertyLabelFields = [
   "updated_at",
 ]
 
-export const defaultPropertyLabelFields = propertyLabelFields
+export const retrieveTransformQueryConfig = {
+  defaults: defaultPropertyLabelFields,
+  isList: false,
+  entity: Entities.property_label,
+}
+
+export const listTransformQueryConfig = {
+  ...retrieveTransformQueryConfig,
+  isList: true,
+}

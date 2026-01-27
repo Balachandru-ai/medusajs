@@ -162,39 +162,59 @@ export function hasEntityOverride(entityName: string): boolean {
 
 /**
  * Get the field filter rules for an entity, merging with defaults.
+ * @param entityName - The entity name (used if override is not provided)
+ * @param override - Optional pre-resolved override to use instead of looking up by entity name
  */
-export function getFieldFilterRules(entityName: string): FieldFilterRules {
-  const override = getEntityOverride(entityName)
+export function getFieldFilterRules(
+  entityName: string,
+  override?: EntityOverride
+): FieldFilterRules {
+  const resolvedOverride = override ?? getEntityOverride(entityName)
 
   return {
-    excludeSuffixes: override?.excludeSuffixes || ["_link"],
-    excludePrefixes: override?.excludePrefixes || ["raw_"],
-    excludeFields: override?.excludeFields || [],
+    excludeSuffixes: resolvedOverride?.excludeSuffixes || ["_link"],
+    excludePrefixes: resolvedOverride?.excludePrefixes || ["raw_"],
+    excludeFields: resolvedOverride?.excludeFields || [],
   }
 }
 
 /**
  * Get the default visible fields for an entity.
+ * @param entityName - The entity name (used if override is not provided)
+ * @param override - Optional pre-resolved override to use instead of looking up by entity name
  */
-export function getDefaultVisibleFields(entityName: string): string[] {
-  const override = getEntityOverride(entityName)
-  return override?.defaultVisibleFields || []
+export function getDefaultVisibleFields(
+  entityName: string,
+  override?: EntityOverride
+): string[] {
+  const resolvedOverride = override ?? getEntityOverride(entityName)
+  return resolvedOverride?.defaultVisibleFields || []
 }
 
 /**
  * Get the field ordering for an entity.
+ * @param entityName - The entity name (used if override is not provided)
+ * @param override - Optional pre-resolved override to use instead of looking up by entity name
  */
-export function getFieldOrdering(entityName: string): Record<string, number> {
-  const override = getEntityOverride(entityName)
-  return override?.fieldOrdering || {}
+export function getFieldOrdering(
+  entityName: string,
+  override?: EntityOverride
+): Record<string, number> {
+  const resolvedOverride = override ?? getEntityOverride(entityName)
+  return resolvedOverride?.fieldOrdering || {}
 }
 
 /**
  * Get additional types to include for an entity.
+ * @param entityName - The entity name (used if override is not provided)
+ * @param override - Optional pre-resolved override to use instead of looking up by entity name
  */
-export function getAdditionalTypes(entityName: string): string[] {
-  const override = getEntityOverride(entityName)
-  return override?.additionalTypes || []
+export function getAdditionalTypes(
+  entityName: string,
+  override?: EntityOverride
+): string[] {
+  const resolvedOverride = override ?? getEntityOverride(entityName)
+  return resolvedOverride?.additionalTypes || []
 }
 
 /**

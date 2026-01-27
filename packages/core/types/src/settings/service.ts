@@ -1,10 +1,7 @@
 import { Context } from "../shared-context"
 import { FindConfig } from "../common"
 import { IModuleService } from "../modules-sdk"
-import {
-  AdminColumn,
-  AdminEntityInfo,
-} from "../http/view-configuration/admin"
+import { AdminColumn, AdminEntityInfo } from "../http/view-configuration/admin"
 import {
   ViewConfigurationDTO,
   UserPreferenceDTO,
@@ -185,7 +182,7 @@ export interface ISettingsModuleService extends IModuleService {
    * Pass data objects with 'id' field to update specific labels.
    */
   updatePropertyLabels(
-    data: (UpdatePropertyLabelDTO & { id: string })[],
+    data: UpdatePropertyLabelDTO[],
     sharedContext?: Context
   ): Promise<PropertyLabelDTO[]>
 
@@ -193,44 +190,29 @@ export interface ISettingsModuleService extends IModuleService {
    * Update property labels by selector.
    */
   updatePropertyLabels(
-    options: { selector: PropertyLabelFilterableFields; data: UpdatePropertyLabelDTO },
+    options: {
+      selector: PropertyLabelFilterableFields
+      data: UpdatePropertyLabelDTO
+    },
     sharedContext?: Context
   ): Promise<PropertyLabelDTO[]>
 
   /**
-   * Get all property labels for an entity.
+   * Retrieve a property label by entity and property.
    */
-  getPropertyLabels(
-    entity: string,
+  retrievePropertyLabel(
+    { entity, property }: { entity: string; property?: string },
     sharedContext?: Context
-  ): Promise<PropertyLabelDTO[]>
-
-  /**
-   * Get a property label for a specific entity and property.
-   */
-  getPropertyLabel(
-    entity: string,
-    property: string,
-    sharedContext?: Context
-  ): Promise<PropertyLabelDTO | null>
+  ): Promise<PropertyLabelDTO>
 
   /**
    * Create or update a property label.
    * If a label already exists for the entity.property combination, it will be updated.
    */
-  upsertPropertyLabel(
-    data: UpsertPropertyLabelDTO,
+  upsertPropertyLabels(
+    data: UpsertPropertyLabelDTO[],
     sharedContext?: Context
-  ): Promise<PropertyLabelDTO>
-
-  /**
-   * Delete a property label by entity and property.
-   */
-  deletePropertyLabel(
-    entity: string,
-    property: string,
-    sharedContext?: Context
-  ): Promise<void>
+  ): Promise<PropertyLabelDTO[]>
 
   deletePropertyLabels(
     ids: string | string[],

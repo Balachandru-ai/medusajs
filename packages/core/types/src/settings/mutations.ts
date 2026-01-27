@@ -163,19 +163,23 @@ export interface CreatePropertyLabelDTO {
  */
 export interface UpsertPropertyLabelDTO {
   /**
+   * The ID of the property label to update.
+   */
+  id?: string
+  /**
    * The entity this label applies to (e.g., "Order", "Product").
    */
-  entity: string
+  entity?: string
 
   /**
    * The property path (e.g., "display_id", "customer.email").
    */
-  property: string
+  property?: string
 
   /**
    * Custom display name for the property.
    */
-  label: string
+  label?: string
 
   /**
    * Optional description providing context about the property.
@@ -187,6 +191,11 @@ export interface UpsertPropertyLabelDTO {
  * The attributes to update in the property label.
  */
 export interface UpdatePropertyLabelDTO {
+  /**
+   * The ID of the property label to update.
+   */
+  id?: string
+
   /**
    * Custom display name for the property.
    */

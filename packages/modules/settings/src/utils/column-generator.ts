@@ -1,43 +1,42 @@
-import { HttpTypes } from "@medusajs/framework/types"
-import { GraphQLObjectType, isEnumType, isScalarType } from "@medusajs/framework/utils"
+import { SettingsTypes } from "@medusajs/framework/types"
 import {
-  EntityDiscoveryService,
-  DiscoveredEntity,
-  SchemaTypeMap,
-  getUnderlyingType,
-  isArrayField,
-  isSingleRelationship,
-} from "./entity-discovery"
-import {
-  inferRenderMode,
-  inferDataType,
-  RenderMode,
-  ColumnDataType,
-} from "./render-mode-mapper"
-import {
-  buildFilterConfig,
-  shouldExcludeField,
-  FieldFilterRules,
-} from "./filter-rules"
-import {
-  getRelationshipFilterConfig,
-  shouldHaveRelationshipFilter,
-} from "./relationship-filters"
+  GraphQLObjectType,
+  isEnumType,
+  isScalarType,
+} from "@medusajs/framework/utils"
 import {
   ComputedColumnDefinition,
   getComputedColumnRegistry,
 } from "./computed-columns"
 import {
+  DiscoveredEntity,
+  EntityDiscoveryService,
+  getUnderlyingType,
+  isArrayField,
+  isSingleRelationship,
+  SchemaTypeMap,
+} from "./entity-discovery"
+import {
   EntityOverride,
+  getAdditionalTypes,
+  getDefaultVisibleFields,
   getEntityOverride,
   getFieldFilterRules,
-  getDefaultVisibleFields,
   getFieldOrdering,
-  getAdditionalTypes,
 } from "./entity-overrides"
+import {
+  buildFilterConfig,
+  FieldFilterRules,
+  shouldExcludeField,
+} from "./filter-rules"
+import {
+  getRelationshipFilterConfig,
+  shouldHaveRelationshipFilter,
+} from "./relationship-filters"
+import { inferDataType, inferRenderMode } from "./render-mode-mapper"
 
 // Re-export the AdminColumn type from types for convenience
-export type AdminColumn = HttpTypes.AdminColumn
+export type ViewConfigurationColumn = SettingsTypes.ViewConfigurationColumnDTO
 
 /**
  * Property label data for customizing column names.
@@ -71,7 +70,7 @@ export function generateEntityColumns(
   entityKey: string,
   propertyLabels?: Map<string, PropertyLabel>,
   customOverride?: EntityOverride
-): AdminColumn[] | null {
+): ViewConfigurationColumn[] | null {
   if (!entityDiscovery.isInitialized()) {
     return null
   }
@@ -82,13 +81,13 @@ export function generateEntityColumns(
   }
 
   const override = customOverride || getEntityOverride(entity.name)
-  const filterRules = getFieldFilterRules(entity.name)
-  const defaultVisibleFields = getDefaultVisibleFields(entity.name)
-  const fieldOrdering = getFieldOrdering(entity.name)
-  const additionalTypes = getAdditionalTypes(entity.name)
+  const filterRules = getFieldFilterRules(entity.name, override)
+  const defaultVisibleFields = getDefaultVisibleFields(entity.name, override)
+  const fieldOrdering = getFieldOrdering(entity.name, override)
+  const additionalTypes = getAdditionalTypes(entity.name, override)
 
   const schemaTypeMap = entityDiscovery.getSchemaTypeMap()
-  const columns: AdminColumn[] = []
+  const columns: ViewConfigurationColumn[] = []
   const processedFields = new Set<string>()
 
   // Process main entity type
@@ -107,7 +106,7 @@ export function generateEntityColumns(
   // Process additional types (e.g., OrderDetail for Order)
   for (const additionalType of additionalTypes) {
     const type = schemaTypeMap[additionalType] as GraphQLObjectType | undefined
-    if (type && type.getFields) {
+    if (type) {
       processEntityType(
         schemaTypeMap,
         additionalType,
@@ -143,8 +142,7 @@ export function generateEntityColumns(
       sortable: false,
       hideable: true,
       default_visible:
-        computed.defaultVisible ||
-        defaultVisibleFields.includes(columnId),
+        computed.defaultVisible || defaultVisibleFields.includes(columnId),
       data_type: "string",
       semantic_type: "computed",
       context: "display",
@@ -176,7 +174,7 @@ function processEntityType(
   schemaTypeMap: SchemaTypeMap,
   typeName: string,
   entity: DiscoveredEntity,
-  columns: AdminColumn[],
+  columns: ViewConfigurationColumn[],
   processedFields: Set<string>,
   filterRules: FieldFilterRules,
   defaultVisibleFields: string[],
@@ -258,9 +256,8 @@ function processEntityType(
       // Process nested fields with dot notation (one level deep)
       if (!parentPath) {
         const relatedTypeName = underlyingType.name
-        const shouldIncludeRelationship = shouldHaveRelationshipFilter(
-          relatedTypeName
-        )
+        const shouldIncludeRelationship =
+          shouldHaveRelationshipFilter(relatedTypeName)
 
         // Get a few key fields from the related entity
         const relatedFields = underlyingType.getFields()
@@ -392,7 +389,7 @@ export function computedColumnToAdminColumn(
   entity: DiscoveredEntity,
   defaultOrder: number = 850,
   label?: PropertyLabel
-): AdminColumn {
+): ViewConfigurationColumn {
   return {
     id: column.id,
     name: label?.label || column.name,
