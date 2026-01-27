@@ -78,7 +78,7 @@ export const batchPropertyLabelsWorkflowId = "batch-property-labels"
 /**
  * This workflow creates, updates, or deletes property labels in batch.
  *
- * @since 2.10.3
+ * @since 2.13.2
  * @featureFlag view_configurations
  */
 export const batchPropertyLabelsWorkflow = createWorkflow(

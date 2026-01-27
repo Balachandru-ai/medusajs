@@ -124,6 +124,11 @@ export interface AdminCreatePropertyLabel {
  */
 export interface AdminUpdatePropertyLabel {
   /**
+   * The ID of the property label.
+   */
+  id: string
+
+  /**
    * Custom display name for the property.
    */
   label?: string
@@ -161,7 +166,7 @@ export interface AdminBatchPropertyLabelRequest {
   /**
    * Property labels to update.
    */
-  update?: (AdminUpdatePropertyLabel & { id: string })[]
+  update?: AdminUpdatePropertyLabel[]
 
   /**
    * IDs of property labels to delete.

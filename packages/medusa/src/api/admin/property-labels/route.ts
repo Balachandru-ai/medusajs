@@ -21,18 +21,10 @@ export const GET = async (
 ) => {
   const query = req.scope.resolve(ContainerRegistrationKeys.QUERY)
 
-  const filters: Record<string, any> = {}
-  if (req.filterableFields.entity) {
-    filters.entity = req.filterableFields.entity
-  }
-  if (req.filterableFields.property) {
-    filters.property = req.filterableFields.property
-  }
-
   const { data: labels, metadata } = await query.graph({
     entity: "property_label",
     fields: req.queryConfig.fields,
-    filters,
+    filters: req.filterableFields,
     pagination: req.queryConfig.pagination,
   })
 

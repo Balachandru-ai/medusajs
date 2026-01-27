@@ -18,7 +18,7 @@ export interface CreatePropertyLabelsWorkflowInput {
 export const createPropertyLabelsWorkflowId = "create-property-labels"
 
 /**
- * @since 2.10.3
+ * @since 2.13.2
  * @featureFlag view_configurations
  */
 export const createPropertyLabelsWorkflow = createWorkflow(
