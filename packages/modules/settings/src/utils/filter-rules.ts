@@ -1,3 +1,4 @@
+import { RelationshipFilterConfig } from "@medusajs/framework/types"
 import { ColumnDataType } from "./render-mode-mapper"
 
 /**
@@ -80,6 +81,7 @@ export interface ColumnFilterConfig {
   enabled: boolean
   operators?: string[]
   enumValues?: string[]
+  relationship?: RelationshipFilterConfig
 }
 
 /**

@@ -29,10 +29,7 @@ import {
   FieldFilterRules,
   shouldExcludeField,
 } from "./filter-rules"
-import {
-  getRelationshipFilterConfig,
-  shouldHaveRelationshipFilter,
-} from "./relationship-filters"
+import { getRelationshipFilterConfig } from "./relationship-filters"
 import { inferDataType, inferRenderMode } from "./render-mode-mapper"
 
 // Re-export the AdminColumn type from types for convenience
@@ -175,7 +172,8 @@ export function generateEntityColumns(
       render_mode: computed.renderMode,
       default_order: fieldOrdering[columnId] || 850,
       category:
-        (computed.category as ViewConfigurationColumn["category"]) || "computed",
+        (computed.category as ViewConfigurationColumn["category"]) ||
+        "computed",
       filter: { enabled: false },
       source: { module: entity.module, entity: entity.name },
       custom_label: hasCustomLabel,
@@ -255,7 +253,9 @@ function processEntityType(
         context: "both",
         render_mode: renderMode,
         default_order: fieldOrdering[fullPath] || 900,
-        category: parentPath ? "relationship" : semanticTypeToCategory(semanticType),
+        category: parentPath
+          ? "relationship"
+          : semanticTypeToCategory(semanticType),
         filter: buildFilterConfig(
           fieldName,
           dataType,
@@ -278,8 +278,7 @@ function processEntityType(
       // Process nested fields with dot notation (one level deep)
       if (!parentPath) {
         const relatedTypeName = underlyingType.name
-        const shouldIncludeRelationship =
-          shouldHaveRelationshipFilter(relatedTypeName)
+        const shouldIncludeRelationship = true
 
         // Get scalar fields from the related entity
         const relatedFields = underlyingType.getFields()
@@ -326,7 +325,7 @@ function processEntityType(
                 schemaTypeMap
               )
               if (relationshipFilter) {
-                ;(filter as any).relationship = relationshipFilter
+                filter.relationship = relationshipFilter
               }
             }
 
@@ -334,7 +333,9 @@ function processEntityType(
               id: nestedPath,
               name:
                 label?.label ||
-                `${formatFieldName(fieldName)} ${formatFieldName(relatedFieldName)}`,
+                `${formatFieldName(fieldName)} ${formatFieldName(
+                  relatedFieldName
+                )}`,
               description: label?.description || undefined,
               field: nestedPath,
               sortable: false,
@@ -360,7 +361,7 @@ function processEntityType(
       const relatedTypeName = underlyingType.name
 
       // Add a relationship filter if this is a filterable entity
-      if (shouldHaveRelationshipFilter(relatedTypeName) && !parentPath) {
+      if (!parentPath) {
         const relationshipFilter = getRelationshipFilterConfig(
           entity.name,
           fieldName,
@@ -430,7 +431,8 @@ export function computedColumnToAdminColumn(
     },
     render_mode: column.renderMode,
     default_order: defaultOrder,
-    category: (column.category as ViewConfigurationColumn["category"]) || "computed",
+    category:
+      (column.category as ViewConfigurationColumn["category"]) || "computed",
     filter: { enabled: false },
     source: { module: entity.module, entity: entity.name },
     custom_label: !!label,

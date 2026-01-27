@@ -1,14 +1,15 @@
 import {
+  cleanGraphQLSchema,
   GraphQLObjectType,
+  graphqlSchemaToFields,
   isListType,
   isNonNullType,
   makeExecutableSchema,
   mergeTypeDefs,
-  cleanGraphQLSchema,
+  pluralize,
   print,
-  graphqlSchemaToFields,
+  singularize,
 } from "@medusajs/framework/utils"
-import { pluralize } from "@medusajs/framework/utils"
 
 /**
  * Joiner config interface (subset of what we need).
@@ -38,23 +39,26 @@ function toKebabCasePlural(name: string): string {
 function normalizeEntityName(name: string): string {
   // Handle kebab-case (e.g., "sales-channels" -> "SalesChannel")
   if (name.includes("-")) {
-    return name
-      .split("-")
-      .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
-      .join("")
-      .replace(/s$/, "") // Remove trailing 's' for singular
+    return singularize(
+      name
+        .split("-")
+        .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+        .join("")
+    )
   }
 
   // Handle snake_case (e.g., "sales_channel" -> "SalesChannel")
   if (name.includes("_")) {
-    return name
-      .split("_")
-      .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
-      .join("")
+    return singularize(
+      name
+        .split("_")
+        .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+        .join("")
+    )
   }
 
   // Already PascalCase or camelCase
-  return name.charAt(0).toUpperCase() + name.slice(1)
+  return singularize(name.charAt(0).toUpperCase() + name.slice(1))
 }
 
 /**

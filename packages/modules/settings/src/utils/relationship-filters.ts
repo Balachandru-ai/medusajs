@@ -239,17 +239,3 @@ export function getRelationshipFilterConfig(
     endpoint: inferOptionsEndpoint(relatedEntityName),
   }
 }
-
-/**
- * Check if a relationship field should have a filter dropdown.
- *
- * Returns true for all object type relationships. The admin UI handles
- * pagination and search for filter dropdowns, so even entities with many
- * records can be filtered. If an endpoint doesn't exist, the UI will
- * handle it gracefully (show empty state or hide the filter).
- */
-export function shouldHaveRelationshipFilter(
-  _relatedEntityName: string
-): boolean {
-  return true
-}
