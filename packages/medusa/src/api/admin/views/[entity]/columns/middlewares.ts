@@ -13,6 +13,9 @@ export const columnRoutesMiddlewares: MiddlewareRoute[] = [
   {
     method: ["GET"],
     matcher: "/admin/views/:entity/columns",
-    middlewares: [validateAndTransformQuery(AdminGetColumnsParams, {})],
+    middlewares: [
+      ensureViewConfigurationsEnabled,
+      validateAndTransformQuery(AdminGetColumnsParams, {}),
+    ],
   },
 ]

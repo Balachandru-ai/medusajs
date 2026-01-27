@@ -11,6 +11,7 @@ import {
   AdminUpdatePropertyLabel,
   AdminBatchPropertyLabels,
 } from "./validators"
+import { ensureViewConfigurationsEnabled } from "../views/[entity]/configurations/middleware"
 
 export const adminPropertyLabelsMiddlewares: MiddlewareRoute[] = [
   // List property labels
@@ -18,6 +19,7 @@ export const adminPropertyLabelsMiddlewares: MiddlewareRoute[] = [
     matcher: "/admin/property-labels",
     method: "GET",
     middlewares: [
+      ensureViewConfigurationsEnabled,
       validateAndTransformQuery(
         AdminPropertyLabelListParams,
         QueryConfig.listTransformQueryConfig
@@ -29,6 +31,7 @@ export const adminPropertyLabelsMiddlewares: MiddlewareRoute[] = [
     matcher: "/admin/property-labels",
     method: "POST",
     middlewares: [
+      ensureViewConfigurationsEnabled,
       validateAndTransformBody(AdminCreatePropertyLabel),
       validateAndTransformQuery(
         AdminPropertyLabelParams,
@@ -41,6 +44,7 @@ export const adminPropertyLabelsMiddlewares: MiddlewareRoute[] = [
     matcher: "/admin/property-labels/:id",
     method: "GET",
     middlewares: [
+      ensureViewConfigurationsEnabled,
       validateAndTransformQuery(
         AdminPropertyLabelParams,
         QueryConfig.retrieveTransformQueryConfig
@@ -52,6 +56,7 @@ export const adminPropertyLabelsMiddlewares: MiddlewareRoute[] = [
     matcher: "/admin/property-labels/:id",
     method: "POST",
     middlewares: [
+      ensureViewConfigurationsEnabled,
       validateAndTransformBody(AdminUpdatePropertyLabel),
       validateAndTransformQuery(
         AdminPropertyLabelParams,
@@ -63,13 +68,14 @@ export const adminPropertyLabelsMiddlewares: MiddlewareRoute[] = [
   {
     matcher: "/admin/property-labels/:id",
     method: "DELETE",
-    middlewares: [],
+    middlewares: [ensureViewConfigurationsEnabled],
   },
   // Batch operations
   {
     matcher: "/admin/property-labels/batch",
     method: "POST",
     middlewares: [
+      ensureViewConfigurationsEnabled,
       validateAndTransformBody(AdminBatchPropertyLabels),
       validateAndTransformQuery(
         AdminPropertyLabelParams,
