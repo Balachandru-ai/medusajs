@@ -270,11 +270,6 @@ export const updateOrderTaxLinesWorkflow = createWorkflow(
         translatedTaxLines.shippingTaxLines as ShippingTaxLineDTO[],
     })
 
-    return new WorkflowResponse({
-      itemTaxLines: taxLineItems.lineItemTaxLines,
-      shippingTaxLines: taxLineItems.shippingMethodsTaxLines,
-    })
-
     // Update order metadata with any sourceMetadata returned by tax providers
     when("should-update-order-metadata", { taxLineItems }, ({ taxLineItems }) => {
       return !!taxLineItems.sourceMetadata
@@ -292,6 +287,11 @@ export const updateOrderTaxLinesWorkflow = createWorkflow(
         })
       )
       updateOrdersStep(orderMetadataUpdate)
+    })
+
+    return new WorkflowResponse({
+      itemTaxLines: taxLineItems.lineItemTaxLines,
+      shippingTaxLines: taxLineItems.shippingMethodsTaxLines,
     })
   }
 )
