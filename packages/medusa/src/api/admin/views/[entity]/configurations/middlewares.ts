@@ -55,7 +55,13 @@ export const viewConfigurationRoutesMiddlewares: MiddlewareRoute[] = [
   {
     method: ["POST"],
     matcher: "/admin/views/:entity/configurations/:id",
-    middlewares: [validateAndTransformBody(AdminUpdateViewConfiguration)],
+    middlewares: [
+      validateAndTransformQuery(
+        AdminGetViewConfigurationParams,
+        QueryConfig.retrieveViewConfiguration
+      ),
+      validateAndTransformBody(AdminUpdateViewConfiguration),
+    ],
   },
   {
     method: ["GET"],
