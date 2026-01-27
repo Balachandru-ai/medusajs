@@ -1,9 +1,8 @@
 import { PropsWithChildren, useCallback, useMemo } from "react"
 import {
-  can as canUtil,
-  checkAllPermissions,
-  checkAnyPermission,
-  checkPermission,
+  buildPermission,
+  OPERATION_IMPLICATIONS,
+  parsePermission,
   type Permission,
   type PermissionOperation,
   type PermissionResource,
@@ -28,32 +27,60 @@ export const PermissionsProvider = ({
   isLoading = false,
   children,
 }: PermissionsProviderProps) => {
+  const permissionsMap = useMemo(() => {
+    const index: Record<Permission, true> = Object.create(null)
+
+    for (const granted of policy?.permissions ?? []) {
+      const parsed = parsePermission(granted)
+      if (!parsed) {
+        continue
+      }
+
+      const { resource, operation } = parsed
+      const impliedOperations = OPERATION_IMPLICATIONS[operation] || [operation]
+
+      for (const impliedOperation of impliedOperations) {
+        index[buildPermission(resource, impliedOperation)] = true
+      }
+    }
+
+    return index
+  }, [policy])
+
   const hasPermission = useCallback(
     (permission: Permission): boolean => {
-      return checkPermission(policy, permission)
+      return !!permissionsMap[permission]
     },
-    [policy]
+    [permissionsMap]
   )
 
   const hasAnyPermission = useCallback(
     (permissions: Permission[]): boolean => {
-      return checkAnyPermission(policy, permissions)
+      if (!permissions?.length) {
+        return false
+      }
+
+      return permissions.some(hasPermission)
     },
-    [policy]
+    [hasPermission]
   )
 
   const hasAllPermissions = useCallback(
     (permissions: Permission[]): boolean => {
-      return checkAllPermissions(policy, permissions)
+      if (!permissions?.length) {
+        return false
+      }
+
+      return permissions.every(hasPermission)
     },
-    [policy]
+    [hasPermission]
   )
 
   const can = useCallback(
     (resource: PermissionResource, operation: PermissionOperation): boolean => {
-      return canUtil(policy, resource, operation)
+      return !!permissionsMap[buildPermission(resource, operation)]
     },
-    [policy]
+    [permissionsMap]
   )
 
   const value: PermissionsContextValue = useMemo(
