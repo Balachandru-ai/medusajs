@@ -3,18 +3,20 @@
 /**
  * Migration Script: Assign Super Admin Role to All Admin Users
  *
- * This script assigns the pre-created super admin role (created by migration)
+ * This script assigns the pre-created super admin role
  * to all existing admin users in your Medusa instance.
- *
- * The super admin role and wildcard policy are created by the migration:
- * - Migration20260123115138_createSuperAdminRole
  *
  * Usage: npx tsx packages/medusa/src/migration-scripts/create-super-admin-role.ts
  */
 
 import { MedusaModule } from "@medusajs/framework/modules-sdk"
 import { ExecArgs } from "@medusajs/framework/types"
-import { ContainerRegistrationKeys, Modules } from "@medusajs/framework/utils"
+import {
+  ContainerRegistrationKeys,
+  defineFileConfig,
+  FeatureFlag,
+  Modules,
+} from "@medusajs/framework/utils"
 import dotenv from "dotenv"
 
 dotenv.config()
@@ -30,21 +32,10 @@ async function assignSuperAdminRoleToUsers(container: any): Promise<void> {
     const logger = container.resolve(ContainerRegistrationKeys.LOGGER)
     logger.info("🚀 Starting super admin role assignment script...")
 
-    // Check environment variables
-    if (!process.env.DATABASE_URL) {
-      throw new Error("DATABASE_URL environment variable is required")
-    }
-
-    logger.info("Assigning super admin role to users")
-
-    // Get required services
     const userModuleService = container.resolve(Modules.USER)
     const rbacModuleService = container.resolve(Modules.RBAC)
 
-    // Fetch all admin users
-    const users: User[] = await userModuleService.listUsers({
-      // You can add filters here if needed, e.g., only users with specific metadata
-    })
+    const users: User[] = await userModuleService.listUsers({})
 
     if (users.length === 0) {
       logger.info("⚠️  No users found. Exiting.")
@@ -53,7 +44,6 @@ async function assignSuperAdminRoleToUsers(container: any): Promise<void> {
 
     logger.info(`📊 Found ${users.length} users`)
 
-    // Display user information
     logger.info("\n👥 Users found:")
     users.forEach((user: User, index: number) => {
       logger.info(`  ${index + 1}. ${user.email || user.id} (${user.id})`)
@@ -75,12 +65,12 @@ async function assignSuperAdminRoleToUsers(container: any): Promise<void> {
         )
       } else {
         throw new Error(
-          "Super admin role not found. Please ensure the migration Migration20260123115138_createSuperAdminRole has been run."
+          "Super admin role not found. Please ensure RBAC module is loaded."
         )
       }
     } catch (error) {
       logger.error(
-        "❌ Could not find super admin role. Please ensure the migration has been run:",
+        "❌ Could not find super admin role. Please ensure RBAC module is loaded.",
         error
       )
       throw error
@@ -109,34 +99,15 @@ async function assignSuperAdminRoleToUsers(container: any): Promise<void> {
 
     let successCount = 0
     let errorCount = 0
-    let alreadyAssignedCount = 0
 
-    // Get the remote link service
-    const remoteLink = container.resolve(ContainerRegistrationKeys.LINK)
+    const link = container.resolve(ContainerRegistrationKeys.LINK)
 
-    // Assign the role to all existing users
     for (const user of users) {
       try {
         logger.info(`  🔄 Processing user: ${user.email || user.id}`)
 
-        // Check if user already has the super admin role
-        const existingLinks = await remoteLink.list({
-          [Modules.USER]: {
-            user_id: user.id,
-          },
-          [Modules.RBAC]: {
-            rbac_role_id: superAdminRole.id,
-          },
-        })
-
-        if (existingLinks.length > 0) {
-          logger.info(`    ℹ️  User already has super admin role`)
-          alreadyAssignedCount++
-          continue
-        }
-
-        // Link the user to the super admin role using remoteLink
-        await remoteLink.create({
+        // Link the user to the super admin role
+        await link.create({
           [Modules.USER]: {
             user_id: user.id,
           },
@@ -156,15 +127,16 @@ async function assignSuperAdminRoleToUsers(container: any): Promise<void> {
       }
     }
 
-    logger.info(`\n📈 Summary:`)
     logger.info(`  ✅ Successfully assigned role: ${successCount} users`)
-    logger.info(`  ℹ️  Already had role: ${alreadyAssignedCount} users`)
-    logger.info(`  ❌ Failed to assign role: ${errorCount} users`)
 
-    if (successCount > 0 || alreadyAssignedCount > 0) {
+    if (errorCount > 0) {
+      logger.info(`  ❌ Failed to assign role: ${errorCount} users`)
+    }
+
+    if (successCount > 0) {
       logger.log("\n🎉 Super admin role assignment completed successfully!")
 
-      const totalAssigned = successCount + alreadyAssignedCount
+      const totalAssigned = successCount
       logger.info(
         `Super admin role is now assigned to ${totalAssigned} out of ${users.length} users`
       )
@@ -181,15 +153,6 @@ async function assignSuperAdminRoleToUsers(container: any): Promise<void> {
   } catch (error: any) {
     console.error("\n❌ Fatal error:", error.message)
     console.error("🔍 Stack trace:", error.stack)
-
-    const logger = container.resolve(ContainerRegistrationKeys.LOGGER)
-    logger.info("\n🛠️  Troubleshooting tips:")
-    logger.info("  • Ensure DATABASE_URL is set correctly")
-    logger.info("  • Make sure all Medusa modules are installed")
-    logger.info("  • Check that the database is accessible")
-    logger.info(
-      "  • Verify that migrations have been run (Migration20260123115138_createSuperAdminRole)"
-    )
 
     throw error
   }
@@ -216,3 +179,7 @@ export default async function createSuperAdminRole({ container }: ExecArgs) {
     throw error
   }
 }
+
+defineFileConfig({
+  isDisabled: () => !FeatureFlag.isFeatureEnabled("rbac"),
+})
