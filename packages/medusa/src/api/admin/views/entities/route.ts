@@ -16,13 +16,11 @@ export const GET = async (
   req: AuthenticatedMedusaRequest,
   res: MedusaResponse<HttpTypes.AdminEntityListResponse>
 ) => {
-  const settingsService = req.scope.resolve(
-    Modules.SETTINGS
-  ) as SettingsTypes.ISettingsModuleService
+  const settingsService =
+    req.scope.resolve<SettingsTypes.ISettingsModuleService>(Modules.SETTINGS)
 
   const entities = settingsService.listDiscoverableEntities()
 
-  // Sort alphabetically by name
   entities.sort((a, b) => a.name.localeCompare(b.name))
 
   return res.json({

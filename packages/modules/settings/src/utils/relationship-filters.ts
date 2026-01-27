@@ -3,6 +3,8 @@
  * Configures dropdown filters for relationship fields.
  */
 
+import { pluralize } from "@medusajs/framework/utils"
+
 /**
  * Configuration for a relationship filter.
  */
@@ -31,6 +33,11 @@ export interface RelationshipFilterDefinition {
    * Whether multiple selection is allowed.
    */
   multiple: boolean
+
+  /**
+   * API endpoint to fetch options (e.g., "/admin/sales-channels").
+   */
+  endpoint?: string
 }
 
 /**
@@ -46,23 +53,16 @@ export interface RelationshipFilterConfig {
 
 /**
  * Maps entity names to their admin API endpoints.
+ *
+ * Most endpoints follow the convention: EntityName → /admin/{kebab-case-plural}
+ * e.g., SalesChannel → /admin/sales-channels
+ *
+ * Only entities that DON'T follow this convention need to be listed here.
+ * The `inferOptionsEndpoint` function will auto-generate endpoints for unlisted entities.
  */
 export const ENTITY_ENDPOINT_MAP: Record<string, string> = {
-  SalesChannel: "/admin/sales-channels",
+  // ProductCollection uses /admin/collections instead of /admin/product-collections
   ProductCollection: "/admin/collections",
-  ProductType: "/admin/product-types",
-  ProductTag: "/admin/product-tags",
-  Region: "/admin/regions",
-  CustomerGroup: "/admin/customer-groups",
-  Currency: "/admin/currencies",
-  Store: "/admin/stores",
-  StockLocation: "/admin/stock-locations",
-  ShippingProfile: "/admin/shipping-profiles",
-  ShippingOption: "/admin/shipping-options",
-  Fulfillment: "/admin/fulfillments",
-  PaymentProvider: "/admin/payment-providers",
-  TaxRegion: "/admin/tax-regions",
-  TaxRate: "/admin/tax-rates",
 }
 
 /**
@@ -70,21 +70,8 @@ export const ENTITY_ENDPOINT_MAP: Record<string, string> = {
  */
 function toKebabCase(str: string): string {
   return str
-    .replace(/([A-Z])/g, (match, offset) => (offset > 0 ? `-${match}` : match))
+    .replace(/[A-Z]/g, (match, offset) => (offset > 0 ? `-${match}` : match))
     .toLowerCase()
-}
-
-/**
- * Simple pluralization.
- */
-function pluralize(str: string): string {
-  if (str.endsWith("y")) {
-    return str.slice(0, -1) + "ies"
-  }
-  if (str.endsWith("s")) {
-    return str
-  }
-  return str + "s"
 }
 
 /**
@@ -187,7 +174,8 @@ export function getRelationshipFilterConfig(
         value_field: override.valueField,
         display_field: override.displayField,
         multiple: override.multiple,
-        endpoint: inferOptionsEndpoint(override.relatedEntity),
+        endpoint:
+          override.endpoint ?? inferOptionsEndpoint(override.relatedEntity),
       }
     }
   }
@@ -207,28 +195,14 @@ export function getRelationshipFilterConfig(
 
 /**
  * Check if a relationship field should have a filter dropdown.
- * Returns true for relationships to "small" entities that make sense as filters.
+ *
+ * Returns true for all object type relationships. The admin UI handles
+ * pagination and search for filter dropdowns, so even entities with many
+ * records can be filtered. If an endpoint doesn't exist, the UI will
+ * handle it gracefully (show empty state or hide the filter).
  */
 export function shouldHaveRelationshipFilter(
-  relatedEntityName: string
+  _relatedEntityName: string
 ): boolean {
-  // These entities typically have few records and make good filter options
-  const filterableEntities = [
-    "SalesChannel",
-    "ProductCollection",
-    "ProductType",
-    "ProductTag",
-    "Region",
-    "CustomerGroup",
-    "Currency",
-    "Store",
-    "StockLocation",
-    "ShippingProfile",
-    "FulfillmentProvider",
-    "PaymentProvider",
-    "TaxRegion",
-    "Country",
-  ]
-
-  return filterableEntities.includes(relatedEntityName)
+  return true
 }

@@ -17,11 +17,9 @@ export const GET = async (
 ) => {
   const entity = req.params.entity
 
-  const settingsService = req.scope.resolve(
-    Modules.SETTINGS
-  ) as SettingsTypes.ISettingsModuleService
+  const settingsService =
+    req.scope.resolve<SettingsTypes.ISettingsModuleService>(Modules.SETTINGS)
 
-  // Check if entity discovery is initialized
   if (!settingsService.isEntityDiscoveryInitialized()) {
     throw new MedusaError(
       MedusaError.Types.UNEXPECTED_STATE,
@@ -29,7 +27,6 @@ export const GET = async (
     )
   }
 
-  // Check if entity exists
   if (!settingsService.hasEntity(entity)) {
     const availableEntities = settingsService.listDiscoverableEntities()
     const entityNames = availableEntities.map((e) => e.pluralName).slice(0, 10)
@@ -42,7 +39,6 @@ export const GET = async (
     )
   }
 
-  // Generate columns using the settings module
   const columns = await settingsService.generateEntityColumns(entity)
 
   if (!columns) {
