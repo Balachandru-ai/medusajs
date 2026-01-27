@@ -14,15 +14,6 @@ import {
 
 export const adminUserRoutesMiddlewares: MiddlewareRoute[] = [
   {
-    matcher: "/admin/users/*",
-    policies: [
-      {
-        resource: Entities.user,
-        operation: PolicyOperation.read,
-      },
-    ],
-  },
-  {
     method: ["GET"],
     matcher: "/admin/users",
     middlewares: [
@@ -30,6 +21,12 @@ export const adminUserRoutesMiddlewares: MiddlewareRoute[] = [
         AdminGetUsersParams,
         QueryConfig.listTransformQueryConfig
       ),
+    ],
+    policies: [
+      {
+        resource: Entities.user,
+        operation: PolicyOperation.read,
+      },
     ],
   },
   {
@@ -40,6 +37,12 @@ export const adminUserRoutesMiddlewares: MiddlewareRoute[] = [
         AdminGetUserParams,
         QueryConfig.retrieveTransformQueryConfig
       ),
+    ],
+    policies: [
+      {
+        resource: Entities.user,
+        operation: PolicyOperation.read,
+      },
     ],
   },
   {
