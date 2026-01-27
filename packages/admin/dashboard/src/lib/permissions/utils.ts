@@ -1,3 +1,4 @@
+import type { HttpTypes } from "@medusajs/types"
 import { OPERATION_IMPLICATIONS, ROUTE_PERMISSIONS } from "./constants"
 import type {
   Permission,
@@ -5,6 +6,32 @@ import type {
   PermissionResource,
   UserPolicy,
 } from "./types"
+
+export const buildPermissionsResponse = (
+  user:
+    | (HttpTypes.AdminUser & { rbac_roles: HttpTypes.AdminRbacRole[] })
+    | null
+    | undefined
+): { policy: UserPolicy } => {
+  const permissions = new Set<Permission>()
+
+  user?.rbac_roles
+    .forEach((role) => {
+      role.policies?.forEach((policy) => {
+        if (!policy?.key) {
+          return
+        }
+
+        permissions.add(policy.key as Permission)
+      })
+    })
+
+  return {
+    policy: {
+      permissions: Array.from(permissions),
+    },
+  }
+}
 
 /**
  * Parse a permission string into its resource and operation components.

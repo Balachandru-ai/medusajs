@@ -1,22 +1,21 @@
 import { Spinner } from "@medusajs/icons"
 import { Navigate, Outlet, useLocation } from "react-router-dom"
 import { useMe } from "../../../hooks/api/users"
-import { useMyPermissions } from "../../../hooks/api/permissions"
+import { buildPermissionsResponse } from "../../../lib/permissions"
 import { PermissionsProvider } from "../../../providers/permissions-provider"
 import { SearchProvider } from "../../../providers/search-provider"
 import { SidebarProvider } from "../../../providers/sidebar-provider"
 
 export const ProtectedRoute = () => {
+  const location = useLocation()
+
   const { user, isLoading: isLoadingUser } = useMe({
     fields: "rbac_roles.*,rbac_roles.policies.*",
   })
 
-  const { policy, isLoading: isLoadingPermissions } = useMyPermissions()
-  const location = useLocation()
+  const policy = user ? buildPermissionsResponse(user).policy : null
 
-  const isLoading = isLoadingUser || isLoadingPermissions
-
-  if (isLoading) {
+  if (isLoadingUser) {
     return (
       <div className="flex min-h-screen items-center justify-center">
         <Spinner className="text-ui-fg-interactive animate-spin" />
@@ -29,7 +28,7 @@ export const ProtectedRoute = () => {
   }
 
   return (
-    <PermissionsProvider policy={policy} isLoading={isLoadingPermissions}>
+    <PermissionsProvider policy={policy} isLoading={isLoadingUser}>
       <SidebarProvider>
         <SearchProvider>
           <Outlet />

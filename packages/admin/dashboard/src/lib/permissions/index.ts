@@ -19,6 +19,7 @@ export {
 } from "./constants"
 
 export {
+  buildPermissionsResponse,
   operationImplies,
   buildPermission,
   can,
