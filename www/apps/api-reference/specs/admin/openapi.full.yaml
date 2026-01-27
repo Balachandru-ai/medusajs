@@ -27467,7 +27467,7 @@ paths:
       parameters:
         - name: id
           in: path
-          description: The order edit's ID.
+          description: The ID of the order that is being edited.
           required: true
           schema:
             type: string
@@ -27489,7 +27489,7 @@ paths:
               },
             })
 
-            sdk.admin.orderEdit.cancelRequest("ordch_123")
+            sdk.admin.orderEdit.cancelRequest("order_123")
             .then(({ deleted }) => {
               console.log(deleted)
             })
@@ -27560,7 +27560,7 @@ paths:
       parameters:
         - name: id
           in: path
-          description: The order edit's ID.
+          description: The ID of the order that is being edited.
           required: true
           schema:
             type: string
@@ -27582,7 +27582,7 @@ paths:
               },
             })
 
-            sdk.admin.orderEdit.confirm("ordch_123")
+            sdk.admin.orderEdit.confirm("order_123")
             .then(({ order_preview }) => {
               console.log(order_preview)
             })
@@ -27635,7 +27635,7 @@ paths:
       parameters:
         - name: id
           in: path
-          description: The order edit's ID.
+          description: The ID of the order that is being edited.
           required: true
           schema:
             type: string
@@ -27662,7 +27662,7 @@ paths:
               },
             })
 
-            sdk.admin.orderEdit.addItems("ordch_123", {
+            sdk.admin.orderEdit.addItems("order_123", {
               items: [
                 {
                   variant_id: "variant_123",
@@ -27713,7 +27713,7 @@ paths:
       parameters:
         - name: id
           in: path
-          description: The order edit's ID.
+          description: The ID of the order that is being edited.
           required: true
           schema:
             type: string
@@ -27747,7 +27747,7 @@ paths:
             })
 
             sdk.admin.orderEdit.updateOriginalItem(
-              "ordch_123", 
+              "order_123", 
               "orli_123",
               {
                 quantity: 1
@@ -27801,7 +27801,7 @@ paths:
       parameters:
         - name: id
           in: path
-          description: The order edit's ID.
+          description: The ID of the order that is being edited.
           required: true
           schema:
             type: string
@@ -27835,7 +27835,7 @@ paths:
             })
 
             sdk.admin.orderEdit.updateAddedItem(
-              "ordch_123", 
+              "order_123", 
               "orli_123",
               {
                 quantity: 1
@@ -27884,7 +27884,7 @@ paths:
       parameters:
         - name: id
           in: path
-          description: The order edit's ID.
+          description: The ID of the order that is being edited.
           required: true
           schema:
             type: string
@@ -27913,7 +27913,7 @@ paths:
             })
 
             sdk.admin.orderEdit.removeAddedItem(
-              "ordch_123", 
+              "order_123", 
               "orli_123",
             )
             .then(({ order_preview }) => {
@@ -27956,7 +27956,7 @@ paths:
       parameters:
         - name: id
           in: path
-          description: The order edit's ID.
+          description: The ID of the order that is being edited.
           required: true
           schema:
             type: string
@@ -27978,7 +27978,7 @@ paths:
               },
             })
 
-            sdk.admin.orderEdit.request("ordch_123")
+            sdk.admin.orderEdit.request("order_123")
             .then(({ order_preview }) => {
               console.log(order_preview)
             })
@@ -28031,7 +28031,7 @@ paths:
       parameters:
         - name: id
           in: path
-          description: The order edit's ID.
+          description: The ID of the order that is being edited.
           required: true
           schema:
             type: string
@@ -28090,7 +28090,7 @@ paths:
       parameters:
         - name: id
           in: path
-          description: The order edit's ID.
+          description: The ID of the order that is being edited.
           required: true
           schema:
             type: string
@@ -28150,7 +28150,7 @@ paths:
       parameters:
         - name: id
           in: path
-          description: The order edit's ID.
+          description: The ID of the order that is being edited.
           required: true
           schema:
             type: string
@@ -64633,7 +64633,6 @@ paths:
             .then(({ created, updated, deleted }) => {
               console.log(created, updated, deleted)
             })
-            ```
         - lang: Shell
           label: cURL
           source: |-
