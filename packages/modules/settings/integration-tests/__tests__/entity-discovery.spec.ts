@@ -365,6 +365,202 @@ moduleIntegrationTestRunner<SettingsTypes.ISettingsModuleService>({
         })
       })
 
+      describe("category mapping", function () {
+        it("should map identifier semantic type to identifier category", async () => {
+          const columns = await service.generateEntityColumns("Order")
+
+          expect(columns).not.toBeNull()
+
+          // display_id should have identifier category
+          const displayIdColumn = columns!.find((c) => c.id === "display_id")
+          expect(displayIdColumn).toBeDefined()
+          expect(displayIdColumn?.semantic_type).toBe("identifier")
+          expect(displayIdColumn?.category).toBe("identifier")
+        })
+
+        it("should map timestamp semantic type to timestamp category", async () => {
+          const columns = await service.generateEntityColumns("Order")
+
+          expect(columns).not.toBeNull()
+
+          // created_at should have timestamp category
+          const createdAtColumn = columns!.find((c) => c.id === "created_at")
+          expect(createdAtColumn).toBeDefined()
+          expect(createdAtColumn?.semantic_type).toBe("timestamp")
+          expect(createdAtColumn?.category).toBe("timestamp")
+        })
+
+        it("should map status semantic type to status category", async () => {
+          const columns = await service.generateEntityColumns("Order")
+
+          expect(columns).not.toBeNull()
+
+          // status should have status category
+          const statusColumn = columns!.find((c) => c.id === "status")
+          expect(statusColumn).toBeDefined()
+          expect(statusColumn?.semantic_type).toBe("status")
+          expect(statusColumn?.category).toBe("status")
+        })
+
+        it("should map currency semantic type to metric category", async () => {
+          const columns = await service.generateEntityColumns("Order")
+
+          expect(columns).not.toBeNull()
+
+          // total should have metric category (mapped from currency semantic type)
+          const totalColumn = columns!.find((c) => c.id === "total")
+          expect(totalColumn).toBeDefined()
+          expect(totalColumn?.semantic_type).toBe("currency")
+          expect(totalColumn?.category).toBe("metric")
+        })
+
+        it("should use field category for other semantic types", async () => {
+          const columns = await service.generateEntityColumns("Order")
+
+          expect(columns).not.toBeNull()
+
+          // currency_code should have field category
+          const currencyCodeColumn = columns!.find(
+            (c) => c.id === "currency_code"
+          )
+          expect(currencyCodeColumn).toBeDefined()
+          expect(currencyCodeColumn?.category).toBe("field")
+        })
+      })
+
+      describe("single relationship columns", function () {
+        it("should generate multiple columns for single relationships", async () => {
+          const columns = await service.generateEntityColumns("Order")
+
+          expect(columns).not.toBeNull()
+          const columnIds = columns!.map((c) => c.id)
+
+          // Region is a single relationship - should have multiple nested columns
+          const regionColumns = columnIds.filter((id) =>
+            id.startsWith("region.")
+          )
+          expect(regionColumns.length).toBeGreaterThan(1)
+
+          // Should include both id and name
+          expect(columnIds).toContain("region.id")
+          expect(columnIds).toContain("region.name")
+        })
+
+        it("should generate columns for all scalar fields of relationships", async () => {
+          const columns = await service.generateEntityColumns("Product")
+
+          expect(columns).not.toBeNull()
+          const columnIds = columns!.map((c) => c.id)
+
+          // Collection is a single relationship - should have multiple nested columns
+          const collectionColumns = columnIds.filter((id) =>
+            id.startsWith("collection.")
+          )
+          expect(collectionColumns.length).toBeGreaterThan(1)
+
+          // Should include id, title, handle
+          expect(columnIds).toContain("collection.id")
+          expect(columnIds).toContain("collection.title")
+          expect(columnIds).toContain("collection.handle")
+        })
+
+        it("should mark all relationship columns with relationship category", async () => {
+          const columns = await service.generateEntityColumns("Order")
+
+          expect(columns).not.toBeNull()
+
+          // All region.* columns should have relationship category
+          const regionColumns = columns!.filter((c) =>
+            c.id.startsWith("region.")
+          )
+          for (const col of regionColumns) {
+            expect(col.category).toBe("relationship")
+          }
+        })
+      })
+
+      describe("endpoint inference", function () {
+        it("should infer endpoint following kebab-case plural convention", async () => {
+          const columns = await service.generateEntityColumns("Product")
+
+          expect(columns).not.toBeNull()
+
+          // sales_channels filter should have inferred endpoint
+          const salesChannelsFilter = columns!.find(
+            (c) => c.id === "sales_channels_filter"
+          )
+          expect(salesChannelsFilter?.filter?.relationship?.endpoint).toBe(
+            "/admin/sales-channels"
+          )
+        })
+
+        it("should use custom endpoint for ProductCollection", async () => {
+          const columns = await service.generateEntityColumns("Product")
+
+          expect(columns).not.toBeNull()
+
+          // collection.id should have relationship filter with custom endpoint
+          const collectionIdColumn = columns!.find(
+            (c) => c.id === "collection.id"
+          )
+          expect(
+            collectionIdColumn?.filter?.relationship?.endpoint
+          ).toBe("/admin/collections")
+        })
+
+        it("should infer endpoint for CustomerGroup", async () => {
+          const columns = await service.generateEntityColumns("Customer")
+
+          expect(columns).not.toBeNull()
+
+          // groups filter should have inferred endpoint
+          const groupsFilter = columns!.find((c) => c.id === "groups_filter")
+          expect(groupsFilter?.filter?.relationship?.endpoint).toBe(
+            "/admin/customer-groups"
+          )
+        })
+      })
+
+      describe("display field inference", function () {
+        it("should use name as display field when available", async () => {
+          const columns = await service.generateEntityColumns("Product")
+
+          expect(columns).not.toBeNull()
+
+          // SalesChannel has name field, should use it as display_field
+          const salesChannelsFilter = columns!.find(
+            (c) => c.id === "sales_channels_filter"
+          )
+          expect(salesChannelsFilter?.filter?.relationship?.display_field).toBe(
+            "name"
+          )
+        })
+
+        it("should use title as display field for ProductCollection", async () => {
+          const columns = await service.generateEntityColumns("Product")
+
+          expect(columns).not.toBeNull()
+
+          // ProductCollection uses title (from override)
+          const collectionIdColumn = columns!.find(
+            (c) => c.id === "collection.id"
+          )
+          expect(
+            collectionIdColumn?.filter?.relationship?.display_field
+          ).toBe("title")
+        })
+
+        it("should use value as display field for ProductTag", async () => {
+          const columns = await service.generateEntityColumns("Product")
+
+          expect(columns).not.toBeNull()
+
+          // ProductTag uses value (from override)
+          const tagsFilter = columns!.find((c) => c.id === "tags_filter")
+          expect(tagsFilter?.filter?.relationship?.display_field).toBe("value")
+        })
+      })
+
       describe("entity overrides", function () {
         describe("excludePrefixes", function () {
           it("should exclude fields with raw_ prefix for Order", async () => {

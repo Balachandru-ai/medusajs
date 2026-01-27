@@ -43,6 +43,11 @@ export interface ComputedColumnDefinition {
    * Description of the column.
    */
   description?: string
+
+  /**
+   * Category for grouping columns (e.g., "relationship", "metadata", "computed").
+   */
+  category?: string
 }
 
 /**
@@ -63,6 +68,7 @@ export const BUILTIN_COMPUTED_COLUMNS: ComputedColumnDefinition[] = [
     entities: ["Order"],
     defaultVisible: true,
     description: "Customer name and contact information",
+    category: "relationship",
   },
   {
     id: "shipping_address_display",
@@ -80,6 +86,7 @@ export const BUILTIN_COMPUTED_COLUMNS: ComputedColumnDefinition[] = [
     entities: ["Order"],
     defaultVisible: false,
     description: "Shipping address summary",
+    category: "relationship",
   },
   {
     id: "billing_address_display",
@@ -97,6 +104,7 @@ export const BUILTIN_COMPUTED_COLUMNS: ComputedColumnDefinition[] = [
     entities: ["Order"],
     defaultVisible: false,
     description: "Billing address summary",
+    category: "relationship",
   },
   {
     id: "country",
@@ -107,6 +115,7 @@ export const BUILTIN_COMPUTED_COLUMNS: ComputedColumnDefinition[] = [
     entities: ["Order"],
     defaultVisible: true,
     description: "Shipping country",
+    category: "metadata",
   },
 
   // Product computed columns
@@ -119,6 +128,7 @@ export const BUILTIN_COMPUTED_COLUMNS: ComputedColumnDefinition[] = [
     entities: ["Product"],
     defaultVisible: true,
     description: "Product title and thumbnail",
+    category: "computed",
   },
   {
     id: "variants_count",
@@ -129,6 +139,7 @@ export const BUILTIN_COMPUTED_COLUMNS: ComputedColumnDefinition[] = [
     entities: ["Product"],
     defaultVisible: true,
     description: "Number of product variants",
+    category: "metric",
   },
   {
     id: "sales_channels_display",
@@ -139,6 +150,7 @@ export const BUILTIN_COMPUTED_COLUMNS: ComputedColumnDefinition[] = [
     entities: ["Product"],
     defaultVisible: true,
     description: "Sales channels the product is available in",
+    category: "relationship",
   },
 ]
 

@@ -63,6 +63,27 @@ function formatFieldName(fieldName: string): string {
 }
 
 /**
+ * Map semantic type to a valid column category.
+ */
+function semanticTypeToCategory(
+  semanticType: string | undefined
+): ViewConfigurationColumn["category"] {
+  switch (semanticType) {
+    case "identifier":
+      return "identifier"
+    case "timestamp":
+      return "timestamp"
+    case "status":
+      return "status"
+    case "currency":
+    case "count":
+      return "metric"
+    default:
+      return "field"
+  }
+}
+
+/**
  * Generate columns for an entity using the entity discovery service.
  */
 export function generateEntityColumns(
@@ -153,7 +174,8 @@ export function generateEntityColumns(
       },
       render_mode: computed.renderMode,
       default_order: fieldOrdering[columnId] || 850,
-      category: "computed",
+      category:
+        (computed.category as ViewConfigurationColumn["category"]) || "computed",
       filter: { enabled: false },
       source: { module: entity.module, entity: entity.name },
       custom_label: hasCustomLabel,
@@ -233,7 +255,7 @@ function processEntityType(
         context: "both",
         render_mode: renderMode,
         default_order: fieldOrdering[fullPath] || 900,
-        category: parentPath ? "relationship" : "field",
+        category: parentPath ? "relationship" : semanticTypeToCategory(semanticType),
         filter: buildFilterConfig(
           fieldName,
           dataType,
@@ -259,78 +281,76 @@ function processEntityType(
         const shouldIncludeRelationship =
           shouldHaveRelationshipFilter(relatedTypeName)
 
-        // Get a few key fields from the related entity
+        // Get scalar fields from the related entity
         const relatedFields = underlyingType.getFields()
-        const keyFields = ["name", "title", "email", "code", "value"]
 
-        for (const keyField of keyFields) {
-          if (relatedFields[keyField]) {
-            const nestedPath = `${fieldName}.${keyField}`
-            const nestedFieldType = (relatedFields[keyField] as any).type
-            const nestedUnderlyingType = getUnderlyingType(nestedFieldType)
+        // Process all scalar fields of the relationship
+        for (const [relatedFieldName, relatedFieldDef] of Object.entries(
+          relatedFields
+        )) {
+          const nestedPath = `${fieldName}.${relatedFieldName}`
+          const nestedFieldType = (relatedFieldDef as any).type
+          const nestedUnderlyingType = getUnderlyingType(nestedFieldType)
 
-            if (
-              isScalarType(nestedUnderlyingType) &&
-              !processedFields.has(nestedPath)
-            ) {
-              const graphqlTypeName = nestedUnderlyingType.name
-              const dataType = inferDataType(graphqlTypeName, keyField)
-              const { renderMode, semanticType } = inferRenderMode(
-                keyField,
-                graphqlTypeName
-              )
+          // Only include scalar fields (not nested objects or arrays)
+          if (
+            isScalarType(nestedUnderlyingType) &&
+            !processedFields.has(nestedPath)
+          ) {
+            const graphqlTypeName = nestedUnderlyingType.name
+            const dataType = inferDataType(graphqlTypeName, relatedFieldName)
+            const { renderMode, semanticType } = inferRenderMode(
+              relatedFieldName,
+              graphqlTypeName
+            )
 
-              const label = propertyLabels?.get(nestedPath)
-              const hasCustomLabel = !!label
+            const label = propertyLabels?.get(nestedPath)
+            const hasCustomLabel = !!label
 
-              processedFields.add(nestedPath)
+            processedFields.add(nestedPath)
 
-              const filter = buildFilterConfig(
-                keyField,
-                dataType,
+            const filter = buildFilterConfig(
+              relatedFieldName,
+              dataType,
+              false,
+              semanticType
+            )
+
+            // Add relationship filter config for the id field
+            if (shouldIncludeRelationship && relatedFieldName === "id") {
+              const relationshipFilter = getRelationshipFilterConfig(
+                entity.name,
+                fieldName,
+                relatedTypeName,
                 false,
-                semanticType
+                schemaTypeMap
               )
-
-              // Add relationship filter config if applicable
-              if (shouldIncludeRelationship && keyField === "id") {
-                const relationshipFilter = getRelationshipFilterConfig(
-                  entity.name,
-                  fieldName,
-                  relatedTypeName,
-                  false,
-                  schemaTypeMap
-                )
-                if (relationshipFilter) {
-                  ;(filter as any).relationship = relationshipFilter
-                }
+              if (relationshipFilter) {
+                ;(filter as any).relationship = relationshipFilter
               }
-
-              columns.push({
-                id: nestedPath,
-                name:
-                  label?.label ||
-                  `${formatFieldName(fieldName)} ${formatFieldName(keyField)}`,
-                description: label?.description || undefined,
-                field: nestedPath,
-                sortable: false,
-                hideable: true,
-                default_visible: defaultVisibleFields.includes(nestedPath),
-                data_type: dataType,
-                semantic_type: semanticType,
-                context: "both",
-                render_mode: renderMode,
-                default_order: fieldOrdering[nestedPath] || 950,
-                category: "relationship",
-                filter,
-                source: { module: entity.module, entity: entity.name },
-                custom_label: hasCustomLabel,
-                label_id: label?.id,
-              })
-
-              // Only include the first matching key field
-              break
             }
+
+            columns.push({
+              id: nestedPath,
+              name:
+                label?.label ||
+                `${formatFieldName(fieldName)} ${formatFieldName(relatedFieldName)}`,
+              description: label?.description || undefined,
+              field: nestedPath,
+              sortable: false,
+              hideable: true,
+              default_visible: defaultVisibleFields.includes(nestedPath),
+              data_type: dataType,
+              semantic_type: semanticType,
+              context: "both",
+              render_mode: renderMode,
+              default_order: fieldOrdering[nestedPath] || 950,
+              category: "relationship",
+              filter,
+              source: { module: entity.module, entity: entity.name },
+              custom_label: hasCustomLabel,
+              label_id: label?.id,
+            })
           }
         }
       }
@@ -410,7 +430,7 @@ export function computedColumnToAdminColumn(
     },
     render_mode: column.renderMode,
     default_order: defaultOrder,
-    category: "computed",
+    category: (column.category as ViewConfigurationColumn["category"]) || "computed",
     filter: { enabled: false },
     source: { module: entity.module, entity: entity.name },
     custom_label: !!label,
