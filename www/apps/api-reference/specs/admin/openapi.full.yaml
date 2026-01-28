@@ -98750,6 +98750,38 @@ components:
           type: number
           title: rank
           description: The image's rank among its sibling images
+    StoreProductListResponse:
+      type: object
+      description: The paginated list of products.
+      x-schemaName: StoreProductListResponse
+      required:
+        - limit
+        - offset
+        - count
+        - products
+      properties:
+        limit:
+          type: number
+          title: limit
+          description: The maximum number of items returned.
+        offset:
+          type: number
+          title: offset
+          description: The number of items skipped before retrieving the returned items.
+        count:
+          type: number
+          title: count
+          description: The total count of items.
+        products:
+          type: array
+          description: The list of products.
+          items:
+            $ref: '#/components/schemas/StoreProduct'
+        estimate_count:
+          type: number
+          title: estimate_count
+          description: The estimated count retrieved from the PostgreSQL query planner, which may be inaccurate.
+          x-featureFlag: index_engine
     StoreProductOption:
       type: object
       description: The product option's details.
