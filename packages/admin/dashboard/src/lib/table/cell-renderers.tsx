@@ -2,6 +2,7 @@ import React from "react"
 import { Badge, StatusBadge, Tooltip } from "@medusajs/ui"
 import { HttpTypes } from "@medusajs/types"
 import ReactCountryFlag from "react-country-flag"
+import { ArrowUpRightOnBox } from "@medusajs/icons"
 import { getCountryByIso2 } from "../data/countries"
 import { ProductCell } from "../../components/table/table-cells/product/product-cell"
 import { CollectionCell } from "../../components/table/table-cells/product/collection-cell"
@@ -39,9 +40,16 @@ const TextRenderer: CellRenderer = (value, _row, _column, _t) => {
 }
 
 const CountRenderer: CellRenderer = (value, _row, _column, t) => {
-  const items = value || []
-  const count = Array.isArray(items) ? items.length : 0
-  return t("general.items", { count })
+  if (Array.isArray(value)) {
+    const count = value.length
+    return t("general.items", { count })
+  }
+
+  if (typeof value === "number") {
+    return t("general.items", { count: value })
+  }
+
+  return t("general.items", { count: 0 })
 }
 
 const StatusRenderer: CellRenderer = (value, row, column, t) => {
@@ -267,6 +275,163 @@ const TotalRenderer: CellRenderer = (value, row, _column, _t) => {
   return <TotalCell currencyCode={currencyCode} total={value} />
 }
 
+const NumberRenderer: CellRenderer = (value, _row, _column, _t) => {
+  if (value === null || value === undefined) return "-"
+
+  const num = typeof value === "string" ? parseFloat(value) : value
+  if (isNaN(num)) return "-"
+
+  return (num as number).toLocaleString()
+}
+
+const BooleanRenderer: CellRenderer = (value, _row, _column, t) => {
+  if (value === null || value === undefined) return "-"
+
+  const label = (
+    value
+      ? t
+        ? t("fields.yes", "Yes")
+        : "Yes"
+      : t
+      ? t("fields.no", "No")
+      : "No"
+  ) as string
+
+  return (
+    <Badge size="xsmall" color={value ? "green" : "grey"}>
+      {label}
+    </Badge>
+  )
+}
+
+const IdRenderer: CellRenderer = (value, _row, _column, _t) => {
+  if (!value) return "-"
+
+  return (
+    <span className="text-ui-fg-subtle font-mono text-sm">{String(value)}</span>
+  )
+}
+
+const EmailRenderer: CellRenderer = (value, _row, _column, _t) => {
+  if (!value) return "-"
+
+  return (
+    <a
+      href={`mailto:${value}`}
+      className="text-ui-fg-interactive hover:text-ui-fg-interactive-hover"
+      onClick={(e) => e.stopPropagation()}
+    >
+      {value}
+    </a>
+  )
+}
+
+const PhoneRenderer: CellRenderer = (value, _row, _column, _t) => {
+  if (!value) return "-"
+
+  return (
+    <a
+      href={`tel:${value}`}
+      className="text-ui-fg-interactive hover:text-ui-fg-interactive-hover"
+      onClick={(e) => e.stopPropagation()}
+    >
+      {value}
+    </a>
+  )
+}
+
+const UrlRenderer: CellRenderer = (value, _row, _column, _t) => {
+  if (!value) return "-"
+
+  return (
+    <a
+      href={value}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="text-ui-fg-interactive hover:text-ui-fg-interactive-hover flex items-center gap-1"
+      onClick={(e) => e.stopPropagation()}
+    >
+      <span className="max-w-[200px] truncate">{value}</span>
+      <ArrowUpRightOnBox className="h-3 w-3 flex-shrink-0" />
+    </a>
+  )
+}
+
+const ImageRenderer: CellRenderer = (value, _row, _column, _t) => {
+  if (!value) return "-"
+
+  return (
+    <div className="flex items-center justify-center">
+      <img
+        src={value}
+        alt=""
+        className="h-8 w-8 rounded object-cover"
+        onError={(e) => {
+          ;(e.target as HTMLImageElement).style.display = "none"
+        }}
+      />
+    </div>
+  )
+}
+
+const JsonRenderer: CellRenderer = (value, _row, _column, _t) => {
+  if (value === null || value === undefined) return "-"
+
+  const jsonString = typeof value === "string" ? value : JSON.stringify(value)
+  const truncated =
+    jsonString.length > 50 ? jsonString.substring(0, 47) + "..." : jsonString
+
+  return (
+    <Tooltip
+      content={
+        <pre className="max-w-[400px] overflow-auto text-xs">
+          {JSON.stringify(value, null, 2)}
+        </pre>
+      }
+    >
+      <span className="text-ui-fg-subtle cursor-help font-mono text-xs">
+        {truncated}
+      </span>
+    </Tooltip>
+  )
+}
+
+const BadgeRenderer: CellRenderer = (value, _row, _column, _t) => {
+  if (!value) return "-"
+
+  return <Badge size="xsmall">{String(value)}</Badge>
+}
+
+// TODO: improve based on how we receive the data, probably targetting row
+const AddressRenderer: CellRenderer = (value, row, column, _t) => {
+  let address = value
+  if (!address && column.field.includes("address")) {
+    address = row[column.field.replace("_display", "")]
+  }
+
+  if (!address || typeof address !== "object") return "-"
+
+  const parts = []
+  if (address.address_1) parts.push(address.address_1)
+  if (address.address_2) parts.push(address.address_2)
+  if (address.city) parts.push(address.city)
+  if (address.province) parts.push(address.province)
+  if (address.postal_code) parts.push(address.postal_code)
+  if (address.country_code) parts.push(address.country_code.toUpperCase())
+
+  if (parts.length === 0) return "-"
+
+  const fullAddress = parts.join(", ")
+  const truncated =
+    fullAddress.length > 40 ? fullAddress.substring(0, 37) + "..." : fullAddress
+
+  return (
+    <Tooltip content={fullAddress}>
+      <span className="max-w-[200px] truncate">{truncated}</span>
+    </Tooltip>
+  )
+}
+
 // Register built-in renderers
 cellRenderers.set("text", TextRenderer)
 cellRenderers.set("count", CountRenderer)
@@ -276,6 +441,16 @@ cellRenderers.set("date", DateRenderer)
 cellRenderers.set("timestamp", DateRenderer)
 cellRenderers.set("currency", CurrencyRenderer)
 cellRenderers.set("total", TotalRenderer)
+cellRenderers.set("number", NumberRenderer)
+cellRenderers.set("boolean", BooleanRenderer)
+cellRenderers.set("id", IdRenderer)
+cellRenderers.set("email", EmailRenderer)
+cellRenderers.set("phone", PhoneRenderer)
+cellRenderers.set("url", UrlRenderer)
+cellRenderers.set("image", ImageRenderer)
+cellRenderers.set("json", JsonRenderer)
+cellRenderers.set("badge", BadgeRenderer)
+cellRenderers.set("datetime", DateRenderer)
 
 // Register product-specific renderers
 cellRenderers.set("product_info", ProductInfoRenderer)
@@ -288,6 +463,7 @@ cellRenderers.set("customer_name", CustomerNameRenderer)
 cellRenderers.set("address_summary", AddressSummaryRenderer)
 cellRenderers.set("country_code", CountryCodeRenderer)
 cellRenderers.set("display_id", DisplayIdRenderer)
+cellRenderers.set("address", AddressRenderer)
 
 export function getCellRenderer(
   renderType?: string,
