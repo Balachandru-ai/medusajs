@@ -18,6 +18,7 @@ export type RenderMode =
   | "badge_list"
   | "count"
   | "id"
+  | "display_id"
   | "email"
   | "phone"
   | "url"
@@ -142,13 +143,17 @@ const FIELD_PATTERN_OVERRIDES: FieldPatternOverride[] = [
 
   // Identifiers
   { pattern: /^id$/, renderMode: "id", semanticType: "identifier" },
-  { pattern: /_id$/, renderMode: "id", semanticType: "identifier" },
-  { pattern: /^display_id$/, renderMode: "id", semanticType: "identifier" },
   {
-    pattern: /^custom_display_id$/,
-    renderMode: "id",
+    pattern: /^display_id$/,
+    renderMode: "display_id",
     semanticType: "identifier",
   },
+  {
+    pattern: /^custom_display_id$/,
+    renderMode: "display_id",
+    semanticType: "identifier",
+  },
+  { pattern: /_id$/, renderMode: "id", semanticType: "identifier" },
   { pattern: /^handle$/, renderMode: "text", semanticType: "identifier" },
   { pattern: /^code$/, renderMode: "text", semanticType: "identifier" },
 
