@@ -12,7 +12,6 @@ import { ProductStatusCell } from "../../components/table/table-cells/product/pr
 import { DateCell } from "../../components/table/table-cells/common/date-cell"
 import { DisplayIdCell } from "../../components/table/table-cells/order/display-id-cell"
 import { TotalCell } from "../../components/table/table-cells/order/total-cell"
-import { MoneyAmountCell } from "../../components/table/table-cells/common/money-amount-cell"
 import { TFunction } from "i18next"
 import {
   getOrderPaymentStatus,
@@ -52,6 +51,9 @@ const CountRenderer: CellRenderer = (value, _row, _column, t) => {
   return t("general.items", { count: 0 })
 }
 
+// TODO: if we expect users to use this renderer for their statuses, we need to provide a way for them to pass some
+// sort of registry that passes the context field and resolves the status label and color based on it.
+// Also, use translated value if available and remove hardcoded field conditional
 const StatusRenderer: CellRenderer = (value, row, column, t) => {
   if (!value) return "-"
 
@@ -63,14 +65,22 @@ const StatusRenderer: CellRenderer = (value, row, column, t) => {
     return <ProductStatusCell status={row.status} />
   }
 
-  if (column.context === "payment" && t) {
+  if (column.field === "payment_status" && t) {
     const { label, color } = getOrderPaymentStatus(t, value)
-    return <StatusBadge color={color}>{label}</StatusBadge>
+    return (
+      <StatusBadge className="mx-auto" color={color}>
+        {label}
+      </StatusBadge>
+    )
   }
 
-  if (column.context === "fulfillment" && t) {
+  if (column.field === "fulfillment_status" && t) {
     const { label, color } = getOrderFulfillmentStatus(t, value)
-    return <StatusBadge color={color}>{label}</StatusBadge>
+    return (
+      <StatusBadge className="mx-auto" color={color}>
+        {label}
+      </StatusBadge>
+    )
   }
 
   // Generic status badge for other status types
@@ -121,7 +131,9 @@ const StatusRenderer: CellRenderer = (value, row, column, t) => {
   const translatedValue = getTranslatedStatus(value)
 
   return (
-    <StatusBadge color={getStatusColor(value)}>{translatedValue}</StatusBadge>
+    <StatusBadge className="mx-auto" color={getStatusColor(value)}>
+      {translatedValue}
+    </StatusBadge>
   )
 }
 
@@ -264,15 +276,7 @@ const DisplayIdRenderer: CellRenderer = (value, _row, _column, _t) => {
 }
 
 const CurrencyRenderer: CellRenderer = (value, row, _column, _t) => {
-  const currencyCode = row.currency_code || "USD"
-  return (
-    <MoneyAmountCell currencyCode={currencyCode} amount={value} align="right" />
-  )
-}
-
-const TotalRenderer: CellRenderer = (value, row, _column, _t) => {
-  const currencyCode = row.currency_code || "USD"
-  return <TotalCell currencyCode={currencyCode} total={value} />
+  return <TotalCell currencyCode={row.currency_code || "USD"} total={value} />
 }
 
 const NumberRenderer: CellRenderer = (value, _row, _column, _t) => {
@@ -304,12 +308,9 @@ const BooleanRenderer: CellRenderer = (value, _row, _column, t) => {
   )
 }
 
+// TODO: ask Ludvig how we want to show this renderer
 const IdRenderer: CellRenderer = (value, _row, _column, _t) => {
-  if (!value) return "-"
-
-  return (
-    <span className="text-ui-fg-subtle font-mono text-sm">{String(value)}</span>
-  )
+  return TextRenderer(value, _row, _column, _t)
 }
 
 const EmailRenderer: CellRenderer = (value, _row, _column, _t) => {
@@ -440,7 +441,6 @@ cellRenderers.set("badge_list", BadgeListRenderer)
 cellRenderers.set("date", DateRenderer)
 cellRenderers.set("timestamp", DateRenderer)
 cellRenderers.set("currency", CurrencyRenderer)
-cellRenderers.set("total", TotalRenderer)
 cellRenderers.set("number", NumberRenderer)
 cellRenderers.set("boolean", BooleanRenderer)
 cellRenderers.set("id", IdRenderer)
@@ -480,12 +480,7 @@ export function getCellRenderer(
     case "date":
       return DateRenderer
     case "boolean":
-      return (value, _row, _column, t) => {
-        if (t) {
-          return value ? t("fields.yes", "Yes") : t("fields.no", "No")
-        }
-        return value ? "Yes" : "No"
-      }
+      return BooleanRenderer
     case "enum":
       return StatusRenderer
     case "currency":

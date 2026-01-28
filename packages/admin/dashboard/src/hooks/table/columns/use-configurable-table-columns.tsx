@@ -2,7 +2,10 @@ import React, { useMemo } from "react"
 import { createDataTableColumnHelper } from "@medusajs/ui"
 import { HttpTypes } from "@medusajs/types"
 import { useTranslation } from "react-i18next"
-import { getCellRenderer, getColumnValue } from "../../../lib/table/cell-renderers"
+import {
+  getCellRenderer,
+  getColumnValue,
+} from "../../../lib/table/cell-renderers"
 import { getColumnAlignment } from "../../../lib/table/column-utils"
 
 export function useConfigurableTableColumns<TData = any>(
@@ -17,25 +20,14 @@ export function useConfigurableTableColumns<TData = any>(
       return []
     }
 
-    return apiColumns.map(apiColumn => {
+    return apiColumns.map((apiColumn) => {
       let renderType = apiColumn.computed?.type
 
       if (!renderType) {
-        if (apiColumn.semantic_type === 'timestamp') {
-          renderType = 'timestamp'
-        } else if (apiColumn.field === 'display_id') {
-          renderType = 'display_id'
-        } else if (apiColumn.field === 'total') {
-          renderType = 'total'
-        } else if (apiColumn.semantic_type === 'currency') {
-          renderType = 'currency'
-        }
+        renderType = apiColumn.render_mode
       }
 
-      const renderer = getCellRenderer(
-        renderType,
-        apiColumn.data_type
-      )
+      const renderer = getCellRenderer(renderType, apiColumn.data_type)
 
       const headerAlign = getColumnAlignment(apiColumn)
 
@@ -44,7 +36,7 @@ export function useConfigurableTableColumns<TData = any>(
       return columnHelper.accessor(accessor, {
         id: apiColumn.field,
         header: () => apiColumn.name,
-        cell: ({ getValue, row }: { getValue: any, row: any }) => {
+        cell: ({ getValue, row }: { getValue: any; row: any }) => {
           const value = getValue()
 
           return renderer(value, row.original, apiColumn, t)
