@@ -360,11 +360,6 @@ export const GET = async (
   req: AuthenticatedMedusaRequest,
   res: MedusaResponse
 ) => {
-  const { 
-    fields, 
-    limit = 20, 
-    offset = 0,
-  } = req.validatedQuery || {}
   const query = req.scope.resolve(ContainerRegistrationKeys.QUERY)
 
   const { 
@@ -372,16 +367,7 @@ export const GET = async (
     metadata: { count, take, skip } = {},
   } = await query.graph({
     entity: "digital_product",
-    fields: [
-      "*",
-      "medias.*",
-      "product_variant.*",
-      ...(fields || []),
-    ],
-    pagination: {
-      skip: offset,
-      take: limit,
-    },
+    ...req.queryConfig,
   })
 
   res.json({
@@ -396,6 +382,45 @@ export const GET = async (
 This adds a `GET` API route at `/admin/digital-products`.
 
 In the route handler, you use Query to retrieve the list of digital products and their relations. The route handler also supports pagination.
+
+Then, create the file `src/api/middlewares.ts` with the following content:
+
+```ts title="src/api/middlewares.ts"
+import { validateAndTransformQuery } from "@medusajs/framework/http"
+import { createFindParams } from "@medusajs/medusa/api/utils/validators"
+
+const GetDigitalProductsSchema = createFindParams()
+
+export default defineMiddlewares({
+  routes: [
+    {
+      matcher: "/admin/digital-products",
+      method: "GET",
+      middlewares: [
+        validateAndTransformQuery(
+          GetDigitalProductsSchema,
+          {
+            defaults: [
+              "id",
+              "name",
+              "created_at",
+              "updated_at",
+              "deleted_at",
+              "medias.*",
+              "product_variant.*",
+            ],
+            isList: true,
+          }
+        ),
+      ],
+    }
+  ]
+})
+```
+
+### Further Read
+
+- [How to Create a Middleware](!docs!/learn/fundamentals/api-routes/middlewares)
 
 ### Test API Route
 
@@ -788,7 +813,7 @@ export const createDigitalProductsSchema = z.object({
 
 This defines the expected request body schema.
 
-Finally, create the file `src/api/middlewares.ts` with the following content:
+Finally, add to the file `src/api/middlewares.ts` the following content:
 
 ```ts title="src/api/middlewares.ts"
 import { 
