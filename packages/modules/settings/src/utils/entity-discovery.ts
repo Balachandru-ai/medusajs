@@ -4,6 +4,7 @@ import {
   graphqlSchemaToFields,
   isListType,
   isNonNullType,
+  kebabCase,
   makeExecutableSchema,
   mergeTypeDefs,
   pluralize,
@@ -25,10 +26,8 @@ export interface JoinerConfig {
 /**
  * Convert PascalCase to kebab-case with pluralization.
  */
-function toKebabCasePlural(name: string): string {
-  const kebab = name
-    .replace(/([A-Z])/g, (match, offset) => (offset > 0 ? `-${match}` : match))
-    .toLowerCase()
+export function toKebabCasePlural(name: string): string {
+  const kebab = kebabCase(name)
 
   return pluralize(kebab)
 }

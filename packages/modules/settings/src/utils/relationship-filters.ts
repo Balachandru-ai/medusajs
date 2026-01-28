@@ -3,12 +3,12 @@
  * Configures dropdown filters for relationship fields.
  */
 
+import { GraphQLObjectType, isScalarType } from "@medusajs/framework/utils"
 import {
-  GraphQLObjectType,
-  isScalarType,
-  pluralize,
-} from "@medusajs/framework/utils"
-import { SchemaTypeMap, getUnderlyingType } from "./entity-discovery"
+  SchemaTypeMap,
+  getUnderlyingType,
+  toKebabCasePlural,
+} from "./entity-discovery"
 
 /**
  * Configuration for a relationship filter.
@@ -71,15 +71,6 @@ export const ENTITY_ENDPOINT_MAP: Record<string, string> = {
 }
 
 /**
- * Convert PascalCase to kebab-case.
- */
-function toKebabCase(str: string): string {
-  return str
-    .replace(/[A-Z]/g, (match, offset) => (offset > 0 ? `-${match}` : match))
-    .toLowerCase()
-}
-
-/**
  * Infer the API endpoint for fetching filter options.
  */
 export function inferOptionsEndpoint(entityName: string): string {
@@ -88,7 +79,7 @@ export function inferOptionsEndpoint(entityName: string): string {
   }
 
   // Auto-generate: "SalesChannel" → "/admin/sales-channels"
-  return `/admin/${toKebabCase(pluralize(entityName))}`
+  return `/admin/${toKebabCasePlural(entityName)}`
 }
 
 /**
