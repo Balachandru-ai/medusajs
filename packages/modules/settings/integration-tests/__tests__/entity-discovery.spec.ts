@@ -2,6 +2,12 @@ import { Modules } from "@medusajs/utils"
 import { moduleIntegrationTestRunner } from "@medusajs/test-utils"
 import { SettingsTypes } from "@medusajs/types"
 import { getTestJoinerConfigs } from "../__fixtures__/joiner-configs"
+import {
+  getEntityOverrideRegistry,
+  resetEntityOverrideRegistry,
+  EntityOverride,
+  BUILTIN_ENTITY_OVERRIDES,
+} from "../../src/utils"
 
 jest.setTimeout(30000)
 
@@ -503,9 +509,9 @@ moduleIntegrationTestRunner<SettingsTypes.ISettingsModuleService>({
           const collectionIdColumn = columns!.find(
             (c) => c.id === "collection.id"
           )
-          expect(
-            collectionIdColumn?.filter?.relationship?.endpoint
-          ).toBe("/admin/collections")
+          expect(collectionIdColumn?.filter?.relationship?.endpoint).toBe(
+            "/admin/collections"
+          )
         })
 
         it("should infer endpoint for CustomerGroup", async () => {
@@ -545,9 +551,9 @@ moduleIntegrationTestRunner<SettingsTypes.ISettingsModuleService>({
           const collectionIdColumn = columns!.find(
             (c) => c.id === "collection.id"
           )
-          expect(
-            collectionIdColumn?.filter?.relationship?.display_field
-          ).toBe("title")
+          expect(collectionIdColumn?.filter?.relationship?.display_field).toBe(
+            "title"
+          )
         })
 
         it("should use value as display field for ProductTag", async () => {
@@ -795,6 +801,267 @@ moduleIntegrationTestRunner<SettingsTypes.ISettingsModuleService>({
             for (const entity of entities) {
               expect(typeof entity.hasOverrides).toBe("boolean")
             }
+          })
+        })
+      })
+
+      describe("EntityOverrideRegistry", function () {
+        beforeEach(() => {
+          resetEntityOverrideRegistry()
+        })
+
+        afterAll(() => {
+          resetEntityOverrideRegistry()
+        })
+
+        describe("initialization", function () {
+          it("should initialize with built-in overrides", () => {
+            const registry = getEntityOverrideRegistry()
+            const entityNames = registry.getEntityNames()
+
+            // Should include all built-in entities
+            expect(entityNames).toContain("Order")
+            expect(entityNames).toContain("Product")
+            expect(entityNames).toContain("Customer")
+            expect(entityNames).toContain("User")
+            expect(entityNames).toContain("Region")
+            expect(entityNames).toContain("SalesChannel")
+          })
+
+          it("should return same instance on multiple calls (singleton)", () => {
+            const registry1 = getEntityOverrideRegistry()
+            const registry2 = getEntityOverrideRegistry()
+
+            expect(registry1).toBe(registry2)
+          })
+
+          it("should reset correctly for testing", () => {
+            const registry1 = getEntityOverrideRegistry()
+            registry1.register("TestEntity", { excludeFields: ["test"] })
+
+            resetEntityOverrideRegistry()
+
+            const registry2 = getEntityOverrideRegistry()
+            expect(registry2.has("TestEntity")).toBe(false)
+          })
+        })
+
+        describe("register", function () {
+          it("should register a new entity override", () => {
+            const registry = getEntityOverrideRegistry()
+
+            const customOverride: EntityOverride = {
+              excludeFields: ["internal_field"],
+              excludePrefixes: ["_"],
+              defaultVisibleFields: ["name", "status"],
+              fieldOrdering: { name: 100, status: 200 },
+            }
+
+            registry.register("CustomEntity", customOverride)
+
+            expect(registry.has("CustomEntity")).toBe(true)
+            const retrieved = registry.get("CustomEntity")
+            expect(retrieved?.excludeFields).toContain("internal_field")
+            expect(retrieved?.excludePrefixes).toContain("_")
+            expect(retrieved?.defaultVisibleFields).toEqual(["name", "status"])
+          })
+
+          it("should merge overrides for existing entity", () => {
+            const registry = getEntityOverrideRegistry()
+
+            registry.register("Order", {
+              excludeFields: ["new_excluded_field"],
+              fieldOrdering: { new_field: 50 },
+            })
+
+            const merged = registry.get("Order")
+
+            expect(merged?.excludeFields).toContain("order_change")
+            expect(merged?.excludeFields).toContain("new_excluded_field")
+            expect(merged?.fieldOrdering?.display_id).toBe(100)
+            expect(merged?.fieldOrdering?.new_field).toBe(50)
+          })
+
+          it("should prefer new values for non-array fields", () => {
+            const registry = getEntityOverrideRegistry()
+
+            registry.register("Order", {
+              excludePrefixes: ["custom_"],
+            })
+
+            const merged = registry.get("Order")
+
+            expect(merged?.excludePrefixes).toEqual(["custom_"])
+          })
+
+          it("should concatenate array fields (excludeFields, additionalTypes)", () => {
+            const registry = getEntityOverrideRegistry()
+
+            registry.register("Order", {
+              additionalTypes: ["OrderSummary"],
+            })
+
+            const merged = registry.get("Order")
+
+            expect(merged?.additionalTypes).toContain("OrderDetail")
+            expect(merged?.additionalTypes).toContain("OrderSummary")
+          })
+        })
+
+        describe("get", function () {
+          it("should return override for existing entity", () => {
+            const registry = getEntityOverrideRegistry()
+            const orderOverride = registry.get("Order")
+
+            expect(orderOverride).toBeDefined()
+            expect(orderOverride?.excludeFields).toContain("order_change")
+          })
+
+          it("should return undefined for non-existing entity", () => {
+            const registry = getEntityOverrideRegistry()
+            const nonExistent = registry.get("NonExistentEntity")
+
+            expect(nonExistent).toBeUndefined()
+          })
+        })
+
+        describe("has", function () {
+          it("should return true for entities with overrides", () => {
+            const registry = getEntityOverrideRegistry()
+
+            expect(registry.has("Order")).toBe(true)
+            expect(registry.has("Product")).toBe(true)
+          })
+
+          it("should return false for entities without overrides", () => {
+            const registry = getEntityOverrideRegistry()
+
+            expect(registry.has("NonExistentEntity")).toBe(false)
+          })
+        })
+
+        describe("getEntityNames", function () {
+          it("should return all registered entity names", () => {
+            const registry = getEntityOverrideRegistry()
+            const names = registry.getEntityNames()
+
+            expect(Array.isArray(names)).toBe(true)
+            expect(names.length).toBeGreaterThan(0)
+
+            for (const builtIn of Object.keys(BUILTIN_ENTITY_OVERRIDES)) {
+              expect(names).toContain(builtIn)
+            }
+          })
+
+          it("should include newly registered entities", () => {
+            const registry = getEntityOverrideRegistry()
+
+            registry.register("NewCustomEntity", {
+              defaultVisibleFields: ["field1"],
+            })
+
+            const names = registry.getEntityNames()
+            expect(names).toContain("NewCustomEntity")
+          })
+        })
+
+        describe("getAll", function () {
+          it("should return all overrides as a record", () => {
+            const registry = getEntityOverrideRegistry()
+            const all = registry.getAll()
+
+            expect(typeof all).toBe("object")
+            expect(all).toHaveProperty("Order")
+            expect(all).toHaveProperty("Product")
+          })
+
+          it("should include registered custom entities", () => {
+            const registry = getEntityOverrideRegistry()
+
+            registry.register("AnotherCustomEntity", {
+              excludeFields: ["secret"],
+            })
+
+            const all = registry.getAll()
+            expect(all).toHaveProperty("AnotherCustomEntity")
+            expect(all.AnotherCustomEntity.excludeFields).toContain("secret")
+          })
+        })
+
+        describe("column generation helper functions", function () {
+          it("should use registry overrides in getFieldFilterRules", () => {
+            // Import the helper function for direct testing
+            const {
+              getFieldFilterRules,
+            } = require("../../src/utils/entity-overrides")
+
+            const registry = getEntityOverrideRegistry()
+
+            registry.register("TestEntity", {
+              excludeFields: ["secret_field"],
+              excludePrefixes: ["internal_"],
+            })
+
+            const filterRules = getFieldFilterRules("TestEntity")
+
+            expect(filterRules.excludeFields).toContain("secret_field")
+            expect(filterRules.excludePrefixes).toContain("internal_")
+          })
+
+          it("should use registry overrides in getDefaultVisibleFields", () => {
+            const {
+              getDefaultVisibleFields,
+            } = require("../../src/utils/entity-overrides")
+
+            const registry = getEntityOverrideRegistry()
+
+            registry.register("VisibilityTestEntity", {
+              defaultVisibleFields: ["name", "status", "created_at"],
+            })
+
+            const visibleFields = getDefaultVisibleFields(
+              "VisibilityTestEntity"
+            )
+
+            expect(visibleFields).toEqual(["name", "status", "created_at"])
+          })
+
+          it("should use registry overrides in getFieldOrdering", () => {
+            const {
+              getFieldOrdering,
+            } = require("../../src/utils/entity-overrides")
+
+            const registry = getEntityOverrideRegistry()
+
+            registry.register("OrderingTestEntity", {
+              fieldOrdering: { name: 100, status: 200, created_at: 300 },
+            })
+
+            const ordering = getFieldOrdering("OrderingTestEntity")
+
+            expect(ordering.name).toBe(100)
+            expect(ordering.status).toBe(200)
+            expect(ordering.created_at).toBe(300)
+          })
+
+          it("should use registry overrides in getAdditionalTypes", () => {
+            const {
+              getAdditionalTypes,
+            } = require("../../src/utils/entity-overrides")
+
+            const registry = getEntityOverrideRegistry()
+
+            registry.register("TypesTestEntity", {
+              additionalTypes: [
+                "TypesTestEntityDetail",
+                "TypesTestEntitySummary",
+              ],
+            })
+
+            const additionalTypes = getAdditionalTypes("TypesTestEntity")
+
+            expect(additionalTypes).toContain("TypesTestEntityDetail")
+            expect(additionalTypes).toContain("TypesTestEntitySummary")
           })
         })
       })

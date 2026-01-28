@@ -45,10 +45,10 @@ export interface EntityOverride {
 }
 
 /**
- * Entity-specific overrides migrated from entity-mappings.ts.
- * These provide backward compatibility and customization for core entities.
+ * Built-in entity overrides for core Medusa entities.
+ * These provide backward compatibility and sensible defaults.
  */
-export const ENTITY_OVERRIDES: Record<string, EntityOverride> = {
+export const BUILTIN_ENTITY_OVERRIDES: Record<string, EntityOverride> = {
   Order: {
     excludeSuffixes: ["_link"],
     excludePrefixes: ["raw_"],
@@ -144,20 +144,126 @@ export const ENTITY_OVERRIDES: Record<string, EntityOverride> = {
 }
 
 /**
+ * Registry for entity overrides.
+ * Allows registration of custom overrides for any entity.
+ */
+export class EntityOverrideRegistry {
+  private overrides: Map<string, EntityOverride> = new Map()
+
+  constructor() {
+    // Register built-in overrides
+    for (const [entityName, override] of Object.entries(
+      BUILTIN_ENTITY_OVERRIDES
+    )) {
+      this.register(entityName, override)
+    }
+  }
+
+  /**
+   * Register an override for an entity.
+   * If an override already exists, it will be merged (new values take precedence).
+   */
+  register(entityName: string, override: EntityOverride): void {
+    const existing = this.overrides.get(entityName)
+    if (existing) {
+      // Merge overrides - new values take precedence
+      this.overrides.set(entityName, {
+        excludeFields: [
+          ...(existing.excludeFields || []),
+          ...(override.excludeFields || []),
+        ],
+        excludeSuffixes:
+          override.excludeSuffixes ?? existing.excludeSuffixes,
+        excludePrefixes:
+          override.excludePrefixes ?? existing.excludePrefixes,
+        defaultVisibleFields:
+          override.defaultVisibleFields ?? existing.defaultVisibleFields,
+        fieldOrdering: {
+          ...(existing.fieldOrdering || {}),
+          ...(override.fieldOrdering || {}),
+        },
+        additionalTypes: [
+          ...(existing.additionalTypes || []),
+          ...(override.additionalTypes || []),
+        ],
+        computedColumns: [
+          ...(existing.computedColumns || []),
+          ...(override.computedColumns || []),
+        ],
+      })
+    } else {
+      this.overrides.set(entityName, override)
+    }
+  }
+
+  /**
+   * Get the override for an entity.
+   */
+  get(entityName: string): EntityOverride | undefined {
+    return this.overrides.get(entityName)
+  }
+
+  /**
+   * Check if an entity has an override.
+   */
+  has(entityName: string): boolean {
+    return this.overrides.has(entityName)
+  }
+
+  /**
+   * Get all registered entity names.
+   */
+  getEntityNames(): string[] {
+    return Array.from(this.overrides.keys())
+  }
+
+  /**
+   * Get all overrides as a record.
+   */
+  getAll(): Record<string, EntityOverride> {
+    const result: Record<string, EntityOverride> = {}
+    for (const [name, override] of this.overrides.entries()) {
+      result[name] = override
+    }
+    return result
+  }
+}
+
+// Singleton instance
+let registryInstance: EntityOverrideRegistry | null = null
+
+/**
+ * Get the entity override registry singleton.
+ */
+export function getEntityOverrideRegistry(): EntityOverrideRegistry {
+  if (!registryInstance) {
+    registryInstance = new EntityOverrideRegistry()
+  }
+  return registryInstance
+}
+
+/**
+ * Reset the entity override registry (for testing purposes).
+ */
+export function resetEntityOverrideRegistry(): void {
+  registryInstance = null
+}
+
+/**
  * Get the entity override for an entity name.
  * Returns undefined if no override exists.
  */
 export function getEntityOverride(
   entityName: string
 ): EntityOverride | undefined {
-  return ENTITY_OVERRIDES[entityName]
+  return getEntityOverrideRegistry().get(entityName)
 }
 
 /**
  * Check if an entity has custom overrides.
  */
 export function hasEntityOverride(entityName: string): boolean {
-  return entityName in ENTITY_OVERRIDES
+  return getEntityOverrideRegistry().has(entityName)
 }
 
 /**
@@ -235,3 +341,10 @@ export const ROUTE_TO_ENTITY_MAP: Record<string, string> = {
 export function entityNameFromRoute(routeName: string): string | undefined {
   return ROUTE_TO_ENTITY_MAP[routeName]
 }
+
+/**
+ * @deprecated Use `getEntityOverrideRegistry()` instead.
+ * Backward compatibility export - returns a snapshot of current overrides.
+ */
+export const ENTITY_OVERRIDES: Record<string, EntityOverride> =
+  BUILTIN_ENTITY_OVERRIDES
