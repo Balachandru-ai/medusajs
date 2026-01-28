@@ -27,36 +27,53 @@ export default async function ({
     })
     const logger = container.resolve(ContainerRegistrationKeys.LOGGER)
 
-    const userService = container.resolve(Modules.USER)
     const authService = container.resolve(Modules.AUTH)
     const workflowService = container.resolve(Modules.WORKFLOW_ENGINE)
 
     const provider = "emailpass"
 
+    // Check if RBAC is enabled and get super admin role
+    let userRoles: string[] = []
+    const rbacEnabled = FeatureFlag.isFeatureEnabled("rbac")
+
+    if (rbacEnabled) {
+      const rbacService = container.resolve(Modules.RBAC)
+      const superAdminRoles = await rbacService.listRbacRoles({
+        id: "role_super_admin",
+      })
+
+      if (superAdminRoles.length > 0) {
+        userRoles = [superAdminRoles[0].id]
+      }
+    }
+
     if (invite) {
-      const invite = await userService.createInvites({ email })
-
-      logger.info(`
-      Invite token: ${invite.token}
-      Open the invite in Medusa Admin at: [your-admin-url]/invite?token=${invite.token}`)
-    } else {
-      // Check if RBAC is enabled and get super admin role
-      let userRoles: string[] = []
-      const rbacEnabled = FeatureFlag.isFeatureEnabled("rbac")
-
-      if (rbacEnabled) {
-        const rbacService = container.resolve(Modules.RBAC)
-        const superAdminRoles = await rbacService.listRbacRoles({
-          id: "role_super_admin",
-        })
-
-        if (superAdminRoles.length > 0) {
-          userRoles = [superAdminRoles[0].id]
-          logger.info("Assigning super admin role to user.")
+      const { result: invites } = await workflowService.run(
+        "create-invite-step",
+        {
+          input: {
+            invites: [
+              {
+                email,
+                roles: userRoles,
+              },
+            ],
+          },
         }
+      )
+
+      const createdInvite = invites[0]
+
+      logger.info(
+        `
+      Invite token: ${createdInvite.token}
+      Open the invite in Medusa Admin at: [your-admin-url]/invite?token=${createdInvite.token}`
+      )
+    } else {
+      if (userRoles.length > 0) {
+        logger.info("Assigning super admin role to user.")
       }
 
-      // Use workflow to create user with roles
       const { result: users } = await workflowService.run(
         "create-users-workflow",
         {
@@ -85,7 +102,6 @@ export default async function ({
         process.exit(1)
       }
 
-      // We know the authIdentity is not undefined
       await authService.updateAuthIdentities({
         id: authIdentity!.id,
         app_metadata: {
