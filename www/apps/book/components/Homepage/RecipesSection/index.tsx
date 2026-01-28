@@ -116,7 +116,8 @@ const HomepageRecipesSection = () => {
             className={clsx(
               "w-full sm:w-1/2 md:w-1/3 p-2 flex gap-1 flex-col",
               "border-b last:!border-b-0",
-              index > 3 && "md:border-b-0",
+              index >= 3 && "md:border-b-0",
+              index >= 4 && "sm:border-b-0",
               index % 3 !== 2 && "border-r",
               index === 2 && "border-r md:border-r-0",
               "border-medusa-border-base border-dashed",

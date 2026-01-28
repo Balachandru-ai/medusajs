@@ -16,7 +16,7 @@ const HomepageTopSection = () => {
         <h2 className="text-display text-center">
           Learn how to build Medusa projects.
         </h2>
-        <div className="flex gap-1 w-full overflow-y-hidden">
+        <div className="flex gap-1 w-full items-center">
           <ShadedBlock className="w-full min-h-[44px]" />
           <h2 className="text-display min-w-max">Explore our guides.</h2>
         </div>

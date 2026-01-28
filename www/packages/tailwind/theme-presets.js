@@ -26,8 +26,8 @@ const light = {
   "--docs-fg-disabled": "rgba(161, 161, 170, 1)",
   "--docs-fg-on-color": "rgba(255, 255, 255, 1)",
   "--docs-fg-on-inverted": "rgba(255, 255, 255, 1)",
-  "--docs-fg-interactive": "rgba(59, 130, 246, 1)",
-  "--docs-fg-interactive-hover": "rgba(37, 99, 235, 1)",
+  "--docs-fg-interactive": "rgba(37, 99, 235, 1)",
+  "--docs-fg-interactive-hover": "rgba(59, 130, 246, 1)",
   "--docs-fg-error": "rgba(225, 29, 72, 1)",
 
   "--docs-border-base": "rgba(228, 228, 231, 1)",

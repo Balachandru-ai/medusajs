@@ -98,8 +98,6 @@ export const MainNav = ({ className, itemsClassName }: MainNavProps) => {
                 ],
               }}
               isActive={false}
-              className="text-medusa-fg-subtle hover:bg-medusa-button-transparent-hover rounded-docs_sm px-docs_0.5"
-              wrapperClassName="z-10"
             />
           </div>
           <div className="flex items-center">

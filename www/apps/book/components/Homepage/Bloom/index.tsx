@@ -1,6 +1,6 @@
 "use client"
 
-import { ArrowUpMini, Telescope } from "@medusajs/icons"
+import { ArrowUpMini, Telescope, XMarkMini } from "@medusajs/icons"
 import clsx from "clsx"
 import { BloomIcon, Button, HeadlineTags, useAiAssistant } from "docs-ui"
 import { useState } from "react"
@@ -48,77 +48,104 @@ const HomepageBloom = () => {
   ]
 
   return (
-    <div className="w-full flex gap-0 items-center border-y border-medusa-border-base flex-col lg:flex-row">
+    <div className="w-full flex gap-0 items-center border-y border-medusa-border-base flex-col lg:flex-row lg:h-[480px]">
       {/* Chat area */}
       <div
         className={clsx(
-          "w-full lg:w-1/2 bg-medusa-bg-component relative",
+          "w-full h-full lg:w-1/2 bg-medusa-bg-component relative",
           "flex flex-col justify-between gap-2",
           "p-2 border-r border-medusa-border-base",
           "border-b lg:border-b-0"
         )}
       >
-        <BloomIcon className="w-2 h-2 text-medusa-fg-subtle" />
-        <span className="text-h1 text-pretty">
-          Hello! I’m Bloom, your go to ecommerce assistant. How can I help you?
-        </span>
-        <div className="flex flex-col justify-between lg:gap-2">
-          <div className="w-full flex-1 py-0.75 border-t border-medusa-border-base">
-            <div className="w-full relative">
-              <textarea
-                className={clsx(
-                  "appearance-none text-base placeholder:text-medusa-fg-muted",
-                  "bg-transparent resize-none w-full focus:outline-none",
-                  "h-1.5 lg:h-auto",
-                  !question && "caret-transparent"
-                )}
-                placeholder="Ask anything about Medusa..."
-                value={question}
-                onChange={(e) => setQuestion(e.target.value)}
-                onFocus={() => setShowCustomCaret(true)}
-                onBlur={() => setShowCustomCaret(false)}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter" && !e.shiftKey) {
-                    e.preventDefault()
-                    handleSubmit()
-                  }
-                }}
-              ></textarea>
-              {!question && showCustomCarat && (
-                <span className="block h-[21px] w-[7.5px] bg-medusa-fg-base absolute top-px left-0 animate-[pulse_0.8s_ease-in-out_infinite] rounded-xxs" />
-              )}
-            </div>
-          </div>
-          <div className="flex justify-between">
-            <Button
-              variant="transparent-clear"
-              onClick={toggleDeepThinking}
+        <div className="flex flex-col gap-2 flex-1">
+          <BloomIcon className="w-2 h-2 text-medusa-fg-subtle" />
+          <span className="text-h1 text-pretty">
+            Hello! I’m Bloom, your go to ecommerce assistant. How can I help
+            you?
+          </span>
+          <div className="w-full flex-1 py-0.75 border-t border-medusa-border-base relative">
+            <textarea
               className={clsx(
-                "focus:!shadow-none active:!shadow-none",
-                deepThinkingEnabled &&
-                  "!text-medusa-fg-base !bg-medusa-button-transparent-hover focus:!bg-medusa-button-transparent-hover active:!bg-medusa-button-transparent-hover",
-                !deepThinkingEnabled &&
-                  "focus:!bg-transparent active:!bg-transparent"
+                "appearance-none text-base placeholder:text-medusa-fg-muted",
+                "bg-transparent resize-none w-full focus:outline-none",
+                "h-1.5 lg:h-auto",
+                !question && "caret-transparent"
               )}
-            >
-              <Telescope />
-            </Button>
-            <Button
-              variant="primary"
-              className="rounded-full !p-[6.5px]"
-              disabled={!question}
-              onClick={() => handleSubmit()}
-            >
-              <ArrowUpMini />
-            </Button>
+              placeholder="Ask anything about Medusa..."
+              value={question}
+              onChange={(e) => setQuestion(e.target.value)}
+              onFocus={() => setShowCustomCaret(true)}
+              onBlur={() => setShowCustomCaret(false)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && !e.shiftKey) {
+                  e.preventDefault()
+                  handleSubmit()
+                }
+              }}
+            ></textarea>
+            {!question && showCustomCarat && (
+              <span className="block h-[21px] w-[7.5px] bg-medusa-fg-base absolute top-0.75 left-0 animate-[pulsingCursor_0.8s_ease-in-out_infinite] rounded-xxs" />
+            )}
           </div>
+        </div>
+        <div className="flex justify-between">
+          <Button
+            variant="transparent-clear"
+            onClick={(e) => {
+              toggleDeepThinking()
+              e.currentTarget.blur()
+            }}
+            className={clsx(
+              "group",
+              deepThinkingEnabled && [
+                "!bg-medusa-button-neutral rounded-full flex !pl-[10px] !pr-[9px] !py-0 gap-[6px]",
+                "!shadow-button-neutral",
+              ],
+              !deepThinkingEnabled && [
+                "focus:!bg-transparent active:!bg-transparent",
+                "focus:!shadow-none active:!shadow-none",
+              ]
+            )}
+          >
+            <Telescope
+              className={clsx(
+                deepThinkingEnabled &&
+                  "text-medusa-fg-interactive group-hover:hidden",
+                !deepThinkingEnabled && "text-medusa-fg-muted"
+              )}
+            />
+            <XMarkMini
+              className={clsx(
+                "hidden text-medusa-fg-base",
+                deepThinkingEnabled && "group-hover:block"
+              )}
+            />
+            {deepThinkingEnabled && (
+              <span className="text-compact-small-plus text-medusa-fg-base">
+                Deep research
+              </span>
+            )}
+          </Button>
+          <Button
+            variant="primary"
+            className={clsx(
+              "rounded-full !p-[6.5px] border",
+              question && "shadow-button-inverted border-transparent",
+              !question && "border-medusa-border-base"
+            )}
+            disabled={!question}
+            onClick={() => handleSubmit()}
+          >
+            <ArrowUpMini width="13px" height="13px" />
+          </Button>
         </div>
         <HomepageEdges />
       </div>
       {/* Chat suggestions area */}
       <div
         className={clsx(
-          "w-full lg:w-1/2 flex justify-start lg:justify-center",
+          "w-full h-full lg:w-1/2 flex justify-start items-center",
           "px-2 py-2 lg:py-0"
         )}
       >

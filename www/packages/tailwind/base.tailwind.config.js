@@ -224,7 +224,7 @@ module.exports = {
         "elevation-modal-dark":
           "0px 0px 0px 1px #18181B inset, 0px 0px 0px 1.5px rgba(255, 255, 255, 0.06) inset, 0px -1px 0px 0px rgba(255, 255, 255, 0.04), 0px 0px 0px 1px rgba(255, 255, 255, 0.10), 0px 4px 8px 0px rgba(0, 0, 0, 0.32), 0px 8px 16px 0px rgba(0, 0, 0, 0.32)",
         "button-neutral":
-          "0px 1px 2px 0px rgba(0, 0, 0, 0.12), 0px 0px 0px 1px rgba(0, 0, 0, 0.08)",
+          "0 1px 2px 0 rgba(0, 0, 0, 0.12), 0 0 0 1px rgba(0, 0, 0, 0.08)",
         "button-neutral-dark":
           "0px -1px 0px 0px rgba(255, 255, 255, 0.06), 0px 0px 0px 1px rgba(255, 255, 255, 0.06), 0px 0px 0px 1px rgba(39, 39, 42, 1), 0px 0px 1px 1.5px rgba(0, 0, 0, 0.24), 0px 2px 2px 0px rgba(0, 0, 0, 0.24)",
         "button-neutral-focused":
@@ -688,6 +688,11 @@ module.exports = {
           },
           "100%": {
             opacity: 0.3,
+          },
+        },
+        pulsingCursor: {
+          "50%": {
+            opacity: 0,
           },
         },
         minimize: {

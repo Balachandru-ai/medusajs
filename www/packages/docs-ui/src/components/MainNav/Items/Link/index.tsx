@@ -21,7 +21,11 @@ export const MainNavItemLink = ({
   return (
     <LinkButton
       href={item.link}
-      className={clsx(className)}
+      className={clsx(
+        "text-medusa-fg-subtle hover:bg-medusa-button-transparent-hover",
+        "rounded-docs_sm px-docs_0.5 py-docs_0.25",
+        className
+      )}
       variant={isActive ? "base" : "subtle"}
     >
       {item.title}
