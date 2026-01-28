@@ -1,17 +1,30 @@
 import { defaultAdminProductVariantFields } from "../product-variants/query-config"
 
+export enum Entities {
+  product = "product",
+  product_option = "product_option",
+  product_variant = "product_variant",
+  inventory_item = "inventory_item",
+  price_set = "price_set",
+  price = "price",
+  sales_channel = "sales_channel",
+  shipping_profile = "shipping_profile",
+}
+
 export const defaultAdminProductsVariantFields =
   defaultAdminProductVariantFields.filter((field) => field !== "*product")
 
 export const retrieveVariantConfig = {
   defaults: defaultAdminProductsVariantFields,
   isList: false,
+  entity: Entities.product_variant,
 }
 
 export const listVariantConfig = {
   ...retrieveVariantConfig,
   defaultLimit: 50,
   isList: true,
+  entity: Entities.product_variant,
 }
 
 export const defaultAdminProductsOptionFields = ["id", "title"]
@@ -19,12 +32,14 @@ export const defaultAdminProductsOptionFields = ["id", "title"]
 export const retrieveOptionConfig = {
   defaults: defaultAdminProductsOptionFields,
   isList: false,
+  entity: Entities.product_option,
 }
 
 export const listOptionConfig = {
   ...retrieveOptionConfig,
   defaultLimit: 50,
   isList: true,
+  entity: Entities.product_option,
 }
 
 export const defaultAdminProductFields = [
@@ -69,10 +84,12 @@ export const defaultAdminProductFields = [
 export const retrieveProductQueryConfig = {
   defaults: defaultAdminProductFields,
   isList: false,
+  entity: Entities.product,
 }
 
 export const listProductQueryConfig = {
   ...retrieveProductQueryConfig,
   defaultLimit: 50,
   isList: true,
+  entity: Entities.product,
 }
