@@ -136,7 +136,7 @@ export interface AdminUpdatePropertyLabel {
   /**
    * Optional description providing context about the property.
    */
-  description?: string
+  description?: string | null
 }
 
 /**
