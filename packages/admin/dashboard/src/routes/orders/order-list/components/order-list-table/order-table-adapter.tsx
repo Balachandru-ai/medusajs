@@ -2,7 +2,6 @@ import { HttpTypes } from "@medusajs/types"
 import { createTableAdapter, TableAdapter } from "../../../../../lib/table/table-adapters"
 import { useOrders } from "../../../../../hooks/api/orders"
 import { useOrderTableFilters } from "./use-order-table-filters"
-import { orderColumnAdapter } from "../../../../../lib/table/entity-adapters"
 
 /**
  * Create the order table adapter with all order-specific logic
@@ -12,7 +11,6 @@ export function createOrderTableAdapter(): TableAdapter<HttpTypes.AdminOrder> {
     entity: "orders",
     queryPrefix: "o",
     pageSize: 20,
-    columnAdapter: orderColumnAdapter,
 
     useData: (fields, params) => {
       const { orders, count, isError, error, isLoading } = useOrders(

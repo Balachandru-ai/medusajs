@@ -1,6 +1,5 @@
 import { HttpTypes } from "@medusajs/types"
 import { useProducts } from "../../../../../hooks/api/products"
-import { productColumnAdapter } from "../../../../../lib/table/entity-adapters"
 import { createTableAdapter, TableAdapter } from "../../../../../lib/table/table-adapters"
 import { useProductTableFilters } from "./use-product-table-filters"
 
@@ -9,7 +8,6 @@ export function createProductTableAdapter(): TableAdapter<HttpTypes.AdminProduct
     entity: "products",
     queryPrefix: "p",
     pageSize: 20,
-    columnAdapter: productColumnAdapter,
     useData: (fields, params) => {
       const { products, count, isError, error, isLoading } = useProducts(
         {

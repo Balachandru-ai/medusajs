@@ -6,7 +6,6 @@ import { SaveViewDialog } from "../save-view-dialog"
 import { SaveViewDropdown } from "./save-view-dropdown"
 import { useTableConfiguration } from "../../../hooks/table/use-table-configuration"
 import { useConfigurableTableColumns } from "../../../hooks/table/columns/use-configurable-table-columns"
-import { getEntityAdapter } from "../../../lib/table/entity-adapters"
 import { TableAdapter } from "../../../lib/table/table-adapters"
 
 type DataTableActionProps = {
@@ -96,8 +95,7 @@ export function ConfigurableDataTable<TData>({
 
   const fetchResult = adapter.useData(requiredFields, searchParams)
 
-  const columnAdapter = adapter.columnAdapter || getEntityAdapter(entity)
-  const generatedColumns = useConfigurableTableColumns(entity, apiColumns || [], columnAdapter)
+  const generatedColumns = useConfigurableTableColumns(entity, apiColumns || [])
   const columns = (adapter.getColumns && apiColumns)
     ? adapter.getColumns(apiColumns)
     : generatedColumns

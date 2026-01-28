@@ -3,7 +3,6 @@ import {
   DataTableEmptyStateProps,
   DataTableFilter,
 } from "@medusajs/ui"
-import { ColumnAdapter } from "../../hooks/table/columns/use-configurable-table-columns"
 
 /**
  * Adapter interface for configurable tables.
@@ -50,12 +49,6 @@ export interface TableAdapter<TData> {
    * If not provided, will use default column generation.
    */
   getColumns?: (apiColumns: any[]) => DataTableColumnDef<TData, any>[]
-
-  /**
-   * Column adapter for customizing column behavior (alignment, formatting, etc.)
-   * If not provided, will use entity's default column adapter if available.
-   */
-  columnAdapter?: ColumnAdapter<TData>
 
   /**
    * Empty state configuration
