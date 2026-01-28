@@ -1,10 +1,11 @@
 "use client"
 
-import { ArrowUpMini, Telescope, XMarkMini } from "@medusajs/icons"
+import { Telescope, XMarkMini } from "@medusajs/icons"
 import clsx from "clsx"
 import { BloomIcon, Button, HeadlineTags, useAiAssistant } from "docs-ui"
 import { useState } from "react"
 import HomepageEdges from "../Edges"
+import HomepageArrowUpMini from "./ArrowUpMini"
 
 const HomepageBloom = () => {
   const {
@@ -137,7 +138,7 @@ const HomepageBloom = () => {
             disabled={!question}
             onClick={() => handleSubmit()}
           >
-            <ArrowUpMini width="13px" height="13px" />
+            <HomepageArrowUpMini width="13px" height="13px" />
           </Button>
         </div>
         <HomepageEdges />
