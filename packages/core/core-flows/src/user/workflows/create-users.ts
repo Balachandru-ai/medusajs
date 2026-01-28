@@ -6,8 +6,10 @@ import {
   createWorkflow,
   transform,
 } from "@medusajs/framework/workflows-sdk"
+import { createRemoteLinkStep } from "../../common/steps/create-remote-links"
 import { emitEventStep } from "../../common/steps/emit-event"
-import { createUsersStep, linkUsersToRolesStep } from "../steps"
+import { validateRolesExistStep } from "../../invite/steps/validate-roles-exist"
+import { createUsersStep } from "../steps"
 
 export const createUsersWorkflowId = "create-users-workflow"
 /**
@@ -45,21 +47,40 @@ export const createUsersWorkflow = createWorkflow(
   (
     input: WorkflowData<UserWorkflow.CreateUsersWorkflowInputDTO>
   ): WorkflowResponse<UserDTO[]> => {
+    const allRoleIds = transform({ input }, ({ input }) => {
+      const roleIds = new Set<string>()
+      input.users.forEach((user) => {
+        for (const roleId of user.roles || []) {
+          roleIds.add(roleId)
+        }
+      })
+      return Array.from(roleIds)
+    })
+
+    validateRolesExistStep(allRoleIds)
+
     const createdUsers = createUsersStep(input.users)
 
-    const usersWithRoles = transform(
+    const userRoleLinks = transform(
       { input, createdUsers },
       ({ input, createdUsers }) => {
-        return input.users
-          .map((user, index) => ({
-            user_id: createdUsers[index].id,
-            role_ids: user.roles || [],
-          }))
-          .filter(({ role_ids }) => role_ids.length > 0)
+        const links: {
+          [key: string]: { user_id?: string; rbac_role_id?: string }
+        }[] = []
+        input.users.forEach((user, index) => {
+          const userId = createdUsers[index].id
+          for (const roleId of user.roles || []) {
+            links.push({
+              user: { user_id: userId },
+              rbac: { rbac_role_id: roleId },
+            })
+          }
+        })
+        return links
       }
     )
 
-    linkUsersToRolesStep(usersWithRoles)
+    createRemoteLinkStep(userRoleLinks)
 
     const userIdEvents = transform({ createdUsers }, ({ createdUsers }) => {
       return createdUsers.map((v) => {

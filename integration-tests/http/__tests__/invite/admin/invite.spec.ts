@@ -142,7 +142,7 @@ medusaIntegrationTestRunner({
           password: "secret_password",
         })
 
-        await api
+        const error = await api
           .post(
             `/admin/invites/accept?token=${invite.token}`,
             {
@@ -153,10 +153,10 @@ medusaIntegrationTestRunner({
               headers: { authorization: `Bearer ${signupAgain.data.token}` },
             }
           )
-          .catch((e) => {
-            expect(e.response.status).toEqual(401)
-            expect(e.response.data.message).toEqual("Unauthorized")
-          })
+          .catch((e) => e.response)
+
+        expect(error.status).toEqual(401)
+        expect(error.data.message).toEqual("Unauthorized")
       })
 
       it("should fail to accept with an expired token", async () => {
@@ -170,7 +170,7 @@ medusaIntegrationTestRunner({
         // Advance time by 25 hours
         jest.advanceTimersByTime(25 * 60 * 60 * 1000)
 
-        await api
+        const error = await api
           .post(
             `/admin/invites/accept?token=${invite.token}`,
             {
@@ -181,10 +181,10 @@ medusaIntegrationTestRunner({
               headers: { authorization: `Bearer ${signup.data.token}` },
             }
           )
-          .catch((e) => {
-            expect(e.response.status).toEqual(401)
-            expect(e.response.data.message).toEqual("Unauthorized")
-          })
+          .catch((e) => e.response)
+
+        expect(error.status).toEqual(401)
+        expect(error.data.message).toEqual("Unauthorized")
 
         jest.useRealTimers()
       })
@@ -438,7 +438,7 @@ medusaIntegrationTestRunner({
 
       it("should handle invite with non-existent role gracefully", async () => {
         // Try to create invite with non-existent role
-        await api
+        const error = await api
           .post(
             "/admin/invites",
             {
@@ -447,10 +447,10 @@ medusaIntegrationTestRunner({
             },
             adminHeaders
           )
-          .catch((e) => {
-            expect(e.response.status).toEqual(400)
-            expect(e.response.data.message).toContain("role")
-          })
+          .catch((e) => e.response)
+
+        expect(error.status).toEqual(400)
+        expect(error.data.message).toContain("role")
       })
     })
   },

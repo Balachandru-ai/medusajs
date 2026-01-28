@@ -6,8 +6,9 @@ import {
   createWorkflow,
   transform,
 } from "@medusajs/framework/workflows-sdk"
+import { createRemoteLinkStep } from "../../common/steps/create-remote-links"
 import { emitEventStep } from "../../common/steps/emit-event"
-import { createInviteStep, linkInvitesToRolesStep } from "../steps"
+import { createInviteStep, validateRolesExistStep } from "../steps"
 export const createInvitesWorkflowId = "create-invite-step"
 /**
  * This workflow creates one or more user invites. It's used by the
@@ -40,21 +41,40 @@ export const createInvitesWorkflow = createWorkflow(
   (
     input: WorkflowData<InviteWorkflow.CreateInvitesWorkflowInputDTO>
   ): WorkflowResponse<InviteDTO[]> => {
+    const allRoleIds = transform({ input }, ({ input }) => {
+      const roleIds = new Set<string>()
+      input.invites.forEach((invite) => {
+        for (const roleId of invite.roles || []) {
+          roleIds.add(roleId)
+        }
+      })
+      return Array.from(roleIds)
+    })
+
+    validateRolesExistStep(allRoleIds)
+
     const createdInvites = createInviteStep(input.invites)
 
-    const invitesWithRoles = transform(
+    const inviteRoleLinks = transform(
       { input, createdInvites },
       ({ input, createdInvites }) => {
-        return input.invites
-          .map((invite, index) => ({
-            invite_id: createdInvites[index].id,
-            role_ids: invite.roles || [],
-          }))
-          .filter(({ role_ids }) => role_ids.length > 0)
+        const links: {
+          [key: string]: { invite_id?: string; rbac_role_id?: string }
+        }[] = []
+        input.invites.forEach((invite, index) => {
+          const inviteId = createdInvites[index].id
+          for (const roleId of invite.roles || []) {
+            links.push({
+              user: { invite_id: inviteId },
+              rbac: { rbac_role_id: roleId },
+            })
+          }
+        })
+        return links
       }
     )
 
-    linkInvitesToRolesStep(invitesWithRoles)
+    createRemoteLinkStep(inviteRoleLinks)
 
     const invitesIdEvents = transform(
       { createdInvites },
