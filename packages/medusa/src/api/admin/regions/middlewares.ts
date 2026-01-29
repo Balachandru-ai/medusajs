@@ -1,9 +1,11 @@
-import * as QueryConfig from "./query-config"
-import { MiddlewareRoute } from "@medusajs/framework/http"
 import {
   validateAndTransformBody,
   validateAndTransformQuery,
 } from "@medusajs/framework"
+import { MiddlewareRoute } from "@medusajs/framework/http"
+import { PolicyOperation } from "@medusajs/framework/utils"
+import * as QueryConfig from "./query-config"
+import { Entities } from "./query-config"
 import {
   AdminCreateRegion,
   AdminGetRegionParams,
@@ -12,6 +14,15 @@ import {
 } from "./validators"
 
 export const adminRegionRoutesMiddlewares: MiddlewareRoute[] = [
+  {
+    matcher: "/admin/regions/*",
+    policies: [
+      {
+        resource: Entities.region,
+        operation: PolicyOperation.read,
+      },
+    ],
+  },
   {
     method: ["GET"],
     matcher: "/admin/regions",
@@ -42,6 +53,12 @@ export const adminRegionRoutesMiddlewares: MiddlewareRoute[] = [
         QueryConfig.retrieveTransformQueryConfig
       ),
     ],
+    policies: [
+      {
+        resource: Entities.region,
+        operation: PolicyOperation.create,
+      },
+    ],
   },
   {
     method: ["POST"],
@@ -52,6 +69,23 @@ export const adminRegionRoutesMiddlewares: MiddlewareRoute[] = [
         AdminGetRegionParams,
         QueryConfig.retrieveTransformQueryConfig
       ),
+    ],
+    policies: [
+      {
+        resource: Entities.region,
+        operation: PolicyOperation.update,
+      },
+    ],
+  },
+  {
+    method: ["DELETE"],
+    matcher: "/admin/regions/:id",
+    middlewares: [],
+    policies: [
+      {
+        resource: Entities.region,
+        operation: PolicyOperation.delete,
+      },
     ],
   },
 ]

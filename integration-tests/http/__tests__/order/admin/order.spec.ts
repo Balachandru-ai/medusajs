@@ -1,6 +1,6 @@
 import { medusaIntegrationTestRunner } from "@medusajs/test-utils"
 import { AdminShippingOption } from "@medusajs/types"
-import { ModuleRegistrationName, ProductStatus } from "@medusajs/utils"
+import { ModuleRegistrationName, Modules, ProductStatus } from "@medusajs/utils"
 import {
   adminHeaders,
   createAdminUser,
@@ -10,8 +10,18 @@ import {
 import { setupTaxStructure } from "../../../../modules/__tests__/fixtures"
 import { createOrderSeeder } from "../../fixtures/order"
 import { createShippingOptionSeeder } from "../../fixtures/shipping"
+import {
+  updateOrderChangeActionsWorkflow,
+  updateOrderChangesWorkflow,
+  updateOrderShippingMethodsStep,
+} from "@medusajs/core-flows"
+import {
+  createWorkflow,
+  WorkflowResponse,
+} from "@medusajs/framework/workflows-sdk"
 
 jest.setTimeout(300000)
+
 
 medusaIntegrationTestRunner({
   testSuite: ({ dbConnection, getContainer, api }) => {
@@ -20,10 +30,11 @@ medusaIntegrationTestRunner({
       inventoryItemOverride3,
       productOverride3,
       shippingProfile,
-      productOverride4
+      productOverride4,
+      container
 
     beforeEach(async () => {
-      const container = getContainer()
+      container = getContainer()
 
       await setupTaxStructure(container.resolve(ModuleRegistrationName.TAX))
       await createAdminUser(dbConnection, adminHeaders, container)
@@ -115,6 +126,31 @@ medusaIntegrationTestRunner({
 
         expect(response.data.orders).toHaveLength(0)
         expect(response.data.orders).toEqual([])
+      })
+
+      it("should return the total in list same as the total in the order detail", async () => {
+        /**
+         * Ensure both loading strategies return same data for calculation
+         */
+
+        const detailResponse = await api.get(
+          `/admin/orders/${order.id}`,
+          adminHeaders
+        )
+        const expectedTotal = detailResponse.data.order.total
+
+        const listResponse = await api.get(
+          `/admin/orders?fields=id,status,total`,
+          adminHeaders
+        )
+
+        const listedOrder = listResponse.data.orders.find(
+          (listed) => listed.id === order.id
+        )
+
+        expect(listedOrder).toBeTruthy()
+        expect(listedOrder.total).toBeGreaterThan(0)
+        expect(listedOrder.total).toBe(expectedTotal)
       })
 
       it("should search orders by billing address", async () => {
@@ -230,9 +266,67 @@ medusaIntegrationTestRunner({
               expect(response.data.orders).toEqual([])
             }
           }
+         )
+       })
+      
+      it("should return shipping_address when pagination included", async () => {
+        const response = await api.get(
+          `/admin/orders?fields=*shipping_address&offset=0`,
+          adminHeaders
+        )
+
+        expect(response.data.orders).toHaveLength(1)
+        expect(response.data.orders[0].id).toEqual(order.id)
+        expect(response.data.orders[0].shipping_address).toBeDefined()
+        expect(response.data.orders[0].shipping_address.address_1).toEqual(
+          order.shipping_address.address_1
+        )
+        expect(response.data.orders[0].shipping_address.city).toEqual(
+          order.shipping_address.city
         )
       })
-    })
+
+      it("should return billing_address when pagination included", async () => {
+        const response = await api.get(
+          `/admin/orders?fields=*billing_address&offset=0`,
+          adminHeaders
+        )
+
+        expect(response.data.orders).toHaveLength(1)
+        expect(response.data.orders[0].id).toEqual(order.id)
+        expect(response.data.orders[0].billing_address).toBeDefined()
+        expect(response.data.orders[0].billing_address.address_1).toEqual(
+          order.billing_address.address_1
+        )
+        expect(response.data.orders[0].billing_address.city).toEqual(
+          order.billing_address.city
+        )
+      })
+
+      it("should return specific address fields when pagination included", async () => {
+        const response = await api.get(
+          `/admin/orders?fields=+shipping_address.address_1,+shipping_address.city,+billing_address.address_1,+billing_address.city&offset=0`,
+          adminHeaders
+        )
+
+        expect(response.data.orders).toHaveLength(1)
+        const responseOrder = response.data.orders[0]
+        expect(responseOrder.id).toEqual(order.id)
+        expect(responseOrder.shipping_address).toBeDefined()
+        expect(responseOrder.shipping_address.address_1).toEqual(
+          order.shipping_address.address_1
+        )
+        expect(responseOrder.shipping_address.city).toEqual(
+          order.shipping_address.city
+        )
+        expect(responseOrder.billing_address).toBeDefined()
+        expect(responseOrder.billing_address.address_1).toEqual(
+          order.billing_address.address_1
+        )
+        expect(responseOrder.billing_address.city).toEqual(
+          order.billing_address.city
+        )
+      })
 
     describe("POST /orders/:id", () => {
       beforeEach(async () => {
@@ -243,7 +337,10 @@ medusaIntegrationTestRunner({
         order = seeder.order
 
         order = (
-          await api.get(`/admin/orders/${order.id}?fields=+email`, adminHeaders)
+          await api.get(
+            `/admin/orders/${order.id}?fields=+email,+customer_id`,
+            adminHeaders
+          )
         ).data.order
       })
 
@@ -554,6 +651,215 @@ medusaIntegrationTestRunner({
         ).data.order_changes
 
         expect(orderChangesResult.length).toEqual(0)
+      })
+
+      describe("conditional customer creation", () => {
+        it("should create or find a customer when order email is unset and input email is provided", async () => {
+          const container = getContainer()
+          const orderService = container.resolve(ModuleRegistrationName.ORDER)
+          const customerService = container.resolve(
+            ModuleRegistrationName.CUSTOMER
+          )
+
+          const orderWithoutEmail = await orderService.createOrders({
+            region_id: seeder.region.id,
+            currency_code: "usd",
+            items: [
+              {
+                title: "Test Item",
+                quantity: 1,
+                unit_price: 100,
+              },
+            ],
+            shipping_address: {
+              first_name: "Test",
+              last_name: "Test",
+              address_1: "Test",
+              city: "Test",
+              country_code: "US",
+              postal_code: "12345",
+            },
+            billing_address: {
+              first_name: "Test",
+              last_name: "Test",
+              address_1: "Test",
+              city: "Test",
+              country_code: "US",
+              postal_code: "12345",
+            },
+          })
+
+          expect(orderWithoutEmail.email).toBeNull()
+
+          const newEmail = "newcustomer@example.com"
+
+          const customersBefore = await customerService.listCustomers()
+          const customerCountBefore = customersBefore.length
+
+          const response = await api.post(
+            `/admin/orders/${orderWithoutEmail.id}?fields=+email,+customer_id`,
+            {
+              email: newEmail,
+            },
+            adminHeaders
+          )
+
+          expect(response.data.order.email).toBe(newEmail)
+          expect(response.data.order.customer_id).toBeDefined()
+
+          const customersAfter = await customerService.listCustomers()
+          expect(customersAfter.length).toBe(customerCountBefore + 1)
+
+          const customer = await customerService.retrieveCustomer(
+            response.data.order.customer_id
+          )
+          expect(customer.email).toBe(newEmail)
+        })
+
+        it("should NOT create or find a customer when order email is already set and input email is provided", async () => {
+          const container = getContainer()
+          const customerService = container.resolve(
+            ModuleRegistrationName.CUSTOMER
+          )
+
+          const existingEmail = order.email
+
+          expect(existingEmail).toBeDefined()
+
+          const originalCustomerId = order.customer_id
+          const newEmail = "updated@example.com"
+
+          const customersBefore = await customerService.listCustomers()
+          const customerCountBefore = customersBefore.length
+
+          const response = await api.post(
+            `/admin/orders/${order.id}?fields=+email,+customer_id`,
+            {
+              email: newEmail,
+            },
+            adminHeaders
+          )
+
+          expect(response.data.order.email).toBe(newEmail)
+          expect(response.data.order.customer_id).toBe(originalCustomerId)
+
+          const customersAfter = await customerService.listCustomers()
+          expect(customersAfter.length).toBe(customerCountBefore)
+        })
+
+        it("should NOT create or find a customer when order email is unset and input email is not provided", async () => {
+          const container = getContainer()
+          const orderService = container.resolve(ModuleRegistrationName.ORDER)
+          const customerService = container.resolve(
+            ModuleRegistrationName.CUSTOMER
+          )
+
+          const orderWithoutEmail = await orderService.createOrders({
+            region_id: seeder.region.id,
+            currency_code: "usd",
+            email: undefined,
+            items: [
+              {
+                title: "Test Item",
+                quantity: 1,
+                unit_price: 100,
+              },
+            ],
+            shipping_address: {
+              first_name: "Test",
+              last_name: "Test",
+              address_1: "Test",
+              city: "Test",
+              country_code: "US",
+              postal_code: "12345",
+            },
+            billing_address: {
+              first_name: "Test",
+              last_name: "Test",
+              address_1: "Test",
+              city: "Test",
+              country_code: "US",
+              postal_code: "12345",
+            },
+          })
+
+          const customersBefore = await customerService.listCustomers()
+          const customerCountBefore = customersBefore.length
+
+          const response = await api.post(
+            `/admin/orders/${orderWithoutEmail.id}?fields=+customer_id`,
+            {
+              metadata: {
+                test: "value",
+              },
+            },
+            adminHeaders
+          )
+
+          expect(response.data.order.customer_id).toBeNull()
+
+          const customersAfter = await customerService.listCustomers()
+          expect(customersAfter.length).toBe(customerCountBefore)
+        })
+
+        it("should find existing customer when order email is unset and input email matches existing customer", async () => {
+          const container = getContainer()
+          const orderService = container.resolve(ModuleRegistrationName.ORDER)
+          const customerService = container.resolve(
+            ModuleRegistrationName.CUSTOMER
+          )
+
+          const existingEmail = "existingcustomer@example.com"
+
+          const existingCustomer = await customerService.createCustomers({
+            email: existingEmail,
+          })
+
+          const orderWithoutEmail = await orderService.createOrders({
+            region_id: seeder.region.id,
+            currency_code: "usd",
+            items: [
+              {
+                title: "Test Item",
+                quantity: 1,
+                unit_price: 100,
+              },
+            ],
+            shipping_address: {
+              first_name: "Test",
+              last_name: "Test",
+              address_1: "Test",
+              city: "Test",
+              country_code: "US",
+              postal_code: "12345",
+            },
+            billing_address: {
+              first_name: "Test",
+              last_name: "Test",
+              address_1: "Test",
+              city: "Test",
+              country_code: "US",
+              postal_code: "12345",
+            },
+          })
+
+          const customersBefore = await customerService.listCustomers()
+          const customerCountBefore = customersBefore.length
+
+          const response = await api.post(
+            `/admin/orders/${orderWithoutEmail.id}?fields=+email,+customer_id`,
+            {
+              email: existingEmail,
+            },
+            adminHeaders
+          )
+
+          expect(response.data.order.email).toBe(existingEmail)
+          expect(response.data.order.customer_id).toBe(existingCustomer.id)
+
+          const customersAfter = await customerService.listCustomers()
+          expect(customersAfter.length).toBe(customerCountBefore)
+        })
       })
     })
 
@@ -1733,8 +2039,7 @@ medusaIntegrationTestRunner({
 
         // cancel the fulfillment
         await api.post(
-          `/admin/orders/${tabletOrder.id}/fulfillments/${
-            fulOrder2.fulfillments.find((f) => !f.canceled_at).id
+          `/admin/orders/${tabletOrder.id}/fulfillments/${fulOrder2.fulfillments.find((f) => !f.canceled_at).id
           }/cancel`,
           {},
           adminHeaders
@@ -2127,8 +2432,7 @@ medusaIntegrationTestRunner({
 
         // 7. cancel the entire fulfillment once again
         await api.post(
-          `/admin/orders/${fulOrderFull.id}/fulfillments/${
-            fulOrderFull.fulfillments.find((f) => !f.canceled_at)!.id
+          `/admin/orders/${fulOrderFull.id}/fulfillments/${fulOrderFull.fulfillments.find((f) => !f.canceled_at)!.id
           }/cancel?fields=*fulfillments,*fulfillments.items`,
           {},
           adminHeaders
@@ -2632,8 +2936,7 @@ medusaIntegrationTestRunner({
 
         // cancel the fulfillment for the entire order
         await api.post(
-          `/admin/orders/${bottleOrder.id}/fulfillments/${
-            fulOrder3.fulfillments.find((f) => !f.canceled_at)!.id
+          `/admin/orders/${bottleOrder.id}/fulfillments/${fulOrder3.fulfillments.find((f) => !f.canceled_at)!.id
           }/cancel`,
           {},
           adminHeaders
@@ -3448,6 +3751,60 @@ medusaIntegrationTestRunner({
         expect(response3.response.data.message).toBe(
           "Can only create credit lines if the order has a positive or negative pending difference"
         )
+      })
+    })
+
+    describe("workflows", () => {
+      it("updateOrderChangeActionsWorkflow - should not call listOrderChangeActions when orderChangeActions is empty", async () => {
+        const orderService = container.resolve(Modules.ORDER)
+        const listOrderChangeActionsSpy = jest.spyOn(
+          orderService,
+          "listOrderChangeActions"
+        )
+
+        const { result } = await updateOrderChangeActionsWorkflow(
+          container
+        ).run({
+          input: [],
+        })
+
+        expect(result).toEqual([])
+
+        expect(listOrderChangeActionsSpy).not.toHaveBeenCalled()
+        listOrderChangeActionsSpy.mockRestore()
+      })
+
+      it("updateOrderChangesWorkflow - should not call listOrderChanges when orderChanges is empty", async () => {
+        const orderService = container.resolve(Modules.ORDER)
+        const listOrderChangesSpy = jest.spyOn(orderService, "listOrderChanges")
+
+        const { result } = await updateOrderChangesWorkflow(container).run({
+          input: [],
+        })
+
+        expect(result).toEqual([])
+
+        expect(listOrderChangesSpy).not.toHaveBeenCalled()
+        listOrderChangesSpy.mockRestore()
+      })
+
+      it("updateOrderShippingMethodsStep - should not call listOrderShippingMethods when shipping methods is empty", async () => {
+        const orderService = container.resolve(Modules.ORDER)
+        const listOrderShippingMethodsSpy = jest.spyOn(
+          orderService,
+          "listOrderShippingMethods"
+        )
+
+        const workflow = createWorkflow("test-workflow", () => {
+          return new WorkflowResponse(updateOrderShippingMethodsStep([]))
+        })
+
+        const { result } = await workflow(container).run()
+
+        expect(result).toEqual([])
+
+        expect(listOrderShippingMethodsSpy).not.toHaveBeenCalled()
+        listOrderShippingMethodsSpy.mockRestore()
       })
     })
   },
