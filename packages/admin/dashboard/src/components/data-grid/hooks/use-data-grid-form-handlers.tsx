@@ -161,7 +161,7 @@ function setValue<
 }
 
 function setValueToggleableNumber(
-  currentValues: any,
+  currentValues: any = {},
   field: string,
   newValue: DataGridToggleableNumber,
   isHistory?: boolean
