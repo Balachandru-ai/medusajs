@@ -115,8 +115,8 @@ medusaIntegrationTestRunner({
             }
           )
           .catch((err) => {
-            expect(err.response.status).toEqual(401)
-            expect(err.response.data.message).toEqual("Unauthorized")
+            expect(err.response.status).toEqual(403)
+            expect(err.response.data.message).toEqual("Forbidden")
           })
       })
 
@@ -155,8 +155,8 @@ medusaIntegrationTestRunner({
           )
           .catch((e) => e.response)
 
-        expect(error.status).toEqual(401)
-        expect(error.data.message).toEqual("Unauthorized")
+        expect(error.status).toEqual(403)
+        expect(error.data.message).toEqual("Forbidden")
       })
 
       it("should fail to accept with an expired token", async () => {
@@ -183,8 +183,8 @@ medusaIntegrationTestRunner({
           )
           .catch((e) => e.response)
 
-        expect(error.status).toEqual(401)
-        expect(error.data.message).toEqual("Unauthorized")
+        expect(error.status).toEqual(403)
+        expect(error.data.message).toEqual("Forbidden")
 
         jest.useRealTimers()
       })
