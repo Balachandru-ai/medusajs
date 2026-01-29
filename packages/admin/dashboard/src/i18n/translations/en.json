@@ -3064,6 +3064,13 @@
       "value": "Value"
     }
   },
+  "propertyLabels": {
+    "domain": "Property Labels",
+    "edit": {
+      "header": "Edit Property Labels",
+      "description": "Customize how property names are displayed for {{entity}}"
+    }
+  },
   "notifications": {
     "domain": "Notifications",
     "emptyState": {

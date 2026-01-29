@@ -6829,6 +6829,29 @@
       "required": ["domain", "subtitle", "create", "delete", "tooltip"],
       "additionalProperties": false
     },
+    "propertyLabels": {
+      "type": "object",
+      "properties": {
+        "domain": {
+          "type": "string"
+        },
+        "edit": {
+          "type": "object",
+          "properties": {
+            "header": {
+              "type": "string"
+            },
+            "description": {
+              "type": "string"
+            }
+          },
+          "required": ["header", "description"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["domain", "edit"],
+      "additionalProperties": false
+    },
     "taxRegions": {
       "type": "object",
       "properties": {

@@ -1778,6 +1778,13 @@
       "type": "Introduce el tipo de perfil de envío, por ejemplo: Pesado, Sobredimensionado, Solo carga, etc."
     }
   },
+  "propertyLabels": {
+    "domain": "Etiquetas de Propiedades",
+    "edit": {
+      "header": "Editar Etiquetas de Propiedades",
+      "description": "Personaliza cómo se muestran los nombres de las propiedades para {{entity}}"
+    }
+  },
   "taxRegions": {
     "domain": "Regiones Impositivas",
     "list": {
