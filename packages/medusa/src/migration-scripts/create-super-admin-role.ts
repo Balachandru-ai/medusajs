@@ -37,7 +37,7 @@ async function assignSuperAdminRoleToUsers(container: any): Promise<void> {
 
     const users: User[] = await userModuleService.listUsers({})
 
-    if (users.length === 0) {
+    if (!users.length) {
       logger.info("⚠️  No users found. Exiting.")
       return
     }
@@ -58,7 +58,7 @@ async function assignSuperAdminRoleToUsers(container: any): Promise<void> {
         id: "role_super_admin",
       })
 
-      if (existingRoles.length > 0) {
+      if (existingRoles.length) {
         superAdminRole = existingRoles[0]
         logger.info(
           `✅ Found super admin role: ${superAdminRole.name} (${superAdminRole.id})`
@@ -82,7 +82,7 @@ async function assignSuperAdminRoleToUsers(container: any): Promise<void> {
         role_id: superAdminRole.id,
       })
 
-      if (rolePolicies.length === 0) {
+      if (!rolePolicies.length) {
         logger.warn(
           "⚠️  Super admin role has no policies assigned. This might indicate an issue with the migration."
         )

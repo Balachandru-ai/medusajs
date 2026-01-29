@@ -25,7 +25,7 @@ export const validateRolesExistStep = createStep(
     const existingRoleIds = new Set(existingRoles.map((r) => r.id))
     const missingRoles = roleIds.filter((id) => !existingRoleIds.has(id))
 
-    if (missingRoles.length > 0) {
+    if (missingRoles.length) {
       throw new MedusaError(
         MedusaError.Types.INVALID_DATA,
         `The following role IDs do not exist: ${missingRoles.join(", ")}`
