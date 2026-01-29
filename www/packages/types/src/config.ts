@@ -23,6 +23,7 @@ export declare type DocsConfig = {
   version: {
     number: string
     releaseUrl: string
+    releaseDate: string
     hide?: boolean
     bannerImage?: {
       light: string
