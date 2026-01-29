@@ -3,9 +3,11 @@ import {
   validateAndTransformQuery,
 } from "@medusajs/framework"
 import { maybeApplyLinkFilter, MiddlewareRoute } from "@medusajs/framework/http"
+import { PolicyOperation } from "@medusajs/framework/utils"
 import { DEFAULT_BATCH_ENDPOINTS_SIZE_LIMIT } from "../../../utils/middlewares"
 import { createBatchBody } from "../../utils/validators"
 import {
+  Entities,
   listTransformQueryConfig,
   retrieveRuleTransformQueryConfig,
   retrieveTransformQueryConfig,
@@ -21,6 +23,15 @@ import {
 } from "./validators"
 
 export const adminShippingOptionRoutesMiddlewares: MiddlewareRoute[] = [
+  {
+    matcher: "/admin/shipping-options/*",
+    policies: [
+      {
+        resource: Entities.shipping_option,
+        operation: PolicyOperation.read,
+      },
+    ],
+  },
   {
     method: ["GET"],
     matcher: "/admin/shipping-options",
@@ -57,6 +68,12 @@ export const adminShippingOptionRoutesMiddlewares: MiddlewareRoute[] = [
         retrieveTransformQueryConfig
       ),
     ],
+    policies: [
+      {
+        resource: Entities.shipping_option,
+        operation: PolicyOperation.create,
+      },
+    ],
   },
   {
     method: ["POST"],
@@ -68,10 +85,22 @@ export const adminShippingOptionRoutesMiddlewares: MiddlewareRoute[] = [
         retrieveTransformQueryConfig
       ),
     ],
+    policies: [
+      {
+        resource: Entities.shipping_option,
+        operation: PolicyOperation.update,
+      },
+    ],
   },
   {
     method: ["DELETE"],
     matcher: "/admin/shipping-options/:id",
+    policies: [
+      {
+        resource: Entities.shipping_option,
+        operation: PolicyOperation.delete,
+      },
+    ],
   },
   {
     method: ["POST"],
@@ -90,6 +119,12 @@ export const adminShippingOptionRoutesMiddlewares: MiddlewareRoute[] = [
         AdminGetShippingOptionRuleParams,
         retrieveRuleTransformQueryConfig
       ),
+    ],
+    policies: [
+      {
+        resource: Entities.shipping_option,
+        operation: PolicyOperation.update,
+      },
     ],
   },
 ]

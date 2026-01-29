@@ -1,4 +1,5 @@
 import * as QueryConfig from "./query-config"
+import { Entities } from "./query-config"
 
 import {
   AdminCreateCustomer,
@@ -16,9 +17,19 @@ import {
   validateAndTransformQuery,
 } from "@medusajs/framework"
 import { MiddlewareRoute } from "@medusajs/framework/http"
+import { PolicyOperation } from "@medusajs/framework/utils"
 import { createLinkBody } from "../../utils/validators"
 
 export const adminCustomerRoutesMiddlewares: MiddlewareRoute[] = [
+  {
+    matcher: "/admin/customers/*",
+    policies: [
+      {
+        resource: Entities.customer,
+        operation: PolicyOperation.read,
+      },
+    ],
+  },
   {
     method: ["GET"],
     matcher: "/admin/customers",
@@ -38,6 +49,12 @@ export const adminCustomerRoutesMiddlewares: MiddlewareRoute[] = [
         AdminCustomerParams,
         QueryConfig.retrieveTransformQueryConfig
       ),
+    ],
+    policies: [
+      {
+        resource: Entities.customer,
+        operation: PolicyOperation.create,
+      },
     ],
   },
   {
@@ -60,6 +77,22 @@ export const adminCustomerRoutesMiddlewares: MiddlewareRoute[] = [
         QueryConfig.retrieveTransformQueryConfig
       ),
     ],
+    policies: [
+      {
+        resource: Entities.customer,
+        operation: PolicyOperation.update,
+      },
+    ],
+  },
+  {
+    method: ["DELETE"],
+    matcher: "/admin/customers/:id",
+    policies: [
+      {
+        resource: Entities.customer,
+        operation: PolicyOperation.delete,
+      },
+    ],
   },
   {
     method: ["POST"],
@@ -71,6 +104,12 @@ export const adminCustomerRoutesMiddlewares: MiddlewareRoute[] = [
         QueryConfig.retrieveTransformQueryConfig
       ),
     ],
+    policies: [
+      {
+        resource: Entities.customer_address,
+        operation: PolicyOperation.create,
+      },
+    ],
   },
   {
     method: ["GET"],
@@ -80,6 +119,12 @@ export const adminCustomerRoutesMiddlewares: MiddlewareRoute[] = [
         AdminCustomerAddressParams,
         QueryConfig.retrieveAddressTransformQueryConfig
       ),
+    ],
+    policies: [
+      {
+        resource: Entities.customer_address,
+        operation: PolicyOperation.read,
+      },
     ],
   },
   {
@@ -92,6 +137,12 @@ export const adminCustomerRoutesMiddlewares: MiddlewareRoute[] = [
         QueryConfig.retrieveTransformQueryConfig
       ),
     ],
+    policies: [
+      {
+        resource: Entities.customer_address,
+        operation: PolicyOperation.update,
+      },
+    ],
   },
   {
     method: ["DELETE"],
@@ -101,6 +152,12 @@ export const adminCustomerRoutesMiddlewares: MiddlewareRoute[] = [
         AdminCustomerParams,
         QueryConfig.retrieveTransformQueryConfig
       ),
+    ],
+    policies: [
+      {
+        resource: Entities.customer_address,
+        operation: PolicyOperation.delete,
+      },
     ],
   },
   {
@@ -112,6 +169,12 @@ export const adminCustomerRoutesMiddlewares: MiddlewareRoute[] = [
         QueryConfig.listAddressesTransformQueryConfig
       ),
     ],
+    policies: [
+      {
+        resource: Entities.customer_address,
+        operation: PolicyOperation.read,
+      },
+    ],
   },
   {
     method: ["POST"],
@@ -122,6 +185,12 @@ export const adminCustomerRoutesMiddlewares: MiddlewareRoute[] = [
         AdminCustomerParams,
         QueryConfig.retrieveTransformQueryConfig
       ),
+    ],
+    policies: [
+      {
+        resource: Entities.customer,
+        operation: PolicyOperation.update,
+      },
     ],
   },
 ]
