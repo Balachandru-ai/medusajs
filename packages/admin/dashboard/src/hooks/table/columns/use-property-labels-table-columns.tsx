@@ -16,31 +16,15 @@ export const usePropertyLabelsTableColumns = () => {
     () => [
       columnHelper.accessor("module", {
         header: () => t("propertyLabels.fields.module"),
-        enableSorting: true,
-        sortLabel: t("propertyLabels.fields.module"),
-        sortAscLabel: t("filters.sorting.alphabeticallyAsc"),
-        sortDescLabel: t("filters.sorting.alphabeticallyDesc"),
       }),
       columnHelper.accessor("name", {
         header: () => t("propertyLabels.fields.model"),
-        enableSorting: true,
-        sortLabel: t("propertyLabels.fields.model"),
-        sortAscLabel: t("filters.sorting.alphabeticallyAsc"),
-        sortDescLabel: t("filters.sorting.alphabeticallyDesc"),
       }),
       columnHelper.accessor("propertyCount", {
         header: () => t("propertyLabels.fields.propertyCount"),
-        enableSorting: true,
-        sortLabel: t("propertyLabels.fields.propertyCount"),
-        sortAscLabel: t("filters.sorting.alphabeticallyAsc"),
-        sortDescLabel: t("filters.sorting.alphabeticallyDesc"),
       }),
       columnHelper.accessor("hasOverrides", {
         header: () => t("propertyLabels.fields.hasOverrides"),
-        enableSorting: true,
-        sortLabel: t("propertyLabels.fields.hasOverrides"),
-        sortAscLabel: t("filters.sorting.alphabeticallyAsc"),
-        sortDescLabel: t("filters.sorting.alphabeticallyDesc"),
         cell: ({ getValue }) => {
           const value = getValue()
           return (

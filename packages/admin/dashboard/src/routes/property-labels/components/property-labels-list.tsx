@@ -24,6 +24,9 @@ export const PropertyLabelsList = () => {
 
       <DataTable
         columns={columns}
+        enablePagination={false}
+        enableFilterMenu={false}
+        enableSearch={false}
         data={entities}
         isLoading={isPending}
         getRowId={(row) => `${row.module}-${row.name}`}
