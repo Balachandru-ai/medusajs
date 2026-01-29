@@ -51,7 +51,7 @@ export function ConfigurableDataTable<TData>({
   const filters = rawFilters.map((filter) => {
     // If filter has 'key' but no 'id', use 'key' as 'id' for compatibility
     if ((filter as any).key && !(filter as any).id) {
-      return { ...filter, id: (filter as any).key }
+      return { ...filter, id: (filter as any).key as string }
     }
     return filter
   })
@@ -84,7 +84,7 @@ export function ConfigurableDataTable<TData>({
 
   const parsedQueryParams = { ...queryParams }
   filters.forEach((filter) => {
-    const filterKey = (filter as any).id || (filter as any).key
+    const filterKey = filter.id
     if (filterKey && parsedQueryParams[filterKey] !== undefined) {
       try {
         parsedQueryParams[filterKey] = JSON.parse(parsedQueryParams[filterKey])
