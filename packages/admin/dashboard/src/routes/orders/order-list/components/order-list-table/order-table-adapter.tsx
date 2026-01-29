@@ -13,6 +13,12 @@ export function createOrderTableAdapter(): TableAdapter<HttpTypes.AdminOrder> {
     entity: "orders",
     queryPrefix: "o",
     pageSize: 20,
+    resolveExcludedFilters: (columns) => {
+      const FIELDS_TO_EXCLUDE = ["region_id", "customer_id", "sales_channel_id"]
+      return columns
+        .filter((column) => FIELDS_TO_EXCLUDE.includes(column.field))
+        .map((column) => column.id)
+    },
 
     useData: (fields, params) => {
       const { orders, count, isError, error, isLoading } = useOrders(

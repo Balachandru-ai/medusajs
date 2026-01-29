@@ -1,3 +1,4 @@
+import { HttpTypes } from "@medusajs/types"
 import {
   DataTableColumnDef,
   DataTableEmptyStateProps,
@@ -40,9 +41,11 @@ export interface TableAdapter<TData> {
   getRowHref?: (row: TData) => string | undefined
 
   /**
-   * Table filters configuration
+   * Explicit table filters configuration. If not provided, filters will be reolved dynamically from the API columns.
    */
   filters?: DataTableFilter[]
+
+  resolveExcludedFilters?: (columns: HttpTypes.AdminColumn[]) => string[]
 
   /**
    * Transform API columns to table columns.

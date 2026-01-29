@@ -19,6 +19,7 @@ import {
   RelationshipFilterConfig,
   useRelationshipFilterOptions,
 } from "./use-relationship-filter-options"
+import { TableAdapter } from "../../lib/table/table-adapters"
 
 export interface TableConfiguration {
   filters: Record<string, any>
@@ -32,6 +33,7 @@ export interface UseTableConfigurationOptions {
   entity: string
   pageSize?: number
   queryPrefix?: string
+  exludedFiltersResolver?: TableAdapter<unknown>["resolveExcludedFilters"]
   filters?: Array<{ id: string }>
 }
 
@@ -69,6 +71,7 @@ export function useTableConfiguration({
   entity,
   queryPrefix = "",
   filters = [],
+  exludedFiltersResolver,
 }: UseTableConfigurationOptions): UseTableConfigurationReturn {
   const isViewConfigEnabled = useFeatureFlag("view_configurations")
   const [_, setSearchParams] = useSearchParams()
@@ -89,12 +92,22 @@ export function useTableConfiguration({
 
   console.log(apiColumns)
 
+  const whitelistedFilterableColumns = useMemo(() => {
+    if (!apiColumns || !exludedFiltersResolver) {
+      return apiColumns ?? []
+    }
+
+    const excludedColumnIds = exludedFiltersResolver(apiColumns)
+    return apiColumns.filter((column) => !excludedColumnIds.includes(column.id))
+  }, [apiColumns, exludedFiltersResolver])
+
   const relationshipFilterConfigs = useMemo(() => {
     if (!apiColumns) {
       return []
     }
-    return getRelationshipFilterConfigs(apiColumns)
-  }, [apiColumns])
+
+    return getRelationshipFilterConfigs(whitelistedFilterableColumns)
+  }, [whitelistedFilterableColumns])
 
   const { options: relationshipOptions, isLoading: isLoadingFilterOptions } =
     useRelationshipFilterOptions(
@@ -104,11 +117,14 @@ export function useTableConfiguration({
     )
 
   const resolvedFilters = useMemo(() => {
-    if (!apiColumns) {
+    if (!whitelistedFilterableColumns) {
       return []
     }
-    return generateFiltersFromColumns(apiColumns, relationshipOptions)
-  }, [apiColumns, relationshipOptions])
+    return generateFiltersFromColumns(
+      whitelistedFilterableColumns,
+      relationshipOptions
+    )
+  }, [whitelistedFilterableColumns, relationshipOptions])
 
   const queryParams = useQueryParams(
     ["q", "order", "offset", "limit", ...resolvedFilters.map((f) => f.id)],
