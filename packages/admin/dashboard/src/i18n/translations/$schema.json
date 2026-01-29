@@ -6835,21 +6835,33 @@
         "domain": {
           "type": "string"
         },
-        "edit": {
+        "title": {
+          "type": "string"
+        },
+        "subtitle": {
+          "type": "string"
+        },
+        "fields": {
           "type": "object",
           "properties": {
-            "header": {
+            "module": {
               "type": "string"
             },
-            "description": {
+            "model": {
+              "type": "string"
+            },
+            "propertyCount": {
+              "type": "string"
+            },
+            "hasOverrides": {
               "type": "string"
             }
           },
-          "required": ["header", "description"],
+          "required": ["module", "model", "propertyCount", "hasOverrides"],
           "additionalProperties": false
         }
       },
-      "required": ["domain", "edit"],
+      "required": ["domain", "title", "subtitle", "fields"],
       "additionalProperties": false
     },
     "taxRegions": {
@@ -9435,17 +9447,17 @@
           "required": ["metrics"]
         },
         "settings": {
-            "type": "object",
-            "properties": {
-                "header": {
-                    "type": "string"
-                },
-                "successToast": {
-                    "type": "string"
-                }
+          "type": "object",
+          "properties": {
+            "header": {
+              "type": "string"
             },
-            "required": ["header", "successToast"],
-            "additionalProperties": false
+            "successToast": {
+              "type": "string"
+            }
+          },
+          "required": ["header", "successToast"],
+          "additionalProperties": false
         },
         "actions": {
           "type": "object",

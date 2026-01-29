@@ -3066,9 +3066,13 @@
   },
   "propertyLabels": {
     "domain": "Property Labels",
-    "edit": {
-      "header": "Edit Property Labels",
-      "description": "Customize how property names are displayed for {{entity}}"
+    "title": "Property Labels",
+    "subtitle": "Manage custom property labels for configurable tables of your entities.",
+    "fields": {
+      "module": "Module",
+      "model": "Model",
+      "propertyCount": "Property Count",
+      "hasOverrides": "Has Overrides"
     }
   },
   "notifications": {

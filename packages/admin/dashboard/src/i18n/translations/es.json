@@ -1780,9 +1780,13 @@
   },
   "propertyLabels": {
     "domain": "Etiquetas de Propiedades",
-    "edit": {
-      "header": "Editar Etiquetas de Propiedades",
-      "description": "Personaliza cómo se muestran los nombres de las propiedades para {{entity}}"
+    "title": "Etiquetas de Propiedades",
+    "subtitle": "Gestiona etiquetas de propiedades personalizadas para tablas configurables de tus entidades.",
+    "fields": {
+      "module": "Módulo",
+      "model": "Modelo",
+      "propertyCount": "Cantidad de Propiedades",
+      "hasOverrides": "Tiene Sobrescrituras"
     }
   },
   "taxRegions": {

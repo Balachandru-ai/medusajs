@@ -1012,7 +1012,7 @@ export function getRouteMap({
                   lazy: () => import("../../routes/property-labels"),
                   children: [
                     {
-                      path: ":entity",
+                      path: ":entity/edit",
                       lazy: () =>
                         import(
                           "../../routes/property-labels/property-labels-edit"
