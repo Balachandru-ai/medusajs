@@ -75,6 +75,7 @@ export function ConfigurableDataTable<TData>({
     // TODO: remove
     filters: adapterFilters,
     exludedFiltersResolver: adapter.resolveExcludedFilters,
+    overrideSorting: adapter.overrideSorting,
   })
 
   const parsedQueryParams = { ...queryParams }

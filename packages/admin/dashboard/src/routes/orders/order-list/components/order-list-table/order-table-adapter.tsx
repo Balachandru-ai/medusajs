@@ -14,12 +14,30 @@ export function createOrderTableAdapter(): TableAdapter<HttpTypes.AdminOrder> {
     queryPrefix: "o",
     pageSize: 20,
     resolveExcludedFilters: (columns) => {
-      const FIELDS_TO_EXCLUDE = ["region_id", "customer_id", "sales_channel_id"]
+      const FIELDS_TO_EXCLUDE = [
+        "region_id",
+        "customer_id",
+        "sales_channel_id",
+        "payment_status",
+        "fulfillment_status",
+        "sales_channel.name",
+      ]
       return columns
         .filter((column) => FIELDS_TO_EXCLUDE.includes(column.field))
         .map((column) => column.id)
     },
-
+    overrideSorting: (columns) => {
+      const FIELDS_TO_DISABLE = [
+        "payment_status",
+        "fulfillment_status",
+        "sales_channel.name",
+      ]
+      columns.forEach((column) => {
+        if (FIELDS_TO_DISABLE.includes(column.field)) {
+          column.sortable = false
+        }
+      })
+    },
     useData: (fields, params) => {
       const { orders, count, isError, error, isLoading } = useOrders(
         {

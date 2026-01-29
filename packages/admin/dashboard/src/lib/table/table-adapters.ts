@@ -45,7 +45,18 @@ export interface TableAdapter<TData> {
    */
   filters?: DataTableFilter[]
 
+  /**
+   * Resolve the excluded filters for the table by overriding specific columns filter configuration.
+   * @param columns - The API columns to resolve the excluded filters for.
+   * @returns The column IDs to exclude from the filters.
+   */
   resolveExcludedFilters?: (columns: HttpTypes.AdminColumn[]) => string[]
+
+  /**
+   * Override the sorting for the table by overriding specific columns sorting configuration.
+   * @param columns - The API columns to override the sorting for.
+   */
+  overrideSorting?: (columns: HttpTypes.AdminColumn[]) => void
 
   /**
    * Transform API columns to table columns.

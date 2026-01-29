@@ -34,6 +34,7 @@ export interface UseTableConfigurationOptions {
   pageSize?: number
   queryPrefix?: string
   exludedFiltersResolver?: TableAdapter<unknown>["resolveExcludedFilters"]
+  overrideSorting?: TableAdapter<unknown>["overrideSorting"]
   filters?: Array<{ id: string }>
 }
 
@@ -72,6 +73,7 @@ export function useTableConfiguration({
   queryPrefix = "",
   filters = [],
   exludedFiltersResolver,
+  overrideSorting,
 }: UseTableConfigurationOptions): UseTableConfigurationReturn {
   const isViewConfigEnabled = useFeatureFlag("view_configurations")
   const [_, setSearchParams] = useSearchParams()
@@ -89,6 +91,12 @@ export function useTableConfiguration({
       enabled: isViewConfigEnabled,
     }
   )
+
+  useEffect(() => {
+    if (apiColumns && overrideSorting) {
+      overrideSorting(apiColumns)
+    }
+  }, [apiColumns, overrideSorting])
 
   console.log(apiColumns)
 
