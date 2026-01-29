@@ -15,8 +15,6 @@ export const PropertyLabelsList = () => {
     throw error
   }
 
-  console.log(entities)
-
   return (
     <Container className="divide-y p-0">
       <div className="px-6 py-4">
