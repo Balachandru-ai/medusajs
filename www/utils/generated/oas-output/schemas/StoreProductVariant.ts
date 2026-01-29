@@ -120,10 +120,15 @@
  *     type: string
  *     title: thumbnail
  *     description: The variant's thumbnail.
+ *   images:
+ *     type: array
+ *     description: The variant's images.
+ *     items:
+ *       $ref: "#/components/schemas/BaseProductImage"
  * required:
  *   - options
- *   - length
  *   - title
+ *   - length
  *   - id
  *   - created_at
  *   - updated_at
@@ -135,6 +140,7 @@
  *   - hs_code
  *   - mid_code
  *   - material
+ *   - images
  *   - deleted_at
  *   - manage_inventory
  *   - allow_backorder

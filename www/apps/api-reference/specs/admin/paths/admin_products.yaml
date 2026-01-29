@@ -347,6 +347,7 @@ get:
             type: boolean
             title: $exists
             description: Filter by whether a value for this parameter exists (not `null`).
+        title: created_at
     - name: updated_at
       in: query
       description: Filter by a product's update date.
@@ -486,6 +487,7 @@ get:
             type: boolean
             title: $exists
             description: Filter by whether a value for this parameter exists (not `null`).
+        title: updated_at
     - name: deleted_at
       in: query
       description: Filter by a product's deletion date.
@@ -625,6 +627,7 @@ get:
             type: boolean
             title: $exists
             description: Filter by whether a value for this parameter exists (not `null`).
+        title: deleted_at
     - name: $and
       in: query
       description: >-
@@ -1368,18 +1371,18 @@ post:
     - name: product-variant.created
       payload: |-
         ```ts
-        [{
+        {
           id, // The ID of the product variant
-        }]
+        }
         ```
       description: Emitted when product variants are created.
       deprecated: false
     - name: product.created
       payload: |-
         ```ts
-        [{
+        {
           id, // The ID of the product
-        }]
+        }
         ```
       description: Emitted when products are created.
       deprecated: false

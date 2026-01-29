@@ -1,5 +1,31 @@
 # @medusajs/icons
 
+## 2.13.1
+
+## 2.13.0
+
+### Minor Changes
+
+- [`a31e72c31c5235240cead2d04e39e5927688eec7`](https://github.com/medusajs/medusa/commit/a31e72c31c5235240cead2d04e39e5927688eec7) Thanks [@olivermrbl](https://github.com/olivermrbl)! - chore: Minor bump
+
+## 2.12.6
+
+## 2.12.5
+
+## 2.12.4
+
+## 2.12.3
+
+### Patch Changes
+
+- [#14297](https://github.com/medusajs/medusa/pull/14297) [`a43eb11d6565d19e82cf2b06e262ab509214b3d4`](https://github.com/medusajs/medusa/commit/a43eb11d6565d19e82cf2b06e262ab509214b3d4) Thanks [@fPolic](https://github.com/fPolic)! - chore(icons): sync new icons
+
+## 2.12.2
+
+## 2.12.1
+
+## 2.12.0
+
 ## 2.11.3
 
 ### Patch Changes

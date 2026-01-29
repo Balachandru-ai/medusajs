@@ -346,12 +346,48 @@ const generatedgeneratedAdminSidebarSidebar = {
     },
     {
       "type": "category",
+      "title": "Locales",
+      "children": [
+        {
+          "type": "link",
+          "path": "locales_locale_schema",
+          "title": "Locale Object",
+          "loaded": true,
+          "badge": {
+            "variant": "neutral",
+            "text": "Schema"
+          }
+        }
+      ],
+      "loaded": false,
+      "showLoadingIfEmpty": true
+    },
+    {
+      "type": "category",
       "title": "Notifications",
       "children": [
         {
           "type": "link",
           "path": "notifications_notification_schema",
           "title": "Notification Object",
+          "loaded": true,
+          "badge": {
+            "variant": "neutral",
+            "text": "Schema"
+          }
+        }
+      ],
+      "loaded": false,
+      "showLoadingIfEmpty": true
+    },
+    {
+      "type": "category",
+      "title": "Order Changes",
+      "children": [
+        {
+          "type": "link",
+          "path": "order-changes_orderchange_schema",
+          "title": "OrderChange Object",
           "loaded": true,
           "badge": {
             "variant": "neutral",
@@ -582,6 +618,13 @@ const generatedgeneratedAdminSidebarSidebar = {
           }
         }
       ],
+      "loaded": false,
+      "showLoadingIfEmpty": true
+    },
+    {
+      "type": "category",
+      "title": "Rbac",
+      "children": [],
       "loaded": false,
       "showLoadingIfEmpty": true
     },
@@ -863,6 +906,24 @@ const generatedgeneratedAdminSidebarSidebar = {
           "type": "link",
           "path": "transaction-groups_transactiongroup_schema",
           "title": "TransactionGroup Object",
+          "loaded": true,
+          "badge": {
+            "variant": "neutral",
+            "text": "Schema"
+          }
+        }
+      ],
+      "loaded": false,
+      "showLoadingIfEmpty": true
+    },
+    {
+      "type": "category",
+      "title": "Translations",
+      "children": [
+        {
+          "type": "link",
+          "path": "translations_translation_schema",
+          "title": "Translation Object",
           "loaded": true,
           "badge": {
             "variant": "neutral",

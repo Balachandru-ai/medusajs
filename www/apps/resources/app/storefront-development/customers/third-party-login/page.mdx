@@ -611,6 +611,7 @@ If you already set up the [Auth Module Provider](../../../commerce-modules/auth/
     - A token in a `token` property. In this case, the customer was previously logged in with the third-party service. No additional actions are required. You can use the token to send subsequent authenticated requests.
 2. Once authentication with the third-party service finishes, it redirects back to the storefront with query parameters such as `code` and `state`. Make sure your third-party service is configured to redirect to your storefront's callback page after successful authentication.
 3. In the storefront's callback page, send a request to the [Validate Authentication Callback API route](!api!/store#auth_postactor_typeauth_providercallback). Pass the query parameters (`code`, `state`, etc.) received from the third-party service.
+    - Medusa validates the authentication with the third-party service.
 4. If the callback validation is successful, you'll receive the authentication token. Decode the received token in the storefront using tools like [react-jwt](https://www.npmjs.com/package/react-jwt).
     - If the decoded data has an `actor_id` property, the customer is already registered. Use this token for subsequent authenticated requests.
     - If not, follow the rest of the steps.
