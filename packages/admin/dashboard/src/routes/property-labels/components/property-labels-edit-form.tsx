@@ -7,14 +7,11 @@ import { useTranslation } from "react-i18next"
 import { HttpTypes } from "@medusajs/types"
 import { ColumnDef } from "@tanstack/react-table"
 
-import { RouteFocusModal, useRouteModal } from "../../../../components/modals"
-import { KeyboundForm } from "../../../../components/utilities/keybound-form"
-import { useBatchPropertyLabels } from "../../../../hooks/api/property-labels"
-import {
-  DataGrid,
-  createDataGridHelper,
-} from "../../../../components/data-grid"
-import { VisuallyHidden } from "../../../../components/utilities/visually-hidden"
+import { RouteFocusModal, useRouteModal } from "../../../components/modals"
+import { KeyboundForm } from "../../../components/utilities/keybound-form"
+import { useBatchPropertyLabels } from "../../../hooks/api/property-labels"
+import { DataGrid, createDataGridHelper } from "../../../components/data-grid"
+import { VisuallyHidden } from "../../../components/utilities/visually-hidden"
 
 interface PropertyFieldRow {
   field: string

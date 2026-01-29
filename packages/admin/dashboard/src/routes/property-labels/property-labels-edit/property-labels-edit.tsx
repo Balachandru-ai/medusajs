@@ -1,8 +1,8 @@
 import { useParams } from "react-router-dom"
 
-import { RouteFocusModal } from "../../../../components/modals"
-import { useEntityColumns } from "../../../../hooks/api/views"
-import { usePropertyLabels } from "../../../../hooks/api/property-labels"
+import { RouteFocusModal } from "../../../components/modals"
+import { useEntityColumns } from "../../../hooks/api/views"
+import { usePropertyLabels } from "../../../hooks/api/property-labels"
 import { PropertyLabelsEditForm } from "../components/property-labels-edit-form"
 
 export const PropertyLabelsEdit = () => {

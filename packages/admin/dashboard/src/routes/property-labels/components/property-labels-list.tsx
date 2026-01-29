@@ -3,7 +3,7 @@ import { PencilSquare } from "@medusajs/icons"
 import { useTranslation } from "react-i18next"
 import { Link } from "react-router-dom"
 
-import { useEntities } from "../../../../hooks/api/views"
+import { useEntities } from "../../../hooks/api/views"
 
 export const PropertyLabelsList = () => {
   const { t } = useTranslation()

@@ -1009,13 +1009,13 @@ export function getRouteMap({
               children: [
                 {
                   path: "",
-                  lazy: () => import("../../routes/settings/property-labels"),
+                  lazy: () => import("../../routes/property-labels"),
                   children: [
                     {
                       path: ":entity",
                       lazy: () =>
                         import(
-                          "../../routes/settings/property-labels/property-labels-edit"
+                          "../../routes/property-labels/property-labels-edit"
                         ),
                     },
                   ],

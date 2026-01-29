@@ -1,4 +1,4 @@
-import { SingleColumnPage } from "../../../components/layout/pages"
+import { SingleColumnPage } from "../../components/layout/pages"
 import { PropertyLabelsList } from "./components/property-labels-list"
 
 export const PropertyLabels = () => {
