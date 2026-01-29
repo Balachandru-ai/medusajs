@@ -1,6 +1,7 @@
 import { useState, useMemo, useCallback, useEffect } from "react"
 import { useSearchParams } from "react-router-dom"
 import { HttpTypes } from "@medusajs/types"
+import { DataTableFilter } from "@medusajs/ui"
 import {
   useViewConfigurations,
   useViewConfiguration,
@@ -10,6 +11,14 @@ import { useFeatureFlag } from "../../providers/feature-flag-provider"
 import { useColumnState } from "./columns/use-column-state"
 import { useQueryParams } from "../use-query-params"
 import { calculateRequiredFields } from "../../lib/table/field-utils"
+import {
+  generateFiltersFromColumns,
+  getRelationshipFilterConfigs,
+} from "../../lib/table/filter-utils"
+import {
+  RelationshipFilterConfig,
+  useRelationshipFilterOptions,
+} from "./use-relationship-filter-options"
 
 export interface TableConfiguration {
   filters: Record<string, any>
@@ -43,7 +52,9 @@ export interface UseTableConfigurationReturn {
   hasConfigurationChanged: boolean
   handleClearConfiguration: () => void
   apiColumns: HttpTypes.AdminColumn[] | undefined
+  filters: DataTableFilter[]
   isLoadingColumns: boolean
+  isLoadingFilterOptions: boolean
   queryParams: Record<string, any>
   requiredFields: string
 }
@@ -76,8 +87,31 @@ export function useTableConfiguration({
     }
   )
 
+  console.log(apiColumns)
+
+  const relationshipFilterConfigs = useMemo(() => {
+    if (!apiColumns) {
+      return []
+    }
+    return getRelationshipFilterConfigs(apiColumns)
+  }, [apiColumns])
+
+  const { options: relationshipOptions, isLoading: isLoadingFilterOptions } =
+    useRelationshipFilterOptions(
+      relationshipFilterConfigs.filter(
+        (config) => config.config !== undefined
+      ) as RelationshipFilterConfig[]
+    )
+
+  const resolvedFilters = useMemo(() => {
+    if (!apiColumns) {
+      return []
+    }
+    return generateFiltersFromColumns(apiColumns, relationshipOptions)
+  }, [apiColumns, relationshipOptions])
+
   const queryParams = useQueryParams(
-    ["q", "order", "offset", "limit", ...filters.map((f) => f.id)],
+    ["q", "order", "offset", "limit", ...resolvedFilters.map((f) => f.id)],
     queryPrefix
   )
 
@@ -136,7 +170,7 @@ export function useTableConfiguration({
   // Current configuration from URL
   const currentConfiguration = useMemo(() => {
     const currentFilters: Record<string, any> = {}
-    filters.forEach((filter) => {
+    resolvedFilters.forEach((filter) => {
       if (queryParams[filter.id] !== undefined) {
         currentFilters[filter.id] = JSON.parse(queryParams[filter.id] || "")
       }
@@ -147,7 +181,7 @@ export function useTableConfiguration({
       sorting: queryParams.order ? parseSortingState(queryParams.order) : null,
       search: queryParams.q || "",
     }
-  }, [filters, queryParams])
+  }, [resolvedFilters, queryParams])
 
   // Check if configuration has changed from view
   const [debouncedHasConfigChanged, setDebouncedHasConfigChanged] =
@@ -326,7 +360,9 @@ export function useTableConfiguration({
     hasConfigurationChanged: debouncedHasConfigChanged,
     handleClearConfiguration,
     apiColumns,
+    filters: resolvedFilters,
     isLoadingColumns,
+    isLoadingFilterOptions,
     queryParams,
     requiredFields,
   }
