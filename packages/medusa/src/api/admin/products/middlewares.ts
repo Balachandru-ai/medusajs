@@ -98,6 +98,12 @@ export const adminProductRoutesMiddlewares: MiddlewareRoute[] = [
       },
       maybeApplyPriceListsFilter(),
     ],
+    policies: [
+      {
+        resource: Entities.product,
+        operation: PolicyOperation.read,
+      },
+    ],
   },
   {
     method: ["POST"],
