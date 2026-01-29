@@ -269,8 +269,8 @@ medusaIntegrationTestRunner({
           .get(`/admin/products/${baseProduct.id}`, copyAdminHeaders)
           .catch((error) => error.response)
 
-        expect(response.status).toEqual(401)
-        expect(response.data.message).toContain("Unauthorized")
+        expect(response.status).toEqual(403)
+        expect(response.data.message).toContain("Forbidden")
       })
 
       it("should filter out fields not allowed - product with no tags and no prices", async () => {
