@@ -74,6 +74,7 @@ interface DataTableProps<TData> {
   enableSearch?: boolean
   autoFocusSearch?: boolean
   enableFilterMenu?: boolean
+  enableSortingMenu?: boolean
   rowHref?: (row: TData) => string
   emptyState?: DataTableEmptyStateProps
   heading?: string
@@ -116,6 +117,7 @@ export const DataTable = <TData,>({
   enableSearch = true,
   autoFocusSearch = false,
   enableFilterMenu,
+  enableSortingMenu,
   rowHref,
   heading,
   headingLevel = "h1",
@@ -149,6 +151,8 @@ export const DataTable = <TData,>({
     enableFilterMenu !== undefined ? enableFilterMenu : enableFiltering
   const enableCommands = commands && commands.length > 0
   const enableSorting = columns.some((column) => column.enableSorting)
+  const showSortingMenu =
+    enableSortingMenu !== undefined ? enableSortingMenu : enableSorting
 
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>(initialColumnVisibility)
@@ -404,7 +408,7 @@ export const DataTable = <TData,>({
           </div>
           <div className="flex items-center gap-x-2">
             {showFilterMenu && <UiDataTable.FilterMenu />}
-            {enableSorting && <UiDataTable.SortingMenu />}
+            {showSortingMenu && <UiDataTable.SortingMenu />}
             {enableSearch && (
               <div className="w-full md:w-auto">
                 <UiDataTable.Search

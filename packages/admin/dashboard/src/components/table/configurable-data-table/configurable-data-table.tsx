@@ -223,6 +223,7 @@ export function ConfigurableDataTable<TData>({
         prefix={queryPrefix}
         actions={actions}
         enableFilterMenu={false}
+        enableSortingMenu={false}
       />
 
       {saveDialogOpen && (
