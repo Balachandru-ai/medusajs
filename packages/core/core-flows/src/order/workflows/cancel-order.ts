@@ -171,10 +171,12 @@ export const cancelOrderWorkflow = createWorkflow(
         ({ payments }) => payments
       )
 
-      return payments.reduce(
-        (acc, payment) => MathBN.sum(acc, payment.amount),
-        MathBN.convert(0)
-      )
+      return payments
+        .flatMap((payment) => payment.captures)
+        .reduce(
+          (acc, capture) => MathBN.sum(acc, capture.amount),
+          MathBN.convert(0)
+        )
     })
 
     const lineItemIds = transform({ order }, ({ order }) => {
