@@ -28,10 +28,6 @@ export const adminCustomerRoutesMiddlewares: MiddlewareRoute[] = [
         resource: Entities.customer,
         operation: PolicyOperation.read,
       },
-      {
-        resource: Entities.customer_address,
-        operation: PolicyOperation.read,
-      },
     ],
   },
   {
@@ -124,6 +120,12 @@ export const adminCustomerRoutesMiddlewares: MiddlewareRoute[] = [
         QueryConfig.retrieveAddressTransformQueryConfig
       ),
     ],
+    policies: [
+      {
+        resource: Entities.customer_address,
+        operation: PolicyOperation.read,
+      },
+    ],
   },
   {
     method: ["POST"],
@@ -166,6 +168,12 @@ export const adminCustomerRoutesMiddlewares: MiddlewareRoute[] = [
         AdminCustomerAddressesParams,
         QueryConfig.listAddressesTransformQueryConfig
       ),
+    ],
+    policies: [
+      {
+        resource: Entities.customer_address,
+        operation: PolicyOperation.read,
+      },
     ],
   },
   {
