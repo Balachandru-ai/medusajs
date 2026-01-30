@@ -3,4 +3,4 @@
 "@medusajs/dashboard": patch
 ---
 
-Fixed the stale filters when selecting a view (VIEW_CONFIUGRATIONS_FF)
+fix(ui): stale filters when selecting a view (VIEW_CONFIUGRATIONS_FF)
