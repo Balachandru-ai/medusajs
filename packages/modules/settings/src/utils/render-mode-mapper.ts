@@ -158,7 +158,11 @@ const FIELD_PATTERN_OVERRIDES: FieldPatternOverride[] = [
   { pattern: /^code$/, renderMode: "text", semanticType: "identifier" },
 
   // Counts
-  { pattern: /count$/, renderMode: "number", semanticType: "count" },
+  {
+    pattern: /^(count|.*_count)$/,
+    renderMode: "number",
+    semanticType: "count",
+  },
   { pattern: /quantity$/, renderMode: "number", semanticType: "count" },
 
   // Booleans
