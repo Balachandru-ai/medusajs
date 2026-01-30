@@ -5,12 +5,7 @@ import {
 } from "@medusajs/framework/utils"
 import { defaultPolicyOperations } from "../utils/default-policy-operations"
 
-const pricingResources = [
-  "price_list",
-  "price_preference",
-  "prices",
-  "currency",
-]
+const pricingResources = ["price_list", "price_preference", "price", "currency"]
 
 const policies: PolicyDefinition[] = []
 
