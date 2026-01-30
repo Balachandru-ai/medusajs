@@ -11,7 +11,6 @@ const filterHelper = createDataTableFilterHelper()
  * Maps API data types to DataTable filter UI types
  */
 function getFilterType(column: HttpTypes.AdminColumn): DataTableFilterType {
-  // Relationship filters
   if (column.filter?.relationship) {
     return column.filter.relationship.multiple ? "multiselect" : "select"
   }
@@ -32,8 +31,11 @@ function getFilterType(column: HttpTypes.AdminColumn): DataTableFilterType {
     return "number"
   }
 
-  // Default to text
-  return "string"
+  if (column.data_type === "string") {
+    return "string"
+  }
+
+  return "custom"
 }
 
 /**

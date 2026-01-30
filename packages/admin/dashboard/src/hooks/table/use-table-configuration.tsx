@@ -115,7 +115,7 @@ export function useTableConfiguration({
     }
 
     return getRelationshipFilterConfigs(whitelistedFilterableColumns)
-  }, [whitelistedFilterableColumns])
+  }, [whitelistedFilterableColumns, apiColumns])
 
   const { options: relationshipOptions, isLoading: isLoadingFilterOptions } =
     useRelationshipFilterOptions(
