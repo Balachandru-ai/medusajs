@@ -71,7 +71,7 @@ export type MiddlewareRoute = {
   /** @ignore */
   policies?:
     | { resource: string; operation: string }
-    | Array<{ resource: string; operation: string }>
+    | Array<{ resource: string; operation: string | string[] }>
 }
 
 export type MiddlewaresConfig = {
@@ -88,9 +88,6 @@ export type RouteDescriptor = {
   matcher: string
   method: RouteVerb
   handler: RouteHandler
-  policies?:
-    | { resource: string; operation: string }
-    | Array<{ resource: string; operation: string }>
   optedOutOfAuth: boolean
   isRoute: true
   routeType?: "admin" | "store" | "auth"
@@ -110,7 +107,7 @@ export type MiddlewareDescriptor = {
   handler: MiddlewareFunction
   policies?:
     | { resource: string; operation: string }
-    | Array<{ resource: string; operation: string }>
+    | Array<{ resource: string; operation: string | string[] }>
 }
 
 export type BodyParserConfigRoute = {

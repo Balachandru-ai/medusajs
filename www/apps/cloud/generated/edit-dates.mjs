@@ -30,6 +30,6 @@ export const generatedEditDates = {
   "app/emails/react-email/page.mdx": "2025-11-12T15:41:56.365Z",
   "app/user/page.mdx": "2025-12-17T12:03:18.968Z",
   "app/deployments/access/page.mdx": "2026-01-08T08:52:48.924Z",
-  "app/projects/prerequisites/page.mdx": "2026-01-16T11:43:33.796Z",
-  "app/storefront/page.mdx": "2026-01-08T08:56:47.209Z"
+  "app/projects/prerequisites/page.mdx": "2026-01-27T08:41:13.100Z",
+  "app/storefront/page.mdx": "2026-01-27T08:41:42.215Z"
 }
