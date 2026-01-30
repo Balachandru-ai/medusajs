@@ -47,6 +47,7 @@ export function useConfigurableTableColumns<TData = any>(
         },
         enableHiding: apiColumn.hideable,
         enableSorting: apiColumn.sortable,
+        sortLabel: apiColumn.name,
         headerAlign, // Pass the header alignment to the DataTable
       } as any)
     })
