@@ -223,6 +223,35 @@ export class RbacRole {
   }
 
   /**
+   * This method retrieves a paginated list of users associated with an RBAC role.
+   * It sends a request to the List Role Users API route.
+   *
+   * @param roleId - The role's ID.
+   * @param queryParams - Filters and pagination configurations.
+   * @param headers - Headers to pass in the request.
+   * @returns The paginated list of users.
+   *
+   * @example
+   * sdk.admin.rbacRole.listUsers("role_123")
+   * .then(({ users, count, limit, offset }) => {
+   *   console.log(users)
+   * })
+   */
+  async listUsers(
+    roleId: string,
+    queryParams?: HttpTypes.AdminRbacRoleUserListParams,
+    headers?: ClientHeaders
+  ) {
+    return await this.client.fetch<HttpTypes.AdminRbacRoleUserListResponse>(
+      `/admin/rbac/roles/${roleId}/users`,
+      {
+        query: queryParams,
+        headers,
+      }
+    )
+  }
+
+  /**
    * This method adds policies to an RBAC role. It sends a request to the
    * Add Role Policies API route.
    *

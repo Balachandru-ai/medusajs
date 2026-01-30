@@ -4,6 +4,7 @@ import { useLoaderData, useNavigate, useParams } from "react-router-dom"
 import { useRbacRole } from "../../../hooks/api/rbac-roles"
 import { useFeatureFlag } from "../../../providers/feature-flag-provider"
 import { RoleGeneralSection } from "./components/role-general-section"
+import { RoleUsersSection } from "./components/role-users-section"
 import { roleLoader } from "./loader"
 
 import { SingleColumnPageSkeleton } from "../../../components/common/skeleton"
@@ -43,7 +44,7 @@ export const RoleDetail = () => {
   }
 
   if (isLoading || !role) {
-    return <SingleColumnPageSkeleton sections={1} showJSON showMetadata />
+    return <SingleColumnPageSkeleton sections={2} showJSON showMetadata />
   }
 
   if (isError) {
@@ -61,6 +62,7 @@ export const RoleDetail = () => {
       }}
     >
       <RoleGeneralSection role={role} />
+      <RoleUsersSection role={role} />
     </SingleColumnPage>
   )
 }

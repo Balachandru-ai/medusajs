@@ -16,10 +16,15 @@ const _rbacRolesQueryKeys = queryKeysFactory(
   RBAC_ROLES_QUERY_KEY
 ) as TQueryKey<"rbac_roles"> & {
   policies: (roleId: string, query?: any) => any[]
+  users: (roleId: string, query?: any) => any[]
 }
 
 _rbacRolesQueryKeys.policies = function (roleId: string, query?: any) {
   return [this.detail(roleId), "policies", query].filter(Boolean)
+}
+
+_rbacRolesQueryKeys.users = function (roleId: string, query?: any) {
+  return [this.detail(roleId), "users", query].filter(Boolean)
 }
 
 export const rbacRolesQueryKeys = _rbacRolesQueryKeys
@@ -83,6 +88,28 @@ export const useRbacRolePolicies = (
   const { data, ...rest } = useQuery({
     queryFn: () => sdk.admin.rbacRole.listPolicies(roleId, query),
     queryKey: rbacRolesQueryKeys.policies(roleId, query),
+    ...options,
+  })
+
+  return { ...data, ...rest }
+}
+
+export const useRbacRoleUsers = (
+  roleId: string,
+  query?: HttpTypes.AdminRbacRoleUserListParams,
+  options?: Omit<
+    UseQueryOptions<
+      HttpTypes.AdminRbacRoleUserListResponse,
+      FetchError,
+      HttpTypes.AdminRbacRoleUserListResponse,
+      QueryKey
+    >,
+    "queryKey" | "queryFn"
+  >
+) => {
+  const { data, ...rest } = useQuery({
+    queryFn: () => sdk.admin.rbacRole.listUsers(roleId, query),
+    queryKey: rbacRolesQueryKeys.users(roleId, query),
     ...options,
   })
 
