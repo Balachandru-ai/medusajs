@@ -22,7 +22,6 @@ import {
 
 jest.setTimeout(300000)
 
-
 medusaIntegrationTestRunner({
   testSuite: ({ dbConnection, getContainer, api }) => {
     let order,
@@ -822,8 +821,8 @@ medusaIntegrationTestRunner({
             status: "canceled",
 
             summary: expect.objectContaining({
-              current_order_total: 0,
-              accounting_total: 0,
+              current_order_total: 106,
+              accounting_total: 106,
             }),
 
             payment_collections: [
@@ -951,8 +950,8 @@ medusaIntegrationTestRunner({
             status: "canceled",
 
             summary: expect.objectContaining({
-              current_order_total: 0,
-              accounting_total: 0,
+              current_order_total: 56,
+              accounting_total: 56,
             }),
 
             payment_collections: [
@@ -1962,7 +1961,8 @@ medusaIntegrationTestRunner({
 
         // cancel the fulfillment
         await api.post(
-          `/admin/orders/${tabletOrder.id}/fulfillments/${fulOrder2.fulfillments.find((f) => !f.canceled_at).id
+          `/admin/orders/${tabletOrder.id}/fulfillments/${
+            fulOrder2.fulfillments.find((f) => !f.canceled_at).id
           }/cancel`,
           {},
           adminHeaders
@@ -2355,7 +2355,8 @@ medusaIntegrationTestRunner({
 
         // 7. cancel the entire fulfillment once again
         await api.post(
-          `/admin/orders/${fulOrderFull.id}/fulfillments/${fulOrderFull.fulfillments.find((f) => !f.canceled_at)!.id
+          `/admin/orders/${fulOrderFull.id}/fulfillments/${
+            fulOrderFull.fulfillments.find((f) => !f.canceled_at)!.id
           }/cancel?fields=*fulfillments,*fulfillments.items`,
           {},
           adminHeaders
@@ -2859,7 +2860,8 @@ medusaIntegrationTestRunner({
 
         // cancel the fulfillment for the entire order
         await api.post(
-          `/admin/orders/${bottleOrder.id}/fulfillments/${fulOrder3.fulfillments.find((f) => !f.canceled_at)!.id
+          `/admin/orders/${bottleOrder.id}/fulfillments/${
+            fulOrder3.fulfillments.find((f) => !f.canceled_at)!.id
           }/cancel`,
           {},
           adminHeaders
