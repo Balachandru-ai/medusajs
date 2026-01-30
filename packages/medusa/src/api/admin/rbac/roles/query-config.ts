@@ -1,8 +1,3 @@
-export enum Entities {
-  role = "role",
-  permission = "permission",
-}
-
 export const defaultAdminRbacRoleFields = [
   "id",
   "name",
@@ -17,14 +12,12 @@ export const defaultAdminRbacRoleFields = [
 export const retrieveTransformQueryConfig = {
   defaults: defaultAdminRbacRoleFields,
   isList: false,
-  entity: Entities.role,
 }
 
 export const listTransformQueryConfig = {
   ...retrieveTransformQueryConfig,
   defaultLimit: 20,
   isList: true,
-  entity: Entities.role,
 }
 
 export const defaultAdminRolePoliciesFields = [
