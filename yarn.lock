@@ -3841,6 +3841,7 @@ __metadata:
     "@medusajs/pricing": 2.13.1
     "@medusajs/product": 2.13.1
     "@medusajs/promotion": 2.13.1
+    "@medusajs/rbac": 2.13.1
     "@medusajs/region": 2.13.1
     "@medusajs/sales-channel": 2.13.1
     "@medusajs/settings": 2.13.1
@@ -4013,7 +4014,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@medusajs/rbac@workspace:packages/modules/rbac":
+"@medusajs/rbac@2.13.1, @medusajs/rbac@workspace:packages/modules/rbac":
   version: 0.0.0-use.local
   resolution: "@medusajs/rbac@workspace:packages/modules/rbac"
   dependencies:
