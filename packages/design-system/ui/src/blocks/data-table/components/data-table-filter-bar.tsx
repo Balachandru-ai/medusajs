@@ -49,11 +49,10 @@ const DataTableFilterBar = ({
       const updatedLocalFilters: LocalFilter[] = prevLocalFilters
         .filter((f) => parentIds.includes(f.id) || f.isNew)
         .map((f) => {
-          // If filter exists in parent, update its value from parent
+          // If filter exists in parent, it's no longer "new"
           if (parentIds.includes(f.id)) {
             const parentValue = parentFilterState[f.id]
-            // Only update if value actually changed
-            if (!isEqual(f.value, parentValue)) {
+            if (!isEqual(f.value, parentValue) || f.isNew) {
               return {
                 id: f.id,
                 value: parentValue,
