@@ -101,6 +101,10 @@ describe("defineConfig", function () {
           "promotion": {
             "resolve": "@medusajs/medusa/promotion",
           },
+          "rbac": {
+            "disable": true,
+            "resolve": "@medusajs/medusa/rbac",
+          },
           "region": {
             "resolve": "@medusajs/medusa/region",
           },
@@ -118,6 +122,10 @@ describe("defineConfig", function () {
           },
           "tax": {
             "resolve": "@medusajs/medusa/tax",
+          },
+          "translation": {
+            "disable": true,
+            "resolve": "@medusajs/medusa/translation",
           },
           "user": {
             "options": {
@@ -274,6 +282,10 @@ describe("defineConfig", function () {
           "promotion": {
             "resolve": "@medusajs/medusa/promotion",
           },
+          "rbac": {
+            "disable": true,
+            "resolve": "@medusajs/medusa/rbac",
+          },
           "region": {
             "resolve": "@medusajs/medusa/region",
           },
@@ -291,6 +303,10 @@ describe("defineConfig", function () {
           },
           "tax": {
             "resolve": "@medusajs/medusa/tax",
+          },
+          "translation": {
+            "disable": true,
+            "resolve": "@medusajs/medusa/translation",
           },
           "user": {
             "options": {
@@ -455,6 +471,10 @@ describe("defineConfig", function () {
           "promotion": {
             "resolve": "@medusajs/medusa/promotion",
           },
+          "rbac": {
+            "disable": true,
+            "resolve": "@medusajs/medusa/rbac",
+          },
           "region": {
             "resolve": "@medusajs/medusa/region",
           },
@@ -472,6 +492,10 @@ describe("defineConfig", function () {
           },
           "tax": {
             "resolve": "@medusajs/medusa/tax",
+          },
+          "translation": {
+            "disable": true,
+            "resolve": "@medusajs/medusa/translation",
           },
           "user": {
             "options": {
@@ -637,6 +661,10 @@ describe("defineConfig", function () {
           "promotion": {
             "resolve": "@medusajs/medusa/promotion",
           },
+          "rbac": {
+            "disable": true,
+            "resolve": "@medusajs/medusa/rbac",
+          },
           "region": {
             "resolve": "@medusajs/medusa/region",
           },
@@ -654,6 +682,10 @@ describe("defineConfig", function () {
           },
           "tax": {
             "resolve": "@medusajs/medusa/tax",
+          },
+          "translation": {
+            "disable": true,
+            "resolve": "@medusajs/medusa/translation",
           },
           "user": {
             "options": {
@@ -807,6 +839,10 @@ describe("defineConfig", function () {
           "promotion": {
             "resolve": "@medusajs/medusa/promotion",
           },
+          "rbac": {
+            "disable": true,
+            "resolve": "@medusajs/medusa/rbac",
+          },
           "region": {
             "resolve": "@medusajs/medusa/region",
           },
@@ -824,6 +860,10 @@ describe("defineConfig", function () {
           },
           "tax": {
             "resolve": "@medusajs/medusa/tax",
+          },
+          "translation": {
+            "disable": true,
+            "resolve": "@medusajs/medusa/translation",
           },
           "user": {
             "options": {
@@ -980,6 +1020,10 @@ describe("defineConfig", function () {
           "promotion": {
             "resolve": "@medusajs/medusa/promotion",
           },
+          "rbac": {
+            "disable": true,
+            "resolve": "@medusajs/medusa/rbac",
+          },
           "region": {
             "resolve": "@medusajs/medusa/region",
           },
@@ -997,6 +1041,10 @@ describe("defineConfig", function () {
           },
           "tax": {
             "resolve": "@medusajs/medusa/tax",
+          },
+          "translation": {
+            "disable": true,
+            "resolve": "@medusajs/medusa/translation",
           },
           "user": {
             "options": {
@@ -1100,7 +1148,7 @@ describe("defineConfig", function () {
                 },
               ],
             },
-            "resolve": "@medusajs/caching",
+            "resolve": "@medusajs/medusa/caching",
           },
           "cart": {
             "resolve": "@medusajs/medusa/cart",
@@ -1115,7 +1163,7 @@ describe("defineConfig", function () {
             "options": {
               "redisUrl": "redis://localhost:6379",
               "workerOptions": {
-                "concurrency": 3,
+                "concurrency": 1,
               },
             },
             "resolve": "@medusajs/medusa/event-bus-redis",
@@ -1200,6 +1248,10 @@ describe("defineConfig", function () {
           "promotion": {
             "resolve": "@medusajs/medusa/promotion",
           },
+          "rbac": {
+            "disable": true,
+            "resolve": "@medusajs/medusa/rbac",
+          },
           "region": {
             "resolve": "@medusajs/medusa/region",
           },
@@ -1217,6 +1269,10 @@ describe("defineConfig", function () {
           },
           "tax": {
             "resolve": "@medusajs/medusa/tax",
+          },
+          "translation": {
+            "disable": true,
+            "resolve": "@medusajs/medusa/translation",
           },
           "user": {
             "options": {
@@ -1327,7 +1383,7 @@ describe("defineConfig", function () {
                 },
               ],
             },
-            "resolve": "@medusajs/caching",
+            "resolve": "@medusajs/medusa/caching",
           },
           "cart": {
             "resolve": "@medusajs/medusa/cart",
@@ -1342,7 +1398,7 @@ describe("defineConfig", function () {
             "options": {
               "redisUrl": "redis://localhost:6379",
               "workerOptions": {
-                "concurrency": 3,
+                "concurrency": 1,
               },
             },
             "resolve": "@medusajs/medusa/event-bus-redis",
@@ -1427,6 +1483,10 @@ describe("defineConfig", function () {
           "promotion": {
             "resolve": "@medusajs/medusa/promotion",
           },
+          "rbac": {
+            "disable": true,
+            "resolve": "@medusajs/medusa/rbac",
+          },
           "region": {
             "resolve": "@medusajs/medusa/region",
           },
@@ -1444,6 +1504,10 @@ describe("defineConfig", function () {
           },
           "tax": {
             "resolve": "@medusajs/medusa/tax",
+          },
+          "translation": {
+            "disable": true,
+            "resolve": "@medusajs/medusa/translation",
           },
           "user": {
             "options": {
@@ -1570,7 +1634,7 @@ describe("defineConfig", function () {
                 },
               ],
             },
-            "resolve": "@medusajs/caching",
+            "resolve": "@medusajs/medusa/caching",
           },
           "cart": {
             "resolve": "@medusajs/medusa/cart",
@@ -1585,7 +1649,7 @@ describe("defineConfig", function () {
             "options": {
               "redisUrl": "redis://localhost:6379",
               "workerOptions": {
-                "concurrency": 3,
+                "concurrency": 1,
               },
             },
             "resolve": "@medusajs/medusa/event-bus-redis",
@@ -1670,6 +1734,10 @@ describe("defineConfig", function () {
           "promotion": {
             "resolve": "@medusajs/medusa/promotion",
           },
+          "rbac": {
+            "disable": true,
+            "resolve": "@medusajs/medusa/rbac",
+          },
           "region": {
             "resolve": "@medusajs/medusa/region",
           },
@@ -1687,6 +1755,10 @@ describe("defineConfig", function () {
           },
           "tax": {
             "resolve": "@medusajs/medusa/tax",
+          },
+          "translation": {
+            "disable": true,
+            "resolve": "@medusajs/medusa/translation",
           },
           "user": {
             "options": {
@@ -1948,6 +2020,10 @@ describe("defineConfig", function () {
           "promotion": {
             "resolve": "@medusajs/medusa/promotion",
           },
+          "rbac": {
+            "disable": true,
+            "resolve": "@medusajs/medusa/rbac",
+          },
           "region": {
             "resolve": "@medusajs/medusa/region",
           },
@@ -1965,6 +2041,10 @@ describe("defineConfig", function () {
           },
           "tax": {
             "resolve": "@medusajs/medusa/tax",
+          },
+          "translation": {
+            "disable": true,
+            "resolve": "@medusajs/medusa/translation",
           },
           "user": {
             "options": {
@@ -2157,6 +2237,10 @@ describe("defineConfig", function () {
           "promotion": {
             "resolve": "@medusajs/medusa/promotion",
           },
+          "rbac": {
+            "disable": true,
+            "resolve": "@medusajs/medusa/rbac",
+          },
           "region": {
             "resolve": "@medusajs/medusa/region",
           },
@@ -2174,6 +2258,10 @@ describe("defineConfig", function () {
           },
           "tax": {
             "resolve": "@medusajs/medusa/tax",
+          },
+          "translation": {
+            "disable": true,
+            "resolve": "@medusajs/medusa/translation",
           },
           "user": {
             "options": {
@@ -2369,6 +2457,10 @@ describe("defineConfig", function () {
           "promotion": {
             "resolve": "@medusajs/medusa/promotion",
           },
+          "rbac": {
+            "disable": true,
+            "resolve": "@medusajs/medusa/rbac",
+          },
           "region": {
             "resolve": "@medusajs/medusa/region",
           },
@@ -2386,6 +2478,10 @@ describe("defineConfig", function () {
           },
           "tax": {
             "resolve": "@medusajs/medusa/tax",
+          },
+          "translation": {
+            "disable": true,
+            "resolve": "@medusajs/medusa/translation",
           },
           "user": {
             "options": {
@@ -2590,6 +2686,10 @@ describe("defineConfig", function () {
           "promotion": {
             "resolve": "@medusajs/medusa/promotion",
           },
+          "rbac": {
+            "disable": true,
+            "resolve": "@medusajs/medusa/rbac",
+          },
           "region": {
             "resolve": "@medusajs/medusa/region",
           },
@@ -2607,6 +2707,10 @@ describe("defineConfig", function () {
           },
           "tax": {
             "resolve": "@medusajs/medusa/tax",
+          },
+          "translation": {
+            "disable": true,
+            "resolve": "@medusajs/medusa/translation",
           },
           "user": {
             "options": {

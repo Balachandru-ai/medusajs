@@ -1068,6 +1068,10 @@ export const filesMap = [
     "pathname": "/medusa-cli/commands/build"
   },
   {
+    "filePath": "/www/apps/resources/app/medusa-cli/commands/codemod/page.mdx",
+    "pathname": "/medusa-cli/commands/codemod"
+  },
+  {
     "filePath": "/www/apps/resources/app/medusa-cli/commands/db/page.mdx",
     "pathname": "/medusa-cli/commands/db"
   },
@@ -1550,6 +1554,10 @@ export const filesMap = [
   {
     "filePath": "/www/apps/resources/app/troubleshooting/medusa-admin/no-widget-route/page.mdx",
     "pathname": "/troubleshooting/medusa-admin/no-widget-route"
+  },
+  {
+    "filePath": "/www/apps/resources/app/troubleshooting/nextjs-node-25/page.mdx",
+    "pathname": "/troubleshooting/nextjs-node-25"
   },
   {
     "filePath": "/www/apps/resources/app/troubleshooting/nextjs-starter-rewrites/page.mdx",

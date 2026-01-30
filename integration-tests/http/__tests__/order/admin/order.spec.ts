@@ -1,6 +1,6 @@
 import { medusaIntegrationTestRunner } from "@medusajs/test-utils"
 import { AdminShippingOption } from "@medusajs/types"
-import { ModuleRegistrationName, ProductStatus } from "@medusajs/utils"
+import { ModuleRegistrationName, Modules, ProductStatus } from "@medusajs/utils"
 import {
   adminHeaders,
   createAdminUser,
@@ -10,8 +10,18 @@ import {
 import { setupTaxStructure } from "../../../../modules/__tests__/fixtures"
 import { createOrderSeeder } from "../../fixtures/order"
 import { createShippingOptionSeeder } from "../../fixtures/shipping"
+import {
+  updateOrderChangeActionsWorkflow,
+  updateOrderChangesWorkflow,
+  updateOrderShippingMethodsStep,
+} from "@medusajs/core-flows"
+import {
+  createWorkflow,
+  WorkflowResponse,
+} from "@medusajs/framework/workflows-sdk"
 
 jest.setTimeout(300000)
+
 
 medusaIntegrationTestRunner({
   testSuite: ({ dbConnection, getContainer, api }) => {
@@ -20,10 +30,11 @@ medusaIntegrationTestRunner({
       inventoryItemOverride3,
       productOverride3,
       shippingProfile,
-      productOverride4
+      productOverride4,
+      container
 
     beforeEach(async () => {
-      const container = getContainer()
+      container = getContainer()
 
       await setupTaxStructure(container.resolve(ModuleRegistrationName.TAX))
       await createAdminUser(dbConnection, adminHeaders, container)
@@ -117,6 +128,31 @@ medusaIntegrationTestRunner({
         expect(response.data.orders).toEqual([])
       })
 
+      it("should return the total in list same as the total in the order detail", async () => {
+        /**
+         * Ensure both loading strategies return same data for calculation
+         */
+
+        const detailResponse = await api.get(
+          `/admin/orders/${order.id}`,
+          adminHeaders
+        )
+        const expectedTotal = detailResponse.data.order.total
+
+        const listResponse = await api.get(
+          `/admin/orders?fields=id,status,total`,
+          adminHeaders
+        )
+
+        const listedOrder = listResponse.data.orders.find(
+          (listed) => listed.id === order.id
+        )
+
+        expect(listedOrder).toBeTruthy()
+        expect(listedOrder.total).toBeGreaterThan(0)
+        expect(listedOrder.total).toBe(expectedTotal)
+      })
+
       it("should search orders by billing address", async () => {
         let response = await api.get(
           `/admin/orders?fields=+billing_address.address_1,+billing_address.address_2`,
@@ -153,6 +189,65 @@ medusaIntegrationTestRunner({
             id: order.id,
           }),
         ])
+      })
+
+      it("should return shipping_address when pagination included", async () => {
+        const response = await api.get(
+          `/admin/orders?fields=*shipping_address&offset=0`,
+          adminHeaders
+        )
+
+        expect(response.data.orders).toHaveLength(1)
+        expect(response.data.orders[0].id).toEqual(order.id)
+        expect(response.data.orders[0].shipping_address).toBeDefined()
+        expect(response.data.orders[0].shipping_address.address_1).toEqual(
+          order.shipping_address.address_1
+        )
+        expect(response.data.orders[0].shipping_address.city).toEqual(
+          order.shipping_address.city
+        )
+      })
+
+      it("should return billing_address when pagination included", async () => {
+        const response = await api.get(
+          `/admin/orders?fields=*billing_address&offset=0`,
+          adminHeaders
+        )
+
+        expect(response.data.orders).toHaveLength(1)
+        expect(response.data.orders[0].id).toEqual(order.id)
+        expect(response.data.orders[0].billing_address).toBeDefined()
+        expect(response.data.orders[0].billing_address.address_1).toEqual(
+          order.billing_address.address_1
+        )
+        expect(response.data.orders[0].billing_address.city).toEqual(
+          order.billing_address.city
+        )
+      })
+
+      it("should return specific address fields when pagination included", async () => {
+        const response = await api.get(
+          `/admin/orders?fields=+shipping_address.address_1,+shipping_address.city,+billing_address.address_1,+billing_address.city&offset=0`,
+          adminHeaders
+        )
+
+        expect(response.data.orders).toHaveLength(1)
+        const responseOrder = response.data.orders[0]
+        expect(responseOrder.id).toEqual(order.id)
+        expect(responseOrder.shipping_address).toBeDefined()
+        expect(responseOrder.shipping_address.address_1).toEqual(
+          order.shipping_address.address_1
+        )
+        expect(responseOrder.shipping_address.city).toEqual(
+          order.shipping_address.city
+        )
+        expect(responseOrder.billing_address).toBeDefined()
+        expect(responseOrder.billing_address.address_1).toEqual(
+          order.billing_address.address_1
+        )
+        expect(responseOrder.billing_address.city).toEqual(
+          order.billing_address.city
+        )
       })
     })
 
@@ -1867,8 +1962,7 @@ medusaIntegrationTestRunner({
 
         // cancel the fulfillment
         await api.post(
-          `/admin/orders/${tabletOrder.id}/fulfillments/${
-            fulOrder2.fulfillments.find((f) => !f.canceled_at).id
+          `/admin/orders/${tabletOrder.id}/fulfillments/${fulOrder2.fulfillments.find((f) => !f.canceled_at).id
           }/cancel`,
           {},
           adminHeaders
@@ -2261,8 +2355,7 @@ medusaIntegrationTestRunner({
 
         // 7. cancel the entire fulfillment once again
         await api.post(
-          `/admin/orders/${fulOrderFull.id}/fulfillments/${
-            fulOrderFull.fulfillments.find((f) => !f.canceled_at)!.id
+          `/admin/orders/${fulOrderFull.id}/fulfillments/${fulOrderFull.fulfillments.find((f) => !f.canceled_at)!.id
           }/cancel?fields=*fulfillments,*fulfillments.items`,
           {},
           adminHeaders
@@ -2766,8 +2859,7 @@ medusaIntegrationTestRunner({
 
         // cancel the fulfillment for the entire order
         await api.post(
-          `/admin/orders/${bottleOrder.id}/fulfillments/${
-            fulOrder3.fulfillments.find((f) => !f.canceled_at)!.id
+          `/admin/orders/${bottleOrder.id}/fulfillments/${fulOrder3.fulfillments.find((f) => !f.canceled_at)!.id
           }/cancel`,
           {},
           adminHeaders
@@ -3582,6 +3674,60 @@ medusaIntegrationTestRunner({
         expect(response3.response.data.message).toBe(
           "Can only create credit lines if the order has a positive or negative pending difference"
         )
+      })
+    })
+
+    describe("workflows", () => {
+      it("updateOrderChangeActionsWorkflow - should not call listOrderChangeActions when orderChangeActions is empty", async () => {
+        const orderService = container.resolve(Modules.ORDER)
+        const listOrderChangeActionsSpy = jest.spyOn(
+          orderService,
+          "listOrderChangeActions"
+        )
+
+        const { result } = await updateOrderChangeActionsWorkflow(
+          container
+        ).run({
+          input: [],
+        })
+
+        expect(result).toEqual([])
+
+        expect(listOrderChangeActionsSpy).not.toHaveBeenCalled()
+        listOrderChangeActionsSpy.mockRestore()
+      })
+
+      it("updateOrderChangesWorkflow - should not call listOrderChanges when orderChanges is empty", async () => {
+        const orderService = container.resolve(Modules.ORDER)
+        const listOrderChangesSpy = jest.spyOn(orderService, "listOrderChanges")
+
+        const { result } = await updateOrderChangesWorkflow(container).run({
+          input: [],
+        })
+
+        expect(result).toEqual([])
+
+        expect(listOrderChangesSpy).not.toHaveBeenCalled()
+        listOrderChangesSpy.mockRestore()
+      })
+
+      it("updateOrderShippingMethodsStep - should not call listOrderShippingMethods when shipping methods is empty", async () => {
+        const orderService = container.resolve(Modules.ORDER)
+        const listOrderShippingMethodsSpy = jest.spyOn(
+          orderService,
+          "listOrderShippingMethods"
+        )
+
+        const workflow = createWorkflow("test-workflow", () => {
+          return new WorkflowResponse(updateOrderShippingMethodsStep([]))
+        })
+
+        const { result } = await workflow(container).run()
+
+        expect(result).toEqual([])
+
+        expect(listOrderShippingMethodsSpy).not.toHaveBeenCalled()
+        listOrderShippingMethodsSpy.mockRestore()
       })
     })
   },
