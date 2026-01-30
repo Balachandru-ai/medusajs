@@ -469,6 +469,146 @@ medusaIntegrationTestRunner({
           expect(finalResponse.data.role.policies).toHaveLength(0)
         })
       })
+
+      describe("GET /admin/rbac/roles/:id/users", () => {
+        let testRole
+        let testUser1
+        let testUser2
+
+        beforeEach(async () => {
+          const userModule = container.resolve(Modules.USER)
+          const remoteLink = container.resolve(ContainerRegistrationKeys.LINK)
+
+          // Create a role for testing
+          const roleResponse = await api.post(
+            "/admin/rbac/roles",
+            {
+              name: "Test Role",
+              description: "Role for testing users endpoint",
+            },
+            adminHeaders
+          )
+          testRole = roleResponse.data.role
+
+          // Create test users using the workflow
+          const { result: users } = await createUsersWorkflow(container).run({
+            input: {
+              users: [
+                {
+                  email: "user1@example.com",
+                  first_name: "User",
+                  last_name: "One",
+                },
+                {
+                  email: "user2@example.com",
+                  first_name: "User",
+                  last_name: "Two",
+                },
+              ],
+            },
+          })
+
+          testUser1 = users[0]
+          testUser2 = users[1]
+
+          // Link users to the role
+          await remoteLink.create([
+            {
+              [Modules.USER]: { user_id: testUser1.id },
+              [Modules.RBAC]: { rbac_role_id: testRole.id },
+            },
+            {
+              [Modules.USER]: { user_id: testUser2.id },
+              [Modules.RBAC]: { rbac_role_id: testRole.id },
+            },
+          ])
+        })
+
+        it("should list users for a role", async () => {
+          const response = await api.get(
+            `/admin/rbac/roles/${testRole.id}/users`,
+            adminHeaders
+          )
+
+          expect(response.status).toEqual(200)
+          expect(response.data.count).toEqual(2)
+          expect(response.data.users).toHaveLength(2)
+          expect(response.data.users).toEqual(
+            expect.arrayContaining([
+              expect.objectContaining({
+                id: testUser1.id,
+                email: "user1@example.com",
+              }),
+              expect.objectContaining({
+                id: testUser2.id,
+                email: "user2@example.com",
+              }),
+            ])
+          )
+        })
+
+        it("should filter users by user_id", async () => {
+          const response = await api.get(
+            `/admin/rbac/roles/${testRole.id}/users?user_id=${testUser1.id}`,
+            adminHeaders
+          )
+
+          expect(response.status).toEqual(200)
+          expect(response.data.count).toEqual(1)
+          expect(response.data.users).toHaveLength(1)
+          expect(response.data.users[0]).toEqual(
+            expect.objectContaining({
+              id: testUser1.id,
+              email: "user1@example.com",
+            })
+          )
+        })
+
+        it("should filter users by multiple user_ids", async () => {
+          const response = await api.get(
+            `/admin/rbac/roles/${testRole.id}/users?user_id[]=${testUser1.id}&user_id[]=${testUser2.id}`,
+            adminHeaders
+          )
+
+          expect(response.status).toEqual(200)
+          expect(response.data.count).toEqual(2)
+          expect(response.data.users).toHaveLength(2)
+        })
+
+        it("should paginate users", async () => {
+          const response = await api.get(
+            `/admin/rbac/roles/${testRole.id}/users?limit=1&offset=0`,
+            adminHeaders
+          )
+
+          expect(response.status).toEqual(200)
+          expect(response.data.count).toEqual(2)
+          expect(response.data.users).toHaveLength(1)
+          expect(response.data.limit).toEqual(1)
+          expect(response.data.offset).toEqual(0)
+        })
+
+        it("should return empty array for role with no users", async () => {
+          const emptyRoleResponse = await api.post(
+            "/admin/rbac/roles",
+            {
+              name: "Empty Role",
+              description: "Role with no users",
+            },
+            adminHeaders
+          )
+          const emptyRole = emptyRoleResponse.data.role
+
+          const response = await api.get(
+            `/admin/rbac/roles/${emptyRole.id}/users`,
+            adminHeaders
+          )
+
+          expect(response.status).toEqual(200)
+          expect(response.data.count).toEqual(0)
+          expect(response.data.users).toHaveLength(0)
+        })
+      })
     })
   },
 })
