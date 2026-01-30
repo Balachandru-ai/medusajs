@@ -302,9 +302,11 @@ const BooleanRenderer: CellRenderer = (value, _row, _column, t) => {
   ) as string
 
   return (
-    <Badge size="xsmall" color={value ? "green" : "grey"}>
-      {label}
-    </Badge>
+    <span className="mx-auto flex items-center justify-center">
+      <Badge size="xsmall" color={value ? "green" : "grey"}>
+        {label}
+      </Badge>
+    </span>
   )
 }
 
