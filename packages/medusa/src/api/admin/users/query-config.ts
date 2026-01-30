@@ -1,3 +1,7 @@
+export enum Entities {
+  user = "user",
+}
+
 export const defaultAdminUserFields = [
   "id",
   "first_name",
@@ -13,9 +17,11 @@ export const defaultAdminUserFields = [
 export const retrieveTransformQueryConfig = {
   defaults: defaultAdminUserFields,
   isList: false,
+  entity: Entities.user,
 }
 
 export const listTransformQueryConfig = {
   ...retrieveTransformQueryConfig,
   isList: true,
+  entity: Entities.user,
 }
