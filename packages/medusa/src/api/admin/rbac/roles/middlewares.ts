@@ -1,12 +1,10 @@
 import * as QueryConfig from "./query-config"
-import { Entities } from "./query-config"
 
 import {
   validateAndTransformBody,
   validateAndTransformQuery,
 } from "@medusajs/framework"
 import { MiddlewareRoute } from "@medusajs/framework/http"
-import { PolicyOperation } from "@medusajs/framework/utils"
 
 import {
   AdminAddRolePoliciesType,
@@ -17,19 +15,6 @@ import {
 } from "./validators"
 
 export const adminRbacRoleRoutesMiddlewares: MiddlewareRoute[] = [
-  {
-    matcher: "/admin/rbac/roles/*",
-    policies: [
-      {
-        resource: Entities.role,
-        operation: PolicyOperation.read,
-      },
-      {
-        resource: Entities.permission,
-        operation: PolicyOperation.read,
-      },
-    ],
-  },
   {
     method: ["GET"],
     matcher: "/admin/rbac/roles",

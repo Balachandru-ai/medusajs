@@ -38,7 +38,7 @@ export const validateUserPermissionsStep = createStep(
     })
 
     if (!users?.[0]?.rbac_roles || users[0].rbac_roles.length === 0) {
-      throw new MedusaError(MedusaError.Types.UNAUTHORIZED, "Unauthorized")
+      throw new MedusaError(MedusaError.Types.FORBIDDEN, "Forbidden")
     }
 
     const operationMap = new Map()
@@ -76,7 +76,7 @@ export const validateUserPermissionsStep = createStep(
     }
 
     if (unauthorizedPolicies.length) {
-      throw new MedusaError(MedusaError.Types.UNAUTHORIZED, "Unauthorized")
+      throw new MedusaError(MedusaError.Types.FORBIDDEN, "Forbidden")
     }
   }
 )
