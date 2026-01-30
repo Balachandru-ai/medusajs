@@ -2,4 +2,4 @@
 "@medusajs/core-flows": patch
 ---
 
-Add original item totals for cart refresh
+chore(core-flows): Add original item totals for cart refresh
