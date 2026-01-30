@@ -58,3 +58,17 @@ export const AdminAddRolePoliciesType = z.object({
 })
 
 export type AdminAddRolePoliciesType = z.infer<typeof AdminAddRolePoliciesType>
+
+export const AdminGetRoleUsersParamsFields = z.object({
+  user_id: z.union([z.string(), z.array(z.string())]).optional(),
+})
+
+export type AdminGetRoleUsersParamsType = z.infer<
+  typeof AdminGetRoleUsersParams
+>
+export const AdminGetRoleUsersParams = createFindParams({
+  limit: 50,
+  offset: 0,
+})
+  .merge(AdminGetRoleUsersParamsFields)
+  .merge(applyAndAndOrOperators(AdminGetRoleUsersParamsFields))
