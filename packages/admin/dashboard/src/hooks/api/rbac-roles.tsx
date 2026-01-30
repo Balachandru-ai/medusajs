@@ -171,6 +171,31 @@ export const useAddRbacRolePolicies = (
   })
 }
 
+export const useAddRbacRolePoliciesById = (
+  options?: UseMutationOptions<
+    HttpTypes.AdminRbacPolicyListResponse,
+    FetchError,
+    { roleId: string; policies: string[] }
+  >
+) => {
+  return useMutation({
+    mutationFn: ({ roleId, policies }) =>
+      sdk.admin.rbacRole.addPolicies(roleId, { policies }),
+    onSuccess: (data, variables, context) => {
+      queryClient.invalidateQueries({
+        queryKey: rbacRolesQueryKeys.policies(variables.roleId),
+      })
+      queryClient.invalidateQueries({
+        queryKey: rbacRolesQueryKeys.detail(variables.roleId),
+      })
+      queryClient.invalidateQueries({ queryKey: rbacRolesQueryKeys.lists() })
+
+      options?.onSuccess?.(data, variables, context)
+    },
+    ...options,
+  })
+}
+
 export const useRemoveRbacRolePolicy = (
   roleId: string,
   policyId: string,

@@ -2,6 +2,7 @@ import { useQuery } from "@tanstack/react-query"
 import { sdk } from "../../lib/client"
 
 export type FeatureFlags = {
+  rbac?: boolean
   view_configurations?: boolean
   translation?: boolean
   [key: string]: boolean | undefined

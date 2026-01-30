@@ -2522,6 +2522,61 @@
     "deleteUserSuccess": "User {{name}} deleted successfully",
     "invite": "Invite"
   },
+  "roles": {
+    "domain": "Roles",
+    "subtitle": "Manage access roles and permissions.",
+    "create": {
+      "header": "Create role",
+      "hint": "Create a role to manage access in your admin.",
+      "successToast": "Role {{name}} created",
+      "tabs": {
+        "details": "Details",
+        "permissions": "Permissions"
+      },
+      "permissions": {
+        "empty": {
+          "heading": "No permissions",
+          "description": "There are no permissions to select."
+        },
+        "filtered": {
+          "heading": "No results",
+          "description": "No permissions match the current filter criteria."
+        }
+      }
+    },
+    "edit": {
+      "header": "Edit role",
+      "successToast": "Role {{name}} updated"
+    },
+    "fields": {
+      "permissions": "Permissions"
+    },
+    "actions": {
+      "managePermissions": "Manage permissions"
+    },
+    "permissions": {
+      "header": "Manage permissions",
+      "hint": "Select permissions that this role should include.",
+      "empty": {
+        "heading": "No permissions",
+        "description": "There are no permissions to select."
+      },
+      "filtered": {
+        "heading": "No results",
+        "description": "No permissions match the current filter criteria."
+      }
+    },
+    "list": {
+      "empty": {
+        "heading": "No roles found",
+        "description": "Create roles to manage access in your admin."
+      },
+      "filtered": {
+        "heading": "No results",
+        "description": "No roles match the current filter criteria."
+      }
+    }
+  },
   "translations": {
     "domain": "Translations",
     "settings": {
@@ -3215,11 +3270,13 @@
     "region": "Region",
     "discount": "Discount",
     "role": "Role",
+    "resource": "Resource",
     "sent": "Sent",
     "salesChannels": "Sales Channels",
     "product": "Product",
     "createdAt": "Created",
     "updatedAt": "Updated",
+    "operation": "Operation",
     "revokedAt": "Revoked at",
     "true": "True",
     "false": "False",
@@ -3338,6 +3395,8 @@
       "region": "Region",
       "store": "Store",
       "user": "User",
+      "role": "Role",
+      "permission": "Permission",
       "sales_channel": "Sales Channel",
       "stock_location": "Stock Location",
       "shipping_profile": "Shipping Profile",
