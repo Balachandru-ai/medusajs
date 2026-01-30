@@ -3,4 +3,4 @@
 "@medusajs/payment": patch
 ---
 
-Fix rounding issue on refund creation
+fix(core-flows,payment): Fix rounding issue on refund creation
