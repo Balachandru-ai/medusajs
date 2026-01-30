@@ -22,6 +22,7 @@ import {
 
 jest.setTimeout(300000)
 
+
 medusaIntegrationTestRunner({
   testSuite: ({ dbConnection, getContainer, api }) => {
     let order,
@@ -55,6 +56,8 @@ medusaIntegrationTestRunner({
         })
         order = seeder.order
       })
+
+
 
       it("should search orders by display_id", async () => {
         let response = await api.get(`/admin/orders`, adminHeaders)
@@ -127,6 +130,183 @@ medusaIntegrationTestRunner({
         expect(response.data.orders).toEqual([])
       })
 
+      describe("with matching list vs detail order totals with varying request fields", () => {
+        const getDetailTotal = async (query?: string) => {
+          const detailResponse = await api.get(
+            `/admin/orders/${order.id}${query ? `?${query}` : ""}`,
+            adminHeaders
+          )
+
+          return detailResponse.data.order.total
+        }
+
+        const getListTotal = async (query: string) => {
+          const listResponse = await api.get(
+            `/admin/orders?${query}`,
+            adminHeaders
+          )
+
+          const listedOrder = listResponse.data.orders.find(
+            (listed) => listed.id === order.id
+          )
+
+          expect(listedOrder).toBeTruthy()
+          return listedOrder!.total
+        }
+
+        it("should match totals across key fields with default list and detail responses", async () => {
+          const detailResponse = await api.get(
+            `/admin/orders/${order.id}`,
+            adminHeaders
+          )
+          const listResponse = await api.get(`/admin/orders`, adminHeaders)
+
+          const listedOrder = listResponse.data.orders.find(
+            (listed) => listed.id === order.id
+          ) as any
+
+          expect(listedOrder).toBeTruthy()
+
+          const detailOrder = detailResponse.data.order as any
+          const fieldsToCompare = [
+            // default admin order list endpoint only has total
+            "total",
+            // admin order detail endpoint has more fields
+            // "original_total",
+            // "discount_total",
+            // "discount_subtotal",
+            // "shipping_total",
+            // "tax_total",
+          ]
+
+          for (const field of fieldsToCompare) {
+            expect(listedOrder).toHaveProperty(field)
+            expect(listedOrder[field]).toBeDefined()
+            expect(listedOrder[field]).toBe(detailOrder[field])
+          }
+        })
+
+        it("should return the same total using default list fields", async () => {
+          const expectedTotal = await getDetailTotal()
+          const listTotal = await getListTotal(
+            // fields we use on the admin list page
+            `fields=${encodeURIComponent(
+              "id,status,created_at,email,display_id,custom_display_id,payment_status,fulfillment_status,total,currency_code,*customer,*sales_channel,*payment_collections"
+            )}`
+          )
+
+          expect(listTotal).toBe(expectedTotal)
+        })
+
+        it("should return the same total using minimal list fields", async () => {
+          const expectedTotal = await getDetailTotal()
+          const listTotal = await getListTotal("fields=id,total")
+
+          expect(listTotal).toBe(expectedTotal)
+        })
+
+        it("should return the same total when requesting item fields", async () => {
+          const expectedTotal = await getDetailTotal()
+          const listTotal = await getListTotal(
+            `fields=${encodeURIComponent("id,total,*items,+items.detail")}`
+          )
+
+          expect(listTotal).toBe(expectedTotal)
+        })
+
+        it("should return the same total when requesting shipping fields", async () => {
+          const expectedTotal = await getDetailTotal()
+          const listTotal = await getListTotal(
+            `fields=${encodeURIComponent(
+              "id,total,*shipping_methods,+shipping_methods.tax_lines"
+            )}`
+          )
+
+          expect(listTotal).toBe(expectedTotal)
+        })
+
+        it("should return the same total when using mixed list fields", async () => {
+          const expectedTotal = await getDetailTotal()
+          const listTotal = await getListTotal(
+            `fields=${encodeURIComponent(
+              "id,status,total,currency_code,*items,+items.detail,*shipping_methods,+shipping_methods.tax_lines"
+            )}`
+          )
+
+          expect(listTotal).toBe(expectedTotal)
+        })
+
+        it("should return the same total when using + / - field modifiers", async () => {
+          const expectedTotal = await getDetailTotal()
+          const listTotal = await getListTotal(
+            `fields=${encodeURIComponent("+total,-email")}`
+          )
+
+          expect(listTotal).toBe(expectedTotal)
+        })
+
+        it("should return the same total when ordering results", async () => {
+          const expectedTotal = await getDetailTotal()
+          const listTotal = await getListTotal(
+            "fields=id,total&order=-created_at"
+          )
+
+          expect(listTotal).toBe(expectedTotal)
+        })
+
+        it("should return the same total when requesting minimal detail fields", async () => {
+          const listTotal = await getListTotal(
+            `fields=${encodeURIComponent(
+              "id,status,created_at,email,display_id,custom_display_id,payment_status,fulfillment_status,total,currency_code,*customer,*sales_channel,*payment_collections"
+            )}`
+          )
+          const detailTotal = await getDetailTotal("fields=id,total")
+
+          expect(detailTotal).toBe(listTotal)
+        })
+
+        it("should return the same total when requesting item detail fields", async () => {
+          const listTotal = await getListTotal(
+            `fields=${encodeURIComponent(
+              "id,status,created_at,email,display_id,custom_display_id,payment_status,fulfillment_status,total,currency_code,*customer,*sales_channel,*payment_collections"
+            )}`
+          )
+          const detailTotal = await getDetailTotal(
+            `fields=${encodeURIComponent("id,total,*items,+items.detail")}`
+          )
+
+          expect(detailTotal).toBe(listTotal)
+        })
+
+        it("should return the same total when requesting shipping detail fields", async () => {
+          const listTotal = await getListTotal(
+            `fields=${encodeURIComponent(
+              "id,status,created_at,email,display_id,custom_display_id,payment_status,fulfillment_status,total,currency_code,*customer,*sales_channel,*payment_collections"
+            )}`
+          )
+          const detailTotal = await getDetailTotal(
+            `fields=${encodeURIComponent(
+              "id,total,*shipping_methods,+shipping_methods.tax_lines"
+            )}`
+          )
+
+          expect(detailTotal).toBe(listTotal)
+        })
+
+        it("should return the same total when using + / - field modifiers on detail", async () => {
+          const listTotal = await getListTotal(
+            `fields=${encodeURIComponent(
+              "id,status,created_at,email,display_id,custom_display_id,payment_status,fulfillment_status,total,currency_code,*customer,*sales_channel,*payment_collections"
+            )}`
+          )
+          const detailTotal = await getDetailTotal(
+            `fields=${encodeURIComponent("+total,-email")}`
+          )
+
+          expect(detailTotal).toBe(listTotal)
+        })
+      })
+
       it("should search orders by billing address", async () => {
         let response = await api.get(
           `/admin/orders?fields=+billing_address.address_1,+billing_address.address_2`,
@@ -182,7 +362,7 @@ medusaIntegrationTestRunner({
         )
       })
 
-      it("should return billing_address when pagination included", async () => {        
+      it("should return billing_address when pagination included", async () => {
         const response = await api.get(
           `/admin/orders?fields=*billing_address&offset=0`,
           adminHeaders
@@ -1936,8 +2116,7 @@ medusaIntegrationTestRunner({
 
         // cancel the fulfillment
         await api.post(
-          `/admin/orders/${tabletOrder.id}/fulfillments/${
-            fulOrder2.fulfillments.find((f) => !f.canceled_at).id
+          `/admin/orders/${tabletOrder.id}/fulfillments/${fulOrder2.fulfillments.find((f) => !f.canceled_at).id
           }/cancel`,
           {},
           adminHeaders
@@ -2330,8 +2509,7 @@ medusaIntegrationTestRunner({
 
         // 7. cancel the entire fulfillment once again
         await api.post(
-          `/admin/orders/${fulOrderFull.id}/fulfillments/${
-            fulOrderFull.fulfillments.find((f) => !f.canceled_at)!.id
+          `/admin/orders/${fulOrderFull.id}/fulfillments/${fulOrderFull.fulfillments.find((f) => !f.canceled_at)!.id
           }/cancel?fields=*fulfillments,*fulfillments.items`,
           {},
           adminHeaders
@@ -2835,8 +3013,7 @@ medusaIntegrationTestRunner({
 
         // cancel the fulfillment for the entire order
         await api.post(
-          `/admin/orders/${bottleOrder.id}/fulfillments/${
-            fulOrder3.fulfillments.find((f) => !f.canceled_at)!.id
+          `/admin/orders/${bottleOrder.id}/fulfillments/${fulOrder3.fulfillments.find((f) => !f.canceled_at)!.id
           }/cancel`,
           {},
           adminHeaders

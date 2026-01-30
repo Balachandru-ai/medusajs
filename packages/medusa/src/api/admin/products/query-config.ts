@@ -5,10 +5,7 @@ export enum Entities {
   product_option = "product_option",
   product_variant = "product_variant",
   inventory_item = "inventory_item",
-  price_set = "price_set",
   price = "price",
-  sales_channel = "sales_channel",
-  shipping_profile = "shipping_profile",
 }
 
 export const defaultAdminProductsVariantFields =
