@@ -146,12 +146,12 @@ export const computeDraftOrderAdjustmentsWorkflow = createWorkflow(
       })
 
       const actionsToComputeItemsInput = prepareOrderComputeActionContextStep({
-          order,
-          previewedOrder,
-        })
+        order,
+        previewedOrder,
+      })
 
       const actions = getActionsToComputeFromPromotionsStep({
-        computeActionContext: actionsToComputeContext,
+        computeActionContext: actionsToComputeItemsInput,
         promotionCodesToApply: orderPromotions,
       })
 

@@ -1,4 +1,8 @@
-import { OrderChangeDTO, OrderDTO, PromotionDTO } from "@medusajs/framework/types"
+import {
+  OrderChangeDTO,
+  OrderDTO,
+  PromotionDTO,
+} from "@medusajs/framework/types"
 import { ChangeActionType } from "@medusajs/framework/utils"
 import {
   createWorkflow,
@@ -95,7 +99,7 @@ export const computeAdjustmentsForPreviewWorkflow = createWorkflow(
       })
 
       const actions = getActionsToComputeFromPromotionsStep({
-        computeActionContext: actionsToComputeContext,
+        computeActionContext: actionsToComputeItemsInput,
         promotionCodesToApply: orderPromotions,
         options: {
           skip_usage_limit_checks: true,
