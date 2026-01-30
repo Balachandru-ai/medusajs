@@ -88,7 +88,7 @@ export const validateRefundPaymentExceedsCapturedAmountStep = createStep(
     if (
       MathBN.lt(
         MathBN.sub(capturedAmount, totalRefundedAmount),
-        currencyEpsilon
+        -currencyEpsilon
       )
     ) {
       throw new MedusaError(

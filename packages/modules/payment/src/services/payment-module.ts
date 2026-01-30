@@ -889,7 +889,7 @@ export default class PaymentModuleService
     if (
       MathBN.lt(
         MathBN.sub(capturedAmount, totalRefundedAmount),
-        currencyEpsilon
+        -currencyEpsilon
       )
     ) {
       throw new MedusaError(
