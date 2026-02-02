@@ -197,14 +197,6 @@ export default class PackageManager {
     if (!this.packageManager) {
       await this.setPackageManager(execOptions)
     }
-    if (this.verbose) {
-      logMessage({
-        type: "info",
-        message: `Installing dependencies using ${
-          this.packageManager
-        } and options: ${JSON.stringify(execOptions)}`,
-      })
-    }
 
     // Remove lock files from other package managers
     if (execOptions.cwd && typeof execOptions.cwd === "string") {
