@@ -154,6 +154,14 @@ export const RELATIONSHIP_FILTER_OVERRIDES: Record<
       multiple: true,
       filterKey: "customer_id",
     },
+    {
+      field: "sales_channel",
+      relatedEntity: "SalesChannel",
+      valueField: "id",
+      displayField: "name",
+      multiple: true,
+      filterKey: "sales_channel_id",
+    },
   ],
   Customer: [
     {

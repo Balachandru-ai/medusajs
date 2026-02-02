@@ -15,30 +15,49 @@ export function createOrderTableAdapter(): TableAdapter<HttpTypes.AdminOrder> {
     queryPrefix: "o",
     pageSize: 20,
     transformColumns: (columns) => {
-      const FIELDS_TO_EXCLUDE_FILTERS = [
-        "region_id",
-        "customer_id",
-        "sales_channel_id",
-        "payment_status",
-        "fulfillment_status",
-        "sales_channel.name",
+      const DISABLED_FILTER_PATTERNS = [
+        /^shipping_address.+/,
+        /^billing_address.+/,
+        /^cart.+/,
+        /^shipping_methods.+/,
+        /^items.+/,
+        /^fulfillments.+/,
+        /^payment_collections.+/,
+        /^promotions.+/,
+        /^promotion.+/,
+        /^transactions.+/,
+        /^summary.+/,
+        /total/i,
+        /^customer\.(?!id$).+/,
+        /^region\.(?!id$).+/,
+        /^sales_channel\.(?!id$).+/,
+        /payment_status/,
+        /fulfillment_status/,
       ]
 
-      const FIELDS_TO_DISABLE_SORTING = [
-        "payment_status",
-        "fulfillment_status",
-        "sales_channel.name",
+      const DISABLED_SORTING_PATTERNS = [
+        /total/i,
+        /payment_status/,
+        /fulfillment_status/,
       ]
 
-      return columns.map((column) => ({
-        ...column,
-        filter: FIELDS_TO_EXCLUDE_FILTERS.includes(column.field)
-          ? { ...column.filter, enabled: false }
-          : column.filter,
-        sortable: FIELDS_TO_DISABLE_SORTING.includes(column.field)
-          ? false
-          : column.sortable,
-      }))
+      return columns.map((column) => {
+        const isFilterDisabled = DISABLED_FILTER_PATTERNS.some((pattern) =>
+          pattern.test(column.field)
+        )
+
+        const isSortingDisabled = DISABLED_SORTING_PATTERNS.some((pattern) =>
+          pattern.test(column.field)
+        )
+
+        return {
+          ...column,
+          filter: isFilterDisabled
+            ? { ...column.filter, enabled: false }
+            : column.filter,
+          sortable: isSortingDisabled ? false : column.sortable,
+        }
+      })
     },
     useData: (fields, params) => {
       const { orders, count, isError, error, isLoading } = useOrders(
