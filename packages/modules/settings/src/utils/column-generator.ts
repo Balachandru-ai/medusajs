@@ -168,6 +168,7 @@ export function generateEntityColumns(
         type: computed.renderMode,
         required_fields: computed.requiredFields,
         optional_fields: computed.optionalFields || [],
+        metadata: computed.metadata ?? {},
       },
       render_mode: computed.renderMode,
       default_order: fieldOrdering[columnId] || 850,
@@ -240,35 +241,39 @@ function processEntityType(
 
       processedFields.add(fullPath)
 
-      columns.push({
-        id: fullPath,
-        name: label?.label || formatFieldName(fieldName),
-        description: label?.description || undefined,
-        field: fullPath,
-        sortable: !parentPath, // Only top-level fields are sortable
-        hideable: true,
-        default_visible: defaultVisibleFields.includes(fullPath),
-        data_type: dataType,
-        semantic_type: semanticType,
-        context: "both",
-        render_mode: renderMode,
-        default_order: fieldOrdering[fullPath] || 900,
-        category: parentPath
-          ? "relationship"
-          : semanticTypeToCategory(semanticType),
-        filter: buildFilterConfig(
-          fieldName,
-          dataType,
-          false,
-          semanticType,
-          isEnumType(underlyingType)
-            ? underlyingType.getValues().map((v: any) => v.value)
-            : undefined
-        ),
-        source: { module: entity.module, entity: entity.name },
-        custom_label: hasCustomLabel,
-        label_id: label?.id,
-      })
+      // TODO: review with Adrien, expectation here is for foreign key columns not to be added, since their corresponding relationship
+      // filter represents it and includes additional properties needed to construct filters in UI
+      if (!processedFields.has(fullPath.replace("_", "."))) {
+        columns.push({
+          id: fullPath,
+          name: label?.label || formatFieldName(fieldName),
+          description: label?.description || undefined,
+          field: fullPath,
+          sortable: !parentPath, // Only top-level fields are sortable
+          hideable: true,
+          default_visible: defaultVisibleFields.includes(fullPath),
+          data_type: dataType,
+          semantic_type: semanticType,
+          context: "both",
+          render_mode: renderMode,
+          default_order: fieldOrdering[fullPath] || 900,
+          category: parentPath
+            ? "relationship"
+            : semanticTypeToCategory(semanticType),
+          filter: buildFilterConfig(
+            fieldName,
+            dataType,
+            false,
+            semanticType,
+            isEnumType(underlyingType)
+              ? underlyingType.getValues().map((v: any) => v.value)
+              : undefined
+          ),
+          source: { module: entity.module, entity: entity.name },
+          custom_label: hasCustomLabel,
+          label_id: label?.id,
+        })
+      }
     }
     // Handle single relationships (many-to-one, one-to-one)
     else if (
@@ -327,6 +332,15 @@ function processEntityType(
               if (relationshipFilter) {
                 filter.relationship = relationshipFilter
               }
+            }
+
+            // TODO: review with Adrien, expectation here is for foreign key columns to be removed if they were already added, since their corresponding relationship
+            // filter represents it and includes additional properties needed to construct filters in UI
+            if (processedFields.has(nestedPath.replace(".", "_"))) {
+              columns.splice(
+                columns.findIndex((c) => c.id === nestedPath.replace(".", "_")),
+                1
+              )
             }
 
             columns.push({
@@ -428,6 +442,7 @@ export function computedColumnToAdminColumn(
       type: column.renderMode,
       required_fields: column.requiredFields,
       optional_fields: column.optionalFields || [],
+      metadata: column.metadata ?? {},
     },
     render_mode: column.renderMode,
     default_order: defaultOrder,

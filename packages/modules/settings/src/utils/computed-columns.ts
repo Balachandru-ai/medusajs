@@ -48,6 +48,11 @@ export interface ComputedColumnDefinition {
    * Category for grouping columns (e.g., "relationship", "metadata", "computed").
    */
   category?: string
+
+  /**
+   * Metadata for the column.
+   */
+  metadata?: Record<string, any>
 }
 
 /**
@@ -134,6 +139,21 @@ export const BUILTIN_COMPUTED_COLUMNS: ComputedColumnDefinition[] = [
     defaultVisible: true,
     description: "Number of product variants",
     category: "metric",
+  },
+  {
+    id: "categories_display",
+    name: "Categories",
+    renderMode: "badge_list",
+    requiredFields: ["categories.name"],
+    optionalFields: [],
+    entities: ["Product"],
+    defaultVisible: false,
+    description: "Product categories",
+    category: "relationship",
+    metadata: {
+      display_field: "name",
+      list_field: "categories",
+    },
   },
   {
     id: "sales_channels_display",
