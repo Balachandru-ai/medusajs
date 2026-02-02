@@ -33,9 +33,7 @@ export interface UseTableConfigurationOptions {
   entity: string
   pageSize?: number
   queryPrefix?: string
-  exludedFiltersResolver?: TableAdapter<unknown>["resolveExcludedFilters"]
-  overrideSorting?: TableAdapter<unknown>["overrideSorting"]
-  filters?: Array<{ id: string }>
+  transformColumns?: TableAdapter<unknown>["transformColumns"]
 }
 
 export interface UseTableConfigurationReturn {
@@ -71,9 +69,7 @@ function parseSortingState(value: string) {
 export function useTableConfiguration({
   entity,
   queryPrefix = "",
-  filters = [],
-  exludedFiltersResolver,
-  overrideSorting,
+  transformColumns,
 }: UseTableConfigurationOptions): UseTableConfigurationReturn {
   const isViewConfigEnabled = useFeatureFlag("view_configurations")
   const [_, setSearchParams] = useSearchParams()
@@ -85,54 +81,46 @@ export function useTableConfiguration({
     currentActiveView?.id || ""
   )
 
-  const { columns: apiColumns, isLoading: isLoadingColumns } = useEntityColumns(
-    entity,
-    {
+  const { columns: rawApiColumns, isLoading: isLoadingColumns } =
+    useEntityColumns(entity, {
       enabled: isViewConfigEnabled,
-    }
-  )
+    })
 
-  useEffect(() => {
-    if (apiColumns && overrideSorting) {
-      overrideSorting(apiColumns)
+  const apiColumns = useMemo(() => {
+    if (!rawApiColumns) {
+      return undefined
     }
-  }, [apiColumns, overrideSorting])
+    return transformColumns ? transformColumns(rawApiColumns) : rawApiColumns
+  }, [rawApiColumns, transformColumns])
 
   console.log(apiColumns)
 
-  const whitelistedFilterableColumns = useMemo(() => {
-    if (!apiColumns || !exludedFiltersResolver) {
-      return apiColumns ?? []
-    }
-
-    const excludedColumnIds = exludedFiltersResolver(apiColumns)
-    return apiColumns.filter((column) => !excludedColumnIds.includes(column.id))
-  }, [apiColumns, exludedFiltersResolver])
-
+  // Extract relationship filter configs from filterable columns only
   const relationshipFilterConfigs = useMemo(() => {
     if (!apiColumns) {
       return []
     }
 
-    return getRelationshipFilterConfigs(whitelistedFilterableColumns)
-  }, [whitelistedFilterableColumns, apiColumns])
+    const filterableColumns = apiColumns.filter(
+      (column) => column.filter?.enabled
+    )
+    return getRelationshipFilterConfigs(filterableColumns)
+  }, [apiColumns])
 
   const { options: relationshipOptions, isLoading: isLoadingFilterOptions } =
     useRelationshipFilterOptions(
-      relationshipFilterConfigs.filter(
-        (config) => config.config !== undefined
-      ) as RelationshipFilterConfig[]
+      relationshipFilterConfigs as RelationshipFilterConfig[]
     )
 
   const resolvedFilters = useMemo(() => {
-    if (!whitelistedFilterableColumns) {
+    if (!apiColumns) {
       return []
     }
-    return generateFiltersFromColumns(
-      whitelistedFilterableColumns,
-      relationshipOptions
+    const filterableColumns = apiColumns.filter(
+      (column) => column.filter?.enabled
     )
-  }, [whitelistedFilterableColumns, relationshipOptions])
+    return generateFiltersFromColumns(filterableColumns, relationshipOptions)
+  }, [apiColumns, relationshipOptions])
 
   const queryParams = useQueryParams(
     ["q", "order", "offset", "limit", ...resolvedFilters.map((f) => f.id)],

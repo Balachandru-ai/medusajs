@@ -45,7 +45,6 @@ export function ConfigurableDataTable<TData>({
 
   const entity = adapter.entity
   const entityName = adapter.entityName
-  const adapterFilters = adapter.filters || []
   const pageSize = pageSizeProp || adapter.pageSize || 20
   const queryPrefix = queryPrefixProp || adapter.queryPrefix || ""
 
@@ -72,10 +71,7 @@ export function ConfigurableDataTable<TData>({
     entity,
     pageSize,
     queryPrefix,
-    // TODO: remove
-    filters: adapterFilters,
-    exludedFiltersResolver: adapter.resolveExcludedFilters,
-    overrideSorting: adapter.overrideSorting,
+    transformColumns: adapter.transformColumns,
   })
 
   const parsedQueryParams = { ...queryParams }

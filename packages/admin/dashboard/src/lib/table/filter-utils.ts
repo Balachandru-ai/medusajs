@@ -89,7 +89,7 @@ export function generateFiltersFromColumns(
       filterConfig.options = []
     }
 
-    // TODO: Enhance DataTable component to support operators input
+    // TODO: Enhance DataTable component to support operators input?
     const filterKey = column.filter?.relationship?.filter_key || column.field
 
     filters.push(filterHelper.accessor(filterKey, filterConfig))

@@ -1,3 +1,4 @@
+import { useMemo } from "react"
 import { HttpTypes } from "@medusajs/types"
 import {
   createTableAdapter,
@@ -13,8 +14,8 @@ export function createOrderTableAdapter(): TableAdapter<HttpTypes.AdminOrder> {
     entity: "orders",
     queryPrefix: "o",
     pageSize: 20,
-    resolveExcludedFilters: (columns) => {
-      const FIELDS_TO_EXCLUDE = [
+    transformColumns: (columns) => {
+      const FIELDS_TO_EXCLUDE_FILTERS = [
         "region_id",
         "customer_id",
         "sales_channel_id",
@@ -22,21 +23,22 @@ export function createOrderTableAdapter(): TableAdapter<HttpTypes.AdminOrder> {
         "fulfillment_status",
         "sales_channel.name",
       ]
-      return columns
-        .filter((column) => FIELDS_TO_EXCLUDE.includes(column.field))
-        .map((column) => column.id)
-    },
-    overrideSorting: (columns) => {
-      const FIELDS_TO_DISABLE = [
+
+      const FIELDS_TO_DISABLE_SORTING = [
         "payment_status",
         "fulfillment_status",
         "sales_channel.name",
       ]
-      columns.forEach((column) => {
-        if (FIELDS_TO_DISABLE.includes(column.field)) {
-          column.sortable = false
-        }
-      })
+
+      return columns.map((column) => ({
+        ...column,
+        filter: FIELDS_TO_EXCLUDE_FILTERS.includes(column.field)
+          ? { ...column.filter, enabled: false }
+          : column.filter,
+        sortable: FIELDS_TO_DISABLE_SORTING.includes(column.field)
+          ? false
+          : column.sortable,
+      }))
     },
     useData: (fields, params) => {
       const { orders, count, isError, error, isLoading } = useOrders(
@@ -79,5 +81,5 @@ export function createOrderTableAdapter(): TableAdapter<HttpTypes.AdminOrder> {
 }
 
 export function useOrderTableAdapter(): TableAdapter<HttpTypes.AdminOrder> {
-  return createOrderTableAdapter()
+  return useMemo(() => createOrderTableAdapter(), [])
 }

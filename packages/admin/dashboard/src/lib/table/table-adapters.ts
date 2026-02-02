@@ -46,17 +46,23 @@ export interface TableAdapter<TData> {
   filters?: DataTableFilter[]
 
   /**
-   * Resolve the excluded filters for the table by overriding specific columns filter configuration.
-   * @param columns - The API columns to resolve the excluded filters for.
-   * @returns The column IDs to exclude from the filters.
+   * Transform API columns before use (e.g., disable sorting, exclude filters).
+   * Applied immediately after fetching columns from API.
+   * Returns a new array of columns with desired modifications.
+   *
+   * @param columns - The API columns to transform
+   * @returns Transformed columns
+   *
+   * @example
+   * transformColumns: (columns) => columns.map(col => ({
+   *   ...col,
+   *   sortable: col.field === 'status' ? false : col.sortable,
+   *   filter: { ...col.filter, enabled: false }
+   * }))
    */
-  resolveExcludedFilters?: (columns: HttpTypes.AdminColumn[]) => string[]
-
-  /**
-   * Override the sorting for the table by overriding specific columns sorting configuration.
-   * @param columns - The API columns to override the sorting for.
-   */
-  overrideSorting?: (columns: HttpTypes.AdminColumn[]) => void
+  transformColumns?: (
+    columns: HttpTypes.AdminColumn[]
+  ) => HttpTypes.AdminColumn[]
 
   /**
    * Transform API columns to table columns.
