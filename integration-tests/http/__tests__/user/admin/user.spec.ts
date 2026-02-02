@@ -1,12 +1,15 @@
+import { IWorkflowEngineService } from "@medusajs/framework/types"
+import { medusaIntegrationTestRunner } from "@medusajs/test-utils"
 import { IAuthModuleService } from "@medusajs/types"
 import { Modules } from "@medusajs/utils"
-import { medusaIntegrationTestRunner } from "@medusajs/test-utils"
 import {
   adminHeaders,
   createAdminUser,
 } from "../../../../helpers/create-admin-user"
 
 jest.setTimeout(30000)
+
+process.env.MEDUSA_FF_RBAC = "true"
 
 medusaIntegrationTestRunner({
   testSuite: ({ dbConnection, getContainer, api }) => {
@@ -107,15 +110,13 @@ medusaIntegrationTestRunner({
     describe("DELETE /admin/users", () => {
       it("Deletes a user and updates associated auth identity", async () => {
         const userTwoAdminHeaders = {
-            headers: { "x-medusa-access-token": "test_token" },
+          headers: { "x-medusa-access-token": "test_token" },
         }
 
-        const { user: userTwo, authIdentity: userTwoAuthIdentity } = await createAdminUser(
-            dbConnection,
-            userTwoAdminHeaders,
-            container,
-            { email: "test@test.com" },
-          )
+        const { user: userTwo, authIdentity: userTwoAuthIdentity } =
+          await createAdminUser(dbConnection, userTwoAdminHeaders, container, {
+            email: "test@test.com",
+          })
 
         const response = await api.delete(
           `/admin/users/${userTwo.id}`,
@@ -132,7 +133,7 @@ medusaIntegrationTestRunner({
         const authModule: IAuthModuleService = container.resolve(Modules.AUTH)
 
         const updatedAuthIdentity = await authModule.retrieveAuthIdentity(
-            userTwoAuthIdentity.id
+          userTwoAuthIdentity.id
         )
 
         // Ensure the auth identity has been updated to not contain the user's id
@@ -360,6 +361,60 @@ medusaIntegrationTestRunner({
             expect(err.response.status).toEqual(400)
             expect(err.response.data.message).toEqual("invalid token")
           })
+      })
+    })
+
+    describe("User creation with roles", () => {
+      it("should fail to create user with non-existent role", async () => {
+        const workflowService: IWorkflowEngineService = container.resolve(
+          Modules.WORKFLOW_ENGINE
+        )
+
+        const error = await workflowService
+          .run("create-users-workflow", {
+            input: {
+              users: [
+                {
+                  email: "test-role@medusa.js",
+                  roles: ["non_existent_role_id"],
+                },
+              ],
+            },
+          })
+          .catch((e) => e)
+
+        expect(error.message).toContain("non_existent_role_id")
+      })
+
+      it("should create user with valid role", async () => {
+        const workflowService: IWorkflowEngineService = container.resolve(
+          Modules.WORKFLOW_ENGINE
+        )
+
+        // Get the super admin role created by the RBAC module loader
+        const rbacService = container.resolve(Modules.RBAC)
+        const superAdminRoles = await rbacService.listRbacRoles({
+          id: "role_super_admin",
+        })
+
+        expect(superAdminRoles.length).toBeGreaterThan(0)
+
+        const { result: users } = await workflowService.run(
+          "create-users-workflow",
+          {
+            input: {
+              users: [
+                {
+                  email: "test-with-role@medusa.js",
+                  roles: [superAdminRoles[0].id],
+                },
+              ],
+            },
+          }
+        )
+
+        expect(users).toHaveLength(1)
+        expect(users[0].email).toEqual("test-with-role@medusa.js")
       })
     })
   },

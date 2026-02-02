@@ -19,11 +19,11 @@ export const PropertyLabel = model
     /**
      * Custom display name for the property
      */
-    label: model.text(),
+    label: model.text().translatable(),
     /**
      * Optional description providing context about the property
      */
-    description: model.text().nullable(),
+    description: model.text().translatable().nullable(),
   })
   .indexes([
     {

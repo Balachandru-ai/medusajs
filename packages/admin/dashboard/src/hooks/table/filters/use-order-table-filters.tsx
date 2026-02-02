@@ -37,7 +37,7 @@ export const useOrderTableFilters = (): Filter[] => {
         searchable: true,
       }
 
-      filters = [...filters, regionFilter]
+      filters.push(regionFilter)
     }
 
     if (sales_channels) {
@@ -53,7 +53,7 @@ export const useOrderTableFilters = (): Filter[] => {
         })),
       }
 
-      filters = [...filters, salesChannelFilter]
+      filters.push(salesChannelFilter)
     }
 
     const paymentStatusFilter: Filter = {
@@ -147,13 +147,11 @@ export const useOrderTableFilters = (): Filter[] => {
       type: "date",
     }))
 
-    filters = [
-      ...dateFilters,
-      ...filters,
-      // TODO: enable when Payment, Fulfillments <> Orders are linked
-      // paymentStatusFilter,
-      // fulfillmentStatusFilter,
-    ]
+    filters.push(...dateFilters)
+
+    // TODO: enable when Payment, Fulfillments <> Orders are linked
+    // filters.push(paymentStatusFilter)
+    // filters.push(fulfillmentStatusFilter)
 
     return filters
   }, [regions, sales_channels, t])
