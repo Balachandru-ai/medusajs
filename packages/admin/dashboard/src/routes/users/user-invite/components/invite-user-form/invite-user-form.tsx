@@ -362,7 +362,7 @@ const useColumns = ({ isRbacEnabled }: { isRbacEnabled: boolean }) => {
                 if (!roleNames.length) {
                   return (
                     <Text size="small" className="text-ui-fg-subtle">
-                      {t("fields.none")}
+                      -
                     </Text>
                   )
                 }
