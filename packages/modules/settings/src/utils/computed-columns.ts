@@ -74,10 +74,7 @@ export const BUILTIN_COMPUTED_COLUMNS: ComputedColumnDefinition[] = [
     id: "shipping_address_display",
     name: "Shipping Address",
     renderMode: "address_summary",
-    requiredFields: [
-      "shipping_address.city",
-      "shipping_address.country_code",
-    ],
+    requiredFields: ["shipping_address.city", "shipping_address.country_code"],
     optionalFields: [
       "shipping_address.address_1",
       "shipping_address.province",
@@ -92,10 +89,7 @@ export const BUILTIN_COMPUTED_COLUMNS: ComputedColumnDefinition[] = [
     id: "billing_address_display",
     name: "Billing Address",
     renderMode: "address_summary",
-    requiredFields: [
-      "billing_address.city",
-      "billing_address.country_code",
-    ],
+    requiredFields: ["billing_address.city", "billing_address.country_code"],
     optionalFields: [
       "billing_address.address_1",
       "billing_address.province",
@@ -145,7 +139,7 @@ export const BUILTIN_COMPUTED_COLUMNS: ComputedColumnDefinition[] = [
     id: "sales_channels_display",
     name: "Sales Channels",
     renderMode: "sales_channels_list",
-    requiredFields: ["sales_channels"],
+    requiredFields: ["sales_channels.*"],
     optionalFields: [],
     entities: ["Product"],
     defaultVisible: true,

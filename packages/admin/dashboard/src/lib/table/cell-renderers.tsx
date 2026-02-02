@@ -34,7 +34,9 @@ const getNestedValue = (obj: any, path: string) => {
 }
 
 const TextRenderer: CellRenderer = (value, _row, _column, _t) => {
-  if (value === null || value === undefined) return "-"
+  if (value === null || value === undefined) {
+    return "-"
+  }
   return String(value)
 }
 
@@ -55,7 +57,9 @@ const CountRenderer: CellRenderer = (value, _row, _column, t) => {
 // sort of registry that passes the context field and resolves the status label and color based on it.
 // Also, use translated value if available and remove hardcoded field conditional
 const StatusRenderer: CellRenderer = (value, row, column, t) => {
-  if (!value) return "-"
+  if (!value) {
+    return "-"
+  }
 
   if (
     column.field === "status" &&
@@ -108,7 +112,9 @@ const StatusRenderer: CellRenderer = (value, row, column, t) => {
 
   // Use existing translation keys where available
   const getTranslatedStatus = (status: string): string => {
-    if (!t) return status
+    if (!t) {
+      return status
+    }
 
     const lowerStatus = status.toLowerCase()
     switch (lowerStatus) {
@@ -139,15 +145,14 @@ const StatusRenderer: CellRenderer = (value, row, column, t) => {
 
 const BadgeListRenderer: CellRenderer = (value, row, column, t) => {
   // For sales channels
-  if (
-    column.field === "sales_channels_display" ||
-    column.field === "sales_channels"
-  ) {
+  if (column.render_mode === "sales_channels_list") {
     return <SalesChannelsCell salesChannels={row.sales_channels} />
   }
 
   // Generic badge list
-  if (!Array.isArray(value)) return "-"
+  if (!Array.isArray(value)) {
+    return "-"
+  }
 
   const items = value.slice(0, 2)
   const remaining = value.length - 2
@@ -190,7 +195,9 @@ const CustomerNameRenderer: CellRenderer = (_, row, _column, t) => {
     const fullName = `${row.customer.first_name || ""} ${
       row.customer.last_name || ""
     }`.trim()
-    if (fullName) return fullName
+    if (fullName) {
+      return fullName
+    }
   }
 
   // Fall back to email
@@ -216,7 +223,9 @@ const AddressSummaryRenderer: CellRenderer = (_, row, column, _t) => {
     address = row.shipping_address || row.billing_address
   }
 
-  if (!address) return "-"
+  if (!address) {
+    return "-"
+  }
 
   const parts = []
 
@@ -225,9 +234,15 @@ const AddressSummaryRenderer: CellRenderer = (_, row, column, _t) => {
   }
 
   const locationParts = []
-  if (address.city) locationParts.push(address.city)
-  if (address.province) locationParts.push(address.province)
-  if (address.postal_code) locationParts.push(address.postal_code)
+  if (address.city) {
+    locationParts.push(address.city)
+  }
+  if (address.province) {
+    locationParts.push(address.province)
+  }
+  if (address.postal_code) {
+    locationParts.push(address.postal_code)
+  }
 
   if (locationParts.length > 0) {
     parts.push(locationParts.join(", "))
@@ -243,7 +258,9 @@ const AddressSummaryRenderer: CellRenderer = (_, row, column, _t) => {
 const CountryCodeRenderer: CellRenderer = (_, row, _column, _t) => {
   const countryCode = row.shipping_address?.country_code
 
-  if (!countryCode) return <div className="flex w-full justify-center">-</div>
+  if (!countryCode) {
+    return <div className="flex w-full justify-center">-</div>
+  }
 
   const country = getCountryByIso2(countryCode)
   const displayName = country?.display_name || countryCode.toUpperCase()
@@ -280,16 +297,22 @@ const CurrencyRenderer: CellRenderer = (value, row, _column, _t) => {
 }
 
 const NumberRenderer: CellRenderer = (value, _row, _column, _t) => {
-  if (value === null || value === undefined) return "-"
+  if (value === null || value === undefined) {
+    return "-"
+  }
 
   const num = typeof value === "string" ? parseFloat(value) : value
-  if (isNaN(num)) return "-"
+  if (isNaN(num)) {
+    return "-"
+  }
 
   return (num as number).toLocaleString()
 }
 
 const BooleanRenderer: CellRenderer = (value, _row, _column, t) => {
-  if (value === null || value === undefined) return "-"
+  if (value === null || value === undefined) {
+    return "-"
+  }
 
   const label = (
     value
@@ -316,7 +339,9 @@ const IdRenderer: CellRenderer = (value, _row, _column, _t) => {
 }
 
 const EmailRenderer: CellRenderer = (value, _row, _column, _t) => {
-  if (!value) return "-"
+  if (!value) {
+    return "-"
+  }
 
   return (
     <a
@@ -330,7 +355,9 @@ const EmailRenderer: CellRenderer = (value, _row, _column, _t) => {
 }
 
 const PhoneRenderer: CellRenderer = (value, _row, _column, _t) => {
-  if (!value) return "-"
+  if (!value) {
+    return "-"
+  }
 
   return (
     <a
@@ -344,7 +371,9 @@ const PhoneRenderer: CellRenderer = (value, _row, _column, _t) => {
 }
 
 const UrlRenderer: CellRenderer = (value, _row, _column, _t) => {
-  if (!value) return "-"
+  if (!value) {
+    return "-"
+  }
 
   return (
     <a
@@ -361,7 +390,9 @@ const UrlRenderer: CellRenderer = (value, _row, _column, _t) => {
 }
 
 const ImageRenderer: CellRenderer = (value, _row, _column, _t) => {
-  if (!value) return "-"
+  if (!value) {
+    return "-"
+  }
 
   return (
     <div className="flex items-center justify-center">
@@ -378,7 +409,9 @@ const ImageRenderer: CellRenderer = (value, _row, _column, _t) => {
 }
 
 const JsonRenderer: CellRenderer = (value, _row, _column, _t) => {
-  if (value === null || value === undefined) return "-"
+  if (value === null || value === undefined) {
+    return "-"
+  }
 
   const jsonString = typeof value === "string" ? value : JSON.stringify(value)
   const truncated =
@@ -400,7 +433,9 @@ const JsonRenderer: CellRenderer = (value, _row, _column, _t) => {
 }
 
 const BadgeRenderer: CellRenderer = (value, _row, _column, _t) => {
-  if (!value) return "-"
+  if (!value) {
+    return "-"
+  }
 
   return <Badge size="xsmall">{String(value)}</Badge>
 }
@@ -412,17 +447,33 @@ const AddressRenderer: CellRenderer = (value, row, column, _t) => {
     address = row[column.field.replace("_display", "")]
   }
 
-  if (!address || typeof address !== "object") return "-"
+  if (!address || typeof address !== "object") {
+    return "-"
+  }
 
   const parts = []
-  if (address.address_1) parts.push(address.address_1)
-  if (address.address_2) parts.push(address.address_2)
-  if (address.city) parts.push(address.city)
-  if (address.province) parts.push(address.province)
-  if (address.postal_code) parts.push(address.postal_code)
-  if (address.country_code) parts.push(address.country_code.toUpperCase())
+  if (address.address_1) {
+    parts.push(address.address_1)
+  }
+  if (address.address_2) {
+    parts.push(address.address_2)
+  }
+  if (address.city) {
+    parts.push(address.city)
+  }
+  if (address.province) {
+    parts.push(address.province)
+  }
+  if (address.postal_code) {
+    parts.push(address.postal_code)
+  }
+  if (address.country_code) {
+    parts.push(address.country_code.toUpperCase())
+  }
 
-  if (parts.length === 0) return "-"
+  if (parts.length === 0) {
+    return "-"
+  }
 
   const fullAddress = parts.join(", ")
   const truncated =
