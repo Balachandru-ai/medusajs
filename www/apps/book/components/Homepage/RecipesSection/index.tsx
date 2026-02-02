@@ -73,12 +73,12 @@ const HomepageRecipesSection = () => {
   ]
   return (
     <div className="w-full border-b border-medusa-border-base">
-      <div className="flex flex-col md:flex-row gap-0 justify-center border-b border-medusa-border-base border-dashed">
+      <div className="flex flex-col md:flex-row gap-0 justify-center border-b border-medusa-border-base">
         <div
           className={clsx(
             "w-full md:w-1/2 lg:w-1/3 bg-medusa-bg-component p-2",
             "flex justify-center items-center",
-            "md:border-r border-medusa-border-base border-dashed",
+            "md:border-r border-medusa-border-base",
             "border-b md:border-b-0"
           )}
         >
@@ -120,7 +120,7 @@ const HomepageRecipesSection = () => {
               index >= 4 && "sm:border-b-0",
               index % 3 !== 2 && "border-r",
               index === 2 && "border-r md:border-r-0",
-              "border-medusa-border-base border-dashed",
+              "border-medusa-border-base",
               "group relative"
             )}
           >

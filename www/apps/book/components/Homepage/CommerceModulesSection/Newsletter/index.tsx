@@ -85,7 +85,11 @@ const HomepageNewsletter = () => {
           />
           <button
             type="submit"
-            className="appearance-none bg-transparent p-0 text-compact-medium-plus text-medusa-fg-base disabled:text-medusa-fg-disabled flex-shrink-0 whitespace-nowrap"
+            className={clsx(
+              "appearance-none bg-transparent p-0 text-compact-medium-plus",
+              "text-medusa-fg-base disabled:text-medusa-fg-disabled flex-shrink-0 whitespace-nowrap",
+              "hover:text-medusa-fg-subtle cursor-pointer"
+            )}
             disabled={loading}
           >
             Subscribe

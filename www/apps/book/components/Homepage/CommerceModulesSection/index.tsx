@@ -165,7 +165,7 @@ const HomepageCommerceModulesSection = () => {
   ]
   return (
     <div className="w-full border-b border-medusa-border-base">
-      <div className="p-2 flex gap-2 border-b border-medusa-border-base border-dashed">
+      <div className="p-2 flex gap-2 border-b border-medusa-border-base">
         <h2 className="text-h1 text-medusa-fg-base min-w-max">
           Commerce Modules
         </h2>
@@ -178,7 +178,7 @@ const HomepageCommerceModulesSection = () => {
             className={clsx(
               "py-2 w-full sm:w-1/2 lg:w-1/3",
               "flex flex-col gap-1 items-start",
-              "border-medusa-border-base border-dashed",
+              "border-medusa-border-base",
               "border-b",
               index === 3 && "lg:border-b-0",
               index > 3 && "sm:border-b-0",
