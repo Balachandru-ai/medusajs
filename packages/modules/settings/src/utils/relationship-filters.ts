@@ -109,7 +109,7 @@ export const RELATIONSHIP_FILTER_OVERRIDES: Record<
       relatedEntity: "ProductCollection",
       valueField: "id",
       displayField: "title",
-      multiple: false,
+      multiple: true,
       filterKey: "collection_id",
     },
     {
@@ -117,7 +117,7 @@ export const RELATIONSHIP_FILTER_OVERRIDES: Record<
       relatedEntity: "ProductType",
       valueField: "id",
       displayField: "value",
-      multiple: false,
+      multiple: true,
       filterKey: "type_id",
     },
     {
@@ -144,6 +144,15 @@ export const RELATIONSHIP_FILTER_OVERRIDES: Record<
       valueField: "id",
       displayField: "name",
       multiple: false,
+      filterKey: "region_id",
+    },
+    {
+      field: "customer",
+      relatedEntity: "Customer",
+      valueField: "id",
+      displayField: "email",
+      multiple: true,
+      filterKey: "customer_id",
     },
   ],
   Customer: [
