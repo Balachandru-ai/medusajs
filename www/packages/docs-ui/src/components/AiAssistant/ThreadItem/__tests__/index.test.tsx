@@ -51,6 +51,9 @@ vi.mock("@/components/AiAssistant/ThreadItem/Actions", () => ({
 vi.mock("@/components/Loading/Dots", () => ({
   DotsLoading: () => <div>DotsLoading</div>,
 }))
+vi.mock("@/components/AiAssistant/Loading", () => ({
+  AiAssistantLoading: () => <div>AiAssistantLoading</div>,
+}))
 
 import { AiAssistantThreadItem } from "../../ThreadItem"
 
@@ -111,7 +114,7 @@ describe("loading", () => {
       <AiAssistantThreadItem item={mockEmptyAnswerThreadItem} />
     )
     expect(container).toBeInTheDocument()
-    expect(container).toHaveTextContent("DotsLoading")
+    expect(container).toHaveTextContent("AiAssistantLoading")
   })
   test("hide loading when answer has question_id and no content", () => {
     const { container } = render(
@@ -123,20 +126,20 @@ describe("loading", () => {
       />
     )
     expect(container).toBeInTheDocument()
-    expect(container).not.toHaveTextContent("DotsLoading")
+    expect(container).not.toHaveTextContent("AiAssistantLoading")
   })
   test("hide loading when answer has content", () => {
     const { container } = render(
       <AiAssistantThreadItem item={mockAnswerWithoutQuestionThreadItem} />
     )
     expect(container).toBeInTheDocument()
-    expect(container).not.toHaveTextContent("DotsLoading")
+    expect(container).not.toHaveTextContent("AiAssistantLoading")
   })
   test("hide loading when error is not empty", () => {
     const { container } = render(
       <AiAssistantThreadItem item={mockErrorThreadItem} />
     )
     expect(container).toBeInTheDocument()
-    expect(container).not.toHaveTextContent("DotsLoading")
+    expect(container).not.toHaveTextContent("AiAssistantLoading")
   })
 })
