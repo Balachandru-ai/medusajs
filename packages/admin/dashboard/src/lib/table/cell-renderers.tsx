@@ -144,34 +144,67 @@ const StatusRenderer: CellRenderer = (value, row, column, t) => {
 }
 
 const BadgeListRenderer: CellRenderer = (value, row, column, t) => {
-  // For sales channels
+  // Note: leaving for backwards compatibility, since it is how sales channels for products are visualized in many products tables
+  // across the UI. Ideally we use the resolution below, so we unify how list of values in tables are visualized across the UI.
   if (column.render_mode === "sales_channels_list") {
     return <SalesChannelsCell salesChannels={row.sales_channels} />
   }
 
+  let resolvedValue = value
+  let computedMetadata = {} as Record<string, any>
+
+  if (column.computed) {
+    computedMetadata = column.computed.metadata ?? {}
+    resolvedValue = row[computedMetadata.list_field]
+  }
+
   // Generic badge list
-  if (!Array.isArray(value)) {
+  if (!Array.isArray(resolvedValue) || resolvedValue.length === 0) {
     return "-"
   }
 
-  const items = value.slice(0, 2)
-  const remaining = value.length - 2
+  const items = resolvedValue.slice(0, 2)
+  const remaining = resolvedValue.length - 2
+
+  const resolveBadgeValue = (item: any) => {
+    if (typeof item === "string") {
+      return item
+    }
+
+    if (Object.keys(computedMetadata).length > 0) {
+      return item[computedMetadata.display_field]
+    }
+
+    return item.name || item.title || item.value || "-"
+  }
 
   return (
     <div className="flex gap-1">
-      {items.map((item, index) => (
-        <Badge key={index} size="xsmall">
-          {typeof item === "string" ? item : item.name || item.title || "-"}
-        </Badge>
-      ))}
+      {items.map((item, index) => {
+        return (
+          <Badge key={index} size="xsmall">
+            {resolveBadgeValue(item)}
+          </Badge>
+        )
+      })}
       {remaining > 0 && (
-        <Badge size="xsmall" color="grey">
-          {t
-            ? t("general.plusCountMore", "+ {{count}} more", {
-                count: remaining,
-              })
-            : `+${remaining}`}
-        </Badge>
+        <Tooltip
+          content={
+            <ul>
+              {resolvedValue.slice(2).map((item) => (
+                <li key={item}>{resolveBadgeValue(item)}</li>
+              ))}
+            </ul>
+          }
+        >
+          <Badge size="xsmall" color="grey">
+            {t
+              ? t("general.plusCountMore", "+ {{count}} more", {
+                  count: remaining,
+                })
+              : `+${remaining}`}
+          </Badge>
+        </Tooltip>
       )}
     </div>
   )
