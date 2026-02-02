@@ -9273,6 +9273,9 @@
         "inviteUserHint": {
           "type": "string"
         },
+        "inviteRolesTooltip": {
+          "type": "string"
+        },
         "sendInvite": {
           "type": "string"
         },
@@ -9377,6 +9380,7 @@
         "editUser",
         "inviteUser",
         "inviteUserHint",
+        "inviteRolesTooltip",
         "sendInvite",
         "pendingInvites",
         "deleteInviteWarning",

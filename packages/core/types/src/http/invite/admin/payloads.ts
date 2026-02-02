@@ -2,15 +2,15 @@ export type AdminAcceptInvite = {
   /**
    * The user's email.
    */
-  email: string
+  email?: string
   /**
    * The user's first name.
    */
-  first_name: string
+  first_name?: string
   /**
    * The user's last name.
    */
-  last_name: string
+  last_name?: string
 }
 
 export type AdminCreateInvite = {
