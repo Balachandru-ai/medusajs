@@ -9502,6 +9502,73 @@
           "required": ["managePermissions"],
           "additionalProperties": false
         },
+        "users": {
+          "type": "object",
+          "properties": {
+            "alreadyAddedTooltip": {
+              "type": "string"
+            },
+            "add": {
+              "type": "object",
+              "properties": {
+                "successToast_one": {
+                  "type": "string"
+                },
+                "successToast_other": {
+                  "type": "string"
+                },
+                "list": {
+                  "type": "object",
+                  "properties": {
+                    "noRecordsMessage": {
+                      "type": "string"
+                    }
+                  },
+                  "required": ["noRecordsMessage"],
+                  "additionalProperties": false
+                }
+              },
+              "required": ["successToast_one", "successToast_other", "list"],
+              "additionalProperties": false
+            },
+            "remove": {
+              "type": "object",
+              "properties": {
+                "title_one": {
+                  "type": "string"
+                },
+                "title_other": {
+                  "type": "string"
+                },
+                "description_one": {
+                  "type": "string"
+                },
+                "description_other": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "title_one",
+                "title_other",
+                "description_one",
+                "description_other"
+              ],
+              "additionalProperties": false
+            },
+            "list": {
+              "type": "object",
+              "properties": {
+                "noRecordsMessage": {
+                  "type": "string"
+                }
+              },
+              "required": ["noRecordsMessage"],
+              "additionalProperties": false
+            }
+          },
+          "required": ["alreadyAddedTooltip", "add", "remove", "list"],
+          "additionalProperties": false
+        },
         "permissions": {
           "type": "object",
           "properties": {
@@ -9582,6 +9649,7 @@
         "edit",
         "fields",
         "actions",
+        "users",
         "permissions",
         "list"
       ],

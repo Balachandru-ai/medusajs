@@ -153,6 +153,7 @@ export const ROUTE_PERMISSIONS: Record<
   "/settings/roles/create": { resource: "role", operation: "create" },
   "/settings/roles/:id": { resource: "role", operation: "read" },
   "/settings/roles/:id/edit": { resource: "role", operation: "update" },
+  "/settings/roles/:id/add-users": { resource: "role", operation: "update" },
   "/settings/roles/:id/permissions": { resource: "role", operation: "update" },
 
   "/settings/sales-channels": { resource: "sales_channel", operation: "read" },

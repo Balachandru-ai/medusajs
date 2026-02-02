@@ -247,3 +247,59 @@ export const useRemoveRbacRolePolicy = (
     ...options,
   })
 }
+
+export const useAddRbacRoleUsers = (
+  roleId: string,
+  options?: UseMutationOptions<
+    void,
+    FetchError,
+    HttpTypes.AdminBatchLink["add"]
+  >
+) => {
+  return useMutation({
+    mutationFn: async (_payload) => {
+      // TODO: Replace with SDK call once the role user assignment endpoint is available.
+      return Promise.resolve()
+    },
+    onSuccess: (data, variables, context) => {
+      queryClient.invalidateQueries({
+        queryKey: rbacRolesQueryKeys.users(roleId),
+      })
+      queryClient.invalidateQueries({
+        queryKey: rbacRolesQueryKeys.detail(roleId),
+      })
+      queryClient.invalidateQueries({ queryKey: rbacRolesQueryKeys.lists() })
+
+      options?.onSuccess?.(data, variables, context)
+    },
+    ...options,
+  })
+}
+
+export const useRemoveRbacRoleUsers = (
+  roleId: string,
+  options?: UseMutationOptions<
+    void,
+    FetchError,
+    HttpTypes.AdminBatchLink["remove"]
+  >
+) => {
+  return useMutation({
+    mutationFn: async (_payload) => {
+      // TODO: Replace with SDK call once the role user assignment endpoint is available.
+      return Promise.resolve()
+    },
+    onSuccess: (data, variables, context) => {
+      queryClient.invalidateQueries({
+        queryKey: rbacRolesQueryKeys.users(roleId),
+      })
+      queryClient.invalidateQueries({
+        queryKey: rbacRolesQueryKeys.detail(roleId),
+      })
+      queryClient.invalidateQueries({ queryKey: rbacRolesQueryKeys.lists() })
+
+      options?.onSuccess?.(data, variables, context)
+    },
+    ...options,
+  })
+}

@@ -2555,6 +2555,25 @@
     "actions": {
       "managePermissions": "Manage permissions"
     },
+    "users": {
+      "alreadyAddedTooltip": "User already has this role.",
+      "add": {
+        "successToast_one": "User was successfully added to the role.",
+        "successToast_other": "Users were successfully added to the role.",
+        "list": {
+          "noRecordsMessage": "Create a user first."
+        }
+      },
+      "remove": {
+        "title_one": "Remove user",
+        "title_other": "Remove users",
+        "description_one": "You are about to remove {{count}} user from the role. This action cannot be undone.",
+        "description_other": "You are about to remove {{count}} users from the role. This action cannot be undone."
+      },
+      "list": {
+        "noRecordsMessage": "This role doesn't have users."
+      }
+    },
     "permissions": {
       "header": "Manage permissions",
       "hint": "Select permissions that this role should include.",

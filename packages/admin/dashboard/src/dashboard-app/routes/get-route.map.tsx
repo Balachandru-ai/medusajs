@@ -1165,6 +1165,10 @@ export function getRouteMap({
                       lazy: () => import("../../routes/roles/role-edit"),
                     },
                     {
+                      path: "add-users",
+                      lazy: () => import("../../routes/roles/role-add-users"),
+                    },
+                    {
                       path: "permissions",
                       lazy: () => import("../../routes/roles/role-permissions"),
                     },
