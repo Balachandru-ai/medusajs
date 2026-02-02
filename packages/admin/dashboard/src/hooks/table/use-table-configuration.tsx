@@ -127,6 +127,10 @@ export function useTableConfiguration({
     queryPrefix
   )
 
+  const columnsToRender = useMemo(() => {
+    return apiColumns?.filter((column) => column.context !== "filter")
+  }, [apiColumns])
+
   // Column state
   const {
     visibleColumns,
@@ -135,14 +139,14 @@ export function useTableConfiguration({
     setColumnOrder,
     handleColumnVisibilityChange,
     handleViewChange: originalHandleViewChange,
-  } = useColumnState(apiColumns, currentActiveView)
+  } = useColumnState(columnsToRender, currentActiveView)
 
   // Sync view configuration with URL and column state
   useEffect(() => {
-    if (!apiColumns) {
+    if (!columnsToRender) {
       return
     }
-    originalHandleViewChange(currentActiveView, apiColumns)
+    originalHandleViewChange(currentActiveView, columnsToRender)
     setSearchParams((prev) => {
       // Clear existing query params
       const keysToDelete = Array.from(prev.keys()).filter(
@@ -177,7 +181,7 @@ export function useTableConfiguration({
 
       return prev
     })
-  }, [currentActiveView, apiColumns])
+  }, [currentActiveView, columnsToRender])
 
   // Current configuration from URL
   const currentConfiguration = useMemo(() => {
@@ -270,10 +274,10 @@ export function useTableConfiguration({
         return true
       }
 
-      if (apiColumns) {
+      if (columnsToRender) {
         const currentVisibleSet = new Set(currentVisibleColumns)
         const defaultVisibleSet = new Set(
-          apiColumns
+          columnsToRender
             .filter((col) => col.default_visible)
             .map((col) => col.field)
         )
@@ -285,7 +289,7 @@ export function useTableConfiguration({
           return true
         }
 
-        const defaultOrder = apiColumns
+        const defaultOrder = columnsToRender
           .sort((a, b) => (a.default_order ?? 500) - (b.default_order ?? 500))
           .map((col) => col.field)
 
@@ -301,7 +305,7 @@ export function useTableConfiguration({
     visibleColumns,
     columnOrder,
     currentConfiguration,
-    apiColumns,
+    columnsToRender,
   ])
 
   // Debounce configuration change detection
@@ -315,8 +319,8 @@ export function useTableConfiguration({
 
   // Clear configuration handler
   const handleClearConfiguration = useCallback(() => {
-    if (apiColumns) {
-      originalHandleViewChange(currentActiveView, apiColumns)
+    if (columnsToRender) {
+      originalHandleViewChange(currentActiveView, columnsToRender)
     }
 
     setSearchParams((prev) => {
@@ -351,12 +355,12 @@ export function useTableConfiguration({
 
       return prev
     })
-  }, [currentActiveView, apiColumns, queryPrefix])
+  }, [currentActiveView, columnsToRender, queryPrefix])
 
   // Calculate required fields based on visible columns
   const requiredFields = useMemo(() => {
-    return calculateRequiredFields(apiColumns || [], visibleColumns)
-  }, [apiColumns, visibleColumns])
+    return calculateRequiredFields(columnsToRender || [], visibleColumns)
+  }, [columnsToRender, visibleColumns])
 
   return {
     activeView: currentActiveView,
@@ -371,7 +375,7 @@ export function useTableConfiguration({
     currentConfiguration,
     hasConfigurationChanged: debouncedHasConfigChanged,
     handleClearConfiguration,
-    apiColumns,
+    apiColumns: columnsToRender,
     filters: resolvedFilters,
     isLoadingColumns,
     isLoadingFilterOptions,
