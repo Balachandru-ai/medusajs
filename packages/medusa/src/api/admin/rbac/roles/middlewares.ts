@@ -1,5 +1,4 @@
 import * as QueryConfig from "./query-config"
-import { Entities } from "./query-config"
 
 import {
   validateAndTransformBody,
@@ -8,28 +7,17 @@ import {
 import { MiddlewareRoute } from "@medusajs/framework/http"
 import { PolicyOperation } from "@medusajs/framework/utils"
 
+import { Entities } from "./query-config"
 import {
   AdminAddRolePoliciesType,
   AdminCreateRbacRole,
   AdminGetRbacRoleParams,
   AdminGetRbacRolesParams,
+  AdminGetRoleUsersParams,
   AdminUpdateRbacRole,
 } from "./validators"
 
 export const adminRbacRoleRoutesMiddlewares: MiddlewareRoute[] = [
-  {
-    matcher: "/admin/rbac/roles/*",
-    policies: [
-      {
-        resource: Entities.role,
-        operation: PolicyOperation.read,
-      },
-      {
-        resource: Entities.permission,
-        operation: PolicyOperation.read,
-      },
-    ],
-  },
   {
     method: ["GET"],
     matcher: "/admin/rbac/roles",
@@ -97,6 +85,22 @@ export const adminRbacRoleRoutesMiddlewares: MiddlewareRoute[] = [
     method: ["DELETE"],
     matcher: "/admin/rbac/roles/:id/policies/:policy_id",
     middlewares: [],
+  },
+  {
+    method: ["GET"],
+    matcher: "/admin/rbac/roles/:id/users",
+    middlewares: [
+      validateAndTransformQuery(
+        AdminGetRoleUsersParams,
+        QueryConfig.listRoleUsersTransformQueryConfig
+      ),
+    ],
+    policies: [
+      {
+        resource: Entities.user,
+        operation: PolicyOperation.read,
+      },
+    ],
   },
   {
     method: ["DELETE"],
