@@ -40,19 +40,19 @@ const HomepageCommerceModulesSection = () => {
       modules: [
         {
           name: "Cart",
-          description: "Add to cart, checkout, and totals.",
+          description: "Add to cart, checkout, and totals",
           link: "/resources/commerce-modules/cart",
           Icon: ShoppingCart,
         },
         {
           name: "Payment",
-          description: "Process any payment type.",
+          description: "Process any payment type",
           link: "/resources/commerce-modules/payment",
           Icon: CreditCard,
         },
         {
           name: "Customer",
-          description: "Customer and group management.",
+          description: "Customer and group management",
           link: "/resources/commerce-modules/customer",
           Icon: Users,
         },

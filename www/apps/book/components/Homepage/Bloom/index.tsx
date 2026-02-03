@@ -73,7 +73,9 @@ const HomepageBloom = () => {
                 "h-1.5 lg:h-auto",
                 !question && "caret-transparent"
               )}
-              placeholder="Ask anything about Medusa..."
+              placeholder={
+                !showCustomCarat ? "Ask anything about Medusa..." : ""
+              }
               value={question}
               onChange={(e) => setQuestion(e.target.value)}
               onFocus={() => setShowCustomCaret(true)}
