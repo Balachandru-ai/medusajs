@@ -8,10 +8,10 @@ import {
   Button,
   Link,
   Table,
+  BloomIcon,
   CodeTab,
   CodeTabs
 } from "docs-ui"
-import { AiAssistent, AiAssistentLuminosity } from "@medusajs/icons"
 
 export const metadata = {
   title: `${pageNumber} Build with AI Assistants and LLMs`,
@@ -324,12 +324,18 @@ For example, you can ask:
 
 The Medusa documentation includes an AI Assistant that answers your questions and helps you build customizations with Medusa.
 
+<Note>
+
+The AI Assistant in the docs is different from [Bloom](https://bloom.medusajs.com/), our AI-powered commerce assistant that helps you build, manage, and scale your ecommerce store. The AI Assistant in the docs is specifically designed to help you with Medusa development by providing relevant documentation links, code snippets, and explanations.
+
+</Note>
+
 ### Open the AI Assistant
 
 To open the AI Assistant, either:
 
 - Use the keyboard shortcut `Ctrl + I` for Windows/Linux, or `Cmd + I` for macOS.
-- Click the <InlineIcon Icon={AiAssistent} alt="AI Assistant" /> icon in the top right corner of the documentation.
+- Click the <InlineIcon Icon={BloomIcon} alt="Bloom" /> icon in the top right corner of the documentation.
 
 You can then ask the AI Assistant any questions about Medusa, such as:
 
@@ -342,13 +348,13 @@ The AI Assistant will provide you with relevant documentation links, code snippe
 
 ### Ask About Code Snippets
 
-While browsing the documentation, you'll find a <InlineIcon Icon={AiAssistentLuminosity} alt="AI Assistant" /> icon in the header of code snippets. You can click this icon to ask the AI Assistant about the code snippet.
+While browsing the documentation, you'll find a <InlineIcon Icon={BloomIcon} alt="Bloom" /> icon in the header of code snippets. You can click this icon to ask the AI Assistant about the code snippet.
 
 The AI Assistant will analyze the code and provide explanations, usage examples, and any additional information you need to understand how the code works.
 
 ### Ask About Documentation Pages
 
-If you need more help understanding a specific documentation page, you can click the "Explain with AI Assistant" link in the page's right sidebar. This will open the AI Assistant and provide context about the current page, allowing you to ask questions related to the content.
+If you need more help understanding a specific documentation page, you can click the "Explain this page" link in the page's right sidebar. This will open the AI Assistant and provide context about the current page, allowing you to ask questions related to the content.
 
 ### Formatting and Code Blocks
 
