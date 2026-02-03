@@ -108,15 +108,15 @@ const HomepageCodeTabs = () => {
         source: `const handleDeliveryWorkflow = createWorkflow(
     "handle-delivery",
     function (input: WorkflowInput) {
-      notifyRestaurantStep(input.delivery_id);
+      notifyRestaurantStep(input.delivery_id)
   
-      const order = createOrderStep(input.delivery_id);
+      const order = createOrderStep(input.delivery_id)
   
-      createFulfillmentStep(order);
+      createFulfillmentStep(order)
   
-      awaitDeliveryStep();
+      awaitDeliveryStep()
   
-      return new WorkflowResponse("Delivery completed");
+      return new WorkflowResponse("Delivery completed")
     }
   )`,
         highlights: [
@@ -146,7 +146,8 @@ const HomepageCodeTabs = () => {
       },
       code: {
         lang: "ts",
-        source: `const DigitalProduct = model.define("digital_product", {
+        source: `const DigitalProduct = model.define("digital_product", 
+  {
     id: model.id().primaryKey(),
     name: model.text(),
     medias: model.hasMany(() => DigitalProductMedia, {
@@ -182,7 +183,7 @@ const HomepageCodeTabs = () => {
       },
       code: {
         lang: "ts",
-        source: `class DigitalProductModuleService extends MedusaService({
+        source: `class DigitalProductService extends MedusaService({
     DigitalProduct,
   }) {
     async authorizeLicense() {
@@ -194,11 +195,11 @@ const HomepageCodeTabs = () => {
     req: MedusaRequest,
     res: MedusaResponse
   ) {
-    const digitalProductModuleService = req.scope.resolve(
-      "digitalProductModuleService"
+    const moduleService = req.scope.resolve(
+      "digitalProduct"
     )
   
-    await digitalProductModuleService.authorizeLicense()
+    await moduleService.authorizeLicense()
   
     res.json({ success: true })
   }`,
@@ -267,11 +268,11 @@ const HomepageCodeTabs = () => {
         source: `async function orderPlaced({
     container,
   }: SubscriberArgs) {
-    const notificationModuleService = container.resolve(
+    const moduleService = container.resolve(
       Modules.NOTIFICATION
     )
   
-    await notificationModuleService.createNotifications({
+    await moduleService.createNotifications({
       to: "customer@gmail.com",
       channel: "email",
       template: "order-placed"
