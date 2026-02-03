@@ -8,34 +8,31 @@ import {
 } from "@medusajs/framework/http"
 import {
   ContainerRegistrationKeys,
-  defineFileConfig,
-  FeatureFlag,
   MedusaError,
 } from "@medusajs/framework/utils"
-import RbacFeatureFlag from "../../../../../../feature-flags/rbac"
 import {
-  AdminAssignRoleUsersType,
-  AdminRemoveRoleUsersType,
+  AdminAssignUserRolesType,
+  AdminRemoveUserRolesType,
 } from "../../validators"
 
 export const GET = async (
   req: AuthenticatedMedusaRequest,
   res: MedusaResponse
 ) => {
-  const roleId = req.params.id
+  const userId = req.params.id
   const query = req.scope.resolve(ContainerRegistrationKeys.QUERY)
 
   const { data: links, metadata } = await query.graph({
     entity: "user_rbac_role",
     fields: req.queryConfig?.fields,
-    filters: { ...req.filterableFields, rbac_role_id: roleId },
+    filters: { ...req.filterableFields, user_id: userId },
     pagination: req.queryConfig?.pagination || {},
   })
 
-  const users = links.map((link: any) => link.user)
+  const roles = links.map((link: any) => link.rbac_role)
 
   res.status(200).json({
-    users,
+    roles,
     count: metadata?.count ?? 0,
     offset: metadata?.skip ?? 0,
     limit: metadata?.take ?? 0,
@@ -43,25 +40,25 @@ export const GET = async (
 }
 
 export const POST = async (
-  req: AuthenticatedMedusaRequest<AdminAssignRoleUsersType>,
+  req: AuthenticatedMedusaRequest<AdminAssignUserRolesType>,
   res: MedusaResponse
 ) => {
-  const roleId = req.params.id
-  const { users } = req.validatedBody
+  const userId = req.params.id
+  const { roles } = req.validatedBody
   const query = req.scope.resolve(ContainerRegistrationKeys.QUERY)
 
   const {
-    data: [role],
+    data: [user],
   } = await query.graph({
-    entity: "rbac_role",
+    entity: "user",
     fields: ["id"],
-    filters: { id: roleId },
+    filters: { id: userId },
   })
 
-  if (!role) {
+  if (!user) {
     throw new MedusaError(
       MedusaError.Types.NOT_FOUND,
-      `Role with id "${roleId}" not found`
+      `User with id "${userId}" not found`
     )
   }
 
@@ -69,42 +66,42 @@ export const POST = async (
     input: {
       actor_id: req.auth_context.actor_id,
       actor: req.auth_context.actor_type,
-      role_id: roleId,
-      user_ids: users,
+      user_id: userId,
+      role_ids: roles,
     },
   })
 
   const { data: links } = await query.graph({
     entity: "user_rbac_role",
-    fields: ["user.*"],
-    filters: { rbac_role_id: roleId },
+    fields: ["rbac_role.*"],
+    filters: { user_id: userId },
   })
 
-  const roleUsers = links.map((link: any) => link.user)
+  const userRoles = links.map((link: any) => link.rbac_role)
 
-  res.status(200).json({ users: roleUsers })
+  res.status(200).json({ roles: userRoles })
 }
 
 export const DELETE = async (
-  req: AuthenticatedMedusaRequest<AdminRemoveRoleUsersType>,
+  req: AuthenticatedMedusaRequest<AdminRemoveUserRolesType>,
   res: MedusaResponse
 ) => {
-  const roleId = req.params.id
-  const { users } = req.validatedBody
+  const userId = req.params.id
+  const { roles } = req.validatedBody
   const query = req.scope.resolve(ContainerRegistrationKeys.QUERY)
 
   const {
-    data: [role],
+    data: [user],
   } = await query.graph({
-    entity: "rbac_role",
+    entity: "user",
     fields: ["id"],
-    filters: { id: roleId },
+    filters: { id: userId },
   })
 
-  if (!role) {
+  if (!user) {
     throw new MedusaError(
       MedusaError.Types.NOT_FOUND,
-      `Role with id "${roleId}" not found`
+      `User with id "${userId}" not found`
     )
   }
 
@@ -112,18 +109,14 @@ export const DELETE = async (
     input: {
       actor_id: req.auth_context.actor_id,
       actor: req.auth_context.actor_type,
-      role_id: roleId,
-      user_ids: users,
+      user_id: userId,
+      role_ids: roles,
     },
   })
 
   res.status(200).json({
-    ids: users,
-    object: "role_user",
+    ids: roles,
+    object: "user_role",
     deleted: true,
   })
 }
-
-defineFileConfig({
-  isDisabled: () => !FeatureFlag.isFeatureEnabled(RbacFeatureFlag.key),
-})
