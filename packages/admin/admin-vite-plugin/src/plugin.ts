@@ -2,12 +2,14 @@ import { SourceMap } from "magic-string"
 import { rm, writeFile } from "node:fs/promises"
 import path from "node:path"
 import type * as Vite from "vite"
+import { generateCellRendererHash } from "./cell-renderers"
 import { generateCustomFieldHashes } from "./custom-fields"
 import { generateI18nHash } from "./i18n"
 import { generateRouteHashes } from "./routes"
 import { MedusaVitePlugin } from "./types"
 import { AdminSubdirectory, isFileInAdminSubdirectory } from "./utils"
 import {
+  generateVirtualCellRendererModule,
   generateVirtualDisplayModule,
   generateVirtualFormModule,
   generateVirtualI18nModule,
@@ -87,6 +89,7 @@ export const medusaVitePlugin: MedusaVitePlugin = (options) => {
     const formModule = await generateVirtualFormModule(sources, true)
     const displayModule = await generateVirtualDisplayModule(sources, true)
     const i18nModule = await generateVirtualI18nModule(sources, true)
+    const cellRendererModule = await generateVirtualCellRendererModule(sources, true)
 
     // Create the index.js content that re-exports everything
     return `
@@ -97,14 +100,16 @@ export const medusaVitePlugin: MedusaVitePlugin = (options) => {
     ${formModule.code}
     ${displayModule.code}
     ${i18nModule.code}
-    
+    ${cellRendererModule.code}
+
     const plugin = {
       widgetModule,
       routeModule,
       menuItemModule,
       formModule,
       displayModule,
-      i18nModule
+      i18nModule,
+      cellRendererModule
     }
 
     export default plugin
@@ -239,6 +244,11 @@ const loadConfigs: Record<string, ModuleConfig> = {
     moduleGenerator: async (sources) => generateVirtualI18nModule(sources),
     hashKey: vmod.virtual.i18n,
   },
+  [vmod.resolved.cellRenderer]: {
+    hashGenerator: async (sources) => generateCellRendererHash(sources),
+    moduleGenerator: async (sources) => generateVirtualCellRendererModule(sources),
+    hashKey: vmod.virtual.cellRenderer,
+  },
 }
 
 type WatcherConfig = {
@@ -312,6 +322,19 @@ const watcherConfigs: WatcherConfig[] = [
         virtualModule: vmod.virtual.i18n,
         resolvedModule: vmod.resolved.i18n,
         hashKey: "i18nHash",
+      },
+    ],
+  },
+  {
+    subdirectory: "cell-renderers.tsx",
+    hashGenerator: async (sources) => ({
+      cellRendererHash: await generateCellRendererHash(sources),
+    }),
+    modules: [
+      {
+        virtualModule: vmod.virtual.cellRenderer,
+        resolvedModule: vmod.resolved.cellRenderer,
+        hashKey: "cellRendererHash",
       },
     ],
   },

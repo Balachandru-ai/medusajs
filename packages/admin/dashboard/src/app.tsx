@@ -7,6 +7,9 @@ import i18nModule from "virtual:medusa/i18n"
 import menuItemModule from "virtual:medusa/menu-items"
 import routeModule from "virtual:medusa/routes"
 import widgetModule from "virtual:medusa/widgets"
+import "virtual:medusa/cell-renderers"
+
+import { registerCellRenderer } from "./lib/table/cell-renderers"
 
 import "./index.css"
 
@@ -31,4 +34,5 @@ function App({ plugins = [] }: AppProps) {
   return <div>{app.render()}</div>
 }
 
+export { registerCellRenderer }
 export default App

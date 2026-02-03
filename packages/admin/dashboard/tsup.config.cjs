@@ -11,6 +11,7 @@ export default defineConfig({
     "virtual:medusa/menu-items",
     "virtual:medusa/widgets",
     "virtual:medusa/i18n",
+    "virtual:medusa/cell-renderers",
   ],
   tsconfig: "tsconfig.build.json",
   clean: true,
