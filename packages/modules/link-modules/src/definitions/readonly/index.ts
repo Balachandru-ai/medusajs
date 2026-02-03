@@ -1,5 +1,7 @@
 export * from "./cart-customer"
 export * from "./cart-product"
+export * from "./customer-store-credit-account"
+export * from "./gift-card-order-line-item"
 export * from "./cart-region"
 export * from "./cart-sales-channel"
 export * from "./cart-shipping-option"

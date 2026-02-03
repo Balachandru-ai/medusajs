@@ -140,4 +140,16 @@ export const LINKS = {
     Modules.RBAC,
     "rbac_role_id"
   ),
+  CartGiftCard: composeLinkName(
+    Modules.CART,
+    "cart_id",
+    Modules.LOYALTY,
+    "gift_card_id"
+  ),
+  OrderGiftCard: composeLinkName(
+    Modules.ORDER,
+    "order_id",
+    Modules.LOYALTY,
+    "gift_card_id"
+  ),
 }
