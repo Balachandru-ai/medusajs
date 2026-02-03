@@ -97,7 +97,6 @@ export function createOrderTableAdapter(): TableAdapter<HttpTypes.AdminOrder> {
       },
     },
   })
-}
 
 export function useOrderTableAdapter(): TableAdapter<HttpTypes.AdminOrder> {
   return useMemo(() => createOrderTableAdapter(), [])
