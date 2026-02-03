@@ -1,6 +1,6 @@
 "use client"
 
-import { KapaProvider, useChat } from "@kapaai/react-sdk"
+import { KapaProvider, useChat, useDeepThinking } from "@kapaai/react-sdk"
 import React, {
   createContext,
   useCallback,
@@ -25,6 +25,9 @@ export type AiAssistantContextType = {
   contentRef: React.RefObject<HTMLDivElement | null>
   loading: boolean
   isCaptchaLoaded: boolean
+  submitQuery: (q: string) => void
+  deepThinkingEnabled: boolean
+  toggleDeepThinking: () => void
 }
 
 export type AiAssistantThreadItem = {
@@ -65,7 +68,9 @@ const AiAssistantInnerProvider = ({
   const [chatOpened, setChatOpened] = useState(false)
   const inputRef = useRef<HTMLInputElement | HTMLTextAreaElement>(null)
   const contentRef = useRef<HTMLDivElement>(null)
-  const { isGeneratingAnswer, isPreparingAnswer } = useChat()
+  const { isGeneratingAnswer, isPreparingAnswer, submitQuery } = useChat()
+  const { active: deepThinkingEnabled, toggle: toggleDeepThinking } =
+    useDeepThinking()
   const loading = useMemo(
     () => isGeneratingAnswer || isPreparingAnswer,
     [isGeneratingAnswer, isPreparingAnswer]
@@ -184,6 +189,9 @@ const AiAssistantInnerProvider = ({
         contentRef,
         loading,
         isCaptchaLoaded,
+        submitQuery,
+        deepThinkingEnabled,
+        toggleDeepThinking,
       }}
     >
       {children}

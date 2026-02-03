@@ -46,7 +46,7 @@ export const ContentMenuActions = () => {
         data-testid="ai-assistant-button"
       >
         <BroomSparkle width={15} height={15} />
-        Explain with AI Assistant
+        Explain this page
       </button>
     </div>
   )
