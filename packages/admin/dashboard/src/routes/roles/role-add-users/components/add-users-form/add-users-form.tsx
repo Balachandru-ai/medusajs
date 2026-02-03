@@ -18,13 +18,17 @@ import {
 import { _DataTable } from "../../../../../components/table/data-table"
 import { KeyboundForm } from "../../../../../components/utilities/keybound-form"
 import { useAddRbacRoleUsers } from "../../../../../hooks/api/rbac-roles"
-import { useUsers } from "../../../../../hooks/api/users"
+import { useMe, useUsers } from "../../../../../hooks/api/users"
 import { useDataTable } from "../../../../../hooks/use-data-table"
 import { useDate } from "../../../../../hooks/use-date"
 import { useQueryParams } from "../../../../../hooks/use-query-params"
 
 type AddUsersFormProps = {
   roleId: string
+}
+
+type UserWithRbacRoles = HttpTypes.AdminUser & {
+  rbac_roles?: HttpTypes.AdminRbacRole[] | null
 }
 
 export const AddUsersSchema = zod.object({
@@ -36,6 +40,9 @@ const PAGE_SIZE = 10
 export const AddUsersForm = ({ roleId }: AddUsersFormProps) => {
   const { t } = useTranslation()
   const { handleSuccess } = useRouteModal()
+  const { user } = useMe({ fields: "id,rbac_roles.id" })
+  const userRoles = (user as UserWithRbacRoles | undefined)?.rbac_roles ?? []
+  const canManageRole = userRoles.some((rbacRole) => rbacRole.id === roleId)
 
   const form = useForm<zod.infer<typeof AddUsersSchema>>({
     defaultValues: {
@@ -59,15 +66,27 @@ export const AddUsersForm = ({ roleId }: AddUsersFormProps) => {
     )
   }, [rowSelection, setValue])
 
+  useEffect(() => {
+    if (!canManageRole && Object.keys(rowSelection).length) {
+      setRowSelection({})
+    }
+  }, [canManageRole, rowSelection, setRowSelection])
+
   const queryObject = useQueryParams(["offset", "q", "order"])
   const { offset, q, order } = queryObject
 
-  const { users, count, isPending: isLoading, isError, error } = useUsers({
+  const {
+    users,
+    count,
+    isPending: isLoading,
+    isError,
+    error,
+  } = useUsers({
     limit: PAGE_SIZE,
     offset: offset ? Number(offset) : 0,
     q,
     order,
-    fields: "id,email,first_name,last_name,created_at,roles",
+    fields: "id,email,first_name,last_name,created_at,rbac_roles.id",
   })
 
   const updater: OnChangeFn<RowSelectionState> = (fn) => {
@@ -83,7 +102,7 @@ export const AddUsersForm = ({ roleId }: AddUsersFormProps) => {
     setRowSelection(state)
   }
 
-  const columns = useColumns()
+  const columns = useColumns({ roleId, canManageRole })
 
   const { table } = useDataTable({
     data: users ?? [],
@@ -91,7 +110,10 @@ export const AddUsersForm = ({ roleId }: AddUsersFormProps) => {
     count,
     enablePagination: true,
     enableRowSelection: (row) => {
-      return !row.original.roles?.includes(roleId)
+      const rowRoles = (row.original as UserWithRbacRoles)?.rbac_roles ?? []
+      return (
+        canManageRole && !rowRoles.some((rbacRole) => rbacRole.id === roleId)
+      )
     },
     getRowId: (row) => row.id,
     pageSize: PAGE_SIZE,
@@ -104,6 +126,10 @@ export const AddUsersForm = ({ roleId }: AddUsersFormProps) => {
   const { mutateAsync, isPending } = useAddRbacRoleUsers(roleId)
 
   const handleSubmit = form.handleSubmit(async (data) => {
+    if (!canManageRole) {
+      return
+    }
+
     await mutateAsync(data.user_ids, {
       onSuccess: () => {
         toast.success(
@@ -132,6 +158,11 @@ export const AddUsersForm = ({ roleId }: AddUsersFormProps) => {
       >
         <RouteFocusModal.Header>
           <div className="flex items-center justify-end gap-x-2">
+            {!canManageRole && (
+              <Hint variant="error">
+                {t("permissions.accessDenied.description")}
+              </Hint>
+            )}
             {form.formState.errors.user_ids && (
               <Hint variant="error">
                 {form.formState.errors.user_ids.message}
@@ -172,6 +203,7 @@ export const AddUsersForm = ({ roleId }: AddUsersFormProps) => {
             variant="primary"
             size="small"
             isLoading={isPending}
+            disabled={!canManageRole}
           >
             {t("actions.save")}
           </Button>
@@ -183,7 +215,13 @@ export const AddUsersForm = ({ roleId }: AddUsersFormProps) => {
 
 const columnHelper = createColumnHelper<HttpTypes.AdminUser>()
 
-const useColumns = () => {
+const useColumns = ({
+  roleId,
+  canManageRole,
+}: {
+  roleId: string
+  canManageRole: boolean
+}) => {
   const { t } = useTranslation()
   const { getFullDate } = useDate()
 
@@ -199,6 +237,7 @@ const useColumns = () => {
                   ? "indeterminate"
                   : table.getIsAllPageRowsSelected()
               }
+              disabled={!canManageRole}
               onCheckedChange={(value) =>
                 table.toggleAllPageRowsSelected(!!value)
               }
@@ -206,13 +245,17 @@ const useColumns = () => {
           )
         },
         cell: ({ row }) => {
-          const isPreSelected = !row.getCanSelect()
-          const isSelected = row.getIsSelected() || isPreSelected
+          const rowRoles = (row.original as UserWithRbacRoles)?.rbac_roles ?? []
+          const isAlreadyAdded = rowRoles.some(
+            (rbacRole) => rbacRole.id === roleId
+          )
+          const isSelected = row.getIsSelected() || isAlreadyAdded
+          const isDisabled = !canManageRole || isAlreadyAdded
 
           const Component = (
             <Checkbox
               checked={isSelected}
-              disabled={isPreSelected}
+              disabled={isDisabled}
               onCheckedChange={(value) => row.toggleSelected(!!value)}
               onClick={(e) => {
                 e.stopPropagation()
@@ -220,10 +263,21 @@ const useColumns = () => {
             />
           )
 
-          if (isPreSelected) {
+          if (isAlreadyAdded) {
             return (
               <Tooltip
                 content={t("roles.users.alreadyAddedTooltip")}
+                side="right"
+              >
+                {Component}
+              </Tooltip>
+            )
+          }
+
+          if (!canManageRole) {
+            return (
+              <Tooltip
+                content={t("permissions.accessDenied.description")}
                 side="right"
               >
                 {Component}
@@ -251,6 +305,6 @@ const useColumns = () => {
         cell: ({ row }) => getFullDate({ date: row.original.created_at }),
       }),
     ],
-    [t, getFullDate]
+    [t, getFullDate, roleId, canManageRole]
   )
 }

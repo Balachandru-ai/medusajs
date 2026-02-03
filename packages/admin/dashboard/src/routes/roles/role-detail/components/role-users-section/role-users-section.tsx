@@ -2,7 +2,7 @@ import { PencilSquare, Trash } from "@medusajs/icons"
 import { HttpTypes } from "@medusajs/types"
 import { Button, Checkbox, Container, Heading, usePrompt } from "@medusajs/ui"
 import { RowSelectionState, createColumnHelper } from "@tanstack/react-table"
-import { useMemo, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { useTranslation } from "react-i18next"
 import { Link } from "react-router-dom"
 
@@ -12,12 +12,17 @@ import {
   useRbacRoleUsers,
   useRemoveRbacRoleUsers,
 } from "../../../../../hooks/api/rbac-roles"
+import { useMe } from "../../../../../hooks/api/users"
 import { useDataTable } from "../../../../../hooks/use-data-table"
 import { useDate } from "../../../../../hooks/use-date"
 import { useQueryParams } from "../../../../../hooks/use-query-params"
 
 type RoleUsersSectionProps = {
   role: HttpTypes.AdminRbacRole
+}
+
+type UserWithRbacRoles = HttpTypes.AdminUser & {
+  rbac_roles?: HttpTypes.AdminRbacRole[] | null
 }
 
 const PAGE_SIZE = 10
@@ -27,6 +32,16 @@ export const RoleUsersSection = ({ role }: RoleUsersSectionProps) => {
   const { t } = useTranslation()
   const prompt = usePrompt()
   const { offset, order } = useQueryParams(["offset", "order"])
+  const { user } = useMe({ fields: "id,rbac_roles.id" })
+
+  const userRoles = (user as UserWithRbacRoles)?.rbac_roles ?? []
+  const canManageRole = userRoles.some((rbacRole) => rbacRole.id === role.id)
+
+  useEffect(() => {
+    if (!canManageRole && Object.keys(rowSelection).length) {
+      setRowSelection({})
+    }
+  }, [canManageRole, rowSelection, setRowSelection])
 
   const {
     users,
@@ -40,7 +55,7 @@ export const RoleUsersSection = ({ role }: RoleUsersSectionProps) => {
     order,
   })
 
-  const columns = useColumns()
+  const columns = useColumns(canManageRole)
 
   const { table } = useDataTable({
     data: users ?? [],
@@ -48,7 +63,7 @@ export const RoleUsersSection = ({ role }: RoleUsersSectionProps) => {
     count,
     getRowId: (row) => row.id,
     enablePagination: true,
-    enableRowSelection: true,
+    enableRowSelection: canManageRole,
     pageSize: PAGE_SIZE,
     rowSelection: {
       state: rowSelection,
@@ -66,6 +81,10 @@ export const RoleUsersSection = ({ role }: RoleUsersSectionProps) => {
   const { mutateAsync } = useRemoveRbacRoleUsers(role.id)
 
   const handleRemove = async () => {
+    if (!canManageRole) {
+      return
+    }
+
     const keys = Object.keys(rowSelection)
 
     if (!keys.length) {
@@ -98,11 +117,17 @@ export const RoleUsersSection = ({ role }: RoleUsersSectionProps) => {
     <Container className="divide-y p-0">
       <div className="flex items-center justify-between px-6 py-4">
         <Heading level="h2">{t("users.domain")}</Heading>
-        <Link to="add-users">
-          <Button variant="secondary" size="small">
+        {canManageRole ? (
+          <Link to="add-users">
+            <Button variant="secondary" size="small">
+              {t("general.add")}
+            </Button>
+          </Link>
+        ) : (
+          <Button variant="secondary" size="small" disabled>
             {t("general.add")}
           </Button>
-        </Link>
+        )}
       </div>
       <_DataTable
         table={table}
@@ -118,13 +143,17 @@ export const RoleUsersSection = ({ role }: RoleUsersSectionProps) => {
           { key: "created_at", label: t("fields.createdAt") },
           { key: "updated_at", label: t("fields.updatedAt") },
         ]}
-        commands={[
-          {
-            action: handleRemove,
-            label: t("actions.remove"),
-            shortcut: "r",
-          },
-        ]}
+        commands={
+          canManageRole
+            ? [
+                {
+                  action: handleRemove,
+                  label: t("actions.remove"),
+                  shortcut: "r",
+                },
+              ]
+            : undefined
+        }
         noRecords={{
           message: t("roles.users.list.noRecordsMessage"),
         }}
@@ -137,15 +166,21 @@ export const RoleUsersSection = ({ role }: RoleUsersSectionProps) => {
 const RoleUserActions = ({
   user,
   roleId,
+  canManageRole,
 }: {
   user: HttpTypes.AdminUser
   roleId: string
+  canManageRole: boolean
 }) => {
   const { t } = useTranslation()
   const prompt = usePrompt()
   const { mutateAsync } = useRemoveRbacRoleUsers(roleId)
 
   const handleRemove = async () => {
+    if (!canManageRole) {
+      return
+    }
+
     const res = await prompt({
       title: t("roles.users.remove.title", {
         count: 1,
@@ -182,6 +217,8 @@ const RoleUserActions = ({
               icon: <Trash />,
               label: t("actions.remove"),
               onClick: handleRemove,
+              disabled: !canManageRole,
+              disabledTooltip: t("permissions.accessDenied.description"),
             },
           ],
         },
@@ -192,7 +229,7 @@ const RoleUserActions = ({
 
 const columnHelper = createColumnHelper<HttpTypes.AdminUser>()
 
-const useColumns = () => {
+const useColumns = (canManageRole: boolean) => {
   const { t } = useTranslation()
   const { getFullDate } = useDate()
 
@@ -208,6 +245,7 @@ const useColumns = () => {
                   ? "indeterminate"
                   : table.getIsAllPageRowsSelected()
               }
+              disabled={!canManageRole}
               onCheckedChange={(value) =>
                 table.toggleAllPageRowsSelected(!!value)
               }
@@ -218,6 +256,7 @@ const useColumns = () => {
           return (
             <Checkbox
               checked={row.getIsSelected()}
+              disabled={!row.getCanSelect()}
               onCheckedChange={(value) => row.toggleSelected(!!value)}
               onClick={(e) => {
                 e.stopPropagation()
@@ -247,10 +286,16 @@ const useColumns = () => {
         cell: ({ row, table }) => {
           const { roleId } = table.options.meta as { roleId: string }
 
-          return <RoleUserActions user={row.original} roleId={roleId} />
+          return (
+            <RoleUserActions
+              user={row.original}
+              roleId={roleId}
+              canManageRole={canManageRole}
+            />
+          )
         },
       }),
     ],
-    [t, getFullDate]
+    [t, getFullDate, canManageRole]
   )
 }

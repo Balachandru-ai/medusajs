@@ -251,16 +251,13 @@ export const useRemoveRbacRolePolicy = (
 export const useAddRbacRoleUsers = (
   roleId: string,
   options?: UseMutationOptions<
-    void,
+    HttpTypes.AdminRbacRoleUsersResponse,
     FetchError,
-    HttpTypes.AdminBatchLink["add"]
+    HttpTypes.AdminAssignRoleUsers["users"]
   >
 ) => {
   return useMutation({
-    mutationFn: async (_payload) => {
-      // TODO: Replace with SDK call once the role user assignment endpoint is available.
-      return Promise.resolve()
-    },
+    mutationFn: (users) => sdk.admin.rbacRole.addUsers(roleId, { users }),
     onSuccess: (data, variables, context) => {
       queryClient.invalidateQueries({
         queryKey: rbacRolesQueryKeys.users(roleId),
@@ -279,16 +276,13 @@ export const useAddRbacRoleUsers = (
 export const useRemoveRbacRoleUsers = (
   roleId: string,
   options?: UseMutationOptions<
-    void,
+    HttpTypes.AdminRbacRoleUsersDeleteResponse,
     FetchError,
-    HttpTypes.AdminBatchLink["remove"]
+    HttpTypes.AdminRemoveRoleUsers["users"]
   >
 ) => {
   return useMutation({
-    mutationFn: async (_payload) => {
-      // TODO: Replace with SDK call once the role user assignment endpoint is available.
-      return Promise.resolve()
-    },
+    mutationFn: (users) => sdk.admin.rbacRole.removeUsers(roleId, { users }),
     onSuccess: (data, variables, context) => {
       queryClient.invalidateQueries({
         queryKey: rbacRolesQueryKeys.users(roleId),
