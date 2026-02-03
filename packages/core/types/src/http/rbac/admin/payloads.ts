@@ -43,6 +43,20 @@ export interface AdminAddRolePolicies {
   policies: string[]
 }
 
+export interface AdminAssignRoleUsers {
+  /**
+   * The IDs of the users to add to the role.
+   */
+  users: string[]
+}
+
+export interface AdminRemoveRoleUsers {
+  /**
+   * The IDs of the users to remove from the role.
+   */
+  users: string[]
+}
+
 export interface AdminCreateRbacPolicy {
   /**
    * The policy's unique key.

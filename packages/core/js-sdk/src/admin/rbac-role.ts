@@ -252,6 +252,70 @@ export class RbacRole {
   }
 
   /**
+   * This method adds users to an RBAC role. It sends a request to the
+   * Add Role Users API route.
+   *
+   * @param roleId - The role's ID.
+   * @param body - The users to add to the role.
+   * @param headers - Headers to pass in the request.
+   * @returns The role's users.
+   *
+   * @example
+   * sdk.admin.rbacRole.addUsers("role_123", {
+   *   users: ["user_123"]
+   * })
+   * .then(({ users }) => {
+   *   console.log(users)
+   * })
+   */
+  async addUsers(
+    roleId: string,
+    body: HttpTypes.AdminAssignRoleUsers,
+    headers?: ClientHeaders
+  ) {
+    return await this.client.fetch<HttpTypes.AdminRbacRoleUsersResponse>(
+      `/admin/rbac/roles/${roleId}/users`,
+      {
+        method: "POST",
+        headers,
+        body,
+      }
+    )
+  }
+
+  /**
+   * This method removes users from an RBAC role. It sends a request to the
+   * Remove Role Users API route.
+   *
+   * @param roleId - The role's ID.
+   * @param body - The users to remove from the role.
+   * @param headers - Headers to pass in the request.
+   * @returns The removal's details.
+   *
+   * @example
+   * sdk.admin.rbacRole.removeUsers("role_123", {
+   *   users: ["user_123"]
+   * })
+   * .then(({ deleted }) => {
+   *   console.log(deleted)
+   * })
+   */
+  async removeUsers(
+    roleId: string,
+    body: HttpTypes.AdminRemoveRoleUsers,
+    headers?: ClientHeaders
+  ) {
+    return await this.client.fetch<HttpTypes.AdminRbacRoleUsersDeleteResponse>(
+      `/admin/rbac/roles/${roleId}/users`,
+      {
+        method: "DELETE",
+        headers,
+        body,
+      }
+    )
+  }
+
+  /**
    * This method adds policies to an RBAC role. It sends a request to the
    * Add Role Policies API route.
    *

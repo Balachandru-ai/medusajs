@@ -45,3 +45,25 @@ export interface AdminRbacRoleUserListResponse
      */
     users: AdminUser[]
   }> { }
+
+export interface AdminRbacRoleUsersResponse {
+  /**
+   * The list of users.
+   */
+  users: AdminUser[]
+}
+
+export interface AdminRbacRoleUsersDeleteResponse {
+  /**
+   * The IDs of the users that were removed.
+   */
+  ids: string[]
+  /**
+   * The type of the removed items.
+   */
+  object: "role_user"
+  /**
+   * Whether the users were removed successfully.
+   */
+  deleted: boolean
+}
