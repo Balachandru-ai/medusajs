@@ -10,10 +10,12 @@ import { PolicyOperation } from "@medusajs/framework/utils"
 import { Entities } from "./query-config"
 import {
   AdminAddRolePoliciesType,
+  AdminAssignRoleUsers,
   AdminCreateRbacRole,
   AdminGetRbacRoleParams,
   AdminGetRbacRolesParams,
   AdminGetRoleUsersParams,
+  AdminRemoveRoleUsers,
   AdminUpdateRbacRole,
 } from "./validators"
 
@@ -99,6 +101,28 @@ export const adminRbacRoleRoutesMiddlewares: MiddlewareRoute[] = [
       {
         resource: Entities.user,
         operation: PolicyOperation.read,
+      },
+    ],
+  },
+  {
+    method: ["POST"],
+    matcher: "/admin/rbac/roles/:id/users",
+    middlewares: [validateAndTransformBody(AdminAssignRoleUsers)],
+    policies: [
+      {
+        resource: Entities.rbac_role,
+        operation: PolicyOperation.update,
+      },
+    ],
+  },
+  {
+    method: ["DELETE"],
+    matcher: "/admin/rbac/roles/:id/users",
+    middlewares: [validateAndTransformBody(AdminRemoveRoleUsers)],
+    policies: [
+      {
+        resource: Entities.rbac_role,
+        operation: PolicyOperation.update,
       },
     ],
   },

@@ -11,6 +11,7 @@ import {
   AdminGetUserParams,
   AdminGetUserRolesParams,
   AdminGetUsersParams,
+  AdminRemoveUserRoles,
   AdminUpdateUser,
 } from "./validators"
 
@@ -114,6 +115,17 @@ export const adminUserRoutesMiddlewares: MiddlewareRoute[] = [
   {
     method: ["DELETE"],
     matcher: "/admin/users/:id/roles/:role_id",
+    policies: [
+      {
+        resource: Entities.rbac_role,
+        operation: PolicyOperation.update,
+      },
+    ],
+  },
+  {
+    method: ["DELETE"],
+    matcher: "/admin/users/:id/roles",
+    middlewares: [validateAndTransformBody(AdminRemoveUserRoles)],
     policies: [
       {
         resource: Entities.rbac_role,

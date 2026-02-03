@@ -51,7 +51,7 @@ export const validateUserRolePermissionsStep = createStep(
       filters: { id: actor_id },
     })
 
-    if (!actors?.[0]?.rbac_roles || actors[0].rbac_roles.length === 0) {
+    if (!actors?.[0]?.rbac_roles?.length) {
       throw new MedusaError(
         MedusaError.Types.FORBIDDEN,
         "You do not have permission to assign these roles"

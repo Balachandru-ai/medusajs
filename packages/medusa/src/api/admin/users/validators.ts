@@ -45,6 +45,11 @@ export const AdminAssignUserRoles = z.object({
   roles: z.array(z.string().min(1)).min(1),
 })
 
+export type AdminRemoveUserRolesType = z.infer<typeof AdminRemoveUserRoles>
+export const AdminRemoveUserRoles = z.object({
+  roles: z.array(z.string().min(1)).min(1),
+})
+
 export const AdminGetUserRolesParamsFields = z.object({
   role_id: z.union([z.string(), z.array(z.string())]).optional(),
 })

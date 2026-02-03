@@ -727,6 +727,54 @@ medusaIntegrationTestRunner({
           )
           expect(afterResponse.data.count).toEqual(0)
         })
+      })
+
+      describe("DELETE /admin/users/:id/roles (batch)", () => {
+        it("should remove multiple roles from a user", async () => {
+          const remoteLink = container.resolve(ContainerRegistrationKeys.LINK)
+
+          // Assign multiple roles to test user
+          await remoteLink.create([
+            {
+              [Modules.USER]: { user_id: testUser.id },
+              [Modules.RBAC]: { rbac_role_id: viewerRole.id },
+            },
+            {
+              [Modules.USER]: { user_id: testUser.id },
+              [Modules.RBAC]: { rbac_role_id: editorRole.id },
+            },
+          ])
+
+          // Verify roles were assigned
+          const beforeResponse = await api.get(
+            `/admin/users/${testUser.id}/roles`,
+            adminHeaders
+          )
+          expect(beforeResponse.data.count).toEqual(2)
+
+          // Remove multiple roles
+          const deleteResponse = await api.delete(
+            `/admin/users/${testUser.id}/roles`,
+            {
+              ...adminHeaders,
+              data: { roles: [viewerRole.id, editorRole.id] },
+            }
+          )
+
+          expect(deleteResponse.status).toEqual(200)
+          expect(deleteResponse.data).toEqual({
+            ids: [viewerRole.id, editorRole.id],
+            object: "user_role",
+            deleted: true,
+          })
+
+          // Verify roles were removed
+          const afterResponse = await api.get(
+            `/admin/users/${testUser.id}/roles`,
+            adminHeaders
+          )
+          expect(afterResponse.data.count).toEqual(0)
+        })
 
         it("should fail to remove a role when actor lacks required policies", async () => {
           const remoteLink = container.resolve(ContainerRegistrationKeys.LINK)

@@ -1,4 +1,7 @@
-import { assignUserRolesWorkflow } from "@medusajs/core-flows"
+import {
+  assignUserRolesWorkflow,
+  removeUserRolesWorkflow,
+} from "@medusajs/core-flows"
 import {
   AuthenticatedMedusaRequest,
   MedusaResponse,
@@ -7,7 +10,10 @@ import {
   ContainerRegistrationKeys,
   MedusaError,
 } from "@medusajs/framework/utils"
-import { AdminAssignUserRolesType } from "../../validators"
+import {
+  AdminAssignUserRolesType,
+  AdminRemoveUserRolesType,
+} from "../../validators"
 
 export const GET = async (
   req: AuthenticatedMedusaRequest,
@@ -74,4 +80,43 @@ export const POST = async (
   const userRoles = links.map((link: any) => link.rbac_role)
 
   res.status(200).json({ roles: userRoles })
+}
+
+export const DELETE = async (
+  req: AuthenticatedMedusaRequest<AdminRemoveUserRolesType>,
+  res: MedusaResponse
+) => {
+  const userId = req.params.id
+  const { roles } = req.validatedBody
+  const query = req.scope.resolve(ContainerRegistrationKeys.QUERY)
+
+  const {
+    data: [user],
+  } = await query.graph({
+    entity: "user",
+    fields: ["id"],
+    filters: { id: userId },
+  })
+
+  if (!user) {
+    throw new MedusaError(
+      MedusaError.Types.NOT_FOUND,
+      `User with id "${userId}" not found`
+    )
+  }
+
+  await removeUserRolesWorkflow(req.scope).run({
+    input: {
+      actor_id: req.auth_context.actor_id,
+      actor: req.auth_context.actor_type,
+      user_id: userId,
+      role_ids: roles,
+    },
+  })
+
+  res.status(200).json({
+    ids: roles,
+    object: "user_role",
+    deleted: true,
+  })
 }
