@@ -96,6 +96,10 @@ export const adminUserRoutesMiddlewares: MiddlewareRoute[] = [
     ],
     policies: [
       {
+        resource: Entities.user,
+        operation: PolicyOperation.read,
+      },
+      {
         resource: Entities.rbac_role,
         operation: PolicyOperation.read,
       },
@@ -107,6 +111,10 @@ export const adminUserRoutesMiddlewares: MiddlewareRoute[] = [
     middlewares: [validateAndTransformBody(AdminAssignUserRoles)],
     policies: [
       {
+        resource: Entities.user,
+        operation: PolicyOperation.update,
+      },
+      {
         resource: Entities.rbac_role,
         operation: PolicyOperation.update,
       },
@@ -116,6 +124,10 @@ export const adminUserRoutesMiddlewares: MiddlewareRoute[] = [
     method: ["DELETE"],
     matcher: "/admin/users/:id/roles/:role_id",
     policies: [
+      {
+        resource: Entities.user,
+        operation: PolicyOperation.update,
+      },
       {
         resource: Entities.rbac_role,
         operation: PolicyOperation.update,
@@ -127,6 +139,10 @@ export const adminUserRoutesMiddlewares: MiddlewareRoute[] = [
     matcher: "/admin/users/:id/roles",
     middlewares: [validateAndTransformBody(AdminRemoveUserRoles)],
     policies: [
+      {
+        resource: Entities.user,
+        operation: PolicyOperation.update,
+      },
       {
         resource: Entities.rbac_role,
         operation: PolicyOperation.update,

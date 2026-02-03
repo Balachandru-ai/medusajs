@@ -29,6 +29,12 @@ export const adminRbacRoleRoutesMiddlewares: MiddlewareRoute[] = [
         QueryConfig.listTransformQueryConfig
       ),
     ],
+    policies: [
+      {
+        resource: Entities.rbac_role,
+        operation: PolicyOperation.read,
+      },
+    ],
   },
   {
     method: ["GET"],
@@ -38,6 +44,12 @@ export const adminRbacRoleRoutesMiddlewares: MiddlewareRoute[] = [
         AdminGetRbacRoleParams,
         QueryConfig.retrieveTransformQueryConfig
       ),
+    ],
+    policies: [
+      {
+        resource: Entities.rbac_role,
+        operation: PolicyOperation.read,
+      },
     ],
   },
   {
@@ -61,6 +73,12 @@ export const adminRbacRoleRoutesMiddlewares: MiddlewareRoute[] = [
         QueryConfig.retrieveTransformQueryConfig
       ),
     ],
+    policies: [
+      {
+        resource: Entities.rbac_role,
+        operation: PolicyOperation.update,
+      },
+    ],
   },
   {
     method: ["GET"],
@@ -70,6 +88,12 @@ export const adminRbacRoleRoutesMiddlewares: MiddlewareRoute[] = [
         AdminGetRbacRoleParams,
         QueryConfig.retrieveRolePoliciesTransformQueryConfig
       ),
+    ],
+    policies: [
+      {
+        resource: Entities.rbac_role,
+        operation: PolicyOperation.read,
+      },
     ],
   },
   {
@@ -82,11 +106,23 @@ export const adminRbacRoleRoutesMiddlewares: MiddlewareRoute[] = [
         QueryConfig.retrieveRolePoliciesTransformQueryConfig
       ),
     ],
+    policies: [
+      {
+        resource: Entities.rbac_role,
+        operation: PolicyOperation.update,
+      },
+    ],
   },
   {
     method: ["DELETE"],
     matcher: "/admin/rbac/roles/:id/policies/:policy_id",
     middlewares: [],
+    policies: [
+      {
+        resource: Entities.rbac_role,
+        operation: PolicyOperation.update,
+      },
+    ],
   },
   {
     method: ["GET"],
@@ -110,6 +146,10 @@ export const adminRbacRoleRoutesMiddlewares: MiddlewareRoute[] = [
     middlewares: [validateAndTransformBody(AdminAssignRoleUsers)],
     policies: [
       {
+        resource: Entities.user,
+        operation: PolicyOperation.update,
+      },
+      {
         resource: Entities.rbac_role,
         operation: PolicyOperation.update,
       },
@@ -121,6 +161,10 @@ export const adminRbacRoleRoutesMiddlewares: MiddlewareRoute[] = [
     middlewares: [validateAndTransformBody(AdminRemoveRoleUsers)],
     policies: [
       {
+        resource: Entities.user,
+        operation: PolicyOperation.update,
+      },
+      {
         resource: Entities.rbac_role,
         operation: PolicyOperation.update,
       },
@@ -130,5 +174,11 @@ export const adminRbacRoleRoutesMiddlewares: MiddlewareRoute[] = [
     method: ["DELETE"],
     matcher: "/admin/rbac/roles/:id",
     middlewares: [],
+    policies: [
+      {
+        resource: Entities.rbac_role,
+        operation: PolicyOperation.delete,
+      },
+    ],
   },
 ]
