@@ -104,7 +104,7 @@ const HomepageRecipesSection = () => {
             Medusa’s framework supports any business use case.
           </h2>
           <p className="txt-large text-medusa-fg-base">
-            These recipes show how you to build a use case by customizing and
+            These recipes show you how to build a use case by customizing and
             extending existing data models and features, or creating new ones.
           </p>
         </div>

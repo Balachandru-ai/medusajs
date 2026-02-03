@@ -15,15 +15,15 @@ const HomepageLinksSection = () => {
       links: [
         {
           link: "/learn/installation",
-          text: "Create your first application",
+          text: "Install Medusa",
         },
         {
           link: "https://docs.medusajs.com/cloud/sign-up",
-          text: "Deploy to Medusa Cloud",
+          text: "Deploy to Cloud",
         },
         {
           link: "https://docs.medusajs.com/resources/integrations",
-          text: "Browse third-party integrations",
+          text: "Browse integrations",
         },
       ],
     },
@@ -32,15 +32,15 @@ const HomepageLinksSection = () => {
       links: [
         {
           link: "/learn/fundamentals/admin/widgets",
-          text: "Build a UI Widget",
+          text: "Build a UI widget",
         },
         {
           link: "/learn/fundamentals/admin/ui-routes",
-          text: "Add a UI Route",
+          text: "Add a UI route",
         },
         {
           link: "https://docs.medusajs.com/ui",
-          text: "Browse the UI component library",
+          text: "Browse the UI library",
         },
       ],
     },
@@ -49,15 +49,15 @@ const HomepageLinksSection = () => {
       links: [
         {
           link: "https://docs.medusajs.com/resources/nextjs-starter",
-          text: "Explore our storefront starter",
+          text: "Explore storefront starter",
         },
         {
           link: "https://docs.medusajs.com/resources/storefront-development",
-          text: "Build a custom storefront",
+          text: "Build custom storefront",
         },
         {
           link: "https://docs.medusajs.com/learn/introduction/build-with-llms-ai#ecommerce-storefront-best-practices",
-          text: "Use Agent Skills",
+          text: "Use agent skills",
         },
       ],
     },

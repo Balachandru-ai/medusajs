@@ -62,7 +62,7 @@ const HomepageBloom = () => {
         <div className="flex flex-col gap-2 flex-1">
           <BloomIcon className="w-2 h-2 text-medusa-fg-subtle" />
           <span className="text-h1 text-pretty">
-            Hello! I’m Bloom, your go to ecommerce assistant. How can I help
+            Hello! I’m Bloom, your go-to ecommerce assistant. How can I help
             you?
           </span>
           <div className="w-full flex-1 py-0.75 border-t border-medusa-border-base relative">
