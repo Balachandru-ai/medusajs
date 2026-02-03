@@ -176,7 +176,7 @@ export const generatedEditDates = {
   "app/storefront-development/regions/store-retrieve-region/page.mdx": "2025-03-27T13:29:54.041Z",
   "app/storefront-development/regions/page.mdx": "2024-06-09T15:19:09+02:00",
   "app/storefront-development/tips/page.mdx": "2025-12-09T13:33:33.997Z",
-  "app/storefront-development/page.mdx": "2025-12-09T13:30:25.379Z",
+  "app/storefront-development/page.mdx": "2026-02-02T12:34:41.022Z",
   "app/troubleshooting/cors-errors/page.mdx": "2024-05-03T17:36:38+03:00",
   "app/troubleshooting/create-medusa-app-errors/page.mdx": "2026-01-14T08:32:33.242Z",
   "app/troubleshooting/database-errors/page.mdx": "2025-12-04T14:14:46.745Z",
