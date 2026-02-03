@@ -3773,6 +3773,17 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@medusajs/loyalty@workspace:packages/modules/loyalty":
+  version: 0.0.0-use.local
+  resolution: "@medusajs/loyalty@workspace:packages/modules/loyalty"
+  dependencies:
+    "@medusajs/framework": 2.13.1
+    "@medusajs/test-utils": 2.13.1
+  peerDependencies:
+    "@medusajs/framework": 2.13.1
+  languageName: unknown
+  linkType: soft
+
 "@medusajs/medusa-oas-cli@2.13.1, @medusajs/medusa-oas-cli@workspace:packages/cli/oas/medusa-oas-cli":
   version: 0.0.0-use.local
   resolution: "@medusajs/medusa-oas-cli@workspace:packages/cli/oas/medusa-oas-cli"

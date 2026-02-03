@@ -15,6 +15,7 @@ import {
   IIndexService,
   IInventoryService,
   ILockingModule,
+  ILoyaltyModuleService,
   INotificationModuleService,
   IOrderModuleService,
   IPaymentModuleService,
@@ -84,6 +85,7 @@ declare module "@medusajs/types" {
     [Modules.INDEX]: IIndexService
     [Modules.TRANSLATION]: ITranslationModuleService
     [Modules.RBAC]: IRbacModuleService
+    [Modules.LOYALTY]: ILoyaltyModuleService
   }
 }
 
