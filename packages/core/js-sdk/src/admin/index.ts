@@ -27,6 +27,7 @@ import { ProductTag } from "./product-tag"
 import { ProductType } from "./product-type"
 import { ProductVariant } from "./product-variant"
 import { Promotion } from "./promotion"
+import { PropertyLabel } from "./property-label"
 import { RefundReason } from "./refund-reasons"
 import { Region } from "./region"
 import Reservation from "./reservation"
@@ -243,6 +244,11 @@ export class Admin {
    * @featureFlag view_configurations
    */
   public views: Views
+  /**
+   * @tags property-labels
+   * @featureFlag view_configurations
+   */
+  public propertyLabel: PropertyLabel
 
   constructor(client: Client) {
     this.invite = new Invite(client)
@@ -293,5 +299,6 @@ export class Admin {
     this.plugin = new Plugin(client)
     this.taxProvider = new TaxProvider(client)
     this.views = new Views(client)
+    this.propertyLabel = new PropertyLabel(client)
   }
 }

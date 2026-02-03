@@ -2,6 +2,7 @@ import React from "react"
 import { Badge, StatusBadge, Tooltip } from "@medusajs/ui"
 import { HttpTypes } from "@medusajs/types"
 import ReactCountryFlag from "react-country-flag"
+import { ArrowUpRightOnBox } from "@medusajs/icons"
 import { getCountryByIso2 } from "../data/countries"
 import { ProductCell } from "../../components/table/table-cells/product/product-cell"
 import { CollectionCell } from "../../components/table/table-cells/product/collection-cell"
@@ -11,7 +12,6 @@ import { ProductStatusCell } from "../../components/table/table-cells/product/pr
 import { DateCell } from "../../components/table/table-cells/common/date-cell"
 import { DisplayIdCell } from "../../components/table/table-cells/order/display-id-cell"
 import { TotalCell } from "../../components/table/table-cells/order/total-cell"
-import { MoneyAmountCell } from "../../components/table/table-cells/common/money-amount-cell"
 import { TFunction } from "i18next"
 import {
   getOrderPaymentStatus,
@@ -34,18 +34,32 @@ const getNestedValue = (obj: any, path: string) => {
 }
 
 const TextRenderer: CellRenderer = (value, _row, _column, _t) => {
-  if (value === null || value === undefined) return "-"
+  if (value === null || value === undefined) {
+    return "-"
+  }
   return String(value)
 }
 
 const CountRenderer: CellRenderer = (value, _row, _column, t) => {
-  const items = value || []
-  const count = Array.isArray(items) ? items.length : 0
-  return t("general.items", { count })
+  if (Array.isArray(value)) {
+    const count = value.length
+    return t("general.items", { count })
+  }
+
+  if (typeof value === "number") {
+    return t("general.items", { count: value })
+  }
+
+  return t("general.items", { count: 0 })
 }
 
+// TODO: if we expect users to use this renderer for their statuses, we need to provide a way for them to pass some
+// sort of registry that passes the context field and resolves the status label and color based on it.
+// Also, use translated value if available and remove hardcoded field conditional
 const StatusRenderer: CellRenderer = (value, row, column, t) => {
-  if (!value) return "-"
+  if (!value) {
+    return "-"
+  }
 
   if (
     column.field === "status" &&
@@ -55,14 +69,22 @@ const StatusRenderer: CellRenderer = (value, row, column, t) => {
     return <ProductStatusCell status={row.status} />
   }
 
-  if (column.context === "payment" && t) {
+  if (column.field === "payment_status" && t) {
     const { label, color } = getOrderPaymentStatus(t, value)
-    return <StatusBadge color={color}>{label}</StatusBadge>
+    return (
+      <StatusBadge className="mx-auto" color={color}>
+        {label}
+      </StatusBadge>
+    )
   }
 
-  if (column.context === "fulfillment" && t) {
+  if (column.field === "fulfillment_status" && t) {
     const { label, color } = getOrderFulfillmentStatus(t, value)
-    return <StatusBadge color={color}>{label}</StatusBadge>
+    return (
+      <StatusBadge className="mx-auto" color={color}>
+        {label}
+      </StatusBadge>
+    )
   }
 
   // Generic status badge for other status types
@@ -90,7 +112,9 @@ const StatusRenderer: CellRenderer = (value, row, column, t) => {
 
   // Use existing translation keys where available
   const getTranslatedStatus = (status: string): string => {
-    if (!t) return status
+    if (!t) {
+      return status
+    }
 
     const lowerStatus = status.toLowerCase()
     switch (lowerStatus) {
@@ -113,40 +137,74 @@ const StatusRenderer: CellRenderer = (value, row, column, t) => {
   const translatedValue = getTranslatedStatus(value)
 
   return (
-    <StatusBadge color={getStatusColor(value)}>{translatedValue}</StatusBadge>
+    <StatusBadge className="mx-auto" color={getStatusColor(value)}>
+      {translatedValue}
+    </StatusBadge>
   )
 }
 
 const BadgeListRenderer: CellRenderer = (value, row, column, t) => {
-  // For sales channels
-  if (
-    column.field === "sales_channels_display" ||
-    column.field === "sales_channels"
-  ) {
+  // Note: leaving for backwards compatibility, since it is how sales channels for products are visualized in many products tables
+  // across the UI. Ideally we use the resolution below, so we unify how list of values in tables are visualized across the UI.
+  if (column.render_mode === "sales_channels_list") {
     return <SalesChannelsCell salesChannels={row.sales_channels} />
   }
 
-  // Generic badge list
-  if (!Array.isArray(value)) return "-"
+  let resolvedValue = value
+  let computedMetadata = {} as Record<string, any>
 
-  const items = value.slice(0, 2)
-  const remaining = value.length - 2
+  if (column.computed) {
+    computedMetadata = column.computed.metadata ?? {}
+    resolvedValue = row[computedMetadata.list_field]
+  }
+
+  // Generic badge list
+  if (!Array.isArray(resolvedValue) || resolvedValue.length === 0) {
+    return "-"
+  }
+
+  const items = resolvedValue.slice(0, 2)
+  const remaining = resolvedValue.length - 2
+
+  const resolveBadgeValue = (item: any) => {
+    if (typeof item === "string") {
+      return item
+    }
+
+    if (Object.keys(computedMetadata).length > 0) {
+      return item[computedMetadata.display_field]
+    }
+
+    return item.name || item.title || item.value || "-"
+  }
 
   return (
     <div className="flex gap-1">
-      {items.map((item, index) => (
-        <Badge key={index} size="xsmall">
-          {typeof item === "string" ? item : item.name || item.title || "-"}
-        </Badge>
-      ))}
+      {items.map((item, index) => {
+        return (
+          <Badge key={index} size="xsmall">
+            {resolveBadgeValue(item)}
+          </Badge>
+        )
+      })}
       {remaining > 0 && (
-        <Badge size="xsmall" color="grey">
-          {t
-            ? t("general.plusCountMore", "+ {{count}} more", {
-                count: remaining,
-              })
-            : `+${remaining}`}
-        </Badge>
+        <Tooltip
+          content={
+            <ul>
+              {resolvedValue.slice(2).map((item) => (
+                <li key={item}>{resolveBadgeValue(item)}</li>
+              ))}
+            </ul>
+          }
+        >
+          <Badge size="xsmall" color="grey">
+            {t
+              ? t("general.plusCountMore", "+ {{count}} more", {
+                  count: remaining,
+                })
+              : `+${remaining}`}
+          </Badge>
+        </Tooltip>
       )}
     </div>
   )
@@ -170,7 +228,9 @@ const CustomerNameRenderer: CellRenderer = (_, row, _column, t) => {
     const fullName = `${row.customer.first_name || ""} ${
       row.customer.last_name || ""
     }`.trim()
-    if (fullName) return fullName
+    if (fullName) {
+      return fullName
+    }
   }
 
   // Fall back to email
@@ -196,7 +256,9 @@ const AddressSummaryRenderer: CellRenderer = (_, row, column, _t) => {
     address = row.shipping_address || row.billing_address
   }
 
-  if (!address) return "-"
+  if (!address) {
+    return "-"
+  }
 
   const parts = []
 
@@ -205,9 +267,15 @@ const AddressSummaryRenderer: CellRenderer = (_, row, column, _t) => {
   }
 
   const locationParts = []
-  if (address.city) locationParts.push(address.city)
-  if (address.province) locationParts.push(address.province)
-  if (address.postal_code) locationParts.push(address.postal_code)
+  if (address.city) {
+    locationParts.push(address.city)
+  }
+  if (address.province) {
+    locationParts.push(address.province)
+  }
+  if (address.postal_code) {
+    locationParts.push(address.postal_code)
+  }
 
   if (locationParts.length > 0) {
     parts.push(locationParts.join(", "))
@@ -223,7 +291,9 @@ const AddressSummaryRenderer: CellRenderer = (_, row, column, _t) => {
 const CountryCodeRenderer: CellRenderer = (_, row, _column, _t) => {
   const countryCode = row.shipping_address?.country_code
 
-  if (!countryCode) return <div className="flex w-full justify-center">-</div>
+  if (!countryCode) {
+    return <div className="flex w-full justify-center">-</div>
+  }
 
   const country = getCountryByIso2(countryCode)
   const displayName = country?.display_name || countryCode.toUpperCase()
@@ -256,15 +326,197 @@ const DisplayIdRenderer: CellRenderer = (value, _row, _column, _t) => {
 }
 
 const CurrencyRenderer: CellRenderer = (value, row, _column, _t) => {
-  const currencyCode = row.currency_code || "USD"
+  return <TotalCell currencyCode={row.currency_code || "USD"} total={value} />
+}
+
+const NumberRenderer: CellRenderer = (value, _row, _column, _t) => {
+  if (value === null || value === undefined) {
+    return "-"
+  }
+
+  const num = typeof value === "string" ? parseFloat(value) : value
+  if (isNaN(num)) {
+    return "-"
+  }
+
+  return (num as number).toLocaleString()
+}
+
+const BooleanRenderer: CellRenderer = (value, _row, _column, t) => {
+  if (value === null || value === undefined) {
+    return "-"
+  }
+
+  const label = (
+    value
+      ? t
+        ? t("fields.yes", "Yes")
+        : "Yes"
+      : t
+      ? t("fields.no", "No")
+      : "No"
+  ) as string
+
   return (
-    <MoneyAmountCell currencyCode={currencyCode} amount={value} align="right" />
+    <span className="mx-auto flex items-center justify-center">
+      <Badge size="xsmall" color={value ? "green" : "grey"}>
+        {label}
+      </Badge>
+    </span>
   )
 }
 
-const TotalRenderer: CellRenderer = (value, row, _column, _t) => {
-  const currencyCode = row.currency_code || "USD"
-  return <TotalCell currencyCode={currencyCode} total={value} />
+// TODO: ask Ludvig how we want to show this renderer
+const IdRenderer: CellRenderer = (value, _row, _column, _t) => {
+  return TextRenderer(value, _row, _column, _t)
+}
+
+const EmailRenderer: CellRenderer = (value, _row, _column, _t) => {
+  if (!value) {
+    return "-"
+  }
+
+  return (
+    <a
+      href={`mailto:${value}`}
+      className="text-ui-fg-interactive hover:text-ui-fg-interactive-hover"
+      onClick={(e) => e.stopPropagation()}
+    >
+      {value}
+    </a>
+  )
+}
+
+const PhoneRenderer: CellRenderer = (value, _row, _column, _t) => {
+  if (!value) {
+    return "-"
+  }
+
+  return (
+    <a
+      href={`tel:${value}`}
+      className="text-ui-fg-interactive hover:text-ui-fg-interactive-hover"
+      onClick={(e) => e.stopPropagation()}
+    >
+      {value}
+    </a>
+  )
+}
+
+const UrlRenderer: CellRenderer = (value, _row, _column, _t) => {
+  if (!value) {
+    return "-"
+  }
+
+  return (
+    <a
+      href={value}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="text-ui-fg-interactive hover:text-ui-fg-interactive-hover flex items-center gap-1"
+      onClick={(e) => e.stopPropagation()}
+    >
+      <span className="max-w-[200px] truncate">{value}</span>
+      <ArrowUpRightOnBox className="h-3 w-3 flex-shrink-0" />
+    </a>
+  )
+}
+
+const ImageRenderer: CellRenderer = (value, _row, _column, _t) => {
+  if (!value) {
+    return "-"
+  }
+
+  return (
+    <div className="flex items-center justify-center">
+      <img
+        src={value}
+        alt=""
+        className="h-8 w-8 rounded object-cover"
+        onError={(e) => {
+          ;(e.target as HTMLImageElement).style.display = "none"
+        }}
+      />
+    </div>
+  )
+}
+
+const JsonRenderer: CellRenderer = (value, _row, _column, _t) => {
+  if (value === null || value === undefined) {
+    return "-"
+  }
+
+  const jsonString = typeof value === "string" ? value : JSON.stringify(value)
+  const truncated =
+    jsonString.length > 50 ? jsonString.substring(0, 47) + "..." : jsonString
+
+  return (
+    <Tooltip
+      content={
+        <pre className="max-w-[400px] overflow-auto text-xs">
+          {JSON.stringify(value, null, 2)}
+        </pre>
+      }
+    >
+      <span className="text-ui-fg-subtle cursor-help font-mono text-xs">
+        {truncated}
+      </span>
+    </Tooltip>
+  )
+}
+
+const BadgeRenderer: CellRenderer = (value, _row, _column, _t) => {
+  if (!value) {
+    return "-"
+  }
+
+  return <Badge size="xsmall">{String(value)}</Badge>
+}
+
+// TODO: improve based on how we receive the data, probably targetting row
+const AddressRenderer: CellRenderer = (value, row, column, _t) => {
+  let address = value
+  if (!address && column.field.includes("address")) {
+    address = row[column.field.replace("_display", "")]
+  }
+
+  if (!address || typeof address !== "object") {
+    return "-"
+  }
+
+  const parts = []
+  if (address.address_1) {
+    parts.push(address.address_1)
+  }
+  if (address.address_2) {
+    parts.push(address.address_2)
+  }
+  if (address.city) {
+    parts.push(address.city)
+  }
+  if (address.province) {
+    parts.push(address.province)
+  }
+  if (address.postal_code) {
+    parts.push(address.postal_code)
+  }
+  if (address.country_code) {
+    parts.push(address.country_code.toUpperCase())
+  }
+
+  if (parts.length === 0) {
+    return "-"
+  }
+
+  const fullAddress = parts.join(", ")
+  const truncated =
+    fullAddress.length > 40 ? fullAddress.substring(0, 37) + "..." : fullAddress
+
+  return (
+    <Tooltip content={fullAddress}>
+      <span className="max-w-[200px] truncate">{truncated}</span>
+    </Tooltip>
+  )
 }
 
 // Register built-in renderers
@@ -275,7 +527,16 @@ cellRenderers.set("badge_list", BadgeListRenderer)
 cellRenderers.set("date", DateRenderer)
 cellRenderers.set("timestamp", DateRenderer)
 cellRenderers.set("currency", CurrencyRenderer)
-cellRenderers.set("total", TotalRenderer)
+cellRenderers.set("number", NumberRenderer)
+cellRenderers.set("boolean", BooleanRenderer)
+cellRenderers.set("id", IdRenderer)
+cellRenderers.set("email", EmailRenderer)
+cellRenderers.set("phone", PhoneRenderer)
+cellRenderers.set("url", UrlRenderer)
+cellRenderers.set("image", ImageRenderer)
+cellRenderers.set("json", JsonRenderer)
+cellRenderers.set("badge", BadgeRenderer)
+cellRenderers.set("datetime", DateRenderer)
 
 // Register product-specific renderers
 cellRenderers.set("product_info", ProductInfoRenderer)
@@ -288,6 +549,7 @@ cellRenderers.set("customer_name", CustomerNameRenderer)
 cellRenderers.set("address_summary", AddressSummaryRenderer)
 cellRenderers.set("country_code", CountryCodeRenderer)
 cellRenderers.set("display_id", DisplayIdRenderer)
+cellRenderers.set("address", AddressRenderer)
 
 export function getCellRenderer(
   renderType?: string,
@@ -304,12 +566,7 @@ export function getCellRenderer(
     case "date":
       return DateRenderer
     case "boolean":
-      return (value, _row, _column, t) => {
-        if (t) {
-          return value ? t("fields.yes", "Yes") : t("fields.no", "No")
-        }
-        return value ? "Yes" : "No"
-      }
+      return BooleanRenderer
     case "enum":
       return StatusRenderer
     case "currency":

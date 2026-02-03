@@ -1,9 +1,9 @@
+import { HttpTypes } from "@medusajs/types"
 import {
   DataTableColumnDef,
   DataTableEmptyStateProps,
   DataTableFilter,
 } from "@medusajs/ui"
-import { ColumnAdapter } from "../../hooks/table/columns/use-configurable-table-columns"
 
 /**
  * Adapter interface for configurable tables.
@@ -41,21 +41,34 @@ export interface TableAdapter<TData> {
   getRowHref?: (row: TData) => string | undefined
 
   /**
-   * Table filters configuration
+   * Explicit table filters configuration. If not provided, filters will be reolved dynamically from the API columns.
    */
   filters?: DataTableFilter[]
+
+  /**
+   * Transform API columns before use (e.g., disable sorting, exclude filters).
+   * Applied immediately after fetching columns from API.
+   * Returns a new array of columns with desired modifications.
+   *
+   * @param columns - The API columns to transform
+   * @returns Transformed columns
+   *
+   * @example
+   * transformColumns: (columns) => columns.map(col => ({
+   *   ...col,
+   *   sortable: col.field === 'status' ? false : col.sortable,
+   *   filter: { ...col.filter, enabled: false }
+   * }))
+   */
+  transformColumns?: (
+    columns: HttpTypes.AdminColumn[]
+  ) => HttpTypes.AdminColumn[]
 
   /**
    * Transform API columns to table columns.
    * If not provided, will use default column generation.
    */
   getColumns?: (apiColumns: any[]) => DataTableColumnDef<TData, any>[]
-
-  /**
-   * Column adapter for customizing column behavior (alignment, formatting, etc.)
-   * If not provided, will use entity's default column adapter if available.
-   */
-  columnAdapter?: ColumnAdapter<TData>
 
   /**
    * Empty state configuration

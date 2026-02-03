@@ -1,15 +1,16 @@
 import { HttpTypes } from "@medusajs/types"
 import { useProducts } from "../../../../../hooks/api/products"
-import { productColumnAdapter } from "../../../../../lib/table/entity-adapters"
-import { createTableAdapter, TableAdapter } from "../../../../../lib/table/table-adapters"
-import { useProductTableFilters } from "./use-product-table-filters"
+import {
+  createTableAdapter,
+  TableAdapter,
+} from "../../../../../lib/table/table-adapters"
+import { useMemo } from "react"
 
 export function createProductTableAdapter(): TableAdapter<HttpTypes.AdminProduct> {
   return createTableAdapter<HttpTypes.AdminProduct>({
     entity: "products",
     queryPrefix: "p",
     pageSize: 20,
-    columnAdapter: productColumnAdapter,
     useData: (fields, params) => {
       const { products, count, isError, error, isLoading } = useProducts(
         {
@@ -20,7 +21,8 @@ export function createProductTableAdapter(): TableAdapter<HttpTypes.AdminProduct
         {
           placeholderData: (previousData, previousQuery) => {
             // Only keep placeholder data if the fields haven't changed
-            const prevFields = previousQuery?.[previousQuery.length - 1]?.query?.fields
+            const prevFields =
+              previousQuery?.[previousQuery.length - 1]?.query?.fields
             if (prevFields && prevFields !== fields) {
               // Fields changed, don't use placeholder data
               return undefined
@@ -33,6 +35,28 @@ export function createProductTableAdapter(): TableAdapter<HttpTypes.AdminProduct
       return { data: products, count, isLoading, isError, error }
     },
     getRowHref: (row) => `/products/${row.id}`,
+    transformColumns: (columns) => {
+      const DISABLED_FILTER_PATTERNS = [
+        /^collection\.(?!id$).+/,
+        /^shipping_profile.+/,
+        /^images.+/,
+        /^options.+/,
+        /^type\.(?!id$).+/,
+      ]
+
+      return columns.map((column) => {
+        const isFilterDisabled = DISABLED_FILTER_PATTERNS.some((pattern) =>
+          pattern.test(column.field)
+        )
+
+        return {
+          ...column,
+          filter: isFilterDisabled
+            ? { ...column.filter, enabled: false }
+            : column.filter,
+        }
+      })
+    },
   })
 }
 
@@ -40,12 +64,5 @@ export function createProductTableAdapter(): TableAdapter<HttpTypes.AdminProduct
  * Hook to get the product table adapter with filters
  */
 export function useProductTableAdapter(): TableAdapter<HttpTypes.AdminProduct> {
-  const filters = useProductTableFilters()
-  const adapter = createProductTableAdapter()
-
-  // Add dynamic filters to the adapter
-  return {
-    ...adapter,
-    filters,
-  }
+  return useMemo(() => createProductTableAdapter(), [])
 }

@@ -6829,6 +6829,41 @@
       "required": ["domain", "subtitle", "create", "delete", "tooltip"],
       "additionalProperties": false
     },
+    "propertyLabels": {
+      "type": "object",
+      "properties": {
+        "domain": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        },
+        "subtitle": {
+          "type": "string"
+        },
+        "fields": {
+          "type": "object",
+          "properties": {
+            "module": {
+              "type": "string"
+            },
+            "model": {
+              "type": "string"
+            },
+            "propertyCount": {
+              "type": "string"
+            },
+            "hasOverrides": {
+              "type": "string"
+            }
+          },
+          "required": ["module", "model", "propertyCount", "hasOverrides"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["domain", "title", "subtitle", "fields"],
+      "additionalProperties": false
+    },
     "taxRegions": {
       "type": "object",
       "properties": {
@@ -9412,17 +9447,17 @@
           "required": ["metrics"]
         },
         "settings": {
-            "type": "object",
-            "properties": {
-                "header": {
-                    "type": "string"
-                },
-                "successToast": {
-                    "type": "string"
-                }
+          "type": "object",
+          "properties": {
+            "header": {
+              "type": "string"
             },
-            "required": ["header", "successToast"],
-            "additionalProperties": false
+            "successToast": {
+              "type": "string"
+            }
+          },
+          "required": ["header", "successToast"],
+          "additionalProperties": false
         },
         "actions": {
           "type": "object",

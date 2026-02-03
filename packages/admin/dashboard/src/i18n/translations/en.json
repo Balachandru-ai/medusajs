@@ -3064,6 +3064,17 @@
       "value": "Value"
     }
   },
+  "propertyLabels": {
+    "domain": "Property Labels",
+    "title": "Property Labels",
+    "subtitle": "Manage custom property labels for configurable tables of your entities.",
+    "fields": {
+      "module": "Module",
+      "model": "Model",
+      "propertyCount": "Property Count",
+      "hasOverrides": "Has Overrides"
+    }
+  },
   "notifications": {
     "domain": "Notifications",
     "emptyState": {

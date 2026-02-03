@@ -21,6 +21,19 @@ import type enTranslation from "./en.json"
 export type Resources = {
   translation: typeof enTranslation
 }
+
+// Cell renderer types
+import type React from "react"
+import type { TFunction } from "i18next"
+
+export type CellRenderer<TData = any> = (
+  value: any,
+  row: TData,
+  column: any,
+  t: TFunction
+) => React.ReactNode
+
+export declare function registerCellRenderer(type: string, renderer: CellRenderer): void
 `
 
   // Ensure the dist directory exists
@@ -33,7 +46,8 @@ export type Resources = {
 
   // Copy the canonical en translation for type inference
   const enTranslationSrcPath = path.join(
-    __dirname, "../src/i18n/translations/en.json"
+    __dirname,
+    "../src/i18n/translations/en.json"
   )
   const enTranslationDistPath = path.join(distDir, "en.json")
   fs.copyFileSync(enTranslationSrcPath, enTranslationDistPath)
