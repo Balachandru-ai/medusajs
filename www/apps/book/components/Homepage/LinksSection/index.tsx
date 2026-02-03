@@ -56,8 +56,8 @@ const HomepageLinksSection = () => {
           text: "Build a custom storefront",
         },
         {
-          link: "https://docs.medusajs.com/ui",
-          text: "Browse the UI component library",
+          link: "https://docs.medusajs.com/learn/introduction/build-with-llms-ai#ecommerce-storefront-best-practices",
+          text: "Use Agent Skills",
         },
       ],
     },
