@@ -22,12 +22,7 @@ import {
 
 const GiftCardExpiration = () => {
   const { id } = useParams()
-  const {
-    gift_card: giftCard,
-    isPending,
-    isError,
-    error,
-  } = useGiftCard(id!, {})
+  const { gift_card: giftCard, isPending, isError, error } = useGiftCard(id!)
 
   if (isError) {
     throw error
