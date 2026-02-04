@@ -37,8 +37,8 @@ export const validateCustomerStoreCreditAccountStep = createStep(
   }
 )
 
-export const validateCartStepId = "validate-cart"
-export const validateCartStep = createStep(
+const validateCartStepId = "validate-cart"
+const validateCartStep = createStep(
   validateCartStepId,
   async function ({
     cart,

@@ -1,5 +1,4 @@
 import {
-  CartDTO,
   CartTypes,
   CreateCartCreditLineDTO,
   LoyaltyTypes,

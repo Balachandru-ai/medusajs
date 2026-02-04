@@ -29,7 +29,7 @@ export const validateStoreCreditAccountInputStep = createStep(
 
 type CreateStoreCreditAccountInput = {
   code?: string
-  customer_id: string
+  customer_id?: string
   currency_code: string
 }
 
