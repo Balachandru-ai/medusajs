@@ -1,9 +1,9 @@
 import crypto from "crypto"
 
 /**
- * Generates a unique code for gift cards or store credit accounts.
+ * Generates a unique code for gift cards, store credit accounts, or other entities.
  *
- * @param prefix - The prefix for the code (e.g., "GC" for gift card)
+ * @param prefix - The prefix for the code (e.g., "GC" for gift card, "SC" for store credit)
  * @param sections - The number of 4-character sections
  * @returns A formatted code like "GC-ABCD-EFGH-IJKL-MNOP"
  */

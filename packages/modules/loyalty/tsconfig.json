@@ -4,8 +4,7 @@
     "paths": {
       "@models": ["./src/models"],
       "@services": ["./src/services"],
-      "@types": ["./src/types"],
-      "@utils": ["./src/utils"]
+      "@types": ["./src/types"]
     }
   }
 }
