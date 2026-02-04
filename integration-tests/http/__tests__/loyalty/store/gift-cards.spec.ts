@@ -1,54 +1,48 @@
-import { medusaIntegrationTestRunner } from "@medusajs/test-utils";
+import { medusaIntegrationTestRunner } from "@medusajs/test-utils"
 import {
   adminHeaders,
   createAdminUser,
-  createStoreUser,
-} from "../../../utils/admin";
-import {
   generatePublishableKey,
   generateStoreHeaders,
-} from "../../../utils/store";
+} from "../../../../helpers/create-admin-user"
+import { createAuthenticatedCustomer } from "../../../../modules/helpers/create-authenticated-customer"
 
-jest.setTimeout(60 * 1000);
+jest.setTimeout(60 * 1000)
 
 const giftCardPayload = {
   currency_code: "usd",
   value: 1000,
   code: "TEST1",
   line_item_id: "lin_123",
-};
+}
 
 medusaIntegrationTestRunner({
-  testSuite: ({ api, getContainer }) => {
-    let customer;
-    let storeHeaders;
+  testSuite: ({ dbConnection, api, getContainer }) => {
+    let customer
+    let storeHeaders
 
     beforeEach(async () => {
-      const container = getContainer();
-      await createAdminUser(adminHeaders, container);
-      const publishableKey = await generatePublishableKey(container);
-      storeHeaders = generateStoreHeaders({ publishableKey });
+      await createAdminUser(dbConnection, adminHeaders, getContainer())
+      const publishableKey = await generatePublishableKey(getContainer())
+      storeHeaders = generateStoreHeaders({ publishableKey })
 
-      const user = await createStoreUser({
-        api,
-        storeHeaders,
+      const user = await createAuthenticatedCustomer(api, storeHeaders, {
         email: "initial@customer.com",
-      });
+      })
 
-      storeHeaders.headers["Authorization"] = `Bearer ${user.token}`;
-
-      customer = user.customer;
-    });
+      storeHeaders.headers["Authorization"] = `Bearer ${user.jwt}`
+      customer = user.customer
+    })
 
     describe("POST /admin/gift-cards", () => {
-      it("should create a gift card and an annonymous credit account for the card", async () => {
+      it("should create a gift card and an anonymous credit account for the card", async () => {
         const giftCard = (
           await api.post(
             `/admin/gift-cards?fields=*store_credit_account,*store_credit_account.transactions`,
             { ...giftCardPayload },
             adminHeaders
           )
-        ).data.gift_card;
+        ).data.gift_card
 
         expect(giftCard).toEqual(
           expect.objectContaining({
@@ -71,12 +65,12 @@ medusaIntegrationTestRunner({
               ]),
             }),
           })
-        );
-      });
-    });
+        )
+      })
+    })
 
     describe("POST /admin/gift-cards/:id/claim", () => {
-      it.todo("should claim a gift card");
-    });
+      it.todo("should claim a gift card")
+    })
   },
-});
+})

@@ -46,8 +46,7 @@
   "scripts": {
     "build": "medusa plugin:build",
     "dev": "medusa plugin:develop",
-    "prepare": "cross-env NODE_ENV=production yarn run build",
-    "test": "NODE_OPTIONS=--experimental-vm-modules jest --silent=false --runInBand --forceExit --silent"
+    "prepare": "cross-env NODE_ENV=production yarn run build"
   },
   "devDependencies": {
     "@medusajs/admin-sdk": "2.13.1",
@@ -59,11 +58,8 @@
     "@medusajs/ui": "4.1.1",
     "@medusajs/ui-preset": "2.13.1",
     "@swc/core": "1.5.7",
-    "@swc/jest": "^0.2.37",
-    "@types/jest": "^29.5.14",
     "@types/node": "^20.0.0",
     "cross-env": "^7.0.3",
-    "jest": "^29.7.0",
     "ts-node": "^10.9.2",
     "typescript": "^5.7.3"
   },

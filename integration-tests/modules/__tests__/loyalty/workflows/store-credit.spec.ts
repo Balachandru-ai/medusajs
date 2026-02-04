@@ -1,37 +1,33 @@
-import { medusaIntegrationTestRunner } from "@medusajs/test-utils";
-
-import { createStoreCreditAccountsWorkflow } from "../../../src/workflows/store-credit/workflows/create-store-credit-accounts";
-import { creditAccountsWorkflow } from "../../../src/workflows/store-credit/workflows/credit-accounts";
-import { debitAccountsWorkflow } from "../../../src/workflows/store-credit/workflows/debit-accounts";
+import { medusaIntegrationTestRunner } from "@medusajs/test-utils"
+import {
+  createStoreCreditAccountsWorkflow,
+  creditAccountsWorkflow,
+  debitAccountsWorkflow,
+} from "@medusajs/loyalty-plugin/workflows"
 import {
   adminHeaders,
   createAdminUser,
-  createStoreUser,
-} from "../../utils/admin";
-import {
   generatePublishableKey,
   generateStoreHeaders,
-} from "../../utils/store";
+} from "../../../../helpers/create-admin-user"
+import { createAuthenticatedCustomer } from "../../../helpers/create-authenticated-customer"
 
-jest.setTimeout(60 * 1000);
+jest.setTimeout(60 * 1000)
 
 medusaIntegrationTestRunner({
-  testSuite: ({ api, getContainer }) => {
-    let customer, storeCreditAccount, storeHeaders;
+  testSuite: ({ dbConnection, api, getContainer }) => {
+    let customer, storeCreditAccount, storeHeaders
 
     beforeEach(async () => {
-      const container = getContainer();
+      await createAdminUser(dbConnection, adminHeaders, getContainer())
+      const publishableKey = await generatePublishableKey(getContainer())
+      storeHeaders = generateStoreHeaders({ publishableKey })
 
-      await createAdminUser(adminHeaders, container);
-      const publishableKey = await generatePublishableKey(container);
-      storeHeaders = generateStoreHeaders({ publishableKey });
-      const user = await createStoreUser({
-        api,
-        storeHeaders,
+      const user = await createAuthenticatedCustomer(api, storeHeaders, {
         email: "initial@customer.com",
-      });
-      storeHeaders.headers["Authorization"] = `Bearer ${user.token}`;
-      customer = user.customer;
+      })
+      storeHeaders.headers["Authorization"] = `Bearer ${user.jwt}`
+      customer = user.customer
 
       const { result: storeCreditAccounts } =
         await createStoreCreditAccountsWorkflow.run({
@@ -42,10 +38,10 @@ medusaIntegrationTestRunner({
             },
           ],
           container: getContainer(),
-        });
+        })
 
-      storeCreditAccount = storeCreditAccounts[0];
-    });
+      storeCreditAccount = storeCreditAccounts[0]
+    })
 
     describe("debitAccountsWorkflow", () => {
       beforeEach(async () => {
@@ -59,8 +55,8 @@ medusaIntegrationTestRunner({
             },
           ],
           container: getContainer(),
-        });
-      });
+        })
+      })
 
       it("successfully debits the account", async () => {
         const { result: transactions } = await debitAccountsWorkflow.run({
@@ -73,7 +69,7 @@ medusaIntegrationTestRunner({
             },
           ],
           container: getContainer(),
-        });
+        })
 
         expect(transactions).toEqual([
           expect.objectContaining({
@@ -82,8 +78,8 @@ medusaIntegrationTestRunner({
             reference: "test",
             reference_id: "test-id",
           }),
-        ]);
-      });
+        ])
+      })
 
       it("should throw if the amount is greater than the account balance", async () => {
         const { errors } = await debitAccountsWorkflow.run({
@@ -97,7 +93,7 @@ medusaIntegrationTestRunner({
           ],
           container: getContainer(),
           throwOnError: false,
-        });
+        })
 
         expect(errors).toEqual([
           expect.objectContaining({
@@ -106,8 +102,8 @@ medusaIntegrationTestRunner({
               type: "invalid_data",
             }),
           }),
-        ]);
-      });
+        ])
+      })
 
       it("should throw if account does not exist", async () => {
         const { errors } = await debitAccountsWorkflow.run({
@@ -121,7 +117,7 @@ medusaIntegrationTestRunner({
           ],
           container: getContainer(),
           throwOnError: false,
-        });
+        })
 
         expect(errors).toEqual([
           expect.objectContaining({
@@ -131,8 +127,8 @@ medusaIntegrationTestRunner({
               type: "not_found",
             }),
           }),
-        ]);
-      });
+        ])
+      })
 
       it("should throw if amount does not exist", async () => {
         const { errors } = await debitAccountsWorkflow.run({
@@ -145,7 +141,7 @@ medusaIntegrationTestRunner({
           ],
           container: getContainer(),
           throwOnError: false,
-        });
+        })
 
         expect(errors).toEqual([
           expect.objectContaining({
@@ -154,8 +150,8 @@ medusaIntegrationTestRunner({
               type: "invalid_data",
             }),
           }),
-        ]);
-      });
-    });
+        ])
+      })
+    })
   },
-});
+})
