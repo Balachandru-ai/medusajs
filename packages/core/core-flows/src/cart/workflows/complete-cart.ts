@@ -47,6 +47,8 @@ import {
   PrepareLineItemDataInput,
   prepareTaxLinesData,
 } from "../utils/prepare-line-item-data"
+import { confirmCartCreditLinesWorkflow } from "./confirm-cart-credit-lines"
+import { cloneCartGiftCardsToOrderWorkflow } from "../../order/workflows/link-gift-cards-to-order"
 /**
  * The data to complete a cart and place an order.
  */
@@ -605,6 +607,11 @@ export const completeCartWorkflow = createWorkflow(
         })
       )
 
+      // Confirm cart credit lines (debit gift card/store credit accounts)
+      confirmCartCreditLinesWorkflow.runAsStep({
+        input: { cart_id: cartData.data.id },
+      })
+
       /**
        * @ignore
        */
@@ -642,6 +649,14 @@ export const completeCartWorkflow = createWorkflow(
       )
 
       addOrderTransactionStep(orderTransactions)
+
+      // Link gift cards from cart to order
+      cloneCartGiftCardsToOrderWorkflow.runAsStep({
+        input: {
+          order_id: createdOrder.id,
+          cart_id: cartData.data.id,
+        },
+      })
 
       /**
        * @ignore

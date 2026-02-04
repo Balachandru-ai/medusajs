@@ -21,6 +21,7 @@ import { useQueryGraphStep } from "../../common"
 import { confirmOrderChanges } from "../steps/confirm-order-changes"
 import { createOrderChangeStep } from "../steps/create-order-change"
 import { createOrderChangeActionsWorkflow } from "./create-order-change-actions"
+import { refundCreditLinesWorkflow } from "./refund-credit-lines"
 
 export const validateOrderCreditLinesStep = createStep(
   "validate-order-credit-lines",
@@ -161,6 +162,13 @@ export const createOrderCreditLinesWorkflow = createWorkflow(
     const orderChanges = confirmOrderChanges({
       changes: [orderChange],
       orderId: order.id,
+    })
+
+    refundCreditLinesWorkflow.runAsStep({
+      input: {
+        order_id: input.id,
+        credit_lines: orderChanges.credit_lines,
+      },
     })
 
     createHook("creditLinesCreated", {
