@@ -10,6 +10,8 @@ import { adminDraftOrderRoutesMiddlewares } from "./admin/draft-orders/middlewar
 import { adminExchangeRoutesMiddlewares } from "./admin/exchanges/middlewares"
 import { adminFulfillmentProvidersRoutesMiddlewares } from "./admin/fulfillment-providers/middlewares"
 import { adminFulfillmentSetsRoutesMiddlewares } from "./admin/fulfillment-sets/middlewares"
+import { adminGiftCardRoutesMiddlewares } from "./admin/gift-cards/middlewares"
+import { adminStoreCreditAccountRoutesMiddlewares } from "./admin/store-credit-accounts/middlewares"
 import { adminFulfillmentsRoutesMiddlewares } from "./admin/fulfillments/middlewares"
 import { adminInventoryRoutesMiddlewares } from "./admin/inventory-items/middlewares"
 import { adminInviteRoutesMiddlewares } from "./admin/invites/middlewares"
@@ -56,6 +58,8 @@ import { cloudRoutesMiddlewares } from "./cloud/middlewares"
 import { hooksRoutesMiddlewares } from "./hooks/middlewares"
 import { storeCartRoutesMiddlewares } from "./store/carts/middlewares"
 import { storeCollectionRoutesMiddlewares } from "./store/collections/middlewares"
+import { storeGiftCardRoutesMiddlewares } from "./store/gift-cards/middlewares"
+import { storeStoreCreditAccountRoutesMiddlewares } from "./store/store-credit-accounts/middlewares"
 import { storeCurrencyRoutesMiddlewares } from "./store/currencies/middlewares"
 import { storeCustomerRoutesMiddlewares } from "./store/customers/middlewares"
 import { storeRoutesMiddlewares } from "./store/middlewares"
@@ -81,6 +85,8 @@ export default defineMiddlewares([
   ...storeCustomerRoutesMiddlewares,
   ...storeCartRoutesMiddlewares,
   ...storeCollectionRoutesMiddlewares,
+  ...storeGiftCardRoutesMiddlewares,
+  ...storeStoreCreditAccountRoutesMiddlewares,
   ...storeProductCategoryRoutesMiddlewares,
   ...storeProductTagRoutesMiddlewares,
   ...storeProductTypeRoutesMiddlewares,
@@ -128,6 +134,8 @@ export default defineMiddlewares([
   ...adminShippingProfilesMiddlewares,
   ...adminFulfillmentsRoutesMiddlewares,
   ...adminFulfillmentProvidersRoutesMiddlewares,
+  ...adminGiftCardRoutesMiddlewares,
+  ...adminStoreCreditAccountRoutesMiddlewares,
   ...storeProductRoutesMiddlewares,
   ...storeProductVariantRoutesMiddlewares,
   ...storeReturnReasonRoutesMiddlewares,

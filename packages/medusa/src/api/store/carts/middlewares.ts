@@ -12,10 +12,13 @@ import {
   StoreAddCartLineItem,
   StoreAddCartPromotions,
   StoreAddCartShippingMethods,
+  StoreAddGiftCardToCart,
+  StoreAddStoreCreditsToCart,
   StoreCalculateCartTaxes,
   StoreCreateCart,
   StoreGetCartsCart,
   StoreRemoveCartPromotions,
+  StoreRemoveGiftCardFromCart,
   StoreUpdateCart,
   StoreUpdateCartCustomer,
   StoreUpdateCartLineItem,
@@ -151,6 +154,40 @@ export const storeCartRoutesMiddlewares: MiddlewareRoute[] = [
       validateAndTransformQuery(
         StoreGetOrderParams,
         OrderQueryConfig.retrieveTransformQueryConfig
+      ),
+    ],
+  },
+  {
+    method: ["POST"],
+    matcher: "/store/carts/:id/gift-cards",
+    middlewares: [
+      validateAndTransformBody(StoreAddGiftCardToCart),
+      validateAndTransformQuery(
+        StoreGetCartsCart,
+        QueryConfig.retrieveTransformQueryConfig
+      ),
+    ],
+  },
+  {
+    method: ["DELETE"],
+    matcher: "/store/carts/:id/gift-cards",
+    middlewares: [
+      validateAndTransformBody(StoreRemoveGiftCardFromCart),
+      validateAndTransformQuery(
+        StoreGetCartsCart,
+        QueryConfig.retrieveTransformQueryConfig
+      ),
+    ],
+  },
+  {
+    method: ["POST"],
+    matcher: "/store/carts/:id/store-credits",
+    middlewares: [
+      authenticate("customer", ["session", "bearer"]),
+      validateAndTransformBody(StoreAddStoreCreditsToCart),
+      validateAndTransformQuery(
+        StoreGetCartsCart,
+        QueryConfig.retrieveTransformQueryConfig
       ),
     ],
   },

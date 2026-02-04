@@ -130,6 +130,7 @@ export const defaultStoreCartFields = [
   "*payment_collection",
   "*payment_collection.payment_sessions",
   "*credit_lines",
+  "*gift_cards",
 ]
 
 export const retrieveTransformQueryConfig = {
