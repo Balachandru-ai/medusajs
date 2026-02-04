@@ -1,7 +1,7 @@
 import React from "react"
 import { beforeEach, describe, expect, test, vi } from "vitest"
 import { fireEvent, render } from "@testing-library/react"
-import { AlgoliaIndex } from "@/providers/Search"
+import type { AlgoliaIndex } from "../../../../providers/Search"
 
 // mock hooks
 const mockSetSelectedIndex = vi.fn()
