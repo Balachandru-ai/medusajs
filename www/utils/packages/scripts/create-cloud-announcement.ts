@@ -114,7 +114,7 @@ async function sendAnnouncement(payload: AnnouncementPayload): Promise<void> {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${apiToken}`,
+      Authorization: `Basic ${apiToken}`,
     },
     body: JSON.stringify(payload),
   })
@@ -193,10 +193,7 @@ async function createCloudAnnouncement() {
     published_at: new Date().toISOString(),
   }
 
-  console.log(
-    "Sending announcement to API...",
-    JSON.stringify(payload, null, 2)
-  )
+  console.log("Sending announcement to API...")
 
   // Send to API
   await sendAnnouncement(payload)
