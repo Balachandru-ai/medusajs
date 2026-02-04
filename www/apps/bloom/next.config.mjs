@@ -52,7 +52,7 @@ const withMDX = mdx({
       [
         crossProjectLinksPlugin,
         {
-          baseUrl: process.env.NEXT_PUBLIC_BASE_URL,
+          baseUrl: process.env.NEXT_PUBLIC_MEDUSA_DOCS_BASE_URL,
           projectUrls: {
             docs: {
               url: process.env.NEXT_PUBLIC_DOCS_URL,
