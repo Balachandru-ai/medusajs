@@ -1,191 +1,176 @@
-import { CreateCartCreditLineDTO, LoyaltyTypes } from "@medusajs/framework/types"
+import {
+  CartDTO,
+  CartTypes,
+  CreateCartCreditLineDTO,
+  LoyaltyTypes,
+} from "@medusajs/framework/types"
 import { MathBN, MedusaError, Modules } from "@medusajs/framework/utils"
 import {
   createStep,
   createWorkflow,
   StepResponse,
   transform,
-  WorkflowData,
   WorkflowResponse,
 } from "@medusajs/framework/workflows-sdk"
 import { createCartCreditLinesWorkflow } from "./create-cart-credit-lines"
 import { refreshCartItemsWorkflow } from "./refresh-cart-items"
 import { createLinksWorkflow, useQueryGraphStep } from "../../common"
+import { validateGiftCardBalancesStep } from "../steps/validate-gift-card-balances"
 
-const validateGiftCardStepId = "validate-gift-card"
-
-/**
- * Validates that the gift card exists.
- */
-const validateGiftCardStep = createStep(
-  validateGiftCardStepId,
-  async ({
-    giftCard,
-    code,
-  }: {
-    giftCard: LoyaltyTypes.GiftCardDTO | null
-    code: string
-  }): Promise<StepResponse<void>> => {
-    if (!giftCard) {
-      throw new MedusaError(
-        MedusaError.Types.INVALID_DATA,
-        `Gift card (${code}) not found`
-      )
-    }
-
-    if (giftCard.status !== "active") {
-      throw new MedusaError(
-        MedusaError.Types.INVALID_DATA,
-        `Gift card (${code}) is not active`
-      )
-    }
-
-    return new StepResponse(void 0)
-  }
-)
-
-const validateCartGiftCardStepId = "validate-cart-gift-card"
-
-/**
- * Validates that the gift card can be added to the cart.
- */
-const validateCartGiftCardStep = createStep(
-  validateCartGiftCardStepId,
-  async ({
-    cart,
-    giftCard,
-  }: {
-    cart: { id: string; currency_code: string; gift_cards?: { code: string }[] }
-    giftCard: LoyaltyTypes.GiftCardDTO
-  }): Promise<StepResponse<void>> => {
-    const existingGiftCard = cart.gift_cards?.find((gc) =>
-      gc.code.includes(giftCard.code)
-    )
-
-    if (existingGiftCard) {
-      throw new MedusaError(
-        MedusaError.Types.INVALID_DATA,
-        `Gift card (${giftCard.code}) already applied to cart`
-      )
-    }
-
-    if (giftCard.currency_code !== cart.currency_code) {
-      throw new MedusaError(
-        MedusaError.Types.INVALID_DATA,
-        `Gift card (${giftCard.code}) currency does not match cart currency`
-      )
-    }
-
-    return new StepResponse(void 0)
-  }
-)
-
-const validateGiftCardBalanceStepId = "validate-gift-card-balance"
-
-/**
- * Validates that the gift card has sufficient balance.
- */
-const validateGiftCardBalanceStep = createStep(
-  validateGiftCardBalanceStepId,
-  async ({
-    giftCard,
-    balance,
-  }: {
-    giftCard: LoyaltyTypes.GiftCardDTO
-    balance: number
-  }): Promise<StepResponse<void>> => {
-    if (MathBN.convert(balance).lte(0)) {
-      throw new MedusaError(
-        MedusaError.Types.INVALID_DATA,
-        `Gift card (${giftCard.code}) has no balance`
-      )
-    }
-
-    return new StepResponse(void 0)
-  }
-)
-
-const retrieveGiftCardBalanceStepId = "retrieve-gift-card-balance"
-
-/**
- * Retrieves the balance for a gift card.
- */
-const retrieveGiftCardBalanceStep = createStep(
+export const retrieveGiftCardBalanceStepId = "retrieve-gift-cards-balance"
+export const retrieveGiftCardBalanceStep = createStep(
   retrieveGiftCardBalanceStepId,
-  async (
-    { giftCardId }: { giftCardId: string },
+  async function (
+    {
+      storeCreditAccount,
+      giftCard,
+    }: {
+      storeCreditAccount: LoyaltyTypes.StoreCreditAccountDTO
+      giftCard: LoyaltyTypes.GiftCardDTO
+    },
     { container }
-  ): Promise<StepResponse<number>> => {
-    const loyaltyModule = container.resolve<LoyaltyTypes.ILoyaltyModuleService>(
+  ) {
+    const accountBalanceMap: Record<string, LoyaltyTypes.AccountStatsDTO> = {}
+    const module = container.resolve<LoyaltyTypes.ILoyaltyModuleService>(
       Modules.LOYALTY
     )
 
-    const giftCard = await loyaltyModule.retrieveGiftCard(giftCardId)
-    // For now, use the gift card value as balance
-    // In future iterations, this could track remaining balance through transactions
-    const balance = Number(giftCard.balance ?? giftCard.value)
+    const giftCardBalance = await module.retrieveAccountStats({
+      account_id: storeCreditAccount.id,
+    })
 
-    return new StepResponse(balance)
+    accountBalanceMap[giftCard.code] = giftCardBalance
+
+    return new StepResponse(accountBalanceMap)
   }
 )
 
-export const addGiftCardToCartWorkflowId = "add-gift-card-to-cart"
+/**
+ * Validate if the gift card exists.
+ */
+export const validateGiftCardStepId = "validate-gift-card"
+const validateGiftCardStep = createStep(
+  validateGiftCardStepId,
+  async function ({
+    giftCard,
+    input,
+  }: {
+    giftCard: LoyaltyTypes.GiftCardDTO
+    input: { code: string }
+  }) {
+    if (!giftCard) {
+      throw new MedusaError(
+        MedusaError.Types.INVALID_DATA,
+        `Gift card (${input.code}) not found`
+      )
+    }
+  }
+)
 
 /**
- * This workflow adds a gift card to a cart.
+ * Validate if the gift card can be added to the cart
  */
+export const validateCartGiftCardStepId = "validate-cart-gift-card"
+export const validateCartGiftCardStep = createStep(
+  validateCartGiftCardStepId,
+  async function ({
+    cart,
+    giftCards,
+  }: {
+    cart: CartTypes.CartDTO
+    giftCards: LoyaltyTypes.GiftCardDTO[]
+  }) {
+    for (const giftCard of giftCards) {
+      const cartGiftCard = cart.gift_cards?.find((gc) =>
+        gc.code.includes(giftCard.code)
+      )
+
+      if (cartGiftCard) {
+        throw new MedusaError(
+          MedusaError.Types.INVALID_DATA,
+          `Gift card (${giftCard.code}) already applied to cart`
+        )
+      }
+
+      if (giftCard.currency_code !== cart.currency_code) {
+        throw new MedusaError(
+          MedusaError.Types.INVALID_DATA,
+          `Gift card (${giftCard.code}) currency does not match cart currency`
+        )
+      }
+    }
+  }
+)
+
+/*
+  A workflow that adds gift card to a cart
+*/
+export const addGiftCardToCartWorkflowId = "add-gift-card-to-cart"
 export const addGiftCardToCartWorkflow = createWorkflow(
   addGiftCardToCartWorkflowId,
-  (
-    input: WorkflowData<{ code: string; cart_id: string }>
-  ): WorkflowResponse<any> => {
-    const cartQuery = useQueryGraphStep({
+  function (input: { code: string; cart_id: string }) {
+    const { data: cart } = useQueryGraphStep({
       entity: "cart",
       filters: { id: input.cart_id },
-      fields: ["id", "currency_code", "total", "gift_cards.code"],
+      fields: [
+        "id",
+        "currency_code",
+        "total",
+        "gift_cards.code",
+        "gift_cards.store_credit_account.id",
+        "gift_cards.store_credit_account.balance",
+      ],
+      options: { isList: false },
     }).config({ name: "get-cart-query" })
 
-    const cart = transform({ cartQuery }, ({ cartQuery }) => {
-      return cartQuery.data[0]
-    })
-
-    const giftCardQuery = useQueryGraphStep({
+    const { data: giftCards } = useQueryGraphStep({
       entity: "gift_card",
       filters: { code: input.code },
-      fields: ["id", "code", "status", "currency_code", "value", "balance"],
+      fields: ["id", "code", "status", "currency_code"],
     }).config({ name: "get-gift-card-query" })
 
-    const giftCard = transform({ giftCardQuery }, ({ giftCardQuery }) => {
-      return giftCardQuery.data[0]
+    const giftCard = transform({ giftCards }, ({ giftCards }) => {
+      return giftCards[0]
     })
 
-    validateGiftCardStep({ giftCard, code: input.code })
-    validateCartGiftCardStep({ cart, giftCard })
+    validateGiftCardStep({ giftCard, input })
+    validateCartGiftCardStep({ cart, giftCards })
 
-    const balance = retrieveGiftCardBalanceStep({ giftCardId: giftCard.id })
+    const storeCreditAccount = transform({ giftCard }, ({ giftCard }) => {
+      return giftCard.store_credit_account
+    })
 
-    validateGiftCardBalanceStep({ giftCard, balance })
+    const giftCardsBalanceMap = retrieveGiftCardBalanceStep({
+      storeCreditAccount,
+      giftCard,
+    })
+
+    validateGiftCardBalancesStep({
+      giftCards,
+      giftCardsBalanceMap,
+    })
 
     const creditLinesToCreate = transform(
-      { giftCard, cart, balance },
-      ({ giftCard, cart, balance }) => {
-        const amount = MathBN.min(balance, cart.total)
+      { giftCardsBalanceMap, giftCards, cart },
+      ({ giftCardsBalanceMap, giftCards, cart }) => {
+        const creditLinesData: CreateCartCreditLineDTO[] = []
 
-        if (MathBN.convert(amount).lte(0)) {
-          return []
+        for (const giftCard of giftCards) {
+          const stats = giftCardsBalanceMap[giftCard.code]
+          const amount = MathBN.min(stats.balance, cart.total)
+
+          if (amount.gt(0)) {
+            creditLinesData.push({
+              cart_id: cart.id,
+              amount: amount.toNumber(),
+              reference: "gift-card",
+              reference_id: giftCard.id,
+              metadata: {},
+            })
+          }
         }
 
-        const creditLines: CreateCartCreditLineDTO[] = [
-          {
-            cart_id: cart.id,
-            amount: Number(amount),
-            reference: "gift-card",
-            reference_id: giftCard.id,
-            metadata: {},
-          },
-        ]
-
-        return creditLines
+        return creditLinesData
       }
     )
 
@@ -194,14 +179,16 @@ export const addGiftCardToCartWorkflow = createWorkflow(
     })
 
     const linksToCreate = transform(
-      { giftCard, cart },
-      ({ giftCard, cart }) => {
-        return [
-          {
+      { creditLines, cart },
+      ({ creditLines, cart }) => {
+        const links = creditLines
+          .filter((creditLine) => creditLine.reference === "gift-card")
+          .map((creditLine) => ({
             [Modules.CART]: { cart_id: cart.id },
-            [Modules.LOYALTY]: { gift_card_id: giftCard.id },
-          },
-        ]
+            [Modules.LOYALTY]: { gift_card_id: creditLine.reference_id },
+          }))
+
+        return links
       }
     )
 

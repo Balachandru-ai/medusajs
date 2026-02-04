@@ -23,6 +23,7 @@ import { refreshPaymentCollectionForCartWorkflow } from "./refresh-payment-colle
 import { updateCartPromotionsWorkflow } from "./update-cart-promotions"
 import { updateTaxLinesWorkflow } from "./update-tax-lines"
 import { upsertTaxLinesWorkflow } from "./upsert-tax-lines"
+import { refreshCartGiftCardsWorkflow } from "./refresh-cart-gift-cards"
 
 /**
  * The details of the cart to refresh.
@@ -252,6 +253,10 @@ export const refreshCartItemsWorkflow = createWorkflow(
         locale: input.locale!,
         items: refetchedCart.items,
       })
+    })
+
+    refreshCartGiftCardsWorkflow.runAsStep({
+      input: { cart_id: input.cart_id },
     })
 
     const beforeRefreshingPaymentCollection = createHook(
