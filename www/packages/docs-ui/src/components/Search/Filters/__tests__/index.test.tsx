@@ -29,6 +29,24 @@ beforeEach(() => {
 })
 
 describe("rendering", () => {
+  test("does not render when only one index", () => {
+    mockUseSearch.mockReturnValue({
+      ...defaultUseSearchReturn,
+      indices: [{ value: "docs", title: "Documentation" }],
+    })
+    const { container } = render(<SearchFilters />)
+    expect(container.firstChild).toBeNull()
+  })
+
+  test("does not render when no indices", () => {
+    mockUseSearch.mockReturnValue({
+      ...defaultUseSearchReturn,
+      indices: [],
+    })
+    const { container } = render(<SearchFilters />)
+    expect(container.firstChild).toBeNull()
+  })
+
   test("renders filter buttons for each index", () => {
     const { container } = render(<SearchFilters />)
     const buttons = container.querySelectorAll("button")

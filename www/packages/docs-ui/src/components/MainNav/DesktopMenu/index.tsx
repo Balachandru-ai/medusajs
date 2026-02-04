@@ -11,7 +11,7 @@ import clsx from "clsx"
 import { HouseIcon } from "../../Icons/House"
 import { MainNavThemeMenu } from "./ThemeMenu"
 import { MenuItem } from "types"
-import { useMainNav } from "../../../providers"
+import { useMainNav } from "../../../providers/MainNav"
 
 export const MainNavDesktopMenu = () => {
   const [isOpen, setIsOpen] = useState(false)
