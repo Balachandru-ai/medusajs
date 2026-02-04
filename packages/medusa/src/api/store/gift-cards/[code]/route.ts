@@ -1,6 +1,5 @@
 import {
   AuthenticatedMedusaRequest,
-  MedusaRequest,
   MedusaResponse,
 } from "@medusajs/framework/http"
 import { StoreGetGiftCardParams } from "@medusajs/framework/types"
