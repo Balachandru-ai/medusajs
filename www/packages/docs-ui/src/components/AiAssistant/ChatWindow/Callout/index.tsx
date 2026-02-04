@@ -27,6 +27,7 @@ export const AiAssistantChatWindowCallout = () => {
     <div className="m-docs_1 flex justify-center items-center">
       <Card
         {...matchedCallout}
+        type="bloom"
         onClick={() => {
           track({
             event: {

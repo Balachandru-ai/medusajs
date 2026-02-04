@@ -2,7 +2,6 @@
 
 import clsx from "clsx"
 import React from "react"
-import { BorderedIcon } from "@/components/BorderedIcon"
 import { Button } from "@/components/Button"
 import { GITHUB_ISSUES_LINK } from "@/constants"
 import { SearchModalOpener } from "@/components/Search/ModalOpener"
@@ -17,6 +16,7 @@ import Link from "next/link"
 import { MainNavVersion } from "./Version"
 import { AiAssistantTriggerButton } from "../AiAssistant/TriggerButton"
 import { MainNavItemDropdown } from "./Items/Dropdown"
+import { ColoredMedusaIcon } from "../Icons"
 
 type MainNavProps = {
   className?: string
@@ -52,14 +52,7 @@ export const MainNav = ({ className, itemsClassName }: MainNavProps) => {
             </Button>
           )}
           <Link href={`${config.baseUrl}`} data-testid="logo-link">
-            <BorderedIcon
-              icon={config.logo}
-              iconWrapperClassName="my-[14px]"
-              wrapperClassName="w-[20px] h-[20px]"
-              iconWidth={20}
-              iconHeight={20}
-              data-testid="logo-icon"
-            />
+            <ColoredMedusaIcon variant="subtle" />
           </Link>
         </div>
         {!showCollapsedNavbar && (
@@ -72,7 +65,7 @@ export const MainNav = ({ className, itemsClassName }: MainNavProps) => {
           )}
           data-testid="main-nav-actions"
         >
-          <div className="lg:flex items-center gap-[6px] text-medusa-fg-subtle hidden">
+          <div className="lg:flex items-center gap-docs_0.25 text-medusa-fg-subtle hidden">
             <MainNavVersion />
             <MainNavItemDropdown
               item={{
@@ -105,8 +98,6 @@ export const MainNav = ({ className, itemsClassName }: MainNavProps) => {
                 ],
               }}
               isActive={false}
-              className="text-medusa-fg-subtle hover:bg-medusa-button-transparent-hover rounded-docs_sm px-docs_0.5"
-              wrapperClassName="z-10"
             />
           </div>
           <div className="flex items-center">
