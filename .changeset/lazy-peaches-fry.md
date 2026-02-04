@@ -2,4 +2,4 @@
 "@medusajs/core-flows": patch
 ---
 
-Expose payment & fulfillment status helpers
+chore(core-flows): Expose payment & fulfillment status helpers
