@@ -1,21 +1,18 @@
-import { zodResolver } from "@hookform/resolvers/zod";
-import { XCircleSolid } from "@medusajs/icons";
-import { HttpTypes } from "@medusajs/types";
-import { Alert, Button, Input, toast } from "@medusajs/ui";
-import { useFieldArray, useForm } from "react-hook-form";
-import { z } from "zod";
-import { Form } from "../../../../../../components/form";
-import { KeyboundForm } from "../../../../../../components/keybound-form";
-import {
-  RouteDrawer,
-  useRouteModal,
-} from "../../../../../../components/modals";
-import { useUpdateProduct } from "../../../../../../hooks/api/products";
-import { optionalFloat } from "../../../../../../utils/validations";
+import { zodResolver } from "@hookform/resolvers/zod"
+import { XCircleSolid } from "@medusajs/icons"
+import { HttpTypes } from "@medusajs/types"
+import { Alert, Button, Input, toast } from "@medusajs/ui"
+import { useFieldArray, useForm } from "react-hook-form"
+import { z } from "@medusajs/framework/zod"
+import { Form } from "../../../../../../components/form"
+import { KeyboundForm } from "../../../../../../components/keybound-form"
+import { RouteDrawer, useRouteModal } from "../../../../../../components/modals"
+import { useUpdateProduct } from "../../../../../../hooks/api/products"
+import { optionalFloat } from "../../../../../../utils/validations"
 
 type GiftCardProductEditDenominationsProps = {
-  product: HttpTypes.AdminProduct;
-};
+  product: HttpTypes.AdminProduct
+}
 
 const EditProductSchema = z.object({
   denominations: z
@@ -27,12 +24,12 @@ const EditProductSchema = z.object({
       })
     )
     .min(1),
-});
+})
 
 export const GiftCardProductEditDenominationsForm = ({
   product,
 }: GiftCardProductEditDenominationsProps) => {
-  const { handleSuccess } = useRouteModal();
+  const { handleSuccess } = useRouteModal()
 
   const form = useForm<z.infer<typeof EditProductSchema>>({
     defaultValues: {
@@ -42,21 +39,21 @@ export const GiftCardProductEditDenominationsForm = ({
       })),
     },
     resolver: zodResolver(EditProductSchema),
-  });
+  })
 
-  const { mutateAsync, isPending } = useUpdateProduct(product.id);
+  const { mutateAsync, isPending } = useUpdateProduct(product.id)
 
   const handleSubmit = form.handleSubmit(async (data: any) => {
     const optionValues = data.denominations.map(
       (denomination) => denomination.value
-    );
+    )
 
     const options = [
       {
         title: "denomination",
         values: optionValues,
       },
-    ];
+    ]
 
     await mutateAsync(
       {
@@ -72,15 +69,15 @@ export const GiftCardProductEditDenominationsForm = ({
       },
       {
         onSuccess: () => {
-          toast.success(`Denominations updated successfully`);
-          handleSuccess();
+          toast.success(`Denominations updated successfully`)
+          handleSuccess()
         },
         onError: (e) => {
-          toast.error(e.message);
+          toast.error(e.message)
         },
       }
-    );
-  });
+    )
+  })
 
   const {
     fields: denominationsFields,
@@ -89,7 +86,7 @@ export const GiftCardProductEditDenominationsForm = ({
   } = useFieldArray({
     name: "denominations",
     control: form.control,
-  });
+  })
 
   return (
     <RouteDrawer.Form form={form}>
@@ -105,7 +102,7 @@ export const GiftCardProductEditDenominationsForm = ({
                   return (
                     <div
                       key={denominationField.id}
-                      className="flex items-center justify-between shadow-elevation-card-rest bg-ui-bg-component transition-fg rounded-md px-4 py-2"
+                      className="shadow-elevation-card-rest bg-ui-bg-component transition-fg flex items-center justify-between rounded-md px-4 py-2"
                     >
                       <Form.Field
                         key={denominationField.id}
@@ -120,7 +117,7 @@ export const GiftCardProductEditDenominationsForm = ({
 
                               <Form.ErrorMessage />
                             </Form.Item>
-                          );
+                          )
                         }}
                       />
 
@@ -129,16 +126,16 @@ export const GiftCardProductEditDenominationsForm = ({
                           size="small"
                           variant="secondary"
                           type="button"
-                          className="rounded-full p-0 ml-4"
+                          className="ml-4 rounded-full p-0"
                           onClick={() => {
-                            removeDenomination(index);
+                            removeDenomination(index)
                           }}
                         >
                           <XCircleSolid className="rounded-full" />
                         </Button>
                       </div>
                     </div>
-                  );
+                  )
                 })}
 
                 <Button
@@ -147,7 +144,7 @@ export const GiftCardProductEditDenominationsForm = ({
                   type="button"
                   className="w-full"
                   onClick={() => {
-                    addDenomination({ value: "", prices: {} });
+                    addDenomination({ value: "", prices: {} })
                   }}
                 >
                   Add denomination
@@ -177,5 +174,5 @@ export const GiftCardProductEditDenominationsForm = ({
         </RouteDrawer.Footer>
       </KeyboundForm>
     </RouteDrawer.Form>
-  );
-};
+  )
+}

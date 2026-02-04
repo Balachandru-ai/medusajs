@@ -1,72 +1,72 @@
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Button, Heading, Text, toast } from "@medusajs/ui";
-import { useMemo, useState } from "react";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
-import { Combobox } from "../../../../../components/combobox";
-import { Form } from "../../../../../components/form";
+import { zodResolver } from "@hookform/resolvers/zod"
+import { Button, Heading, Text, toast } from "@medusajs/ui"
+import { useMemo, useState } from "react"
+import { useForm } from "react-hook-form"
+import { z } from "@medusajs/framework/zod"
+import { Combobox } from "../../../../../components/combobox"
+import { Form } from "../../../../../components/form"
 import {
   RouteFocusModal,
   useRouteModal,
-} from "../../../../../components/modals";
-import { customersQueryKeys } from "../../../../../hooks/api/customers";
-import { useCreateStoreCreditAccount } from "../../../../../hooks/api/store-credit-accounts";
-import { useComboboxData } from "../../../../../hooks/common/use-combobox-data";
-import { currencies } from "../../../../../lib/currencies";
-import { sdk } from "../../../../../lib/sdk";
+} from "../../../../../components/modals"
+import { customersQueryKeys } from "../../../../../hooks/api/customers"
+import { useCreateStoreCreditAccount } from "../../../../../hooks/api/store-credit-accounts"
+import { useComboboxData } from "../../../../../hooks/common/use-combobox-data"
+import { currencies } from "../../../../../lib/currencies"
+import { sdk } from "../../../../../lib/sdk"
 
 export const formSchema = z.object({
   currency_code: z.string().min(1, "Please select a currency"),
   customer_id: z.string().optional(),
-});
+})
 
 export const StoreCreditAccountCreateForm = () => {
-  const { handleSuccess } = useRouteModal();
+  const { handleSuccess } = useRouteModal()
   const form = useForm<z.infer<typeof formSchema>>({
     defaultValues: {
       currency_code: "",
       customer_id: "",
     },
     resolver: zodResolver(formSchema),
-  });
+  })
 
   const { mutateAsync: createStoreCreditAccount, isPending } =
-    useCreateStoreCreditAccount();
+    useCreateStoreCreditAccount()
 
   const handleSubmit = form.handleSubmit(async (data) => {
     if (!data.customer_id) {
-      delete data.customer_id;
+      delete data.customer_id
     }
 
     await createStoreCreditAccount(data, {
       onSuccess: (data) => {
-        toast.success(`Store credit account was successfully created.`);
+        toast.success(`Store credit account was successfully created.`)
 
-        handleSuccess(`../${data.store_credit_account.id}`);
+        handleSuccess(`../${data.store_credit_account.id}`)
       },
       onError: (error) => {
-        toast.error(error.message);
+        toast.error(error.message)
       },
-    });
-  });
+    })
+  })
 
   // Set up currency options
-  const [currencySearchValue, setCurrencySearchValue] = useState("");
+  const [currencySearchValue, setCurrencySearchValue] = useState("")
 
   const currencyOptions = useMemo(() => {
     const options = Object.values(currencies).map((currency) => ({
       label: `${currency.code} - ${currency.name} (${currency.symbol_native})`,
       value: currency.code.toLowerCase(),
-    }));
+    }))
 
     if (!currencySearchValue) {
-      return options;
+      return options
     }
 
     return options.filter((option) =>
       option.label.toLowerCase().includes(currencySearchValue.toLowerCase())
-    );
-  }, [currencySearchValue]);
+    )
+  }, [currencySearchValue])
 
   const {
     options: customerOptions,
@@ -78,26 +78,26 @@ export const StoreCreditAccountCreateForm = () => {
   } = useComboboxData({
     queryKey: customersQueryKeys.list(),
     queryFn: async (params) => {
-      return sdk.admin.customer.list(params);
+      return sdk.admin.customer.list(params)
     },
     getOptions: (data) => {
       return (
         data.customers?.map((customer) => {
           const fullName = [customer.first_name, customer.last_name]
             .filter(Boolean)
-            .join(" ");
+            .join(" ")
           const label = fullName
             ? `${customer.email} (${fullName})`
-            : customer.email;
+            : customer.email
 
           return {
             label,
             value: customer.id,
-          };
+          }
         }) || []
-      );
+      )
     },
-  });
+  })
 
   return (
     <RouteFocusModal.Form form={form}>
@@ -135,7 +135,7 @@ export const StoreCreditAccountCreateForm = () => {
                       </Form.Control>
                       <Form.ErrorMessage />
                     </Form.Item>
-                  );
+                  )
                 }}
               />
 
@@ -165,7 +165,7 @@ export const StoreCreditAccountCreateForm = () => {
                       </Form.Control>
                       <Form.ErrorMessage />
                     </Form.Item>
-                  );
+                  )
                 }}
               />
             </div>
@@ -190,5 +190,5 @@ export const StoreCreditAccountCreateForm = () => {
         </Button>
       </RouteFocusModal.Footer>
     </RouteFocusModal.Form>
-  );
-};
+  )
+}

@@ -1,4 +1,4 @@
-import { zodResolver } from "@hookform/resolvers/zod";
+import { zodResolver } from "@hookform/resolvers/zod"
 import {
   Button,
   clx,
@@ -6,34 +6,34 @@ import {
   Heading,
   RadioGroup,
   toast,
-} from "@medusajs/ui";
-import { useState } from "react";
-import { useForm } from "react-hook-form";
-import { useParams } from "react-router-dom";
-import { z } from "zod";
-import { AdminGiftCard } from "../../../../../types";
-import { Form } from "../../../../components/form";
-import { KeyboundForm } from "../../../../components/keybound-form";
-import { RouteDrawer, useRouteModal } from "../../../../components/modals";
+} from "@medusajs/ui"
+import { useState } from "react"
+import { useForm } from "react-hook-form"
+import { useParams } from "react-router-dom"
+import { z } from "@medusajs/framework/zod"
+import { AdminGiftCard } from "../../../../../types"
+import { Form } from "../../../../components/form"
+import { KeyboundForm } from "../../../../components/keybound-form"
+import { RouteDrawer, useRouteModal } from "../../../../components/modals"
 import {
   useGiftCard,
   useUpdateGiftCard,
-} from "../../../../hooks/api/gift-cards";
+} from "../../../../hooks/api/gift-cards"
 
 const GiftCardExpiration = () => {
-  const { id } = useParams();
+  const { id } = useParams()
   const {
     gift_card: giftCard,
     isPending,
     isError,
     error,
-  } = useGiftCard(id!, {});
+  } = useGiftCard(id!, {})
 
   if (isError) {
-    throw error;
+    throw error
   }
 
-  const isReady = !isPending && !!giftCard;
+  const isReady = !isPending && !!giftCard
 
   return (
     <RouteDrawer>
@@ -51,11 +51,11 @@ const GiftCardExpiration = () => {
 
       {isReady && <GiftCardExpirationForm giftCard={giftCard} />}
     </RouteDrawer>
-  );
-};
+  )
+}
 
 interface GiftCardExpirationFormProps {
-  giftCard: AdminGiftCard;
+  giftCard: AdminGiftCard
 }
 
 const GiftCardExpirationForm = ({ giftCard }: GiftCardExpirationFormProps) => {
@@ -64,13 +64,13 @@ const GiftCardExpirationForm = ({ giftCard }: GiftCardExpirationFormProps) => {
       expires_at: giftCard.expires_at ? new Date(giftCard.expires_at) : null,
     },
     resolver: zodResolver(schema),
-  });
+  })
 
-  const { mutateAsync, isPending } = useUpdateGiftCard(giftCard.id);
-  const { handleSuccess } = useRouteModal();
+  const { mutateAsync, isPending } = useUpdateGiftCard(giftCard.id)
+  const { handleSuccess } = useRouteModal()
   const [isSettingExpiration, setIsSettingExpiration] = useState(
     !!giftCard.expires_at
-  );
+  )
 
   const onSubmit = form.handleSubmit(async (data) => {
     await mutateAsync(
@@ -79,14 +79,14 @@ const GiftCardExpirationForm = ({ giftCard }: GiftCardExpirationFormProps) => {
       },
       {
         onSuccess: () => {
-          handleSuccess();
+          handleSuccess()
         },
         onError: (error) => {
-          toast.error(error.message);
+          toast.error(error.message)
         },
       }
-    );
-  });
+    )
+  })
 
   return (
     <RouteDrawer.Form form={form}>
@@ -135,7 +135,7 @@ const GiftCardExpirationForm = ({ giftCard }: GiftCardExpirationFormProps) => {
 
                     <Form.ErrorMessage />
                   </Form.Item>
-                );
+                )
               }}
             />
           )}
@@ -155,11 +155,11 @@ const GiftCardExpirationForm = ({ giftCard }: GiftCardExpirationFormProps) => {
         </RouteDrawer.Footer>
       </KeyboundForm>
     </RouteDrawer.Form>
-  );
-};
+  )
+}
 
 const schema = z.object({
   expires_at: z.date().nullish(),
-});
+})
 
-export default GiftCardExpiration;
+export default GiftCardExpiration

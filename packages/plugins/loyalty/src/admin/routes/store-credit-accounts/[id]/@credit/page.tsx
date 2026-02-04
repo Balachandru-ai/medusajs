@@ -1,33 +1,33 @@
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Button, CurrencyInput, Heading, Textarea, toast } from "@medusajs/ui";
-import { useForm } from "react-hook-form";
-import { useParams } from "react-router-dom";
-import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod"
+import { Button, CurrencyInput, Heading, Textarea, toast } from "@medusajs/ui"
+import { useForm } from "react-hook-form"
+import { useParams } from "react-router-dom"
+import { z } from "@medusajs/framework/zod"
 
-import { AdminStoreCreditAccount } from "../../../../../types";
-import { Form } from "../../../../components/form";
-import { KeyboundForm } from "../../../../components/keybound-form";
-import { RouteDrawer, useRouteModal } from "../../../../components/modals";
+import { AdminStoreCreditAccount } from "../../../../../types"
+import { Form } from "../../../../components/form"
+import { KeyboundForm } from "../../../../components/keybound-form"
+import { RouteDrawer, useRouteModal } from "../../../../components/modals"
 import {
   useCreditStoreCreditAccount,
   useStoreCreditAccount,
-} from "../../../../hooks/api/store-credit-accounts";
-import { currencies } from "../../../../lib/currencies";
+} from "../../../../hooks/api/store-credit-accounts"
+import { currencies } from "../../../../lib/currencies"
 
 const Note = () => {
-  const { id } = useParams();
+  const { id } = useParams()
   const {
     store_credit_account: storeCreditAccount,
     isPending,
     isError,
     error,
-  } = useStoreCreditAccount(id!, {});
+  } = useStoreCreditAccount(id!, {})
 
   if (isError) {
-    throw error;
+    throw error
   }
 
-  const isReady = !isPending && !!storeCreditAccount;
+  const isReady = !isPending && !!storeCreditAccount
 
   return (
     <RouteDrawer>
@@ -45,11 +45,11 @@ const Note = () => {
         <StoreCreditAccountCreditForm storeCreditAccount={storeCreditAccount} />
       )}
     </RouteDrawer>
-  );
-};
+  )
+}
 
 interface StoreCreditAccountCreditFormProps {
-  storeCreditAccount: AdminStoreCreditAccount;
+  storeCreditAccount: AdminStoreCreditAccount
 }
 
 const StoreCreditAccountCreditForm = ({
@@ -64,17 +64,17 @@ const StoreCreditAccountCreditForm = ({
       note: "",
     },
     resolver: zodResolver(schema),
-  });
+  })
 
   const { mutateAsync, isPending } = useCreditStoreCreditAccount(
     storeCreditAccount.id
-  );
-  const { handleSuccess } = useRouteModal();
+  )
+  const { handleSuccess } = useRouteModal()
 
   const onSubmit = form.handleSubmit(async (data) => {
     if (data.amount.float <= 0) {
-      form.setError("amount", { message: "Amount must be greater than 0" });
-      return;
+      form.setError("amount", { message: "Amount must be greater than 0" })
+      return
     }
 
     await mutateAsync(
@@ -83,8 +83,8 @@ const StoreCreditAccountCreditForm = ({
         onSuccess: () => handleSuccess(),
         onError: (error) => toast.error(error.message),
       }
-    );
-  });
+    )
+  })
 
   return (
     <RouteDrawer.Form form={form}>
@@ -108,7 +108,7 @@ const StoreCreditAccountCreditForm = ({
                       field.onChange({
                         value: values?.value,
                         float: values?.float || null,
-                      });
+                      })
                     }}
                     symbol={
                       currencies[storeCreditAccount.currency_code.toUpperCase()]
@@ -152,8 +152,8 @@ const StoreCreditAccountCreditForm = ({
         </RouteDrawer.Footer>
       </KeyboundForm>
     </RouteDrawer.Form>
-  );
-};
+  )
+}
 
 const schema = z.object({
   note: z.string(),
@@ -161,6 +161,6 @@ const schema = z.object({
     float: z.number(),
     value: z.string(),
   }),
-});
+})
 
-export default Note;
+export default Note

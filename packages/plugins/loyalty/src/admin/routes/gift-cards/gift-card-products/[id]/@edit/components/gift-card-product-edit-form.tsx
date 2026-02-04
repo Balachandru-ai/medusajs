@@ -1,19 +1,16 @@
-import { zodResolver } from "@hookform/resolvers/zod";
-import { HttpTypes } from "@medusajs/types";
-import { Button, Input, Select, Text, Textarea, toast } from "@medusajs/ui";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
-import { Form } from "../../../../../../components/form";
-import { KeyboundForm } from "../../../../../../components/keybound-form";
-import {
-  RouteDrawer,
-  useRouteModal,
-} from "../../../../../../components/modals";
-import { useUpdateProduct } from "../../../../../../hooks/api/products";
+import { zodResolver } from "@hookform/resolvers/zod"
+import { HttpTypes } from "@medusajs/types"
+import { Button, Input, Select, Text, Textarea, toast } from "@medusajs/ui"
+import { useForm } from "react-hook-form"
+import { z } from "@medusajs/framework/zod"
+import { Form } from "../../../../../../components/form"
+import { KeyboundForm } from "../../../../../../components/keybound-form"
+import { RouteDrawer, useRouteModal } from "../../../../../../components/modals"
+import { useUpdateProduct } from "../../../../../../hooks/api/products"
 
 type GiftCardProductEditFormProps = {
-  product: HttpTypes.AdminProduct;
-};
+  product: HttpTypes.AdminProduct
+}
 
 const EditProductSchema = z.object({
   status: z.enum(["draft", "published", "proposed", "rejected"]),
@@ -21,12 +18,12 @@ const EditProductSchema = z.object({
   subtitle: z.string().optional(),
   handle: z.string().min(1),
   description: z.string().optional(),
-});
+})
 
 export const GiftCardProductEditForm = ({
   product,
 }: GiftCardProductEditFormProps) => {
-  const { handleSuccess } = useRouteModal();
+  const { handleSuccess } = useRouteModal()
 
   const form = useForm<z.infer<typeof EditProductSchema>>({
     defaultValues: {
@@ -37,12 +34,12 @@ export const GiftCardProductEditForm = ({
       description: product.description || "",
     },
     resolver: zodResolver(EditProductSchema),
-  });
+  })
 
-  const { mutateAsync, isPending } = useUpdateProduct(product.id);
+  const { mutateAsync, isPending } = useUpdateProduct(product.id)
 
   const handleSubmit = form.handleSubmit(async (data: any) => {
-    const { title, handle, status, ...optional } = data;
+    const { title, handle, status, ...optional } = data
 
     await mutateAsync(
       {
@@ -55,15 +52,15 @@ export const GiftCardProductEditForm = ({
         onSuccess: ({ product }) => {
           toast.success(
             `Gift card product ${product.title} updated successfully`
-          );
-          handleSuccess();
+          )
+          handleSuccess()
         },
         onError: (e) => {
-          toast.error(e.message);
+          toast.error(e.message)
         },
       }
-    );
-  });
+    )
+  })
 
   return (
     <RouteDrawer.Form form={form}>
@@ -104,14 +101,14 @@ export const GiftCardProductEditForm = ({
                                 >
                                   {status}
                                 </Select.Item>
-                              );
+                              )
                             })}
                           </Select.Content>
                         </Select>
                       </Form.Control>
                       <Form.ErrorMessage />
                     </Form.Item>
-                  );
+                  )
                 }}
               />
 
@@ -127,7 +124,7 @@ export const GiftCardProductEditForm = ({
                       </Form.Control>
                       <Form.ErrorMessage />
                     </Form.Item>
-                  );
+                  )
                 }}
               />
 
@@ -143,7 +140,7 @@ export const GiftCardProductEditForm = ({
                       </Form.Control>
                       <Form.ErrorMessage />
                     </Form.Item>
-                  );
+                  )
                 }}
               />
               <Form.Field
@@ -170,7 +167,7 @@ export const GiftCardProductEditForm = ({
                       </Form.Control>
                       <Form.ErrorMessage />
                     </Form.Item>
-                  );
+                  )
                 }}
               />
 
@@ -186,7 +183,7 @@ export const GiftCardProductEditForm = ({
                       </Form.Control>
                       <Form.ErrorMessage />
                     </Form.Item>
-                  );
+                  )
                 }}
               />
             </div>
@@ -207,5 +204,5 @@ export const GiftCardProductEditForm = ({
         </RouteDrawer.Footer>
       </KeyboundForm>
     </RouteDrawer.Form>
-  );
-};
+  )
+}

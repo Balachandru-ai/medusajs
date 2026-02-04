@@ -1,15 +1,15 @@
-import { useCallback } from "react";
-import { UseFormReturn } from "react-hook-form";
-import { z } from "zod";
-import { MediaSchema } from "../routes/gift-cards/gift-card-products/components/gift-card-product-create-form/schema";
+import { useCallback } from "react"
+import { UseFormReturn } from "react-hook-form"
+import { z } from "@medusajs/framework/zod"
+import { MediaSchema } from "../routes/gift-cards/gift-card-products/components/gift-card-product-create-form/schema"
 import {
   EditProductMediaSchemaType,
   ProductCreateSchemaType,
-} from "../routes/gift-cards/gift-card-products/components/gift-card-product-create-form/types";
-import { FileType, FileUpload } from "./file-upload";
-import { Form } from "./form";
+} from "../routes/gift-cards/gift-card-products/components/gift-card-product-create-form/types"
+import { FileType, FileUpload } from "./file-upload"
+import { Form } from "./form"
 
-type Media = z.infer<typeof MediaSchema>;
+type Media = z.infer<typeof MediaSchema>
 
 const SUPPORTED_FORMATS = [
   "image/jpeg",
@@ -18,7 +18,7 @@ const SUPPORTED_FORMATS = [
   "image/webp",
   "image/heic",
   "image/svg+xml",
-];
+]
 
 const SUPPORTED_FORMATS_FILE_EXTENSIONS = [
   ".jpeg",
@@ -27,7 +27,7 @@ const SUPPORTED_FORMATS_FILE_EXTENSIONS = [
   ".webp",
   ".heic",
   ".svg",
-];
+]
 
 export const UploadMediaFormItem = ({
   form,
@@ -36,15 +36,15 @@ export const UploadMediaFormItem = ({
 }: {
   form:
     | UseFormReturn<ProductCreateSchemaType>
-    | UseFormReturn<EditProductMediaSchemaType>;
-  append: (value: Media) => void;
-  showHint?: boolean;
+    | UseFormReturn<EditProductMediaSchemaType>
+  append: (value: Media) => void
+  showHint?: boolean
 }) => {
   const hasInvalidFiles = useCallback(
     (fileList: FileType[]) => {
       const invalidFile = fileList.find(
         (f) => !SUPPORTED_FORMATS.includes(f.file.type)
-      );
+      )
 
       if (invalidFile) {
         form.setError("media", {
@@ -54,27 +54,27 @@ export const UploadMediaFormItem = ({
           }' is not a supported file type. Supported file types are: ${SUPPORTED_FORMATS_FILE_EXTENSIONS.join(
             ", "
           )}.",`,
-        });
+        })
 
-        return true;
+        return true
       }
 
-      return false;
+      return false
     },
     [form]
-  );
+  )
 
   const onUploaded = useCallback(
     (files: FileType[]) => {
-      form.clearErrors("media");
+      form.clearErrors("media")
       if (hasInvalidFiles(files)) {
-        return;
+        return
       }
 
-      files.forEach((f) => append({ ...f, isThumbnail: false }));
+      files.forEach((f) => append({ ...f, isThumbnail: false }))
     },
     [form, append, hasInvalidFiles]
-  );
+  )
 
   return (
     <Form.Field
@@ -104,8 +104,8 @@ export const UploadMediaFormItem = ({
               <Form.ErrorMessage />
             </div>
           </Form.Item>
-        );
+        )
       }}
     />
-  );
-};
+  )
+}

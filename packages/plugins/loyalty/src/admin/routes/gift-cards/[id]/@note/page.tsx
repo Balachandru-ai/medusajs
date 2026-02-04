@@ -1,31 +1,31 @@
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Button, Heading, Textarea, toast } from "@medusajs/ui";
-import { useForm } from "react-hook-form";
-import { useParams } from "react-router-dom";
-import { z } from "zod";
-import { AdminGiftCard } from "../../../../../types";
-import { Form } from "../../../../components/form";
-import { KeyboundForm } from "../../../../components/keybound-form";
-import { RouteDrawer, useRouteModal } from "../../../../components/modals";
+import { zodResolver } from "@hookform/resolvers/zod"
+import { Button, Heading, Textarea, toast } from "@medusajs/ui"
+import { useForm } from "react-hook-form"
+import { useParams } from "react-router-dom"
+import { z } from "@medusajs/framework/zod"
+import { AdminGiftCard } from "../../../../../types"
+import { Form } from "../../../../components/form"
+import { KeyboundForm } from "../../../../components/keybound-form"
+import { RouteDrawer, useRouteModal } from "../../../../components/modals"
 import {
   useGiftCard,
   useUpdateGiftCard,
-} from "../../../../hooks/api/gift-cards";
+} from "../../../../hooks/api/gift-cards"
 
 const Note = () => {
-  const { id } = useParams();
+  const { id } = useParams()
   const {
     gift_card: giftCard,
     isPending,
     isError,
     error,
-  } = useGiftCard(id!, {});
+  } = useGiftCard(id!, {})
 
   if (isError) {
-    throw error;
+    throw error
   }
 
-  const isReady = !isPending && !!giftCard;
+  const isReady = !isPending && !!giftCard
 
   return (
     <RouteDrawer>
@@ -41,11 +41,11 @@ const Note = () => {
 
       {isReady && <GiftCardNoteForm giftCard={giftCard} />}
     </RouteDrawer>
-  );
-};
+  )
+}
 
 interface GiftCardNoteFormProps {
-  giftCard: AdminGiftCard;
+  giftCard: AdminGiftCard
 }
 
 const GiftCardNoteForm = ({ giftCard }: GiftCardNoteFormProps) => {
@@ -54,10 +54,10 @@ const GiftCardNoteForm = ({ giftCard }: GiftCardNoteFormProps) => {
       note: giftCard.note ?? "",
     },
     resolver: zodResolver(schema),
-  });
+  })
 
-  const { mutateAsync, isPending } = useUpdateGiftCard(giftCard.id);
-  const { handleSuccess } = useRouteModal();
+  const { mutateAsync, isPending } = useUpdateGiftCard(giftCard.id)
+  const { handleSuccess } = useRouteModal()
 
   const onSubmit = form.handleSubmit(async (data) => {
     await mutateAsync(
@@ -66,8 +66,8 @@ const GiftCardNoteForm = ({ giftCard }: GiftCardNoteFormProps) => {
         onSuccess: () => handleSuccess(),
         onError: (error) => toast.error(error.message),
       }
-    );
-  });
+    )
+  })
 
   return (
     <RouteDrawer.Form form={form}>
@@ -106,11 +106,11 @@ const GiftCardNoteForm = ({ giftCard }: GiftCardNoteFormProps) => {
         </RouteDrawer.Footer>
       </KeyboundForm>
     </RouteDrawer.Form>
-  );
-};
+  )
+}
 
 const schema = z.object({
   note: z.string().optional(),
-});
+})
 
-export default Note;
+export default Note

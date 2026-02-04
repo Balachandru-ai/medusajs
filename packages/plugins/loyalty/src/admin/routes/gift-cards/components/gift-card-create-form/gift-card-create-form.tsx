@@ -1,5 +1,5 @@
-import { zodResolver } from "@hookform/resolvers/zod";
-import { HttpTypes } from "@medusajs/framework/types";
+import { zodResolver } from "@hookform/resolvers/zod"
+import { HttpTypes } from "@medusajs/framework/types"
 import {
   Button,
   CurrencyInput,
@@ -9,26 +9,26 @@ import {
   Text,
   Textarea,
   toast,
-} from "@medusajs/ui";
-import { useMemo, useState } from "react";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
-import { Combobox } from "../../../../components/combobox";
-import { Form } from "../../../../components/form";
-import { RouteFocusModal, useRouteModal } from "../../../../components/modals";
-import { useCreateGiftCard } from "../../../../hooks/api/gift-cards";
-import { currencies } from "../../../../lib/currencies";
-import { GiftCardCreateSchema } from "./schema";
+} from "@medusajs/ui"
+import { useMemo, useState } from "react"
+import { useForm } from "react-hook-form"
+import { z } from "@medusajs/framework/zod"
+import { Combobox } from "../../../../components/combobox"
+import { Form } from "../../../../components/form"
+import { RouteFocusModal, useRouteModal } from "../../../../components/modals"
+import { useCreateGiftCard } from "../../../../hooks/api/gift-cards"
+import { currencies } from "../../../../lib/currencies"
+import { GiftCardCreateSchema } from "./schema"
 
 export const GiftCardCreateForm = ({
   store,
 }: {
-  store: HttpTypes.AdminStore;
+  store: HttpTypes.AdminStore
 }) => {
-  const { handleSuccess } = useRouteModal();
+  const { handleSuccess } = useRouteModal()
   const supportedCurrencies = store.supported_currencies.map(
     (currency) => currency.currency_code
-  );
+  )
 
   const form = useForm<z.infer<typeof GiftCardCreateSchema>>({
     defaultValues: {
@@ -39,47 +39,47 @@ export const GiftCardCreateForm = ({
       note: "",
     },
     resolver: zodResolver(GiftCardCreateSchema),
-  });
+  })
 
-  const { mutateAsync: createGiftCard, isPending } = useCreateGiftCard();
+  const { mutateAsync: createGiftCard, isPending } = useCreateGiftCard()
 
   const handleSubmit = form.handleSubmit(async (data) => {
     await createGiftCard(data, {
       onSuccess: (data) => {
-        toast.success("Gift card was successfully created");
-        handleSuccess(`../${data.gift_card.id}`);
+        toast.success("Gift card was successfully created")
+        handleSuccess(`../${data.gift_card.id}`)
       },
       onError: (error) => {
-        toast.error(error.message);
+        toast.error(error.message)
       },
-    });
-  });
+    })
+  })
 
   // Set up currency options
-  const [currencySearchValue, setCurrencySearchValue] = useState("");
+  const [currencySearchValue, setCurrencySearchValue] = useState("")
 
   const currencyOptions = useMemo(() => {
     const options = Object.values(currencies).map((currency) => ({
       label: `${currency.code} - ${currency.name} (${currency.symbol_native})`,
       value: currency.code.toLowerCase(),
-    }));
+    }))
 
     if (!currencySearchValue) {
-      return options;
+      return options
     }
 
     return options.filter((option) =>
       option.label.toLowerCase().includes(currencySearchValue.toLowerCase())
-    );
-  }, [currencySearchValue]);
+    )
+  }, [currencySearchValue])
 
-  const selectedCurrency = form.watch("currency_code");
+  const selectedCurrency = form.watch("currency_code")
   const currentCurrency = useMemo(() => {
-    return currencies[selectedCurrency.toUpperCase()];
-  }, [selectedCurrency, currencies]);
+    return currencies[selectedCurrency.toUpperCase()]
+  }, [selectedCurrency, currencies])
 
   if (!currentCurrency) {
-    return <div>Loading...</div>;
+    return <div>Loading...</div>
   }
 
   return (
@@ -103,7 +103,7 @@ export const GiftCardCreateForm = ({
 
             <div
               id="general"
-              className="grid grid-cols-1 gap-y-6 gap-x-4 md:grid-cols-2"
+              className="grid grid-cols-1 gap-x-4 gap-y-6 md:grid-cols-2"
             >
               <div>
                 <Text className="txt-small-plus text-ui-fg-base" weight="plus">
@@ -137,7 +137,7 @@ export const GiftCardCreateForm = ({
                         </Form.Control>
                         <Form.ErrorMessage />
                       </Form.Item>
-                    );
+                    )
                   }}
                 />
 
@@ -161,15 +161,13 @@ export const GiftCardCreateForm = ({
                             autoComplete="off"
                             tabIndex={-1}
                             onValueChange={(_value, _name, values) => {
-                              field.onChange(
-                                values?.value ? values?.value : ""
-                              );
+                              field.onChange(values?.value ? values?.value : "")
                             }}
                           />
                         </Form.Control>
                         <Form.ErrorMessage />
                       </Form.Item>
-                    );
+                    )
                   }}
                 />
 
@@ -192,7 +190,7 @@ export const GiftCardCreateForm = ({
 
                         <Form.ErrorMessage />
                       </Form.Item>
-                    );
+                    )
                   }}
                 />
 
@@ -211,7 +209,7 @@ export const GiftCardCreateForm = ({
                         </Form.Control>
                         <Form.ErrorMessage />
                       </Form.Item>
-                    );
+                    )
                   }}
                 />
               </div>
@@ -237,5 +235,5 @@ export const GiftCardCreateForm = ({
         </Button>
       </RouteFocusModal.Footer>
     </RouteFocusModal.Form>
-  );
-};
+  )
+}
