@@ -17,7 +17,7 @@ export default function SignupForm() {
     setMessage('')
 
     try {
-      const response = await fetch('/api/tenant/register', { // Proxied or direct to Medusa
+      const response = await fetch('/auth/tenant/register', { // Proxied or direct to Medusa
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData)

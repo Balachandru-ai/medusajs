@@ -80,5 +80,5 @@ images:
   - 'us-central1-docker.pkg.dev/${PROJECT_ID}/medusa/storefront'
 
 substitutions:
-  _DATABASE_URL: 'postgres://postgres:password@db.supabase.co:5432/postgres'
-  _MEDUSA_BACKEND_URL: 'https://medusa-backend-xyz.a.run.app'
+  _DATABASE_URL: 'يرجى_وضع_رابط_قاعدة_البيانات_هنا'
+  _MEDUSA_BACKEND_URL: 'يرجى_وضع_رابط_المحرك_هنا'

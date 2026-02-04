@@ -4,9 +4,12 @@ import {
   WorkflowResponse,
   transform,
 } from "@medusajs/framework/workflows-sdk"
-import { createStoresStep, updateStoresStep } from "@medusajs/core-flows"
-import { createSalesChannelsStep } from "@medusajs/core-flows"
-import { createUsersStep } from "@medusajs/core-flows"
+import {
+  createStoresStep,
+  updateStoresStep,
+  createSalesChannelsStep,
+  createUsersStep
+} from "../core-flows"
 
 export type TenantSignupInput = {
   store_name: string

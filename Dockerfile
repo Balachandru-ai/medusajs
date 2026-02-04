@@ -17,8 +17,8 @@ COPY . .
 # Install dependencies
 RUN yarn install
 
-# Build the backend (Medusa)
-RUN yarn workspace @medusajs/medusa build
+# Build the backend (Medusa) and its dependencies
+RUN yarn turbo run build --filter=@medusajs/medusa...
 
 # Production image
 FROM node:20-slim
