@@ -1,5 +1,6 @@
 import { model } from "@medusajs/framework/utils"
 import LoyaltyTypes from "@medusajs/framework/types"
+import { StoreCreditAccount } from "./store-credit-account"
 
 export const GiftCard = model.define(
   { tableName: "loyalty_gift_card", name: "GiftCard" },
@@ -17,5 +18,9 @@ export const GiftCard = model.define(
     line_item_id: model.text().nullable(),
     note: model.text().nullable(),
     metadata: model.json().nullable(),
+
+    store_credit_account: model.belongsTo(() => StoreCreditAccount, {
+      mappedBy: "gift_cards",
+    }),
   }
 )

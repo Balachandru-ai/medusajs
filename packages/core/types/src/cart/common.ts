@@ -1,5 +1,6 @@
 import { BaseFilterable } from "../dal"
 import { OperatorMap } from "../dal/utils"
+import { GiftCardDTO } from "../loyalty"
 import { BigNumberRawValue, BigNumberValue } from "../totals"
 
 /**
@@ -808,6 +809,13 @@ export interface CartDTO {
    * @expandable
    */
   shipping_methods?: CartShippingMethodDTO[]
+
+  /**
+   * The associated gift cards
+   *
+   * @expandable
+   */
+  gift_cards?: GiftCardDTO[]
 
   /**
    * Holds custom data in key-value pairs.

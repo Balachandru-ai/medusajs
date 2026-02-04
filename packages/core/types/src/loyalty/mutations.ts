@@ -75,6 +75,10 @@ export interface UpdateGiftCardDTO {
    * Custom metadata for the gift card.
    */
   metadata?: Record<string, unknown> | null
+  /**
+   * The ID of the linked store credit account.
+   */
+  store_credit_account_id?: string | null
 }
 
 /**

@@ -1,5 +1,6 @@
 import { model } from "@medusajs/framework/utils"
 import { AccountTransaction } from "./account-transaction"
+import { GiftCard } from "./gift-card"
 
 export const StoreCreditAccount = model
   .define(
@@ -13,6 +14,9 @@ export const StoreCreditAccount = model
 
       transactions: model.hasMany(() => AccountTransaction, {
         mappedBy: "account",
+      }),
+      gift_cards: model.hasMany(() => GiftCard, {
+        mappedBy: "store_credit_account",
       }),
     }
   )

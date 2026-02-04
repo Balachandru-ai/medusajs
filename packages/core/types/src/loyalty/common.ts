@@ -67,6 +67,14 @@ export interface GiftCardDTO {
    */
   metadata: Record<string, unknown> | null
   /**
+   * The ID of the linked store credit account.
+   */
+  store_credit_account_id: string | null
+  /**
+   * The linked store credit account.
+   */
+  store_credit_account?: StoreCreditAccountDTO | null
+  /**
    * When the gift card was created.
    */
   created_at: Date
@@ -158,6 +166,10 @@ export interface StoreCreditAccountDTO {
    * The transactions for the account.
    */
   transactions?: AccountTransactionDTO[]
+  /**
+   * The gift cards linked to this account.
+   */
+  gift_cards?: GiftCardDTO[]
   /**
    * When the account was created.
    */

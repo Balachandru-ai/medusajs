@@ -1,3 +1,4 @@
+import { LoyaltyTypes } from ".."
 import { BaseFilterable } from "../dal"
 import { OperatorMap } from "../dal/utils"
 import { FulfillmentDTO } from "../fulfillment"
@@ -1120,6 +1121,13 @@ export interface OrderDTO {
    * @expandable
    */
   credit_lines?: OrderCreditLineDTO[]
+
+  /**
+   * The gift cards for an order
+   *
+   * @expandable
+   */
+  gift_cards?: LoyaltyTypes.GiftCardDTO[]
 
   /**
    * The summary of the order totals.
