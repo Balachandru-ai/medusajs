@@ -187,9 +187,9 @@ async function createCloudAnnouncement() {
     subtitle: subtitle || release.name || undefined,
     image,
     content: content || "Learn more about the latest Medusa release",
-    type: "feature",
+    type: "release",
     link_url: release.html_url,
-    published: true,
+    published: false,
     published_at: new Date().toISOString(),
   }
 
