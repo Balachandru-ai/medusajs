@@ -7,6 +7,7 @@ export const User = model
     last_name: model.text().searchable().nullable(),
     email: model.text().searchable(),
     avatar_url: model.text().nullable(),
+    store_id: model.text().nullable().index(),
     metadata: model.json().nullable(),
   })
   .indexes([

@@ -6,6 +6,9 @@ const Store = model
   .define("Store", {
     id: model.id({ prefix: "store" }).primaryKey(),
     name: model.text().default("Medusa Store").searchable(),
+    subdomain: model.text().unique().nullable(),
+    primary_color: model.text().nullable(),
+    logo_url: model.text().nullable(),
     default_sales_channel_id: model.text().nullable(),
     default_region_id: model.text().nullable(),
     default_location_id: model.text().nullable(),
