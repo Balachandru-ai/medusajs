@@ -16,6 +16,14 @@ export const generatedSidebars = [
             "title": "Introduction",
             "path": "/",
             "children": []
+          },
+          {
+            "loaded": true,
+            "isPathHref": true,
+            "type": "link",
+            "title": "Create your first Bloom",
+            "path": "/first-store",
+            "children": []
           }
         ]
       }
