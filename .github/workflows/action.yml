@@ -44,6 +44,7 @@ jobs:
           name: build-artifacts
           path: |
             packages/**/dist
+            packages/plugins/**/.medusa/server
             integration-tests/**/dist
             !packages/**/node_modules
           retention-days: 1
