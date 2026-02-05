@@ -7,13 +7,6 @@ import * as AiAssistantMocks from "../../../../AiAssistant/__mocks__"
 vi.mock("@/providers/AiAssistant", () => ({
   useAiAssistant: () => AiAssistantMocks.mockUseAiAssistant(),
 }))
-vi.mock("@/providers/SiteConfig", () => ({
-  useSiteConfig: () => ({
-    config: {
-      basePath: "http://example.com",
-    },
-  }),
-}))
 vi.mock("@kapaai/react-sdk", () => ({
   useChat: () => AiAssistantMocks.mockUseChat(),
 }))
@@ -29,6 +22,10 @@ vi.mock("@/components/Tooltip", () => ({
       {children} - {innerClassName}
     </div>
   ),
+}))
+
+vi.mock("@/components/Icons/Bloom", () => ({
+  BloomIcon: () => <span data-testid="bloom-icon" />,
 }))
 
 import { CodeBlockAskAiAction } from "../../AskAi"
@@ -60,11 +57,8 @@ describe("rendering", () => {
     expect(span).toBeInTheDocument()
     expect(span).toHaveClass("p-[4.5px]")
     expect(span).toHaveClass("cursor-pointer")
-    const image = span?.querySelector("img")
-    expect(image).toBeInTheDocument()
-    expect(image).toHaveAttribute("width", "15")
-    expect(image).toHaveAttribute("height", "15")
-    expect(image).toHaveAttribute("alt", "Ask AI")
+    const icon = span?.querySelector("[data-testid='bloom-icon']")
+    expect(icon).toBeInTheDocument()
   })
 
   test("render code block ask ai action not in header", () => {
