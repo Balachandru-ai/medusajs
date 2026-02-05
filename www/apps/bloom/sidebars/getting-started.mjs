@@ -13,6 +13,11 @@ export const gettingStartedSidebar = [
             title: "Introduction",
             path: "/",
           },
+          {
+            type: "link",
+            title: "Create your first Bloom",
+            path: "/first-store",
+          }
         ],
       },
     ],
