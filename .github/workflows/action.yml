@@ -45,7 +45,7 @@ jobs:
           include-hidden-files: true
           path: |
             packages/**/dist
-            packages/**/.medusa/server  
+            packages/plugins/*/.medusa/server
             integration-tests/**/dist
             !packages/**/node_modules
           retention-days: 1
