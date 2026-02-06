@@ -830,12 +830,11 @@ export class TransactionOrchestrator extends EventEmitter {
       if (!step.isCompensating()) {
         const isTransactionTimeout =
           TransactionTimeoutError.isTransactionTimeoutError(timeoutError!)
-        const isStepTimeout = hasTimedOut && !isTransactionTimeout
 
         const canContinueOnFailure =
           (step.definition.continueOnPermanentFailure ||
             step.definition.skipOnPermanentFailure) &&
-          (!isTransactionTimeout || isStepTimeout)
+          !isTransactionTimeout
 
         if (canContinueOnFailure) {
           if (step.definition.skipOnPermanentFailure) {
