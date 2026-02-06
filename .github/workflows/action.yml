@@ -40,8 +40,9 @@ jobs:
 
       - name: Prepare plugin build artifacts
         run: |
+          shopt -s nullglob
           for dir in packages/plugins/*/.medusa; do
-            [ -d "$dir" ] && cp -r "$dir" "${dir%/.medusa}/_medusa"
+            cp -r "$dir" "${dir%/.medusa}/_medusa"
           done
 
       - name: Upload build artifacts
@@ -90,8 +91,9 @@ jobs:
 
       - name: Restore plugin build artifacts
         run: |
+          shopt -s nullglob
           for dir in packages/plugins/*/_medusa; do
-            [ -d "$dir" ] && mv "$dir" "${dir%/_medusa}/.medusa"
+            mv "$dir" "${dir%/_medusa}/.medusa"
           done
 
       - name: Run unit tests
@@ -172,8 +174,9 @@ jobs:
 
       - name: Restore plugin build artifacts
         run: |
+          shopt -s nullglob
           for dir in packages/plugins/*/_medusa; do
-            [ -d "$dir" ] && mv "$dir" "${dir%/_medusa}/.medusa"
+            mv "$dir" "${dir%/_medusa}/.medusa"
           done
 
       - name: Run package integration tests
@@ -256,8 +259,9 @@ jobs:
 
       - name: Restore plugin build artifacts
         run: |
+          shopt -s nullglob
           for dir in packages/plugins/*/_medusa; do
-            [ -d "$dir" ] && mv "$dir" "${dir%/_medusa}/.medusa"
+            mv "$dir" "${dir%/_medusa}/.medusa"
           done
 
       - name: Run HTTP integration tests
@@ -340,8 +344,9 @@ jobs:
 
       - name: Restore plugin build artifacts
         run: |
+          shopt -s nullglob
           for dir in packages/plugins/*/_medusa; do
-            [ -d "$dir" ] && mv "$dir" "${dir%/_medusa}/.medusa"
+            mv "$dir" "${dir%/_medusa}/.medusa"
           done
 
       - name: Run Modules integration tests
