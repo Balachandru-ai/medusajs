@@ -3,25 +3,37 @@
 import { usePathname } from "next/navigation"
 import React, { createContext, useContext, useMemo } from "react"
 import { MenuItem, NavigationItem, NavigationItemDropdown } from "types"
-import { useSiteConfig } from "../SiteConifg"
+import { useSiteConfig } from "../SiteConfig"
 
 export type MainNavContext = {
   navItems: NavigationItem[]
   activeItemIndex?: number
   activeItem?: NavigationItem
   editDate?: string
+  logo?: React.ReactNode
+  logoUrl?: string
+  helpNavItem?: NavigationItemDropdown
+  additionalMenuItems?: MenuItem[]
 }
 
 const MainNavContext = createContext<MainNavContext | null>(null)
 
 export type MainNavProviderProps = {
   navItems: NavigationItem[]
+  logo?: React.ReactNode
+  logoUrl?: string
   children?: React.ReactNode
+  helpNavItem?: NavigationItemDropdown
+  additionalMenuItems?: MenuItem[]
 }
 
 export const MainNavProvider = ({
   navItems,
+  logo,
+  logoUrl,
+  helpNavItem,
   children,
+  additionalMenuItems,
 }: MainNavProviderProps) => {
   const pathname = usePathname()
   const { config } = useSiteConfig()
@@ -117,6 +129,10 @@ export const MainNavProvider = ({
         navItems,
         activeItemIndex,
         activeItem,
+        logo,
+        logoUrl,
+        helpNavItem,
+        additionalMenuItems,
       }}
     >
       {children}

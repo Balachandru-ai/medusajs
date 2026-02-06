@@ -8,14 +8,16 @@ import React, {
   useRef,
   useState,
 } from "react"
-import { useAiAssistant, useIsBrowser } from "../../../providers"
+import { useAiAssistant } from "../../../providers/AiAssistant"
+import { useIsBrowser } from "../../../providers/BrowserProvider"
 import { AiAssistantChatWindowHeader } from "./Header"
 import { AiAssistantSuggestions } from "../Suggestions"
 import { AiAssistantThreadItem } from "../ThreadItem"
 import { AiAssistantChatWindowInput } from "./Input"
-import { useKeyboardShortcut } from "../../.."
+import { useKeyboardShortcut } from "../../../hooks/use-keyboard-shortcut"
 import { AiAssistantChatWindowFooter } from "./Footer"
 import { useChat } from "@kapaai/react-sdk"
+import { AiAssistantChatWindowCallout } from "./Callout"
 
 const DEFAULT_HEIGHT = "calc(100% - 8px)"
 
@@ -53,6 +55,7 @@ export const AiAssistantChatWindow = () => {
             content: item.question,
             sources: item.sources,
             question_id: item.id,
+            isGenerationAborted: item.isGenerationAborted,
           }}
         />
         <AiAssistantThreadItem
@@ -61,6 +64,7 @@ export const AiAssistantChatWindow = () => {
             content: item.answer,
             sources: item.sources,
             question_id: item.id,
+            isGenerationAborted: item.isGenerationAborted,
           }}
         />
       </Fragment>
@@ -177,10 +181,10 @@ export const AiAssistantChatWindow = () => {
         <div className="flex flex-auto overflow-auto relative">
           <div
             className={clsx(
-              "overflow-y-auto flex-auto px-docs_0.5 pt-docs_0.25 pb-docs_2"
+              "overflow-y-auto flex-auto px-docs_0.5 py-docs_1.5"
             )}
           >
-            <div ref={contentRef}>
+            <div ref={contentRef} className="flex flex-col gap-docs_2">
               {!conversation.length && <AiAssistantSuggestions />}
               {getThreadItems()}
               {error?.length && (
@@ -201,6 +205,7 @@ export const AiAssistantChatWindow = () => {
             )}
           ></span>
         </div>
+        <AiAssistantChatWindowCallout />
         <AiAssistantChatWindowInput chatWindowRef={chatWindowRef} />
         <AiAssistantChatWindowFooter />
       </div>

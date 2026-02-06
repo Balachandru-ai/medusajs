@@ -1,5 +1,65 @@
 # Change Log
 
+## 2.13.1
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @medusajs/deps@2.13.1
+  - @medusajs/telemetry@2.13.1
+
+## 2.13.0
+
+### Minor Changes
+
+- [`a31e72c31c5235240cead2d04e39e5927688eec7`](https://github.com/medusajs/medusa/commit/a31e72c31c5235240cead2d04e39e5927688eec7) Thanks [@olivermrbl](https://github.com/olivermrbl)! - chore: Minor bump
+
+### Patch Changes
+
+- Updated dependencies [[`a31e72c31c5235240cead2d04e39e5927688eec7`](https://github.com/medusajs/medusa/commit/a31e72c31c5235240cead2d04e39e5927688eec7)]:
+  - @medusajs/deps@2.13.0
+  - @medusajs/telemetry@2.13.0
+
+## 2.12.6
+
+### Patch Changes
+
+- [`87a8bb35bf38759c5a1d9dfebd1a28bb17488aaa`](undefined) - fix(create-medusa-app): fix error handling when thrown error is a string
+
+- [`5f90cd0650eb11bfbd27cc326ca8c261fc588c55`](undefined) - feat(create-medusa-app): add support for pnpm and specifying package manager
+
+- [`61193c6314304af7f71cd9c0714823d039973900`](undefined) - feat(create-medusa-app): add facts for Claude Code plugin and MCP server
+
+- Updated dependencies [[`1ca3516a5cbb059ad79fe483cd8e1d6a7ebca23b`](https://github.com/medusajs/medusa/commit/1ca3516a5cbb059ad79fe483cd8e1d6a7ebca23b)]:
+  - @medusajs/deps@2.12.6
+  - @medusajs/telemetry@2.12.6
+
+## 2.12.5
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @medusajs/deps@2.12.5
+  - @medusajs/telemetry@2.12.5
+
+## 2.12.4
+
+### Patch Changes
+
+- [#14462](https://github.com/medusajs/medusa/pull/14462) [`b300a9334584d5b373d6b1879d715e9ebd9050db`](https://github.com/medusajs/medusa/commit/b300a9334584d5b373d6b1879d715e9ebd9050db) Thanks [@shahednasser](https://github.com/shahednasser)! - fix(create-medusa-app): fix version option not working with Next.js storefront
+
+- Updated dependencies []:
+  - @medusajs/deps@2.12.4
+  - @medusajs/telemetry@2.12.4
+
+## 2.12.3
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @medusajs/deps@2.12.3
+  - @medusajs/telemetry@2.12.3
+
 ## 2.12.2
 
 ### Patch Changes

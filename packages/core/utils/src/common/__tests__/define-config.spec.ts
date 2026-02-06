@@ -101,6 +101,10 @@ describe("defineConfig", function () {
           "promotion": {
             "resolve": "@medusajs/medusa/promotion",
           },
+          "rbac": {
+            "disable": true,
+            "resolve": "@medusajs/medusa/rbac",
+          },
           "region": {
             "resolve": "@medusajs/medusa/region",
           },
@@ -118,6 +122,10 @@ describe("defineConfig", function () {
           },
           "tax": {
             "resolve": "@medusajs/medusa/tax",
+          },
+          "translation": {
+            "disable": true,
+            "resolve": "@medusajs/medusa/translation",
           },
           "user": {
             "options": {
@@ -274,6 +282,10 @@ describe("defineConfig", function () {
           "promotion": {
             "resolve": "@medusajs/medusa/promotion",
           },
+          "rbac": {
+            "disable": true,
+            "resolve": "@medusajs/medusa/rbac",
+          },
           "region": {
             "resolve": "@medusajs/medusa/region",
           },
@@ -291,6 +303,10 @@ describe("defineConfig", function () {
           },
           "tax": {
             "resolve": "@medusajs/medusa/tax",
+          },
+          "translation": {
+            "disable": true,
+            "resolve": "@medusajs/medusa/translation",
           },
           "user": {
             "options": {
@@ -455,6 +471,10 @@ describe("defineConfig", function () {
           "promotion": {
             "resolve": "@medusajs/medusa/promotion",
           },
+          "rbac": {
+            "disable": true,
+            "resolve": "@medusajs/medusa/rbac",
+          },
           "region": {
             "resolve": "@medusajs/medusa/region",
           },
@@ -472,6 +492,10 @@ describe("defineConfig", function () {
           },
           "tax": {
             "resolve": "@medusajs/medusa/tax",
+          },
+          "translation": {
+            "disable": true,
+            "resolve": "@medusajs/medusa/translation",
           },
           "user": {
             "options": {
@@ -637,6 +661,10 @@ describe("defineConfig", function () {
           "promotion": {
             "resolve": "@medusajs/medusa/promotion",
           },
+          "rbac": {
+            "disable": true,
+            "resolve": "@medusajs/medusa/rbac",
+          },
           "region": {
             "resolve": "@medusajs/medusa/region",
           },
@@ -654,6 +682,10 @@ describe("defineConfig", function () {
           },
           "tax": {
             "resolve": "@medusajs/medusa/tax",
+          },
+          "translation": {
+            "disable": true,
+            "resolve": "@medusajs/medusa/translation",
           },
           "user": {
             "options": {
@@ -807,6 +839,10 @@ describe("defineConfig", function () {
           "promotion": {
             "resolve": "@medusajs/medusa/promotion",
           },
+          "rbac": {
+            "disable": true,
+            "resolve": "@medusajs/medusa/rbac",
+          },
           "region": {
             "resolve": "@medusajs/medusa/region",
           },
@@ -824,6 +860,10 @@ describe("defineConfig", function () {
           },
           "tax": {
             "resolve": "@medusajs/medusa/tax",
+          },
+          "translation": {
+            "disable": true,
+            "resolve": "@medusajs/medusa/translation",
           },
           "user": {
             "options": {
@@ -980,6 +1020,10 @@ describe("defineConfig", function () {
           "promotion": {
             "resolve": "@medusajs/medusa/promotion",
           },
+          "rbac": {
+            "disable": true,
+            "resolve": "@medusajs/medusa/rbac",
+          },
           "region": {
             "resolve": "@medusajs/medusa/region",
           },
@@ -997,6 +1041,10 @@ describe("defineConfig", function () {
           },
           "tax": {
             "resolve": "@medusajs/medusa/tax",
+          },
+          "translation": {
+            "disable": true,
+            "resolve": "@medusajs/medusa/translation",
           },
           "user": {
             "options": {
@@ -1100,7 +1148,7 @@ describe("defineConfig", function () {
                 },
               ],
             },
-            "resolve": "@medusajs/caching",
+            "resolve": "@medusajs/medusa/caching",
           },
           "cart": {
             "resolve": "@medusajs/medusa/cart",
@@ -1114,6 +1162,9 @@ describe("defineConfig", function () {
           "event_bus": {
             "options": {
               "redisUrl": "redis://localhost:6379",
+              "workerOptions": {
+                "concurrency": 1,
+              },
             },
             "resolve": "@medusajs/medusa/event-bus-redis",
           },
@@ -1197,6 +1248,10 @@ describe("defineConfig", function () {
           "promotion": {
             "resolve": "@medusajs/medusa/promotion",
           },
+          "rbac": {
+            "disable": true,
+            "resolve": "@medusajs/medusa/rbac",
+          },
           "region": {
             "resolve": "@medusajs/medusa/region",
           },
@@ -1214,6 +1269,10 @@ describe("defineConfig", function () {
           },
           "tax": {
             "resolve": "@medusajs/medusa/tax",
+          },
+          "translation": {
+            "disable": true,
+            "resolve": "@medusajs/medusa/translation",
           },
           "user": {
             "options": {
@@ -1324,7 +1383,7 @@ describe("defineConfig", function () {
                 },
               ],
             },
-            "resolve": "@medusajs/caching",
+            "resolve": "@medusajs/medusa/caching",
           },
           "cart": {
             "resolve": "@medusajs/medusa/cart",
@@ -1338,6 +1397,9 @@ describe("defineConfig", function () {
           "event_bus": {
             "options": {
               "redisUrl": "redis://localhost:6379",
+              "workerOptions": {
+                "concurrency": 1,
+              },
             },
             "resolve": "@medusajs/medusa/event-bus-redis",
           },
@@ -1421,6 +1483,10 @@ describe("defineConfig", function () {
           "promotion": {
             "resolve": "@medusajs/medusa/promotion",
           },
+          "rbac": {
+            "disable": true,
+            "resolve": "@medusajs/medusa/rbac",
+          },
           "region": {
             "resolve": "@medusajs/medusa/region",
           },
@@ -1438,6 +1504,10 @@ describe("defineConfig", function () {
           },
           "tax": {
             "resolve": "@medusajs/medusa/tax",
+          },
+          "translation": {
+            "disable": true,
+            "resolve": "@medusajs/medusa/translation",
           },
           "user": {
             "options": {
@@ -1564,7 +1634,7 @@ describe("defineConfig", function () {
                 },
               ],
             },
-            "resolve": "@medusajs/caching",
+            "resolve": "@medusajs/medusa/caching",
           },
           "cart": {
             "resolve": "@medusajs/medusa/cart",
@@ -1578,6 +1648,9 @@ describe("defineConfig", function () {
           "event_bus": {
             "options": {
               "redisUrl": "redis://localhost:6379",
+              "workerOptions": {
+                "concurrency": 1,
+              },
             },
             "resolve": "@medusajs/medusa/event-bus-redis",
           },
@@ -1661,6 +1734,10 @@ describe("defineConfig", function () {
           "promotion": {
             "resolve": "@medusajs/medusa/promotion",
           },
+          "rbac": {
+            "disable": true,
+            "resolve": "@medusajs/medusa/rbac",
+          },
           "region": {
             "resolve": "@medusajs/medusa/region",
           },
@@ -1678,6 +1755,10 @@ describe("defineConfig", function () {
           },
           "tax": {
             "resolve": "@medusajs/medusa/tax",
+          },
+          "translation": {
+            "disable": true,
+            "resolve": "@medusajs/medusa/translation",
           },
           "user": {
             "options": {
@@ -1939,6 +2020,10 @@ describe("defineConfig", function () {
           "promotion": {
             "resolve": "@medusajs/medusa/promotion",
           },
+          "rbac": {
+            "disable": true,
+            "resolve": "@medusajs/medusa/rbac",
+          },
           "region": {
             "resolve": "@medusajs/medusa/region",
           },
@@ -1956,6 +2041,10 @@ describe("defineConfig", function () {
           },
           "tax": {
             "resolve": "@medusajs/medusa/tax",
+          },
+          "translation": {
+            "disable": true,
+            "resolve": "@medusajs/medusa/translation",
           },
           "user": {
             "options": {
@@ -2013,18 +2102,23 @@ describe("defineConfig", function () {
 
   it("should add cloud options to the project config and relevant modules if the environment variables are set", function () {
     const originalEnv = { ...process.env }
+    process.env.MEDUSA_BACKEND_URL = "test-backend-url"
     process.env.MEDUSA_CLOUD_ENVIRONMENT_HANDLE = "test-environment"
     process.env.MEDUSA_CLOUD_API_KEY = "test-api-key"
     process.env.MEDUSA_CLOUD_EMAILS_ENDPOINT = "test-emails-endpoint"
     process.env.MEDUSA_CLOUD_PAYMENTS_ENDPOINT = "test-payments-endpoint"
     process.env.MEDUSA_CLOUD_WEBHOOK_SECRET = "test-webhook-secret"
+    process.env.MEDUSA_CLOUD_OAUTH_AUTHORIZE_ENDPOINT =
+      "test-oauth-authorize-endpoint"
+    process.env.MEDUSA_CLOUD_OAUTH_TOKEN_ENDPOINT = "test-oauth-token-endpoint"
+    process.env.MEDUSA_CLOUD_OAUTH_DISABLED = "true"
     const config = defineConfig()
     process.env = { ...originalEnv }
 
     expect(config).toMatchInlineSnapshot(`
       {
         "admin": {
-          "backendUrl": "/",
+          "backendUrl": "test-backend-url",
           "path": "/app",
         },
         "featureFlags": {},
@@ -2035,6 +2129,15 @@ describe("defineConfig", function () {
           },
           "auth": {
             "options": {
+              "cloud": {
+                "api_key": "test-api-key",
+                "callback_url": "test-backend-url/app/login?auth_provider=cloud",
+                "disabled": true,
+                "environment_handle": "test-environment",
+                "oauth_authorize_endpoint": "test-oauth-authorize-endpoint",
+                "oauth_token_endpoint": "test-oauth-token-endpoint",
+                "sandbox_handle": undefined,
+              },
               "providers": [
                 {
                   "id": "emailpass",
@@ -2134,6 +2237,10 @@ describe("defineConfig", function () {
           "promotion": {
             "resolve": "@medusajs/medusa/promotion",
           },
+          "rbac": {
+            "disable": true,
+            "resolve": "@medusajs/medusa/rbac",
+          },
           "region": {
             "resolve": "@medusajs/medusa/region",
           },
@@ -2151,6 +2258,10 @@ describe("defineConfig", function () {
           },
           "tax": {
             "resolve": "@medusajs/medusa/tax",
+          },
+          "translation": {
+            "disable": true,
+            "resolve": "@medusajs/medusa/translation",
           },
           "user": {
             "options": {
@@ -2176,6 +2287,10 @@ describe("defineConfig", function () {
             "apiKey": "test-api-key",
             "emailsEndpoint": "test-emails-endpoint",
             "environmentHandle": "test-environment",
+            "oauthAuthorizeEndpoint": "test-oauth-authorize-endpoint",
+            "oauthCallbackUrl": undefined,
+            "oauthDisabled": true,
+            "oauthTokenEndpoint": "test-oauth-token-endpoint",
             "paymentsEndpoint": "test-payments-endpoint",
             "sandboxHandle": undefined,
             "webhookSecret": "test-webhook-secret",
@@ -2205,20 +2320,25 @@ describe("defineConfig", function () {
     `)
   })
 
-  it("should add cloud options to the project config and relevant modules if the environment varianbles is set for a sandbox", function () {
+  it("should add cloud options to the project config and relevant modules if the environment variable is set for a sandbox", function () {
     const originalEnv = { ...process.env }
+    process.env.MEDUSA_BACKEND_URL = "test-backend-url"
     process.env.MEDUSA_CLOUD_SANDBOX_HANDLE = "test-sandbox"
     process.env.MEDUSA_CLOUD_API_KEY = "test-api-key"
     process.env.MEDUSA_CLOUD_EMAILS_ENDPOINT = "test-emails-endpoint"
     process.env.MEDUSA_CLOUD_PAYMENTS_ENDPOINT = "test-payments-endpoint"
     process.env.MEDUSA_CLOUD_WEBHOOK_SECRET = "test-webhook-secret"
+    process.env.MEDUSA_CLOUD_OAUTH_AUTHORIZE_ENDPOINT =
+      "test-oauth-authorize-endpoint"
+    process.env.MEDUSA_CLOUD_OAUTH_TOKEN_ENDPOINT = "test-oauth-token-endpoint"
+    process.env.MEDUSA_CLOUD_OAUTH_DISABLED = "true"
     const config = defineConfig()
     process.env = { ...originalEnv }
 
     expect(config).toMatchInlineSnapshot(`
       {
         "admin": {
-          "backendUrl": "/",
+          "backendUrl": "test-backend-url",
           "path": "/app",
         },
         "featureFlags": {},
@@ -2229,6 +2349,15 @@ describe("defineConfig", function () {
           },
           "auth": {
             "options": {
+              "cloud": {
+                "api_key": "test-api-key",
+                "callback_url": "test-backend-url/app/login?auth_provider=cloud",
+                "disabled": true,
+                "environment_handle": undefined,
+                "oauth_authorize_endpoint": "test-oauth-authorize-endpoint",
+                "oauth_token_endpoint": "test-oauth-token-endpoint",
+                "sandbox_handle": "test-sandbox",
+              },
               "providers": [
                 {
                   "id": "emailpass",
@@ -2328,6 +2457,10 @@ describe("defineConfig", function () {
           "promotion": {
             "resolve": "@medusajs/medusa/promotion",
           },
+          "rbac": {
+            "disable": true,
+            "resolve": "@medusajs/medusa/rbac",
+          },
           "region": {
             "resolve": "@medusajs/medusa/region",
           },
@@ -2345,6 +2478,10 @@ describe("defineConfig", function () {
           },
           "tax": {
             "resolve": "@medusajs/medusa/tax",
+          },
+          "translation": {
+            "disable": true,
+            "resolve": "@medusajs/medusa/translation",
           },
           "user": {
             "options": {
@@ -2370,6 +2507,10 @@ describe("defineConfig", function () {
             "apiKey": "test-api-key",
             "emailsEndpoint": "test-emails-endpoint",
             "environmentHandle": undefined,
+            "oauthAuthorizeEndpoint": "test-oauth-authorize-endpoint",
+            "oauthCallbackUrl": undefined,
+            "oauthDisabled": true,
+            "oauthTokenEndpoint": "test-oauth-token-endpoint",
             "paymentsEndpoint": "test-payments-endpoint",
             "sandboxHandle": "test-sandbox",
             "webhookSecret": "test-webhook-secret",
@@ -2415,6 +2556,9 @@ describe("defineConfig", function () {
           webhookSecret: "overriden-webhook-secret",
           emailsEndpoint: "overriden-emails-endpoint",
           paymentsEndpoint: "overriden-payments-endpoint",
+          oauthAuthorizeEndpoint: "overriden-oauth-authorize-endpoint",
+          oauthTokenEndpoint: "overriden-oauth-token-endpoint",
+          oauthDisabled: true,
         },
       },
     })
@@ -2434,6 +2578,15 @@ describe("defineConfig", function () {
           },
           "auth": {
             "options": {
+              "cloud": {
+                "api_key": "overriden-api-key",
+                "callback_url": "//app/login?auth_provider=cloud",
+                "disabled": true,
+                "environment_handle": "overriden-environment",
+                "oauth_authorize_endpoint": "overriden-oauth-authorize-endpoint",
+                "oauth_token_endpoint": "overriden-oauth-token-endpoint",
+                "sandbox_handle": undefined,
+              },
               "providers": [
                 {
                   "id": "emailpass",
@@ -2533,6 +2686,10 @@ describe("defineConfig", function () {
           "promotion": {
             "resolve": "@medusajs/medusa/promotion",
           },
+          "rbac": {
+            "disable": true,
+            "resolve": "@medusajs/medusa/rbac",
+          },
           "region": {
             "resolve": "@medusajs/medusa/region",
           },
@@ -2550,6 +2707,10 @@ describe("defineConfig", function () {
           },
           "tax": {
             "resolve": "@medusajs/medusa/tax",
+          },
+          "translation": {
+            "disable": true,
+            "resolve": "@medusajs/medusa/translation",
           },
           "user": {
             "options": {
@@ -2575,6 +2736,10 @@ describe("defineConfig", function () {
             "apiKey": "overriden-api-key",
             "emailsEndpoint": "overriden-emails-endpoint",
             "environmentHandle": "overriden-environment",
+            "oauthAuthorizeEndpoint": "overriden-oauth-authorize-endpoint",
+            "oauthCallbackUrl": undefined,
+            "oauthDisabled": true,
+            "oauthTokenEndpoint": "overriden-oauth-token-endpoint",
             "paymentsEndpoint": "overriden-payments-endpoint",
             "sandboxHandle": undefined,
             "webhookSecret": "overriden-webhook-secret",
