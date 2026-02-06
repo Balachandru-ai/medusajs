@@ -169,6 +169,7 @@ medusaIntegrationTestRunner({
       describe("Step timeout with continueOnPermanentFailure", () => {
         it("should continue the workflow when an async step with retryIntervalAwaiting reaches timeout and continueOnPermanentFailure is set", async () => {
           const invokeSpy = jest.fn()
+          const invokeSpyB = jest.fn()
 
           const step1 = createStep(
             {
@@ -176,6 +177,20 @@ medusaIntegrationTestRunner({
             },
             async () => {
               return new StepResponse({ result: "from-step-1" })
+            }
+          )
+
+          const step2b = createStep(
+            {
+              name: "step-async-timeout-b",
+              async: true,
+              timeout: 1,
+              retryIntervalAwaiting: 0.3,
+              maxAwaitingRetries: 2,
+              continueOnPermanentFailure: true,
+            },
+            async () => {
+              invokeSpyB()
             }
           )
 
@@ -211,6 +226,7 @@ medusaIntegrationTestRunner({
             function () {
               step1()
               step2()
+              step2b()
               const res3 = step3()
               return new WorkflowResponse(res3)
             }
@@ -228,8 +244,8 @@ medusaIntegrationTestRunner({
           // The workflow should be waiting for the async step
           expect(transaction.getState()).toBe(TransactionState.INVOKING)
 
-          // Wait for the step timeout to fire (1s) plus some buffer
-          await new Promise((resolve) => global.setTimeout(resolve, 2000))
+          // Wait for the step timeout to fire plus some buffer
+          await new Promise((resolve) => global.setTimeout(resolve, 4000))
 
           const executions = await engine.listWorkflowExecutions({
             transaction_id: transactionId,
@@ -239,6 +255,7 @@ medusaIntegrationTestRunner({
           expect(executions[0].state).toBe(TransactionState.DONE)
 
           expect(invokeSpy).toHaveBeenCalled()
+          expect(invokeSpyB).toHaveBeenCalled()
         })
       })
     })
