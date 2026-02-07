@@ -1,5 +1,10 @@
-import { Modules } from "@medusajs/framework/utils"
-import { createWorkflow, WorkflowData } from "@medusajs/framework/workflows-sdk"
+import { Modules, PriceListWorkflowEvents } from "@medusajs/framework/utils"
+import {
+  createWorkflow,
+  transform,
+  WorkflowData,
+} from "@medusajs/framework/workflows-sdk"
+import { emitEventStep } from "../../common/steps/emit-event"
 import { removeRemoteLinkStep } from "../../common/steps/remove-remote-links"
 import { deletePriceListsStep } from "../steps"
 
@@ -42,6 +47,15 @@ export const deletePriceListsWorkflow = createWorkflow(
       [Modules.PRICING]: {
         price_list_id: input.ids,
       },
+    })
+
+    const priceListIdEvents = transform({ input }, ({ input }) =>
+      input.ids?.map((id) => ({ id })) ?? []
+    )
+
+    emitEventStep({
+      eventName: PriceListWorkflowEvents.DELETED,
+      data: priceListIdEvents,
     })
 
     return deletedPriceLists

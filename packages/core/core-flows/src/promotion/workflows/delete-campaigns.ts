@@ -1,9 +1,12 @@
+import { CampaignWorkflowEvents } from "@medusajs/framework/utils"
 import {
   createHook,
   createWorkflow,
+  transform,
   WorkflowData,
   WorkflowResponse,
 } from "@medusajs/framework/workflows-sdk"
+import { emitEventStep } from "../../common/steps/emit-event"
 import { deleteCampaignsStep } from "../steps"
 
 /**
@@ -42,6 +45,15 @@ export const deleteCampaignsWorkflow = createWorkflow(
     const deletedCampaigns = deleteCampaignsStep(input.ids)
     const campaignsDeleted = createHook("campaignsDeleted", {
       ids: input.ids,
+    })
+
+    const campaignIdEvents = transform({ input }, ({ input }) =>
+      input.ids?.map((id) => ({ id })) ?? []
+    )
+
+    emitEventStep({
+      eventName: CampaignWorkflowEvents.DELETED,
+      data: campaignIdEvents,
     })
 
     return new WorkflowResponse(deletedCampaigns, {
