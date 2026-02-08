@@ -42,6 +42,9 @@ type IORedisEventType<T = unknown> = {
   opts: BulkJobOptions
 }
 
+const DEFAULT_SUBSCRIBER_EXECUTION_TIMEOUT_MS = 300000
+const WORKER_RESTART_DELAY_MS = 5000
+
 /**
  * Can keep track of multiple subscribers to different events and run the
  * subscribers when events happen. Events will run asynchronously.
@@ -55,11 +58,14 @@ export default class RedisEventBusService extends AbstractEventBusModuleService 
   protected readonly queueOptions_: Omit<QueueOptions, "connection">
   protected readonly workerOptions_: Omit<WorkerOptions, "connection">
   protected readonly jobOptions_: EmitOptions
+  protected readonly subscriberExecutionTimeout_: number
   // TODO: Comment temporarely and we will re enable it in the near future #14478
   // private readonly eventOptions_: EventBusEventsOptions
 
   protected queue_: Queue
   protected bullWorker_: Worker
+  protected workerRunLoopPromise_: Promise<void> | null = null
+  protected shouldStopWorker_ = false
 
   constructor(
     {
@@ -83,6 +89,10 @@ export default class RedisEventBusService extends AbstractEventBusModuleService 
     this.queueOptions_ = eventBusRedisQueueOptions ?? {}
     this.workerOptions_ = eventBusRedisWorkerOptions ?? {}
     this.jobOptions_ = eventBusRedisJobOptions ?? {}
+    this.subscriberExecutionTimeout_ =
+      typeof _moduleOptions.subscriberExecutionTimeout === "number"
+        ? _moduleOptions.subscriberExecutionTimeout
+        : DEFAULT_SUBSCRIBER_EXECUTION_TIMEOUT_MS
     // TODO: Comment temporarely and we will re enable it in the near future #14478
     // this.eventOptions_ =
     //   _moduleOptions.eventOptions ??
@@ -106,9 +116,77 @@ export default class RedisEventBusService extends AbstractEventBusModuleService 
     }
   }
 
+  private async sleep(ms: number): Promise<void> {
+    await new Promise((resolve) => setTimeout(resolve, ms))
+  }
+
+  private startWorkerLoop(): void {
+    if (!this.bullWorker_ || this.workerRunLoopPromise_) {
+      return
+    }
+
+    this.shouldStopWorker_ = false
+    this.workerRunLoopPromise_ = this.runWorkerLoop().finally(() => {
+      this.workerRunLoopPromise_ = null
+    })
+  }
+
+  private async runWorkerLoop(): Promise<void> {
+    while (!this.shouldStopWorker_) {
+      try {
+        await this.bullWorker_.run()
+      } catch (err) {
+        if (this.shouldStopWorker_) {
+          return
+        }
+
+        this.logger_.error(
+          "Event bus worker stopped due to an error and will be restarted."
+        )
+        this.logger_.error(err)
+      }
+
+      if (this.shouldStopWorker_) {
+        return
+      }
+
+      this.logger_.warn(
+        `Event bus worker stopped unexpectedly. Restarting in ${WORKER_RESTART_DELAY_MS}ms.`
+      )
+      await this.sleep(WORKER_RESTART_DELAY_MS)
+    }
+  }
+
+  private withSubscriberTimeout<T>(
+    subscriberId: string,
+    eventName: string,
+    operation: Promise<T>
+  ): Promise<T> {
+    if (this.subscriberExecutionTimeout_ <= 0) {
+      return operation
+    }
+
+    let timer: ReturnType<typeof setTimeout> | undefined
+    const timeoutPromise = new Promise<never>((_, reject) => {
+      timer = setTimeout(() => {
+        reject(
+          new Error(
+            `Subscriber ${subscriberId} timed out while processing ${eventName} after ${this.subscriberExecutionTimeout_}ms`
+          )
+        )
+      }, this.subscriberExecutionTimeout_)
+    })
+
+    return Promise.race([operation, timeoutPromise]).finally(() => {
+      if (timer) {
+        clearTimeout(timer)
+      }
+    })
+  }
+
   __hooks = {
     onApplicationStart: async () => {
-      await this.bullWorker_?.run()
+      this.startWorkerLoop()
     },
     onApplicationShutdown: async () => {
       await this.queue_.close()
@@ -116,7 +194,9 @@ export default class RedisEventBusService extends AbstractEventBusModuleService 
       this.eventBusRedisConnection_.disconnect()
     },
     onApplicationPrepareShutdown: async () => {
+      this.shouldStopWorker_ = true
       await this.bullWorker_?.close()
+      await this.workerRunLoopPromise_
     },
   }
 
@@ -422,7 +502,11 @@ export default class RedisEventBusService extends AbstractEventBusModuleService 
         }
 
         try {
-          return await subscriber(event).then((data) => {
+          return await this.withSubscriberTimeout(
+            id,
+            name,
+            Promise.resolve(subscriber(event))
+          ).then((data) => {
             // For every subscriber that completes successfully, add their id to the list of completed subscribers
             completedSubscribersInCurrentAttempt.push(id)
             return data

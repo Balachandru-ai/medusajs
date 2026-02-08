@@ -76,6 +76,17 @@ export type EventBusRedisModuleOptions = {
    */
   jobOptions?: EmitOptions
 
+  /**
+   * Maximum time in milliseconds to wait for an individual subscriber to finish.
+   * If exceeded, the subscriber is treated as failed for this attempt and the job
+   * can retry based on `attempts`.
+   *
+   * Set to `0` or a negative number to disable timeout enforcement.
+   *
+   * @default 300000 (5 minutes)
+   */
+  subscriberExecutionTimeout?: number
+
   // eventOptions?: EventBusEventsOptions
 }
 

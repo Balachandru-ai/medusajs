@@ -1015,6 +1015,45 @@ describe("RedisEventBusService", () => {
         eventBus = new RedisEventBusService(moduleDeps, {}, moduleDeclaration)
       })
 
+      it("should timeout hanging subscribers and treat them as failed", async () => {
+        eventBus = new RedisEventBusService(
+          moduleDeps,
+          { subscriberExecutionTimeout: 20 },
+          moduleDeclaration
+        )
+
+        eventBus.subscribe(
+          "eventName",
+          () => {
+            return new Promise(() => undefined)
+          },
+          {
+            subscriberId: "hanging-subscriber",
+          }
+        )
+
+        await eventBus.worker_({
+          name: "eventName",
+          data: { data: { test: 1 } },
+          opts: { attempts: 1 },
+        } as any)
+
+        expect(loggerMock.warn).toHaveBeenCalledWith(
+          "An error occurred while processing eventName:"
+        )
+
+        const timeoutError = (loggerMock.warn as jest.Mock).mock.calls.find(
+          (call) =>
+            call[0] instanceof Error &&
+            call[0].message.includes("hanging-subscriber timed out")
+        )?.[0]
+
+        expect(timeoutError).toBeInstanceOf(Error)
+        expect(loggerMock.warn).toHaveBeenCalledWith(
+          "One or more subscribers of eventName failed. Retrying is not configured. Use 'attempts' option when emitting events."
+        )
+      })
+
       it("should process a simple event with no options", async () => {
         const test: string[] = []
 
