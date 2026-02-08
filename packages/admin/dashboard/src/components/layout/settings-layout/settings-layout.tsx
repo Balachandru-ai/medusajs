@@ -21,6 +21,7 @@ export const SettingsLayout = () => {
 
 const useSettingRoutes = (): INavItem[] => {
   const isTranslationsEnabled = useFeatureFlag("translation")
+  const isRbacEnabled = useFeatureFlag("rbac")
   const { t } = useTranslation()
 
   return useMemo(
@@ -33,6 +34,14 @@ const useSettingRoutes = (): INavItem[] => {
         label: t("users.domain"),
         to: "/settings/users",
       },
+      ...(isRbacEnabled
+        ? [
+            {
+              label: t("roles.domain"),
+              to: "/settings/roles",
+            },
+          ]
+        : []),
       {
         label: t("regions.domain"),
         to: "/settings/regions",
@@ -74,7 +83,7 @@ const useSettingRoutes = (): INavItem[] => {
           ]
         : []),
     ],
-    [t, isTranslationsEnabled]
+    [t, isTranslationsEnabled, isRbacEnabled]
   )
 }
 

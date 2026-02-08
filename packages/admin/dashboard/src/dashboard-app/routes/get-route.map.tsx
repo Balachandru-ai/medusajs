@@ -1125,6 +1125,58 @@ export function getRouteMap({
               ],
             },
             {
+              path: "roles",
+              errorElement: <ErrorBoundary />,
+              element: <Outlet />,
+              handle: {
+                breadcrumb: () => t("roles.domain"),
+              },
+              children: [
+                {
+                  path: "",
+                  lazy: () => import("../../routes/roles/role-list"),
+                  children: [
+                    {
+                      path: "create",
+                      lazy: () => import("../../routes/roles/role-create"),
+                    },
+                  ],
+                },
+                {
+                  path: ":id",
+                  lazy: async () => {
+                    const { Component, Breadcrumb, loader } = await import(
+                      "../../routes/roles/role-detail"
+                    )
+
+                    return {
+                      Component,
+                      loader,
+                      handle: {
+                        breadcrumb: (
+                          match: UIMatch<HttpTypes.AdminRbacRoleResponse>
+                        ) => <Breadcrumb {...match} />,
+                      },
+                    }
+                  },
+                  children: [
+                    {
+                      path: "edit",
+                      lazy: () => import("../../routes/roles/role-edit"),
+                    },
+                    {
+                      path: "add-users",
+                      lazy: () => import("../../routes/roles/role-add-users"),
+                    },
+                    {
+                      path: "permissions",
+                      lazy: () => import("../../routes/roles/role-permissions"),
+                    },
+                  ],
+                },
+              ],
+            },
+            {
               path: "sales-channels",
               errorElement: <ErrorBoundary />,
               element: <Outlet />,

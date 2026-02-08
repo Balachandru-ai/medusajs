@@ -80,10 +80,10 @@
         "select": {
           "type": "string"
         },
-        "unselectAll": {
+        "selectAll": {
           "type": "string"
         },
-        "selectAll": {
+        "unselectAll": {
           "type": "string"
         },
         "selected": {
@@ -9273,6 +9273,9 @@
         "inviteUserHint": {
           "type": "string"
         },
+        "inviteRolesTooltip": {
+          "type": "string"
+        },
         "sendInvite": {
           "type": "string"
         },
@@ -9377,6 +9380,7 @@
         "editUser",
         "inviteUser",
         "inviteUserHint",
+        "inviteRolesTooltip",
         "sendInvite",
         "pendingInvites",
         "deleteInviteWarning",
@@ -9391,6 +9395,263 @@
         "deleteUserWarning",
         "deleteUserSuccess",
         "invite"
+      ],
+      "additionalProperties": false
+    },
+    "roles": {
+      "type": "object",
+      "properties": {
+        "domain": {
+          "type": "string"
+        },
+        "subtitle": {
+          "type": "string"
+        },
+        "create": {
+          "type": "object",
+          "properties": {
+            "header": {
+              "type": "string"
+            },
+            "hint": {
+              "type": "string"
+            },
+            "successToast": {
+              "type": "string"
+            },
+            "tabs": {
+              "type": "object",
+              "properties": {
+                "details": {
+                  "type": "string"
+                },
+                "permissions": {
+                  "type": "string"
+                }
+              },
+              "required": ["details", "permissions"],
+              "additionalProperties": false
+            },
+            "permissions": {
+              "type": "object",
+              "properties": {
+                "empty": {
+                  "type": "object",
+                  "properties": {
+                    "heading": {
+                      "type": "string"
+                    },
+                    "description": {
+                      "type": "string"
+                    }
+                  },
+                  "required": ["heading", "description"],
+                  "additionalProperties": false
+                },
+                "filtered": {
+                  "type": "object",
+                  "properties": {
+                    "heading": {
+                      "type": "string"
+                    },
+                    "description": {
+                      "type": "string"
+                    }
+                  },
+                  "required": ["heading", "description"],
+                  "additionalProperties": false
+                }
+              },
+              "required": ["empty", "filtered"],
+              "additionalProperties": false
+            }
+          },
+          "required": ["header", "hint", "successToast", "tabs", "permissions"],
+          "additionalProperties": false
+        },
+        "edit": {
+          "type": "object",
+          "properties": {
+            "header": {
+              "type": "string"
+            },
+            "successToast": {
+              "type": "string"
+            }
+          },
+          "required": ["header", "successToast"],
+          "additionalProperties": false
+        },
+        "fields": {
+          "type": "object",
+          "properties": {
+            "permissions": {
+              "type": "string"
+            }
+          },
+          "required": ["permissions"],
+          "additionalProperties": false
+        },
+        "actions": {
+          "type": "object",
+          "properties": {
+            "managePermissions": {
+              "type": "string"
+            }
+          },
+          "required": ["managePermissions"],
+          "additionalProperties": false
+        },
+        "users": {
+          "type": "object",
+          "properties": {
+            "alreadyAddedTooltip": {
+              "type": "string"
+            },
+            "add": {
+              "type": "object",
+              "properties": {
+                "successToast_one": {
+                  "type": "string"
+                },
+                "successToast_other": {
+                  "type": "string"
+                },
+                "list": {
+                  "type": "object",
+                  "properties": {
+                    "noRecordsMessage": {
+                      "type": "string"
+                    }
+                  },
+                  "required": ["noRecordsMessage"],
+                  "additionalProperties": false
+                }
+              },
+              "required": ["successToast_one", "successToast_other", "list"],
+              "additionalProperties": false
+            },
+            "remove": {
+              "type": "object",
+              "properties": {
+                "title_one": {
+                  "type": "string"
+                },
+                "title_other": {
+                  "type": "string"
+                },
+                "description_one": {
+                  "type": "string"
+                },
+                "description_other": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "title_one",
+                "title_other",
+                "description_one",
+                "description_other"
+              ],
+              "additionalProperties": false
+            },
+            "list": {
+              "type": "object",
+              "properties": {
+                "noRecordsMessage": {
+                  "type": "string"
+                }
+              },
+              "required": ["noRecordsMessage"],
+              "additionalProperties": false
+            }
+          },
+          "required": ["alreadyAddedTooltip", "add", "remove", "list"],
+          "additionalProperties": false
+        },
+        "permissions": {
+          "type": "object",
+          "properties": {
+            "header": {
+              "type": "string"
+            },
+            "hint": {
+              "type": "string"
+            },
+            "empty": {
+              "type": "object",
+              "properties": {
+                "heading": {
+                  "type": "string"
+                },
+                "description": {
+                  "type": "string"
+                }
+              },
+              "required": ["heading", "description"],
+              "additionalProperties": false
+            },
+            "filtered": {
+              "type": "object",
+              "properties": {
+                "heading": {
+                  "type": "string"
+                },
+                "description": {
+                  "type": "string"
+                }
+              },
+              "required": ["heading", "description"],
+              "additionalProperties": false
+            }
+          },
+          "required": ["header", "hint", "empty", "filtered"],
+          "additionalProperties": false
+        },
+        "list": {
+          "type": "object",
+          "properties": {
+            "empty": {
+              "type": "object",
+              "properties": {
+                "heading": {
+                  "type": "string"
+                },
+                "description": {
+                  "type": "string"
+                }
+              },
+              "required": ["heading", "description"],
+              "additionalProperties": false
+            },
+            "filtered": {
+              "type": "object",
+              "properties": {
+                "heading": {
+                  "type": "string"
+                },
+                "description": {
+                  "type": "string"
+                }
+              },
+              "required": ["heading", "description"],
+              "additionalProperties": false
+            }
+          },
+          "required": ["empty", "filtered"],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "domain",
+        "subtitle",
+        "create",
+        "edit",
+        "fields",
+        "actions",
+        "users",
+        "permissions",
+        "list"
       ],
       "additionalProperties": false
     },
@@ -11876,6 +12137,9 @@
         "role": {
           "type": "string"
         },
+        "resource": {
+          "type": "string"
+        },
         "sent": {
           "type": "string"
         },
@@ -11889,6 +12153,9 @@
           "type": "string"
         },
         "updatedAt": {
+          "type": "string"
+        },
+        "operation": {
           "type": "string"
         },
         "revokedAt": {
@@ -12141,11 +12408,13 @@
         "region",
         "discount",
         "role",
+        "resource",
         "sent",
         "salesChannels",
         "product",
         "createdAt",
         "updatedAt",
+        "operation",
         "revokedAt",
         "true",
         "false",
@@ -12440,6 +12709,12 @@
             "user": {
               "type": "string"
             },
+            "role": {
+              "type": "string"
+            },
+            "permission": {
+              "type": "string"
+            },
             "sales_channel": {
               "type": "string"
             },
@@ -12488,6 +12763,8 @@
             "region",
             "store",
             "user",
+            "role",
+            "permission",
             "sales_channel",
             "stock_location",
             "shipping_profile",
@@ -12521,7 +12798,12 @@
           "additionalProperties": false
         }
       },
-      "required": ["accessDenied", "requiredPermissions", "resources", "actions"],
+      "required": [
+        "accessDenied",
+        "requiredPermissions",
+        "resources",
+        "actions"
+      ],
       "additionalProperties": false
     }
   },
@@ -12558,6 +12840,7 @@
     "priceLists",
     "profile",
     "users",
+    "roles",
     "translations",
     "store",
     "regions",

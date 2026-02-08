@@ -20,6 +20,7 @@ export const RESOURCE_ROUTE_MAP: Record<PermissionResource, string[]> = {
   region: ["/settings/regions"],
   store: ["/settings/store"],
   user: ["/settings/users"],
+  role: ["/settings/roles"],
   sales_channel: ["/settings/sales-channels"],
   stock_location: ["/settings/locations"],
   shipping_profile: ["/settings/locations/shipping-profiles"],
@@ -147,6 +148,13 @@ export const ROUTE_PERMISSIONS: Record<
   "/settings/users/invite": { resource: "user", operation: "create" },
   "/settings/users/:id": { resource: "user", operation: "read" },
   "/settings/users/:id/edit": { resource: "user", operation: "update" },
+
+  "/settings/roles": { resource: "role", operation: "read" },
+  "/settings/roles/create": { resource: "role", operation: "create" },
+  "/settings/roles/:id": { resource: "role", operation: "read" },
+  "/settings/roles/:id/edit": { resource: "role", operation: "update" },
+  "/settings/roles/:id/add-users": { resource: "role", operation: "update" },
+  "/settings/roles/:id/permissions": { resource: "role", operation: "update" },
 
   "/settings/sales-channels": { resource: "sales_channel", operation: "read" },
   "/settings/sales-channels/create": {

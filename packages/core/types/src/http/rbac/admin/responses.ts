@@ -1,5 +1,6 @@
 import { DeleteResponse, PaginatedResponse } from "../../common"
 import { AdminRbacPolicy, AdminRbacRole } from "./entities"
+import { AdminUser } from "../../user"
 
 export interface AdminRbacRoleResponse {
   /**
@@ -14,10 +15,10 @@ export interface AdminRbacRoleListResponse
      * The list of roles.
      */
     roles: AdminRbacRole[]
-  }> {}
+  }> { }
 
 export interface AdminRbacRoleDeleteResponse
-  extends DeleteResponse<"rbac_role"> {}
+  extends DeleteResponse<"rbac_role"> { }
 
 export interface AdminRbacPolicyResponse {
   /**
@@ -32,7 +33,37 @@ export interface AdminRbacPolicyListResponse
      * The list of policies.
      */
     policies: AdminRbacPolicy[]
-  }> {}
+  }> { }
 
 export interface AdminRbacPolicyDeleteResponse
-  extends DeleteResponse<"rbac_policy"> {}
+  extends DeleteResponse<"rbac_policy"> { }
+
+export interface AdminRbacRoleUserListResponse
+  extends PaginatedResponse<{
+    /**
+     * The list of users.
+     */
+    users: AdminUser[]
+  }> { }
+
+export interface AdminRbacRoleUsersResponse {
+  /**
+   * The list of users.
+   */
+  users: AdminUser[]
+}
+
+export interface AdminRbacRoleUsersDeleteResponse {
+  /**
+   * The IDs of the users that were removed.
+   */
+  ids: string[]
+  /**
+   * The type of the removed items.
+   */
+  object: "role_user"
+  /**
+   * Whether the users were removed successfully.
+   */
+  deleted: boolean
+}

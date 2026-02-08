@@ -30,6 +30,7 @@ import { useExtension } from "../../../providers/extension-provider"
 import { useSearch } from "../../../providers/search-provider"
 import { UserMenu } from "../user-menu"
 import { useDocumentDirection } from "../../../hooks/use-document-direction"
+import { PermissionGuard } from "../../common/permission-guard"
 
 export const MainLayout = () => {
   return (
@@ -44,10 +45,12 @@ const MainSidebar = () => {
     <aside className="flex flex-1 flex-col justify-between overflow-y-auto">
       <div className="flex flex-1 flex-col">
         <div className="bg-ui-bg-subtle sticky top-0">
-          <Header />
-          <div className="px-3">
-            <Divider variant="dashed" />
-          </div>
+          <PermissionGuard resource="store" operation="read">
+            <Header />
+            <div className="px-3">
+              <Divider variant="dashed" />
+            </div>
+          </PermissionGuard>
         </div>
         <div className="flex flex-1 flex-col justify-between">
           <div className="flex flex-1 flex-col">
@@ -107,8 +110,7 @@ const Header = () => {
 
   return (
     <div className="w-full p-3">
-    <DropdownMenu
-          dir={direction}>
+      <DropdownMenu dir={direction}>
         <DropdownMenu.Trigger
           disabled={!isLoaded}
           className={clx(
