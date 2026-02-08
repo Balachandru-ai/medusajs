@@ -20,7 +20,7 @@ export const ContentMenuActions = () => {
     () => isGeneratingAnswer || isPreparingAnswer,
     [isGeneratingAnswer, isPreparingAnswer]
   )
-  const pageUrl = `${baseUrl}${basePath}${pathname}`
+  const pageUrl = `${baseUrl}${basePath}${pathname}`.replace(/\/$/, "")
 
   const handleAiAssistantClick = () => {
     if (loading) {
@@ -46,7 +46,7 @@ export const ContentMenuActions = () => {
         data-testid="ai-assistant-button"
       >
         <BroomSparkle width={15} height={15} />
-        Explain with AI Assistant
+        Explain this page
       </button>
     </div>
   )
