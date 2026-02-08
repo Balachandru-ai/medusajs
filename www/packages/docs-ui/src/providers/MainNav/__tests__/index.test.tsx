@@ -2,7 +2,7 @@ import React from "react"
 import { afterEach, beforeEach, describe, expect, test, vi } from "vitest"
 import { cleanup, render } from "@testing-library/react"
 import { MainNavProvider, useMainNav } from "../index"
-import type { NavigationItem } from "types"
+import type { NavigationItem, MenuItem } from "types"
 
 // mock data
 const defaultUseSiteConfigReturn = {
@@ -31,7 +31,15 @@ vi.mock("@/providers/SiteConfig", () => ({
 }))
 
 const TestComponent = () => {
-  const { navItems, activeItemIndex, activeItem } = useMainNav()
+  const {
+    navItems,
+    activeItemIndex,
+    activeItem,
+    logo,
+    logoUrl,
+    helpNavItem,
+    additionalMenuItems,
+  } = useMainNav()
   return (
     <div>
       <div data-testid="nav-items-count">{navItems.length}</div>
@@ -39,6 +47,14 @@ const TestComponent = () => {
         {activeItemIndex !== undefined ? activeItemIndex : "none"}
       </div>
       <div data-testid="active-item">{activeItem?.title || "none"}</div>
+      <div data-testid="logo">{logo ? "custom" : "none"}</div>
+      <div data-testid="logo-url">{logoUrl || "none"}</div>
+      <div data-testid="help-nav-item">
+        {helpNavItem ? helpNavItem.title : "none"}
+      </div>
+      <div data-testid="additional-menu-items">
+        {additionalMenuItems?.length || 0}
+      </div>
     </div>
   )
 }
@@ -204,5 +220,100 @@ describe("useMainNav hook", () => {
     }).toThrow("useMainNav must be used within a MainNavProvider")
 
     consoleSpy.mockRestore()
+  })
+
+  test("provides custom logo when passed", () => {
+    const navItems: NavigationItem[] = []
+    const customLogo = <div>Custom Logo</div>
+
+    const { getByTestId } = render(
+      <MainNavProvider navItems={navItems} logo={customLogo}>
+        <TestComponent />
+      </MainNavProvider>
+    )
+
+    expect(getByTestId("logo")).toHaveTextContent("custom")
+  })
+
+  test("provides logoUrl when passed", () => {
+    const navItems: NavigationItem[] = []
+
+    const { getByTestId } = render(
+      <MainNavProvider
+        navItems={navItems}
+        logoUrl="https://custom-logo-url.com"
+      >
+        <TestComponent />
+      </MainNavProvider>
+    )
+
+    expect(getByTestId("logo-url")).toHaveTextContent(
+      "https://custom-logo-url.com"
+    )
+  })
+
+  test("provides helpNavItem when passed", () => {
+    const navItems: NavigationItem[] = []
+    const customHelpNavItem = {
+      type: "dropdown" as const,
+      title: "Custom Help",
+      children: [
+        {
+          type: "link" as const,
+          title: "Support",
+          link: "/support",
+        },
+      ],
+    }
+
+    const { getByTestId } = render(
+      <MainNavProvider navItems={navItems} helpNavItem={customHelpNavItem}>
+        <TestComponent />
+      </MainNavProvider>
+    )
+
+    expect(getByTestId("help-nav-item")).toHaveTextContent("Custom Help")
+  })
+
+  test("provides additionalMenuItems when passed", () => {
+    const navItems: NavigationItem[] = []
+    const additionalMenuItems: MenuItem[] = [
+      {
+        type: "link",
+        title: "Custom Link 1",
+        link: "/custom1",
+      },
+      {
+        type: "link",
+        title: "Custom Link 2",
+        link: "/custom2",
+      },
+    ]
+
+    const { getByTestId } = render(
+      <MainNavProvider
+        navItems={navItems}
+        additionalMenuItems={additionalMenuItems}
+      >
+        <TestComponent />
+      </MainNavProvider>
+    )
+
+    expect(getByTestId("additional-menu-items")).toHaveTextContent("2")
+  })
+
+  test("provides default values when optional props not passed", () => {
+    const navItems: NavigationItem[] = []
+
+    const { getByTestId } = render(
+      <MainNavProvider navItems={navItems}>
+        <TestComponent />
+      </MainNavProvider>
+    )
+
+    expect(getByTestId("logo")).toHaveTextContent("none")
+    expect(getByTestId("logo-url")).toHaveTextContent("none")
+    expect(getByTestId("help-nav-item")).toHaveTextContent("none")
+    expect(getByTestId("additional-menu-items")).toHaveTextContent("0")
   })
 })

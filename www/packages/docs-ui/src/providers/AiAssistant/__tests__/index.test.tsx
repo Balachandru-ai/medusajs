@@ -29,6 +29,10 @@ vi.mock("@kapaai/react-sdk", () => ({
     <div data-testid="kapa-provider">{children}</div>
   ),
   useChat: () => AiAssistantMocks.mockUseChat(),
+  useDeepThinking: () => ({
+    active: false,
+    toggle: vi.fn(),
+  }),
 }))
 
 vi.mock("@/components/AiAssistant/SearchWindow", () => ({

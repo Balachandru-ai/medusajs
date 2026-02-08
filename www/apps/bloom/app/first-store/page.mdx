@@ -1,0 +1,315 @@
+import { InlineIcon } from "docs-ui"
+import { CursorDefault } from "@medusajs/icons"
+
+export const metadata = {
+  title: `Build Your First Bloom`,
+}
+
+# {metadata.title}
+
+Build and publish a complete ecommerce store in hours using Bloom as your AI assistant. This guide walks you through creating your first Bloom store, customizing the design, adding features, and going live.
+
+![Bloom store showing product listing page](https://res.cloudinary.com/dza7lstvk/image/upload/v1770299987/Bloom/CleanShot_2026-02-05_at_15.59.27_2x_wl3ehc.png)
+
+---
+
+## What You'll Build
+
+In this guide, you'll create a complete Bloom ecommerce store with:
+
+1. **Custom Store:** Production-ready online store with your design and branding.
+2. **Admin Dashboard:** Dashboard to manage products, orders, and customers.
+3. **Custom Features:** Ecommerce functionalities like product reviews.
+
+By the end, you'll have a working store ready to accept orders and manage your business.
+
+---
+
+## 1. Create Your Store
+
+Start by visiting the [Bloom homepage](https://bloom.medusajs.com/). You have two ways to create your store:
+
+1. [Write a custom prompt](#option-1-write-your-prompt): Describe your unique store idea in the textbox.
+2. [Choose a starter](#option-2-choose-a-starter): Create a store from a pre-built starter.
+
+### Option 1: Write Your Prompt
+
+The Bloom homepage has a textbox where you can enter a prompt describing your store. Bloom uses this prompt to build your store from scratch.
+
+![Bloom homepage with prompt textbox](https://res.cloudinary.com/dza7lstvk/image/upload/v1770302066/Bloom/CleanShot_2026-02-05_at_16.34.18_2x_mo2pqr.png)
+
+The best first prompts include:
+
+1. **What you sell:** The products, service, or store type you want to build.
+2. **Store style:** The look and feel you want.
+3. **Key features:** Any special functionality you need.
+
+Here's an example prompt:
+
+```bash
+Build a candle store called "Lumière" with a minimalist, elegant design.
+Use warm neutral colors (cream, beige, sage green). Add three products:
+Golden Hour candle ($42), Forest Bathing candle ($39), and Clay & Sage
+candle ($39).
+```
+
+<Note title="Tip">
+
+Bloom will generate images for your products and store to provide a complete experience. You can also upload your own product images.
+
+</Note>
+
+Include as many details as possible in your first prompt to get the best results.
+
+After you submit your prompt, you'll be asked to create an account. You can sign up with GitHub or email. Bloom will then start building your store based on your prompt. This takes ~2 minutes.
+
+### Option 2: Choose a Starter
+
+Medusa provides [Starters](#) to help you get started faster. Starters are pre-built store designs and features for common store types like fashion or home goods.
+
+Use starters to get a head start with ready-made designs and features. You can customize everything later by chatting with Bloom.
+
+![Bloom homepage showing starter cards in the Discover starters section](https://res.cloudinary.com/dza7lstvk/image/upload/v1770302066/Bloom/CleanShot_2026-02-05_at_16.34.18_2x_mo2pqr.png)
+
+To choose a starter:
+
+1. Visit the [Bloom homepage](https://bloom.medusajs.com/).
+2. Scroll down to the "Discover starters" section.
+3. Click on a starter card to view its details.
+4. Click the **Use starter** button to create a store based on that starter.
+5. Create an account with GitHub or email to continue.
+6. Bloom starts building your store based on the starter. This takes ~2 minutes.
+
+### Account Plan
+
+Your account will be on the Free plan by default. It includes 5 free credits per month to make changes to your store.
+
+See [Pricing](#) for details on plans and credits, and how to upgrade if you need more credits.
+
+---
+
+## 2. Explore Your Store
+
+Once Bloom finishes building, you'll enter the main project interface. Here, you can preview your store, chat with Bloom to make changes, and manage your store from the admin dashboard.
+
+![Bloom Project Interface](https://res.cloudinary.com/dza7lstvk/image/upload/v1770287619/Bloom/CleanShot_2026-02-05_at_12.33.11_2x_yf6u2i.png)
+
+The project interface has four main sections:
+
+1. **Chat Panel (Left):** Chat with Bloom to make changes to your store.
+2. **Preview Panel (Right):** See your live store or admin dashboard.
+3. **Toolbar (Bottom Center):** Switch between Store and Admin views, with other useful tools.
+4. **Top Bar:** Access Preview, Code, GitHub, and the Publish button.
+
+See [Project Interface](#) guide for a detailed walkthrough of the interface and how to use it effectively.
+
+---
+
+## 3. Change Store Design
+
+Your store's design is fully customizable. Ask Bloom to update colors, layout, images, and more by sending design prompts in the chat.
+
+### Send Design Prompts
+
+For example, you can ask Bloom to update the hero image for a parallax effect:
+
+```bash
+Add a full-width hero image to the homepage showing candles in a cozy
+setting. When users scroll down, add a parallax scroll effect where the
+hero image moves slower than the content below, creating depth. Use a
+semi-transparent dark overlay on the image so the text stays readable.
+```
+
+Once you submit your prompt, Bloom will update the store in real-time. You can see the changes immediately in the Preview panel.
+
+![Updated store with hero image as described in the prompt](https://res.cloudinary.com/dza7lstvk/image/upload/v1770288075/Bloom/CleanShot_2026-02-05_at_12.41.06_2x_ktormp.png)
+
+### Use Selection Mode
+
+Bloom includes a Selection Mode to help you target specific elements on your store for design changes. This is easier and more effective than describing elements you want to change in your prompt.
+
+![Bloom project interface with Selection Mode enabled, showing a blue outline around a selectable element in the Preview panel](https://res.cloudinary.com/dza7lstvk/image/upload/v1770302733/Bloom/CleanShot_2026-02-05_at_16.45.26_2x_d9jvje.png)
+
+To use Selection Mode:
+
+1. Click on the <InlineIcon Icon={CursorDefault} alt="selection mode" /> icon in the bottom toolbar.
+2. Hover over elements on your store in the Preview panel. You'll see a blue outline around selectable elements.
+3. Click on an element to select it. A tag for the element will be added to the chat input box.
+4. Type your design changes in the chat box and submit your prompt. For example:
+
+```bash
+Add an image that shows candles in a cozy setting.
+```
+
+Bloom will apply the changes specifically to the selected element.
+
+See [Selection Mode Guide](#) for details on using this feature effectively.
+
+### Do More with Design Prompts
+
+There are more ways to enhance your store's design with Bloom:
+
+1. Upload screenshots of your design inspirations and ask Bloom to match those styles.
+2. Provide URLs to specific websites you like and ask Bloom to mimic their design elements.
+3. Copy code from Figma and paste it into the chat to have Bloom implement those designs.
+
+See [Design from Media](#) for tips on working with Bloom to create beautiful designs.
+
+---
+
+## 4. Build Custom Features
+
+Bloom is an ecommerce expert. Ask Bloom to add custom features to your store by describing what you need in a prompt.
+
+For example, you can ask Bloom to add a product review system with the following prompt:
+
+```bash
+Add a product review system. Customers should be able
+to leave a star rating (1-5 stars) and a written review. Show the average
+rating and total number of reviews at the top of the product page. Display
+reviews below the product description, with the most recent reviews first.
+Include the reviewer's name and review date.
+```
+
+Once you submit the prompt, Bloom will implement the feature and update your store in real-time. It will make the necessary changes in the store and admin dashboard to support the new feature.
+
+![Bloom store with product reviews added](https://res.cloudinary.com/dza7lstvk/image/upload/v1770289180/Bloom/CleanShot_2026-02-05_at_12.59.32_2x_xmtvfb.png)
+
+See [Prompting Custom Features](#) for tips on asking Bloom to build custom functionality.
+
+---
+
+## 5. Manage Your Store
+
+Your Bloom store includes a full admin dashboard to manage products, orders, and customers. In the project's preview, you can switch between the Store and Admin views to manage your store.
+
+To switch to the Admin view, click the **Admin** tab in the toolbar at the bottom.
+
+![Bloom project interface with an arrow to the Admin tab in the toolbar](https://res.cloudinary.com/dza7lstvk/image/upload/v1770290207/Bloom/CleanShot_2026-02-05_at_13.16.26_2x_sbuezd.png)
+
+In the admin dashboard, you can manage all aspects of your store, including:
+
+1. **Add Products:** Create new products with variants, prices, and images.
+2. **Manage Orders:** View and fulfill customer orders.
+3. **Track Inventory:** Monitor stock levels across warehouses.
+4. **Configure Settings:** Set up regions, shipping, taxes, payment methods, and more.
+
+See [Commerce Features](#) for a full list of features available in your Bloom store.
+
+<Note title="Tip">
+
+Bloom can perform ecommerce operations for you. For example, you can ask Bloom to add a new product or configure your store's currencies. See [Ecommerce Operations](#) for tips on how to use Bloom to manage your store.
+
+</Note>
+
+### Build Admin Features
+
+You can also ask Bloom to add custom features to your admin dashboard. For example, you can ask Bloom to add a "Featured" checkbox to the product page in the admin:
+
+```bash
+Add a "Featured" checkbox to the product page in the admin. When checked,
+display those products in a special section on the homepage.
+```
+
+Bloom updates the admin and store to match your request.
+
+![Bloom project interface with admin dashboard showing admin customizations](https://res.cloudinary.com/dza7lstvk/image/upload/v1770293185/Bloom/CleanShot_2026-02-05_at_14.06.17_2x_qxjdqe.png)
+
+---
+
+## 6. Publish Your Project
+
+Continue to refine your store by chatting with Bloom until you're happy with the design and features.
+
+To start selling or share your store with friends, you can publish your store and admin dashboard.
+
+<Note title="Ready to start selling?">
+
+See the [Going Live](#) guide for a publishing checklist and detailed instructions to ensure your store is ready for launch.
+
+</Note>
+
+To publish your store:
+
+1. Click on the **Publish** button in the top-right corner of the project interface.
+2. In the publish form, enter the following details:
+    - **Name of store:** The name of your store (for example, "Lumière").
+    - **Description:** (optional) A short description of your store.
+3. Click **Publish Store** to deploy your store.
+
+This starts the publishing process. Bloom will deploy your store to a live URL, set up hosting, and configure everything needed to run your store.
+
+![Bloom deploying store](https://res.cloudinary.com/dza7lstvk/image/upload/v1770293648/Bloom/CleanShot_2026-02-05_at_14.13.59_2x_rce5p0.png)
+
+### Visit Your Live Store
+
+Once publishing completes, access your live store using these buttons below the store's image:
+
+1. **Open admin**: Opens your store's admin dashboard to manage products and orders.
+2. **Visit store**: Opens your live store where customers can browse and shop.
+
+### Custom Store Domain
+
+By default, your store will be published to the `.medusajs.site` domain. For example, `your-store-name.medusajs.site`. See [Custom Domain Setup](#) for instructions on configuring your own domain name.
+
+### Sync to GitHub
+
+You have full ownership of your store's code. Transfer your project's codebase to your GitHub account to backup your code, continue development locally, or collaborate with developers.
+
+See [Sync to GitHub](#) for instructions to transfer your project's codebase to your GitHub account.
+
+---
+
+## 7. Deploy New Changes
+
+After publishing, you can continue making changes to your store with Bloom.
+
+To publish new changes:
+
+1. Click on the **Publish** button in the top-right corner of the project interface.
+2. Click on the **Deploy changes** button to deploy your latest changes to your live store.
+
+This re-deploys your store with the latest changes you've made in Bloom. Publish as many times as needed to keep improving your store over time.
+
+![Bloom deploy new changes page](https://res.cloudinary.com/dza7lstvk/image/upload/v1770294747/Bloom/CleanShot_2026-02-05_at_14.32.19_2x_nqi3ah.png)
+
+---
+
+## Next Steps
+
+To get the best out of Bloom, check out the following guides to learn how to write effective prompts, add new features, and prepare your store for launch.
+
+<CardList items={[
+  {
+    href: "#",
+    title: "Going Live Checklist",
+    text: "Prepare your store for launch with this checklist."
+  },
+  {
+    href: "#",
+    title: "Store Domain",
+    text: "Use your own domain name for your store."
+  },
+  {
+    href: "#",
+    title: "Integrate Services",
+    text: "Connect services like Stripe for payments."
+  },
+  {
+    href: "#",
+    title: "Prompting",
+    text: "Learn how to write effective prompts for better results."
+  },
+  {
+    href: "#",
+    title: "Bloom Features",
+    text: "Learn more about selection mode, design from media, responsive view, and more."
+  },
+  {
+    href: "#",
+    title: "Pricing",
+    text: "Understand Bloom's pricing plans and token usage."
+  }
+]} />
+
+{/* TODO: Update all placeholder links once guides are created */}

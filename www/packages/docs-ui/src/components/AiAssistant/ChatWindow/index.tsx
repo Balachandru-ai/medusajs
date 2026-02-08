@@ -181,10 +181,10 @@ export const AiAssistantChatWindow = () => {
         <div className="flex flex-auto overflow-auto relative">
           <div
             className={clsx(
-              "overflow-y-auto flex-auto px-docs_0.5 pt-docs_0.25 pb-docs_2"
+              "overflow-y-auto flex-auto px-docs_0.5 py-docs_1.5"
             )}
           >
-            <div ref={contentRef}>
+            <div ref={contentRef} className="flex flex-col gap-docs_2">
               {!conversation.length && <AiAssistantSuggestions />}
               {getThreadItems()}
               {error?.length && (
