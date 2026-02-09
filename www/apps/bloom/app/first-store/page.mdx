@@ -61,7 +61,7 @@ Bloom will generate images for your products and store to provide a complete exp
 
 Include as many details as possible in your first prompt to get the best results.
 
-After you submit your prompt, you'll be asked to create an account. You can sign up with GitHub or email. Bloom will then start building your store based on your prompt. This takes ~2 minutes.
+After you submit your prompt, you'll be asked to [create an account](#create-account). Afterwards, Bloom will start building your store based on your prompt. This takes ~2 minutes.
 
 ### Option 2: Choose a Starter
 
@@ -77,14 +77,16 @@ To choose a starter:
 2. Scroll down to the "Discover starters" section.
 3. Click on a starter card to view its details.
 4. Click the **Use starter** button to create a store based on that starter.
-5. Create an account with GitHub or email to continue.
+5. [Create an account](#create-account) to continue.
 6. Bloom starts building your store based on the starter. This takes ~2 minutes.
 
-### Account Plan
+### Create Account
 
-Your account will be on the Free plan by default. It includes 5 free credits per month to make changes to your store.
+Whether you write a custom prompt or choose a starter, you must create an account to continue. You can create an account with GitHub or email.
 
-See [Pricing](#) for details on plans and credits, and how to upgrade if you need more credits.
+By default, your account will be on the Free plan, which includes 5 free credits per month to make changes to your store. You don't need to enter payment information to use the Free plan.
+
+See [Credits and Plans](../credits-and-plans/page.mdx) for more details, with information on how to upgrade if you need more credits or to publish your store.
 
 ---
 
@@ -143,7 +145,7 @@ Add an image that shows candles in a cozy setting.
 
 Bloom will apply the changes specifically to the selected element.
 
-See [Selection Mode Guide](#) for details on using this feature effectively.
+Selection Mode also allows you to make quick text changes and design tweaks without writing detailed prompts. See [Selection Mode Guide](#) for details on using this feature effectively.
 
 ### Do More with Design Prompts
 
@@ -221,7 +223,7 @@ Bloom updates the admin and store to match your request.
 
 Continue to refine your store by chatting with Bloom until you're happy with the design and features.
 
-To start selling or share your store with friends, you can publish your store and admin dashboard.
+Once you're ready to start selling, you can publish your store and admin dashboard. Publishing deploys your store to a live URL, sets up hosting, and configures everything needed to run your store.
 
 <Note title="Ready to start selling?">
 
@@ -232,10 +234,13 @@ See the [Going Live](#) guide for a publishing checklist and detailed instructio
 To publish your store:
 
 1. Click on the **Publish** button in the top-right corner of the project interface.
-2. In the publish form, enter the following details:
+2. If you're on the Free plan, you'll be asked to upgrade to the Hobby plan to publish your store.
+    - The Hobby plan includes more credits and allows you to publish your store to a live URL. Learn more in the [Credits and Plans](../credits-and-plans/page.mdx) guide.
+    - When you upgrade, you must enter your payment information and you'll be charged immediately.
+3. In the publish form, enter the following details:
     - **Name of store:** The name of your store (for example, "Lumière").
     - **Description:** (optional) A short description of your store.
-3. Click **Publish Store** to deploy your store.
+4. Click **Publish Store** to deploy your store.
 
 This starts the publishing process. Bloom will deploy your store to a live URL, set up hosting, and configure everything needed to run your store.
 
@@ -243,26 +248,41 @@ This starts the publishing process. Bloom will deploy your store to a live URL, 
 
 ### Visit Your Live Store
 
-Once publishing completes, access your live store using these buttons below the store's image:
+Once publishing completes, access your live store using the buttons below the store's image:
 
 1. **Open admin**: Opens your store's admin dashboard to manage products and orders.
 2. **Visit store**: Opens your live store where customers can browse and shop.
 
+### Log into Admin Dashboard
+
+To log into your store's admin dashboard:
+
+1. Click the **Open admin** button after publishing.
+2. On the login page, click the "Log in with Medusa Cloud" button. This logs you in with the same account you use for Bloom, so you don't need to create a separate account for the admin dashboard.
+
+After logging in, you can manage your store, add products, fulfill orders, and more from the admin dashboard.
+
+<Note title="Tip">
+
+See the [Medusa Admin User Guide](!user-guide!) for detailed instructions on using the admin dashboard.
+
+</Note>
+
 ### Custom Store Domain
 
-By default, your store will be published to the `.medusajs.site` domain. For example, `your-store-name.medusajs.site`. See [Custom Domain Setup](#) for instructions on configuring your own domain name.
+By default, your store will be published to the `.medusajs.site` domain. For example, `your-store-name.medusajs.site`. See the [Custom Domains](../custom-domains/page.mdx) guide for instructions on configuring your own domain name.
 
-### Sync to GitHub
+### Export to GitHub
 
 You have full ownership of your store's code. Transfer your project's codebase to your GitHub account to backup your code, continue development locally, or collaborate with developers.
 
-See [Sync to GitHub](#) for instructions to transfer your project's codebase to your GitHub account.
+See [Export to GitHub](#) for instructions to transfer your project's codebase to your GitHub account.
 
 ---
 
 ## 7. Deploy New Changes
 
-After publishing, you can continue making changes to your store with Bloom.
+After publishing, you can continue making website and design changes to your store with Bloom.
 
 To publish new changes:
 
@@ -281,7 +301,7 @@ To get the best out of Bloom, check out the following guides to learn how to wri
 
 <CardList items={[
   {
-    href: "#",
+    href: "/going-live",
     title: "Going Live Checklist",
     text: "Prepare your store for launch with this checklist."
   },
@@ -307,7 +327,7 @@ To get the best out of Bloom, check out the following guides to learn how to wri
   },
   {
     href: "#",
-    title: "Pricing",
+    title: "Credits and Plans",
     text: "Understand Bloom's pricing plans and token usage."
   }
 ]} />

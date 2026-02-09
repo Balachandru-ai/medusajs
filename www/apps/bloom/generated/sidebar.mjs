@@ -24,6 +24,62 @@ export const generatedSidebars = [
             "title": "Create your first Bloom",
             "path": "/first-store",
             "children": []
+          },
+          {
+            "loaded": true,
+            "isPathHref": true,
+            "type": "link",
+            "title": "Going Live",
+            "path": "/going-live",
+            "children": []
+          },
+          {
+            "loaded": true,
+            "isPathHref": true,
+            "type": "link",
+            "title": "Credits and Plans",
+            "path": "/credits-and-plans",
+            "children": []
+          },
+          {
+            "loaded": true,
+            "isPathHref": true,
+            "type": "link",
+            "title": "Starters",
+            "path": "/starters",
+            "children": []
+          },
+          {
+            "loaded": true,
+            "isPathHref": true,
+            "type": "link",
+            "title": "FAQ",
+            "path": "/faq",
+            "children": []
+          }
+        ]
+      },
+      {
+        "loaded": true,
+        "isPathHref": true,
+        "type": "category",
+        "title": "Project Management",
+        "children": [
+          {
+            "loaded": true,
+            "isPathHref": true,
+            "type": "link",
+            "title": "Manage Projects",
+            "path": "/manage-projects",
+            "children": []
+          },
+          {
+            "loaded": true,
+            "isPathHref": true,
+            "type": "link",
+            "title": "Custom Domains",
+            "path": "/custom-domains",
+            "children": []
           }
         ]
       }
