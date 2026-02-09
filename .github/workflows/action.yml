@@ -40,16 +40,19 @@ jobs:
 
       - name: Debug plugin build output
         run: |
-          echo "=== Checking plugin directories ==="
-          ls -la packages/plugins/ || echo "No plugins directory"
-          echo ""
+          echo "=== Turbo build logs for plugins ==="
           for plugin in packages/plugins/*/; do
-            echo "=== Plugin: $plugin ==="
-            ls -la "$plugin" || true
+            echo "--- $plugin ---"
+            if [ -f "${plugin}.turbo/turbo-build.log" ]; then
+              cat "${plugin}.turbo/turbo-build.log"
+            else
+              echo "  No turbo-build.log found"
+              ls -la "${plugin}.turbo/" 2>/dev/null || echo "  No .turbo/ directory"
+            fi
             echo ""
             if [ -d "${plugin}.medusa" ]; then
               echo "  .medusa/ exists:"
-              ls -laR "${plugin}.medusa/" || true
+              ls -laR "${plugin}.medusa/" | head -30
             else
               echo "  .medusa/ does NOT exist"
             fi
