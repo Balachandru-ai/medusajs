@@ -13,28 +13,13 @@ import {
 } from "@medusajs/framework/utils"
 import { StepResponse, createStep } from "@medusajs/framework/workflows-sdk"
 
-/**
- * The details of the line items to create or update.
- */
 export interface GetLineItemActionsStepInput {
-  /**
-   * The ID of the cart to create line items for.
-   */
   id: string
-  /**
-   * The line items to create or update.
-   */
   items: CreateLineItemForCartDTO[]
 }
 
 export interface GetLineItemActionsStepOutput {
-  /**
-   * The line items to create.
-   */
   itemsToCreate: CreateLineItemForCartDTO[]
-  /**
-   * The line items to update.
-   */
   itemsToUpdate:
     | UpdateLineItemWithSelectorDTO[]
     | UpdateLineItemWithoutSelectorDTO[]
@@ -59,13 +44,14 @@ export const getLineItemActionsStepId = "get-line-item-actions-step"
 export const getLineItemActionsStep = createStep(
   getLineItemActionsStepId,
   async (data: GetLineItemActionsStepInput, { container }) => {
-    if (!data.items.length) {
+    if (!data.items?.length) {
       return new StepResponse({ itemsToCreate: [], itemsToUpdate: [] }, null)
     }
 
     const cartModule = container.resolve<ICartModuleService>(Modules.CART)
 
-    const variantIds = data.items.map((d) => d.variant_id!)
+    const variantIds = [...new Set(data.items.map((d) => d.variant_id!).filter(Boolean))]
+
     const existingVariantItems = await cartModule.listLineItems(
       {
         cart_id: data.id,
@@ -83,40 +69,69 @@ export const getLineItemActionsStep = createStep(
       }
     )
 
-    const variantItemMap = new Map<string, CartLineItemDTO>(
-      existingVariantItems.map((item) => [item.variant_id!, item])
-    )
+    /**
+     * CHANGE NOTE:
+     * We cannot map `variant_id -> single line item`, because a cart may contain
+     * multiple line items with the same `variant_id` but different `metadata`.
+     * Therefore we group existing items by `variant_id` into arrays and match by deep metadata equality.
+     */
+    const variantItemMap = new Map<string, CartLineItemDTO[]>()
+    for (const li of existingVariantItems) {
+      const vid = li.variant_id
+      if (!vid) continue
+      const arr = variantItemMap.get(vid) ?? []
+      arr.push(li)
+      variantItemMap.set(vid, arr)
+    }
 
     const itemsToCreate: CreateLineItemForCartDTO[] = []
-    const itemsToUpdate: UpdateLineItemWithSelectorDTO["data"][] = []
+
+    // Accumulate updates per existing line item ID to avoid sending multiple updates for the same item.
+    const updatesById = new Map<string, UpdateLineItemWithSelectorDTO["data"]>()
+
+    const metadataEquals = (a: unknown, b: unknown) => {
+      return (!isPresent(a) && !isPresent(b)) || deepEqualObj(a as any, b as any)
+    }
 
     for (const item of data.items) {
-      const existingItem = variantItemMap.get(item.variant_id!)
-      const metadataMatches =
-        (!isPresent(existingItem?.metadata) && !isPresent(item.metadata)) ||
-        deepEqualObj(existingItem?.metadata, item.metadata)
+      const variantId = item.variant_id!
+      const candidates = variantItemMap.get(variantId) ?? []
 
-      if (existingItem && metadataMatches) {
-        const quantity = MathBN.sum(
-          existingItem.quantity as number,
-          item.quantity ?? 1
-        )
+      // Find an existing line item with the same variant AND matching metadata
+      const match = candidates.find((existing) =>
+        metadataEquals(existing.metadata, item.metadata)
+      )
 
-        itemsToUpdate.push({
-          id: existingItem.id,
-          quantity: quantity,
-          variant_id: item.variant_id!,
-          unit_price: item.unit_price ?? existingItem.unit_price,
+      if (match) {
+        const alreadyPlanned = updatesById.get(match.id)
+
+        const baseQuantity = alreadyPlanned
+          ? (alreadyPlanned.quantity as number)
+          : (match.quantity as number)
+
+        const nextQuantity = MathBN.sum(baseQuantity, item.quantity ?? 1)
+
+        updatesById.set(match.id, {
+          id: match.id,
+          variant_id: variantId,
+          quantity: nextQuantity,
+          unit_price: item.unit_price ?? alreadyPlanned?.unit_price ?? match.unit_price,
           compare_at_unit_price:
-            item.compare_at_unit_price ?? existingItem.compare_at_unit_price,
+            item.compare_at_unit_price ??
+            alreadyPlanned?.compare_at_unit_price ??
+            match.compare_at_unit_price,
         })
       } else {
+        // No matching metadata -> create a separate line item
         itemsToCreate.push(item)
       }
     }
 
     return new StepResponse(
-      { itemsToCreate, itemsToUpdate } as GetLineItemActionsStepOutput,
+      {
+        itemsToCreate,
+        itemsToUpdate: Array.from(updatesById.values()),
+      } as GetLineItemActionsStepOutput,
       null
     )
   }
