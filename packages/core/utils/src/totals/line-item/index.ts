@@ -162,9 +162,20 @@ export function getLineItemTotals(
     setTotalField: "total",
   })
 
-  const originalTaxTotal = calculateTaxTotal({
+  // Tax on the current (post-return) subtotal before discounts – used for
+  // discount_tax_total which must compare pre-discount vs post-discount values
+  // at the *current* effective quantity.
+  const currentOriginalTaxTotal = calculateTaxTotal({
     taxLines: item.tax_lines || [],
     taxableAmount: currentSubtotal,
+    setTotalField: "subtotal",
+  })
+
+  // Tax on the *full* ordered quantity (before returns) – used for the
+  // original_* totals which must remain immutable once the order is placed.
+  const originalTaxTotal = calculateTaxTotal({
+    taxLines: item.tax_lines || [],
+    taxableAmount: subtotal,
     setTotalField: "subtotal",
   })
 
@@ -189,28 +200,32 @@ export function getLineItemTotals(
       )
     ),
 
+    // original_* totals reflect the full ordered quantity (before any returns)
+    // so they remain stable once an order is placed.
     original_subtotal: new BigNumber(
       MathBN.sub(
         isTaxInclusive
-          ? currentTotalItemPrice
-          : MathBN.add(currentSubtotal, originalTaxTotal),
+          ? totalItemPrice
+          : MathBN.add(subtotal, originalTaxTotal),
         originalTaxTotal
       )
     ),
 
     original_total: new BigNumber(
       isTaxInclusive
-        ? currentTotalItemPrice
-        : MathBN.add(currentSubtotal, originalTaxTotal)
+        ? totalItemPrice
+        : MathBN.add(subtotal, originalTaxTotal)
     ),
 
     // Discount values prorated to the current quantity
     discount_subtotal: new BigNumber(currentDiscountsSubtotal),
-    discount_tax_total: new BigNumber(MathBN.sub(originalTaxTotal, taxTotal)),
+    discount_tax_total: new BigNumber(
+      MathBN.sub(currentOriginalTaxTotal, taxTotal)
+    ),
     discount_total: new BigNumber(
       MathBN.add(
         currentDiscountsSubtotal,
-        MathBN.sub(originalTaxTotal, taxTotal)
+        MathBN.sub(currentOriginalTaxTotal, taxTotal)
       )
     ),
 
