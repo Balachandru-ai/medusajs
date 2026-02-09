@@ -84,6 +84,22 @@ export const retrieveProductQueryConfig = {
   entity: Entities.product,
 }
 
+// Lean product config that excludes heavy variant relations.
+// Used by variant POST/DELETE routes where refetching all variants
+// with prices/options after a single variant change is unnecessary
+// and causes severe performance degradation for products with many variants.
+export const defaultAdminProductFieldsWithoutVariants =
+  defaultAdminProductFields.filter(
+    (field) =>
+      !field.startsWith("*variants") && !field.startsWith("variants.")
+  )
+
+export const retrieveProductWithoutVariantsQueryConfig = {
+  defaults: defaultAdminProductFieldsWithoutVariants,
+  isList: false,
+  entity: Entities.product,
+}
+
 export const listProductQueryConfig = {
   ...retrieveProductQueryConfig,
   defaultLimit: 50,
