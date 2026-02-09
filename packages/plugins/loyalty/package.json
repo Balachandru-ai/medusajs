@@ -53,7 +53,6 @@
     "@medusajs/cli": "2.13.1",
     "@medusajs/framework": "2.13.1",
     "@medusajs/icons": "2.13.1",
-    "@medusajs/medusa": "2.13.1",
     "@medusajs/test-utils": "2.13.1",
     "@medusajs/types": "2.13.1",
     "@medusajs/ui": "4.1.1",
