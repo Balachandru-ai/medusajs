@@ -57,18 +57,11 @@ jobs:
             fi
           done
 
-      # - name: Prepare plugin build artifacts
-      #   run: |
-      #     shopt -s nullglob
-      #     for dir in packages/plugins/*/.medusa; do
-      #       cp -r "$dir" "${dir%/.medusa}/_medusa"
-      #     done
-
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
         with:
-          include-hidden-files: true
           name: build-artifacts
+          include-hidden-files: true
           path: |
             packages/**/dist
             packages/plugins/*/.medusa/server
@@ -108,13 +101,6 @@ jobs:
         with:
           name: build-artifacts
           path: .
-
-      # - name: Restore plugin build artifacts
-      #   run: |
-      #     shopt -s nullglob
-      #     for dir in packages/plugins/*/_medusa; do
-      #       mv "$dir" "${dir%/_medusa}/.medusa"
-      #     done
 
       - name: Run unit tests
         run: yarn test -- --shard=${{ matrix.shard_index }}/4 --maxWorkers=${{ steps.cpu-cores.outputs.count }} --passWithNoTests
@@ -191,13 +177,6 @@ jobs:
         with:
           name: build-artifacts
           path: .
-
-      # - name: Restore plugin build artifacts
-      #   run: |
-      #     shopt -s nullglob
-      #     for dir in packages/plugins/*/_medusa; do
-      #       mv "$dir" "${dir%/_medusa}/.medusa"
-      #     done
 
       - name: Run package integration tests
         run: yarn test:integration:packages:${{ matrix.group }} -- --shard=${{ matrix.shard_index }}/3 --maxWorkers=${{ steps.cpu-cores.outputs.count }}
@@ -277,13 +256,6 @@ jobs:
           name: build-artifacts
           path: .
 
-      # - name: Restore plugin build artifacts
-      #   run: |
-      #     shopt -s nullglob
-      #     for dir in packages/plugins/*/_medusa; do
-      #       mv "$dir" "${dir%/_medusa}/.medusa"
-      #     done
-
       - name: Run HTTP integration tests
         run: yarn test:integration:http -- --shard=${{ matrix.shard_index }}/4 --maxWorkers=${{ steps.cpu-cores.outputs.count }}
         env:
@@ -361,13 +333,6 @@ jobs:
         with:
           name: build-artifacts
           path: .
-
-      # - name: Restore plugin build artifacts
-      #   run: |
-      #     shopt -s nullglob
-      #     for dir in packages/plugins/*/_medusa; do
-      #       mv "$dir" "${dir%/_medusa}/.medusa"
-      #     done
 
       - name: Run Modules integration tests
         run: yarn test:integration:modules -- --shard=${{ matrix.shard_index }}/4 --maxWorkers=${{ steps.cpu-cores.outputs.count }}
