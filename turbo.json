@@ -3,14 +3,6 @@
   "pipeline": {
     "build": {
       "dependsOn": ["^build"],
-      "outputs": ["!node_modules/**", "!src/**", "*/**"]
-    },
-    "@medusajs/loyalty-plugin#build": {
-      "dependsOn": ["@medusajs/medusa#build", "^build"],
-      "outputs": ["!node_modules/**", "!src/**", "*/**", ".medusa/**"]
-    },
-    "@medusajs/draft-order#build": {
-      "dependsOn": ["@medusajs/medusa#build", "^build"],
       "outputs": ["!node_modules/**", "!src/**", "*/**", ".medusa/**"]
     },
     "test": {
