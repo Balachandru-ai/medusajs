@@ -13,18 +13,43 @@ import {
 } from "@medusajs/framework/utils"
 import { StepResponse, createStep } from "@medusajs/framework/workflows-sdk"
 
+/**
+ * Input payload for `get-line-item-actions-step`.
+ * - `id`: the cart ID we want to apply changes to
+ * - `items`: desired line items (create new or merge/update existing ones)
+ */
 export interface GetLineItemActionsStepInput {
+  /** The ID of the cart to create/update line items for. */
   id: string
+
+  /** The line items to create or update in the cart. */
   items: CreateLineItemForCartDTO[]
 }
 
+/**
+ * Output of `get-line-item-actions-step`.
+ * The step splits requested items into:
+ * - items to create (no matching existing line item found)
+ * - items to update (matching existing line item found and quantity/prices should be adjusted)
+ */
 export interface GetLineItemActionsStepOutput {
+  /** Line items that should be created as new records in the cart. */
   itemsToCreate: CreateLineItemForCartDTO[]
+
+  /**
+   * Line items that should be updated.
+   * Note: depending on how the step is consumed, it may use selector-based updates
+   * or direct updates without a selector.
+   */
   itemsToUpdate:
     | UpdateLineItemWithSelectorDTO[]
     | UpdateLineItemWithoutSelectorDTO[]
 }
 
+/**
+ * Unique identifier of the workflow step.
+ * Used by the workflow engine for tracing, debugging, and step composition.
+ */
 export const getLineItemActionsStepId = "get-line-item-actions-step"
 /**
  * This step returns lists of cart line items to create or update based on the
