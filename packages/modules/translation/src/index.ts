@@ -1,6 +1,7 @@
+import "./types"
+import { Module } from "@medusajs/framework/utils"
 import TranslationModuleService from "@services/translation-module"
 import loadDefaults from "./loaders/defaults"
-import { Module } from "@medusajs/framework/utils"
 
 export const TRANSLATION_MODULE = "translation"
 

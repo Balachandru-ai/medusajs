@@ -1,5 +1,53 @@
 # @medusajs/ui
 
+## 4.1.1
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @medusajs/icons@2.13.1
+
+## 4.1.0
+
+### Minor Changes
+
+- [`a31e72c31c5235240cead2d04e39e5927688eec7`](https://github.com/medusajs/medusa/commit/a31e72c31c5235240cead2d04e39e5927688eec7) Thanks [@olivermrbl](https://github.com/olivermrbl)! - chore: Minor bump
+
+### Patch Changes
+
+- Updated dependencies [[`a31e72c31c5235240cead2d04e39e5927688eec7`](https://github.com/medusajs/medusa/commit/a31e72c31c5235240cead2d04e39e5927688eec7)]:
+  - @medusajs/icons@2.13.0
+
+## 4.0.34
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @medusajs/icons@2.12.6
+
+## 4.0.33
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @medusajs/icons@2.12.5
+
+## 4.0.32
+
+### Patch Changes
+
+- [#14464](https://github.com/medusajs/medusa/pull/14464) [`d54589751c7f929c173c500344ce5689b8a5dc15`](https://github.com/medusajs/medusa/commit/d54589751c7f929c173c500344ce5689b8a5dc15) Thanks [@adrien2p](https://github.com/adrien2p)! - feat(translation): Improve translation alert in empty languages state
+
+- Updated dependencies []:
+  - @medusajs/icons@2.12.4
+
+## 4.0.31
+
+### Patch Changes
+
+- Updated dependencies [[`a43eb11d6565d19e82cf2b06e262ab509214b3d4`](https://github.com/medusajs/medusa/commit/a43eb11d6565d19e82cf2b06e262ab509214b3d4)]:
+  - @medusajs/icons@2.12.3
+
 ## 4.0.30
 
 ### Patch Changes

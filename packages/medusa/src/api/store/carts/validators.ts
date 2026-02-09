@@ -1,4 +1,4 @@
-import { z } from "zod"
+import { z } from "@medusajs/framework/zod"
 import { AddressPayload } from "../../utils/common-validators"
 import { createSelectParams, WithAdditionalData } from "../../utils/validators"
 
@@ -23,7 +23,7 @@ export const CreateCart = z
     sales_channel_id: z.string().nullish(),
     promo_codes: z.array(z.string()).optional(),
     metadata: z.record(z.unknown()).nullish(),
-    locale: z.string().optional(),
+    locale: z.string().nullish(),
   })
   .strict()
 export const StoreCreateCart = WithAdditionalData(CreateCart)
@@ -58,7 +58,7 @@ export const UpdateCart = z
     sales_channel_id: z.string().nullish(),
     metadata: z.record(z.unknown()).nullish(),
     promo_codes: z.array(z.string()).optional(),
-    locale: z.string().optional(),
+    locale: z.string().nullish(),
   })
   .strict()
 export const StoreUpdateCart = WithAdditionalData(UpdateCart)

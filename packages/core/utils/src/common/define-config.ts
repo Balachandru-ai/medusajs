@@ -1,10 +1,14 @@
 import {
+  AdminOptions,
   ConfigModule,
   InputConfig,
   InputConfigModules,
+  InputConfigWithArrayModules,
+  InputConfigWithObjectModules,
   InternalModuleDeclaration,
   MedusaCloudOptions,
 } from "@medusajs/types"
+import { FeatureFlag } from "../feature-flags/flag-router"
 import {
   MODULE_PACKAGE_NAMES,
   Modules,
@@ -42,6 +46,13 @@ export const DEFAULT_STORE_RESTRICTED_FIELDS = [
  * make an application work seamlessly, but still provide you the ability
  * to override configuration as needed.
  */
+export function defineConfig(config?: InputConfigWithArrayModules): ConfigModule
+/**
+ * @deprecated Use array-based modules configuration instead
+ */
+export function defineConfig(
+  config?: InputConfigWithObjectModules
+): ConfigModule
 export function defineConfig(config: InputConfig = {}): ConfigModule {
   const options = {
     isCloud: process.env.EXECUTION_CONTEXT === MEDUSA_CLOUD_EXECUTION_CONTEXT,
@@ -50,7 +61,7 @@ export function defineConfig(config: InputConfig = {}): ConfigModule {
   const projectConfig = normalizeProjectConfig(config.projectConfig, options)
   const adminConfig = normalizeAdminConfig(config.admin)
   const modules = resolveModules(config.modules, options, config.projectConfig)
-  applyCloudOptionsToModules(modules, projectConfig?.cloud)
+  applyCloudOptionsToModules(modules, projectConfig?.cloud, adminConfig)
   const plugins = resolvePlugins(config.plugins, options)
 
   return {
@@ -185,8 +196,14 @@ function resolveModules(
     { resolve: MODULE_PACKAGE_NAMES[Modules.ORDER] },
     { resolve: MODULE_PACKAGE_NAMES[Modules.SETTINGS] },
 
-    // TODO: re-enable this once we have the final release
-    // { resolve: MODULE_PACKAGE_NAMES[Modules.TRANSLATION] },
+    {
+      resolve: MODULE_PACKAGE_NAMES[Modules.TRANSLATION],
+      disable: !FeatureFlag.isFeatureEnabled("translation"),
+    },
+    {
+      resolve: MODULE_PACKAGE_NAMES[Modules.RBAC],
+      disable: !FeatureFlag.isFeatureEnabled("rbac"),
+    },
 
     {
       resolve: MODULE_PACKAGE_NAMES[Modules.AUTH],
@@ -270,7 +287,10 @@ function resolveModules(
     },
     {
       resolve: TEMPORARY_REDIS_MODULE_PACKAGE_NAMES[Modules.EVENT_BUS],
-      options: { redisUrl: process.env.REDIS_URL },
+      options: {
+        redisUrl: process.env.REDIS_URL,
+        workerOptions: { concurrency: 1 },
+      },
     },
     {
       resolve: MODULE_PACKAGE_NAMES[Modules.LOCKING],
@@ -349,11 +369,11 @@ function resolveModules(
           ...(isObject(moduleConfig)
             ? moduleConfig
             : { disable: !moduleConfig }),
-        })
+        } as InputConfigModules[number])
       })
     } else if (Array.isArray(configModules)) {
       const modules_ = (configModules ?? []) as InternalModuleDeclaration[]
-      modules.push(...modules_)
+      modules.push(...(modules_ as InputConfigModules))
     } else {
       throw new Error(
         "Invalid modules configuration. Should be an array or object."
@@ -378,6 +398,11 @@ function normalizeProjectConfig(
     webhookSecret: process.env.MEDUSA_CLOUD_WEBHOOK_SECRET,
     emailsEndpoint: process.env.MEDUSA_CLOUD_EMAILS_ENDPOINT,
     paymentsEndpoint: process.env.MEDUSA_CLOUD_PAYMENTS_ENDPOINT,
+    oauthAuthorizeEndpoint: process.env.MEDUSA_CLOUD_OAUTH_AUTHORIZE_ENDPOINT,
+    oauthTokenEndpoint: process.env.MEDUSA_CLOUD_OAUTH_TOKEN_ENDPOINT,
+    oauthCallbackUrl: process.env.MEDUSA_CLOUD_OAUTH_CALLBACK_URL,
+    oauthDisabled:
+      process.env.MEDUSA_CLOUD_OAUTH_DISABLED === "true" ? true : undefined,
     ...cloud,
   }
   const hasCloudOptions = Object.values(mergedCloudOptions).some(
@@ -449,6 +474,21 @@ function normalizeProjectConfig(
     ...restOfProjectConfig,
   } satisfies ConfigModule["projectConfig"]
 
+  if (
+    isCloud &&
+    !mergedCloudOptions.oauthDisabled &&
+    mergedCloudOptions.oauthAuthorizeEndpoint &&
+    mergedCloudOptions.oauthTokenEndpoint
+  ) {
+    const userAuthMethods = config.http.authMethodsPerActor?.user ?? [
+      "emailpass",
+    ]
+    config.http.authMethodsPerActor = {
+      ...config.http.authMethodsPerActor,
+      user: userAuthMethods.concat("cloud"),
+    }
+  }
+
   return config
 }
 
@@ -468,7 +508,8 @@ function normalizeAdminConfig(
 
 function applyCloudOptionsToModules(
   modules: Exclude<ConfigModule["modules"], undefined>,
-  config?: MedusaCloudOptions
+  config?: MedusaCloudOptions,
+  adminConfig?: AdminOptions
 ) {
   if (!config) {
     return
@@ -500,6 +541,24 @@ function applyCloudOptionsToModules(
             endpoint: config.paymentsEndpoint,
             environment_handle: config.environmentHandle,
             sandbox_handle: config.sandboxHandle,
+          },
+          ...(module.options ?? {}),
+        }
+        break
+      case Modules.AUTH:
+        let callbackUrl = config.oauthCallbackUrl
+        if (!callbackUrl && adminConfig?.backendUrl) {
+          callbackUrl = `${adminConfig?.backendUrl}${adminConfig?.path}/login?auth_provider=cloud`
+        }
+        module.options = {
+          cloud: {
+            oauth_authorize_endpoint: config.oauthAuthorizeEndpoint,
+            oauth_token_endpoint: config.oauthTokenEndpoint,
+            environment_handle: config.environmentHandle,
+            sandbox_handle: config.sandboxHandle,
+            api_key: config.apiKey,
+            callback_url: callbackUrl,
+            disabled: config.oauthDisabled,
           },
           ...(module.options ?? {}),
         }

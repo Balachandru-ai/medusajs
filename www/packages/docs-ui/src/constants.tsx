@@ -77,6 +77,11 @@ export const navDropdownItems: NavigationItem[] = [
         ],
       },
       {
+        type: "link",
+        title: "Admin Extensions",
+        link: "/learn/fundamentals/admin",
+      },
+      {
         type: "sub-menu",
         title: "Commerce Modules",
         link: "/resources/commerce-modules",
@@ -165,6 +170,11 @@ export const navDropdownItems: NavigationItem[] = [
             type: "link",
             title: "Tax",
             link: "/resources/commerce-modules/tax",
+          },
+          {
+            type: "link",
+            title: "Translation",
+            link: "/resources/commerce-modules/translation",
           },
           {
             type: "link",
@@ -500,4 +510,6 @@ export enum DocsTrackingEvents {
   SURVEY_API = "survey_api-ref",
   CODE_BLOCK_COPY = "code_block_copy",
   AI_ASSISTANT_START_CHAT = "ai_assistant_start_chat",
+  AI_ASSISTANT_CALLOUT_CLICK = "ai_assistant_callout_click",
+  SEARCH_CALLOUT_CLICK = "search_callout_click",
 }
