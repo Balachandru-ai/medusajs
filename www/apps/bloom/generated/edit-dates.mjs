@@ -4,8 +4,12 @@ export const generatedEditDates = {
   "app/pricing/page.mdx": "2026-02-09T09:36:32.910Z",
   "app/faq/page.mdx": "2026-02-09T14:41:36.562Z",
   "app/starters/page.mdx": "2026-02-09T14:41:36.564Z",
-  "app/credits-and-plans/page.mdx": "2026-02-09T14:41:36.562Z",
+  "app/credits-and-plans/page.mdx": "2026-02-10T09:47:31.639Z",
   "app/manage-projects/page.mdx": "2026-02-09T14:41:36.563Z",
   "app/going-live/page.mdx": "2026-02-09T15:06:42.083Z",
-  "app/custom-domains/page.mdx": "2026-02-09T15:39:51.863Z"
+  "app/custom-domains/page.mdx": "2026-02-09T15:39:51.863Z",
+  "app/profile-management/page.mdx": "2026-02-10T08:50:33.303Z",
+  "app/organization-management/page.mdx": "2026-02-10T08:49:26.789Z",
+  "app/manage-billing/page.mdx": "2026-02-10T10:00:29.326Z",
+  "app/help-and-feedback/page.mdx": "2026-02-10T10:27:29.297Z"
 }
