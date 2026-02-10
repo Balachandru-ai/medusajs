@@ -38,25 +38,6 @@ jobs:
         with:
           extension: pipeline
 
-      - name: Build plugins
-        run: |
-          for plugin_dir in packages/plugins/*/; do
-            if [ -f "${plugin_dir}package.json" ]; then
-              name=$(node -p "require('./${plugin_dir}package.json').name")
-              echo "=== Building plugin: $name ==="
-              yarn workspace "$name" run build
-              echo "--- Build output for $name ---"
-              if [ -d "${plugin_dir}.medusa/server" ]; then
-                echo ".medusa/server exists:"
-                ls -laR "${plugin_dir}.medusa/server" | head -40
-              else
-                echo ".medusa/server does NOT exist"
-                ls -la "${plugin_dir}"
-              fi
-              echo ""
-            fi
-          done
-
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
         with:
