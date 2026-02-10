@@ -82,6 +82,46 @@ export const generatedSidebars = [
             "children": []
           }
         ]
+      },
+      {
+        "loaded": true,
+        "isPathHref": true,
+        "type": "category",
+        "title": "Account Management",
+        "children": [
+          {
+            "loaded": true,
+            "isPathHref": true,
+            "type": "link",
+            "title": "Profile",
+            "path": "/profile-management",
+            "children": []
+          },
+          {
+            "loaded": true,
+            "isPathHref": true,
+            "type": "link",
+            "title": "Organization",
+            "path": "/organization-management",
+            "children": []
+          },
+          {
+            "loaded": true,
+            "isPathHref": true,
+            "type": "link",
+            "title": "Manage Billing",
+            "path": "/manage-billing",
+            "children": []
+          }
+        ]
+      },
+      {
+        "loaded": true,
+        "isPathHref": true,
+        "type": "link",
+        "title": "Help and Feedback",
+        "path": "/help-and-feedback",
+        "children": []
       }
     ]
   },

@@ -41,16 +41,23 @@ export const MainNavProvider = ({ children }: MainNavProviderProps) => {
     type: "dropdown",
     title: "Help",
     children: [
-      // TODO: Update links when resources are available
-      {
-        type: "link",
-        title: "Troubleshooting",
-        link: "#",
-      },
       {
         type: "link",
         title: "Contact Support",
-        link: "#",
+        link: "/help-and-feedback#contact-support",
+      },
+      {
+        type: "link",
+        title: "FAQ",
+        link: "/faq",
+      },
+      {
+        type: "divider",
+      },
+      {
+        type: "link",
+        title: "Discord Community",
+        link: "https://discord.gg/medusajs",
       },
     ],
   }

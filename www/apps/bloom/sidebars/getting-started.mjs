@@ -37,7 +37,7 @@ export const gettingStartedSidebar = [
             type: "link",
             title: "FAQ",
             path: "/faq",
-          }
+          },
         ],
       },
       {
@@ -53,9 +53,35 @@ export const gettingStartedSidebar = [
             type: "link",
             title: "Custom Domains",
             path: "/custom-domains",
-          }
+          },
         ],
-      }
+      },
+      {
+        type: "category",
+        title: "Account Management",
+        children: [
+          {
+            type: "link",
+            title: "Profile",
+            path: "/profile-management",
+          },
+          {
+            type: "link",
+            title: "Organization",
+            path: "/organization-management",
+          },
+          {
+            type: "link",
+            title: "Manage Billing",
+            path: "/manage-billing",
+          },
+        ],
+      },
+      {
+        type: "link",
+        title: "Help and Feedback",
+        path: "/help-and-feedback",
+      },
     ],
   },
 ]
