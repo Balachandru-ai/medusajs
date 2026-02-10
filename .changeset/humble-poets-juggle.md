@@ -1,5 +1,5 @@
 ---
-"@medusajs/loyalty-plugin": patch
+"@medusajs/loyalty-plugin": minor
 "@medusajs/utils": patch
 "@medusajs/medusa": patch
 ---
