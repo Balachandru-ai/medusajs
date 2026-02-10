@@ -28,6 +28,7 @@
     "@medusajs/promotion": "workspace:^",
     "@medusajs/region": "workspace:^",
     "@medusajs/stock-location": "workspace:^",
+    "@medusajs/loyalty-plugin": "workspace:^",
     "@medusajs/store": "workspace:^",
     "@medusajs/tax": "workspace:^",
     "@medusajs/test-utils": "workspace:*",

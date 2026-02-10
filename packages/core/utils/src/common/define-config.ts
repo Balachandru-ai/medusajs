@@ -148,10 +148,6 @@ function resolvePlugins(
       "@medusajs/draft-order",
       { resolve: "@medusajs/draft-order", options: {} },
     ],
-    [
-      "@medusajs/loyalty-plugin",
-      { resolve: "@medusajs/loyalty-plugin", options: {} },
-    ],
   ])
 
   if (configPlugins?.length) {
