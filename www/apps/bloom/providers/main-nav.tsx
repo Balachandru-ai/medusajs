@@ -18,7 +18,7 @@ export const MainNavProvider = ({ children }: MainNavProviderProps) => {
     {
       type: "link",
       title: "Features",
-      link: `/features`,
+      link: `/commerce-features`,
     },
     {
       type: "link",

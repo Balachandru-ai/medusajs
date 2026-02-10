@@ -11,5 +11,11 @@ export const generatedEditDates = {
   "app/profile-management/page.mdx": "2026-02-10T08:50:33.303Z",
   "app/organization-management/page.mdx": "2026-02-10T08:49:26.789Z",
   "app/manage-billing/page.mdx": "2026-02-10T10:00:29.326Z",
-  "app/help-and-feedback/page.mdx": "2026-02-10T10:27:29.297Z"
+  "app/help-and-feedback/page.mdx": "2026-02-10T10:27:29.297Z",
+  "app/commerce-features/page.mdx": "2026-02-10T11:23:06.991Z",
+  "app/mode-switcher/page.mdx": "2026-02-10T13:30:52.414Z",
+  "app/selection-mode/page.mdx": "2026-02-10T13:29:37.266Z",
+  "app/design-from-media/page.mdx": "2026-02-10T14:33:29.834Z",
+  "app/pull-from-urls/page.mdx": "2026-02-10T15:06:21.754Z",
+  "app/restore-changes/page.mdx": "2026-02-10T15:35:01.868Z"
 }

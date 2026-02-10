@@ -128,7 +128,64 @@ export const generatedSidebars = [
   {
     "sidebar_id": "features",
     "title": "Features",
-    "items": []
+    "items": [
+      {
+        "loaded": true,
+        "isPathHref": true,
+        "type": "link",
+        "title": "Commerce Features",
+        "path": "/commerce-features",
+        "children": []
+      },
+      {
+        "loaded": true,
+        "isPathHref": true,
+        "type": "category",
+        "title": "Agent Features",
+        "children": [
+          {
+            "loaded": true,
+            "isPathHref": true,
+            "type": "link",
+            "title": "Mode Switcher",
+            "path": "/mode-switcher",
+            "children": []
+          },
+          {
+            "loaded": true,
+            "isPathHref": true,
+            "type": "link",
+            "title": "Selection Mode",
+            "path": "/selection-mode",
+            "children": []
+          },
+          {
+            "loaded": true,
+            "isPathHref": true,
+            "type": "link",
+            "title": "Design from Media",
+            "path": "/design-from-media",
+            "children": []
+          },
+          {
+            "loaded": true,
+            "isPathHref": true,
+            "type": "link",
+            "title": "Pull from URLs",
+            "path": "/pull-from-urls",
+            "children": []
+          },
+          {
+            "loaded": true,
+            "isPathHref": true,
+            "type": "link",
+            "title": "Restore Changes",
+            "path": "/restore-changes",
+            "children": []
+          }
+        ]
+      }
+    ]
   },
   {
     "sidebar_id": "prompting",
