@@ -9,6 +9,7 @@ import type { Plugin } from "unified"
 import * as Icons from "@medusajs/icons"
 import * as HookValues from "@/specs/hook-values"
 import { colors as allColors } from "@/config/colors"
+import { posthog } from "posthog-js"
 
 type Params = {
   params: Promise<{ slug: string[] }>
@@ -36,6 +37,17 @@ export async function GET(req: NextRequest, { params }: Params) {
       ] as unknown as Plugin[],
     }
   )
+
+  posthog.init(process.env.NEXT_PUBLIC_POSTHOG_KEY!, {
+    api_host: process.env.NEXT_PUBLIC_POSTHOG_HOST,
+    person_profiles: "always",
+    defaults: "2025-05-24",
+  })
+
+  posthog.capture("md_content_requested", {
+    path: `/${slug.join("/")}`,
+    user_agent: req.headers.get("user-agent") || undefined,
+  })
 
   return new NextResponse(cleanMdContent, {
     headers: {
