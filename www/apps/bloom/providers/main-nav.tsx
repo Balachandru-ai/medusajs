@@ -18,17 +18,17 @@ export const MainNavProvider = ({ children }: MainNavProviderProps) => {
     {
       type: "link",
       title: "Features",
-      link: `/commerce-features`,
+      link: `/features/commerce-features`,
     },
     {
       type: "link",
       title: "Prompting",
-      link: `/prompting`,
+      link: `/prompting/store-design-prompting`,
     },
     {
       type: "link",
-      title: "Developer Resources",
-      link: `/developer-resources`,
+      title: "Developers",
+      link: `/developers`,
     },
     {
       type: "link",
