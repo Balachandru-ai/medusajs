@@ -49,10 +49,16 @@ export async function GET(req: NextRequest, { params }: Params) {
       defaults: "2025-05-24",
     })
 
-    posthog.capture("md_content_requested_agents", {
-      path: req.url,
-      user_agent: req.headers.get("user-agent") || undefined,
-    })
+    posthog.capture(
+      "md_content_requested_agents",
+      {
+        path: req.url,
+        user_agent: req.headers.get("user-agent") || undefined,
+      },
+      {
+        send_instantly: true,
+      }
+    )
   }
 
   return new NextResponse(cleanMdContent, {
