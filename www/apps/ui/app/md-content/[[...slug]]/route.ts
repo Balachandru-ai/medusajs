@@ -10,6 +10,7 @@ import * as Icons from "@medusajs/icons"
 import * as HookValues from "@/specs/hook-values"
 import { colors as allColors } from "@/config/colors"
 import { posthog } from "posthog-js"
+import { config } from "../../../config"
 
 type Params = {
   params: Promise<{ slug: string[] }>
@@ -43,16 +44,28 @@ export async function GET(req: NextRequest, { params }: Params) {
     acceptHeader.includes("text/plain") ||
     acceptHeader.includes("text/markdown")
   ) {
-    posthog.init(process.env.NEXT_PUBLIC_POSTHOG_KEY!, {
-      api_host: process.env.NEXT_PUBLIC_POSTHOG_HOST,
-      person_profiles: "always",
-      defaults: "2025-05-24",
-    })
+    if (!posthog.__loaded) {
+      posthog.init(process.env.NEXT_PUBLIC_POSTHOG_KEY!, {
+        api_host: process.env.NEXT_PUBLIC_POSTHOG_HOST,
+        person_profiles: "always",
+        defaults: "2025-05-24",
+      })
+    }
 
-    posthog.capture("md_content_requested_agents", {
-      path: req.url,
-      user_agent: req.headers.get("user-agent") || undefined,
-    })
+    posthog.capture(
+      "md_content_requested_agents",
+      {
+        $current_url:
+          `${config.baseUrl}${config.basePath}/${slug.join("/")}`.replaceAll(
+            "//",
+            "/"
+          ),
+        user_agent: req.headers.get("user-agent") || undefined,
+      },
+      {
+        send_instantly: true,
+      }
+    )
   }
 
   return new NextResponse(cleanMdContent, {
