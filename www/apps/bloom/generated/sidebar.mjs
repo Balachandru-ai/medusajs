@@ -134,7 +134,7 @@ export const generatedSidebars = [
         "isPathHref": true,
         "type": "link",
         "title": "Commerce Features",
-        "path": "/commerce-features",
+        "path": "/features/commerce-features",
         "children": []
       },
       {
@@ -148,7 +148,7 @@ export const generatedSidebars = [
             "isPathHref": true,
             "type": "link",
             "title": "Mode Switcher",
-            "path": "/mode-switcher",
+            "path": "/features/mode-switcher",
             "children": []
           },
           {
@@ -156,7 +156,7 @@ export const generatedSidebars = [
             "isPathHref": true,
             "type": "link",
             "title": "Selection Mode",
-            "path": "/selection-mode",
+            "path": "/features/selection-mode",
             "children": []
           },
           {
@@ -164,7 +164,7 @@ export const generatedSidebars = [
             "isPathHref": true,
             "type": "link",
             "title": "Design from Media",
-            "path": "/design-from-media",
+            "path": "/features/design-from-media",
             "children": []
           },
           {
@@ -172,7 +172,7 @@ export const generatedSidebars = [
             "isPathHref": true,
             "type": "link",
             "title": "Pull from URLs",
-            "path": "/pull-from-urls",
+            "path": "/features/pull-from-urls",
             "children": []
           },
           {
@@ -180,7 +180,23 @@ export const generatedSidebars = [
             "isPathHref": true,
             "type": "link",
             "title": "Restore Changes",
-            "path": "/restore-changes",
+            "path": "/features/restore-changes",
+            "children": []
+          },
+          {
+            "loaded": true,
+            "isPathHref": true,
+            "type": "link",
+            "title": "Responsive View",
+            "path": "/features/responsive-view",
+            "children": []
+          },
+          {
+            "loaded": true,
+            "isPathHref": true,
+            "type": "link",
+            "title": "Demo Data",
+            "path": "/features/demo-data",
             "children": []
           }
         ]
@@ -190,11 +206,36 @@ export const generatedSidebars = [
   {
     "sidebar_id": "prompting",
     "title": "Prompting",
-    "items": []
+    "items": [
+      {
+        "loaded": true,
+        "isPathHref": true,
+        "type": "link",
+        "title": "Store Design",
+        "path": "/prompting/store-design-prompting",
+        "children": []
+      },
+      {
+        "loaded": true,
+        "isPathHref": true,
+        "type": "link",
+        "title": "Custom Features",
+        "path": "/prompting/custom-features-prompting",
+        "children": []
+      },
+      {
+        "loaded": true,
+        "isPathHref": true,
+        "type": "link",
+        "title": "Ecommerce Operations",
+        "path": "/prompting/ecommerce-operations-prompting",
+        "children": []
+      }
+    ]
   },
   {
     "sidebar_id": "developers",
-    "title": "Developer Resources",
+    "title": "Developers",
     "items": []
   },
   {

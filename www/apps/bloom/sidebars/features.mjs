@@ -7,7 +7,7 @@ export const featuresSidebar = [
       {
         type: "link",
         title: "Commerce Features",
-        path: "/commerce-features",
+        path: "/features/commerce-features",
       },
       {
         type: "category",
@@ -16,27 +16,37 @@ export const featuresSidebar = [
           {
             type: "link",
             title: "Mode Switcher",
-            path: "/mode-switcher",
+            path: "/features/mode-switcher",
           },
           {
             type: "link",
             title: "Selection Mode",
-            path: "/selection-mode",
+            path: "/features/selection-mode",
           },
           {
             type: "link",
             title: "Design from Media",
-            path: "/design-from-media",
+            path: "/features/design-from-media",
           },
           {
             type: "link",
             title: "Pull from URLs",
-            path: "/pull-from-urls",
+            path: "/features/pull-from-urls",
           },
           {
             type: "link",
             title: "Restore Changes",
-            path: "/restore-changes",
+            path: "/features/restore-changes",
+          },
+          {
+            type: "link",
+            title: "Responsive View",
+            path: "/features/responsive-view",
+          },
+          {
+            type: "link",
+            title: "Demo Data",
+            path: "/features/demo-data",
           },
         ],
       },
