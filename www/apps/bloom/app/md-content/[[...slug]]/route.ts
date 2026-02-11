@@ -11,7 +11,6 @@ import {
   localLinksRehypePlugin,
 } from "remark-rehype-plugins"
 import type { Plugin } from "unified"
-import { config } from "../../../config"
 
 type Params = {
   params: Promise<{ slug: string[] }>
@@ -83,12 +82,8 @@ export async function GET(req: NextRequest, { params }: Params) {
     posthog.capture(
       "md_content_requested_agents",
       {
-        $current_url:
-          `${config.baseUrl}${config.basePath}/${slug.join("/")}`.replaceAll(
-            "//",
-            "/"
-          ),
-        user_agent: req.headers.get("user-agent") || undefined,
+        $current_url: req.url,
+        $raw_user_agent: req.headers.get("user-agent") || undefined,
       },
       {
         send_instantly: true,
