@@ -31,6 +31,8 @@ import { refreshDraftOrderAdjustmentsWorkflow } from "../../draft-order/workflow
 import { createOrdersStep } from "../steps"
 import { productVariantsFields } from "../utils/fields"
 import { updateOrderTaxLinesWorkflow } from "./update-tax-lines"
+import { cartFieldsForRefreshSteps } from "../../cart/utils/fields"
+import { updateLineItemsStep, validateCartStep } from "../../cart"
 
 function prepareLineItems(data) {
   const items = (data.input.items ?? []).map((item) => {
@@ -401,6 +403,7 @@ export const createOrderWorkflow = createWorkflow(
         "shipping_methods.adjustments.*",
         "total",
         "id",
+        "draft_order_id"
       ],
       filters: {
         id: order.id,
@@ -410,12 +413,19 @@ export const createOrderWorkflow = createWorkflow(
       },
     }).config({ name: "query-fresh-order" })
 
-    parallelize(
-      updateOrderTaxLinesWorkflow.runAsStep({
-        input: {
-          order_id: order.id,
-        },
-      }),
+    updateOrderTaxLinesWorkflow.runAsStep({
+      input: {
+        order_id: order.id,
+      },
+    })
+
+    when(
+      "refresh-draft-order-adjustments",
+      { freshOrder },
+      ({ freshOrder }) => {
+        return !!freshOrder.draft_order_id
+      }
+    ).then(() => {
       refreshDraftOrderAdjustmentsWorkflow.runAsStep({
         input: {
           order: freshOrder,
@@ -423,7 +433,7 @@ export const createOrderWorkflow = createWorkflow(
           action: PromotionActions.REPLACE,
         },
       })
-    )
+    })
 
     const orderCreated = createHook("orderCreated", {
       order: freshOrder,
