@@ -28,5 +28,11 @@ export const generatedEditDates = {
   "app/features/selection-mode/page.mdx": "2026-02-11T10:03:49.475Z",
   "app/prompting/custom-features-prompting/page.mdx": "2026-02-11T14:09:49.737Z",
   "app/prompting/ecommerce-operations-prompting/page.mdx": "2026-02-11T14:08:59.384Z",
-  "app/prompting/store-design-prompting/page.mdx": "2026-02-11T14:07:44.963Z"
+  "app/prompting/store-design-prompting/page.mdx": "2026-02-11T14:07:44.963Z",
+  "app/prompting/service-integrations-prompting/page.mdx": "2026-02-12T10:12:52.502Z",
+  "app/prompting/service-integrations-prompting/guides/algolia/page.mdx": "2026-02-12T10:18:16.780Z",
+  "app/prompting/service-integrations-prompting/guides/avalara/page.mdx": "2026-02-12T10:18:53.516Z",
+  "app/prompting/service-integrations-prompting/guides/shipstation/page.mdx": "2026-02-12T10:20:16.509Z",
+  "app/prompting/service-integrations-prompting/guides/stripe/page.mdx": "2026-02-12T10:20:39.606Z",
+  "app/prompting/fix-errors-and-issues/page.mdx": "2026-02-12T12:00:05.216Z"
 }

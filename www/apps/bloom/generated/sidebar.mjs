@@ -230,6 +230,60 @@ export const generatedSidebars = [
         "title": "Ecommerce Operations",
         "path": "/prompting/ecommerce-operations-prompting",
         "children": []
+      },
+      {
+        "loaded": true,
+        "isPathHref": true,
+        "type": "link",
+        "title": "Fix Errors",
+        "path": "/prompting/fix-errors-and-issues",
+        "children": []
+      },
+      {
+        "loaded": true,
+        "isPathHref": true,
+        "type": "link",
+        "title": "Integrate Services",
+        "path": "/prompting/service-integrations-prompting",
+        "sort_sidebar": "alphabetize",
+        "children": [
+          {
+            "loaded": true,
+            "isPathHref": true,
+            "type": "link",
+            "title": "Algolia",
+            "path": "/prompting/service-integrations-prompting/guides/algolia",
+            "description": "Add search and discovery features",
+            "children": []
+          },
+          {
+            "loaded": true,
+            "isPathHref": true,
+            "type": "link",
+            "title": "Avalara",
+            "path": "/prompting/service-integrations-prompting/guides/avalara",
+            "description": "Add tax calculation features",
+            "children": []
+          },
+          {
+            "loaded": true,
+            "isPathHref": true,
+            "type": "link",
+            "title": "ShipStation",
+            "path": "/prompting/service-integrations-prompting/guides/shipstation",
+            "description": "Add shipping and fulfillment features",
+            "children": []
+          },
+          {
+            "loaded": true,
+            "isPathHref": true,
+            "type": "link",
+            "title": "Stripe",
+            "path": "/prompting/service-integrations-prompting/guides/stripe",
+            "description": "Add payment processing features",
+            "children": []
+          }
+        ]
       }
     ]
   },
