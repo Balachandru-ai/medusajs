@@ -1,18 +1,10 @@
 /**
- * @oas [post] /store/carts/{id}/store-credits
- * operationId: PostCartsIdStoreCredits
- * summary: Add Store Credit to Cart
- * x-sidebar-summary: Add Store Credit
- * description: Add a Store Credit to a cart
- * x-authenticated: false
- * x-ignoreCleanup: true
+ * @oas [post] /store/store-credit-accounts/claim
+ * operationId: PostStoreCreditAccountsClaim
+ * summary: Claim Credits
+ * description: Claim credits of the logged-in customer's store credit account.
+ * x-authenticated: true
  * parameters:
- *   - name: id
- *     in: path
- *     description: The cart's ID.
- *     required: true
- *     schema:
- *       type: string
  *   - name: x-publishable-api-key
  *     in: header
  *     description: Publishable API Key created in the Medusa Admin.
@@ -41,30 +33,34 @@
  *       externalDocs:
  *         url: https://docs.medusajs.com/resources/commerce-modules/translation/storefront
  *         description: Learn more in the Serve Translations in Storefront guide.
+ * security:
+ *   - cookie_auth: []
+ *   - jwt_token: []
  * requestBody:
  *   content:
  *     application/json:
  *       schema:
- *         $ref: "#/components/schemas/StoreAddStoreCreditsToCart"
+ *         $ref: "#/components/schemas/StoreClaimStoreCreditAccountParams"
  * x-codeSamples:
  *   - lang: Shell
  *     label: cURL
  *     source: |-
- *       curl -X POST '{backend_url}/store/carts/{id}/store-credits' \
+ *       curl -X POST '{backend_url}/store/store-credit-accounts/claim' \
+ *       -H 'Authorization: Bearer {access_token}' \
  *       -H 'x-publishable-api-key: {your_publishable_api_key}' \
  *       -H 'Content-Type: application/json' \
  *       --data-raw '{
- *         "amount": 48
+ *         "code": "{value}"
  *       }'
  * tags:
- *   - Carts
+ *   - Store Credit Accounts
  * responses:
  *   "200":
  *     description: OK
  *     content:
  *       application/json:
  *         schema:
- *           $ref: "#/components/schemas/StoreCartResponse"
+ *           $ref: "#/components/schemas/StoreClaimStoreCreditAccountResponse"
  *   "400":
  *     $ref: "#/components/responses/400_error"
  *   "401":

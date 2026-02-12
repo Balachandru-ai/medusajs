@@ -1,14 +1,13 @@
 /**
- * @oas [get] /admin/gift-cards/{id}
- * operationId: GetGiftCardsId
- * summary: Get a Gift Card
- * description: Retrieve a gift card by its ID. You can expand the gift card's relations or select the fields that should be returned.
+ * @oas [post] /admin/store-credit-accounts/{id}/credit
+ * operationId: PostStoreCreditAccountsIdCredit
+ * summary: Add Credit
+ * description: Add credit to a store credit account.
  * x-authenticated: true
- * x-ignoreCleanup: true
  * parameters:
  *   - name: id
  *     in: path
- *     description: The gift card's ID.
+ *     description: The store credit account's ID.
  *     required: true
  *     schema:
  *       type: string
@@ -16,21 +15,30 @@
  *   - api_token: []
  *   - cookie_auth: []
  *   - jwt_token: []
+ * requestBody:
+ *   content:
+ *     application/json:
+ *       schema:
+ *         $ref: "#/components/schemas/AdminCreditStoreCreditAccountParams"
  * x-codeSamples:
  *   - lang: Shell
  *     label: cURL
  *     source: |-
- *       curl '{backend_url}/admin/gift-cards/{id}' \
- *       -H 'Authorization: Bearer {jwt_token}'
+ *       curl -X POST '{backend_url}/admin/store-credit-accounts/{id}/credit' \
+ *       -H 'Authorization: Bearer {access_token}' \
+ *       -H 'Content-Type: application/json' \
+ *       --data-raw '{
+ *         "amount": 0
+ *       }'
  * tags:
- *   - Gift Cards
+ *   - Store Credit Accounts
  * responses:
  *   "200":
  *     description: OK
  *     content:
  *       application/json:
  *         schema:
- *           $ref: "#/components/schemas/AdminGiftCardResponse"
+ *           $ref: "#/components/schemas/AdminStoreCreditAccountResponse"
  *   "400":
  *     $ref: "#/components/responses/400_error"
  *   "401":

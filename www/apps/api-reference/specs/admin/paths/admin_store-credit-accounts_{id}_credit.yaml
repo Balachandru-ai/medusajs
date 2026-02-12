@@ -1,14 +1,12 @@
-get:
-  operationId: GetGiftCardsIdOrders
-  summary: List Gift Card's Orders
-  x-sidebar-summary: List Orders
-  description: Retrieve the list of orders that a gift card was used in.
+post:
+  operationId: PostStoreCreditAccountsIdCredit
+  summary: Add Credit
+  description: Add credit to a store credit account.
   x-authenticated: true
-  x-ignoreCleanup: true
   parameters:
     - name: id
       in: path
-      description: The gift card's ID.
+      description: The store credit account's ID.
       required: true
       schema:
         type: string
@@ -16,16 +14,25 @@ get:
     - api_token: []
     - cookie_auth: []
     - jwt_token: []
+  requestBody:
+    content:
+      application/json:
+        schema:
+          $ref: ../components/schemas/AdminCreditStoreCreditAccountParams.yaml
   x-codeSamples:
     - lang: Shell
       label: cURL
       source:
-        $ref: ../code_samples/Shell/admin_gift-cards_{id}_orders/get.sh
+        $ref: ../code_samples/Shell/admin_store-credit-accounts_{id}_credit/post.sh
   tags:
-    - Gift Cards
+    - Store Credit Accounts
   responses:
     '200':
       description: OK
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/AdminStoreCreditAccountResponse.yaml
     '400':
       $ref: ../components/responses/400_error.yaml
     '401':
