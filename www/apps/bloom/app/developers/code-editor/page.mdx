@@ -166,7 +166,7 @@ While you have complete ownership over your Bloom project's code, if you want to
 1. Root configuration files: `package.json`, `turbo.json`, and any other configuration files at the root level of the project. Changes to these files can affect how Bloom builds and runs your project, potentially causing unexpected behavior.
 2. `package.json` scripts: Avoid changing the scripts in `package.json`, especially those related to building and running the project. These scripts are used by Bloom to execute tasks, and changes can interfere with Bloom's ability to manage your project effectively.
 3. `vite.config.ts` plugins: The default Vite configuration includes plugins that Bloom relies on to build and deploy your storefront. Avoid removing or changing these plugins to ensure Bloom can continue to build and deploy your storefront correctly.
-4. `medusa-config.ts` admin configurations: The `medusa-config.ts` file includes configurations for the Medusa admin dashboard to ensure it works correctly with Bloom's features. Avoid changing admin-related configurations to prevent issues with previewing the admin dashboard.
+4. `medusa-config.ts` admin configurations: The `medusa-config.ts` file includes configurations for the Medusa Admin dashboard to ensure it works correctly with Bloom's features. Avoid changing admin-related configurations to prevent issues with previewing the admin dashboard.
 
 ---
 
