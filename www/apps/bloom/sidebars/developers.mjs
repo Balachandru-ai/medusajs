@@ -2,7 +2,7 @@
 export const developersSidebar = [
   {
     sidebar_id: "developers",
-    title: "Developer Resources",
+    title: "Developers",
     items: [],
   },
 ]
