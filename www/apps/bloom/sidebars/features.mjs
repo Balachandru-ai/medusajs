@@ -3,6 +3,53 @@ export const featuresSidebar = [
   {
     sidebar_id: "features",
     title: "Features",
-    items: [],
+    items: [
+      {
+        type: "link",
+        title: "Commerce Features",
+        path: "/features/commerce-features",
+      },
+      {
+        type: "category",
+        title: "Agent Features",
+        children: [
+          {
+            type: "link",
+            title: "Mode Switcher",
+            path: "/features/mode-switcher",
+          },
+          {
+            type: "link",
+            title: "Selection Mode",
+            path: "/features/selection-mode",
+          },
+          {
+            type: "link",
+            title: "Design from Media",
+            path: "/features/design-from-media",
+          },
+          {
+            type: "link",
+            title: "Pull from URLs",
+            path: "/features/pull-from-urls",
+          },
+          {
+            type: "link",
+            title: "Restore Changes",
+            path: "/features/restore-changes",
+          },
+          {
+            type: "link",
+            title: "Responsive View",
+            path: "/features/responsive-view",
+          },
+          {
+            type: "link",
+            title: "Demo Data",
+            path: "/features/demo-data",
+          },
+        ],
+      },
+    ],
   },
 ]
