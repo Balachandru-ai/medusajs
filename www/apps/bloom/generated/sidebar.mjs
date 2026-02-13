@@ -147,8 +147,16 @@ export const generatedSidebars = [
             "loaded": true,
             "isPathHref": true,
             "type": "link",
-            "title": "Mode Switcher",
-            "path": "/features/mode-switcher",
+            "title": "View Switcher",
+            "path": "/features/view-switcher",
+            "children": []
+          },
+          {
+            "loaded": true,
+            "isPathHref": true,
+            "type": "link",
+            "title": "Emails",
+            "path": "/features/emails",
             "children": []
           },
           {
@@ -290,7 +298,40 @@ export const generatedSidebars = [
   {
     "sidebar_id": "developers",
     "title": "Developers",
-    "items": []
+    "items": [
+      {
+        "loaded": true,
+        "isPathHref": true,
+        "type": "link",
+        "title": "Code Editor",
+        "path": "/developers/code-editor",
+        "children": []
+      },
+      {
+        "loaded": true,
+        "isPathHref": true,
+        "type": "link",
+        "title": "Export to GitHub",
+        "path": "/developers/export-to-github",
+        "children": []
+      },
+      {
+        "loaded": true,
+        "isPathHref": true,
+        "type": "link",
+        "title": "Environment Variables",
+        "path": "/developers/environment-variables",
+        "children": []
+      },
+      {
+        "loaded": true,
+        "isPathHref": true,
+        "type": "link",
+        "title": "Email Templates",
+        "path": "/developers/email-templates",
+        "children": []
+      }
+    ]
   },
   {
     "sidebar_id": "changelog",

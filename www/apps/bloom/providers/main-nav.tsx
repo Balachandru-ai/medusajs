@@ -28,7 +28,8 @@ export const MainNavProvider = ({ children }: MainNavProviderProps) => {
     {
       type: "link",
       title: "Developers",
-      link: `/developers`,
+      // TODO change to overview page
+      link: `/developers/code-editor`,
     },
     {
       type: "link",

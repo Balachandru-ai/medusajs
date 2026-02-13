@@ -15,8 +15,13 @@ export const featuresSidebar = [
         children: [
           {
             type: "link",
-            title: "Mode Switcher",
-            path: "/features/mode-switcher",
+            title: "View Switcher",
+            path: "/features/view-switcher",
+          },
+          {
+            type: "link",
+            title: "Emails",
+            path: "/features/emails",
           },
           {
             type: "link",

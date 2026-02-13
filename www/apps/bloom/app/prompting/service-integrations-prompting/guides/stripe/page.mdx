@@ -46,7 +46,7 @@ Bloom stores these keys securely and uses them to connect your store to Stripe.
 
 <Note title="Technical Information">
 
-Bloom stores your Stripe credentials as environment variables in your store. They are never exposed in your code or logs. See [Environment Variables](#) for more details.
+Bloom stores your Stripe credentials as environment variables in your store. They are never exposed in your code or logs. See [Environment Variables](../../../../developers/environment-variables/page.mdx) for more details.
 
 </Note>
 
@@ -60,15 +60,18 @@ Place a test order. Check that you can see it in your admin dashboard and in you
 
 ---
 
-## Go Live
+## Publish Stripe Integration
 
-When you're ready to publish, Bloom will ask for your live Stripe API keys.
+Once you've tested the integration and you're ready to go live, you can publish your changes with your live credentials.
 
-Find your live keys the same way as [test keys](#prerequisites), but switch your Stripe dashboard to live mode first.
+To publish the changes:
 
-After publishing, your store will process real payments through Stripe.
+1. Click on the "Publish" button at the top right.
+2. If you haven't published your store before, Bloom will ask you for some details about your store.
+3. In the "Missing production values" section, enter the live credentials for Stripe. You can find them the same way as the [test keys](#prerequisites), but switch your Stripe dashboard to live mode first.
+4. Click "Publish" to make your changes live.
 
-{/* TODO add screenshot */}
+Your Stripe integration will be published to your live store, and customers can start using it to make payments.
 
 ---
 
