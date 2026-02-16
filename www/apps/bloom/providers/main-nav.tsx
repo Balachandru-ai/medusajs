@@ -14,26 +14,30 @@ export const MainNavProvider = ({ children }: MainNavProviderProps) => {
       type: "link",
       title: "Getting Started",
       link: "/",
+      sidebar_id: "getting-started",
     },
     {
       type: "link",
       title: "Features",
-      link: `/features`,
+      link: `/features/commerce-features`,
+      sidebar_id: "features",
     },
     {
       type: "link",
       title: "Prompting",
-      link: `/prompting`,
+      link: `/prompting/store-design-prompting`,
+      sidebar_id: "prompting",
     },
     {
       type: "link",
-      title: "Developer Resources",
-      link: `/developer-resources`,
+      title: "Developers",
+      link: `/developers/code-editor`,
+      sidebar_id: "developers",
     },
     {
       type: "link",
       title: "Changelog",
-      link: `/changelog`,
+      link: `#`,
     },
   ]
 
@@ -41,16 +45,23 @@ export const MainNavProvider = ({ children }: MainNavProviderProps) => {
     type: "dropdown",
     title: "Help",
     children: [
-      // TODO: Update links when resources are available
-      {
-        type: "link",
-        title: "Troubleshooting",
-        link: "#",
-      },
       {
         type: "link",
         title: "Contact Support",
-        link: "#",
+        link: "/help-and-feedback#contact-support",
+      },
+      {
+        type: "link",
+        title: "FAQ",
+        link: "/faq",
+      },
+      {
+        type: "divider",
+      },
+      {
+        type: "link",
+        title: "Discord Community",
+        link: "https://discord.gg/medusajs",
       },
     ],
   }
