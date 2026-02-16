@@ -8,7 +8,7 @@ import {
   normalizeLocale,
 } from "@medusajs/framework/utils"
 import Locale from "@models/locale"
-import localesList from "./locales-list.json";
+import localesList from "./locales-list";
 
 /**
  * BCP 47 Language Tags
