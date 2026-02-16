@@ -4,12 +4,12 @@ export const generatedEditDates = {
   "app/pricing/page.mdx": "2026-02-09T09:36:32.910Z",
   "app/faq/page.mdx": "2026-02-13T14:54:47.798Z",
   "app/starters/page.mdx": "2026-02-13T14:54:19.235Z",
-  "app/credits-and-plans/page.mdx": "2026-02-13T14:55:19.094Z",
+  "app/credits-and-plans/page.mdx": "2026-02-16T08:13:12.607Z",
   "app/manage-projects/page.mdx": "2026-02-13T14:55:00.863Z",
   "app/going-live/page.mdx": "2026-02-13T14:55:43.180Z",
   "app/custom-domains/page.mdx": "2026-02-13T14:54:19.235Z",
   "app/profile-management/page.mdx": "2026-02-13T14:54:19.241Z",
-  "app/organization-management/page.mdx": "2026-02-13T14:54:19.236Z",
+  "app/organization-management/page.mdx": "2026-02-16T08:12:50.174Z",
   "app/manage-billing/page.mdx": "2026-02-13T14:54:19.241Z",
   "app/help-and-feedback/page.mdx": "2026-02-13T14:54:19.234Z",
   "app/responsive-view/page.mdx": "2026-02-11T08:35:12.261Z",
@@ -40,5 +40,6 @@ export const generatedEditDates = {
   "app/developers/environment-variables/page.mdx": "2026-02-13T14:54:19.243Z",
   "app/developers/email-templates/page.mdx": "2026-02-13T14:54:19.243Z",
   "app/features/emails/page.mdx": "2026-02-13T14:54:19.238Z",
-  "app/features/view-switcher/page.mdx": "2026-02-13T14:54:19.238Z"
+  "app/features/view-switcher/page.mdx": "2026-02-13T14:54:19.238Z",
+  "app/organization-management/team/page.mdx": "2026-02-16T08:13:37.916Z"
 }

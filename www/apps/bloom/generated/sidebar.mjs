@@ -8,6 +8,7 @@ export const generatedSidebars = [
         "isPathHref": true,
         "type": "category",
         "title": "Get Started",
+        "initialOpen": true,
         "children": [
           {
             "loaded": true,
@@ -87,30 +88,39 @@ export const generatedSidebars = [
         "loaded": true,
         "isPathHref": true,
         "type": "category",
-        "title": "Account Management",
+        "title": "Account & Organization",
         "children": [
-          {
-            "loaded": true,
-            "isPathHref": true,
-            "type": "link",
-            "title": "Profile",
-            "path": "/profile-management",
-            "children": []
-          },
           {
             "loaded": true,
             "isPathHref": true,
             "type": "link",
             "title": "Organization",
             "path": "/organization-management",
-            "children": []
+            "children": [
+              {
+                "loaded": true,
+                "isPathHref": true,
+                "type": "link",
+                "title": "Team",
+                "path": "/organization-management/team",
+                "children": []
+              },
+              {
+                "loaded": true,
+                "isPathHref": true,
+                "type": "link",
+                "title": "Manage Billing",
+                "path": "/manage-billing",
+                "children": []
+              }
+            ]
           },
           {
             "loaded": true,
             "isPathHref": true,
             "type": "link",
-            "title": "Manage Billing",
-            "path": "/manage-billing",
+            "title": "Profile",
+            "path": "/profile-management",
             "children": []
           }
         ]
@@ -142,6 +152,7 @@ export const generatedSidebars = [
         "isPathHref": true,
         "type": "category",
         "title": "Agent Features",
+        "initialOpen": true,
         "children": [
           {
             "loaded": true,
