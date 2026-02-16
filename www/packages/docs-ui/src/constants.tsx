@@ -528,4 +528,5 @@ export enum DocsTrackingEvents {
   AI_ASSISTANT_START_CHAT = "ai_assistant_start_chat",
   AI_ASSISTANT_CALLOUT_CLICK = "ai_assistant_callout_click",
   SEARCH_CALLOUT_CLICK = "search_callout_click",
+  BLOOM_ACTION = "bloom_action",
 }
