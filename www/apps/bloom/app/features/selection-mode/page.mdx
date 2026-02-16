@@ -1,4 +1,4 @@
-import { InlineIcon } from "docs-ui"
+import { InlineIcon, InProductAction, InProductActions } from "docs-ui"
 import { CursorDefault, Palette, Typography, Gap, Expand, ImageSparkle, CloudArrowUp } from "@medusajs/icons"
 
 export const metadata = {
@@ -7,7 +7,7 @@ export const metadata = {
 
 # {metadata.title}
 
-Selection Mode lets you select and edit elements in your store directly. Use it to specify exactly what you want Bloom to change, or make quick edits yourself.
+<InProductAction product={"bloom"} type={"MEDUSA_AI_ENABLE_SELECTION_MODE"}>Selection Mode</InProductAction> lets you select and edit elements in your store directly. Use it to specify exactly what you want Bloom to change, or make quick edits yourself.
 
 ## What is Selection Mode?
 
@@ -32,7 +32,7 @@ You also can't edit admin-managed content with Selection Mode. Only edit content
 
 ## Turn Selection Mode On and Off
 
-To toggle Selection Mode while previewing your store:
+To toggle <InProductAction product={"bloom"} type={"MEDUSA_AI_ENABLE_SELECTION_MODE"}>Selection Mode</InProductAction> while previewing your store:
 
 1. Make sure you're in Store view.
 2. Find the toolbar at the bottom of the preview.
