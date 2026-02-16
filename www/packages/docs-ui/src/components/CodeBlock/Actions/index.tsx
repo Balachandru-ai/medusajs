@@ -8,7 +8,7 @@ import { ExclamationCircle, PlaySolid } from "@medusajs/icons"
 import { GITHUB_ISSUES_LINK } from "@/constants"
 import { CodeBlockCopyAction } from "./Copy"
 import { CodeBlockAskAiAction } from "./AskAi"
-import { useSiteConfig } from "../../../providers"
+import { useSiteConfig } from "../../../providers/SiteConfig"
 import { CodeBlockBloomAction } from "./Bloom"
 
 export type CodeBlockActionsProps = {

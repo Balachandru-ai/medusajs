@@ -1,10 +1,11 @@
 "use client"
 
 import React from "react"
-import { ProductView, useAnalytics, useSiteConfig } from "../../providers"
+import { ProductView, useSiteConfig } from "../../providers/SiteConfig"
 import { ArrowUpRightOnBox } from "@medusajs/icons"
 import clsx from "clsx"
 import { DocsTrackingEvents } from "../../constants"
+import { useAnalytics } from "../../providers/Analytics"
 
 export type InProductActionProps = {
   product: ProductView
@@ -29,7 +30,6 @@ export const InProductAction = ({
   }
 
   const handleClick = () => {
-    console.log("InProductAction clicked", { type, data })
     window.parent.postMessage(
       {
         type,

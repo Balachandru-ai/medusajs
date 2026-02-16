@@ -4,7 +4,7 @@ import React from "react"
 import clsx from "clsx"
 import { Tooltip } from "../../../Tooltip"
 import { BloomIcon } from "../../../Icons"
-import { useAnalytics } from "../../../../providers"
+import { useAnalytics } from "../../../../providers/Analytics"
 import { DocsTrackingEvents } from "../../../../constants"
 
 export type CodeBlockBloomActionProps = {

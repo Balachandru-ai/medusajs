@@ -2,7 +2,7 @@
 
 import React from "react"
 import { Pagination } from "../Pagination"
-import { useSiteConfig } from "../../providers"
+import { useSiteConfig } from "../../providers/SiteConfig"
 
 export type FooterProps = {
   editComponent?: React.ReactNode
