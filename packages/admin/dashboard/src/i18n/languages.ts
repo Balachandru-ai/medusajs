@@ -30,6 +30,7 @@ import {
   uk,
   vi,
   zhCN,
+  zhTW,
 } from "date-fns/locale"
 import { Language } from "./types"
 
@@ -215,9 +216,15 @@ export const languages: Language[] = [
     date_locale: nl,
   },
   {
+    code: "zhTW",
+    display_name: "繁體中文(臺灣)",
+    ltr: true,
+    date_locale: zhTW,
+  },
+  {
     code: "sk",
     display_name: "Slovenčina",
     ltr: true,
     date_locale: sk,
-  },
+  }
 ]

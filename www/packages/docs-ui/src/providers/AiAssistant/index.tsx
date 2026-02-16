@@ -1,6 +1,6 @@
 "use client"
 
-import { KapaProvider, useChat } from "@kapaai/react-sdk"
+import { KapaProvider, useChat, useDeepThinking } from "@kapaai/react-sdk"
 import React, {
   createContext,
   useCallback,
@@ -12,7 +12,7 @@ import React, {
 } from "react"
 import type { Source } from "@kapaai/react-sdk"
 import useResizeObserver from "@react-hook/resize-observer"
-import { AiAssistantSearchWindow } from "../../components"
+import { AiAssistantSearchWindow } from "../../components/AiAssistant/SearchWindow"
 import { useIsBrowser } from "../BrowserProvider"
 
 export type AiAssistantChatType = "default" | "popover"
@@ -25,6 +25,9 @@ export type AiAssistantContextType = {
   contentRef: React.RefObject<HTMLDivElement | null>
   loading: boolean
   isCaptchaLoaded: boolean
+  submitQuery: (q: string) => void
+  deepThinkingEnabled: boolean
+  toggleDeepThinking: () => void
 }
 
 export type AiAssistantThreadItem = {
@@ -32,6 +35,7 @@ export type AiAssistantThreadItem = {
   content: string
   question_id?: string | null
   sources?: Source[]
+  isGenerationAborted?: boolean
 }
 
 const AiAssistantContext = createContext<AiAssistantContextType | null>(null)
@@ -64,7 +68,9 @@ const AiAssistantInnerProvider = ({
   const [chatOpened, setChatOpened] = useState(false)
   const inputRef = useRef<HTMLInputElement | HTMLTextAreaElement>(null)
   const contentRef = useRef<HTMLDivElement>(null)
-  const { isGeneratingAnswer, isPreparingAnswer } = useChat()
+  const { isGeneratingAnswer, isPreparingAnswer, submitQuery } = useChat()
+  const { active: deepThinkingEnabled, toggle: toggleDeepThinking } =
+    useDeepThinking()
   const loading = useMemo(
     () => isGeneratingAnswer || isPreparingAnswer,
     [isGeneratingAnswer, isPreparingAnswer]
@@ -76,6 +82,10 @@ const AiAssistantInnerProvider = ({
       return
     }
     const parent = contentRef.current?.parentElement as HTMLElement
+
+    if (!parent) {
+      return
+    }
 
     parent.scrollTop = parent.scrollHeight
   }
@@ -179,6 +189,9 @@ const AiAssistantInnerProvider = ({
         contentRef,
         loading,
         isCaptchaLoaded,
+        submitQuery,
+        deepThinkingEnabled,
+        toggleDeepThinking,
       }}
     >
       {children}

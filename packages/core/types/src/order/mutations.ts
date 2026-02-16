@@ -139,6 +139,11 @@ export interface CreateOrderDTO {
   currency_code?: string
 
   /**
+   * The locale of the order.
+   */
+  locale?: string | null
+
+  /**
    * The associated shipping address's ID.
    */
   shipping_address_id?: string
@@ -233,6 +238,11 @@ export interface UpdateOrderDTO {
    * Whether the order is a draft order.
    */
   is_draft_order?: boolean
+
+  /**
+   * The locale of the order.
+   */
+  locale?: string | null
 
   /**
    * The items of the order.
@@ -909,6 +919,11 @@ export interface CreateOrderChangeDTO {
   internal_note?: string | null
 
   /**
+   * Whether to carry over promotions (apply promotions to outbound exchange items).
+   */
+  carry_over_promotions?: boolean | null
+
+  /**
    * The user or customer that requested the order change.
    */
   requested_by?: string
@@ -1016,6 +1031,11 @@ export interface UpdateOrderChangeDTO {
    * Holds custom data in key-value pairs.
    */
   metadata?: Record<string, unknown> | null
+
+  /**
+   * Whether to carry over promotions to outbound exchange items.
+   */
+  carry_over_promotions?: boolean | null
 }
 
 /**

@@ -33,8 +33,9 @@ import {
   throwIfOrderChangeIsNotActive,
 } from "../../utils/order-validation"
 import { createOrderChangeActionsWorkflow } from "../create-order-change-actions"
-import { computeAdjustmentsForPreviewWorkflow } from "../order-edit/compute-adjustments-for-preview"
+import { computeAdjustmentsForPreviewWorkflow } from "../compute-adjustments-for-preview"
 import { refreshExchangeShippingWorkflow } from "./refresh-shipping"
+import { fieldsToComputeAdjustmentsForPreview } from "../order-edit/utils/fields"
 
 /**
  * The data to validate that items can be returned as part of an exchange.
@@ -178,14 +179,12 @@ export const orderExchangeRequestItemReturnWorkflow = createWorkflow(
     const order: OrderDTO = useRemoteQueryStep({
       entry_point: "orders",
       fields: [
-        "id",
+        ...fieldsToComputeAdjustmentsForPreview,
+        "canceled_at",
         "status",
-        "currency_code",
-        "items.*",
         "items.variant.manage_inventory",
         "items.variant.inventory_items.inventory_item_id",
         "items.variant.inventory_items.inventory.location_levels.location_id",
-        "promotions.*",
       ],
       variables: { id: orderExchange.order_id },
       list: false,
@@ -194,7 +193,13 @@ export const orderExchangeRequestItemReturnWorkflow = createWorkflow(
 
     const orderChange: OrderChangeDTO = useRemoteQueryStep({
       entry_point: "order_change",
-      fields: ["id", "status", "version"],
+      fields: [
+        "id",
+        "status",
+        "version",
+        "exchange_id",
+        "carry_over_promotions",
+      ],
       variables: {
         filters: {
           order_id: orderExchange.order_id,
@@ -321,7 +326,6 @@ export const orderExchangeRequestItemReturnWorkflow = createWorkflow(
       input: {
         order: orderWithPromotions,
         orderChange,
-        exchange_id: orderExchange.id,
       },
     })
 

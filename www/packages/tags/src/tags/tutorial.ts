@@ -96,6 +96,10 @@ export const tutorial = [
     "path": "https://docs.medusajs.com/resources/integrations/guides/mailchimp"
   },
   {
+    "title": "Integrate Okta",
+    "path": "https://docs.medusajs.com/resources/integrations/guides/okta"
+  },
+  {
     "title": "Integrate Payload",
     "path": "https://docs.medusajs.com/resources/integrations/guides/payload"
   },
@@ -106,6 +110,10 @@ export const tutorial = [
   {
     "title": "Integrate Slack",
     "path": "https://docs.medusajs.com/resources/integrations/guides/slack"
+  },
+  {
+    "title": "Integrate Strapi",
+    "path": "https://docs.medusajs.com/resources/integrations/guides/strapi"
   },
   {
     "title": "Build Wishlist Plugin",

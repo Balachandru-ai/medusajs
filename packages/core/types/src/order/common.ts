@@ -1134,6 +1134,11 @@ export interface OrderDTO {
   is_draft_order?: boolean
 
   /**
+   * The locale of the order.
+   */
+  locale?: string
+
+  /**
    * Holds custom data in key-value pairs.
    */
   metadata?: Record<string, unknown> | null
@@ -2116,6 +2121,11 @@ export interface OrderChangeDTO {
    * The type of the order change
    */
   change_type?: "return" | "exchange" | "claim" | "edit" | "transfer"
+
+  /**
+   * Whether to carry over promotions (apply promotions to outbound exchange items).
+   */
+  carry_over_promotions?: boolean | null
 
   /**
    * The ID of the associated order

@@ -256,6 +256,7 @@ const generatedgeneratedHowToTutorialsSidebarSidebar = {
           "autogenerate_tags": "howTo+admin",
           "autogenerate_as_ref": true,
           "sort_sidebar": "alphabetize",
+          "description": "These how-to guides help you customize the Medusa Admin dashboard with practical examples.",
           "children": [
             {
               "loaded": true,
@@ -384,6 +385,14 @@ const generatedgeneratedHowToTutorialsSidebarSidebar = {
                   ]
                 }
               ]
+            },
+            {
+              "loaded": true,
+              "isPathHref": true,
+              "type": "link",
+              "title": "Custom Admin Authentication",
+              "path": "/how-to-tutorials/how-to/admin/auth",
+              "children": []
             }
           ]
         }
