@@ -7,6 +7,7 @@ export const gettingStartedSidebar = [
       {
         type: "category",
         title: "Get Started",
+        initialOpen: true,
         children: [
           {
             type: "link",

@@ -12,6 +12,7 @@ export const featuresSidebar = [
       {
         type: "category",
         title: "Agent Features",
+        initialOpen: true,
         children: [
           {
             type: "link",
