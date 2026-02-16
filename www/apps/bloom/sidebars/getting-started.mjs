@@ -7,6 +7,7 @@ export const gettingStartedSidebar = [
       {
         type: "category",
         title: "Get Started",
+        initialOpen: true,
         children: [
           {
             type: "link",
@@ -58,22 +59,29 @@ export const gettingStartedSidebar = [
       },
       {
         type: "category",
-        title: "Account Management",
+        title: "Account & Organization",
         children: [
-          {
-            type: "link",
-            title: "Profile",
-            path: "/profile-management",
-          },
           {
             type: "link",
             title: "Organization",
             path: "/organization-management",
+            children: [
+              {
+                type: "link",
+                title: "Team",
+                path: "/organization-management/team",
+              },
+              {
+                type: "link",
+                title: "Manage Billing",
+                path: "/manage-billing",
+              },
+            ],
           },
           {
             type: "link",
-            title: "Manage Billing",
-            path: "/manage-billing",
+            title: "Profile",
+            path: "/profile-management",
           },
         ],
       },
