@@ -20,7 +20,7 @@ export const POST = async (
   const remoteQuery = req.scope.resolve(ContainerRegistrationKeys.REMOTE_QUERY)
   const { cart_id } = req.body
 
-  // We can potentially refactor the workflow to behave more like an upsert and return an existing collection if there is one.
+  // FIXED: Using custom idempotent workflow to prevent race conditions
   const [cartCollectionRelation] = await remoteQuery(
     remoteQueryObjectFromString({
       entryPoint: "cart_payment_collection",
@@ -34,6 +34,7 @@ export const POST = async (
     const we = req.scope.resolve(Modules.WORKFLOW_ENGINE)
     await we.run(createPaymentCollectionForCartWorkflowId, {
       input: req.body,
+      transactionId: "create-payment-collection-" + cart_id,
     })
 
     const [cartCollectionRelation] = await remoteQuery(
