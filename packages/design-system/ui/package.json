@@ -37,8 +37,8 @@
     "test:watch": "../../../node_modules/.bin/vitest",
     "test:coverage": "../../../node_modules/.bin/vitest --run --coverage",
     "lint": "eslint \"**/*.ts*\"",
-    "storybook": "storybook dev -p 6006",
-    "storybook:build": "storybook build",
+    "storybook": "../../../node_modules/.bin/storybook dev -p 6006",
+    "storybook:build": "../../../node_modules/.bin/storybook build",
     "typecheck": "yarn run -T tsc --noEmit"
   },
   "devDependencies": {
