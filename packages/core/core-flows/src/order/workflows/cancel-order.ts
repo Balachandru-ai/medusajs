@@ -138,6 +138,7 @@ export const cancelOrderWorkflow = createWorkflow(
         "payment_collections.payments.refunds.amount",
         "payment_collections.payments.captures.id",
         "payment_collections.payments.captures.amount",
+        "payment_collections.payments.captures.raw_amount",
       ],
       filters: { id: input.order_id },
       options: { throwIfKeyNotFound: true },
@@ -171,10 +172,12 @@ export const cancelOrderWorkflow = createWorkflow(
         ({ payments }) => payments
       )
 
-      return payments.reduce(
-        (acc, payment) => MathBN.sum(acc, payment.amount),
-        MathBN.convert(0)
-      )
+      return payments
+        .flatMap((payment) => payment.captures)
+        .reduce(
+          (acc, capture) => MathBN.sum(acc, capture.raw_amount),
+          MathBN.convert(0)
+        )
     })
 
     const lineItemIds = transform({ order }, ({ order }) => {
