@@ -42,6 +42,9 @@ const TestComponent = () => {
       <div data-testid="version-number">{config.version?.number}</div>
       <div data-testid="release-url">{config.version?.releaseUrl}</div>
       <div data-testid="toc-length">{toc?.length || 0}</div>
+      <div data-testid="ai-assistant-feature">
+        {String(config.features?.aiAssistant ?? false)}
+      </div>
       <div data-testid="is-in-product">{String(isInProduct)}</div>
       <div data-testid="product-view">{productView || "none"}</div>
       <button
@@ -204,6 +207,44 @@ describe("SiteConfigProvider", () => {
       fireEvent.click(getByTestId("update-toc"))
 
       expect(getByTestId("toc-length")).toHaveTextContent("1")
+    })
+
+    test("enables ai assistant feature by default", () => {
+      const { getByTestId } = render(
+        <SiteConfigProvider>
+          <TestComponent />
+        </SiteConfigProvider>
+      )
+
+      expect(getByTestId("ai-assistant-feature")).toHaveTextContent("true")
+    })
+
+    test("allows overriding ai assistant feature via config", () => {
+      const config: DocsConfig = {
+        baseUrl: "",
+        project: {
+          title: "",
+          key: "",
+        },
+        sidebars: [],
+        logo: "",
+        features: {
+          aiAssistant: false,
+        },
+        version: {
+          number: "1.0.0",
+          releaseUrl: "",
+          releaseDate: "",
+        }
+      }
+
+      const { getByTestId } = render(
+        <SiteConfigProvider config={config}>
+          <TestComponent />
+        </SiteConfigProvider>
+      )
+
+      expect(getByTestId("ai-assistant-feature")).toHaveTextContent("false")
     })
 
     test("throws error when used outside provider", () => {

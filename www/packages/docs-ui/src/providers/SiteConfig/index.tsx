@@ -45,6 +45,9 @@ export const SiteConfigProvider = ({
         },
         reportIssueLink: GITHUB_ISSUES_LINK,
         logo: "",
+        features: {
+          aiAssistant: true,
+        },
       },
       globalConfig,
       initConfig || {}
