@@ -9,15 +9,8 @@ import {
 } from "@aws-sdk/client-s3"
 import { Upload } from "@aws-sdk/lib-storage"
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner"
-import {
-  FileTypes,
-  Logger,
-  S3FileServiceOptions,
-} from "@medusajs/framework/types"
-import {
-  AbstractFileProviderService,
-  MedusaError,
-} from "@medusajs/framework/utils"
+import { FileTypes, Logger, S3FileServiceOptions, } from "@medusajs/framework/types"
+import { AbstractFileProviderService, MedusaError, } from "@medusajs/framework/utils"
 import path from "path"
 import { PassThrough, Readable, Writable } from "stream"
 import { ulid } from "ulid"
@@ -117,9 +110,10 @@ export class S3FileService extends AbstractFileProviderService {
     const parsedFilename = path.parse(file.filename)
 
     // TODO: Allow passing a full path for storage per request, not as a global config.
-    const fileKey = `${this.config_.prefix}${parsedFilename.name}-${ulid()}${
+    const encodedFilename = encodeURIComponent(`${parsedFilename.name}-${ulid()}${
       parsedFilename.ext
-    }`
+    }`)
+    const fileKey = `${this.config_.prefix}${encodedFilename}`
 
     let content: Buffer
     try {
@@ -161,7 +155,7 @@ export class S3FileService extends AbstractFileProviderService {
     }
 
     return {
-      url: `${this.config_.fileUrl}/${encodeURIComponent(fileKey)}`,
+      url: `${this.config_.fileUrl}/${fileKey}`,
       key: fileKey,
     }
   }
