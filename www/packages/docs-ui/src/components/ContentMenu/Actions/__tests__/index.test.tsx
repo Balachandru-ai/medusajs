@@ -56,7 +56,7 @@ describe("render", () => {
       "button[data-testid='ai-assistant-button']"
     )
     expect(aiAssistantButton).toBeInTheDocument()
-    expect(aiAssistantButton).toHaveTextContent("Explain with AI Assistant")
+    expect(aiAssistantButton).toHaveTextContent("Explain this page")
   })
 })
 
