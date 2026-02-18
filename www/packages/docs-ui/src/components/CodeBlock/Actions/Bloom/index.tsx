@@ -1,41 +1,47 @@
 "use client"
 
 import React from "react"
-import { useAiAssistant } from "../../../../providers/AiAssistant"
 import clsx from "clsx"
 import { Tooltip } from "../../../Tooltip"
-import { useChat } from "@kapaai/react-sdk"
 import { BloomIcon } from "../../../Icons"
-import { useSiteConfig } from "../../../../providers/SiteConfig"
+import { useAnalytics } from "../../../../providers/Analytics"
+import { DocsTrackingEvents } from "../../../../constants"
 
-export type CodeBlockCopyActionProps = {
+export type CodeBlockBloomActionProps = {
   source: string
   inHeader: boolean
 }
 
-export const CodeBlockAskAiAction = ({
+export const CodeBlockBloomAction = ({
   source,
   inHeader,
-}: CodeBlockCopyActionProps) => {
-  const { setChatOpened, loading } = useAiAssistant()
-  const { config } = useSiteConfig()
-  const { submitQuery } = useChat()
-
-  if (!config.features?.aiAssistant) {
-    return null
-  }
+}: CodeBlockBloomActionProps) => {
+  const { track } = useAnalytics()
 
   const handleClick = () => {
-    if (loading) {
-      return
-    }
-    submitQuery(`\`\`\`tsx\n${source.trim()}\n\`\`\`\n\nExplain the code above`)
-    setChatOpened(true)
+    window.parent.postMessage(
+      {
+        type: "MEDUSA_AI_SEND_PROMPT",
+        data: {
+          prompt: source.trim(),
+        },
+      },
+      "*"
+    )
+    track({
+      event: {
+        event: DocsTrackingEvents.BLOOM_ACTION,
+        options: {
+          type: "send_to_bloom",
+          code: source.trim(),
+        },
+      },
+    })
   }
 
   return (
     <Tooltip
-      text="Ask Bloom"
+      text="Send to Bloom"
       tooltipClassName="font-base"
       className={clsx("group")}
       innerClassName={clsx(

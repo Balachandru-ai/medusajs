@@ -11,7 +11,7 @@ export const developersSidebar = [
       },
       {
         type: "link",
-        title: "Export to GitHub",
+        title: "Sync with GitHub",
         path: "/developers/export-to-github",
       },
       {

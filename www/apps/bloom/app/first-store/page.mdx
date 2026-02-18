@@ -1,4 +1,4 @@
-import { InlineIcon } from "docs-ui"
+import { InlineIcon, InProductAction } from "docs-ui"
 import { CursorDefault } from "@medusajs/icons"
 
 export const metadata = {
@@ -128,7 +128,7 @@ Once you submit your prompt, Bloom will update the store in real-time. You can s
 
 ### Use Selection Mode
 
-Bloom includes a Selection Mode to help you target specific elements on your store for design changes. This is easier and more effective than describing elements you want to change in your prompt.
+Bloom includes a <InProductAction product={"bloom"} type={"MEDUSA_AI_ENABLE_SELECTION_MODE"}>Selection Mode</InProductAction> to help you target specific elements on your store for design changes. This is easier and more effective than describing elements you want to change in your prompt.
 
 {/* TODO: Add image: Bloom project interface with Selection Mode enabled, showing a blue outline around a selectable element in the Preview panel */}
 
@@ -185,7 +185,7 @@ See [Prompting Custom Features](../prompting/custom-features-prompting/page.mdx)
 
 Your Bloom store includes a full admin dashboard to manage products, orders, and customers. In the project's preview, you can switch between the Store and Admin views to manage your store.
 
-To switch to the Admin view, click the **Admin** tab in the toolbar at the bottom.
+To switch to the Admin view, click the <InProductAction product={"bloom"} type={"MEDUSA_AI_OPEN_PANE"} data={{ pane: "admin" }}>**Admin**</InProductAction> tab in the toolbar at the bottom.
 
 {/* TODO: Add image: Bloom project interface with an arrow to the Admin tab in the toolbar */}
 
@@ -233,7 +233,7 @@ See the [Going Live](../going-live/page.mdx) guide for a publishing checklist an
 
 To publish your store:
 
-1. Click on the **Publish** button in the top-right corner of the project interface.
+1. Click on the <InProductAction product={"bloom"} type={"MEDUSA_AI_OPEN_PANE"} data={{ pane: "publish" }}>**Publish**</InProductAction> button in the top-right corner of the project interface.
 2. If you're on the Free plan, you'll be asked to upgrade to the Hobby plan to publish your store.
     - The Hobby plan includes more credits and allows you to publish your store to a live URL. Learn more in the [Credits and Plans](../credits-and-plans/page.mdx) guide.
     - When you upgrade, you must enter your payment information and you'll be charged immediately.
