@@ -202,5 +202,6 @@ export const cartFieldsForCalculateShippingOptionsPrices = [
   "items.product.collection_id",
   "items.product.categories.id",
   "items.product.tags.id",
+  "items.product.weight",
   "shipping_address.*",
 ]
