@@ -110,7 +110,7 @@ export const MainNav = ({ className, itemsClassName }: MainNavProps) => {
               />
             </div>
             <div className="flex items-center">
-              <AiAssistantTriggerButton />
+              {config.features?.aiAssistant && <AiAssistantTriggerButton />}
               <SearchModalOpener />
               <MainNavDesktopMenu />
               <MainNavMobileMenu />
