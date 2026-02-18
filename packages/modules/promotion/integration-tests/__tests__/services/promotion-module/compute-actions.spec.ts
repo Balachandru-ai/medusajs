@@ -1071,7 +1071,7 @@ moduleIntegrationTestRunner({
 
             expect(JSON.parse(JSON.stringify(result))).toEqual([
               {
-                action: "addItemAdjustment",
+                action: "a0ddItemAdjustment",
                 item_id: "item_cotton_tshirt",
                 amount: 50,
                 code: "PROMOTION_TEST_2",
@@ -5906,7 +5906,7 @@ moduleIntegrationTestRunner({
               item_id: "item_cotton_tshirt2",
               amount: 2000,
               code: "PROMOTION_TEST",
-              is_tax_inclusive: undefined
+              is_tax_inclusive: false
             },
           ])
         })
@@ -6101,14 +6101,14 @@ moduleIntegrationTestRunner({
               item_id: "item_cotton_tshirt2",
               amount: 2000,
               code: "PROMOTION_TEST",
-              is_tax_inclusive: undefined
+              is_tax_inclusive: false
             },
             {
               action: "addItemAdjustment",
               item_id: "item_cotton_tshirt",
               amount: 1000,
               code: "PROMOTION_TEST",
-              is_tax_inclusive: undefined
+              is_tax_inclusive: false
             },
           ])
         })
@@ -6275,7 +6275,7 @@ moduleIntegrationTestRunner({
                 item_id: "item_cotton_tshirt",
                 amount: 500,
                 code: "PROMOTION_TEST",
-                is_tax_inclusive: undefined
+                is_tax_inclusive: false
               },
             ])
           })
@@ -6360,7 +6360,7 @@ moduleIntegrationTestRunner({
                 item_id: "item_1",
                 amount: 500, // 1 item * (1500/3) = 500
                 code: "2PLUS1FREE",
-                is_tax_inclusive: undefined
+                is_tax_inclusive: false
               },
             ])
 
@@ -6390,7 +6390,7 @@ moduleIntegrationTestRunner({
                 item_id: "item_1",
                 amount: 500, // 1 item * (2500/5) = 500
                 code: "2PLUS1FREE",
-                is_tax_inclusive: undefined
+                is_tax_inclusive: false
               },
             ])
 
@@ -6420,7 +6420,7 @@ moduleIntegrationTestRunner({
                 item_id: "item_1",
                 amount: 1000, // 2 items * (3000/6) = 1000
                 code: "2PLUS1FREE",
-                is_tax_inclusive: undefined
+                is_tax_inclusive: false
               },
             ])
           })
@@ -6520,7 +6520,7 @@ moduleIntegrationTestRunner({
                 item_id: "item_1",
                 amount: 500, // 1 item * (1500/3) = 500
                 code: "FIRST2PLUS1FREE",
-                is_tax_inclusive: undefined
+                is_tax_inclusive: false
               },
             ])
 
@@ -6554,14 +6554,14 @@ moduleIntegrationTestRunner({
                 item_id: "item_1",
                 amount: 1000, // 2 item * (3000/6) = 1000
                 code: "FIRST2PLUS1FREE",
-                is_tax_inclusive: undefined
+                is_tax_inclusive: false
               },
               {
                 action: "addItemAdjustment",
                 item_id: "item_1",
                 amount: 500, // 1 item * (3000/6) = 500
                 code: "SECOND2PLUS1FREE",
-                is_tax_inclusive: undefined
+                is_tax_inclusive: false
               },
             ])
 
@@ -6595,14 +6595,14 @@ moduleIntegrationTestRunner({
                 item_id: "item_1",
                 amount: 1000, // 2 item * (3500/7) = 1000
                 code: "FIRST2PLUS1FREE",
-                is_tax_inclusive: undefined
+                is_tax_inclusive: false
               },
               {
                 action: "addItemAdjustment",
                 item_id: "item_1",
                 amount: 500, // 1 item * (3500/7) = 500
                 code: "SECOND2PLUS1FREE",
-                is_tax_inclusive: undefined
+                is_tax_inclusive: false
               },
             ])
 
@@ -6636,14 +6636,14 @@ moduleIntegrationTestRunner({
                 item_id: "item_1",
                 amount: 1000, // 2 items * (4500/9) = 1000
                 code: "FIRST2PLUS1FREE",
-                is_tax_inclusive: undefined
+                is_tax_inclusive: false
               },
               {
                 action: "addItemAdjustment",
                 item_id: "item_1",
                 amount: 500, // 1 item * (4500/9) = 500
                 code: "SECOND2PLUS1FREE",
-                is_tax_inclusive: undefined
+                is_tax_inclusive: false
               },
             ])
 
@@ -6676,14 +6676,14 @@ moduleIntegrationTestRunner({
                 item_id: "item_1",
                 amount: 1000, // 2 items * (4500/9) = 1000
                 code: "FIRST2PLUS1FREE",
-                is_tax_inclusive: undefined
+                is_tax_inclusive: false
               },
               {
                 action: "addItemAdjustment",
                 item_id: "item_1",
                 amount: 500, // 1 item * (4500/9) = 500
                 code: "SECOND2PLUS1FREE",
-                is_tax_inclusive: undefined
+                is_tax_inclusive: false
               },
             ])
           })
@@ -6778,14 +6778,14 @@ moduleIntegrationTestRunner({
                 item_id: "item_cotton_tshirt",
                 amount: 2500,
                 code: "BUY50GET1000",
-                is_tax_inclusive: undefined
+                is_tax_inclusive: false
               },
               {
                 action: "addItemAdjustment",
                 amount: 10,
                 code: "BUY10GET200",
                 item_id: "item_cotton_tshirt",
-                is_tax_inclusive: undefined
+                is_tax_inclusive: false
               },
             ])
           })
@@ -6892,21 +6892,21 @@ moduleIntegrationTestRunner({
                   item_id: "item_cotton_tshirt2",
                   amount: 1225,
                   code: "BUY50GET1000",
-                  is_tax_inclusive: undefined
+                  is_tax_inclusive: false
                 },
                 {
                   action: "addItemAdjustment",
                   item_id: "item_cotton_tshirt",
                   amount: 1275,
                   code: "BUY50GET1000",
-                  is_tax_inclusive: undefined
+                  is_tax_inclusive: false
                 },
                 {
                   action: "addItemAdjustment",
                   item_id: "item_cotton_tshirt2",
                   amount: 10,
                   code: "BUY10GET200",
-                  is_tax_inclusive: undefined
+                  is_tax_inclusive: false
                 },
               ])
             )
@@ -7017,14 +7017,14 @@ moduleIntegrationTestRunner({
                   item_id: getProductId,
                   amount: 1250,
                   code: buyXGetXPromotion.code!,
-                  is_tax_inclusive: undefined
+                  is_tax_inclusive: false
                 },
                 {
                   action: "addItemAdjustment",
                   item_id: "item_cotton_tshirt2",
                   amount: 250,
                   code: "TEST_BUYGET_PROMOTION_2",
-                  is_tax_inclusive: undefined
+                  is_tax_inclusive: false
                 },
               ])
             )
@@ -7133,14 +7133,14 @@ moduleIntegrationTestRunner({
                   item_id: getProductId,
                   amount: 500,
                   code: buyXGetXPromotion.code!,
-                  is_tax_inclusive: undefined
+                  is_tax_inclusive: false
                 },
                 {
                   action: "addItemAdjustment",
                   item_id: getProductId,
                   amount: 250,
                   code: "TEST_BUYGET_PROMOTION_2",
-                  is_tax_inclusive: undefined
+                  is_tax_inclusive: false
                 },
               ])
             )
@@ -7215,7 +7215,7 @@ moduleIntegrationTestRunner({
                   item_id: buyAndGetProductId,
                   amount: 750,
                   code: buyXGetXPromotion.code!,
-                  is_tax_inclusive: undefined
+                  is_tax_inclusive: false
                 },
               ])
             )
@@ -7288,7 +7288,7 @@ moduleIntegrationTestRunner({
                   item_id: buyAndGetProductId,
                   amount: 500,
                   code: buyXGetXPromotion.code!,
-                  is_tax_inclusive: undefined
+                  is_tax_inclusive: false
                 },
               ])
             )
@@ -7344,14 +7344,14 @@ moduleIntegrationTestRunner({
                 item_id: "item_cotton_tshirt1",
                 amount: 500,
                 code: "PROMOTION_TEST",
-                is_tax_inclusive: undefined
+                is_tax_inclusive: false
               },
               {
                 action: "addItemAdjustment",
                 item_id: "item_cotton_tshirt",
                 amount: 500,
                 code: "PROMOTION_TEST",
-                is_tax_inclusive: undefined
+                is_tax_inclusive: false
               },
             ])
           })
