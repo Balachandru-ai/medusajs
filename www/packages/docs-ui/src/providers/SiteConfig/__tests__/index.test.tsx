@@ -16,9 +16,24 @@ vi.mock("../..", () => ({
   GITHUB_ISSUES_LINK: "https://github.com/test/issues",
 }))
 
+// mock BrowserProvider
+vi.mock("@/providers/BrowserProvider", () => ({
+  useIsBrowser: () => ({
+    isBrowser: true,
+  }),
+}))
+
 const TestComponent = () => {
-  const { config, setConfig, frontmatter, setFrontmatter, toc, setToc } =
-    useSiteConfig()
+  const {
+    config,
+    setConfig,
+    frontmatter,
+    setFrontmatter,
+    toc,
+    setToc,
+    isInProduct,
+    productView,
+  } = useSiteConfig()
   return (
     <div>
       <div data-testid="base-url">{config.baseUrl}</div>
@@ -27,6 +42,8 @@ const TestComponent = () => {
       <div data-testid="version-number">{config.version?.number}</div>
       <div data-testid="release-url">{config.version?.releaseUrl}</div>
       <div data-testid="toc-length">{toc?.length || 0}</div>
+      <div data-testid="is-in-product">{String(isInProduct)}</div>
+      <div data-testid="product-view">{productView || "none"}</div>
       <button
         data-testid="update-config"
         onClick={() =>
@@ -109,6 +126,7 @@ describe("SiteConfigProvider", () => {
         version: {
           number: "1.0.0",
           releaseUrl: "https://github.com/test/releases/tag/1.0.0",
+          releaseDate: "2024-01-01",
         },
       }
 
@@ -196,6 +214,87 @@ describe("SiteConfigProvider", () => {
       }).toThrow("useSiteConfig must be used inside a SiteConfigProvider")
 
       consoleSpy.mockRestore()
+    })
+  })
+
+  describe("product view properties", () => {
+    test("initializes with isInProduct false when no product view", () => {
+      const { getByTestId } = render(
+        <SiteConfigProvider>
+          <TestComponent />
+        </SiteConfigProvider>
+      )
+
+      expect(getByTestId("is-in-product")).toHaveTextContent("false")
+      expect(getByTestId("product-view")).toHaveTextContent("none")
+    })
+
+    test("detects bloom product view from URL search params", () => {
+      // Mock location.search
+      delete (global as any).location
+      ;(global as any).location = {
+        search: "?view=bloom",
+      }
+
+      const { getByTestId } = render(
+        <SiteConfigProvider>
+          <TestComponent />
+        </SiteConfigProvider>
+      )
+
+      expect(getByTestId("is-in-product")).toHaveTextContent("true")
+      expect(getByTestId("product-view")).toHaveTextContent("bloom")
+    })
+
+    test("ignores invalid product view from URL", () => {
+      // Mock location.search with invalid view
+      delete (global as any).location
+      ;(global as any).location = {
+        search: "?view=invalid",
+      }
+
+      const { getByTestId } = render(
+        <SiteConfigProvider>
+          <TestComponent />
+        </SiteConfigProvider>
+      )
+
+      expect(getByTestId("is-in-product")).toHaveTextContent("false")
+      expect(getByTestId("product-view")).toHaveTextContent("none")
+    })
+
+    test("handles missing view parameter", () => {
+      // Mock location.search without view parameter
+      delete (global as any).location
+      ;(global as any).location = {
+        search: "?other=param",
+      }
+
+      const { getByTestId } = render(
+        <SiteConfigProvider>
+          <TestComponent />
+        </SiteConfigProvider>
+      )
+
+      expect(getByTestId("is-in-product")).toHaveTextContent("false")
+      expect(getByTestId("product-view")).toHaveTextContent("none")
+    })
+
+    test("handles empty search params", () => {
+      // Mock location.search as empty
+      delete (global as any).location
+      ;(global as any).location = {
+        search: "",
+      }
+
+      const { getByTestId } = render(
+        <SiteConfigProvider>
+          <TestComponent />
+        </SiteConfigProvider>
+      )
+
+      expect(getByTestId("is-in-product")).toHaveTextContent("false")
+      expect(getByTestId("product-view")).toHaveTextContent("none")
     })
   })
 })
