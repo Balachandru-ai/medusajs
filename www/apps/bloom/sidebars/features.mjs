@@ -54,6 +54,11 @@ export const featuresSidebar = [
             title: "Demo Data",
             path: "/features/demo-data",
           },
+          {
+            type: "link",
+            title: "Team Collaboration",
+            path: "/features/team-collaboration",
+          },
         ],
       },
     ],
