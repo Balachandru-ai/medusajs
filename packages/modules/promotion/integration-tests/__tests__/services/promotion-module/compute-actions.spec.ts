@@ -1071,7 +1071,7 @@ moduleIntegrationTestRunner({
 
             expect(JSON.parse(JSON.stringify(result))).toEqual([
               {
-                action: "a0ddItemAdjustment",
+                action: "addItemAdjustment",
                 item_id: "item_cotton_tshirt",
                 amount: 50,
                 code: "PROMOTION_TEST_2",
