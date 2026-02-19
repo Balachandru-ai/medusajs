@@ -99,6 +99,10 @@ export const refundCapturedPaymentsWorkflow = createWorkflow(
       return refundPaymentsWorkflow.runAsStep({ input: refundPaymentsData })
     })
 
-    return new WorkflowResponse(refundedPayments ?? [])
+    const response = transform(
+      { refundedPayments },
+      ({ refundedPayments }) => refundedPayments ?? []
+    )
+    return new WorkflowResponse(response as PaymentDTO[])
   }
 )
