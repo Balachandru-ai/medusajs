@@ -35,11 +35,13 @@ export const generatedEditDates = {
   "app/prompting/service-integrations-prompting/guides/stripe/page.mdx": "2026-02-13T15:06:52.578Z",
   "app/prompting/fix-errors-and-issues/page.mdx": "2026-02-13T14:55:01.147Z",
   "app/features/code-editor/page.mdx": "2026-02-13T08:04:00.240Z",
-  "app/developers/code-editor/page.mdx": "2026-02-13T14:54:19.242Z",
-  "app/developers/export-to-github/page.mdx": "2026-02-13T14:54:19.243Z",
+  "app/developers/code-editor/page.mdx": "2026-02-18T10:26:01.462Z",
+  "app/developers/export-to-github/page.mdx": "2026-02-18T10:36:28.722Z",
   "app/developers/environment-variables/page.mdx": "2026-02-13T14:54:19.243Z",
   "app/developers/email-templates/page.mdx": "2026-02-13T14:54:19.243Z",
-  "app/features/emails/page.mdx": "2026-02-13T14:54:19.238Z",
-  "app/features/view-switcher/page.mdx": "2026-02-13T14:54:19.238Z",
-  "app/organization-management/team/page.mdx": "2026-02-16T08:13:37.916Z"
+  "app/features/emails/page.mdx": "2026-02-18T10:37:39.909Z",
+  "app/features/view-switcher/page.mdx": "2026-02-18T10:39:44.819Z",
+  "app/organization-management/team/page.mdx": "2026-02-18T10:24:38.994Z",
+  "app/features/team-collaboration/page.mdx": "2026-02-17T14:30:51.065Z",
+  "app/preview-tabs/page.mdx": "2026-02-18T10:40:42.522Z"
 }

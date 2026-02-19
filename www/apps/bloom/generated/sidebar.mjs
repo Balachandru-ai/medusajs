@@ -57,6 +57,14 @@ export const generatedSidebars = [
             "title": "FAQ",
             "path": "/faq",
             "children": []
+          },
+          {
+            "loaded": true,
+            "isPathHref": true,
+            "type": "link",
+            "title": "Preview Tabs",
+            "path": "/preview-tabs",
+            "children": []
           }
         ]
       },
@@ -217,6 +225,14 @@ export const generatedSidebars = [
             "title": "Demo Data",
             "path": "/features/demo-data",
             "children": []
+          },
+          {
+            "loaded": true,
+            "isPathHref": true,
+            "type": "link",
+            "title": "Team Collaboration",
+            "path": "/features/team-collaboration",
+            "children": []
           }
         ]
       }
@@ -322,7 +338,7 @@ export const generatedSidebars = [
         "loaded": true,
         "isPathHref": true,
         "type": "link",
-        "title": "Export to GitHub",
+        "title": "Sync with GitHub",
         "path": "/developers/export-to-github",
         "children": []
       },

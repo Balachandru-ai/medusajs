@@ -344,6 +344,84 @@ medusaIntegrationTestRunner({
         ])
       })
 
+      describe("filter by total using operators", () => {
+        it.each([
+          {
+            operator: "$eq",
+            matchType: "matching",
+            getValue: (orderTotal: number) => orderTotal,
+            expectedLength: 1,
+            shouldMatchOrder: true,
+          },
+          {
+            operator: "$eq",
+            matchType: "non-matching",
+            getValue: (orderTotal: number) => orderTotal + 1000,
+            expectedLength: 0,
+            shouldMatchOrder: false,
+          },
+          {
+            operator: "$gte",
+            matchType: "matching",
+            getValue: (orderTotal: number) => orderTotal - 100,
+            expectedLength: 1,
+            shouldMatchOrder: true,
+          },
+          {
+            operator: "$gte",
+            matchType: "non-matching",
+            getValue: (orderTotal: number) => orderTotal + 1000,
+            expectedLength: 0,
+            shouldMatchOrder: false,
+          },
+          {
+            operator: "$lte",
+            matchType: "matching",
+            getValue: (orderTotal: number) => orderTotal + 100,
+            expectedLength: 1,
+            shouldMatchOrder: true,
+          },
+          {
+            operator: "$lte",
+            matchType: "non-matching",
+            getValue: (_orderTotal: number) => 0,
+            expectedLength: 0,
+            shouldMatchOrder: false,
+          },
+        ])(
+          "should filter orders by total using $operator operator - $matchType value",
+          async ({ operator, getValue, expectedLength, shouldMatchOrder }) => {
+            let filterValue: number
+
+            const orderResponse = await api.get(
+              `/admin/orders/${order.id}?fields=+summary`,
+              adminHeaders
+            )
+            const orderTotal =
+              orderResponse.data.order.summary.current_order_total
+            filterValue = getValue(orderTotal)
+
+            const queryParams = `total[${operator}]=${filterValue}`
+
+            const response = await api.get(
+              `/admin/orders?${queryParams}`,
+              adminHeaders
+            )
+
+            expect(response.data.orders).toHaveLength(expectedLength)
+            if (shouldMatchOrder) {
+              expect(response.data.orders).toEqual([
+                expect.objectContaining({
+                  id: order.id,
+                }),
+              ])
+            } else {
+              expect(response.data.orders).toEqual([])
+            }
+          }
+        )
+      })
+
       it("should return shipping_address when pagination included", async () => {
         const response = await api.get(
           `/admin/orders?fields=*shipping_address&offset=0`,

@@ -1,4 +1,4 @@
-import { InlineIcon, InProductAction } from "docs-ui"
+import { InlineIcon, InProductAction, getOsShortcut, Kbd } from "docs-ui"
 import { Collapse } from "@medusajs/icons"
 
 export const metadata = {
@@ -105,7 +105,10 @@ To ensure your project works as expected with Bloom, avoid making changes to the
 
 ## Access Code Editor
 
-To access the <InProductAction product={"bloom"} type={"MEDUSA_AI_OPEN_PANE"} data={{ pane: "developer" }}>Code Editor</InProductAction> in a Bloom project, click the **Code** tab at the top of the preview.
+To access the <InProductAction product={"bloom"} type={"MEDUSA_AI_OPEN_PANE"} data={{ pane: "developer" }}>Code Editor</InProductAction> in a Bloom project:
+
+1. Press <Kbd>{getOsShortcut()}</Kbd> + <Kbd>k</Kbd> to open the preview tab switcher.
+2. Select the "Code" tab from the list.
 
 This will show a file tree on the left and a code editor on the right. You can browse your project files, open them in the editor, and make changes directly in Bloom.
 
