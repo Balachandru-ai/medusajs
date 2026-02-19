@@ -1135,7 +1135,7 @@ medusaIntegrationTestRunner({
         )
       })
 
-      it.only("should only create credit lines for successfully refunded payments when some refunds fail", async () => {
+      it("should only create credit lines for successfully refunded payments when some refunds fail", async () => {
         const paymentModule = container.resolve(Modules.PAYMENT)
         const payment = order.payment_collections[0].payments[0]
         const paymentCollectionId = order.payment_collections[0].id
