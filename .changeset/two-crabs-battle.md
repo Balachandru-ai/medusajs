@@ -2,4 +2,4 @@
 "@medusajs/dashboard": patch
 ---
 
-Add i18n support for promotion template titles and descriptions
+chore(dashboard): Add i18n support for promotion template titles and descriptions
