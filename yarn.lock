@@ -18731,6 +18731,7 @@ __metadata:
     "@medusajs/fulfillment": "workspace:^"
     "@medusajs/fulfillment-manual": "workspace:^"
     "@medusajs/inventory": "workspace:^"
+    "@medusajs/loyalty-plugin": "workspace:^"
     "@medusajs/medusa": "workspace:*"
     "@medusajs/modules-sdk": "workspace:^"
     "@medusajs/pricing": "workspace:^"
