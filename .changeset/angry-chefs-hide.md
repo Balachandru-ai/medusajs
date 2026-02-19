@@ -5,4 +5,4 @@
 "@medusajs/dashboard": patch
 ---
 
-feat(admin): add configurable maximum file upload size
+feat(dashboard, admin-bundler, utils, types): add configurable maximum file upload size
