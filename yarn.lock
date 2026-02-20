@@ -3769,7 +3769,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@medusajs/loyalty-plugin@2.13.1, @medusajs/loyalty-plugin@workspace:^, @medusajs/loyalty-plugin@workspace:packages/plugins/loyalty":
+"@medusajs/loyalty-plugin@workspace:^, @medusajs/loyalty-plugin@workspace:packages/plugins/loyalty":
   version: 0.0.0-use.local
   resolution: "@medusajs/loyalty-plugin@workspace:packages/plugins/loyalty"
   dependencies:
@@ -3875,7 +3875,6 @@ __metadata:
     "@medusajs/locking": 2.13.1
     "@medusajs/locking-postgres": 2.13.1
     "@medusajs/locking-redis": 2.13.1
-    "@medusajs/loyalty-plugin": 2.13.1
     "@medusajs/notification": 2.13.1
     "@medusajs/notification-local": 2.13.1
     "@medusajs/notification-sendgrid": 2.13.1
