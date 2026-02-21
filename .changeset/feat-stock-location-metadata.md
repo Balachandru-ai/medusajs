@@ -3,4 +3,4 @@
 "@medusajs/types": minor
 ---
 
-feat(stock-locations): add metadata field to AdminUpsertStockLocationAddress and validators
+feat(medusa,types): add metadata field to AdminUpsertStockLocationAddress and validators
