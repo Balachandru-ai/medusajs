@@ -21,7 +21,7 @@ type DefaultPolicyResources = Record<string, string>
 /**
  * Global registry for all unique resources.
  */
-export const PolicyResource: DefaultPolicyResources & Record<string, string> =
+const PolicyResource: DefaultPolicyResources & Record<string, string> =
   global.PolicyResource ?? {}
 
 global.PolicyResource ??= PolicyResource
@@ -31,7 +31,7 @@ global.PolicyResource ??= PolicyResource
  */
 const defaultOperations = ["read", "create", "update", "delete", "*"]
 
-export const PolicyOperation: Record<string, string> & {
+const PolicyOperation: Record<string, string> & {
   readonly read: "read"
   readonly create: "create"
   readonly update: "update"
@@ -40,14 +40,14 @@ export const PolicyOperation: Record<string, string> & {
   readonly ALL: "*"
 } = global.PolicyOperation ?? { ALL: "*" }
 
-global.PolicyOperation ??= PolicyOperation
-
 for (const operation of defaultOperations) {
   const operationKey = operation === "*" ? "*" : toSnakeCase(operation)
   PolicyOperation[operationKey] = operation
 }
 
-export const Policy: Record<
+global.PolicyOperation ??= PolicyOperation
+
+const Policy: Record<
   string,
   { resource: string; operation: string; description?: string }
 > = global.Policy ?? {}
@@ -106,8 +106,10 @@ export function definePolicies(
   }
 
   for (const policy of policiesArray) {
-    const resourceKey = toSnakeCase(policy.resource)
-    const operationKey = toSnakeCase(policy.operation)
+    const resourceKey =
+      policy.resource === "*" ? "*" : toSnakeCase(policy.resource)
+    const operationKey =
+      policy.operation === "*" ? "*" : toSnakeCase(policy.operation)
 
     policy.resource = resourceKey
     policy.operation = operationKey
@@ -127,3 +129,5 @@ export function definePolicies(
 
   return output
 }
+
+export { Policy, PolicyOperation, PolicyResource }
