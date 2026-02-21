@@ -39,6 +39,11 @@ export const gettingStartedSidebar = [
             title: "FAQ",
             path: "/faq",
           },
+          {
+            type: "link",
+            title: "Preview Tabs",
+            path: "/preview-tabs",
+          },
         ],
       },
       {

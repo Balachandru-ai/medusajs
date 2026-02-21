@@ -1,4 +1,4 @@
-import { InlineIcon, InProductAction } from "docs-ui"
+import { InlineIcon, InProductAction, Kbd, getOsShortcut } from "docs-ui"
 import { ComputerDesktop, Phone } from "@medusajs/icons"
 
 export const metadata = {
@@ -46,7 +46,10 @@ Bloom will set up the email template to match your store's branding and include 
 
 ## Preview Email Templates
 
-To preview the email templates that Bloom creates for your store, click the <InProductAction product={"bloom"} type={"MEDUSA_AI_OPEN_PANE"} data={{ pane: "emails" }}>Emails</InProductAction> tab at the top of the project preview.
+To open the <InProductAction product={"bloom"} type={"MEDUSA_AI_OPEN_PANE"} data={{ pane: "emails" }}>Emails</InProductAction> tab and preview your email templates:
+
+1. Press <Kbd>{getOsShortcut()}</Kbd> + <Kbd>k</Kbd> to open the preview tab switcher.
+2. Select the "Emails" tab from the list.
 
 This will open the email preview where you can switch between email templates, see how they look on desktop and mobile, and make changes to the design and content.
 

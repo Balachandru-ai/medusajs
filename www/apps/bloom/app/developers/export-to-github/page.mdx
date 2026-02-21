@@ -1,7 +1,7 @@
-import { CardList, Prerequisites, InProductAction } from "docs-ui"
+import { CardList, Prerequisites, InProductAction, Kbd, getOsShortcut } from "docs-ui"
 
 export const metadata = {
-  title: `Export to GitHub`,
+  title: `Sync with GitHub`,
 }
 
 # {metadata.title}
@@ -25,7 +25,12 @@ After exporting, you can continue using Bloom to build features while developing
 
 ## How to Export Your Project to GitHub
 
-To export your Bloom project to GitHub, click the <InProductAction product={"bloom"} type={"MEDUSA_AI_OPEN_PANE"} data={{ pane: "github" }}>**GitHub**</InProductAction> tab at the top of the preview. This will take you to the GitHub integration page where you can connect your GitHub account and transfer your repository.
+To export your Bloom project to GitHub, you need to open the <InProductAction product={"bloom"} type={"MEDUSA_AI_OPEN_PANE"} data={{ pane: "github" }}>**GitHub tab**</InProductAction>:
+
+1. Press <Kbd>{getOsShortcut()}</Kbd> + <Kbd>k</Kbd> to open the preview tab switcher.
+2. Select the "Sync with GitHub" tab from the list.
+
+This will open the Sync with GitHub page where you can connect your GitHub account and transfer your repository.
 
 {/* TODO: Screenshot of GitHub integration page */}
 
