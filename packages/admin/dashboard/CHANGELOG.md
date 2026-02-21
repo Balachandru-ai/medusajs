@@ -1,5 +1,89 @@
 # @medusajs/dashboard
 
+## 2.13.1
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @medusajs/admin-shared@2.13.1
+  - @medusajs/js-sdk@2.13.1
+  - @medusajs/icons@2.13.1
+  - @medusajs/ui@4.1.1
+
+## 2.13.0
+
+### Minor Changes
+
+- [`a31e72c31c5235240cead2d04e39e5927688eec7`](https://github.com/medusajs/medusa/commit/a31e72c31c5235240cead2d04e39e5927688eec7) Thanks [@olivermrbl](https://github.com/olivermrbl)! - chore: Minor bump
+
+### Patch Changes
+
+- Updated dependencies [[`a31e72c31c5235240cead2d04e39e5927688eec7`](https://github.com/medusajs/medusa/commit/a31e72c31c5235240cead2d04e39e5927688eec7)]:
+  - @medusajs/admin-shared@2.13.0
+  - @medusajs/js-sdk@2.13.0
+  - @medusajs/icons@2.13.0
+  - @medusajs/ui@4.1.0
+
+## 2.12.6
+
+### Patch Changes
+
+- [#14541](https://github.com/medusajs/medusa/pull/14541) [`a9b5797e2de093e26286808876262b724e26671a`](https://github.com/medusajs/medusa/commit/a9b5797e2de093e26286808876262b724e26671a) Thanks [@NicolasGorga](https://github.com/NicolasGorga)! - feat(dashboard,translation,js-sdk,medusa,types): Translation settings management UI
+
+- [#14601](https://github.com/medusajs/medusa/pull/14601) [`c6067ab3d79571097134b69329b7e605d7108346`](https://github.com/medusajs/medusa/commit/c6067ab3d79571097134b69329b7e605d7108346) Thanks [@NicolasGorga](https://github.com/NicolasGorga)! - fix(dashboard): translations settings ui styles alignment
+
+- [#14488](https://github.com/medusajs/medusa/pull/14488) [`19f274523cda2cf13fc9194d72b9d8a71aba264c`](https://github.com/medusajs/medusa/commit/19f274523cda2cf13fc9194d72b9d8a71aba264c) Thanks [@peterlgh7](https://github.com/peterlgh7)! - add cloud auto-login
+
+- [#14549](https://github.com/medusajs/medusa/pull/14549) [`c5b919850cf4a133686606bbff66b2bc6d6d3ae0`](https://github.com/medusajs/medusa/commit/c5b919850cf4a133686606bbff66b2bc6d6d3ae0) Thanks [@NicolasGorga](https://github.com/NicolasGorga)! - fix(dashboard): filter feed channel notifications in admin dashboard
+
+- [#14560](https://github.com/medusajs/medusa/pull/14560) [`31dc33103620a808a6ded8ce1d5532c27d9daa1e`](https://github.com/medusajs/medusa/commit/31dc33103620a808a6ded8ce1d5532c27d9daa1e) Thanks [@NicolasGorga](https://github.com/NicolasGorga)! - chore(dashboard): polish translations for refund reasons domain
+
+- [#14586](https://github.com/medusajs/medusa/pull/14586) [`3751b10337c056c3a61a4726046ebf4c31a3530b`](https://github.com/medusajs/medusa/commit/3751b10337c056c3a61a4726046ebf4c31a3530b) Thanks [@fPolic](https://github.com/fPolic)! - chore: bump RR minor version
+
+- Updated dependencies [[`a9b5797e2de093e26286808876262b724e26671a`](https://github.com/medusajs/medusa/commit/a9b5797e2de093e26286808876262b724e26671a)]:
+  - @medusajs/js-sdk@2.12.6
+  - @medusajs/admin-shared@2.12.6
+  - @medusajs/icons@2.12.6
+  - @medusajs/ui@4.0.34
+
+## 2.12.5
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @medusajs/js-sdk@2.12.5
+  - @medusajs/admin-shared@2.12.5
+  - @medusajs/icons@2.12.5
+  - @medusajs/ui@4.0.33
+
+## 2.12.4
+
+### Patch Changes
+
+- [#14369](https://github.com/medusajs/medusa/pull/14369) [`d06729d0d14d7f657a2cdeb958dd7ac6d3c6f199`](https://github.com/medusajs/medusa/commit/d06729d0d14d7f657a2cdeb958dd7ac6d3c6f199) Thanks [@fPolic](https://github.com/fPolic)! - fix(dashboard): form reset for across allocation
+
+- [#14394](https://github.com/medusajs/medusa/pull/14394) [`caa561badf960c076b4f564dadbbbb9e36d00a18`](https://github.com/medusajs/medusa/commit/caa561badf960c076b4f564dadbbbb9e36d00a18) Thanks [@NicolasGorga](https://github.com/NicolasGorga)! - feat(dashboard): Add first and last name inputs to update order shipping and billing address forms
+
+- [#14355](https://github.com/medusajs/medusa/pull/14355) [`b21a599d118f126e64d2993d46ba60f4a4e94545`](https://github.com/medusajs/medusa/commit/b21a599d118f126e64d2993d46ba60f4a4e94545) Thanks [@adrien2p](https://github.com/adrien2p)! - feat(): Translation settings + user configuration + js/admin
+
+- [#14453](https://github.com/medusajs/medusa/pull/14453) [`d9bc2767c1dd099844c54c3ef49d64e4135c117d`](https://github.com/medusajs/medusa/commit/d9bc2767c1dd099844c54c3ef49d64e4135c117d) Thanks [@adrien2p](https://github.com/adrien2p)! - feat(translation): Update wording in translation list for translation…
+
+- [#14330](https://github.com/medusajs/medusa/pull/14330) [`9f8da1e2e07ae1424e38b8bc61be465558e6980b`](https://github.com/medusajs/medusa/commit/9f8da1e2e07ae1424e38b8bc61be465558e6980b) Thanks [@NicolasGorga](https://github.com/NicolasGorga)! - fix(dashboard): Remove unused translation property
+
+- [#14464](https://github.com/medusajs/medusa/pull/14464) [`d54589751c7f929c173c500344ce5689b8a5dc15`](https://github.com/medusajs/medusa/commit/d54589751c7f929c173c500344ce5689b8a5dc15) Thanks [@adrien2p](https://github.com/adrien2p)! - feat(translation): Improve translation alert in empty languages state
+
+- [#14451](https://github.com/medusajs/medusa/pull/14451) [`0490a1c67fb6abd80b49a926c41c1f22eb759493`](https://github.com/medusajs/medusa/commit/0490a1c67fb6abd80b49a926c41c1f22eb759493) Thanks [@adrien2p](https://github.com/adrien2p)! - feat(translation): Order translastable entities ordered alphabetically
+
+- [#14413](https://github.com/medusajs/medusa/pull/14413) [`4ac7b72d10e1046100d6ad92c686e846e9635e77`](https://github.com/medusajs/medusa/commit/4ac7b72d10e1046100d6ad92c686e846e9635e77) Thanks [@shahednasser](https://github.com/shahednasser)! - fix(dashboard): fix customer details page crashing when their order is refunded
+
+- [#14400](https://github.com/medusajs/medusa/pull/14400) [`242f1d7d7f96ec27f3d2c9aafa8324f2ee9b28fd`](https://github.com/medusajs/medusa/commit/242f1d7d7f96ec27f3d2c9aafa8324f2ee9b28fd) Thanks [@NicolasGorga](https://github.com/NicolasGorga)! - feat(dashboard,draft-order): Remove hardcoded strings and replace with translations in draft orders list page
+
+- Updated dependencies [[`ab7b04dbc9acfbad11bfaf66276a78ce57d34357`](https://github.com/medusajs/medusa/commit/ab7b04dbc9acfbad11bfaf66276a78ce57d34357), [`b21a599d118f126e64d2993d46ba60f4a4e94545`](https://github.com/medusajs/medusa/commit/b21a599d118f126e64d2993d46ba60f4a4e94545), [`d54589751c7f929c173c500344ce5689b8a5dc15`](https://github.com/medusajs/medusa/commit/d54589751c7f929c173c500344ce5689b8a5dc15)]:
+  - @medusajs/js-sdk@2.12.4
+  - @medusajs/ui@4.0.32
+  - @medusajs/admin-shared@2.12.4
+  - @medusajs/icons@2.12.4
+
 ## 2.12.3
 
 ### Patch Changes

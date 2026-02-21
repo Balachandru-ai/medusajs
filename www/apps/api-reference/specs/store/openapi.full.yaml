@@ -520,9 +520,17 @@ paths:
           application/json:
             schema:
               type: object
-              title: identifier
-              description: The customer's identifier for the selected auth provider. For example, for the `emailpass` auth provider, the value is the customer's email.
-              example: customer@gmail.com
+              description: The input data necessary to generate a reset password token.
+              required:
+                - identifier
+              properties:
+                identifier:
+                  type: string
+                  description: The customer's identifier for the selected auth provider. For example, for the `emailpass` auth provider, the value is the customer's email.
+                  example: customer@gmail.com
+                metadata:
+                  type: object
+                  description: Optional metadata to include with the reset password token generation request.
       x-codeSamples:
         - lang: JavaScript
           label: JS SDK
@@ -585,6 +593,7 @@ paths:
               entity_id, // The identifier of the user or customer. For example, an email address.
               actor_type, // The type of actor. For example, "customer", "user", or custom.
               token, // The generated token.
+              metadata, // Optional custom metadata passed from the request.
             }
             ```
           description: |-
@@ -858,7 +867,7 @@ paths:
             type: string
             externalDocs:
               url: https://docs.medusajs.com/api/store#publishable-api-key
-        - name: Content-Language
+        - name: x-medusa-locale
           in: header
           description: The locale in BCP 47 format to retrieve localized content.
           required: false
@@ -987,7 +996,7 @@ paths:
             type: string
             externalDocs:
               url: https://docs.medusajs.com/api/store#publishable-api-key
-        - name: Content-Language
+        - name: x-medusa-locale
           in: header
           description: The locale in BCP 47 format to retrieve localized content.
           required: false
@@ -1085,7 +1094,7 @@ paths:
             type: string
             externalDocs:
               url: https://docs.medusajs.com/api/store#publishable-api-key
-        - name: Content-Language
+        - name: x-medusa-locale
           in: header
           description: The locale in BCP 47 format to retrieve localized content.
           required: false
@@ -1230,7 +1239,7 @@ paths:
             type: string
             externalDocs:
               url: https://docs.medusajs.com/api/store#publishable-api-key
-        - name: Content-Language
+        - name: x-medusa-locale
           in: header
           description: The locale in BCP 47 format to retrieve localized content.
           required: false
@@ -1400,7 +1409,7 @@ paths:
             type: string
             externalDocs:
               url: https://docs.medusajs.com/api/store#publishable-api-key
-        - name: Content-Language
+        - name: x-medusa-locale
           in: header
           description: The locale in BCP 47 format to retrieve localized content.
           required: false
@@ -1532,19 +1541,26 @@ paths:
             type: string
             externalDocs:
               url: https://docs.medusajs.com/api/store#publishable-api-key
-        - name: fields
-          in: query
-          description: |-
-            Comma-separated fields that should be included in the returned data.
-            if a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields.
-            without prefix it will replace the entire default fields.
+        - name: x-medusa-locale
+          in: header
+          description: The locale in BCP 47 format to retrieve localized content.
           required: false
           schema:
             type: string
-            title: fields
-            description: Comma-separated fields that should be included in the returned data. If a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. Without prefix it will replace the entire default fields.
+            example: en-US
             externalDocs:
-              url: '#select-fields-and-relations'
+              url: https://docs.medusajs.com/resources/commerce-modules/translation/storefront
+              description: Learn more in the Serve Translations in Storefront guide.
+        - name: locale
+          in: query
+          description: The locale in BCP 47 format to retrieve localized content.
+          required: false
+          schema:
+            type: string
+            example: en-US
+            externalDocs:
+              url: https://docs.medusajs.com/resources/commerce-modules/translation/storefront
+              description: Learn more in the Serve Translations in Storefront guide.
       requestBody:
         content:
           application/json:
@@ -1607,19 +1623,26 @@ paths:
             type: string
             externalDocs:
               url: https://docs.medusajs.com/api/store#publishable-api-key
-        - name: fields
-          in: query
-          description: |-
-            Comma-separated fields that should be included in the returned data.
-            if a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields.
-            without prefix it will replace the entire default fields.
+        - name: x-medusa-locale
+          in: header
+          description: The locale in BCP 47 format to retrieve localized content.
           required: false
           schema:
             type: string
-            title: fields
-            description: Comma-separated fields that should be included in the returned data. If a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. Without prefix it will replace the entire default fields.
+            example: en-US
             externalDocs:
-              url: '#select-fields-and-relations'
+              url: https://docs.medusajs.com/resources/commerce-modules/translation/storefront
+              description: Learn more in the Serve Translations in Storefront guide.
+        - name: locale
+          in: query
+          description: The locale in BCP 47 format to retrieve localized content.
+          required: false
+          schema:
+            type: string
+            example: en-US
+            externalDocs:
+              url: https://docs.medusajs.com/resources/commerce-modules/translation/storefront
+              description: Learn more in the Serve Translations in Storefront guide.
       requestBody:
         content:
           application/json:
@@ -1685,7 +1708,7 @@ paths:
             type: string
             externalDocs:
               url: https://docs.medusajs.com/api/store#publishable-api-key
-        - name: Content-Language
+        - name: x-medusa-locale
           in: header
           description: The locale in BCP 47 format to retrieve localized content.
           required: false
@@ -1843,7 +1866,7 @@ paths:
             type: string
             externalDocs:
               url: https://docs.medusajs.com/api/store#publishable-api-key
-        - name: Content-Language
+        - name: x-medusa-locale
           in: header
           description: The locale in BCP 47 format to retrieve localized content.
           required: false
@@ -1997,7 +2020,7 @@ paths:
             type: string
             externalDocs:
               url: https://docs.medusajs.com/api/store#publishable-api-key
-        - name: Content-Language
+        - name: x-medusa-locale
           in: header
           description: The locale in BCP 47 format to retrieve localized content.
           required: false
@@ -2106,7 +2129,16 @@ paths:
         '500':
           $ref: '#/components/responses/500_error'
       x-workflow: deleteLineItemsWorkflow
-      x-events: []
+      x-events:
+        - name: cart.updated
+          payload: |-
+            ```ts
+            {
+              id, // The ID of the cart
+            }
+            ```
+          description: Emitted when a cart's details are updated.
+          deprecated: false
   /store/carts/{id}/promotions:
     post:
       operationId: PostCartsIdPromotions
@@ -2132,7 +2164,7 @@ paths:
             type: string
             externalDocs:
               url: https://docs.medusajs.com/api/store#publishable-api-key
-        - name: Content-Language
+        - name: x-medusa-locale
           in: header
           description: The locale in BCP 47 format to retrieve localized content.
           required: false
@@ -2225,7 +2257,7 @@ paths:
             type: string
             externalDocs:
               url: https://docs.medusajs.com/api/store#publishable-api-key
-        - name: Content-Language
+        - name: x-medusa-locale
           in: header
           description: The locale in BCP 47 format to retrieve localized content.
           required: false
@@ -2324,7 +2356,7 @@ paths:
             type: string
             externalDocs:
               url: https://docs.medusajs.com/api/store#publishable-api-key
-        - name: Content-Language
+        - name: x-medusa-locale
           in: header
           description: The locale in BCP 47 format to retrieve localized content.
           required: false
@@ -2472,19 +2504,26 @@ paths:
             type: string
             externalDocs:
               url: https://docs.medusajs.com/api/store#publishable-api-key
-        - name: fields
-          in: query
-          description: |-
-            Comma-separated fields that should be included in the returned data.
-            if a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields.
-            without prefix it will replace the entire default fields.
+        - name: x-medusa-locale
+          in: header
+          description: The locale in BCP 47 format to retrieve localized content.
           required: false
           schema:
             type: string
-            title: fields
-            description: Comma-separated fields that should be included in the returned data. If a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. Without prefix it will replace the entire default fields.
+            example: en-US
             externalDocs:
-              url: '#select-fields-and-relations'
+              url: https://docs.medusajs.com/resources/commerce-modules/translation/storefront
+              description: Learn more in the Serve Translations in Storefront guide.
+        - name: locale
+          in: query
+          description: The locale in BCP 47 format to retrieve localized content.
+          required: false
+          schema:
+            type: string
+            example: en-US
+            externalDocs:
+              url: https://docs.medusajs.com/resources/commerce-modules/translation/storefront
+              description: Learn more in the Serve Translations in Storefront guide.
       requestBody:
         content:
           application/json:
@@ -2547,7 +2586,7 @@ paths:
             type: string
             externalDocs:
               url: https://docs.medusajs.com/api/store#publishable-api-key
-        - name: Content-Language
+        - name: x-medusa-locale
           in: header
           description: The locale in BCP 47 format to retrieve localized content.
           required: false
@@ -2624,7 +2663,7 @@ paths:
             type: string
             externalDocs:
               url: https://docs.medusajs.com/api/store#publishable-api-key
-        - name: Content-Language
+        - name: x-medusa-locale
           in: header
           description: The locale in BCP 47 format to retrieve localized content.
           required: false
@@ -2917,6 +2956,7 @@ paths:
                 type: boolean
                 title: $exists
                 description: Filter by whether a value for this parameter exists (not `null`).
+            title: created_at
         - name: updated_at
           in: query
           description: Filter by the collection's update date.
@@ -3148,6 +3188,7 @@ paths:
                 type: boolean
                 title: $exists
                 description: Filter by whether a value for this parameter exists (not `null`).
+            title: updated_at
         - name: handle
           in: query
           required: false
@@ -3323,7 +3364,7 @@ paths:
             type: string
             externalDocs:
               url: https://docs.medusajs.com/api/store#publishable-api-key
-        - name: Content-Language
+        - name: x-medusa-locale
           in: header
           description: The locale in BCP 47 format to retrieve localized content.
           required: false
@@ -3416,7 +3457,7 @@ paths:
             type: string
             externalDocs:
               url: https://docs.medusajs.com/api/store#publishable-api-key
-        - name: Content-Language
+        - name: x-medusa-locale
           in: header
           description: The locale in BCP 47 format to retrieve localized content.
           required: false
@@ -3572,7 +3613,7 @@ paths:
             type: string
             externalDocs:
               url: https://docs.medusajs.com/api/store#publishable-api-key
-        - name: Content-Language
+        - name: x-medusa-locale
           in: header
           description: The locale in BCP 47 format to retrieve localized content.
           required: false
@@ -3647,7 +3688,7 @@ paths:
             type: string
             externalDocs:
               url: https://docs.medusajs.com/api/store#publishable-api-key
-        - name: Content-Language
+        - name: x-medusa-locale
           in: header
           description: The locale in BCP 47 format to retrieve localized content.
           required: false
@@ -3785,7 +3826,7 @@ paths:
             type: string
             externalDocs:
               url: https://docs.medusajs.com/api/store#publishable-api-key
-        - name: Content-Language
+        - name: x-medusa-locale
           in: header
           description: The locale in BCP 47 format to retrieve localized content.
           required: false
@@ -3885,7 +3926,7 @@ paths:
             type: string
             externalDocs:
               url: https://docs.medusajs.com/api/store#publishable-api-key
-        - name: Content-Language
+        - name: x-medusa-locale
           in: header
           description: The locale in BCP 47 format to retrieve localized content.
           required: false
@@ -4012,7 +4053,7 @@ paths:
             type: string
             externalDocs:
               url: https://docs.medusajs.com/api/store#publishable-api-key
-        - name: Content-Language
+        - name: x-medusa-locale
           in: header
           description: The locale in BCP 47 format to retrieve localized content.
           required: false
@@ -4204,7 +4245,7 @@ paths:
             type: string
             externalDocs:
               url: https://docs.medusajs.com/api/store#publishable-api-key
-        - name: Content-Language
+        - name: x-medusa-locale
           in: header
           description: The locale in BCP 47 format to retrieve localized content.
           required: false
@@ -4333,7 +4374,7 @@ paths:
             type: string
             externalDocs:
               url: https://docs.medusajs.com/api/store#publishable-api-key
-        - name: Content-Language
+        - name: x-medusa-locale
           in: header
           description: The locale in BCP 47 format to retrieve localized content.
           required: false
@@ -4442,7 +4483,7 @@ paths:
             type: string
             externalDocs:
               url: https://docs.medusajs.com/api/store#publishable-api-key
-        - name: Content-Language
+        - name: x-medusa-locale
           in: header
           description: The locale in BCP 47 format to retrieve localized content.
           required: false
@@ -4565,7 +4606,7 @@ paths:
             type: string
             externalDocs:
               url: https://docs.medusajs.com/api/store#publishable-api-key
-        - name: Content-Language
+        - name: x-medusa-locale
           in: header
           description: The locale in BCP 47 format to retrieve localized content.
           required: false
@@ -4700,6 +4741,16 @@ paths:
             type: string
             externalDocs:
               url: https://docs.medusajs.com/api/store#publishable-api-key
+        - name: x-medusa-locale
+          in: header
+          description: The locale in BCP 47 format to retrieve localized content.
+          required: false
+          schema:
+            type: string
+            example: en-US
+            externalDocs:
+              url: https://docs.medusajs.com/resources/commerce-modules/translation/storefront
+              description: Learn more in the Serve Translations in Storefront guide.
         - name: fields
           in: query
           description: |-
@@ -4713,6 +4764,16 @@ paths:
             description: Comma-separated fields that should be included in the returned data. If a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. Without prefix it will replace the entire default fields.
             externalDocs:
               url: '#select-fields-and-relations'
+        - name: locale
+          in: query
+          description: The locale in BCP 47 format to retrieve localized content.
+          required: false
+          schema:
+            type: string
+            example: en-US
+            externalDocs:
+              url: https://docs.medusajs.com/resources/commerce-modules/translation/storefront
+              description: Learn more in the Serve Translations in Storefront guide.
       x-codeSamples:
         - lang: Shell
           label: cURL
@@ -4725,77 +4786,6 @@ paths:
       responses:
         '200':
           description: OK
-        '400':
-          $ref: '#/components/responses/400_error'
-        '401':
-          $ref: '#/components/responses/unauthorized'
-        '404':
-          $ref: '#/components/responses/not_found_error'
-        '409':
-          $ref: '#/components/responses/invalid_state_error'
-        '422':
-          $ref: '#/components/responses/invalid_request_error'
-        '500':
-          $ref: '#/components/responses/500_error'
-      x-badges:
-        - text: Cloud
-          description: |
-            This API route is only available in [Medusa Cloud](https://docs.medusajs.com/cloud/loyalty-plugin).
-  /store/gift-cards/{idOrCode}/redeem:
-    post:
-      operationId: PostGiftCardsIdorcodeRedeem
-      summary: Redeem a Gift Card
-      x-sidebar-summary: Redeem Gift Card
-      description: Redeem a gift card by its ID or code. The gift card will be added to the logged-in customer's store credit account.
-      x-authenticated: true
-      x-ignoreCleanup: true
-      parameters:
-        - name: idOrCode
-          in: path
-          description: The gift card's ID or code.
-          required: true
-          schema:
-            type: string
-        - name: x-publishable-api-key
-          in: header
-          description: Publishable API Key created in the Medusa Admin.
-          required: true
-          schema:
-            type: string
-            externalDocs:
-              url: https://docs.medusajs.com/api/store#publishable-api-key
-        - name: fields
-          in: query
-          description: |-
-            Comma-separated fields that should be included in the returned data.
-             if a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields.
-             without prefix it will replace the entire default fields.
-          required: false
-          schema:
-            type: string
-            title: fields
-            description: Comma-separated fields that should be included in the returned data. If a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. Without prefix it will replace the entire default fields.
-            externalDocs:
-              url: '#select-fields-and-relations'
-      security:
-        - cookie_auth: []
-        - jwt_token: []
-      x-codeSamples:
-        - lang: Shell
-          label: cURL
-          source: |-
-            curl -X POST '{backend_url}/store/gift-cards/{idOrCode}/redeem' \
-            -H 'Authorization: Bearer {jwt_token}' \
-            -H 'x-publishable-api-key: {your_publishable_api_key}'
-      tags:
-        - Gift Cards
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/StoreGiftCardResponse'
         '400':
           $ref: '#/components/responses/400_error'
         '401':
@@ -4830,7 +4820,7 @@ paths:
             type: string
             externalDocs:
               url: https://docs.medusajs.com/api/store#publishable-api-key
-        - name: Content-Language
+        - name: x-medusa-locale
           in: header
           description: The locale in BCP 47 format to retrieve localized content.
           required: false
@@ -4916,7 +4906,7 @@ paths:
             type: string
             externalDocs:
               url: https://docs.medusajs.com/api/store#publishable-api-key
-        - name: Content-Language
+        - name: x-medusa-locale
           in: header
           description: The locale in BCP 47 format to retrieve localized content.
           required: false
@@ -5154,7 +5144,7 @@ paths:
             type: string
             externalDocs:
               url: https://docs.medusajs.com/api/store#publishable-api-key
-        - name: Content-Language
+        - name: x-medusa-locale
           in: header
           description: The locale in BCP 47 format to retrieve localized content.
           required: false
@@ -5256,7 +5246,7 @@ paths:
             type: string
             externalDocs:
               url: https://docs.medusajs.com/api/store#publishable-api-key
-        - name: Content-Language
+        - name: x-medusa-locale
           in: header
           description: The locale in BCP 47 format to retrieve localized content.
           required: false
@@ -5378,7 +5368,7 @@ paths:
             type: string
             externalDocs:
               url: https://docs.medusajs.com/api/store#publishable-api-key
-        - name: Content-Language
+        - name: x-medusa-locale
           in: header
           description: The locale in BCP 47 format to retrieve localized content.
           required: false
@@ -5494,7 +5484,7 @@ paths:
             type: string
             externalDocs:
               url: https://docs.medusajs.com/api/store#publishable-api-key
-        - name: Content-Language
+        - name: x-medusa-locale
           in: header
           description: The locale in BCP 47 format to retrieve localized content.
           required: false
@@ -5616,7 +5606,7 @@ paths:
             type: string
             externalDocs:
               url: https://docs.medusajs.com/api/store#publishable-api-key
-        - name: Content-Language
+        - name: x-medusa-locale
           in: header
           description: The locale in BCP 47 format to retrieve localized content.
           required: false
@@ -5736,7 +5726,7 @@ paths:
             type: string
             externalDocs:
               url: https://docs.medusajs.com/api/store#publishable-api-key
-        - name: Content-Language
+        - name: x-medusa-locale
           in: header
           description: The locale in BCP 47 format to retrieve localized content.
           required: false
@@ -5862,7 +5852,7 @@ paths:
             type: string
             externalDocs:
               url: https://docs.medusajs.com/api/store#publishable-api-key
-        - name: Content-Language
+        - name: x-medusa-locale
           in: header
           description: The locale in BCP 47 format to retrieve localized content.
           required: false
@@ -5948,7 +5938,7 @@ paths:
             type: string
             externalDocs:
               url: https://docs.medusajs.com/api/store#publishable-api-key
-        - name: Content-Language
+        - name: x-medusa-locale
           in: header
           description: The locale in BCP 47 format to retrieve localized content.
           required: false
@@ -6119,7 +6109,7 @@ paths:
             type: string
             externalDocs:
               url: https://docs.medusajs.com/api/store#publishable-api-key
-        - name: Content-Language
+        - name: x-medusa-locale
           in: header
           description: The locale in BCP 47 format to retrieve localized content.
           required: false
@@ -6478,6 +6468,7 @@ paths:
                 type: boolean
                 title: $exists
                 description: Filter by whether a value for this parameter exists (not `null`).
+            title: created_at
         - name: updated_at
           in: query
           description: Filter by the category's update date.
@@ -6709,6 +6700,7 @@ paths:
                 type: boolean
                 title: $exists
                 description: Filter by whether a value for this parameter exists (not `null`).
+            title: updated_at
         - name: $and
           in: query
           required: false
@@ -6831,7 +6823,7 @@ paths:
             type: string
             externalDocs:
               url: https://docs.medusajs.com/api/store#publishable-api-key
-        - name: Content-Language
+        - name: x-medusa-locale
           in: header
           description: The locale in BCP 47 format to retrieve localized content.
           required: false
@@ -6940,7 +6932,7 @@ paths:
             type: string
             externalDocs:
               url: https://docs.medusajs.com/api/store#publishable-api-key
-        - name: Content-Language
+        - name: x-medusa-locale
           in: header
           description: The locale in BCP 47 format to retrieve localized content.
           required: false
@@ -7280,6 +7272,7 @@ paths:
                 type: boolean
                 title: $exists
                 description: Filter by whether a value for this parameter exists (not `null`).
+            title: created_at
         - name: updated_at
           in: query
           description: Filter by the tag's update date.
@@ -7511,6 +7504,7 @@ paths:
                 type: boolean
                 title: $exists
                 description: Filter by whether a value for this parameter exists (not `null`).
+            title: updated_at
         - name: with_deleted
           in: query
           description: Whether to include deleted records in the result.
@@ -7577,7 +7571,7 @@ paths:
             type: string
             externalDocs:
               url: https://docs.medusajs.com/api/store#publishable-api-key
-        - name: Content-Language
+        - name: x-medusa-locale
           in: header
           description: The locale in BCP 47 format to retrieve localized content.
           required: false
@@ -7652,7 +7646,7 @@ paths:
             type: string
             externalDocs:
               url: https://docs.medusajs.com/api/store#publishable-api-key
-        - name: Content-Language
+        - name: x-medusa-locale
           in: header
           description: The locale in BCP 47 format to retrieve localized content.
           required: false
@@ -7992,6 +7986,7 @@ paths:
                 type: boolean
                 title: $exists
                 description: Filter by whether a value for this parameter exists (not `null`).
+            title: created_at
         - name: updated_at
           in: query
           description: Filter by the type's update date.
@@ -8223,6 +8218,7 @@ paths:
                 type: boolean
                 title: $exists
                 description: Filter by whether a value for this parameter exists (not `null`).
+            title: updated_at
         - name: with_deleted
           in: query
           description: Whether to include deleted records in the result.
@@ -8289,7 +8285,7 @@ paths:
             type: string
             externalDocs:
               url: https://docs.medusajs.com/api/store#publishable-api-key
-        - name: Content-Language
+        - name: x-medusa-locale
           in: header
           description: The locale in BCP 47 format to retrieve localized content.
           required: false
@@ -8356,7 +8352,7 @@ paths:
       description: |
         Retrieve a list of products. The products can be filtered by fields such as `id`. The products can also be sorted or paginated.
 
-        You can retrieve the content of the products translated to a specific locale either by passing the `locale` query parameter or by setting the `Content-Language` header to the desired locale code in BCP 47 format. If you don't pass a locale, and your store has a default locale, the default locale will be used.
+        You can retrieve the content of the products translated to a specific locale either by passing the `locale` query parameter or by setting the `x-medusa-locale` header to the desired locale code in BCP 47 format. If you don't pass a locale, and your store has a default locale, the default locale will be used.
 
         With localization, the products' content like title and description will be in the specified locale if a translation is available,  and fallback to the original content otherwise. Learn more in the [Localization](#localization) section.
       x-authenticated: false
@@ -8372,7 +8368,7 @@ paths:
             type: string
             externalDocs:
               url: https://docs.medusajs.com/api/store#publishable-api-key
-        - name: Content-Language
+        - name: x-medusa-locale
           in: header
           description: The locale in BCP 47 format to retrieve localized content.
           required: false
@@ -8774,6 +8770,7 @@ paths:
                 type: boolean
                 title: $exists
                 description: Filter by whether a value for this parameter exists (not `null`).
+            title: created_at
         - name: updated_at
           in: query
           description: Filter by the product's update date.
@@ -9005,6 +9002,7 @@ paths:
                 type: boolean
                 title: $exists
                 description: Filter by whether a value for this parameter exists (not `null`).
+            title: updated_at
         - name: region_id
           in: query
           description: The ID of the region the products are being viewed from. This is required if you're retrieving product variant prices with taxes.
@@ -9141,36 +9139,7 @@ paths:
           content:
             application/json:
               schema:
-                allOf:
-                  - type: object
-                    description: The paginated list of products.
-                    required:
-                      - limit
-                      - offset
-                      - count
-                    properties:
-                      limit:
-                        type: number
-                        title: limit
-                        description: The maximum number of items returned.
-                      offset:
-                        type: number
-                        title: offset
-                        description: The number of items skipped before retrieving the returned items.
-                      count:
-                        type: number
-                        title: count
-                        description: The total number of items.
-                  - type: object
-                    description: The paginated list of products.
-                    required:
-                      - products
-                    properties:
-                      products:
-                        type: array
-                        description: The list of products.
-                        items:
-                          type: object
+                $ref: '#/components/schemas/StoreProductListResponse'
         '400':
           $ref: '#/components/responses/400_error'
         '401':
@@ -9190,7 +9159,7 @@ paths:
       description: |
         Retrieve a product by its ID. You can expand the product's relations or select the fields that should be returned.
 
-        You can retrieve the content of the product translated to a specific locale either by passing the `locale` query parameter or by setting the `Content-Language` header to the desired locale code in BCP 47 format. If you don't pass a locale, and your store has a default locale, the default locale will be used.
+        You can retrieve the content of the product translated to a specific locale either by passing the `locale` query parameter or by setting the `x-medusa-locale` header to the desired locale code in BCP 47 format. If you don't pass a locale, and your store has a default locale, the default locale will be used.
 
         With localization, the product's content like title and description will be in the specified locale if a translation is available,  and fallback to the original content otherwise. Learn more in the [Localization](#localization) section.
       x-authenticated: false
@@ -9212,7 +9181,7 @@ paths:
             type: string
             externalDocs:
               url: https://docs.medusajs.com/api/store#publishable-api-key
-        - name: Content-Language
+        - name: x-medusa-locale
           in: header
           description: The locale in BCP 47 format to retrieve localized content.
           required: false
@@ -9347,7 +9316,7 @@ paths:
             type: string
             externalDocs:
               url: https://docs.medusajs.com/api/store#publishable-api-key
-        - name: Content-Language
+        - name: x-medusa-locale
           in: header
           description: The locale in BCP 47 format to retrieve localized content.
           required: false
@@ -9581,7 +9550,7 @@ paths:
             type: string
             externalDocs:
               url: https://docs.medusajs.com/api/store#publishable-api-key
-        - name: Content-Language
+        - name: x-medusa-locale
           in: header
           description: The locale in BCP 47 format to retrieve localized content.
           required: false
@@ -9678,7 +9647,7 @@ paths:
             type: string
             externalDocs:
               url: https://docs.medusajs.com/api/store#publishable-api-key
-        - name: Content-Language
+        - name: x-medusa-locale
           in: header
           description: The locale in BCP 47 format to retrieve localized content.
           required: false
@@ -9821,7 +9790,7 @@ paths:
             type: string
             externalDocs:
               url: https://docs.medusajs.com/api/store#publishable-api-key
-        - name: Content-Language
+        - name: x-medusa-locale
           in: header
           description: The locale in BCP 47 format to retrieve localized content.
           required: false
@@ -9893,7 +9862,7 @@ paths:
             type: string
             externalDocs:
               url: https://docs.medusajs.com/api/store#publishable-api-key
-        - name: Content-Language
+        - name: x-medusa-locale
           in: header
           description: The locale in BCP 47 format to retrieve localized content.
           required: false
@@ -10007,7 +9976,7 @@ paths:
             type: string
             externalDocs:
               url: https://docs.medusajs.com/api/store#publishable-api-key
-        - name: Content-Language
+        - name: x-medusa-locale
           in: header
           description: The locale in BCP 47 format to retrieve localized content.
           required: false
@@ -10174,7 +10143,7 @@ paths:
             type: string
             externalDocs:
               url: https://docs.medusajs.com/api/store#publishable-api-key
-        - name: Content-Language
+        - name: x-medusa-locale
           in: header
           description: The locale in BCP 47 format to retrieve localized content.
           required: false
@@ -10298,6 +10267,16 @@ paths:
             type: string
             externalDocs:
               url: https://docs.medusajs.com/api/store#publishable-api-key
+        - name: x-medusa-locale
+          in: header
+          description: The locale in BCP 47 format to retrieve localized content.
+          required: false
+          schema:
+            type: string
+            example: en-US
+            externalDocs:
+              url: https://docs.medusajs.com/resources/commerce-modules/translation/storefront
+              description: Learn more in the Serve Translations in Storefront guide.
         - name: currency_code
           in: query
           description: Filter by the store credit account's currency code.
@@ -10426,6 +10405,7 @@ paths:
                 type: boolean
                 title: $exists
                 description: Filter by whether a value for this parameter exists (not `null`).
+            title: created_at
         - name: updated_at
           in: query
           description: Filter by a store credit account's update date.
@@ -10545,6 +10525,7 @@ paths:
                 type: boolean
                 title: $exists
                 description: Filter by whether a value for this parameter exists (not `null`).
+            title: updated_at
         - name: limit
           in: query
           description: Limit the number of items returned in the list.
@@ -10605,6 +10586,16 @@ paths:
             items:
               type: object
             title: $or
+        - name: locale
+          in: query
+          description: The locale in BCP 47 format to retrieve localized content.
+          required: false
+          schema:
+            type: string
+            example: en-US
+            externalDocs:
+              url: https://docs.medusajs.com/resources/commerce-modules/translation/storefront
+              description: Learn more in the Serve Translations in Storefront guide.
       x-codeSamples:
         - lang: Shell
           label: cURL
@@ -10639,6 +10630,85 @@ paths:
         - text: Cloud
           description: |
             This API route is only available in [Medusa Cloud](https://docs.medusajs.com/cloud/loyalty-plugin).
+  /store/store-credit-accounts/claim:
+    post:
+      operationId: PostStoreCreditAccountsClaim
+      summary: Claim Credits
+      description: Claim credits of the logged-in customer's store credit account.
+      x-authenticated: true
+      parameters:
+        - name: x-publishable-api-key
+          in: header
+          description: Publishable API Key created in the Medusa Admin.
+          required: true
+          schema:
+            type: string
+            externalDocs:
+              url: https://docs.medusajs.com/api/store#publishable-api-key
+        - name: x-medusa-locale
+          in: header
+          description: The locale in BCP 47 format to retrieve localized content.
+          required: false
+          schema:
+            type: string
+            example: en-US
+            externalDocs:
+              url: https://docs.medusajs.com/resources/commerce-modules/translation/storefront
+              description: Learn more in the Serve Translations in Storefront guide.
+        - name: locale
+          in: query
+          description: The locale in BCP 47 format to retrieve localized content.
+          required: false
+          schema:
+            type: string
+            example: en-US
+            externalDocs:
+              url: https://docs.medusajs.com/resources/commerce-modules/translation/storefront
+              description: Learn more in the Serve Translations in Storefront guide.
+      security:
+        - cookie_auth: []
+        - jwt_token: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StoreClaimStoreCreditAccountParams'
+      x-codeSamples:
+        - lang: Shell
+          label: cURL
+          source: |-
+            curl -X POST '{backend_url}/store/store-credit-accounts/claim' \
+            -H 'Authorization: Bearer {access_token}' \
+            -H 'x-publishable-api-key: {your_publishable_api_key}' \
+            -H 'Content-Type: application/json' \
+            --data-raw '{
+              "code": "{value}"
+            }'
+      tags:
+        - Store Credit Accounts
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StoreClaimStoreCreditAccountResponse'
+        '400':
+          $ref: '#/components/responses/400_error'
+        '401':
+          $ref: '#/components/responses/unauthorized'
+        '404':
+          $ref: '#/components/responses/not_found_error'
+        '409':
+          $ref: '#/components/responses/invalid_state_error'
+        '422':
+          $ref: '#/components/responses/invalid_request_error'
+        '500':
+          $ref: '#/components/responses/500_error'
+      x-badges:
+        - text: Cloud
+          description: |
+            This API route is only available in [Medusa Cloud](https://docs.medusajs.com/cloud/loyalty-plugin).
   /store/store-credit-accounts/{id}:
     get:
       operationId: GetStoreCreditAccountsId
@@ -10662,19 +10732,26 @@ paths:
             type: string
             externalDocs:
               url: https://docs.medusajs.com/api/store#publishable-api-key
-        - name: fields
-          in: query
-          description: |-
-            Comma-separated fields that should be included in the returned data.
-            if a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields.
-            without prefix it will replace the entire default fields.
+        - name: x-medusa-locale
+          in: header
+          description: The locale in BCP 47 format to retrieve localized content.
           required: false
           schema:
             type: string
-            title: fields
-            description: Comma-separated fields that should be included in the returned data. If a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. Without prefix it will replace the entire default fields.
+            example: en-US
             externalDocs:
-              url: '#select-fields-and-relations'
+              url: https://docs.medusajs.com/resources/commerce-modules/translation/storefront
+              description: Learn more in the Serve Translations in Storefront guide.
+        - name: locale
+          in: query
+          description: The locale in BCP 47 format to retrieve localized content.
+          required: false
+          schema:
+            type: string
+            example: en-US
+            externalDocs:
+              url: https://docs.medusajs.com/resources/commerce-modules/translation/storefront
+              description: Learn more in the Serve Translations in Storefront guide.
       x-codeSamples:
         - lang: Shell
           label: cURL
@@ -11530,6 +11607,70 @@ components:
               type: boolean
               title: deleted
               description: Whether the product variants were deleted.
+    AdminBatchTranslationSettings:
+      type: object
+      description: The translation settings to create, update, or delete in batch.
+      x-schemaName: AdminBatchTranslationSettings
+      properties:
+        create:
+          type: array
+          description: The translation settings to create.
+          items:
+            $ref: '#/components/schemas/AdminCreateTranslationSettings'
+        update:
+          type: array
+          description: The translation settings to update.
+          items:
+            $ref: '#/components/schemas/AdminUpdateTranslationSettings'
+        delete:
+          type: array
+          description: The translation settings to delete.
+          items:
+            type: string
+            title: delete
+            description: The IDs of the translation settings to delete.
+    AdminBatchTranslationSettingsResponse:
+      type: object
+      description: The result of managing the translation settings in batch.
+      x-schemaName: AdminBatchTranslationSettingsResponse
+      required:
+        - created
+        - updated
+        - deleted
+      properties:
+        created:
+          type: array
+          description: The created translation settings.
+          items:
+            $ref: '#/components/schemas/AdminTranslationSettings'
+        updated:
+          type: array
+          description: The updated translation settings.
+          items:
+            $ref: '#/components/schemas/AdminTranslationSettings'
+        deleted:
+          type: object
+          description: The deletion result.
+          required:
+            - ids
+            - object
+            - deleted
+          properties:
+            ids:
+              type: array
+              description: The IDs of the deleted translation settings.
+              items:
+                type: string
+                title: ids
+                description: The ID of a deleted translation settings.
+            object:
+              type: string
+              title: object
+              description: The type of object deleted.
+            deleted:
+              type: boolean
+              title: deleted
+              description: Whether the deletion was successful.
     AdminBatchUpdateInventoryItemsLocationLevels:
       type: object
       description: The details of an inventory level to update.
@@ -14094,7 +14235,6 @@ components:
       x-schemaName: AdminCreateStoreCreditAccount
       required:
         - currency_code
-        - customer_id
       properties:
         currency_code:
           type: string
@@ -14243,6 +14383,31 @@ components:
           type: string
           title: provider_id
           description: The ID of the tax provider used to calculate the tax rate in this tax region.
+    AdminCreateTranslationSettings:
+      type: object
+      description: The translation settings to create.
+      x-schemaName: AdminCreateTranslationSettings
+      required:
+        - entity_type
+        - fields
+      properties:
+        entity_type:
+          type: string
+          title: entity_type
+          description: The entity type to create the translation settings for.
+          example: product
+        fields:
+          type: array
+          description: The fields to support translations for.
+          items:
+            type: string
+            title: fields
+            description: A field to support translations for.
+            example: title
+        is_active:
+          type: boolean
+          title: is_active
+          description: Whether translations are active for the given entity type.
     AdminCreateVariantInventoryItem:
       type: object
       description: The details of the variant-inventory item association.
@@ -14359,6 +14524,21 @@ components:
           type: string
           title: transaction_id
           description: The ID of the workflow execution's transaction.
+    AdminCreditStoreCreditAccountParams:
+      type: object
+      description: The details of the credits to add to the store credit account.
+      x-schemaName: AdminCreditStoreCreditAccountParams
+      required:
+        - amount
+      properties:
+        amount:
+          type: number
+          title: amount
+          description: The credits to add to the store credit account.
+        note:
+          type: string
+          title: note
+          description: An internal note with more details on the credit addition.
     AdminCurrency:
       type: object
       description: The currency's currencies.
@@ -20799,9 +20979,9 @@ components:
         - type
         - options
         - images
-        - length
         - title
         - status
+        - length
         - id
         - created_at
         - updated_at
@@ -22069,17 +22249,6 @@ components:
                 type: string
                 title: internal_note
                 description: A note viewed only by admin users.
-    AdminRedeemGiftCard:
-      type: object
-      description: The details of the gift card to redeem.
-      x-schemaName: AdminRedeemGiftCard
-      required:
-        - customer_id
-      properties:
-        customer_id:
-          type: string
-          title: customer_id
-          description: The ID of the customer that the gift card belongs to. The gift card's value will be added to the customer's store credit account.
     AdminRefund:
       type: object
       description: The refund's details.
@@ -23649,9 +23818,7 @@ components:
       x-schemaName: AdminStoreCreditAccount
       required:
         - customer
-        - transaction_groups
         - id
-        - customer_id
         - currency_code
         - credits
         - debits
@@ -23687,11 +23854,6 @@ components:
           type: number
           title: balance
           description: The account's balance.
-        transaction_groups:
-          type: array
-          description: The store credit account's transaction groups.
-          items:
-            $ref: '#/components/schemas/AdminTransactionGroup'
         metadata:
           type: object
           description: The store credit account's metadata, can hold custom key-value pairs.
@@ -23708,6 +23870,10 @@ components:
           format: date-time
           title: updated_at
           description: The date the store credit account was updated at.
+        code:
+          type: string
+          title: code
+          description: The store credit account's code.
     AdminStoreCreditAccountResponse:
       type: object
       description: The store credit account's details.
@@ -24144,7 +24310,6 @@ components:
         - account
         - id
         - account_id
-        - transaction_group_id
         - type
         - amount
         - metadata
@@ -24159,10 +24324,6 @@ components:
           type: string
           title: account_id
           description: The ID of the store credit account that the transaction belongs to.
-        transaction_group_id:
-          type: string
-          title: transaction_group_id
-          description: The ID of the transaction group that the transaction belongs to.
         type:
           type: string
           description: The transaction's type.
@@ -24244,38 +24405,6 @@ components:
           externalDocs:
             url: https://docs.medusajs.com/api/admin#manage-metadata
             description: Learn how to manage metadata
-    AdminTransactionGroupsResponse:
-      type: object
-      description: The paginated list of transaction groups.
-      x-schemaName: AdminTransactionGroupsResponse
-      required:
-        - limit
-        - offset
-        - count
-        - transaction_groups
-      properties:
-        limit:
-          type: number
-          title: limit
-          description: The maximum number of transaction groups to return.
-        offset:
-          type: number
-          title: offset
-          description: The number of transaction groups to skip before retrieving the results.
-        count:
-          type: number
-          title: count
-          description: The total number of transaction groups available.
-        transaction_groups:
-          type: array
-          description: The list of transaction groups.
-          items:
-            $ref: '#/components/schemas/AdminTransactionGroup'
-        estimate_count:
-          type: number
-          title: estimate_count
-          description: The transaction group's estimate count.
-          x-featureFlag: index_engine
     AdminTransactionsResponse:
       type: object
       description: The paginated list of transactions.
@@ -24362,20 +24491,106 @@ components:
           format: date-time
           title: deleted_at
           description: The date that the translation was deleted.
+    AdminTranslationEntitiesResponse:
+      type: object
+      description: The list of translatable entities.
+      x-schemaName: AdminTranslationEntitiesResponse
+      required:
+        - data
+        - count
+        - offset
+        - limit
+      properties:
+        data:
+          type: array
+          description: The list of translatable entities.
+          items:
+            allOf:
+              - type: object
+                description: The entity's data.
+                required:
+                  - id
+                  - translations
+                properties:
+                  id:
+                    type: string
+                    title: id
+                    description: The entity's ID.
+                  translations:
+                    type: array
+                    description: The entity's translations.
+                    items:
+                      $ref: '#/components/schemas/AdminTranslation'
+        count:
+          type: number
+          title: count
+          description: The total number of translatable entities.
+        offset:
+          type: number
+          title: offset
+          description: The number of items skipped before retrieving the returned items.
+        limit:
+          type: number
+          title: limit
+          description: The maximum number of items returned in the response.
+    AdminTranslationSettings:
+      type: object
+      description: The translation settings details.
+      x-schemaName: AdminTranslationSettings
+      required:
+        - id
+        - created_at
+        - updated_at
+        - deleted_at
+        - entity_type
+        - fields
+        - is_active
+      properties:
+        id:
+          type: string
+          title: id
+          description: The ID of the translation settings.
+        created_at:
+          type: string
+          format: date-time
+          title: created_at
+          description: The date the translation settings was created.
+        updated_at:
+          type: string
+          format: date-time
+          title: updated_at
+          description: The date the translation settings was updated.
+        deleted_at:
+          type: string
+          format: date-time
+          title: deleted_at
+          description: The date the translation settings was deleted.
+        entity_type:
+          type: string
+          title: entity_type
+          description: The entity type the translation settings are for.
+          example: product
+        fields:
+          type: array
+          description: The fields supported for translations.
+          items:
+            type: string
+            title: fields
+            description: A field supported for translations.
+        is_active:
+          type: boolean
+          title: is_active
+          description: Whether translations are active for the given entity type.
     AdminTranslationSettingsResponse:
       type: object
       description: The translation settings' details.
       x-schemaName: AdminTranslationSettingsResponse
       required:
-        - translatable_fields
+        - translation_settings
       properties:
-        translatable_fields:
+        translation_settings:
           type: object
-          description: Key-value pairs of translatable fields for different entities. Each key is an entity type, and the value is an array of fields that can be translated for that entity.
-          example:
-            product:
-              - title
-              - description
+          description: The translation settings details.
     AdminTranslationStatisticsResponse:
       type: object
       description: The translation statistics details.
@@ -26029,6 +26244,32 @@ components:
           type: string
           title: provider_id
           description: The ID of the tax provider to use when calculating taxes for this tax region.
+    AdminUpdateTranslationSettings:
+      type: object
+      description: The translation settings to update.
+      x-schemaName: AdminUpdateTranslationSettings
+      required:
+        - id
+      properties:
+        id:
+          type: string
+          title: id
+          description: The ID of the translation settings to update.
+        entity_type:
+          type: string
+          title: entity_type
+          description: The entity type to update the translation settings for.
+        fields:
+          type: array
+          description: The fields to update translations for.
+          items:
+            type: string
+            title: fields
+            description: A field to update translations for.
+        is_active:
+          type: boolean
+          title: is_active
+          description: Whether translations are active for the given entity type.
     AdminUpdateUser:
       type: object
       description: The properties to update in a user.
@@ -32859,6 +33100,11 @@ components:
           description: The cart's promotions.
           items:
             $ref: '#/components/schemas/StoreCartPromotion'
+        completed_at:
+          type: string
+          title: completed_at
+          description: The date the cart was completed.
+          format: date-time
     StoreCartAddPromotion:
       type: object
       description: The promotion's details.
@@ -33693,6 +33939,26 @@ components:
           type: boolean
           title: insufficient_inventory
           description: Whether the shipping option's location doesn't have sufficient quantity for any of the cart's items.
+    StoreClaimStoreCreditAccountParams:
+      type: object
+      description: The details of claiming the credit.
+      x-schemaName: StoreClaimStoreCreditAccountParams
+      required:
+        - code
+      properties:
+        code:
+          type: string
+          title: code
+          description: The code of the store credit account to claim.
+    StoreClaimStoreCreditAccountResponse:
+      type: object
+      description: The claimed store credit account's details.
+      x-schemaName: StoreClaimStoreCreditAccountResponse
+      required:
+        - store_credit_account
+      properties:
+        store_credit_account:
+          $ref: '#/components/schemas/StoreStoreCreditAccount'
     StoreCollection:
       type: object
       description: The collection's details.
@@ -34384,15 +34650,6 @@ components:
           format: date-time
           title: updated_at
           description: The date the gift card was updated.
-    StoreGiftCardResponse:
-      type: object
-      description: The gift card's details.
-      x-schemaName: StoreGiftCardResponse
-      required:
-        - gift_card
-      properties:
-        gift_card:
-          $ref: '#/components/schemas/StoreGiftCard'
     StoreInitializePaymentSession:
       type: object
       description: The payment session's details.
@@ -41231,6 +41488,45 @@ components:
           type: number
           title: rank
           description: The image's rank among its sibling images
+    StoreProductListResponse:
+      type: object
+      description: The paginated list of products.
+      x-schemaName: StoreProductListResponse
+      allOf:
+        - type: object
+          description: Pagination details
+          required:
+            - limit
+            - offset
+            - count
+          properties:
+            limit:
+              type: number
+              title: limit
+              description: The maximum number of items returned.
+            offset:
+              type: number
+              title: offset
+              description: The number of items skipped before retrieving the returned items.
+            count:
+              type: number
+              title: count
+              description: The total count of items.
+            estimate_count:
+              type: number
+              title: estimate_count
+              description: The estimated count retrieved from the PostgreSQL query planner, which may be inaccurate.
+              x-featureFlag: index_engine
+        - type: object
+          description: The list of products.
+          required:
+            - products
+          properties:
+            products:
+              type: array
+              description: The list of products.
+              items:
+                $ref: '#/components/schemas/StoreProduct'
     StoreProductOption:
       type: object
       description: The product option's details.
@@ -41619,8 +41915,8 @@ components:
             $ref: '#/components/schemas/BaseProductImage'
       required:
         - options
-        - length
         - title
+        - length
         - id
         - created_at
         - updated_at
@@ -42197,9 +42493,7 @@ components:
       x-schemaName: StoreStoreCreditAccount
       required:
         - customer
-        - transaction_groups
         - id
-        - customer_id
         - currency_code
         - credits
         - debits
@@ -42235,11 +42529,6 @@ components:
           type: number
           title: balance
           description: The store credit account's balance.
-        transaction_groups:
-          type: array
-          description: The store credit account's transaction groups.
-          items:
-            $ref: '#/components/schemas/StoreTransactionGroup'
         metadata:
           type: object
           description: The store credit account's metadata, can hold custom key-value pairs.
@@ -42256,6 +42545,10 @@ components:
           format: date-time
           title: updated_at
           description: The date the store credit account was updated.
+        code:
+          type: string
+          title: code
+          description: The store credit account's code.
     StoreStoreCreditAccountResponse:
       type: object
       description: The store credit account's details.
@@ -42297,47 +42590,6 @@ components:
           title: estimate_count
           description: The store credit account's estimate count.
           x-featureFlag: index_engine
-    StoreTransactionGroup:
-      type: object
-      description: The transaction group's details.
-      required:
-        - account
-        - id
-        - code
-        - credits
-        - debits
-        - balance
-        - metadata
-      properties:
-        id:
-          type: string
-          title: id
-          description: The transaction group's ID.
-        code:
-          type: string
-          title: code
-          description: The transaction group's code.
-        credits:
-          type: number
-          title: credits
-          description: The transaction group's credits.
-        debits:
-          type: number
-          title: debits
-          description: The transaction group's debits.
-        balance:
-          type: number
-          title: balance
-          description: The transaction group's balance.
-        account:
-          type: object
-        metadata:
-          type: object
-          description: The transaction group's metadata, can hold custom key-value pairs.
-          externalDocs:
-            url: https://docs.medusajs.com/api/store#manage-metadata
-            description: Learn how to manage metadata
-      x-schemaName: StoreTransactionGroup
     StoreUpdateCustomer:
       type: object
       description: The details to update in the customer.

@@ -1,5 +1,81 @@
 # @medusajs/draft-order
 
+## 2.13.1
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @medusajs/test-utils@2.13.1
+  - @medusajs/admin-sdk@2.13.1
+  - @medusajs/cli@2.13.1
+  - @medusajs/framework@2.13.1
+  - @medusajs/js-sdk@2.13.1
+  - @medusajs/icons@2.13.1
+  - @medusajs/ui@4.1.1
+
+## 2.13.0
+
+### Minor Changes
+
+- [`a31e72c31c5235240cead2d04e39e5927688eec7`](https://github.com/medusajs/medusa/commit/a31e72c31c5235240cead2d04e39e5927688eec7) Thanks [@olivermrbl](https://github.com/olivermrbl)! - chore: Minor bump
+
+### Patch Changes
+
+- Updated dependencies [[`a31e72c31c5235240cead2d04e39e5927688eec7`](https://github.com/medusajs/medusa/commit/a31e72c31c5235240cead2d04e39e5927688eec7)]:
+  - @medusajs/admin-sdk@2.13.0
+  - @medusajs/cli@2.13.0
+  - @medusajs/framework@2.13.0
+  - @medusajs/js-sdk@2.13.0
+  - @medusajs/icons@2.13.0
+  - @medusajs/ui@4.1.0
+  - @medusajs/test-utils@2.13.0
+
+## 2.12.6
+
+### Patch Changes
+
+- [#14478](https://github.com/medusajs/medusa/pull/14478) [`13476988763368b3b333fa5bc3f613e8eb174fdf`](https://github.com/medusajs/medusa/commit/13476988763368b3b333fa5bc3f613e8eb174fdf) Thanks [@adrien2p](https://github.com/adrien2p)! - Feat/enable event configuration in medusa config
+  enables event priority configuration through the Medusa config, allowing users to configure event processing options (like priority) for specific events at the module level.
+
+- [#14586](https://github.com/medusajs/medusa/pull/14586) [`3751b10337c056c3a61a4726046ebf4c31a3530b`](https://github.com/medusajs/medusa/commit/3751b10337c056c3a61a4726046ebf4c31a3530b) Thanks [@fPolic](https://github.com/fPolic)! - chore: bump RR minor version
+
+- Updated dependencies [[`42235825eeacd4554a5fb533feda5840175bee38`](https://github.com/medusajs/medusa/commit/42235825eeacd4554a5fb533feda5840175bee38), [`13476988763368b3b333fa5bc3f613e8eb174fdf`](https://github.com/medusajs/medusa/commit/13476988763368b3b333fa5bc3f613e8eb174fdf), [`a9b5797e2de093e26286808876262b724e26671a`](https://github.com/medusajs/medusa/commit/a9b5797e2de093e26286808876262b724e26671a), [`8890f284705a4843a57a3800820208f593689a2a`](https://github.com/medusajs/medusa/commit/8890f284705a4843a57a3800820208f593689a2a), [`7828f5ac791df6cb1af56595b6dcadbc4815d61f`](https://github.com/medusajs/medusa/commit/7828f5ac791df6cb1af56595b6dcadbc4815d61f), [`1ca3516a5cbb059ad79fe483cd8e1d6a7ebca23b`](https://github.com/medusajs/medusa/commit/1ca3516a5cbb059ad79fe483cd8e1d6a7ebca23b)]:
+  - @medusajs/cli@2.12.6
+  - @medusajs/framework@2.12.6
+  - @medusajs/js-sdk@2.12.6
+  - @medusajs/test-utils@2.12.6
+  - @medusajs/admin-sdk@2.12.6
+  - @medusajs/icons@2.12.6
+  - @medusajs/ui@4.0.34
+
+## 2.12.5
+
+### Patch Changes
+
+- Updated dependencies [[`233ec261be200fac83002415aa7c0df082339a3f`](https://github.com/medusajs/medusa/commit/233ec261be200fac83002415aa7c0df082339a3f)]:
+  - @medusajs/framework@2.12.5
+  - @medusajs/js-sdk@2.12.5
+  - @medusajs/cli@2.12.5
+  - @medusajs/test-utils@2.12.5
+  - @medusajs/admin-sdk@2.12.5
+  - @medusajs/icons@2.12.5
+  - @medusajs/ui@4.0.33
+
+## 2.12.4
+
+### Patch Changes
+
+- [#14400](https://github.com/medusajs/medusa/pull/14400) [`242f1d7d7f96ec27f3d2c9aafa8324f2ee9b28fd`](https://github.com/medusajs/medusa/commit/242f1d7d7f96ec27f3d2c9aafa8324f2ee9b28fd) Thanks [@NicolasGorga](https://github.com/NicolasGorga)! - feat(dashboard,draft-order): Remove hardcoded strings and replace with translations in draft orders list page
+
+- Updated dependencies [[`ab7b04dbc9acfbad11bfaf66276a78ce57d34357`](https://github.com/medusajs/medusa/commit/ab7b04dbc9acfbad11bfaf66276a78ce57d34357), [`b21a599d118f126e64d2993d46ba60f4a4e94545`](https://github.com/medusajs/medusa/commit/b21a599d118f126e64d2993d46ba60f4a4e94545), [`181d5fa67122e4e5f38b91f6b716d35f2d08a204`](https://github.com/medusajs/medusa/commit/181d5fa67122e4e5f38b91f6b716d35f2d08a204), [`d54589751c7f929c173c500344ce5689b8a5dc15`](https://github.com/medusajs/medusa/commit/d54589751c7f929c173c500344ce5689b8a5dc15), [`d347e369ce555064e24f2dc3cd93b9e4e73a006d`](https://github.com/medusajs/medusa/commit/d347e369ce555064e24f2dc3cd93b9e4e73a006d)]:
+  - @medusajs/js-sdk@2.12.4
+  - @medusajs/framework@2.12.4
+  - @medusajs/cli@2.12.4
+  - @medusajs/ui@4.0.32
+  - @medusajs/test-utils@2.12.4
+  - @medusajs/admin-sdk@2.12.4
+  - @medusajs/icons@2.12.4
+
 ## 2.12.3
 
 ### Patch Changes
