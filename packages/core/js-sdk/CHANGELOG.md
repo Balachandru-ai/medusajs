@@ -1,5 +1,29 @@
 # @medusajs/js-sdk
 
+## 2.13.1
+
+## 2.13.0
+
+### Minor Changes
+
+- [`a31e72c31c5235240cead2d04e39e5927688eec7`](https://github.com/medusajs/medusa/commit/a31e72c31c5235240cead2d04e39e5927688eec7) Thanks [@olivermrbl](https://github.com/olivermrbl)! - chore: Minor bump
+
+## 2.12.6
+
+### Patch Changes
+
+- [#14541](https://github.com/medusajs/medusa/pull/14541) [`a9b5797e2de093e26286808876262b724e26671a`](https://github.com/medusajs/medusa/commit/a9b5797e2de093e26286808876262b724e26671a) Thanks [@NicolasGorga](https://github.com/NicolasGorga)! - feat(dashboard,translation,js-sdk,medusa,types): Translation settings management UI
+
+## 2.12.5
+
+## 2.12.4
+
+### Patch Changes
+
+- [#14458](https://github.com/medusajs/medusa/pull/14458) [`ab7b04dbc9acfbad11bfaf66276a78ce57d34357`](https://github.com/medusajs/medusa/commit/ab7b04dbc9acfbad11bfaf66276a78ce57d34357) Thanks [@shahednasser](https://github.com/shahednasser)! - fix(js-sdk): add metadata parameter to request body type of reset-password route
+
+- [#14355](https://github.com/medusajs/medusa/pull/14355) [`b21a599d118f126e64d2993d46ba60f4a4e94545`](https://github.com/medusajs/medusa/commit/b21a599d118f126e64d2993d46ba60f4a4e94545) Thanks [@adrien2p](https://github.com/adrien2p)! - feat(): Translation settings + user configuration + js/admin
+
 ## 2.12.3
 
 ### Patch Changes

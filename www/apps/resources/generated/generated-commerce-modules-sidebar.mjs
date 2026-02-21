@@ -139,6 +139,14 @@ const generatedgeneratedCommerceModulesSidebarSidebar = {
                       "loaded": true,
                       "isPathHref": true,
                       "type": "ref",
+                      "title": "createDefaultsWorkflow",
+                      "path": "https://docs.medusajs.com/resources/references/medusa-workflows/createDefaultsWorkflow",
+                      "children": []
+                    },
+                    {
+                      "loaded": true,
+                      "isPathHref": true,
+                      "type": "ref",
                       "title": "deleteApiKeysWorkflow",
                       "path": "https://docs.medusajs.com/resources/references/medusa-workflows/deleteApiKeysWorkflow",
                       "children": []
@@ -700,6 +708,14 @@ const generatedgeneratedCommerceModulesSidebarSidebar = {
                       "type": "ref",
                       "title": "removeUserAccountWorkflow",
                       "path": "https://docs.medusajs.com/resources/references/medusa-workflows/removeUserAccountWorkflow",
+                      "children": []
+                    },
+                    {
+                      "loaded": true,
+                      "isPathHref": true,
+                      "type": "ref",
+                      "title": "setAuthAppMetadataWorkflow",
+                      "path": "https://docs.medusajs.com/resources/references/medusa-workflows/setAuthAppMetadataWorkflow",
                       "children": []
                     }
                   ]
@@ -2837,6 +2853,14 @@ const generatedgeneratedCommerceModulesSidebarSidebar = {
                       "type": "ref",
                       "title": "updateCustomersWorkflow",
                       "path": "https://docs.medusajs.com/resources/references/medusa-workflows/updateCustomersWorkflow",
+                      "children": []
+                    },
+                    {
+                      "loaded": true,
+                      "isPathHref": true,
+                      "type": "ref",
+                      "title": "updateOrderWorkflow",
+                      "path": "https://docs.medusajs.com/resources/references/medusa-workflows/updateOrderWorkflow",
                       "children": []
                     }
                   ]
@@ -7716,6 +7740,14 @@ const generatedgeneratedCommerceModulesSidebarSidebar = {
                       "loaded": true,
                       "isPathHref": true,
                       "type": "ref",
+                      "title": "updateOrderShippingMethodsTranslationsStep",
+                      "path": "https://docs.medusajs.com/resources/references/medusa-workflows/steps/updateOrderShippingMethodsTranslationsStep",
+                      "children": []
+                    },
+                    {
+                      "loaded": true,
+                      "isPathHref": true,
+                      "type": "ref",
                       "title": "updateOrdersStep",
                       "path": "https://docs.medusajs.com/resources/references/medusa-workflows/steps/updateOrdersStep",
                       "children": []
@@ -9576,6 +9608,14 @@ const generatedgeneratedCommerceModulesSidebarSidebar = {
               "type": "link",
               "path": "/commerce-modules/payment/payment-provider/stripe",
               "title": "Stripe",
+              "children": []
+            },
+            {
+              "loaded": true,
+              "isPathHref": true,
+              "type": "ref",
+              "path": "/integrations/guides/paypal",
+              "title": "PayPal",
               "children": []
             }
           ]
@@ -17227,6 +17267,14 @@ const generatedgeneratedCommerceModulesSidebarSidebar = {
               "loaded": true,
               "isPathHref": true,
               "type": "link",
+              "path": "/commerce-modules/translation/custom-data-models",
+              "title": "Translate Custom Models",
+              "children": []
+            },
+            {
+              "loaded": true,
+              "isPathHref": true,
+              "type": "link",
               "path": "/commerce-modules/translation/storefront",
               "title": "Translation in Storefront",
               "children": []
@@ -17619,6 +17667,15 @@ const generatedgeneratedCommerceModulesSidebarSidebar = {
                       "type": "link",
                       "path": "/references/translation/models/Locale",
                       "title": "Locale",
+                      "description": "",
+                      "children": []
+                    },
+                    {
+                      "loaded": true,
+                      "isPathHref": true,
+                      "type": "link",
+                      "path": "/references/translation/models/Settings",
+                      "title": "Settings",
                       "description": "",
                       "children": []
                     },
