@@ -3646,6 +3646,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@medusajs/framework@workspace:packages/core/framework"
   dependencies:
+    "@aws-sdk/client-dynamodb": ^3.218.0
     "@jercle/yargonaut": ^1.1.5
     "@medusajs/cli": 2.13.1
     "@medusajs/deps": 2.13.1
@@ -3658,6 +3659,7 @@ __metadata:
     "@types/express": ^4.17.21
     chokidar: ^4.0.3
     compression: ^1.8.1
+    connect-dynamodb: ^3.0.5
     connect-redis: 5.2.0
     cookie-parser: ^1.4.6
     cors: ^2.8.5
@@ -3671,15 +3673,9 @@ __metadata:
     tsconfig-paths: ^4.2.0
     zod-validation-error: 3.5.1
   peerDependencies:
-    "@aws-sdk/client-dynamodb": ^3.218.0
     "@medusajs/cli": 2.13.1
-    connect-dynamodb: ^3.0.5
     ioredis: ^5.4.1
   peerDependenciesMeta:
-    "@aws-sdk/client-dynamodb":
-      optional: true
-    connect-dynamodb:
-      optional: true
     ioredis:
       optional: true
     vite:
@@ -3866,6 +3862,7 @@ __metadata:
     "@medusajs/pricing": 2.13.1
     "@medusajs/product": 2.13.1
     "@medusajs/promotion": 2.13.1
+    "@medusajs/rbac": 2.13.1
     "@medusajs/region": 2.13.1
     "@medusajs/sales-channel": 2.13.1
     "@medusajs/settings": 2.13.1
@@ -4038,7 +4035,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@medusajs/rbac@workspace:packages/modules/rbac":
+"@medusajs/rbac@2.13.1, @medusajs/rbac@workspace:packages/modules/rbac":
   version: 0.0.0-use.local
   resolution: "@medusajs/rbac@workspace:packages/modules/rbac"
   dependencies:
@@ -4230,6 +4227,7 @@ __metadata:
     clsx: ^1.2.1
     copy-to-clipboard: ^3.3.3
     cva: 1.0.0-beta.1
+    lodash.isequal: ^4.5.0
     prism-react-renderer: ^2.0.6
     prismjs: ^1.30.0
     radix-ui: 1.1.2
@@ -24889,7 +24887,6 @@ __metadata:
   resolution: "root@workspace:."
   dependencies:
     "@atomico/rollup-plugin-sizes": ^1.1.4
-    "@aws-sdk/client-dynamodb": ^3.218.0
     "@changesets/changelog-github": ^0.4.8
     "@changesets/cli": ^2.26.0
     "@faker-js/faker": ^9.2.0
@@ -24947,7 +24944,6 @@ __metadata:
     axios-mock-adapter: ^1.19.0
     chromatic: ^6.20.0
     configstore: ^5.0.1
-    connect-dynamodb: ^3.0.5
     cross-env: ^5.2.1
     esbuild: ^0.25.0
     eslint: ^8.40.0

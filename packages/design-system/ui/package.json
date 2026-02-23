@@ -37,8 +37,8 @@
     "test:watch": "../../../node_modules/.bin/vitest",
     "test:coverage": "../../../node_modules/.bin/vitest --run --coverage",
     "lint": "eslint \"**/*.ts*\"",
-    "storybook": "storybook dev -p 6006",
-    "storybook:build": "storybook build",
+    "storybook": "../../../node_modules/.bin/storybook dev -p 6006",
+    "storybook:build": "../../../node_modules/.bin/storybook build",
     "typecheck": "yarn run -T tsc --noEmit"
   },
   "devDependencies": {
@@ -57,6 +57,7 @@
     "clsx": "^1.2.1",
     "copy-to-clipboard": "^3.3.3",
     "cva": "1.0.0-beta.1",
+    "lodash.isequal": "^4.5.0",
     "prism-react-renderer": "^2.0.6",
     "prismjs": "^1.30.0",
     "radix-ui": "1.1.2",
