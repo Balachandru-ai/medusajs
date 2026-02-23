@@ -47,6 +47,7 @@ import { columnRoutesMiddlewares } from "./admin/views/[entity]/columns/middlewa
 import { viewConfigurationRoutesMiddlewares } from "./admin/views/[entity]/configurations/middlewares"
 import { adminWorkflowsExecutionsMiddlewares } from "./admin/workflows-executions/middlewares"
 import { authRoutesMiddlewares } from "./auth/middlewares"
+import { tenantMiddleware } from "./tenant-middleware"
 
 import { adminIndexRoutesMiddlewares } from "./admin/index/middlewares"
 import { adminLocalesRoutesMiddlewares } from "./admin/locales/middlewares"
@@ -72,6 +73,10 @@ import { storeReturnReasonRoutesMiddlewares } from "./store/return-reasons/middl
 import { storeShippingOptionRoutesMiddlewares } from "./store/shipping-options/middlewares"
 
 export default defineMiddlewares([
+  {
+    matcher: "*",
+    middlewares: [tenantMiddleware],
+  },
   ...storeRoutesMiddlewares,
   ...adminCustomerGroupRoutesMiddlewares,
   ...adminCustomerRoutesMiddlewares,

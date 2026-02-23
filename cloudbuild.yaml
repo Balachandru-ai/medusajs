@@ -1,0 +1,84 @@
+steps:
+  - name: 'gcr.io/cloud-builders/docker'
+    id: 'build-backend'
+    args:
+      [
+        'build',
+        '-t',
+        'us-central1-docker.pkg.dev/${PROJECT_ID}/medusa/backend',
+        '.'
+      ]
+
+  - name: 'gcr.io/cloud-builders/docker'
+    id: 'push-backend'
+    args:
+      [
+        'push',
+        'us-central1-docker.pkg.dev/${PROJECT_ID}/medusa/backend'
+      ]
+
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    id: 'deploy-backend'
+    entrypoint: gcloud
+    args:
+      [
+        'run',
+        'deploy',
+        'medusa-backend',
+        '--image',
+        'us-central1-docker.pkg.dev/${PROJECT_ID}/medusa/backend',
+        '--region',
+        'us-central1',
+        '--platform',
+        'managed',
+        '--allow-unauthenticated',
+        '--set-env-vars',
+        'DATABASE_URL=${_DATABASE_URL}'
+      ]
+
+  - name: 'gcr.io/cloud-builders/docker'
+    id: 'build-storefront'
+    args:
+      [
+        'build',
+        '-t',
+        'us-central1-docker.pkg.dev/${PROJECT_ID}/medusa/storefront',
+        '-f',
+        'packages/saas-storefront/Dockerfile',
+        '.'
+      ]
+
+  - name: 'gcr.io/cloud-builders/docker'
+    id: 'push-storefront'
+    args:
+      [
+        'push',
+        'us-central1-docker.pkg.dev/${PROJECT_ID}/medusa/storefront'
+      ]
+
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    id: 'deploy-storefront'
+    entrypoint: gcloud
+    args:
+      [
+        'run',
+        'deploy',
+        'medusa-storefront',
+        '--image',
+        'us-central1-docker.pkg.dev/${PROJECT_ID}/medusa/storefront',
+        '--region',
+        'us-central1',
+        '--platform',
+        'managed',
+        '--allow-unauthenticated',
+        '--set-env-vars',
+        'MEDUSA_BACKEND_URL=${_MEDUSA_BACKEND_URL}'
+      ]
+
+images:
+  - 'us-central1-docker.pkg.dev/${PROJECT_ID}/medusa/backend'
+  - 'us-central1-docker.pkg.dev/${PROJECT_ID}/medusa/storefront'
+
+substitutions:
+  _DATABASE_URL: 'يرجى_وضع_رابط_قاعدة_البيانات_هنا'
+  _MEDUSA_BACKEND_URL: 'يرجى_وضع_رابط_المحرك_هنا'
