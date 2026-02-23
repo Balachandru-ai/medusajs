@@ -8,6 +8,7 @@ import {
   InternalModuleDeclaration,
   MedusaCloudOptions,
 } from "@medusajs/types"
+import { FeatureFlag } from "../feature-flags/flag-router"
 import {
   MODULE_PACKAGE_NAMES,
   Modules,
@@ -195,8 +196,14 @@ function resolveModules(
     { resolve: MODULE_PACKAGE_NAMES[Modules.ORDER] },
     { resolve: MODULE_PACKAGE_NAMES[Modules.SETTINGS] },
 
-    // TODO: re-enable this once we have the final release
-    // { resolve: MODULE_PACKAGE_NAMES[Modules.TRANSLATION] },
+    {
+      resolve: MODULE_PACKAGE_NAMES[Modules.TRANSLATION],
+      disable: !FeatureFlag.isFeatureEnabled("translation"),
+    },
+    {
+      resolve: MODULE_PACKAGE_NAMES[Modules.RBAC],
+      disable: !FeatureFlag.isFeatureEnabled("rbac"),
+    },
 
     {
       resolve: MODULE_PACKAGE_NAMES[Modules.AUTH],
@@ -495,6 +502,7 @@ function normalizeAdminConfig(
   return {
     backendUrl: process.env.MEDUSA_BACKEND_URL || DEFAULT_ADMIN_URL,
     path: "/app",
+    maxUploadFileSize: 1024 * 1024, // 1MB default
     ...adminConfig,
   }
 }
