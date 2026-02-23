@@ -166,7 +166,7 @@ export interface BaseProductVariant {
   /**
    * The variant's images.
    */
-  images: BaseProductImage[] | null
+  images?: BaseProductImage[] | null
   /**
    * Whether the variant can be ordered even if it's out of stock.
    */
