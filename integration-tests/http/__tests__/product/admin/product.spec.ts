@@ -953,6 +953,36 @@ medusaIntegrationTestRunner({
           ])
         })
 
+        it("should return products filtered by external_id", async () => {
+
+          const newProduct = (
+            await api.post(
+              "/admin/products",
+              getProductFixture({
+                title: "Test saleschannel",
+                external_id: "test-external-id",
+                shipping_profile_id: shippingProfile.id,
+              }),
+              adminHeaders
+            )
+          ).data.product
+
+          const res = await api.get(
+            `/admin/products?external_id[]=test-external-id`,
+            adminHeaders
+          )
+
+          expect(res.status).toEqual(200)
+          expect(res.data.products.length).toEqual(1)
+          expect(res.data.products).toEqual([
+            expect.objectContaining({
+              id: newProduct.id,
+            }),
+          ])
+        })
+
+
+
         it("returns a list of products filtered by variants[ean]", async () => {
           const productWithEan = await api.post(
             "/admin/products",
