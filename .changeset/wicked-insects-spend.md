@@ -3,4 +3,4 @@
 "@medusajs/types": patch
 ---
 
-Add filtering of products based on external_id
+chore(types): add external_id to product list params type
