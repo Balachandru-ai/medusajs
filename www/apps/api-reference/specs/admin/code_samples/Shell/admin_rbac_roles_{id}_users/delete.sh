@@ -1,6 +1,8 @@
-curl -X POST '{backend_url}/admin/store-credit-accounts/{id}/credit' \
+curl -X DELETE '{backend_url}/admin/rbac/roles/{id}/users' \
 -H 'Authorization: Bearer {access_token}' \
 -H 'Content-Type: application/json' \
 --data-raw '{
-  "amount": 0
+  "users": [
+    "{value}"
+  ]
 }'

@@ -1,13 +1,13 @@
 /**
- * @oas [post] /admin/store-credit-accounts/{id}/credit
- * operationId: PostStoreCreditAccountsIdCredit
- * summary: Add Credit
- * description: Add credit to a store credit account.
+ * @oas [delete] /admin/rbac/roles/{id}/users
+ * operationId: DeleteRbacRolesIdUsers
+ * summary: Remove User from Rbac
+ * description: Remove a User from a rbac.
  * x-authenticated: true
  * parameters:
  *   - name: id
  *     in: path
- *     description: The store credit account's ID.
+ *     description: The rbac's ID.
  *     required: true
  *     schema:
  *       type: string
@@ -19,26 +19,24 @@
  *   content:
  *     application/json:
  *       schema:
- *         $ref: "#/components/schemas/AdminCreditStoreCreditAccountParams"
+ *         $ref: "#/components/schemas/AdminRemoveRoleUsers"
  * x-codeSamples:
  *   - lang: Shell
  *     label: cURL
  *     source: |-
- *       curl -X POST '{backend_url}/admin/store-credit-accounts/{id}/credit' \
+ *       curl -X DELETE '{backend_url}/admin/rbac/roles/{id}/users' \
  *       -H 'Authorization: Bearer {access_token}' \
  *       -H 'Content-Type: application/json' \
  *       --data-raw '{
- *         "amount": 0
+ *         "users": [
+ *           "{value}"
+ *         ]
  *       }'
  * tags:
- *   - Store Credit Accounts
+ *   - Rbac
  * responses:
  *   "200":
  *     description: OK
- *     content:
- *       application/json:
- *         schema:
- *           $ref: "#/components/schemas/AdminStoreCreditAccountResponse"
  *   "400":
  *     $ref: "#/components/responses/400_error"
  *   "401":
@@ -51,10 +49,8 @@
  *     $ref: "#/components/responses/invalid_request_error"
  *   "500":
  *     $ref: "#/components/responses/500_error"
- * x-badges:
- *   - text: Cloud
- *     description: |
- *       This API route is only available in [Medusa Cloud](https://docs.medusajs.com/cloud/loyalty-plugin).
+ * x-workflow: removeUserRolesWorkflow
+ * x-events: []
  * 
 */
 
