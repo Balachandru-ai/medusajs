@@ -1,5 +1,5 @@
 ---
-"@medusajs/core-flows": minor
+"@medusajs/core-flows": patch
 "@medusajs/order": patch
 ---
 
