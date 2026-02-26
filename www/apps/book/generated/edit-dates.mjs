@@ -19,7 +19,7 @@ export const generatedEditDates = {
   "app/learn/fundamentals/modules/container/page.mdx": "2025-07-31T14:24:04.087Z",
   "app/learn/fundamentals/workflows/execute-another-workflow/page.mdx": "2025-08-01T07:28:51.036Z",
   "app/learn/fundamentals/modules/loaders/page.mdx": "2025-10-09T11:41:31.724Z",
-  "app/learn/fundamentals/admin/widgets/page.mdx": "2025-07-25T15:08:07.035Z",
+  "app/learn/fundamentals/admin/widgets/page.mdx": "2026-02-26T20:49:39.880Z",
   "app/learn/fundamentals/data-models/page.mdx": "2025-10-28T16:01:48.099Z",
   "app/learn/fundamentals/modules/remote-link/page.mdx": "2024-09-30T08:43:53.127Z",
   "app/learn/fundamentals/api-routes/protected-routes/page.mdx": "2025-06-19T16:04:36.064Z",

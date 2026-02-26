@@ -68,10 +68,7 @@ In the example above, the widget is injected at the top of a product’s details
 
 You export the `ProductWidget` component, which displays the heading `Product Widget`. In the widget, you use [Medusa UI](!ui!) to customize the dashboard with the same components used to build it.
 
-To export the widget's configuration, you use `defineWidgetConfig` from the Admin Extension SDK. It accepts an object as a parameter with the following properties:
-
-- `zone`: a string or an array of strings, each being the name of the zone to inject the widget into.
-- `rank`: an optional number to order the widget among other widgets in the same zone. Learn more in the [Specify Widget Rank](#specify-widget-rank) section.
+To export the widget's configuration, you use `defineWidgetConfig` from the Admin Extension SDK. It accepts an object as a parameter with the `zone` property, whose value is a string or an array of strings, each being the name of the zone to inject the widget into.
 
 <Note title="Important" type="warning">
 
@@ -95,6 +92,8 @@ Then, open a product's details page. You'll find your custom widget at the top o
 
 <Note>
 
+{/* TODO add version */}
+
 Widget ranking is available starting Medusa v2.x.x.
 
 </Note>
@@ -108,7 +107,7 @@ For example, consider you have the following widgets in the same zone:
 <CodeTabs group="widgets">
   <CodeTab label="Widget 1" value="widget-1">
 
-```tsx title="src/admin/widgets/product-widget-first.tsx" highlights={[["14"]]}
+```tsx title="src/admin/widgets/product-widget-first.tsx" highlights={[["16"]]}
 import { defineWidgetConfig } from "@medusajs/admin-sdk"
 import { Container, Heading } from "@medusajs/ui"
 
@@ -133,7 +132,7 @@ export default ProductWidgetFirst
   </CodeTab>
   <CodeTab label="Widget 2" value="widget-2">
 
-```tsx title="src/admin/widgets/product-widget-second.tsx" highlights={[["14"]]}
+```tsx title="src/admin/widgets/product-widget-second.tsx" highlights={[["16"]]}
 import { defineWidgetConfig } from "@medusajs/admin-sdk"
 import { Container, Heading } from "@medusajs/ui"
 
