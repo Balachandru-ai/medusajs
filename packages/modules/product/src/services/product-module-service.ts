@@ -9,7 +9,10 @@ import {
   ModuleJoinerConfig,
   ModulesSdkTypes,
   ProductTypes,
+  RestoreReturn,
+  SoftDeleteReturn,
 } from "@medusajs/framework/types"
+import { CreateProductOptionDTO } from "@medusajs/types"
 import {
   Product,
   ProductCategory,
@@ -17,6 +20,8 @@ import {
   ProductImage,
   ProductOption,
   ProductOptionValue,
+  ProductProductOption,
+  ProductProductOptionValue,
   ProductTag,
   ProductType,
   ProductVariant,
@@ -43,23 +48,26 @@ import {
   Modules,
   partitionArray,
   ProductStatus,
+  promiseAll,
   removeUndefined,
   toHandle,
 } from "@medusajs/framework/utils"
-import { EntityManager } from "@mikro-orm/core"
+import { EntityManager } from "@medusajs/framework/mikro-orm/core"
 import { ProductRepository } from "../repositories"
 import {
   UpdateCategoryInput,
   UpdateCollectionInput,
   UpdateProductInput,
+  FilterableProduct,
   UpdateProductOptionInput,
   UpdateProductVariantInput,
   UpdateTagInput,
   UpdateTypeInput,
   VariantImageInputArray,
 } from "../types"
-import { eventBuilders } from "../utils/events"
+import { computeOptionLinkChanges, eventBuilders } from "../utils"
 import { joinerConfig } from "./../joiner-config"
+import { buildOptionValueFilterQuery } from "../utils/build-option-value-filter-query"
 
 type InjectedDependencies = {
   baseRepository: DAL.RepositoryService
@@ -73,6 +81,8 @@ type InjectedDependencies = {
   productImageProductService: ModulesSdkTypes.IMedusaInternalService<any>
   productTypeService: ModulesSdkTypes.IMedusaInternalService<any>
   productOptionService: ModulesSdkTypes.IMedusaInternalService<any>
+  productProductOptionService: ModulesSdkTypes.IMedusaInternalService<any>
+  productProductOptionValueService: ModulesSdkTypes.IMedusaInternalService<any>
   productOptionValueService: ModulesSdkTypes.IMedusaInternalService<any>
   productVariantProductImageService: ModulesSdkTypes.IMedusaInternalService<any>
   [Modules.EVENT_BUS]?: IEventBusModuleService
@@ -107,6 +117,9 @@ export default class ProductModuleService
     ProductImage: {
       dto: ProductTypes.ProductImageDTO
     }
+    ProductProductOption: {
+      dto: ProductTypes.ProductProductOptionDTO
+    }
   }>({
     Product,
     ProductCategory,
@@ -117,6 +130,7 @@ export default class ProductModuleService
     ProductType,
     ProductVariant,
     ProductImage,
+    ProductProductOption,
   })
   implements ProductTypes.IProductModuleService
 {
@@ -147,6 +161,12 @@ export default class ProductModuleService
   protected readonly productOptionValueService_: ModulesSdkTypes.IMedusaInternalService<
     InferEntityType<typeof ProductOptionValue>
   >
+  protected readonly productProductOptionService_: ModulesSdkTypes.IMedusaInternalService<
+    InferEntityType<typeof ProductProductOption>
+  >
+  protected readonly productProductOptionValueService_: ModulesSdkTypes.IMedusaInternalService<
+    InferEntityType<typeof ProductProductOptionValue>
+  >
   protected readonly productVariantProductImageService_: ModulesSdkTypes.IMedusaInternalService<
     InferEntityType<typeof ProductVariantProductImage>
   >
@@ -164,6 +184,8 @@ export default class ProductModuleService
       productImageService,
       productTypeService,
       productOptionService,
+      productProductOptionService,
+      productProductOptionValueService,
       productOptionValueService,
       productVariantProductImageService,
       [Modules.EVENT_BUS]: eventBusModuleService,
@@ -184,6 +206,8 @@ export default class ProductModuleService
     this.productImageService_ = productImageService
     this.productTypeService_ = productTypeService
     this.productOptionService_ = productOptionService
+    this.productProductOptionService_ = productProductOptionService
+    this.productProductOptionValueService_ = productProductOptionValueService
     this.productOptionValueService_ = productOptionValueService
     this.productVariantProductImageService_ = productVariantProductImageService
     this.eventBusModuleService_ = eventBusModuleService
@@ -201,10 +225,22 @@ export default class ProductModuleService
     @MedusaContext() sharedContext?: Context
   ): Promise<ProductTypes.ProductDTO> {
     const relationsSet = new Set(config?.relations ?? [])
+
+    relationsSet.delete("product_options")
+    relationsSet.delete("product_options.values")
+    relationsSet.delete("product_options.product_option")
+
     const shouldLoadVariantImages = relationsSet.has("variants.images")
+    const shouldFilterOptionValues = relationsSet.has("options.values")
+
     if (shouldLoadVariantImages) {
       relationsSet.add("variants")
       relationsSet.add("images")
+    }
+
+    if (shouldFilterOptionValues) {
+      relationsSet.add("options")
+      relationsSet.add("options.values")
     }
 
     const product = await this.productService_.retrieve(
@@ -224,7 +260,14 @@ export default class ProductModuleService
       )
     }
 
-    return this.baseRepository_.serialize<ProductTypes.ProductDTO>(product)
+    const serializedProduct =
+      await this.baseRepository_.serialize<ProductTypes.ProductDTO>(product)
+
+    if (shouldFilterOptionValues) {
+      await this.filterOptionValues(serializedProduct, sharedContext)
+    }
+
+    return serializedProduct
   }
 
   @InjectManager()
@@ -234,6 +277,13 @@ export default class ProductModuleService
     config?: FindConfig<ProductTypes.ProductDTO>,
     sharedContext?: Context
   ): Promise<ProductTypes.ProductDTO[]> {
+    const { filters: normalizedFilters, shouldReturnEmpty } =
+      await this.applyOptionValueFilter_(filters, sharedContext)
+
+    if (shouldReturnEmpty) {
+      return []
+    }
+
     const relationsSet = new Set(config?.relations ?? [])
     const shouldLoadVariantImages = relationsSet.has("variants.images")
     if (shouldLoadVariantImages) {
@@ -241,8 +291,15 @@ export default class ProductModuleService
       relationsSet.add("images")
     }
 
+    const shouldFilterOptionValues = relationsSet.has("options.values")
+
+    if (shouldFilterOptionValues) {
+      relationsSet.add("options")
+      relationsSet.add("options.values")
+    }
+
     const products = await this.productService_.list(
-      filters,
+      normalizedFilters,
       this.getProductFindConfig_({
         ...config,
         relations: Array.from(relationsSet),
@@ -262,7 +319,15 @@ export default class ProductModuleService
       }
     }
 
-    return this.baseRepository_.serialize<ProductTypes.ProductDTO[]>(products)
+    const serializedProducts = await this.baseRepository_.serialize<
+      ProductTypes.ProductDTO[]
+    >(products)
+
+    if (shouldFilterOptionValues) {
+      await this.filterOptionValues(serializedProducts, sharedContext)
+    }
+
+    return serializedProducts
   }
 
   @InjectManager()
@@ -272,11 +337,26 @@ export default class ProductModuleService
     config?: FindConfig<ProductTypes.ProductDTO>,
     sharedContext?: Context
   ): Promise<[ProductTypes.ProductDTO[], number]> {
+    const { filters: normalizedFilters, shouldReturnEmpty } =
+      await this.applyOptionValueFilter_(filters, sharedContext)
+
+    if (shouldReturnEmpty) {
+      return [[], 0]
+    }
+
     const shouldLoadVariantImages =
       config?.relations?.includes("variants.images")
+    const shouldFilterOptionValues =
+      config?.relations?.includes("options.values")
 
     // Ensure we load necessary relations
-    const relations = [...(config?.relations || [])]
+    let relations = [...(config?.relations || [])]
+    relations = relations.filter(
+      (relation) =>
+        relation !== "product_options" &&
+        relation !== "product_options.values" &&
+        relation !== "product_options.product_option"
+    )
     if (shouldLoadVariantImages) {
       if (!relations.includes("variants")) {
         relations.push("variants")
@@ -286,8 +366,17 @@ export default class ProductModuleService
       }
     }
 
+    if (shouldFilterOptionValues) {
+      if (!relations.includes("options")) {
+        relations.push("options")
+      }
+      if (!relations.includes("options.values")) {
+        relations.push("options.values")
+      }
+    }
+
     const [products, count] = await this.productService_.listAndCount(
-      filters,
+      normalizedFilters,
       this.getProductFindConfig_({ ...config, relations }),
       sharedContext
     )
@@ -307,7 +396,60 @@ export default class ProductModuleService
     const serializedProducts = await this.baseRepository_.serialize<
       ProductTypes.ProductDTO[]
     >(products)
+
+    if (shouldFilterOptionValues) {
+      await this.filterOptionValues(serializedProducts, sharedContext)
+    }
+
     return [serializedProducts, count]
+  }
+
+  protected async applyOptionValueFilter_(
+    filters?: ProductTypes.FilterableProductProps,
+    sharedContext?: Context
+  ): Promise<{
+    filters?: ProductTypes.FilterableProductProps
+    shouldReturnEmpty: boolean
+  }> {
+    if (!filters?.option_value_id) {
+      return {
+        filters: filters,
+        shouldReturnEmpty: false,
+      }
+    }
+
+    const optionValueIds = Array.isArray(filters.option_value_id)
+      ? filters.option_value_id
+      : [filters.option_value_id]
+
+    if (!optionValueIds.length) {
+      return {
+        filters: filters,
+        shouldReturnEmpty: false,
+      }
+    }
+
+    const optionValueFilter = await buildOptionValueFilterQuery(
+      optionValueIds,
+      sharedContext
+    )
+
+    if (!optionValueFilter) {
+      return {
+        filters: filters,
+        shouldReturnEmpty: true,
+      }
+    }
+
+    const { option_value_id, ...restFilters } = filters
+
+    return {
+      filters: {
+        ...restFilters,
+        ...optionValueFilter,
+      },
+      shouldReturnEmpty: false,
+    }
   }
 
   protected getProductFindConfig_(
@@ -378,10 +520,12 @@ export default class ProductModuleService
 
     const productOptions = await this.productOptionService_.list(
       {
-        product_id: [...new Set<string>(data.map((v) => v.product_id!))],
+        products: {
+          id: [...new Set<string>(data.map((v) => v.product_id!))],
+        },
       },
       {
-        relations: ["values"],
+        relations: ["values", "products"],
       },
       sharedContext
     )
@@ -545,11 +689,13 @@ export default class ProductModuleService
 
     const productOptions = await this.productOptionService_.list(
       {
-        product_id: Array.from(
-          new Set(variantsWithProductId.map((v) => v.product_id!))
-        ),
+        products: {
+          id: Array.from(
+            new Set(variantsWithProductId.map((v) => v.product_id!))
+          ),
+        },
       },
-      { relations: ["values"] },
+      { relations: ["values", "products"] },
       sharedContext
     )
 
@@ -876,26 +1022,32 @@ export default class ProductModuleService
     data: ProductTypes.CreateProductOptionDTO[],
     @MedusaContext() sharedContext: Context = {}
   ): Promise<InferEntityType<typeof ProductOption>[]> {
-    if (data.some((v) => !v.product_id)) {
-      throw new MedusaError(
-        MedusaError.Types.INVALID_DATA,
-        "Tried to create options without specifying a product_id"
-      )
-    }
-
     const normalizedInput = data.map((opt) => {
+      Object.keys(opt.ranks ?? []).forEach((value) => {
+        if (!opt.values.includes(value)) {
+          throw new MedusaError(
+            MedusaError.Types.INVALID_DATA,
+            `Value "${value}" is assigned a rank but is not defined in the list of values.`
+          )
+        }
+      })
+
       return {
         ...opt,
         values: opt.values?.map((v) => {
-          return typeof v === "string" ? { value: v } : v
+          // Normalize each value into an object and attach rank if available
+          const valueObj = isString(v) ? { value: v } : v
+          const rank =
+            opt.ranks && isString(v)
+              ? opt.ranks[v]
+              : opt.ranks?.[valueObj.value]
+
+          return rank !== undefined ? { ...valueObj, rank } : valueObj
         }),
       }
     })
 
-    return await this.productOptionService_.create(
-      normalizedInput,
-      sharedContext
-    )
+    return this.productOptionService_.create(normalizedInput, sharedContext)
   }
 
   async upsertProductOptions(
@@ -964,8 +1116,20 @@ export default class ProductModuleService
   ): Promise<ProductTypes.ProductOptionDTO[] | ProductTypes.ProductOptionDTO> {
     let normalizedInput: UpdateProductOptionInput[] = []
     if (isString(idOrSelector)) {
-      await this.productOptionService_.retrieve(idOrSelector, {}, sharedContext)
+      const option = await this.productOptionService_.retrieve(
+        idOrSelector,
+        {},
+        sharedContext
+      )
       normalizedInput = [{ id: idOrSelector, ...data }]
+
+      if (data.is_exclusive && option.is_exclusive === false) {
+        // disable changing global option to exclusive
+        throw new MedusaError(
+          MedusaError.Types.INVALID_DATA,
+          `Cannot change product option: ${option.id} from global to exclusive.`
+        )
+      }
     } else {
       const options = await this.productOptionService_.list(
         idOrSelector,
@@ -973,10 +1137,19 @@ export default class ProductModuleService
         sharedContext
       )
 
-      normalizedInput = options.map((option) => ({
-        id: option.id,
-        ...data,
-      }))
+      normalizedInput = options.map((option) => {
+        if (data.is_exclusive && option.is_exclusive === false) {
+          throw new MedusaError(
+            MedusaError.Types.INVALID_DATA,
+            `Cannot change product option: ${option.id} from global to exclusive.`
+          )
+        }
+
+        return {
+          id: option.id,
+          ...data,
+        }
+      })
     }
 
     const options = await this.updateOptions_(normalizedInput, sharedContext)
@@ -1017,37 +1190,122 @@ export default class ProductModuleService
       )
     }
 
+    const dbOptionsMap = new Map<string, InferEntityType<typeof ProductOption>>(
+      dbOptions.map((option) => [option.id, option])
+    )
+
+    // Check if any option values are being removed and if they're associated with products
+    const removedValueIds = new Set<string>()
+    for (const opt of data) {
+      if (!isDefined(opt.values)) {
+        continue
+      }
+
+      const dbOption = dbOptionsMap.get(opt.id)
+
+      if (!dbOption) {
+        continue
+      }
+
+      const newValues = new Set<string>(
+        opt.values.map((v) => {
+          if (isString(v)) {
+            return v
+          }
+          return (v as any).value
+        })
+      )
+
+      for (const existingValue of dbOption.values || []) {
+        if (!newValues.has(existingValue.value)) {
+          removedValueIds.add(existingValue.id)
+        }
+      }
+    }
+
+    if (removedValueIds.size > 0) {
+      const productProductOptionValues =
+        await this.productProductOptionValueService_.list(
+          {
+            product_option_value_id: [...removedValueIds],
+          },
+          {
+            select: ["id"],
+            take: 1,
+          },
+          sharedContext
+        )
+
+      if (productProductOptionValues.length > 0) {
+        throw new MedusaError(
+          MedusaError.Types.INVALID_DATA,
+          "Cannot delete product option values that are associated with products."
+        )
+      }
+    }
+
     // Data normalization
     const normalizedInput = data.map((opt) => {
-      const dbValues = dbOptions.find(({ id }) => id === opt.id)?.values || []
-      const normalizedValues = opt.values?.map((v) => {
-        return typeof v === "string" ? { value: v } : v
-      })
+      const dbOption = dbOptions.find(({ id }) => id === opt.id)
+      const dbValues = dbOption?.values || []
 
+      if (opt.ranks) {
+        const validValues = opt.values ?? dbValues.map((v) => v.value)
+
+        Object.keys(opt.ranks).forEach((value) => {
+          if (!validValues.includes(value)) {
+            throw new MedusaError(
+              MedusaError.Types.INVALID_DATA,
+              `Value "${value}" is assigned a rank but is not defined in the list of values.`
+            )
+          }
+        })
+      }
+
+      let normalizedValues
+      if (opt.values) {
+        // If new values are provided → normalize and apply ranks
+        normalizedValues = opt.values.map((v) => {
+          const valueObj = isString(v) ? { value: v } : v
+
+          const rank =
+            opt.ranks && isString(v)
+              ? opt.ranks[v]
+              : opt.ranks?.[valueObj.value]
+
+          const rankedValue =
+            rank !== undefined ? { ...valueObj, rank } : valueObj
+
+          if ("id" in rankedValue) {
+            return rankedValue
+          }
+
+          const dbVal = dbValues.find(
+            (dbVal) => dbVal.value === rankedValue.value
+          )
+          if (!dbVal) {
+            return rankedValue
+          }
+
+          return {
+            id: dbVal.id,
+            ...rankedValue,
+          }
+        })
+      } else if (opt.ranks) {
+        // If only ranks were provided → update existing DB values with ranks
+        normalizedValues = dbValues.map((dbVal) => {
+          const rank = opt.ranks![dbVal.value]
+          return rank !== undefined
+            ? { id: dbVal.id, value: dbVal.value, rank }
+            : { id: dbVal.id, value: dbVal.value }
+        })
+      }
+
+      const { ranks, ...cleanOpt } = opt
       return {
-        ...opt,
-        ...(normalizedValues
-          ? {
-              // Oftentimes the options are only passed by value without an id, even if they exist in the DB
-              values: normalizedValues.map((normVal) => {
-                if ("id" in normVal) {
-                  return normVal
-                }
-
-                const dbVal = dbValues.find(
-                  (dbVal) => dbVal.value === normVal.value
-                )
-                if (!dbVal) {
-                  return normVal
-                }
-
-                return {
-                  id: dbVal.id,
-                  value: normVal.value,
-                }
-              }),
-            }
-          : {}),
+        ...cleanOpt,
+        ...(normalizedValues ? { values: normalizedValues } : {}),
       } as UpdateProductOptionInput
     })
 
@@ -1059,6 +1317,659 @@ export default class ProductModuleService
       )
 
     return productOptions
+  }
+
+  @InjectManager()
+  // @ts-expect-error
+  async softDeleteProductOptions<
+    TReturnableLinkableKeys extends string = string
+  >(
+    primaryKeyValues: string | object | string[] | object[],
+    config?: SoftDeleteReturn<TReturnableLinkableKeys>,
+    @MedusaContext() sharedContext: Context = {}
+  ): Promise<Record<string, string[]> | void> {
+    return await this.softDeleteProductOptions_(
+      primaryKeyValues,
+      config,
+      sharedContext
+    )
+  }
+
+  @InjectTransactionManager()
+  protected async softDeleteProductOptions_<
+    TReturnableLinkableKeys extends string = string
+  >(
+    primaryKeyValues: string | object | string[] | object[],
+    config?: SoftDeleteReturn<TReturnableLinkableKeys>,
+    @MedusaContext() sharedContext: Context = {}
+  ): Promise<Record<string, string[]> | void> {
+    const optionIds = Array.isArray(primaryKeyValues)
+      ? primaryKeyValues.map((v) => (isString(v) ? v : (v as any).id))
+      : [
+          isString(primaryKeyValues)
+            ? primaryKeyValues
+            : (primaryKeyValues as any).id,
+        ]
+
+    const canDelete = await this.productRepository_.canDeleteProductOption(
+      optionIds,
+      sharedContext
+    )
+
+    if (!canDelete) {
+      throw new MedusaError(
+        MedusaError.Types.INVALID_DATA,
+        "Cannot delete product options that are associated with products."
+      )
+    }
+
+    const productProductOptions = await this.productProductOptionService_.list(
+      {
+        product_option_id: optionIds,
+      },
+      {
+        select: ["id"],
+      },
+      sharedContext
+    )
+
+    const productProductOptionIds = productProductOptions.map((ppo) => ppo.id)
+
+    if (productProductOptionIds.length) {
+      const productProductOptionValues =
+        await this.productProductOptionValueService_.list(
+          {
+            product_product_option_id: productProductOptionIds,
+          },
+          {
+            select: ["id"],
+          },
+          sharedContext
+        )
+
+      const productProductOptionValueIds = productProductOptionValues.map(
+        (ppov) => ppov.id
+      )
+
+      if (productProductOptionValueIds.length) {
+        await this.productProductOptionValueService_.softDelete(
+          productProductOptionValueIds,
+          sharedContext
+        )
+      }
+    }
+
+    if (productProductOptionIds.length) {
+      await this.productProductOptionService_.softDelete(
+        productProductOptionIds,
+        sharedContext
+      )
+    }
+
+    return await super.softDeleteProductOptions(
+      primaryKeyValues,
+      config,
+      sharedContext
+    )
+  }
+
+  @InjectManager()
+  @EmitEvents()
+  // @ts-ignore
+  async restoreProductOptions<TReturnableLinkableKeys extends string>(
+    ids: string | object | string[] | object[],
+    config?: RestoreReturn<TReturnableLinkableKeys>,
+    @MedusaContext() sharedContext: Context = {}
+  ): Promise<Record<string, string[]> | void> {
+    return await this.restoreProductOptions_(ids, config, sharedContext)
+  }
+
+  @InjectTransactionManager()
+  protected async restoreProductOptions_<
+    TReturnableLinkableKeys extends string
+  >(
+    ids: string | object | string[] | object[],
+    config?: RestoreReturn<TReturnableLinkableKeys>,
+    @MedusaContext() sharedContext: Context = {}
+  ): Promise<Record<string, string[]> | void> {
+    const optionIds = Array.isArray(ids)
+      ? ids.map((v) => (isString(v) ? v : (v as any).id))
+      : [isString(ids) ? ids : (ids as any).id]
+
+    const productProductOptions = await this.productProductOptionService_.list(
+      {
+        product_option_id: optionIds,
+      },
+      {
+        select: ["id"],
+        withDeleted: true,
+      },
+      sharedContext
+    )
+
+    const productProductOptionIds = productProductOptions.map((ppo) => ppo.id)
+
+    if (productProductOptionIds.length) {
+      const productProductOptionValues =
+        await this.productProductOptionValueService_.list(
+          {
+            product_product_option_id: productProductOptionIds,
+          },
+          {
+            select: ["id"],
+            withDeleted: true,
+          },
+          sharedContext
+        )
+
+      const productProductOptionValueIds = productProductOptionValues.map(
+        (ppov) => ppov.id
+      )
+
+      if (productProductOptionValueIds.length) {
+        await this.productProductOptionValueService_.restore(
+          productProductOptionValueIds,
+          sharedContext
+        )
+      }
+    }
+
+    if (productProductOptionIds.length) {
+      await this.productProductOptionService_.restore(
+        productProductOptionIds,
+        sharedContext
+      )
+    }
+
+    return await super.restoreProductOptions(ids, config, sharedContext)
+  }
+
+  async addProductOptionToProduct(
+    productOptionProductPair: ProductTypes.ProductOptionProductPair,
+    sharedContext?: Context
+  ): Promise<{ id: string }>
+
+  async addProductOptionToProduct(
+    productOptionProductPairs: ProductTypes.ProductOptionProductPair[],
+    sharedContext?: Context
+  ): Promise<{ id: string }[]>
+
+  @InjectManager()
+  @EmitEvents()
+  async addProductOptionToProduct(
+    data:
+      | ProductTypes.ProductOptionProductPair
+      | ProductTypes.ProductOptionProductPair[],
+    @MedusaContext() sharedContext: Context = {}
+  ): Promise<{ id: string } | { id: string }[]> {
+    const productOptionProducts = await this.addProductOptionToProduct_(
+      data,
+      sharedContext
+    )
+
+    return productOptionProducts
+  }
+
+  @InjectTransactionManager()
+  protected async addProductOptionToProduct_(
+    data:
+      | ProductTypes.ProductOptionProductPair
+      | ProductTypes.ProductOptionProductPair[],
+    @MedusaContext() sharedContext: Context = {}
+  ): Promise<{ id: string } | { id: string }[]> {
+    const pairs = Array.isArray(data) ? data : [data]
+    if (Array.isArray(data) && !data.length) {
+      return []
+    }
+
+    const uniqueOptionIds = [...new Set(pairs.map((p) => p.product_option_id))]
+
+    const [options, assignmentConflicts] = await promiseAll([
+      this.productOptionService_.list(
+        { id: uniqueOptionIds },
+        { relations: ["values"] },
+        sharedContext
+      ),
+      this.productRepository_.canAssignProductOptionToProduct(
+        pairs.map((pair) => ({
+          productId: pair.product_id,
+          optionId: pair.product_option_id,
+        })),
+        sharedContext
+      ),
+    ])
+
+    if (assignmentConflicts.alreadyLinkedOptionIds.length) {
+      throw new MedusaError(
+        MedusaError.Types.INVALID_DATA,
+        `Product options are already linked to products: ${assignmentConflicts.alreadyLinkedOptionIds.join(
+          ", "
+        )}`
+      )
+    }
+
+    if (assignmentConflicts.exclusiveOptionIds.length) {
+      throw new MedusaError(
+        MedusaError.Types.INVALID_DATA,
+        `Product options are already assigned to another product: ${assignmentConflicts.exclusiveOptionIds.join(
+          ", "
+        )}`
+      )
+    }
+
+    const optionValuesMap = new Map(
+      options.map((opt) => [opt.id, opt.values || []])
+    )
+
+    const pposToCreate: Array<{
+      product_id: string
+      product_option_id: string
+    }> = []
+
+    for (const pair of pairs) {
+      pposToCreate.push({
+        product_id: pair.product_id,
+        product_option_id: pair.product_option_id,
+      })
+    }
+
+    const createdPPOs = pposToCreate.length
+      ? await this.productProductOptionService_.create(
+          pposToCreate,
+          sharedContext
+        )
+      : []
+
+    const ppoIdByKey = new Map<string, string>()
+    for (const ppo of createdPPOs) {
+      const key = `${ppo.product_id}_${ppo.product_option_id}`
+      ppoIdByKey.set(key, ppo.id)
+    }
+
+    const ppovToCreate: Array<{
+      product_product_option_id: string
+      product_option_value_id: string
+    }> = []
+    for (const pair of pairs) {
+      const key = `${pair.product_id}_${pair.product_option_id}`
+      const productProductOptionId = ppoIdByKey.get(key)
+      if (!productProductOptionId) {
+        continue
+      }
+
+      const allValues = optionValuesMap.get(pair.product_option_id) || []
+      const valueIds =
+        pair.product_option_value_ids ?? allValues.map((v) => v.id)
+
+      for (const valueId of valueIds) {
+        ppovToCreate.push({
+          product_product_option_id: productProductOptionId,
+          product_option_value_id: valueId,
+        })
+      }
+    }
+
+    if (ppovToCreate.length) {
+      await this.productProductOptionValueService_.create(
+        ppovToCreate,
+        sharedContext
+      )
+    }
+
+    const result = pairs.map((pair) => ({
+      id: ppoIdByKey.get(`${pair.product_id}_${pair.product_option_id}`)!,
+    }))
+
+    return Array.isArray(data) ? result : result[0]
+  }
+
+  async removeProductOptionFromProduct(
+    groupCustomerPair: ProductTypes.ProductOptionProductPair,
+    sharedContext?: Context
+  ): Promise<void>
+
+  async removeProductOptionFromProduct(
+    groupCustomerPairs: ProductTypes.ProductOptionProductPair[],
+    sharedContext?: Context
+  ): Promise<void>
+
+  @InjectManager()
+  @EmitEvents()
+  async removeProductOptionFromProduct(
+    data:
+      | ProductTypes.ProductOptionProductPair
+      | ProductTypes.ProductOptionProductPair[],
+    @MedusaContext() sharedContext: Context = {}
+  ): Promise<void> {
+    await this.removeProductOptionFromProduct_(data, new Set(), sharedContext)
+  }
+
+  @InjectTransactionManager()
+  protected async removeProductOptionFromProduct_(
+    data:
+      | ProductTypes.ProductOptionProductPair
+      | ProductTypes.ProductOptionProductPair[],
+    alreadyValidatedProductIds: Set<string>,
+    @MedusaContext() sharedContext: Context = {}
+  ): Promise<void> {
+    const pairs = Array.isArray(data) ? data : [data]
+    const productOptionsProducts = await this.productProductOptionService_.list(
+      {
+        $or: pairs,
+      },
+      {},
+      sharedContext
+    )
+
+    const validationPairs = productOptionsProducts
+      .map((productOptionProduct) => {
+        const productId = productOptionProduct.product_id
+        const optionId = productOptionProduct.product_option_id
+        if (
+          productId &&
+          optionId &&
+          !alreadyValidatedProductIds.has(productId)
+        ) {
+          return { productId, optionId }
+        }
+        return null
+      })
+      .filter((p): p is { productId: string; optionId: string } => p !== null)
+
+    if (validationPairs.length > 0) {
+      await this.validateOptionRemoval_(validationPairs, sharedContext)
+    }
+
+    const productOptionsProductIds = productOptionsProducts.map(({ id }) => id)
+
+    await this.productProductOptionValueService_.delete(
+      productOptionsProductIds.map((id) => ({ product_product_option_id: id })),
+      sharedContext
+    )
+
+    await this.productProductOptionService_.delete(
+      productOptionsProductIds,
+      sharedContext
+    )
+  }
+
+  async updateProductOptionValuesOnProduct(
+    update: ProductTypes.ProductOptionProductValueUpdate,
+    sharedContext?: Context
+  ): Promise<void>
+
+  async updateProductOptionValuesOnProduct(
+    updates: ProductTypes.ProductOptionProductValueUpdate[],
+    sharedContext?: Context
+  ): Promise<void>
+
+  @InjectManager()
+  @EmitEvents()
+  async updateProductOptionValuesOnProduct(
+    data:
+      | ProductTypes.ProductOptionProductValueUpdate
+      | ProductTypes.ProductOptionProductValueUpdate[],
+    @MedusaContext() sharedContext: Context = {}
+  ): Promise<void> {
+    await this.updateProductOptionValuesOnProduct_(data, sharedContext)
+  }
+
+  @InjectTransactionManager()
+  protected async updateProductOptionValuesOnProduct_(
+    data:
+      | ProductTypes.ProductOptionProductValueUpdate
+      | ProductTypes.ProductOptionProductValueUpdate[],
+    @MedusaContext() sharedContext: Context = {}
+  ): Promise<void> {
+    const updates = Array.isArray(data) ? data : [data]
+    const effectiveUpdates = updates.filter(
+      (pair) => pair.add?.length || pair.remove?.length
+    )
+
+    if (!effectiveUpdates.length) {
+      return
+    }
+
+    const existingProductOptions = await this.productProductOptionService_.list(
+      {
+        $or: effectiveUpdates.map((pair) => ({
+          product_id: pair.product_id,
+          product_option_id: pair.product_option_id,
+        })),
+      },
+      { relations: ["values"] },
+      sharedContext
+    )
+
+    const existingPPOMap = new Map<
+      string,
+      InferEntityType<typeof ProductProductOption>
+    >()
+    existingProductOptions.forEach((ppo) => {
+      const key = `${ppo.product_id}_${ppo.product_option_id}`
+      existingPPOMap.set(key, ppo)
+    })
+
+    const missingPairs = effectiveUpdates.filter((pair) => {
+      const key = `${pair.product_id}_${pair.product_option_id}`
+      return !existingPPOMap.has(key)
+    })
+
+    if (missingPairs.length) {
+      const missingPairsLabel = missingPairs
+        .map((pair) => `${pair.product_id}:${pair.product_option_id}`)
+        .join(", ")
+      throw new MedusaError(
+        MedusaError.Types.INVALID_DATA,
+        `Some product options are not linked to products: [${missingPairsLabel}]`
+      )
+    }
+
+    const validationPairs = effectiveUpdates
+      .filter((pair) => pair.remove?.length)
+      .map((pair) => ({
+        productId: pair.product_id,
+        optionId: pair.product_option_id,
+        valueIdsToCheck: pair.remove!,
+      }))
+
+    if (validationPairs.length) {
+      await this.validateOptionRemoval_(validationPairs, sharedContext)
+    }
+
+    // if some values are passed as a create object - create those option values first and return array of value ids to assign to PPOs
+    const normalizedUpdates = await this.normalizeProductOptionValueUpdates_(
+      effectiveUpdates,
+      sharedContext
+    )
+
+    const ppovToCreate: Array<{
+      product_product_option_id: string
+      product_option_value_id: string
+    }> = []
+    const ppovToDelete: Array<{
+      product_product_option_id: string
+      product_option_value_id: string
+    }> = []
+
+    normalizedUpdates.forEach((pair) => {
+      const key = `${pair.product_id}_${pair.product_option_id}`
+      const existingPPO = existingPPOMap.get(key)!
+      const existingValueIds = new Set(
+        (existingPPO.values ?? []).map((value) => value.id)
+      )
+
+      Array.from(new Set(pair.add ?? [])).forEach((valueId) => {
+        if (existingValueIds.has(valueId)) {
+          return
+        }
+
+        ppovToCreate.push({
+          product_product_option_id: existingPPO.id,
+          product_option_value_id: valueId,
+        })
+      })
+
+      Array.from(new Set(pair.remove ?? [])).forEach((valueId) => {
+        ppovToDelete.push({
+          product_product_option_id: existingPPO.id,
+          product_option_value_id: valueId,
+        })
+      })
+    })
+
+    if (ppovToDelete.length) {
+      await this.productProductOptionValueService_.delete(
+        ppovToDelete,
+        sharedContext
+      )
+    }
+
+    if (ppovToCreate.length) {
+      await this.productProductOptionValueService_.create(
+        ppovToCreate,
+        sharedContext
+      )
+    }
+  }
+
+  protected async normalizeProductOptionValueUpdates_(
+    updates: ProductTypes.ProductOptionProductValueUpdate[],
+    sharedContext: Context
+  ): Promise<
+    Array<
+      Omit<ProductTypes.ProductOptionProductValueUpdate, "add"> & {
+        add?: string[]
+      }
+    >
+  > {
+    const valueNamesByOptionId = new Map<string, Set<string>>()
+    const existingAddIdsByIndex: Array<Set<string>> = []
+    const valueNamesByIndex: Array<Set<string>> = []
+
+    updates.forEach((pair, index) => {
+      const existingAddIds = new Set<string>()
+      const valueNames = new Set<string>()
+
+      const addEntries = pair.add ?? []
+
+      addEntries.forEach((valueEntry) => {
+        if (isString(valueEntry)) {
+          existingAddIds.add(valueEntry)
+          return
+        }
+
+        const normalizedValue = valueEntry.value.trim()
+        if (!normalizedValue) {
+          return
+        }
+
+        if (!valueNamesByOptionId.has(pair.product_option_id)) {
+          valueNamesByOptionId.set(pair.product_option_id, new Set())
+        }
+
+        valueNamesByOptionId.get(pair.product_option_id)!.add(normalizedValue)
+        valueNames.add(normalizedValue)
+      })
+
+      existingAddIdsByIndex[index] = existingAddIds
+      valueNamesByIndex[index] = valueNames
+    })
+
+    /*
+     * Return early if no new values need to be created
+     */
+
+    if (!valueNamesByOptionId.size) {
+      return updates.map((pair, index) => ({
+        ...pair,
+        add: existingAddIdsByIndex[index].size
+          ? [...existingAddIdsByIndex[index]]
+          : undefined,
+      }))
+    }
+
+    /*
+     * Create values for options for passed create objects
+     */
+
+    const optionIds = [...valueNamesByOptionId.keys()]
+    const options = await this.productOptionService_.list(
+      { id: optionIds },
+      { relations: ["values"] },
+      sharedContext
+    )
+
+    if (options.length !== optionIds.length) {
+      const existingIds = new Set(options.map((option) => option.id))
+      const missingId = optionIds.find((id) => !existingIds.has(id))
+
+      throw new MedusaError(
+        MedusaError.Types.INVALID_DATA,
+        `Cannot find product option with id: ${missingId}`
+      )
+    }
+
+    const optionsById = new Map(options.map((option) => [option.id, option]))
+    const updateOptionsInput: UpdateProductOptionInput[] = []
+
+    valueNamesByOptionId.forEach((valueNames, optionId) => {
+      const option = optionsById.get(optionId)
+      if (!option) {
+        return
+      }
+
+      const existingValueNames = new Set(
+        option.values?.map((value) => value.value) ?? []
+      )
+      const newValueNames = [...valueNames].filter(
+        (value) => !existingValueNames.has(value)
+      )
+
+      if (!newValueNames.length) {
+        return
+      }
+
+      updateOptionsInput.push({
+        id: optionId,
+        values: [...existingValueNames, ...newValueNames],
+      })
+    })
+
+    if (updateOptionsInput.length) {
+      // todo: we could consider just `upsert` here but `updateOptions` handles validation and rank
+      const updatedOptions = await this.updateOptions_(
+        updateOptionsInput,
+        sharedContext
+      )
+
+      updatedOptions.forEach((option) => optionsById.set(option.id, option))
+    }
+
+    const valueIdsByOptionId = new Map<string, Map<string, string>>(
+      [...optionsById.values()].map((option) => [
+        option.id,
+        new Map(option.values?.map((value) => [value.value, value.id]) ?? []),
+      ])
+    )
+
+    return updates.map((pair, index) => {
+      const addIds = new Set(existingAddIdsByIndex[index])
+      const valueMap = valueIdsByOptionId.get(pair.product_option_id)
+      const valueNames = valueNamesByIndex[index] ?? new Set()
+
+      valueNames.forEach((valueName) => {
+        const resolvedId = valueMap?.get(valueName)
+        if (resolvedId) {
+          addIds.add(resolvedId)
+        }
+      })
+
+      return {
+        ...pair,
+        add: addIds.size ? [...addIds] : undefined,
+      }
+    })
   }
 
   // @ts-expect-error
@@ -1538,6 +2449,8 @@ export default class ProductModuleService
       ProductTypes.ProductDTO[]
     >(products)
 
+    await this.filterOptionValues(createdProducts, sharedContext)
+
     return Array.isArray(data) ? createdProducts : createdProducts[0]
   }
 
@@ -1628,6 +2541,8 @@ export default class ProductModuleService
       ProductTypes.ProductDTO[]
     >(products)
 
+    await this.filterOptionValues(updatedProducts, sharedContext)
+
     return isString(idOrSelector) ? updatedProducts[0] : updatedProducts
   }
 
@@ -1636,10 +2551,63 @@ export default class ProductModuleService
     data: ProductTypes.CreateProductDTO[],
     @MedusaContext() sharedContext: Context = {}
   ): Promise<InferEntityType<typeof Product>[]> {
-    const normalizedProducts = await this.normalizeCreateProductInput(
-      data,
-      sharedContext
+    const existingOptionIds = data
+      .flatMap((p) => p.options ?? [])
+      .filter((o) => "id" in o)
+      .map((o) => o.id)
+
+    let existingOptions: InferEntityType<typeof ProductOption>[] = []
+    if (existingOptionIds.length > 0) {
+      existingOptions = await this.productOptionService_.list(
+        { id: existingOptionIds },
+        { relations: ["values"] },
+        sharedContext
+      )
+
+      const fetchedIds = new Set(existingOptions.map((opt) => opt.id))
+      const missingIds = existingOptionIds.filter((id) => !fetchedIds.has(id))
+      if (missingIds.length) {
+        throw new MedusaError(
+          MedusaError.Types.INVALID_DATA,
+          `Some product options were not found: [${missingIds.join(", ")}]`
+        )
+      }
+    }
+
+    const existingOptionsMap = new Map(
+      existingOptions.map((opt) => [opt.id, opt])
     )
+
+    const hydratedData = data.map((product) => {
+      if (!product.options?.length) return product
+
+      const hydratedOptions = product.options.map((option) => {
+        if ("id" in option) {
+          const dbOption = existingOptionsMap.get(option.id)
+          if (!dbOption) {
+            throw new MedusaError(
+              MedusaError.Types.INVALID_DATA,
+              `Product option with id ${option.id} not found.`
+            )
+          }
+
+          return {
+            id: dbOption.id,
+            title: dbOption.title,
+            values: dbOption.values?.map((v) => ({ value: v.value })),
+            value_ids: option.value_ids,
+          }
+        }
+        return option
+      })
+
+      return { ...product, options: hydratedOptions }
+    })
+
+    const normalizedProducts = (await this.normalizeCreateProductInput(
+      hydratedData,
+      sharedContext
+    )) as ProductTypes.CreateProductDTO[]
 
     for (const product of normalizedProducts) {
       this.validateProductCreatePayload(product)
@@ -1662,6 +2630,11 @@ export default class ProductModuleService
 
     const existingTagsMap = new Map(existingTags.map((tag) => [tag.id, tag]))
 
+    const productOptionsToCreate = new Map<
+      string,
+      ProductTypes.CreateProductOptionDTO[]
+    >()
+
     const productsToCreate = normalizedProducts.map((product) => {
       const productId = generateEntityId(product.id, "prod")
       product.id = productId
@@ -1672,6 +2645,15 @@ export default class ProductModuleService
         )
       }
 
+      if (product.options?.length) {
+        const newOptions = product.options.filter(
+          (o) => !("id" in o)
+        ) as CreateProductOptionDTO[]
+        if (newOptions.length) {
+          productOptionsToCreate.set(productId, newOptions)
+        }
+      }
+
       if (product.variants?.length) {
         const normalizedVariants = product.variants.map((variant) => {
           const variantId = generateEntityId((variant as any).id, "variant")
@@ -1679,9 +2661,9 @@ export default class ProductModuleService
 
           Object.entries(variant.options ?? {}).forEach(([key, value]) => {
             const productOption = product.options?.find(
-              (option) => option.title === key
+              (option) => (option as any).title === key
             )!
-            const productOptionValue = productOption.values?.find(
+            const productOptionValue = (productOption as any).values?.find(
               (optionValue) => (optionValue as any).value === value
             )!
             ;(productOptionValue as any).variants ??= []
@@ -1712,15 +2694,96 @@ export default class ProductModuleService
         )
       }
 
+      delete product.options
+
       return product
     })
 
-    const createdProducts = await this.productService_.create(
-      productsToCreate,
+    const productToOptionIdsMap = new Map<string, string[]>()
+    const allOptionsWithIds: (ProductTypes.CreateProductOptionDTO & {
+      id: string
+    })[] = []
+
+    for (const [productId, options] of productOptionsToCreate.entries()) {
+      const optionIds: string[] = []
+
+      for (const option of options) {
+        const optionId = generateEntityId(undefined, "opt")
+        optionIds.push(optionId)
+        allOptionsWithIds.push({
+          ...option,
+          id: optionId,
+        })
+      }
+
+      productToOptionIdsMap.set(productId, optionIds)
+    }
+
+    const [createdProducts] = await Promise.all([
+      this.productService_.create(productsToCreate, sharedContext),
+      allOptionsWithIds.length > 0
+        ? this.createOptions_(allOptionsWithIds, sharedContext)
+        : Promise.resolve([]),
+    ])
+
+    const linkPairs: ProductTypes.ProductOptionProductPair[] = []
+    for (const product of createdProducts) {
+      const hydratedProduct = hydratedData.find(
+        (p) => p.title === product.title
+      )
+      const existingOptions: { id: string; value_ids?: string[] }[] = []
+
+      if (hydratedProduct?.options?.length) {
+        for (const option of hydratedProduct.options) {
+          if ("id" in option) {
+            existingOptions.push({
+              id: option.id,
+              value_ids: option.value_ids,
+            })
+          }
+        }
+      }
+
+      const newOptionIds = productToOptionIdsMap.get(product.id) ?? []
+      const newOptions = newOptionIds.map((id) => ({ id }))
+      const allOptions = [...existingOptions, ...newOptions]
+
+      for (const option of allOptions) {
+        const pair: ProductTypes.ProductOptionProductPair = {
+          product_id: product.id,
+          product_option_id: option.id,
+          product_option_value_ids: (option as any).value_ids
+            ? (option as any).value_ids
+            : undefined,
+        }
+
+        linkPairs.push(pair)
+      }
+    }
+
+    if (linkPairs.length > 0) {
+      await this.addProductOptionToProduct_(linkPairs, sharedContext)
+    }
+
+    await (sharedContext.transactionManager as any).flush()
+
+    const productIds = createdProducts.map((p) => p.id)
+    const productsWithOptions = await this.productService_.list(
+      { id: productIds },
+      {
+        relations: ["options", "options.values", "variants", "images", "tags"],
+      },
       sharedContext
     )
 
-    return createdProducts
+    const productIdOrder = new Map(productIds.map((id, index) => [id, index]))
+
+    const orderedProductsWithOptions = [...productsWithOptions].sort(
+      (a, b) =>
+        (productIdOrder.get(a.id) ?? 0) - (productIdOrder.get(b.id) ?? 0)
+    )
+
+    return orderedProductsWithOptions
   }
 
   @InjectTransactionManager()
@@ -1743,23 +2806,54 @@ export default class ProductModuleService
         .registerSubscriber(new subscriber(sharedContext))
     }
 
-    const productIds = data.map((d) => d.id).filter(Boolean)
+    const allOptionIds = data
+      .flatMap((p) => p.option_ids ?? [])
+      .filter((id) => !!id)
 
-    const originalProducts = await this.productService_.list(
-      {
-        id: productIds,
-      },
-      {
-        relations: ["options", "options.values", "tags"],
-        take: productIds.length,
-      },
-      sharedContext
-    )
+    const [originalProducts, existingOptions] = await promiseAll([
+      this.productService_.list(
+        { id: data.map((d) => d.id) },
+        {
+          relations: ["options", "options.values", "options.products", "tags"],
+        },
+        sharedContext
+      ),
+      allOptionIds.length
+        ? this.productOptionService_.list(
+            { id: allOptionIds },
+            { relations: ["values", "products"] },
+            sharedContext
+          )
+        : Promise.resolve([]),
+    ])
 
-    const normalizedProducts = await this.normalizeUpdateProductInput(
-      data,
-      originalProducts
-    )
+    if (allOptionIds.length && existingOptions.length !== allOptionIds.length) {
+      const found = new Set(existingOptions.map((opt) => opt.id))
+      const missing = allOptionIds.filter((id) => !found.has(id))
+      if (missing.length) {
+        throw new MedusaError(
+          MedusaError.Types.INVALID_DATA,
+          `Some product options were not found: [${missing.join(", ")}]`
+        )
+      }
+    }
+
+    const { linkPairs, unlinkPairs, expectedOptionIdsMap } =
+      computeOptionLinkChanges(data, originalProducts)
+
+    for (const product of data) {
+      delete product.option_ids
+    }
+
+    if (linkPairs.length) {
+      await this.addProductOptionToProduct_(linkPairs, sharedContext)
+    }
+
+    await (sharedContext.transactionManager as any).flush()
+
+    const normalizedProducts = (await this.normalizeUpdateProductInput(
+      data
+    )) as UpdateProductInput[]
 
     for (const product of normalizedProducts) {
       this.validateProductUpdatePayload(product)
@@ -1768,8 +2862,18 @@ export default class ProductModuleService
     const updatedProducts = await this.productRepository_.deepUpdate(
       normalizedProducts,
       ProductModuleService.validateVariantOptions,
+      expectedOptionIdsMap,
       sharedContext
     )
+
+    if (unlinkPairs.length) {
+      const alreadyValidatedProductIds = new Set(expectedOptionIdsMap.keys())
+      await this.removeProductOptionFromProduct_(
+        unlinkPairs,
+        alreadyValidatedProductIds,
+        sharedContext
+      )
+    }
 
     return updatedProducts
   }
@@ -1797,7 +2901,7 @@ export default class ProductModuleService
   ): Promise<
     ProductTypes.ProductOptionValueDTO | ProductTypes.ProductOptionValueDTO[]
   > {
-    // TODO: There is a missmatch in the API which lead to function with different number of
+    // TODO: There is a mismatch in the API which lead to function with different number of
     // arguments. Therefore, applying the MedusaContext() decorator to the function will not work
     // because the context arg index will differ from method to method.
     sharedContext.messageAggregator ??= new MessageAggregator()
@@ -1908,7 +3012,7 @@ export default class ProductModuleService
     if (options?.length) {
       productData.variants?.forEach((variant) => {
         options.forEach((option) => {
-          if (!variant.options?.[option.title]) {
+          if (!variant.options?.[(option as any).title]) {
             missingOptionsVariants.push(variant.title)
           }
         })
@@ -1946,7 +3050,22 @@ export default class ProductModuleService
       products_ as UpdateProductInput[]
     )) as ProductTypes.CreateProductDTO[]
 
-    for (const productData of normalizedProducts) {
+    for await (const productData of normalizedProducts) {
+      if (productData.options?.length) {
+        ;(productData as any).options = productData.options?.map((option) => {
+          return {
+            title: (option as any).title,
+            values: (option as any).values?.map((value) => {
+              return {
+                value: value,
+              }
+            }),
+            is_exclusive: (option as any).is_exclusive ?? true, // Always default to true for options created from product creation
+            ...((option as any).id ? { id: (option as any).id } : {}),
+          }
+        })
+      }
+
       if (!productData.handle && productData.title) {
         productData.handle = toHandle(productData.title)
       }
@@ -2007,19 +3126,6 @@ export default class ProductModuleService
     originalProducts?: InferEntityType<typeof Product>[]
   ): Promise<TOutput> {
     const products_ = Array.isArray(products) ? products : [products]
-    const productsIds = products_.map((p) => p.id).filter(Boolean)
-
-    let dbOptions: InferEntityType<typeof ProductOption>[] = []
-
-    if (productsIds.length) {
-      // Re map options to handle non serialized data as well
-      dbOptions =
-        originalProducts
-          ?.flatMap((originalProduct) =>
-            originalProduct.options.map((option) => option)
-          )
-          .filter(Boolean) ?? []
-    }
 
     const normalizedProducts: UpdateProductInput[] = []
 
@@ -2027,29 +3133,6 @@ export default class ProductModuleService
       const productData = { ...product }
       if (productData.is_giftcard) {
         productData.discountable = false
-      }
-
-      if (productData.options?.length) {
-        ;(productData as any).options = productData.options?.map((option) => {
-          const dbOption = dbOptions.find(
-            (o) =>
-              (o.title === option.title || o.id === option.id) &&
-              o.product_id === productData.id
-          )
-          return {
-            title: option.title,
-            values: option.values?.map((value) => {
-              const dbValue = dbOption?.values?.find(
-                (val) => val.value === value
-              )
-              return {
-                value: value,
-                ...(dbValue ? { id: dbValue.id } : {}),
-              }
-            }),
-            ...(dbOption ? { id: dbOption.id } : {}),
-          }
-        })
       }
 
       if (productData.tag_ids) {
@@ -2116,7 +3199,10 @@ export default class ProductModuleService
       variants.map((v) => ({
         ...v,
         // adding product_id to the variant to make it valid for the assignOptionsToVariants function
-        ...(options.length ? { product_id: options[0].product_id } : {}),
+        // get product_id from the first product in the products array of the first option
+        ...(options.length && options[0].products?.length
+          ? { product_id: options[0].products[0].id }
+          : {}),
       })),
       options
     )
@@ -2142,9 +3228,13 @@ export default class ProductModuleService
         variant.options || {}
       ).length
 
-      const productsOptions = options.filter(
-        (o) => o.product_id === variant.product_id
-      )
+      const productsOptions = options.filter((o) => {
+        // products could be a Collection object or array, normalize to array
+        const productsArray = Array.isArray(o.products)
+          ? o.products
+          : (o.products as any)?.toArray?.() ?? []
+        return productsArray.some((p) => p.id === variant.product_id)
+      })
 
       if (
         numOfProvidedVariantOptionValues &&
@@ -2520,6 +3610,220 @@ export default class ProductModuleService
     }
 
     return result
+  }
+
+  /**
+   * Validates that no variants are using the specified option or option values
+   * before they are removed from a product.
+   *
+   * @param pairs - Array of validation pairs: { productId, optionId, valueIdsToCheck? }
+   * @param sharedContext - The shared context
+   * @throws MedusaError if any variants are using the option/values
+   */
+  @InjectTransactionManager()
+  protected async validateOptionRemoval_(
+    pairs: Array<{
+      productId: string
+      optionId: string
+      valueIdsToCheck?: string[]
+    }>,
+    @MedusaContext() sharedContext: Context = {}
+  ): Promise<void> {
+    if (pairs.length === 0) {
+      return
+    }
+
+    // Filter pairs that need validation (for option removal, check if option is linked)
+    const pairsToValidate: Array<{
+      productId: string
+      optionId: string
+      valueIdsToCheck?: string[]
+    }> = []
+
+    // For option removals (no valueIdsToCheck), check if options are linked to products
+    const optionRemovalPairs = pairs.filter((p) => !p.valueIdsToCheck)
+    if (optionRemovalPairs.length) {
+      const existingProductOptions =
+        await this.productProductOptionService_.list(
+          {
+            $or: optionRemovalPairs.map((p) => ({
+              product_id: p.productId,
+              product_option_id: p.optionId,
+            })),
+          },
+          {},
+          sharedContext
+        )
+
+      const existingPairsSet = new Set(
+        existingProductOptions.map(
+          (epo) =>
+            `${(epo as any).product_id}_${(epo as any).product_option_id}`
+        )
+      )
+
+      // Only validate pairs that are actually linked
+      for (const pair of optionRemovalPairs) {
+        const key = `${pair.productId}_${pair.optionId}`
+        if (existingPairsSet.has(key)) {
+          pairsToValidate.push(pair)
+        }
+      }
+    }
+
+    // For value removals (with valueIdsToCheck), always validate
+    const valueRemovalPairs = pairs.filter((p) => p.valueIdsToCheck)
+    pairsToValidate.push(...valueRemovalPairs)
+
+    if (pairsToValidate.length === 0) {
+      return // Nothing to validate
+    }
+
+    // Get all unique option IDs to fetch options with their values
+    const uniqueOptionIds = [...new Set(pairsToValidate.map((p) => p.optionId))]
+    const options = await this.productOptionService_.list(
+      { id: uniqueOptionIds },
+      { relations: ["values"] },
+      sharedContext
+    )
+
+    const optionsMap = new Map(options.map((opt) => [opt.id, opt]))
+
+    const bulkValidationPairs: Array<{
+      productId: string
+      optionValueIds: string[]
+      pair: { productId: string; optionId: string; valueIdsToCheck?: string[] }
+      option: InferEntityType<typeof ProductOption>
+    }> = []
+
+    for (const pair of pairsToValidate) {
+      const option = optionsMap.get(pair.optionId)
+      if (!option) {
+        continue // Option doesn't exist, skip
+      }
+
+      // if no subset is provided we check the whole option values
+      const valueIdsToValidate = pair.valueIdsToCheck
+        ? pair.valueIdsToCheck
+        : (option.values || []).map((v) => v.id)
+
+      if (valueIdsToValidate.length === 0) {
+        continue // No values to check
+      }
+
+      bulkValidationPairs.push({
+        productId: pair.productId,
+        optionValueIds: valueIdsToValidate,
+        pair,
+        option,
+      })
+    }
+
+    if (bulkValidationPairs.length > 0) {
+      const conflictingVariantsMap =
+        await this.productRepository_.checkVariantsUsingOptionValues(
+          bulkValidationPairs.map((p) => ({
+            productId: p.productId,
+            optionValueIds: p.optionValueIds,
+          })),
+          sharedContext
+        )
+
+      for (const bulkPair of bulkValidationPairs) {
+        const allConflictingVariants: Array<{
+          variant_id: string
+          title: string | null
+        }> = []
+
+        for (const valueId of bulkPair.optionValueIds) {
+          const key = `${bulkPair.productId}_${valueId}`
+          const variants = conflictingVariantsMap.get(key) || []
+          // Deduplicate variants by variant_id
+          for (const variant of variants) {
+            if (
+              !allConflictingVariants.some(
+                (v) => v.variant_id === variant.variant_id
+              )
+            ) {
+              allConflictingVariants.push({
+                variant_id: variant.variant_id,
+                title: variant.title,
+              })
+            }
+          }
+        }
+
+        if (allConflictingVariants.length > 0) {
+          const variantNames = allConflictingVariants.map(
+            (v) => v.title || v.variant_id
+          )
+
+          if (bulkPair.pair.valueIdsToCheck) {
+            // Specific values being removed
+            throw new MedusaError(
+              MedusaError.Types.INVALID_DATA,
+              `Cannot unassign option values from product because the following variant(s) are using it: ${variantNames.join(
+                ", "
+              )}`
+            )
+          } else {
+            // Entire option being removed
+            throw new MedusaError(
+              MedusaError.Types.INVALID_DATA,
+              `Cannot unassign product option from product which has variants for that option`
+            )
+          }
+        }
+      }
+    }
+  }
+
+  private async filterOptionValues(
+    products: FilterableProduct | FilterableProduct[],
+    sharedContext: Context = {}
+  ): Promise<void> {
+    const productsList = Array.isArray(products) ? products : [products]
+
+    if (!productsList.length) {
+      return
+    }
+
+    const productsWithOptions = productsList.filter(
+      (product) => (product.options ?? []).length > 0
+    )
+
+    if (!productsWithOptions.length) {
+      return
+    }
+
+    const productIds = productsWithOptions
+      .map((product) => product.id)
+      .filter((id): id is string => !!id)
+
+    if (!productIds.length) {
+      return
+    }
+
+    const allowedValueIdsByProduct =
+      await this.productRepository_.getOptionValueIdsByProductIds(
+        productIds,
+        sharedContext
+      )
+
+    for (const product of productsWithOptions) {
+      const allowedValueIds =
+        allowedValueIdsByProduct.get(product.id) ?? new Set<string>()
+
+      const options = product.options ?? []
+
+      for (const option of options) {
+        const values = option.values ?? []
+
+        option.values = values.filter((value) => allowedValueIds.has(value.id))
+      }
+
+      product.options = options
+    }
   }
 
   private async buildVariantImagesFromProduct(

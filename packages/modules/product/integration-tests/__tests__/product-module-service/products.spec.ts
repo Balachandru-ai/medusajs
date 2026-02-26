@@ -382,7 +382,6 @@ moduleIntegrationTestRunner<IProductModuleService>({
             },
             ...data.variants,
           ]
-          productBefore.options = data.options
           productBefore.images = data.images
           productBefore.thumbnail = data.thumbnail
           productBefore.tag_ids = data.tag_ids
@@ -391,6 +390,8 @@ moduleIntegrationTestRunner<IProductModuleService>({
           productBefore.length = 201
           productBefore.height = 301
           productBefore.width = 401
+          productBefore.option_ids = productOne.options.map((o) => o.id)
+          delete productBefore.options
           const updatedProducts = await service.upsertProducts([productBefore])
           expect(updatedProducts).toHaveLength(1)
 
@@ -439,11 +440,11 @@ moduleIntegrationTestRunner<IProductModuleService>({
               options: expect.arrayContaining([
                 expect.objectContaining({
                   id: expect.any(String),
-                  title: productBefore.options?.[0].title,
+                  title: productOne.options[0].title,
                   values: expect.arrayContaining([
                     expect.objectContaining({
                       id: expect.any(String),
-                      value: data.options[0].values[0],
+                      value: productOne.options[0].values[0].value,
                     }),
                   ]),
                 }),
@@ -652,20 +653,7 @@ moduleIntegrationTestRunner<IProductModuleService>({
             {
               id: productBefore.id,
               title: "updated title",
-              options: [
-                {
-                  title: "size",
-                  values: ["large", "small"],
-                },
-                {
-                  title: "color",
-                  values: ["red"],
-                },
-                {
-                  title: "material",
-                  values: ["cotton"],
-                },
-              ],
+              option_ids: productBefore.options.map((o) => o.id),
             },
           ])
 
@@ -682,36 +670,32 @@ moduleIntegrationTestRunner<IProductModuleService>({
             ],
           })
 
-          const beforeOption = productBefore.options.find(
+          const beforeOptionOne = productBefore.options.find(
             (opt) => opt.title === "size"
           )!
-          expect(product.options).toHaveLength(3)
+          const beforeOptionTwo = productBefore.options.find(
+            (opt) => opt.title === "color"
+          )!
+          expect(product.options).toHaveLength(2)
           expect(product.options).toEqual(
             expect.arrayContaining([
               expect.objectContaining({
-                id: beforeOption.id,
-                title: beforeOption.title,
+                id: beforeOptionOne.id,
+                title: beforeOptionOne.title,
                 values: expect.arrayContaining([
                   expect.objectContaining({
-                    id: beforeOption.values[0].id,
-                    value: beforeOption.values[0].value,
+                    id: beforeOptionOne.values[0].id,
+                    value: beforeOptionOne.values[0].value,
                   }),
                 ]),
               }),
               expect.objectContaining({
-                title: "color",
+                id: beforeOptionTwo.id,
+                title: beforeOptionTwo.title,
                 values: expect.arrayContaining([
                   expect.objectContaining({
-                    value: "red",
-                  }),
-                ]),
-              }),
-              expect.objectContaining({
-                id: expect.any(String),
-                title: "material",
-                values: expect.arrayContaining([
-                  expect.objectContaining({
-                    value: "cotton",
+                    id: beforeOptionTwo.values[0].id,
+                    value: beforeOptionTwo.values[0].value,
                   }),
                 ]),
               }),
@@ -969,9 +953,15 @@ moduleIntegrationTestRunner<IProductModuleService>({
         })
 
         it("should simultaneously update options and variants", async () => {
+          const option = (
+            await service.createProductOptions([
+              { title: "material", values: ["cotton", "silk"] },
+            ])
+          )[0]
+
           const updateData = {
             id: productTwo.id,
-            options: [{ title: "material", values: ["cotton", "silk"] }],
+            option_ids: [option.id],
             variants: [{ title: "variant 1", options: { material: "cotton" } }],
           }
 
@@ -1324,6 +1314,111 @@ moduleIntegrationTestRunner<IProductModuleService>({
           const deletedProducts = await service.listProducts(
             { id: products[0].id },
             {
+              relations: ["variants"],
+              withDeleted: true,
+            }
+          )
+
+          expect(deletedProducts).toHaveLength(1)
+          expect(deletedProducts[0].deleted_at).not.toBeNull()
+
+          for (const variant of deletedProducts[0].variants) {
+            expect(variant.deleted_at).not.toBeNull()
+          }
+        })
+
+        it("should not soft delete a product's options and option values", async () => {
+          const data = buildProductAndRelationsData({
+            images,
+            thumbnail: images[0].url,
+            options: [
+              { title: "size", values: ["large", "small"] },
+              { title: "color", values: ["red", "blue"] },
+              { title: "material", values: ["cotton", "polyester"] },
+            ],
+            variants: [
+              {
+                title: "Large Red Cotton",
+                sku: "LRG-RED-CTN",
+                options: {
+                  size: "large",
+                  color: "red",
+                  material: "cotton",
+                },
+              },
+              {
+                title: "Large Red Polyester",
+                sku: "LRG-RED-PLY",
+                options: {
+                  size: "large",
+                  color: "red",
+                  material: "polyester",
+                },
+              },
+              {
+                title: "Large Blue Cotton",
+                sku: "LRG-BLU-CTN",
+                options: {
+                  size: "large",
+                  color: "blue",
+                  material: "cotton",
+                },
+              },
+              {
+                title: "Large Blue Polyester",
+                sku: "LRG-BLU-PLY",
+                options: {
+                  size: "large",
+                  color: "blue",
+                  material: "polyester",
+                },
+              },
+              {
+                title: "Small Red Cotton",
+                sku: "SML-RED-CTN",
+                options: {
+                  size: "small",
+                  color: "red",
+                  material: "cotton",
+                },
+              },
+              {
+                title: "Small Red Polyester",
+                sku: "SML-RED-PLY",
+                options: {
+                  size: "small",
+                  color: "red",
+                  material: "polyester",
+                },
+              },
+              {
+                title: "Small Blue Cotton",
+                sku: "SML-BLU-CTN",
+                options: {
+                  size: "small",
+                  color: "blue",
+                  material: "cotton",
+                },
+              },
+              {
+                title: "Small Blue Polyester",
+                sku: "SML-BLU-PLY",
+                options: {
+                  size: "small",
+                  color: "blue",
+                  material: "polyester",
+                },
+              },
+            ],
+          })
+
+          const products = await service.createProducts([data])
+
+          await service.softDeleteProducts([products[0].id])
+
+          const deletedProducts = await service.listProducts(
+            { id: products[0].id },
+            {
               relations: [
                 "variants",
                 "variants.options",
@@ -1334,11 +1429,8 @@ moduleIntegrationTestRunner<IProductModuleService>({
             }
           )
 
-          expect(deletedProducts).toHaveLength(1)
-          expect(deletedProducts[0].deleted_at).not.toBeNull()
-
           for (const option of deletedProducts[0].options) {
-            expect(option.deleted_at).not.toBeNull()
+            expect(option.deleted_at).toBeNull()
           }
 
           const productOptionsValues = deletedProducts[0].options
@@ -1346,11 +1438,7 @@ moduleIntegrationTestRunner<IProductModuleService>({
             .flat()
 
           for (const optionValue of productOptionsValues) {
-            expect(optionValue.deleted_at).not.toBeNull()
-          }
-
-          for (const variant of deletedProducts[0].variants) {
-            expect(variant.deleted_at).not.toBeNull()
+            expect(optionValue.deleted_at).toBeNull()
           }
 
           const variantsOptions = deletedProducts[0].options
@@ -1358,7 +1446,7 @@ moduleIntegrationTestRunner<IProductModuleService>({
             .flat()
 
           for (const option of variantsOptions) {
-            expect(option.deleted_at).not.toBeNull()
+            expect(option.deleted_at).toBeNull()
           }
         })
 

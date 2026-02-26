@@ -1,6 +1,6 @@
 import {
-  BuildingStorefront,
   Buildings,
+  BuildingStorefront,
   ChevronDownMini,
   CogSixTooth,
   CurrencyDollar,
@@ -14,7 +14,7 @@ import {
   Tag,
   Users,
 } from "@medusajs/icons"
-import { Avatar, Divider, DropdownMenu, Text, clx } from "@medusajs/ui"
+import { Avatar, clx, Divider, DropdownMenu, Text } from "@medusajs/ui"
 import { Collapsible as RadixCollapsible } from "radix-ui"
 import { useTranslation } from "react-i18next"
 
@@ -107,8 +107,7 @@ const Header = () => {
 
   return (
     <div className="w-full p-3">
-    <DropdownMenu
-          dir={direction}>
+      <DropdownMenu dir={direction}>
         <DropdownMenu.Trigger
           disabled={!isLoaded}
           className={clx(
@@ -205,6 +204,10 @@ const useCoreRoutes = (): Omit<INavItem, "pathname">[] => {
         {
           label: t("categories.domain"),
           to: "/categories",
+        },
+        {
+          label: t("productOptions.domain"),
+          to: "/product-options",
         },
         // TODO: Enable when domin is introduced
         // {

@@ -1,10 +1,13 @@
 import { SelectParams } from "../../common"
 import {
   BaseProductListParams,
+  BaseProductOptionListParams,
   BaseProductOptionParams,
   BaseProductVariantParams,
 } from "../common"
 
+export interface StoreProductOptionListParams
+  extends BaseProductOptionListParams {}
 export interface StoreProductOptionParams extends BaseProductOptionParams {}
 export interface StoreProductVariantParams extends BaseProductVariantParams {}
 export interface StoreProductPricingContext {
@@ -29,9 +32,9 @@ export interface StoreProductParams extends SelectParams, StoreProductPricingCon
   /**
    * The locale code in BCP 47 format. Information of the
    * product and related entities will be localized based on the provided locale.
-   * 
+   *
    * Learn more in the [Serve Translations in Storefront](https://docs.medusajs.com/resources/commerce-modules/translations/storefront) guide.
-   * 
+   *
    * @example
    * "en-US"
    */
@@ -51,11 +54,17 @@ export interface StoreProductListParams
   /**
    * The locale code in BCP 47 format. Information of the
    * product and related entities will be localized based on the provided locale.
-   * 
+   *
    * Learn more in the [Serve Translations in Storefront](https://docs.medusajs.com/resources/commerce-modules/translations/storefront) guide.
-   * 
+   *
    * @example
    * "en-US"
    */
   locale?: string
+  /**
+   * Filter by the product's option values. Variants must include one of the provided values per option.
+   * 
+   * @since 2.13.0
+   */
+  option_value_id?: string | string[]
 }

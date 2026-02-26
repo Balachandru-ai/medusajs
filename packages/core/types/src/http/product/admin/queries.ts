@@ -1,6 +1,10 @@
 import { BaseFilterable, OperatorMap } from "../../../dal"
 import { FindParams } from "../../common"
-import { BaseProductListParams, BaseProductOptionParams } from "../common"
+import {
+  BaseProductListParams,
+  BaseProductOptionListParams,
+  BaseProductOptionParams,
+} from "../common"
 
 export interface AdminProductOptionParams
   extends Omit<BaseProductOptionParams, "product_id"> {}
@@ -49,6 +53,7 @@ export interface AdminProductVariantParams
    */
   deleted_at?: OperatorMap<string>
 }
+
 export interface AdminProductListParams
   extends Omit<BaseProductListParams, "categories"> {
   /**
@@ -61,15 +66,18 @@ export interface AdminProductListParams
   variants?: Omit<AdminProductVariantParams, "q">
 }
 
-export interface AdminProductExportParams extends Omit<AdminProductListParams, "tags" | "variants"> {
+export interface AdminProductExportParams
+  extends Omit<AdminProductListParams, "tags" | "variants"> {
   tags?: {
     id?: string[]
   }
-  variants?: { 
-    options?: { 
+  variants?: {
+    options?: {
       value?: string
       option_id?: string
       option?: Record<string, any>
     }
   }
 }
+export interface AdminProductOptionListParams
+  extends BaseProductOptionListParams {}

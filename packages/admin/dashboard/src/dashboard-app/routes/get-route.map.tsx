@@ -137,18 +137,6 @@ export function getRouteMap({
                             import("../../routes/products/product-prices"),
                         },
                         {
-                          path: "options/create",
-                          lazy: () =>
-                            import(
-                              "../../routes/products/product-create-option"
-                            ),
-                        },
-                        {
-                          path: "options/:option_id/edit",
-                          lazy: () =>
-                            import("../../routes/products/product-edit-option"),
-                        },
-                        {
                           path: "variants/create",
                           lazy: () =>
                             import(
@@ -164,6 +152,13 @@ export function getRouteMap({
                           path: "metadata/edit",
                           lazy: () =>
                             import("../../routes/products/product-metadata"),
+                        },
+                        {
+                          path: "options/manage",
+                          lazy: () =>
+                            import(
+                              "../../routes/products/product-options-manage"
+                            ),
                         },
                       ],
                     },
@@ -220,6 +215,63 @@ export function getRouteMap({
                             ),
                         },
                       ],
+                    },
+                  ],
+                },
+              ],
+            },
+            {
+              path: "/product-options",
+              errorElement: <ErrorBoundary />,
+              handle: {
+                breadcrumb: () => t("productOptions.domain"),
+              },
+              children: [
+                {
+                  path: "",
+                  lazy: () =>
+                    import("../../routes/product-options/product-option-list"),
+                  children: [
+                    {
+                      path: "create",
+                      lazy: () =>
+                        import(
+                          "../../routes/product-options/product-option-create"
+                        ),
+                    },
+                  ],
+                },
+                {
+                  path: ":id",
+                  lazy: async () => {
+                    const { Component, Breadcrumb, loader } = await import(
+                      "../../routes/product-options/product-option-detail"
+                    )
+
+                    return {
+                      Component,
+                      loader,
+                      handle: {
+                        breadcrumb: (match: UIMatch<any>) => (
+                          <Breadcrumb {...match} />
+                        ),
+                      },
+                    }
+                  },
+                  children: [
+                    {
+                      path: "edit",
+                      lazy: () =>
+                        import(
+                          "../../routes/product-options/product-option-edit"
+                        ),
+                    },
+                    {
+                      path: "metadata/edit",
+                      lazy: () =>
+                        import(
+                          "../../routes/product-options/product-option-metadata"
+                        ),
                     },
                   ],
                 },

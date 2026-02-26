@@ -18,7 +18,8 @@ export const GET = async (
     // TODO: These filters are not supported by the index engine yet
     if (
       isPresent(req.filterableFields.tags) ||
-      isPresent(req.filterableFields.categories)
+      isPresent(req.filterableFields.categories) ||
+      isPresent(req.filterableFields.option_value_id)
     ) {
       return await getProducts(req, res)
     }

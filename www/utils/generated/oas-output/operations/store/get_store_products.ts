@@ -761,6 +761,34 @@
  *       externalDocs:
  *         url: https://docs.medusajs.com/resources/commerce-modules/translation/storefront
  *         description: Learn more in the Serve Translations in Storefront guide.
+ *   - name: option_value_id
+ *     in: query
+ *     required: false
+ *     schema:
+ *       oneOf:
+ *         - type: string
+ *           title: option_value_id
+ *           description: Filter by an option value ID to retrieve products with variants that have it.
+ *         - type: array
+ *           description: Filter by option value IDs to retrieve products with variants that have them.
+ *           items:
+ *             type: string
+ *             title: option_value_id
+ *             description: An option value ID.
+ *   - name: option_id
+ *     in: query
+ *     required: false
+ *     schema:
+ *       oneOf:
+ *         - type: string
+ *           title: option_id
+ *           description: Filter by an option ID to retrieve products that have it.
+ *         - type: array
+ *           description: Filter by option IDs to retrieve products that have them.
+ *           items:
+ *             type: string
+ *             title: option_id
+ *             description: The option ID's details.
  * x-codeSamples:
  *   - lang: JavaScript
  *     label: JS SDK
