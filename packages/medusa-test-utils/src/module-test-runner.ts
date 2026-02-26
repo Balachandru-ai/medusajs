@@ -249,7 +249,7 @@ class ModuleTestRunner<TService = any> {
         await this.hooks.afterModuleInit(this.medusaApp, this.moduleService)
       }
     } catch (error) {
-      logger.error("Error in beforeEach:", error?.message)
+      logger.error(`Error in beforeEach: ${error?.message}`)
       await this.cleanup()
       throw error
     }

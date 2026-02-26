@@ -73,12 +73,12 @@ export const REVERSED_MODULE_PACKAGE_NAMES = Object.entries(
   return acc
 }, {})
 
-// TODO: temporary fix until the event bus, cache and workflow engine are migrated to use providers and therefore only a single resolution will be good
+// TODO: temporary fix until the event bus and cache are migrated to use providers and therefore only a single resolution will be good
 export const TEMPORARY_REDIS_MODULE_PACKAGE_NAMES = {
   [Modules.EVENT_BUS]: "@medusajs/medusa/event-bus-redis",
   [Modules.CACHE]: "@medusajs/medusa/cache-redis",
-  [Modules.WORKFLOW_ENGINE]: "@medusajs/medusa/workflow-engine-redis",
   [Modules.LOCKING]: "@medusajs/medusa/locking-redis",
+  [Modules.WORKFLOW_ENGINE]: "@medusajs/medusa/workflow-engine-redis",
 }
 
 REVERSED_MODULE_PACKAGE_NAMES[
@@ -88,11 +88,17 @@ REVERSED_MODULE_PACKAGE_NAMES[
   TEMPORARY_REDIS_MODULE_PACKAGE_NAMES[Modules.CACHE]
 ] = Modules.CACHE
 REVERSED_MODULE_PACKAGE_NAMES[
-  TEMPORARY_REDIS_MODULE_PACKAGE_NAMES[Modules.WORKFLOW_ENGINE]
-] = Modules.WORKFLOW_ENGINE
-REVERSED_MODULE_PACKAGE_NAMES[
   TEMPORARY_REDIS_MODULE_PACKAGE_NAMES[Modules.LOCKING]
 ] = Modules.LOCKING
+REVERSED_MODULE_PACKAGE_NAMES[
+  TEMPORARY_REDIS_MODULE_PACKAGE_NAMES[Modules.WORKFLOW_ENGINE]
+] = Modules.WORKFLOW_ENGINE
+
+// Backward compatibility aliases for deprecated workflow engine modules
+REVERSED_MODULE_PACKAGE_NAMES["@medusajs/medusa/workflow-engine-inmemory"] =
+  Modules.WORKFLOW_ENGINE
+REVERSED_MODULE_PACKAGE_NAMES["@medusajs/medusa/workflow-engine-redis"] =
+  Modules.WORKFLOW_ENGINE
 
 /**
  * Making modules be referenced as a type as well.

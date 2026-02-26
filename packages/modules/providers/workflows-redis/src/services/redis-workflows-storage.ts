@@ -1,0 +1,918 @@
+import {
+  DistributedNotificationHandler,
+  DistributedNotificationSubscriber,
+  DistributedNotifyOptions,
+  DistributedStorageHooks,
+  DistributedTransactionType,
+  IDistributedSchedulerStorage,
+  IDistributedTransactionStorage,
+  SchedulerOptions,
+  SkipExecutionError,
+  TransactionCheckpoint,
+  TransactionContext,
+  TransactionFlow,
+  TransactionOptions,
+  TransactionStep,
+  TransactionStepError,
+} from "@medusajs/framework/orchestration"
+import { Logger, ModulesSdkTypes } from "@medusajs/framework/types"
+import {
+  isDefined,
+  MedusaError,
+  promiseAll,
+  TransactionState,
+} from "@medusajs/framework/utils"
+import {
+  clearExpiredExecutions as clearExpiredExecutionsUtil,
+  deleteFromDb as deleteFromDbUtil,
+  failedStates,
+  finishedStates,
+  preventRaceConditionExecutionIfNecessary,
+  saveToDb as saveToDbUtil,
+} from "@medusajs/workflows"
+import {
+  Queue,
+  QueueOptions,
+  RepeatOptions,
+  Worker,
+  WorkerOptions,
+} from "bullmq"
+import Redis from "ioredis"
+import { ulid } from "ulid"
+
+enum JobType {
+  SCHEDULE = "schedule",
+  RETRY = "retry",
+  STEP_TIMEOUT = "step_timeout",
+  TRANSACTION_TIMEOUT = "transaction_timeout",
+}
+
+const THIRTY_MINUTES_IN_MS = 1000 * 60 * 30
+const REPEATABLE_CLEARER_JOB_ID = "clear-expired-executions"
+
+export class RedisWorkflowsStorage
+  implements IDistributedTransactionStorage, IDistributedSchedulerStorage
+{
+  static identifier = "redis-workflows-storage"
+
+  __hooks: DistributedStorageHooks
+  notificationSubscriber: DistributedNotificationSubscriber
+
+  private workflowExecutionService_: ModulesSdkTypes.IMedusaInternalService<any>
+  private logger_: Logger
+  private workflowOrchestratorService_: any
+  private disconnectHandler_?: () => Promise<void>
+
+  private redisClient: Redis
+  private redisWorkerConnection: Redis
+  private redisPublisher_: Redis
+  private redisSubscriber_: Redis
+  private notificationHandlers_: Map<string, DistributedNotificationHandler> =
+    new Map()
+  private queueName: string
+  private jobQueueName: string
+  private queue: Queue
+  private jobQueue?: Queue
+  private worker: Worker
+  private jobWorker?: Worker
+  private cleanerQueueName: string
+  private cleanerWorker_: Worker
+  private cleanerQueue_?: Queue
+
+  // Per-queue options
+  private mainQueueOptions_: Omit<QueueOptions, "connection">
+  private mainWorkerOptions_: Omit<WorkerOptions, "connection">
+  private jobQueueOptions_: Omit<QueueOptions, "connection">
+  private jobWorkerOptions_: Omit<WorkerOptions, "connection">
+  private cleanerQueueOptions_: Omit<QueueOptions, "connection">
+  private cleanerWorkerOptions_: Omit<WorkerOptions, "connection">
+
+  #isWorkerMode: boolean = false
+
+  constructor({
+    redisConnection,
+    redisWorkerConnection,
+    redisPublisher,
+    redisSubscriber,
+    redisQueueName,
+    redisJobQueueName,
+    redisMainQueueOptions,
+    redisMainWorkerOptions,
+    redisJobQueueOptions,
+    redisJobWorkerOptions,
+    redisCleanerQueueOptions,
+    redisCleanerWorkerOptions,
+    logger,
+    isWorkerMode,
+    workflowsProviderDisconnectHandler,
+  }: {
+    redisConnection: Redis
+    redisWorkerConnection: Redis
+    redisPublisher: Redis
+    redisSubscriber: Redis
+    redisQueueName: string
+    redisJobQueueName: string
+    redisMainQueueOptions: Omit<QueueOptions, "connection">
+    redisMainWorkerOptions: Omit<WorkerOptions, "connection">
+    redisJobQueueOptions: Omit<QueueOptions, "connection">
+    redisJobWorkerOptions: Omit<WorkerOptions, "connection">
+    redisCleanerQueueOptions: Omit<QueueOptions, "connection">
+    redisCleanerWorkerOptions: Omit<WorkerOptions, "connection">
+    logger: Logger
+    isWorkerMode: boolean
+    workflowsProviderDisconnectHandler?: () => Promise<void>
+  }) {
+    this.logger_ = logger
+    this.redisClient = redisConnection
+    this.redisWorkerConnection = redisWorkerConnection
+    this.redisPublisher_ = redisPublisher
+    this.redisSubscriber_ = redisSubscriber
+    this.cleanerQueueName = "workflows-cleaner"
+    this.queueName = redisQueueName
+    this.jobQueueName = redisJobQueueName
+    this.disconnectHandler_ = workflowsProviderDisconnectHandler
+
+    this.setupNotificationSubscriber()
+
+    // Store per-queue options
+    this.mainQueueOptions_ = redisMainQueueOptions ?? {}
+    this.mainWorkerOptions_ = redisMainWorkerOptions ?? {}
+    this.jobQueueOptions_ = redisJobQueueOptions ?? {}
+    this.jobWorkerOptions_ = redisJobWorkerOptions ?? {}
+    this.cleanerQueueOptions_ = redisCleanerQueueOptions ?? {}
+    this.cleanerWorkerOptions_ = redisCleanerWorkerOptions ?? {}
+
+    // Create queues with their respective options
+    this.queue = new Queue(redisQueueName, {
+      ...this.mainQueueOptions_,
+      connection: this.redisClient,
+    })
+    this.jobQueue = isWorkerMode
+      ? new Queue(redisJobQueueName, {
+          ...this.jobQueueOptions_,
+          connection: this.redisClient,
+        })
+      : undefined
+    this.cleanerQueue_ = isWorkerMode
+      ? new Queue(this.cleanerQueueName, {
+          ...this.cleanerQueueOptions_,
+          connection: this.redisClient,
+        })
+      : undefined
+    this.#isWorkerMode = isWorkerMode
+
+    this.__hooks = {
+      onApplicationStart: this.onApplicationStart.bind(this),
+      onApplicationPrepareShutdown:
+        this.onApplicationPrepareShutdown.bind(this),
+      onApplicationShutdown: this.onApplicationShutdown.bind(this),
+    }
+  }
+
+  private setupNotificationSubscriber() {
+    // Set up Redis message handler
+    this.redisSubscriber_.on("message", async (channel, message) => {
+      const workflowId = channel.replace("orchestrator:", "")
+      const handler = this.notificationHandlers_.get(workflowId)
+      if (!handler) {
+        return
+      }
+
+      try {
+        const data = JSON.parse(message)
+        handler(workflowId, data)
+      } catch (error) {
+        this.logger_.error(
+          `[Workflows-redis] Failed to process notification message: ${error}`
+        )
+      }
+    })
+
+    // Create the notification subscriber interface
+    this.notificationSubscriber = {
+      publish: async (
+        workflowId: string,
+        data: DistributedNotifyOptions
+      ): Promise<void> => {
+        try {
+          const channel = this.getChannelName(workflowId)
+          const message = JSON.stringify(data)
+          await this.redisPublisher_.publish(channel, message)
+        } catch (error) {
+          this.logger_.error(
+            `[Workflows-redis] Failed to publish notification: ${error}`
+          )
+        }
+      },
+
+      subscribe: (
+        workflowId: string,
+        handler: DistributedNotificationHandler
+      ): void => {
+        if (!this.notificationHandlers_.has(workflowId)) {
+          this.redisSubscriber_
+            .subscribe(this.getChannelName(workflowId))
+            .catch((error) => {
+              this.logger_.error(
+                `[Workflows-redis] Failed to subscribe to workflow channel ${workflowId}: ${error}`
+              )
+            })
+        }
+        this.notificationHandlers_.set(workflowId, handler)
+      },
+
+      unsubscribe: (workflowId: string): void => {
+        this.notificationHandlers_.delete(workflowId)
+        this.redisSubscriber_
+          .unsubscribe(this.getChannelName(workflowId))
+          .catch((error) => {
+            this.logger_.error(
+              `[Workflows-redis] Failed to unsubscribe from workflow channel ${workflowId}: ${error}`
+            )
+          })
+      },
+    }
+  }
+
+  private getChannelName(workflowId: string): string {
+    return `orchestrator:${workflowId}`
+  }
+
+  private async onApplicationPrepareShutdown() {
+    // Close workers immediately without waiting for current jobs to finish
+    // Pass true to force immediate shutdown
+    await this.worker?.close()
+    await this.jobWorker?.close()
+    await this.cleanerWorker_?.close()
+  }
+
+  private async onApplicationShutdown() {
+    await this.queue?.close()
+    await this.jobQueue?.close()
+    await this.cleanerQueue_?.close()
+
+    // Disconnect Redis connections
+    if (this.disconnectHandler_) {
+      await this.disconnectHandler_()
+    }
+  }
+
+  private async onApplicationStart() {
+    await this.ensureRedisConnection()
+    const allowedJobs = [
+      JobType.RETRY,
+      JobType.STEP_TIMEOUT,
+      JobType.TRANSACTION_TIMEOUT,
+    ]
+
+    // Per-worker options with their respective configurations
+    const mainWorkerOptions: WorkerOptions = {
+      ...this.mainWorkerOptions_,
+      connection: this.redisWorkerConnection,
+    }
+    const jobWorkerOptions: WorkerOptions = {
+      ...this.jobWorkerOptions_,
+      connection: this.redisWorkerConnection,
+    }
+    const cleanerWorkerOptions: WorkerOptions = {
+      ...this.cleanerWorkerOptions_,
+      connection: this.redisWorkerConnection,
+    }
+
+    // TODO: Remove this once we have released to all clients (Added: v2.6+)
+    // Remove all repeatable jobs from the old queue since now we have a queue dedicated to scheduled jobs
+    await this.removeAllRepeatableJobs(this.queue)
+
+    if (this.#isWorkerMode) {
+      this.worker = new Worker(
+        this.queueName,
+        async (job) => {
+          this.logger_.debug(
+            `executing job ${job.name} from queue ${
+              this.queueName
+            } with the following data: ${JSON.stringify(job.data)}`
+          )
+          if (allowedJobs.includes(job.name as JobType)) {
+            try {
+              await this.executeTransaction(
+                job.data.workflowId,
+                job.data.transactionId,
+                job.data.transactionMetadata
+              )
+            } catch (error) {
+              if (!SkipExecutionError.isSkipExecutionError(error)) {
+                throw error
+              }
+            }
+          }
+
+          if (job.name === JobType.SCHEDULE) {
+            // Remove repeatable job from the old queue since now we have a queue dedicated to scheduled jobs
+            await this.remove(job.data.jobId)
+          }
+        },
+        mainWorkerOptions
+      )
+
+      this.jobWorker = new Worker(
+        this.jobQueueName,
+        async (job) => {
+          this.logger_.debug(
+            `executing scheduled job ${job.data.jobId} from queue ${
+              this.jobQueueName
+            } with the following options: ${JSON.stringify(
+              job.data.schedulerOptions
+            )}`
+          )
+          return await this.executeScheduledJob(
+            job.data.jobId,
+            job.data.schedulerOptions
+          )
+        },
+        jobWorkerOptions
+      )
+
+      this.cleanerWorker_ = new Worker(
+        this.cleanerQueueName,
+        async () => {
+          await this.clearExpiredExecutions()
+        },
+        cleanerWorkerOptions
+      )
+
+      await this.cleanerQueue_?.add(
+        "cleaner",
+        {},
+        {
+          repeat: {
+            every: THIRTY_MINUTES_IN_MS,
+          },
+          jobId: REPEATABLE_CLEARER_JOB_ID,
+          removeOnComplete: true,
+          removeOnFail: true,
+        }
+      )
+      this.logger_.debug(
+        "[Workflows-redis] onApplicationStart - cleaner job added"
+      )
+    }
+  }
+
+  setWorkflowOrchestratorService(workflowOrchestratorService) {
+    this.workflowOrchestratorService_ = workflowOrchestratorService
+  }
+
+  setWorkflowExecutionService(
+    workflowExecutionService: ModulesSdkTypes.IMedusaInternalService<any>
+  ) {
+    this.workflowExecutionService_ = workflowExecutionService
+  }
+
+  private async ensureRedisConnection(): Promise<void> {
+    const reconnectTasks: Promise<void>[] = []
+
+    if (this.redisClient.status !== "ready") {
+      this.logger_.warn(
+        `[Workflows-redis] Redis connection is not ready (status: ${this.redisClient.status}). Attempting to reconnect...`
+      )
+      reconnectTasks.push(
+        this.redisClient
+          .connect()
+          .then(() => {
+            this.logger_.debug(
+              "[Workflows-redis] Redis connection reestablished successfully"
+            )
+          })
+          .catch((error) => {
+            this.logger_.error(
+              "[Workflows-redis] Failed to reconnect to Redis",
+              error
+            )
+            throw new MedusaError(
+              MedusaError.Types.DB_ERROR,
+              `Redis connection failed: ${error.message}`
+            )
+          })
+      )
+    }
+
+    if (this.redisWorkerConnection.status !== "ready") {
+      this.logger_.warn(
+        `[Workflows-redis] Redis worker connection is not ready (status: ${this.redisWorkerConnection.status}). Attempting to reconnect...`
+      )
+      reconnectTasks.push(
+        this.redisWorkerConnection
+          .connect()
+          .then(() => {
+            this.logger_.debug(
+              "[Workflows-redis] Redis worker connection reestablished successfully"
+            )
+          })
+          .catch((error) => {
+            this.logger_.error(
+              "[Workflows-redis] Failed to reconnect to Redis worker connection",
+              error
+            )
+            throw new MedusaError(
+              MedusaError.Types.DB_ERROR,
+              `Redis worker connection failed: ${error.message}`
+            )
+          })
+      )
+    }
+
+    if (reconnectTasks.length > 0) {
+      await promiseAll(reconnectTasks)
+    }
+  }
+
+  private async saveToDb(data: TransactionCheckpoint, retentionTime?: number) {
+    await saveToDbUtil(this.workflowExecutionService_, data, retentionTime)
+  }
+
+  private async deleteFromDb(data: TransactionCheckpoint) {
+    await deleteFromDbUtil(this.workflowExecutionService_, data)
+  }
+
+  private async executeTransaction(
+    workflowId: string,
+    transactionId: string,
+    transactionMetadata: TransactionFlow["metadata"] = {}
+  ) {
+    return await this.workflowOrchestratorService_.run(workflowId, {
+      transactionId,
+      logOnError: true,
+      throwOnError: false,
+      context: {
+        eventGroupId: transactionMetadata.eventGroupId,
+        parentStepIdempotencyKey: transactionMetadata.parentStepIdempotencyKey,
+        preventReleaseEvents: transactionMetadata.preventReleaseEvents,
+      },
+    })
+  }
+
+  private async executeScheduledJob(
+    jobId: string,
+    schedulerOptions: SchedulerOptions
+  ) {
+    try {
+      // TODO: In the case of concurrency being forbidden, we want to generate a predictable transaction ID and rely on the idempotency
+      // of the transaction to ensure that the transaction is only executed once.
+      await this.workflowOrchestratorService_.run(jobId, {
+        logOnError: true,
+      })
+    } catch (e) {
+      if (e instanceof MedusaError && e.type === MedusaError.Types.NOT_FOUND) {
+        this.logger_?.warn(
+          `Tried to execute a scheduled workflow with ID ${jobId} that does not exist, removing it from the scheduler.`
+        )
+
+        await this.remove(jobId)
+        return
+      }
+
+      throw e
+    }
+  }
+
+  async get(
+    key: string,
+    options?: TransactionOptions & {
+      isCancelling?: boolean
+      _cachedRawData?: string | null
+    }
+  ): Promise<TransactionCheckpoint | undefined> {
+    const [_, workflowId, transactionId] = key.split(":")
+
+    const [trx, rawData] = await promiseAll([
+      this.workflowExecutionService_
+        .list(
+          {
+            workflow_id: workflowId,
+            transaction_id: transactionId,
+          },
+          {
+            select: ["execution", "context"],
+            order: {
+              id: "desc",
+            },
+            take: 1,
+          }
+        )
+        .then((trx) => trx[0])
+        .catch(() => undefined),
+      options?._cachedRawData !== undefined
+        ? Promise.resolve(options._cachedRawData)
+        : this.redisClient.get(key),
+    ])
+
+    if (trx) {
+      let flow!: TransactionFlow, errors!: TransactionStepError[]
+      if (rawData) {
+        const data = JSON.parse(rawData)
+        flow = data.flow
+        errors = data.errors
+      }
+
+      const { idempotent } = options ?? {}
+      const execution = trx.execution as TransactionFlow
+
+      if (!idempotent) {
+        const isFailedOrReverted = failedStates.has(execution.state)
+
+        const isDone = execution.state === TransactionState.DONE
+
+        const isCancellingAndFailedOrReverted =
+          options?.isCancelling && isFailedOrReverted
+
+        const isNotCancellingAndDoneOrFailedOrReverted =
+          !options?.isCancelling && (isDone || isFailedOrReverted)
+
+        if (
+          isCancellingAndFailedOrReverted ||
+          isNotCancellingAndDoneOrFailedOrReverted
+        ) {
+          return
+        }
+      }
+
+      return new TransactionCheckpoint(
+        flow ?? (trx.execution as TransactionFlow),
+        trx.context?.data as TransactionContext,
+        errors ?? (trx.context?.errors as TransactionStepError[])
+      )
+    }
+
+    return
+  }
+
+  async save(
+    key: string,
+    data: TransactionCheckpoint,
+    ttl?: number,
+    options?: TransactionOptions
+  ): Promise<TransactionCheckpoint> {
+    /**
+     * Store the retention time only if the transaction is done, failed or reverted.
+     */
+    const { retentionTime } = options ?? {}
+
+    let lockValue: string | null = null
+
+    let storedData: TransactionCheckpoint | undefined
+
+    if (data.flow._v) {
+      lockValue = await this.#acquireLock(key)
+
+      if (!lockValue) {
+        throw new MedusaError(
+          MedusaError.Types.CONFLICT,
+          "Transaction storage lock could not be acquired"
+        )
+      }
+
+      storedData = await this.get(key, {
+        isCancelling: !!data.flow.cancelledAt,
+      } as any)
+
+      TransactionCheckpoint.mergeCheckpoints(data, storedData)
+    }
+
+    try {
+      const hasFinished = finishedStates.has(data.flow.state)
+
+      await preventRaceConditionExecutionIfNecessary({
+        data,
+        options,
+        cachedData: storedData,
+        getStoredData: () =>
+          this.get(key, {
+            ...options,
+            isCancelling: !!data.flow.cancelledAt,
+          } as TransactionOptions),
+      })
+
+      // Only set if not exists
+      const shouldSetNX =
+        data.flow.state === TransactionState.NOT_STARTED &&
+        !data.flow.transactionId.startsWith("auto-")
+
+      if (retentionTime) {
+        Object.assign(data, {
+          retention_time: retentionTime,
+        })
+      }
+
+      const execPipeline = () => {
+        const stringifiedData = JSON.stringify({
+          errors: data.errors,
+          flow: data.flow,
+        })
+
+        const pipeline = this.redisClient.pipeline()
+
+        if (!hasFinished) {
+          if (ttl) {
+            if (shouldSetNX) {
+              pipeline.set(key, stringifiedData, "EX", ttl, "NX")
+            } else {
+              pipeline.set(key, stringifiedData, "EX", ttl)
+            }
+          } else {
+            if (shouldSetNX) {
+              pipeline.set(key, stringifiedData, "NX")
+            } else {
+              pipeline.set(key, stringifiedData)
+            }
+          }
+        } else {
+          pipeline.unlink(key)
+        }
+
+        return pipeline.exec().then((result) => {
+          if (!shouldSetNX) {
+            return result
+          }
+
+          const actionResult = result?.pop()
+          const isOk = !!actionResult?.pop()
+          if (!isOk) {
+            throw new SkipExecutionError(
+              "Transaction already started for transactionId: " +
+                data.flow.transactionId
+            )
+          }
+
+          return result
+        })
+      }
+
+      // Parallelize DB and Redis operations for better performance
+      if (hasFinished && !retentionTime) {
+        if (!data.flow.metadata?.parentStepIdempotencyKey) {
+          await promiseAll([this.deleteFromDb(data), execPipeline()])
+        } else {
+          await promiseAll([this.saveToDb(data, retentionTime), execPipeline()])
+        }
+      } else {
+        await promiseAll([this.saveToDb(data, retentionTime), execPipeline()])
+      }
+
+      return data as TransactionCheckpoint
+    } finally {
+      if (lockValue) {
+        await this.#releaseLock(key, lockValue)
+      }
+    }
+  }
+
+  async scheduleRetry(
+    transaction: DistributedTransactionType,
+    step: TransactionStep,
+    timestamp: number,
+    interval: number
+  ): Promise<void> {
+    await this.queue.add(
+      JobType.RETRY,
+      {
+        workflowId: transaction.modelId,
+        transactionId: transaction.transactionId,
+        transactionMetadata: transaction.getFlow().metadata,
+        stepId: step.id,
+      },
+      {
+        delay: interval > 0 ? interval * 1000 : undefined,
+        jobId: this.getJobId(JobType.RETRY, transaction, step, interval),
+        removeOnComplete: true,
+      }
+    )
+  }
+
+  async clearRetry(
+    transaction: DistributedTransactionType,
+    step: TransactionStep
+  ): Promise<void> {
+    // Pass retry interval to ensure we remove the correct job (with -retry suffix if interval > 0)
+    const interval = step.definition.retryInterval || 0
+    await this.removeJob(JobType.RETRY, transaction, step, interval)
+  }
+
+  async scheduleTransactionTimeout(
+    transaction: DistributedTransactionType,
+    _: number,
+    interval: number
+  ): Promise<void> {
+    await this.queue.add(
+      JobType.TRANSACTION_TIMEOUT,
+      {
+        workflowId: transaction.modelId,
+        transactionId: transaction.transactionId,
+        transactionMetadata: transaction.getFlow().metadata,
+      },
+      {
+        delay: interval * 1000,
+        jobId: this.getJobId(JobType.TRANSACTION_TIMEOUT, transaction),
+        removeOnComplete: true,
+      }
+    )
+  }
+
+  async clearTransactionTimeout(
+    transaction: DistributedTransactionType
+  ): Promise<void> {
+    await this.removeJob(JobType.TRANSACTION_TIMEOUT, transaction)
+  }
+
+  async scheduleStepTimeout(
+    transaction: DistributedTransactionType,
+    step: TransactionStep,
+    timestamp: number,
+    interval: number
+  ): Promise<void> {
+    await this.queue.add(
+      JobType.STEP_TIMEOUT,
+      {
+        workflowId: transaction.modelId,
+        transactionId: transaction.transactionId,
+        transactionMetadata: transaction.getFlow().metadata,
+        stepId: step.id,
+      },
+      {
+        delay: interval * 1000,
+        jobId: this.getJobId(JobType.STEP_TIMEOUT, transaction, step),
+        removeOnComplete: true,
+      }
+    )
+  }
+
+  async clearStepTimeout(
+    transaction: DistributedTransactionType,
+    step: TransactionStep
+  ): Promise<void> {
+    await this.removeJob(JobType.STEP_TIMEOUT, transaction, step)
+  }
+
+  private getJobId(
+    type: JobType,
+    transaction: DistributedTransactionType,
+    step?: TransactionStep,
+    interval?: number
+  ) {
+    const key = [type, transaction.modelId, transaction.transactionId]
+
+    if (step) {
+      key.push(step.id, step.attempts + "")
+
+      // Add suffix for retry scheduling (interval > 0) to avoid collision with async execution (interval = 0)
+      if (type === JobType.RETRY && isDefined(interval) && interval > 0) {
+        key.push("retry")
+      }
+
+      if (step.isCompensating()) {
+        key.push("compensate")
+      }
+    }
+
+    return key.join(":")
+  }
+
+  private async removeJob(
+    type: JobType,
+    transaction: DistributedTransactionType,
+    step?: TransactionStep,
+    interval?: number
+  ) {
+    const jobId = this.getJobId(type, transaction, step, interval)
+
+    if (type === JobType.SCHEDULE) {
+      const job = await this.jobQueue?.getJob(jobId)
+      if (job) {
+        await job.remove()
+      }
+    } else {
+      const job = await this.queue.getJob(jobId)
+
+      if (job && job.attemptsStarted === 0) {
+        await job.remove()
+      }
+    }
+  }
+
+  /* Scheduler storage methods */
+  async schedule(
+    jobDefinition: string | { jobId: string },
+    schedulerOptions: SchedulerOptions
+  ): Promise<void> {
+    const jobId =
+      typeof jobDefinition === "string" ? jobDefinition : jobDefinition.jobId
+
+    if ("cron" in schedulerOptions && "interval" in schedulerOptions) {
+      throw new MedusaError(
+        MedusaError.Types.INVALID_DATA,
+        `Unable to register a job with both scheduler options interval and cron.`
+      )
+    }
+
+    const repeatOptions: RepeatOptions = {
+      limit: schedulerOptions.numberOfExecutions,
+      key: `${JobType.SCHEDULE}_${jobId}`,
+    }
+
+    if ("cron" in schedulerOptions) {
+      repeatOptions.pattern = schedulerOptions.cron
+    } else {
+      repeatOptions.every = schedulerOptions.interval
+    }
+
+    // If it is the same key (eg. the same workflow name), the old one will get overridden.
+    await this.jobQueue?.add(
+      JobType.SCHEDULE,
+      {
+        jobId,
+        schedulerOptions,
+      },
+      {
+        repeat: repeatOptions,
+        removeOnComplete: {
+          age: 86400,
+          count: 1000,
+        },
+        removeOnFail: {
+          age: 604800,
+          count: 5000,
+        },
+      }
+    )
+  }
+
+  async remove(jobId: string): Promise<void> {
+    await this.jobQueue?.removeRepeatableByKey(`${JobType.SCHEDULE}_${jobId}`)
+  }
+
+  async removeAll(): Promise<void> {
+    if (!this.jobQueue) {
+      return
+    }
+    return await this.removeAllRepeatableJobs(this.jobQueue)
+  }
+
+  private async removeAllRepeatableJobs(queue: Queue): Promise<void> {
+    const repeatableJobs = (await queue.getRepeatableJobs()) ?? []
+    await promiseAll(
+      repeatableJobs.map((job) => queue.removeRepeatableByKey(job.key))
+    )
+  }
+
+  /**
+   * Generate a lock key for the given transaction key
+   */
+  #getLockKey(key: string): string {
+    return `${key}:lock`
+  }
+
+  /**
+   * Acquire a distributed lock with ownership tracking.
+   *
+   * @param key - The key to lock
+   * @param ttlSeconds - Lock TTL in seconds (default: 5)
+   * @returns The unique lock value if acquired, null otherwise
+   */
+  async #acquireLock(
+    key: string,
+    ttlSeconds: number = 5
+  ): Promise<string | null> {
+    const lockKey = this.#getLockKey(key)
+    const lockValue = ulid()
+
+    const result = await this.redisClient.set(
+      lockKey,
+      lockValue,
+      "EX",
+      ttlSeconds,
+      "NX"
+    )
+    return result === "OK" ? lockValue : null
+  }
+
+  /**
+   * Release a distributed lock only if we own it.
+   * Uses a Lua script for atomic check-and-delete.
+   *
+   * @param key - The key to unlock
+   * @param lockValue - The lock value that was returned from acquireLock
+   */
+  async #releaseLock(key: string, lockValue: string): Promise<void> {
+    const lockKey = this.#getLockKey(key)
+    // Lua script: only delete if the lock value matches (we own it)
+    await this.redisClient.eval(
+      'if redis.call("get", KEYS[1]) == ARGV[1] then return redis.call("del", KEYS[1]) else return 0 end',
+      1,
+      lockKey,
+      lockValue
+    )
+  }
+
+  async clearExpiredExecutions() {
+    await clearExpiredExecutionsUtil(this.workflowExecutionService_)
+  }
+}

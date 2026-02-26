@@ -142,3 +142,88 @@ export interface IWorkflowEngineService extends IModuleService {
     sharedContext?: Context
   )
 }
+
+/***************************************************
+ * Workflow Module Orchestrator Service
+ ***************************************************/
+
+export interface IWorkflowModuleOrchestratorService extends IModuleService {
+  __hooks?: {
+    onApplicationStart?: () => Promise<void>
+    onApplicationPrepareShutdown?: () => Promise<void>
+    onApplicationShutdown?: () => Promise<void>
+  }
+
+  run<T = unknown>(
+    workflowIdOrWorkflow: string,
+    options?: Record<string, any> // TODO: unify typings
+  )
+
+  cancel(
+    workflowId: string,
+    options: WorkflowOrchestratorCancelOptionsDTO,
+    sharedContext?: Context
+  )
+
+  getRunningTransaction(
+    workflowId: string,
+    transactionId: string,
+    sharedContext?: Context
+  ): Promise<unknown>
+
+  setStepSuccess(
+    {
+      idempotencyKey,
+      stepResponse,
+      options,
+    }: {
+      idempotencyKey: string | IdempotencyKeyParts
+      stepResponse: unknown
+      options?: Record<string, any>
+    },
+    sharedContext?: Context
+  )
+
+  setStepFailure(
+    {
+      idempotencyKey,
+      stepResponse,
+      options,
+    }: {
+      idempotencyKey: string | IdempotencyKeyParts
+      stepResponse: unknown
+      options?: Record<string, any>
+    },
+    sharedContext?: Context
+  )
+
+  retryStep(
+    {
+      idempotencyKey,
+      options,
+    }: {
+      idempotencyKey: string | IdempotencyKeyParts
+      options?: Record<string, any>
+    },
+    sharedContext?: Context
+  )
+
+  subscribe(
+    args: {
+      workflowId: string
+      transactionId?: string
+      subscriber: Function
+      subscriberId?: string
+    },
+    sharedContext?: Context
+  )
+
+  unsubscribe(
+    args: {
+      workflowId: string
+      transactionId?: string
+      subscriberOrId: string | Function
+    },
+    sharedContext?: Context
+  )
+}

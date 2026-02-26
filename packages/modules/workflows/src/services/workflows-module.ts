@@ -1,0 +1,321 @@
+import { SqlEntityManager } from "@medusajs/framework/mikro-orm/postgresql"
+import {
+  Context,
+  DAL,
+  FilterableWorkflowExecutionProps,
+  FindConfig,
+  IdempotencyKeyParts,
+  InferEntityType,
+  InternalModuleDeclaration,
+  IWorkflowEngineService,
+  ModulesSdkTypes,
+  WorkflowExecutionDTO,
+  WorkflowsSdkTypes,
+} from "@medusajs/framework/types"
+import {
+  InjectManager,
+  InjectSharedContext,
+  isDefined,
+  MedusaContext,
+  ModulesSdkUtils,
+} from "@medusajs/framework/utils"
+import type {
+  ReturnWorkflow,
+  UnwrapWorkflowInputDataType,
+} from "@medusajs/framework/workflows-sdk"
+import { WorkflowExecution } from "@models"
+import { WorkflowOrchestratorCancelOptions } from "@types"
+import {
+  WorkflowOrchestratorRunOptions,
+  WorkflowOrchestratorService,
+} from "./workflow-orchestrator"
+
+type InjectedDependencies = {
+  manager: SqlEntityManager
+  baseRepository: DAL.RepositoryService
+  workflowExecutionService: ModulesSdkTypes.IMedusaInternalService<any>
+  workflowOrchestratorService: WorkflowOrchestratorService
+}
+
+export class WorkflowsModuleService<
+    TWorkflowExecution extends InferEntityType<
+      typeof WorkflowExecution
+    > = InferEntityType<typeof WorkflowExecution>
+  >
+  extends ModulesSdkUtils.MedusaService<{
+    WorkflowExecution: { dto: InferEntityType<typeof WorkflowExecution> }
+  }>({ WorkflowExecution })
+  implements IWorkflowEngineService
+{
+  protected baseRepository_: DAL.RepositoryService
+  protected workflowExecutionService_: ModulesSdkTypes.IMedusaInternalService<TWorkflowExecution>
+  protected workflowOrchestratorService_: WorkflowOrchestratorService
+  protected manager_: SqlEntityManager
+
+  constructor(
+    {
+      manager,
+      baseRepository,
+      workflowExecutionService,
+      workflowOrchestratorService,
+    }: InjectedDependencies,
+    protected readonly moduleDeclaration: InternalModuleDeclaration
+  ) {
+    super(arguments[0])
+
+    this.manager_ = manager
+    this.baseRepository_ = baseRepository
+    this.workflowExecutionService_ = workflowExecutionService
+    this.workflowOrchestratorService_ = workflowOrchestratorService
+  }
+
+  __hooks = {
+    onApplicationStart: async () => {
+      await this.workflowOrchestratorService_.__hooks?.onApplicationStart?.()
+    },
+    onApplicationPrepareShutdown: async () => {
+      await this.workflowOrchestratorService_.__hooks?.onApplicationPrepareShutdown?.()
+    },
+    onApplicationShutdown: async () => {
+      await this.workflowOrchestratorService_.__hooks?.onApplicationShutdown?.()
+    },
+  }
+
+  static prepareFilters<T>(filters: T & { q?: string }) {
+    const filters_ = { ...filters } // shallow copy
+    if (filters_?.q) {
+      const q = filters_.q
+      delete filters_.q
+
+      const textSearch = { $ilike: `%${q}%` }
+      const textSearchFilters = {
+        $or: [
+          {
+            transaction_id: textSearch,
+          },
+          {
+            workflow_id: textSearch,
+          },
+          {
+            state: textSearch,
+          },
+          {
+            execution: {
+              runId: textSearch,
+            },
+          },
+        ],
+      }
+
+      if (!Object.keys(filters_).length) {
+        return textSearchFilters
+      } else {
+        return { $and: [filters_, textSearchFilters] }
+      }
+    }
+
+    return filters
+  }
+
+  @InjectManager()
+  // @ts-expect-error
+  async listWorkflowExecutions(
+    filters: FilterableWorkflowExecutionProps = {},
+    config?: FindConfig<WorkflowExecutionDTO>,
+    @MedusaContext() sharedContext?: Context
+  ) {
+    const filters_ = WorkflowsModuleService.prepareFilters(filters)
+    return await super.listWorkflowExecutions(filters_, config, sharedContext)
+  }
+
+  @InjectManager()
+  // @ts-expect-error
+  async listAndCountWorkflowExecutions(
+    filters: FilterableWorkflowExecutionProps = {},
+    config?: FindConfig<WorkflowExecutionDTO>,
+    @MedusaContext() sharedContext?: Context
+  ) {
+    const filters_ = WorkflowsModuleService.prepareFilters(filters)
+    return await super.listAndCountWorkflowExecutions(
+      filters_,
+      config,
+      sharedContext
+    )
+  }
+
+  @InjectSharedContext()
+  async run<TWorkflow extends string | ReturnWorkflow<any, any, any>>(
+    workflowIdOrWorkflow: TWorkflow,
+    options: WorkflowsSdkTypes.WorkflowOrchestratorRunDTO<
+      TWorkflow extends ReturnWorkflow<any, any, any>
+        ? UnwrapWorkflowInputDataType<TWorkflow>
+        : unknown
+    > = {},
+    @MedusaContext() context: Context = {}
+  ) {
+    const { context: optionsContext, ...restOptions } = options ?? {}
+
+    const {
+      manager,
+      transactionManager,
+      preventReleaseEvents,
+      transactionId,
+      parentStepIdempotencyKey,
+      ...restContext
+    } = context
+
+    let localPreventReleaseEvents = false
+
+    if (isDefined(optionsContext?.preventReleaseEvents)) {
+      localPreventReleaseEvents = optionsContext!.preventReleaseEvents!
+    } else {
+      if (
+        isDefined(context.eventGroupId) &&
+        isDefined(optionsContext?.eventGroupId) &&
+        context.eventGroupId === optionsContext?.eventGroupId
+      ) {
+        localPreventReleaseEvents = true
+      }
+    }
+
+    let eventGroupId
+
+    if (optionsContext?.eventGroupId) {
+      eventGroupId = optionsContext.eventGroupId
+    } else if (localPreventReleaseEvents && context.eventGroupId) {
+      eventGroupId = context.eventGroupId
+    }
+
+    const mergedContext = {
+      ...(restContext ?? {}),
+      ...(optionsContext ?? {}),
+      eventGroupId,
+      preventReleaseEvents: localPreventReleaseEvents,
+    }
+
+    const ret = await this.workflowOrchestratorService_.run<
+      TWorkflow extends ReturnWorkflow<any, any, any>
+        ? UnwrapWorkflowInputDataType<TWorkflow>
+        : unknown
+    >(workflowIdOrWorkflow, {
+      ...restOptions,
+      context: mergedContext,
+    } as WorkflowOrchestratorRunOptions<any>)
+
+    return ret
+  }
+
+  @InjectSharedContext()
+  async getRunningTransaction(
+    workflowId: string,
+    transactionId: string,
+    @MedusaContext() context: Context = {}
+  ) {
+    return await this.workflowOrchestratorService_.getRunningTransaction(
+      workflowId,
+      transactionId,
+      context
+    )
+  }
+
+  @InjectSharedContext()
+  async setStepSuccess(
+    {
+      idempotencyKey,
+      stepResponse,
+      options,
+    }: {
+      idempotencyKey: string | object
+      stepResponse: unknown
+      options?: Record<string, any>
+    },
+    @MedusaContext() context: Context = {}
+  ) {
+    const { manager, transactionManager, ...restContext } = context
+
+    options ??= {}
+    options.context ??= restContext
+
+    return await this.workflowOrchestratorService_.setStepSuccess({
+      idempotencyKey,
+      stepResponse,
+      options,
+    } as any)
+  }
+
+  @InjectSharedContext()
+  async setStepFailure(
+    {
+      idempotencyKey,
+      stepResponse,
+      options,
+    }: {
+      idempotencyKey: string | object
+      stepResponse: unknown
+      options?: Record<string, any> & {
+        forcePermanentFailure?: boolean
+      }
+    },
+    @MedusaContext() context: Context = {}
+  ) {
+    const { manager, transactionManager, ...restContext } = context
+
+    options ??= {}
+    options.context ??= restContext
+
+    return await this.workflowOrchestratorService_.setStepFailure({
+      idempotencyKey,
+      stepResponse,
+      options,
+    } as any)
+  }
+
+  @InjectSharedContext()
+  async retryStep(
+    {
+      idempotencyKey,
+      options,
+    }: {
+      idempotencyKey: string | IdempotencyKeyParts
+      options?: Record<string, any>
+    },
+    @MedusaContext() context: Context = {}
+  ) {
+    const { manager, transactionManager, ...restContext } = context
+
+    options ??= {}
+    options.context ??= restContext
+
+    return await this.workflowOrchestratorService_.retryStep({
+      idempotencyKey,
+      options,
+    })
+  }
+
+  async subscribe(args: {
+    workflowId: string
+    transactionId?: string
+    subscriber: Function
+    subscriberId?: string
+  }) {
+    return this.workflowOrchestratorService_.subscribe(args as any)
+  }
+
+  async unsubscribe(args: {
+    workflowId: string
+    transactionId?: string
+    subscriberOrId: string | Function
+  }) {
+    return this.workflowOrchestratorService_.unsubscribe(args as any)
+  }
+
+  async cancel<TWorkflow extends string | ReturnWorkflow<any, any, any>>(
+    workflowIdOrWorkflow: TWorkflow,
+    options: WorkflowOrchestratorCancelOptions
+  ) {
+    return await this.workflowOrchestratorService_.cancel(
+      workflowIdOrWorkflow,
+      options
+    )
+  }
+}

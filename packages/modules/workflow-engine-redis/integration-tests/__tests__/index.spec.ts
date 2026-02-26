@@ -110,6 +110,10 @@ moduleIntegrationTestRunner<IWorkflowEngineService>({
         await TestDatabase.clearTables()
       })
 
+      afterAll(async () => {
+        await TestDatabase.disconnect()
+      })
+
       let query: RemoteQueryFunction
       let sharedContainer_: MedusaContainer
 

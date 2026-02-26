@@ -106,6 +106,8 @@
     "@medusajs/user": "2.13.1",
     "@medusajs/workflow-engine-inmemory": "2.13.1",
     "@medusajs/workflow-engine-redis": "2.13.1",
+    "@medusajs/workflows": "2.13.1",
+    "@medusajs/workflows-redis": "2.13.1",
     "boxen": "^5.0.1",
     "chalk": "^4.1.2",
     "chokidar": "^4.0.3",

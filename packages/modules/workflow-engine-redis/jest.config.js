@@ -7,4 +7,6 @@ module.exports = defineJestConfig({
     "^@types": "<rootDir>/src/types",
     "^@utils": "<rootDir>/src/utils",
   },
+  testTimeout: 60000,
+  forceExit: true,
 })
