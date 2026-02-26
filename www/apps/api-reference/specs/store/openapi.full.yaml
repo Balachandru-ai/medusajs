@@ -11035,20 +11035,6 @@ components:
           externalDocs:
             url: https://docs.medusajs.com/api/admin#manage-metadata
             description: Learn how to manage metadata
-    AdminAddRolePolicies:
-      type: object
-      description: SUMMARY
-      x-schemaName: AdminAddRolePolicies
-      required:
-        - policies
-      properties:
-        policies:
-          type: array
-          description: The rbac's policies.
-          items:
-            type: string
-            title: policies
-            description: The policy's policies.
     AdminApiKey:
       type: object
       description: The API key's details.
@@ -11195,34 +11181,6 @@ components:
           type: number
           title: apply_to_quantity
           description: The quantity that results from matching the `buyget` promotion's condition. For example, if the promotion is a "Buy 2 shirts get 1 free", the value of this attribute is `1`.
-    AdminAssignRoleUsers:
-      type: object
-      description: SUMMARY
-      x-schemaName: AdminAssignRoleUsers
-      required:
-        - users
-      properties:
-        users:
-          type: array
-          description: The rbac's users.
-          items:
-            type: string
-            title: users
-            description: The user's users.
-    AdminAssignUserRoles:
-      type: object
-      description: SUMMARY
-      x-schemaName: AdminAssignUserRoles
-      required:
-        - roles
-      properties:
-        roles:
-          type: array
-          description: The user's roles.
-          items:
-            type: string
-            title: roles
-            description: The role's roles.
     AdminBatchCreateInventoryItemLocationLevels:
       type: object
       description: The inventory level's details.
@@ -13912,60 +13870,6 @@ components:
                 title: values
                 description: An attribute value.
                 example: prod_123
-    AdminCreateRbacPolicy:
-      type: object
-      description: SUMMARY
-      x-schemaName: AdminCreateRbacPolicy
-      required:
-        - key
-        - resource
-        - operation
-      properties:
-        key:
-          type: string
-          title: key
-          description: The rbac's key.
-        resource:
-          type: string
-          title: resource
-          description: The rbac's resource.
-        operation:
-          type: string
-          title: operation
-          description: The rbac's operation.
-        metadata:
-          type: object
-          description: The rbac's metadata.
-        name:
-          type: string
-          title: name
-          description: The rbac's name.
-        description:
-          type: string
-          title: description
-          description: The rbac's description.
-    AdminCreateRbacRole:
-      type: object
-      description: SUMMARY
-      x-schemaName: AdminCreateRbacRole
-      required:
-        - name
-      properties:
-        name:
-          type: string
-          title: name
-          description: The rbac's name.
-        metadata:
-          type: object
-          description: The rbac's metadata.
-        description:
-          type: string
-          title: description
-          description: The rbac's description.
-        parent_id:
-          type: string
-          title: parent_id
-          description: The rbac's parent id.
     AdminCreateRefundReason:
       type: object
       description: The refund reason's details.
@@ -22495,34 +22399,6 @@ components:
             type: string
             title: promo_codes
             description: A promotion code to remove from the draft order.
-    AdminRemoveRoleUsers:
-      type: object
-      description: SUMMARY
-      x-schemaName: AdminRemoveRoleUsers
-      required:
-        - users
-      properties:
-        users:
-          type: array
-          description: The rbac's users.
-          items:
-            type: string
-            title: users
-            description: The user's users.
-    AdminRemoveUserRoles:
-      type: object
-      description: SUMMARY
-      x-schemaName: AdminRemoveUserRoles
-      required:
-        - roles
-      properties:
-        roles:
-          type: array
-          description: The user's roles.
-          items:
-            type: string
-            title: roles
-            description: The role's roles.
     AdminRequestOrderTransfer:
       type: object
       description: The details of the request to transfer the order.
@@ -24514,9 +24390,7 @@ components:
           items:
             allOf:
               - type: object
-                description: The datum's data.
-              - type: object
-                description: The datum's data.
+                description: The entity's data.
                 required:
                   - id
                   - translations
@@ -24524,58 +24398,12 @@ components:
                   id:
                     type: string
                     title: id
-                    description: The datum's ID.
+                    description: The entity's ID.
                   translations:
                     type: array
-                    description: The datum's translations.
+                    description: The entity's translations.
                     items:
-                      type: object
-                      description: The translation's translations.
-                      x-schemaName: AdminTranslation
-                      required:
-                        - id
-                        - reference_id
-                        - reference
-                        - locale_code
-                        - translations
-                        - created_at
-                        - updated_at
-                        - deleted_at
-                      properties:
-                        id:
-                          type: string
-                          title: id
-                          description: The translation's ID.
-                        reference_id:
-                          type: string
-                          title: reference_id
-                          description: The translation's reference id.
-                        reference:
-                          type: string
-                          title: reference
-                          description: The translation's reference.
-                        locale_code:
-                          type: string
-                          title: locale_code
-                          description: The translation's locale code.
-                        translations:
-                          type: object
-                          description: The translation's translations.
-                        created_at:
-                          type: string
-                          format: date-time
-                          title: created_at
-                          description: The translation's created at.
-                        updated_at:
-                          type: string
-                          format: date-time
-                          title: updated_at
-                          description: The translation's updated at.
-                        deleted_at:
-                          type: string
-                          format: date-time
-                          title: deleted_at
-                          description: The translation's deleted at.
+                      $ref: '#/components/schemas/AdminTranslation'
         count:
           type: number
           title: count
@@ -25659,54 +25487,6 @@ components:
                 description: An attribute value.
                 example: prod_123
       x-schemaName: AdminUpdatePromotionRule
-    AdminUpdateRbacPolicy:
-      type: object
-      description: SUMMARY
-      x-schemaName: AdminUpdateRbacPolicy
-      properties:
-        metadata:
-          type: object
-          description: The rbac's metadata.
-        name:
-          type: string
-          title: name
-          description: The rbac's name.
-        description:
-          type: string
-          title: description
-          description: The rbac's description.
-        key:
-          type: string
-          title: key
-          description: The rbac's key.
-        resource:
-          type: string
-          title: resource
-          description: The rbac's resource.
-        operation:
-          type: string
-          title: operation
-          description: The rbac's operation.
-    AdminUpdateRbacRole:
-      type: object
-      description: SUMMARY
-      x-schemaName: AdminUpdateRbacRole
-      properties:
-        metadata:
-          type: object
-          description: The rbac's metadata.
-        name:
-          type: string
-          title: name
-          description: The rbac's name.
-        description:
-          type: string
-          title: description
-          description: The rbac's description.
-        parent_id:
-          type: string
-          title: parent_id
-          description: The rbac's parent id.
     AdminUpdateRefundReason:
       type: object
       description: The properties to update in the refund reason.

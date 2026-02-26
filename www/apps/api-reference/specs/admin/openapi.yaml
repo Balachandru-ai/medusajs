@@ -1091,20 +1091,6 @@ paths:
     $ref: paths/admin_promotions_{id}_target-rules_batch.yaml
   /admin/promotions/{id}/{rule_type}:
     $ref: paths/admin_promotions_{id}_{rule_type}.yaml
-  /admin/rbac/policies:
-    $ref: paths/admin_rbac_policies.yaml
-  /admin/rbac/policies/{id}:
-    $ref: paths/admin_rbac_policies_{id}.yaml
-  /admin/rbac/roles:
-    $ref: paths/admin_rbac_roles.yaml
-  /admin/rbac/roles/{id}:
-    $ref: paths/admin_rbac_roles_{id}.yaml
-  /admin/rbac/roles/{id}/policies:
-    $ref: paths/admin_rbac_roles_{id}_policies.yaml
-  /admin/rbac/roles/{id}/policies/{policy_id}:
-    $ref: paths/admin_rbac_roles_{id}_policies_{policy_id}.yaml
-  /admin/rbac/roles/{id}/users:
-    $ref: paths/admin_rbac_roles_{id}_users.yaml
   /admin/refund-reasons:
     $ref: paths/admin_refund-reasons.yaml
   /admin/refund-reasons/{id}:
@@ -1227,8 +1213,6 @@ paths:
     $ref: paths/admin_users_me.yaml
   /admin/users/{id}:
     $ref: paths/admin_users_{id}.yaml
-  /admin/users/{id}/roles:
-    $ref: paths/admin_users_{id}_roles.yaml
   /admin/users/{id}/roles/{role_id}:
     $ref: paths/admin_users_{id}_roles_{role_id}.yaml
   /admin/views/{entity}/columns:
