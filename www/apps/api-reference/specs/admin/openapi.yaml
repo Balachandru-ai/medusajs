@@ -479,7 +479,6 @@ tags:
       url: https://docs.medusajs.com/resources/commerce-modules/promotion/concepts
     x-associatedSchema:
       $ref: ./components/schemas/AdminPromotion.yaml
-  - name: Rbac
   - name: Refund Reasons
     description: >
       A refund reason is a possible reason used when issuing a refund to the
