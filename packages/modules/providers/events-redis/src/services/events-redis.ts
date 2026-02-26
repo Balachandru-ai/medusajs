@@ -1,17 +1,22 @@
 import {
   Event,
-  // TODO: Comment temporarely and we will re enable it in the near future #14478
-  // EventBusEventsOptions,
   InternalModuleDeclaration,
   Logger,
   Message,
 } from "@medusajs/framework/types"
 import {
-  AbstractEventBusModuleService,
   EventPriority,
+  EventsUtils,
   isPresent,
+  MedusaError,
   promiseAll,
 } from "@medusajs/framework/utils"
+import {
+  BullJob,
+  EmitOptions,
+  EventRedisProviderOptions,
+  Options,
+} from "@types"
 import {
   BulkJobOptions,
   Queue,
@@ -20,87 +25,68 @@ import {
   WorkerOptions,
 } from "bullmq"
 import { Redis } from "ioredis"
-import {
-  BullJob,
-  EmitOptions,
-  EventBusRedisModuleOptions,
-  Options,
-} from "../types"
 
 type InjectedDependencies = {
   logger: Logger
-  eventBusRedisConnection: Redis
-  eventBusRedisQueueName: string
-  eventBusRedisQueueOptions: Omit<QueueOptions, "connection">
-  eventBusRedisWorkerOptions: Omit<WorkerOptions, "connection">
-  eventBusRedisJobOptions: EmitOptions
+  eventRedisConnection: Redis
+  eventRedisQueueName: string
+  eventRedisQueueOptions: Omit<QueueOptions, "connection">
+  eventRedisWorkerOptions: Omit<WorkerOptions, "connection">
+  eventRedisJobOptions: EmitOptions
 }
 
 type IORedisEventType<T = unknown> = {
   name: string
-  data: Omit<Event<T>, "name"> // See comment in `buildEvents` method
+  data: Omit<Event<T>, "name">
   opts: BulkJobOptions
 }
 
 /**
- * Can keep track of multiple subscribers to different events and run the
- * subscribers when events happen. Events will run asynchronously.
+ * Redis-based event provider using BullMQ for reliable event processing.
+ * Supports priority, retry, and distributed event handling.
  */
-// eslint-disable-next-line max-len
-export default class RedisEventBusService extends AbstractEventBusModuleService {
+export class RedisEventsProvider extends EventsUtils.AbstractEventsProvider<EventRedisProviderOptions> {
+  static identifier = "events-redis"
+
   protected readonly logger_: Logger
-  protected readonly eventBusRedisConnection_: Redis
+  protected readonly eventRedisConnection_: Redis
 
   protected readonly queueName_: string
   protected readonly queueOptions_: Omit<QueueOptions, "connection">
   protected readonly workerOptions_: Omit<WorkerOptions, "connection">
   protected readonly jobOptions_: EmitOptions
-  // TODO: Comment temporarely and we will re enable it in the near future #14478
-  // private readonly eventOptions_: EventBusEventsOptions
 
   protected queue_: Queue
   protected bullWorker_: Worker
+  protected isWorkerMode: boolean = true
 
   constructor(
-    {
-      logger,
-      eventBusRedisConnection,
-      eventBusRedisQueueName,
-      eventBusRedisQueueOptions,
-      eventBusRedisWorkerOptions,
-      eventBusRedisJobOptions,
-    }: InjectedDependencies,
-    _moduleOptions: EventBusRedisModuleOptions = {},
-    _moduleDeclaration: InternalModuleDeclaration
+    container: InjectedDependencies,
+    options: EventRedisProviderOptions = {},
+    moduleDeclaration: InternalModuleDeclaration
   ) {
-    // @ts-ignore
-    super(...arguments)
+    super(container, options)
 
-    this.eventBusRedisConnection_ = eventBusRedisConnection
-    this.logger_ = logger
+    this.eventRedisConnection_ = container.eventRedisConnection
+    this.logger_ = container.logger
 
-    this.queueName_ = eventBusRedisQueueName ?? "events-queue"
-    this.queueOptions_ = eventBusRedisQueueOptions ?? {}
-    this.workerOptions_ = eventBusRedisWorkerOptions ?? {}
-    this.jobOptions_ = eventBusRedisJobOptions ?? {}
-    // TODO: Comment temporarely and we will re enable it in the near future #14478
-    // this.eventOptions_ =
-    //   _moduleOptions.eventOptions ??
-    //   _moduleDeclaration.options?.eventOptions ??
-    //   {}
+    this.queueName_ = container.eventRedisQueueName ?? "events-queue"
+    this.queueOptions_ = container.eventRedisQueueOptions ?? {}
+    this.workerOptions_ = container.eventRedisWorkerOptions ?? {}
+    this.jobOptions_ = container.eventRedisJobOptions ?? {}
+
+    this.isWorkerMode = moduleDeclaration.worker_mode !== "server"
 
     this.queue_ = new Queue(this.queueName_, {
-      prefix: `${this.constructor.name}`,
       ...this.queueOptions_,
-      connection: eventBusRedisConnection,
+      connection: this.eventRedisConnection_,
     })
 
     // Register our worker to handle emit calls
     if (this.isWorkerMode) {
       this.bullWorker_ = new Worker(this.queueName_, this.worker_, {
-        prefix: `${this.constructor.name}`,
         ...this.workerOptions_,
-        connection: eventBusRedisConnection,
+        connection: this.eventRedisConnection_,
         autorun: false,
       })
     }
@@ -108,16 +94,50 @@ export default class RedisEventBusService extends AbstractEventBusModuleService 
 
   __hooks = {
     onApplicationStart: async () => {
+      await this.ensureRedisConnection()
       await this.bullWorker_?.run()
     },
     onApplicationShutdown: async () => {
       await this.queue_.close()
-      // eslint-disable-next-line max-len
-      this.eventBusRedisConnection_.disconnect()
+      await this.eventRedisConnection_.quit()
     },
     onApplicationPrepareShutdown: async () => {
+      // Wait for worker to finish processing current jobs
       await this.bullWorker_?.close()
     },
+  }
+
+  private async ensureRedisConnection(): Promise<void> {
+    const reconnectTasks: Promise<void>[] = []
+
+    if (this.eventRedisConnection_.status !== "ready") {
+      this.logger_.warn(
+        `[events-redis] Redis connection is not ready (status: ${this.eventRedisConnection_.status}). Attempting to reconnect...`
+      )
+      reconnectTasks.push(
+        this.eventRedisConnection_
+          .connect()
+          .then(() => {
+            this.logger_.info(
+              "[events-redis] Redis connection reestablished successfully"
+            )
+          })
+          .catch((error) => {
+            this.logger_.error(
+              "[events-redis] Failed to reconnect to Redis",
+              error
+            )
+            throw new MedusaError(
+              MedusaError.Types.DB_ERROR,
+              `[events-redis] Redis connection failed: ${error.message}`
+            )
+          })
+      )
+    }
+
+    if (reconnectTasks.length > 0) {
+      await promiseAll(reconnectTasks)
+    }
   }
 
   /**
@@ -162,23 +182,18 @@ export default class RedisEventBusService extends AbstractEventBusModuleService 
         ...eventData.options,
       }
 
-      // TODO: Comment temporarely and we will re enable it in the near future #14478
-      // finalOptions.priority =
-      //   eventData.options?.priority ??
-      //   this.eventOptions_[eventData.name]?.priority
-
       if (
         finalOptions.priority != undefined &&
         (finalOptions.priority < 1 ||
           finalOptions.priority > EventPriority.LOWEST)
       ) {
         this.logger_.warn(
-          `Invalid priority value: ${finalOptions.priority} for event ${eventData.name}. Must be between 1 and ${EventPriority.LOWEST}`
+          `[events-redis] Invalid priority value: ${finalOptions.priority} for event ${eventData.name}. Must be between 1 and ${EventPriority.LOWEST}`
+        )
+        this.logger_.warn(
+          `[events-redis] Setting priority to default value: ${EventPriority.DEFAULT} for event ${eventData.name}`
         )
         finalOptions.priority = EventPriority.DEFAULT
-        this.logger_.warn(
-          `Setting priority to default value: ${EventPriority.DEFAULT} for event ${eventData.name}`
-        )
       }
 
       return {
@@ -200,7 +215,7 @@ export default class RedisEventBusService extends AbstractEventBusModuleService 
   ): Promise<void> {
     let eventsDataArray = Array.isArray(eventsData) ? eventsData : [eventsData]
 
-    const { groupedEventsTTL = 600 } = options
+    const { groupedEventsTTL = 600 } = { ...options }
     delete options.groupedEventsTTL
 
     const eventsToEmit = eventsDataArray.filter(
@@ -224,15 +239,16 @@ export default class RedisEventBusService extends AbstractEventBusModuleService 
     const promises: Promise<unknown>[] = []
 
     if (eventsToEmit.length) {
-      eventsToEmit.map((eventData) =>
-        this.callInterceptors(eventData, { isGrouped: false })
+      eventsToEmit.map(
+        (eventData) =>
+          void this.callInterceptors(eventData, { isGrouped: false })
       )
 
+      const wilcardSubscribers = this.eventToSubscribersMap.get("*") || []
       const eventsWithSubscribers = eventsToEmit.filter((eventData) => {
         const eventSubscribers =
           this.eventToSubscribersMap.get(eventData.name) || []
-        const wildcardSubscribers = this.eventToSubscribersMap.get("*") || []
-        return eventSubscribers.length || wildcardSubscribers.length
+        return eventSubscribers.length || wilcardSubscribers.length
       })
 
       if (eventsWithSubscribers.length) {
@@ -265,14 +281,14 @@ export default class RedisEventBusService extends AbstractEventBusModuleService 
       return
     }
 
-    await this.eventBusRedisConnection_.expire(`staging:${eventGroupId}`, ttl)
+    await this.eventRedisConnection_.expire(`staging:${eventGroupId}`, ttl)
   }
 
   private async groupEvents<T = unknown>(
     eventGroupId: string,
     events: IORedisEventType<T>[]
   ) {
-    await this.eventBusRedisConnection_.rpush(
+    await this.eventRedisConnection_.rpush(
       `staging:${eventGroupId}`,
       ...events.map((event) => JSON.stringify(event))
     )
@@ -281,7 +297,7 @@ export default class RedisEventBusService extends AbstractEventBusModuleService 
   private async getGroupedEvents(
     eventGroupId: string
   ): Promise<IORedisEventType[]> {
-    return await this.eventBusRedisConnection_
+    return await this.eventRedisConnection_
       .lrange(`staging:${eventGroupId}`, 0, -1)
       .then((result) => {
         return result.map((jsonString) => JSON.parse(jsonString))
@@ -290,14 +306,14 @@ export default class RedisEventBusService extends AbstractEventBusModuleService 
 
   async releaseGroupedEvents(eventGroupId: string) {
     const groupedEvents = await this.getGroupedEvents(eventGroupId)
-
     // Call interceptors before emitting grouped events
     // Extract the original messages from the job data structure
     groupedEvents.map((jobData) => {
+      const { name, data } = jobData
       const message = {
-        name: jobData.name,
-        data: jobData.data.data,
-        metadata: jobData.data.metadata,
+        name: name,
+        data: data.data,
+        metadata: data.metadata,
       }
       this.callInterceptors(message as any, {
         isGrouped: true,
@@ -337,7 +353,7 @@ export default class RedisEventBusService extends AbstractEventBusModuleService 
        * names. which allow to partially clear an event group.
        */
 
-      const eventsToKeep = await this.eventBusRedisConnection_
+      const eventsToKeep = await this.eventRedisConnection_
         .lrange(`staging:${eventGroupId}`, 0, -1)
         .then((result) => {
           return result
@@ -346,23 +362,25 @@ export default class RedisEventBusService extends AbstractEventBusModuleService 
         })
 
       // Create a pipeline
-      const pipeline = this.eventBusRedisConnection_.pipeline()
+      const pipeline = this.eventRedisConnection_.pipeline()
 
       // Empty the current list
       pipeline.del(`staging:${eventGroupId}`)
 
       // Add the remaining events to the list
-      pipeline.rpush(
-        `staging:${eventGroupId}`,
-        ...eventsToKeep.map((event) => JSON.stringify(event))
-      )
+      if (eventsToKeep.length) {
+        pipeline.rpush(
+          `staging:${eventGroupId}`,
+          ...eventsToKeep.map((event) => JSON.stringify(event))
+        )
+      }
 
       await pipeline.exec()
 
       return
     }
 
-    await this.eventBusRedisConnection_.unlink(`staging:${eventGroupId}`)
+    await this.eventRedisConnection_.unlink(`staging:${eventGroupId}`)
   }
 
   /**
@@ -370,7 +388,9 @@ export default class RedisEventBusService extends AbstractEventBusModuleService 
    * @param job The job object
    * @return resolves to the results of the subscriber calls.
    */
-  worker_ = async <T>(job: BullJob<T>): Promise<unknown> => {
+  worker_ = async <T extends Record<string, unknown>>(
+    job: BullJob<T>
+  ): Promise<unknown> => {
     const { data, name, opts } = job
     const eventSubscribers = this.eventToSubscribersMap.get(name) || []
     const wildcardSubscribers = this.eventToSubscribersMap.get("*") || []
@@ -395,17 +415,17 @@ export default class RedisEventBusService extends AbstractEventBusModuleService 
     if (!opts.internal) {
       if (isRetry) {
         if (isFinalAttempt) {
-          this.logger_.info(`Final retry attempt for ${name}`)
+          this.logger_.info(`[events-redis] Final retry attempt for ${name}`)
         }
 
         this.logger_.info(
-          `Retrying ${name} which has ${eventSubscribers.length} subscribers (${subscribersInCurrentAttempt.length} of them failed)`
+          `[events-redis] Retrying ${name} which has ${eventSubscribers.length} subscribers (${subscribersInCurrentAttempt.length} of them failed)`
         )
       } else {
         const prioirityInfo =
           opts.priority != undefined ? ` (priority: ${opts.priority})` : ""
         this.logger_.info(
-          `Processing ${name}${prioirityInfo} which has ${eventSubscribers.length} subscribers`
+          `[events-redis] Processing ${name}${prioirityInfo} which has ${eventSubscribers.length} subscribers`
         )
       }
     }
@@ -428,8 +448,9 @@ export default class RedisEventBusService extends AbstractEventBusModuleService 
             return data
           })
         } catch (err) {
-          this.logger_?.warn(`An error occurred while processing ${name}:`)
-          this.logger_?.warn(err)
+          this.logger_?.warn(
+            `[events-redis] An error occurred while processing event ${name}: ${err}`
+          )
 
           return err
         }
@@ -457,7 +478,7 @@ export default class RedisEventBusService extends AbstractEventBusModuleService 
 
       await job.updateData(job.data)
 
-      const errorMessage = `One or more subscribers of ${name} failed. Retrying...`
+      const errorMessage = `[events-redis] One or more subscribers of ${name} failed. Retrying...`
 
       this.logger_.warn(errorMessage)
 
@@ -467,7 +488,7 @@ export default class RedisEventBusService extends AbstractEventBusModuleService 
     if (didSubscribersFail && !isFinalAttempt) {
       // If retrying is not configured, we log a warning to allow server admins to recover manually
       this.logger_.warn(
-        `One or more subscribers of ${name} failed. Retrying is not configured. Use 'attempts' option when emitting events.`
+        `[events-redis] One or more subscribers of ${name} failed. Retrying is not configured. Use 'attempts' option when emitting events.`
       )
     }
 

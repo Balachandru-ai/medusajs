@@ -286,10 +286,19 @@ function resolveModules(
       options: { redisUrl: process.env.REDIS_URL },
     },
     {
-      resolve: TEMPORARY_REDIS_MODULE_PACKAGE_NAMES[Modules.EVENT_BUS],
+      resolve: MODULE_PACKAGE_NAMES[Modules.EVENT_BUS],
       options: {
-        redisUrl: process.env.REDIS_URL,
-        workerOptions: { concurrency: 1 },
+        providers: [
+          {
+            id: "redis",
+            resolve: "@medusajs/medusa/events-redis",
+            is_default: true,
+            options: {
+              redisUrl: process.env.REDIS_URL,
+              workerOptions: { concurrency: 1 },
+            },
+          },
+        ],
       },
     },
     {

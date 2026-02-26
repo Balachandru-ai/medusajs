@@ -38,7 +38,7 @@ export const MODULE_PACKAGE_NAMES = {
   [Modules.CACHE]: "@medusajs/medusa/cache-inmemory",
   [Modules.CART]: "@medusajs/medusa/cart",
   [Modules.CUSTOMER]: "@medusajs/medusa/customer",
-  [Modules.EVENT_BUS]: "@medusajs/medusa/event-bus-local",
+  [Modules.EVENT_BUS]: "@medusajs/medusa/events",
   [Modules.INVENTORY]: "@medusajs/medusa/inventory",
   [Modules.LINK]: "@medusajs/medusa/link-modules",
   [Modules.PAYMENT]: "@medusajs/medusa/payment",
@@ -73,17 +73,13 @@ export const REVERSED_MODULE_PACKAGE_NAMES = Object.entries(
   return acc
 }, {})
 
-// TODO: temporary fix until the event bus, cache and workflow engine are migrated to use providers and therefore only a single resolution will be good
+// TODO: temporary fix until the cache and workflow engine are migrated to use providers and therefore only a single resolution will be good
 export const TEMPORARY_REDIS_MODULE_PACKAGE_NAMES = {
-  [Modules.EVENT_BUS]: "@medusajs/medusa/event-bus-redis",
   [Modules.CACHE]: "@medusajs/medusa/cache-redis",
   [Modules.WORKFLOW_ENGINE]: "@medusajs/medusa/workflow-engine-redis",
   [Modules.LOCKING]: "@medusajs/medusa/locking-redis",
 }
 
-REVERSED_MODULE_PACKAGE_NAMES[
-  TEMPORARY_REDIS_MODULE_PACKAGE_NAMES[Modules.EVENT_BUS]
-] = Modules.EVENT_BUS
 REVERSED_MODULE_PACKAGE_NAMES[
   TEMPORARY_REDIS_MODULE_PACKAGE_NAMES[Modules.CACHE]
 ] = Modules.CACHE
