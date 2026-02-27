@@ -1,0 +1,18 @@
+/**
+ * @schema AdminRemoveUserRoles
+ * type: object
+ * description: SUMMARY
+ * x-schemaName: AdminRemoveUserRoles
+ * required:
+ *   - roles
+ * properties:
+ *   roles:
+ *     type: array
+ *     description: The user's roles.
+ *     items:
+ *       type: string
+ *       title: roles
+ *       description: The role's roles.
+ * 
+*/
+

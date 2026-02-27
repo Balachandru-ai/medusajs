@@ -1,0 +1,18 @@
+/**
+ * @schema AdminAssignRoleUsers
+ * type: object
+ * description: SUMMARY
+ * x-schemaName: AdminAssignRoleUsers
+ * required:
+ *   - users
+ * properties:
+ *   users:
+ *     type: array
+ *     description: The rbac's users.
+ *     items:
+ *       type: string
+ *       title: users
+ *       description: The user's users.
+ * 
+*/
+
