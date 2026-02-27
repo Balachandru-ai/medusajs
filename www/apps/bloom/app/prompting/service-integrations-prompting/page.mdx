@@ -54,7 +54,7 @@ For example, when adding Stripe, you'll provide your Stripe keys. Bloom stores t
 
 <Note title="Tip">
 
-See [Environment Variables](#) to learn more about managing environment variables in your Bloom store.
+See [Environment Variables](../../developers/environment-variables/page.mdx) to learn more about managing environment variables in your Bloom store.
 
 </Note>
 
@@ -70,7 +70,18 @@ For example, after integrating Stripe:
 2. Place test orders using [Stripe's test card numbers](https://docs.stripe.com/testing).
 3. Verify that the checkout process works, payment confirmations appear, and orders are created in your admin dashboard.
 
-Once everything works, switch to live keys and publish your store to start processing real payments.
+### 4. Publish Integration
+
+Once you've tested the integration and you're ready to go live, you can publish your changes.
+
+To publish the changes:
+
+1. Click on the "Publish" button at the top right.
+2. If you haven't published your store before, Bloom will ask you for some details about your store.
+3. In the "Missing production values" section, enter the live credentials for the services you integrated. For example, enter your live Stripe API keys.
+4. Click "Publish" to make your changes live.
+
+Your integration will be published to your live store.
 
 ---
 

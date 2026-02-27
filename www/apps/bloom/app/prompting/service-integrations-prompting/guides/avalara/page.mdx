@@ -58,7 +58,7 @@ Bloom stores these credentials securely and uses them to connect your store to A
 
 <Note title="Technical Information">
 
-Bloom stores your Avalara credentials as environment variables in your store. They are never exposed in your code or logs. See [Environment Variables](#) for more details.
+Bloom stores your Avalara credentials as environment variables in your store. They are never exposed in your code or logs. See [Environment Variables](../../../../developers/environment-variables/page.mdx) for more details.
 
 </Note>
 
@@ -72,13 +72,18 @@ Make sure the tax amount looks right for the location and products you're testin
 
 ---
 
-## Go Live
+## Publish Avalara Integration
 
-When you're ready to publish, Bloom will ask for live Avalara credentials.
+Once you've tested the integration and you're ready to go live, you can publish your changes with your live credentials.
 
-Use the same credentials but change App Environment to `production`. It was `sandbox` for testing.
+To publish the changes:
 
-After publishing, your store will calculate real taxes through Avalara.
+1. Click on the "Publish" button at the top right.
+2. If you haven't published your store before, Bloom will ask you for some details about your store.
+3. In the "Missing production values" section, enter the live credentials for Avalara. You can use the same credentials, but set the App Environment to `production` instead of `sandbox`.
+4. Click "Publish" to make your changes live.
+
+Your Avalara integration will be published to your live store, and your store will start calculating taxes at checkout with Avalara.
 
 ---
 
