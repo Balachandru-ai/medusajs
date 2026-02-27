@@ -11,7 +11,7 @@ export const developersSidebar = [
       },
       {
         type: "link",
-        title: "Export to GitHub",
+        title: "Sync with GitHub",
         path: "/developers/export-to-github",
       },
       {
@@ -19,11 +19,11 @@ export const developersSidebar = [
         title: "Environment Variables",
         path: "/developers/environment-variables",
       },
-      {
-        type: "link",
-        title: "Email Templates",
-        path: "/developers/email-templates",
-      },
+      // {
+      //   type: "link",
+      //   title: "Email Templates",
+      //   path: "/developers/email-templates",
+      // },
     ],
   },
 ]
