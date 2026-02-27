@@ -1,5 +1,14 @@
 # @medusajs/core-flows
 
+## 2.13.3
+
+### Patch Changes
+
+- [#14805](https://github.com/medusajs/medusa/pull/14805) [`5ccd523b41efaae2f2aaa6d5833b5ce88558d37b`](https://github.com/medusajs/medusa/commit/5ccd523b41efaae2f2aaa6d5833b5ce88558d37b) Thanks [@NicolasGorga](https://github.com/NicolasGorga)! - fix(core-flows): prevent exception when deleting product/variant with orphaned inventory
+
+- Updated dependencies [[`dbaae9630d26a0806751d5614beadef3e0b4bf07`](https://github.com/medusajs/medusa/commit/dbaae9630d26a0806751d5614beadef3e0b4bf07)]:
+  - @medusajs/framework@2.13.3
+
 ## 2.13.2
 
 ### Patch Changes

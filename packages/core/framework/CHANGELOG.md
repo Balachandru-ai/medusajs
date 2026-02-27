@@ -1,5 +1,21 @@
 # @medusajs/framework
 
+## 2.13.3
+
+### Patch Changes
+
+- [#14815](https://github.com/medusajs/medusa/pull/14815) [`dbaae9630d26a0806751d5614beadef3e0b4bf07`](https://github.com/medusajs/medusa/commit/dbaae9630d26a0806751d5614beadef3e0b4bf07) Thanks [@NicolasGorga](https://github.com/NicolasGorga)! - fix(framework): remoteQueryConfig undefined entity regression
+
+- Updated dependencies [[`9fecbd2b0487b10736879507cf11ed426d9523d5`](https://github.com/medusajs/medusa/commit/9fecbd2b0487b10736879507cf11ed426d9523d5)]:
+  - @medusajs/types@2.13.3
+  - @medusajs/modules-sdk@2.13.3
+  - @medusajs/orchestration@2.13.3
+  - @medusajs/utils@2.13.3
+  - @medusajs/workflows-sdk@2.13.3
+  - @medusajs/cli@2.13.3
+  - @medusajs/deps@2.13.3
+  - @medusajs/telemetry@2.13.3
+
 ## 2.13.2
 
 ### Patch Changes

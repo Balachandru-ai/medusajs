@@ -1,5 +1,11 @@
 # @medusajs/types
 
+## 2.13.3
+
+### Patch Changes
+
+- [#14802](https://github.com/medusajs/medusa/pull/14802) [`9fecbd2b0487b10736879507cf11ed426d9523d5`](https://github.com/medusajs/medusa/commit/9fecbd2b0487b10736879507cf11ed426d9523d5) Thanks [@asgerjensen](https://github.com/asgerjensen)! - chore(types): add external_id to product list params type
+
 ## 2.13.2
 
 ### Patch Changes

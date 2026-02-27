@@ -1,5 +1,38 @@
 # integration-tests-http
 
+## 1.1.3
+
+### Patch Changes
+
+- [#14802](https://github.com/medusajs/medusa/pull/14802) [`9fecbd2b0487b10736879507cf11ed426d9523d5`](https://github.com/medusajs/medusa/commit/9fecbd2b0487b10736879507cf11ed426d9523d5) Thanks [@asgerjensen](https://github.com/asgerjensen)! - chore(types): add external_id to product list params type
+
+- Updated dependencies [[`dbaae9630d26a0806751d5614beadef3e0b4bf07`](https://github.com/medusajs/medusa/commit/dbaae9630d26a0806751d5614beadef3e0b4bf07), [`5ccd523b41efaae2f2aaa6d5833b5ce88558d37b`](https://github.com/medusajs/medusa/commit/5ccd523b41efaae2f2aaa6d5833b5ce88558d37b)]:
+  - @medusajs/framework@2.13.3
+  - @medusajs/core-flows@2.13.3
+  - @medusajs/medusa@2.13.3
+  - @medusajs/test-utils@2.13.3
+  - @medusajs/api-key@2.13.3
+  - @medusajs/auth@2.13.3
+  - @medusajs/cache-inmemory@2.13.3
+  - @medusajs/customer@2.13.3
+  - @medusajs/event-bus-local@2.13.3
+  - @medusajs/event-bus-redis@2.13.3
+  - @medusajs/fulfillment@2.13.3
+  - @medusajs/inventory@2.13.3
+  - @medusajs/pricing@2.13.3
+  - @medusajs/product@2.13.3
+  - @medusajs/promotion@2.13.3
+  - @medusajs/fulfillment-manual@2.13.3
+  - @medusajs/region@2.13.3
+  - @medusajs/stock-location@2.13.3
+  - @medusajs/store@2.13.3
+  - @medusajs/tax@2.13.3
+  - @medusajs/translation@2.13.3
+  - @medusajs/user@2.13.3
+  - @medusajs/workflow-engine-inmemory@2.13.3
+  - @medusajs/modules-sdk@2.13.3
+  - @medusajs/utils@2.13.3
+
 ## 1.1.2
 
 ### Patch Changes

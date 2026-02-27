@@ -1,5 +1,64 @@
 # Change Log
 
+## 2.13.3
+
+### Patch Changes
+
+- Updated dependencies [[`dbaae9630d26a0806751d5614beadef3e0b4bf07`](https://github.com/medusajs/medusa/commit/dbaae9630d26a0806751d5614beadef3e0b4bf07), [`5ccd523b41efaae2f2aaa6d5833b5ce88558d37b`](https://github.com/medusajs/medusa/commit/5ccd523b41efaae2f2aaa6d5833b5ce88558d37b)]:
+  - @medusajs/framework@2.13.3
+  - @medusajs/core-flows@2.13.3
+  - @medusajs/analytics@2.13.3
+  - @medusajs/api-key@2.13.3
+  - @medusajs/auth@2.13.3
+  - @medusajs/cache-inmemory@2.13.3
+  - @medusajs/cache-redis@2.13.3
+  - @medusajs/caching@2.13.3
+  - @medusajs/cart@2.13.3
+  - @medusajs/currency@2.13.3
+  - @medusajs/customer@2.13.3
+  - @medusajs/event-bus-local@2.13.3
+  - @medusajs/event-bus-redis@2.13.3
+  - @medusajs/file@2.13.3
+  - @medusajs/fulfillment@2.13.3
+  - @medusajs/index@2.13.3
+  - @medusajs/inventory@2.13.3
+  - @medusajs/link-modules@2.13.3
+  - @medusajs/locking@2.13.3
+  - @medusajs/notification@2.13.3
+  - @medusajs/order@2.13.3
+  - @medusajs/payment@2.13.3
+  - @medusajs/pricing@2.13.3
+  - @medusajs/product@2.13.3
+  - @medusajs/promotion@2.13.3
+  - @medusajs/analytics-local@2.13.3
+  - @medusajs/analytics-posthog@2.13.3
+  - @medusajs/auth-emailpass@2.13.3
+  - @medusajs/auth-github@2.13.3
+  - @medusajs/auth-google@2.13.3
+  - @medusajs/caching-redis@2.13.3
+  - @medusajs/file-local@2.13.3
+  - @medusajs/file-s3@2.13.3
+  - @medusajs/fulfillment-manual@2.13.3
+  - @medusajs/locking-postgres@2.13.3
+  - @medusajs/locking-redis@2.13.3
+  - @medusajs/notification-local@2.13.3
+  - @medusajs/notification-sendgrid@2.13.3
+  - @medusajs/payment-stripe@2.13.3
+  - @medusajs/rbac@2.13.3
+  - @medusajs/region@2.13.3
+  - @medusajs/sales-channel@2.13.3
+  - @medusajs/settings@2.13.3
+  - @medusajs/stock-location@2.13.3
+  - @medusajs/store@2.13.3
+  - @medusajs/tax@2.13.3
+  - @medusajs/translation@2.13.3
+  - @medusajs/user@2.13.3
+  - @medusajs/workflow-engine-inmemory@2.13.3
+  - @medusajs/workflow-engine-redis@2.13.3
+  - @medusajs/draft-order@2.13.3
+  - @medusajs/admin-bundler@2.13.3
+  - @medusajs/telemetry@2.13.3
+
 ## 2.13.2
 
 ### Patch Changes

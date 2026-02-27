@@ -1,5 +1,7 @@
 # @medusajs/toolbox
 
+## 2.13.3
+
 ## 2.13.2
 
 ### Patch Changes
