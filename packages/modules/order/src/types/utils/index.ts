@@ -20,7 +20,7 @@ export type VirtualOrder = {
     unit_price: BigNumberInput
     compare_at_unit_price: BigNumberInput | null
     quantity: BigNumberInput
-    metadata?: Record<string, unknown>
+    metadata?: Record<string, unknown> | null
     adjustments?: (LineItemAdjustmentDTO & { version: number })[]
     tax_lines?: LineItemTaxLineDTO[]
 
@@ -41,7 +41,7 @@ export type VirtualOrder = {
       return_received_quantity: BigNumberInput
       return_dismissed_quantity: BigNumberInput
       written_off_quantity: BigNumberInput
-      metadata?: Record<string, unknown>
+      metadata?: Record<string, unknown> | null
     }
   }[]
 

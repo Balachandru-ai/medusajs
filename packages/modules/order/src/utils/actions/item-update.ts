@@ -30,14 +30,20 @@ OrderChangeProcessing.registerActionType(ChangeActionType.ITEM_UPDATE, {
     existing.detail.quantity = currentQuantity
 
     if (isDefined(action.details.metadata)) {
-      existing.detail.metadata = mergeMetadata(
-        existing.detail.metadata ?? {},
-        action.details.metadata
-      )
-      existing.metadata = mergeMetadata(
-        existing.metadata ?? {},
-        action.details.metadata
-      )
+      const isUnset = action.details.metadata === null;
+      
+      if (isUnset) {
+        existing.detail.metadata = null;
+        existing.metadata = null;
+      } else {
+        existing.detail.metadata = mergeMetadata(
+          existing.detail.metadata ?? {},
+          action.details.metadata
+        )
+        existing.metadata = mergeMetadata(
+          existing.metadata ?? {},
+          action.details.metadata
+        )
     }
 
     if (action.details.adjustments) {
