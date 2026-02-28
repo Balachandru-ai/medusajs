@@ -8,7 +8,6 @@ import {
   MedusaError,
   isPresent,
   mergeMetadata,
-  isDefined,
   deepCopy,
 } from "@medusajs/framework/utils"
 import {
