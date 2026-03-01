@@ -816,6 +816,7 @@ medusaIntegrationTestRunner({
         expect(updatedItem.quantity).toBe(2)
         expect(updatedItem.metadata).toEqual({
           updated: "metadata",
+          initial: "value",
           custom_field: "modified",
         })
 
@@ -836,6 +837,7 @@ medusaIntegrationTestRunner({
           order.items.find((i) => i.subtitle === "L shirt").metadata
         ).toEqual({
           updated: "metadata",
+          initial: "value",
           custom_field: "modified",
         })
       })

@@ -37,7 +37,7 @@ OrderChangeProcessing.registerActionType(ChangeActionType.ITEM_UPDATE, {
         existing.metadata = null
       } else {
         existing.detail.metadata = mergeMetadata(
-          existing.detail.metadata ?? {},
+          existing.detail.metadata ?? existing.metadata ?? {},
           action.details.metadata
         )
         existing.metadata = mergeMetadata(
