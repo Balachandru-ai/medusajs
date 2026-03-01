@@ -588,39 +588,39 @@
         },
         "weight": {
           "name": "weight",
-          "type": "numeric",
+          "type": "real",
           "unsigned": false,
           "autoincrement": false,
           "primary": false,
           "nullable": true,
-          "mappedType": "decimal"
+          "mappedType": "float"
         },
         "length": {
           "name": "length",
-          "type": "numeric",
+          "type": "real",
           "unsigned": false,
           "autoincrement": false,
           "primary": false,
           "nullable": true,
-          "mappedType": "decimal"
+          "mappedType": "float"
         },
         "height": {
           "name": "height",
-          "type": "numeric",
+          "type": "real",
           "unsigned": false,
           "autoincrement": false,
           "primary": false,
           "nullable": true,
-          "mappedType": "decimal"
+          "mappedType": "float"
         },
         "width": {
           "name": "width",
-          "type": "numeric",
+          "type": "real",
           "unsigned": false,
           "autoincrement": false,
           "primary": false,
           "nullable": true,
-          "mappedType": "decimal"
+          "mappedType": "float"
         },
         "origin_country": {
           "name": "origin_country",
@@ -703,42 +703,6 @@
           "primary": false,
           "nullable": true,
           "mappedType": "text"
-        },
-        "raw_weight": {
-          "name": "raw_weight",
-          "type": "jsonb",
-          "unsigned": false,
-          "autoincrement": false,
-          "primary": false,
-          "nullable": true,
-          "mappedType": "json"
-        },
-        "raw_length": {
-          "name": "raw_length",
-          "type": "jsonb",
-          "unsigned": false,
-          "autoincrement": false,
-          "primary": false,
-          "nullable": true,
-          "mappedType": "json"
-        },
-        "raw_height": {
-          "name": "raw_height",
-          "type": "jsonb",
-          "unsigned": false,
-          "autoincrement": false,
-          "primary": false,
-          "nullable": true,
-          "mappedType": "json"
-        },
-        "raw_width": {
-          "name": "raw_width",
-          "type": "jsonb",
-          "unsigned": false,
-          "autoincrement": false,
-          "primary": false,
-          "nullable": true,
-          "mappedType": "json"
         },
         "created_at": {
           "name": "created_at",
@@ -1538,39 +1502,39 @@
         },
         "weight": {
           "name": "weight",
-          "type": "numeric",
+          "type": "real",
           "unsigned": false,
           "autoincrement": false,
           "primary": false,
           "nullable": true,
-          "mappedType": "decimal"
+          "mappedType": "float"
         },
         "length": {
           "name": "length",
-          "type": "numeric",
+          "type": "real",
           "unsigned": false,
           "autoincrement": false,
           "primary": false,
           "nullable": true,
-          "mappedType": "decimal"
+          "mappedType": "float"
         },
         "height": {
           "name": "height",
-          "type": "numeric",
+          "type": "real",
           "unsigned": false,
           "autoincrement": false,
           "primary": false,
           "nullable": true,
-          "mappedType": "decimal"
+          "mappedType": "float"
         },
         "width": {
           "name": "width",
-          "type": "numeric",
+          "type": "real",
           "unsigned": false,
           "autoincrement": false,
           "primary": false,
           "nullable": true,
-          "mappedType": "decimal"
+          "mappedType": "float"
         },
         "metadata": {
           "name": "metadata",
@@ -1608,42 +1572,6 @@
           "primary": false,
           "nullable": true,
           "mappedType": "text"
-        },
-        "raw_weight": {
-          "name": "raw_weight",
-          "type": "jsonb",
-          "unsigned": false,
-          "autoincrement": false,
-          "primary": false,
-          "nullable": true,
-          "mappedType": "json"
-        },
-        "raw_length": {
-          "name": "raw_length",
-          "type": "jsonb",
-          "unsigned": false,
-          "autoincrement": false,
-          "primary": false,
-          "nullable": true,
-          "mappedType": "json"
-        },
-        "raw_height": {
-          "name": "raw_height",
-          "type": "jsonb",
-          "unsigned": false,
-          "autoincrement": false,
-          "primary": false,
-          "nullable": true,
-          "mappedType": "json"
-        },
-        "raw_width": {
-          "name": "raw_width",
-          "type": "jsonb",
-          "unsigned": false,
-          "autoincrement": false,
-          "primary": false,
-          "nullable": true,
-          "mappedType": "json"
         },
         "created_at": {
           "name": "created_at",
