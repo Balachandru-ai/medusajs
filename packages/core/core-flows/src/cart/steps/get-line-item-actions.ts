@@ -83,20 +83,38 @@ export const getLineItemActionsStep = createStep(
       }
     )
 
-    const variantItemMap = new Map<string, CartLineItemDTO>(
-      existingVariantItems.map((item) => [item.variant_id!, item])
+    const variantItemsMap = existingVariantItems.reduce(
+      (result, variantItem) => {
+        if (!result.has(variantItem.variant_id!)) {
+          result.set(variantItem.variant_id!, [])
+        }
+        result.get(variantItem.variant_id!)!.push(variantItem)
+        return result
+      },
+      new Map<string, CartLineItemDTO[]>()
     )
 
     const itemsToCreate: CreateLineItemForCartDTO[] = []
     const itemsToUpdate: UpdateLineItemWithSelectorDTO["data"][] = []
 
-    for (const item of data.items) {
-      const existingItem = variantItemMap.get(item.variant_id!)
-      const metadataMatches =
-        (!isPresent(existingItem?.metadata) && !isPresent(item.metadata)) ||
-        deepEqualObj(existingItem?.metadata, item.metadata)
+    const metadataMatches = (
+      existingItem: CartLineItemDTO,
+      newItem: CreateLineItemForCartDTO
+    ) =>
+      (!isPresent(existingItem?.metadata) && !isPresent(newItem.metadata)) ||
+      deepEqualObj(existingItem?.metadata, newItem.metadata)
 
-      if (existingItem && metadataMatches) {
+    for (const item of data.items) {
+      const variantItems = variantItemsMap.get(item.variant_id!)
+
+      const existingItem = variantItems?.find((existingItem) =>
+        item.is_custom_price
+          ? metadataMatches(existingItem, item) &&
+            item.unit_price === existingItem.unit_price
+          : metadataMatches(existingItem, item) && !existingItem.is_custom_price
+      )
+
+      if (existingItem) {
         const quantity = MathBN.sum(
           existingItem.quantity as number,
           item.quantity ?? 1
