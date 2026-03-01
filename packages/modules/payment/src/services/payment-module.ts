@@ -1106,7 +1106,8 @@ export default class PaymentModuleService
         input.provider_id,
         {
           context: {
-            idempotency_key: input.context?.customer?.id,
+            idempotency_key:
+              input.context?.idempotency_key ?? input.context?.customer?.id,
             ...input.context,
           },
         }

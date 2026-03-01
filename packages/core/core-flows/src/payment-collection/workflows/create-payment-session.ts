@@ -128,6 +128,9 @@ export const createPaymentSessionsWorkflow = createWorkflow(
           return {
             provider_id: data.input.provider_id,
             context: {
+              idempotency_key: data.input.context?.idempotency_key as
+                | string
+                | undefined,
               // The module is idempotent, so if there already is a linked account holder, the module will simply return it back.
               account_holder: data.existingAccountHolder,
               customer: data.paymentCustomer,
