@@ -12,7 +12,7 @@ import {
 } from "@medusajs/framework/workflows-sdk"
 import { useQueryGraphStep } from "../../common"
 import { getItemTaxLinesStep } from "../../tax/steps/get-item-tax-lines"
-import { validateCartStep } from "../steps"
+import { updateCartTaxMetadataStep, validateCartStep } from "../steps"
 import { upsertTaxLinesForItemsStep } from "../steps/upsert-tax-lines-for-items"
 import { getTranslatedTaxLinesStep } from "../../common/steps/get-translated-tax-lines"
 
@@ -21,6 +21,7 @@ const cartFields = [
   "locale",
   "currency_code",
   "email",
+  "metadata",
   "region.id",
   "region.automatic_taxes",
   "items.id",
@@ -168,6 +169,18 @@ export const upsertTaxLinesWorkflow = createWorkflow(
       item_tax_lines: translatedTaxLines.itemTaxLines as ItemTaxLineDTO[],
       shipping_tax_lines:
         translatedTaxLines.shippingTaxLines as ShippingTaxLineDTO[],
+    })
+
+    // Update cart metadata with any sourceMetadata returned by tax providers
+    when("should-update-cart-metadata", { taxLineItems }, ({ taxLineItems }) => {
+      return !!taxLineItems.sourceMetadata
+    }).then(() => {
+      updateCartTaxMetadataStep(
+        transform({ cart, taxLineItems }, ({ cart, taxLineItems }) => ({
+          cart_id: cart.id,
+          sourceMetadata: taxLineItems.sourceMetadata as Record<string, unknown>,
+        }))
+      )
     })
   }
 )

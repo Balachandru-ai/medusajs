@@ -409,7 +409,7 @@ export default class TaxModuleService
     items: (TaxTypes.TaxableItemDTO | TaxTypes.TaxableShippingDTO)[],
     calculationContext: TaxTypes.TaxCalculationContext,
     @MedusaContext() sharedContext: Context = {}
-  ): Promise<(TaxTypes.ItemTaxLineDTO | TaxTypes.ShippingTaxLineDTO)[]> {
+  ): Promise<(TaxTypes.ItemTaxLineDTO | TaxTypes.ShippingTaxLineDTO)[] | TaxTypes.TaxLinesResult> {
     const normalizedContext =
       this.normalizeTaxCalculationContext(calculationContext)
     const regions = await this.taxRegionService_.list(

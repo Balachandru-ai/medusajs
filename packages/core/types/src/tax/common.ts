@@ -572,3 +572,41 @@ export interface ShippingTaxLineDTO extends TaxLineDTO {
    */
   shipping_line_id: string
 }
+
+/**
+ * The result returned by a tax provider's getTaxLines method.
+ * Providers can return either just tax lines (for backward compatibility)
+ * or this result object to include metadata to be stored on the source cart/order.
+ */
+export interface TaxLinesResult {
+  /**
+   * The calculated tax lines for items and shipping methods.
+   */
+  taxLines: (ItemTaxLineDTO | ShippingTaxLineDTO)[]
+
+  /**
+   * Optional metadata to be stored on the source cart or order.
+   * This is useful for storing tax calculation references (e.g., calculation_id)
+   * that need to be used later during order completion (e.g., committing transactions).
+   *
+   * **Important:**
+   * - Metadata is merged into existing cart/order metadata
+   * - If both item and shipping calculations return metadata with the same keys,
+   *   the shipping metadata will take precedence
+   * - Use namespaced keys (e.g., 'taxjar_calculation_id') to avoid collisions
+   *   with other providers or application metadata
+   * - Avoid storing sensitive data; this metadata may be exposed in API responses
+   *
+   * @example
+   * ```ts
+   * return {
+   *   taxLines: [...],
+   *   sourceMetadata: {
+   *     taxjar_calculation_id: "calc_123",
+   *     taxjar_calculation_date: "2025-01-22"
+   *   }
+   * }
+   * ```
+   */
+  sourceMetadata?: Record<string, unknown>
+}

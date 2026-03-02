@@ -48,7 +48,7 @@ export default class TaxProviderService extends ModulesSdkUtils.MedusaInternalSe
     itemLines: TaxTypes.ItemTaxCalculationLine[],
     shippingLines: TaxTypes.ShippingTaxCalculationLine[],
     context: TaxTypes.TaxCalculationContext
-  ): Promise<(TaxTypes.ItemTaxLineDTO | TaxTypes.ShippingTaxLineDTO)[]> {
+  ): Promise<(TaxTypes.ItemTaxLineDTO | TaxTypes.ShippingTaxLineDTO)[] | TaxTypes.TaxLinesResult> {
     const provider = this.retrieveProvider(providerId)
     return provider.getTaxLines(itemLines, shippingLines, context)
   }

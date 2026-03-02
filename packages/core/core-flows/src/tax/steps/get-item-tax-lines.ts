@@ -11,9 +11,25 @@ import {
   TaxableItemDTO,
   TaxableShippingDTO,
   TaxCalculationContext,
+  TaxLinesResult,
 } from "@medusajs/framework/types"
 import { isDefined, MedusaError, Modules } from "@medusajs/framework/utils"
 import { createStep, StepResponse } from "@medusajs/framework/workflows-sdk"
+
+/**
+ * Helper to check if a tax provider result is a TaxLinesResult object
+ * (as opposed to just an array of tax lines for backward compatibility)
+ */
+function isTaxLinesResult(
+  result: (ItemTaxLineDTO | ShippingTaxLineDTO)[] | TaxLinesResult
+): result is TaxLinesResult {
+  return (
+    result !== null &&
+    typeof result === "object" &&
+    !Array.isArray(result) &&
+    "taxLines" in result
+  )
+}
 
 /**
  * The data to retrieve tax lines for an order or cart's line items and shipping methods.
@@ -192,24 +208,63 @@ export const getItemTaxLinesStep = createStep(
     const stepResponseData = {
       lineItemTaxLines: [] as ItemTaxLineDTO[],
       shippingMethodsTaxLines: [] as ShippingTaxLineDTO[],
+      sourceMetadata: undefined as Record<string, unknown> | undefined,
     }
 
     if (!taxContext) {
       return new StepResponse(stepResponseData)
     }
 
+    // Collect metadata from providers to pass through to the workflow.
+    // Note: If both item and shipping tax calculations return metadata with the same keys,
+    // the shipping metadata will take precedence (merged last). Providers should use
+    // namespaced keys (e.g., 'taxjar_calculation_id') to avoid collisions.
+    let collectedMetadata: Record<string, unknown> = {}
+
     if (items.length) {
-      stepResponseData.lineItemTaxLines = (await taxService.getTaxLines(
+      const itemTaxResult = await taxService.getTaxLines(
         normalizeLineItemsForTax(orderOrCart, filteredItems),
         taxContext
-      )) as ItemTaxLineDTO[]
+      )
+
+      if (isTaxLinesResult(itemTaxResult)) {
+        stepResponseData.lineItemTaxLines =
+          itemTaxResult.taxLines as ItemTaxLineDTO[]
+        if (itemTaxResult.sourceMetadata) {
+          collectedMetadata = {
+            ...collectedMetadata,
+            ...itemTaxResult.sourceMetadata,
+          }
+        }
+      } else {
+        stepResponseData.lineItemTaxLines = itemTaxResult as ItemTaxLineDTO[]
+      }
     }
 
     if (shippingMethods.length) {
-      stepResponseData.shippingMethodsTaxLines = (await taxService.getTaxLines(
+      const shippingTaxResult = await taxService.getTaxLines(
         normalizeLineItemsForShipping(orderOrCart, shippingMethods),
         taxContext
-      )) as ShippingTaxLineDTO[]
+      )
+
+      if (isTaxLinesResult(shippingTaxResult)) {
+        stepResponseData.shippingMethodsTaxLines =
+          shippingTaxResult.taxLines as ShippingTaxLineDTO[]
+        if (shippingTaxResult.sourceMetadata) {
+          collectedMetadata = {
+            ...collectedMetadata,
+            ...shippingTaxResult.sourceMetadata,
+          }
+        }
+      } else {
+        stepResponseData.shippingMethodsTaxLines =
+          shippingTaxResult as ShippingTaxLineDTO[]
+      }
+    }
+
+    // Include collected metadata in response for workflows to handle
+    if (Object.keys(collectedMetadata).length > 0) {
+      stepResponseData.sourceMetadata = collectedMetadata
     }
 
     return new StepResponse(stepResponseData)
