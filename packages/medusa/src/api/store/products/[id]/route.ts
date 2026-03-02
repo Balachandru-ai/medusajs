@@ -31,7 +31,7 @@ export const GET = async (
     ...req.filterableFields,
   }
 
-  const context: QueryContextType = {}
+  const context: QueryContextType = req.context || {}
 
   if (req.pricingContext) {
     context["variants"] ??= {}

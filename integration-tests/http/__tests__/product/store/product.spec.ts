@@ -17,9 +17,15 @@ import {
 import { getProductFixture } from "../../../../helpers/fixtures"
 import { createAuthenticatedCustomer } from "../../../../modules/helpers/create-authenticated-customer"
 
+import path from "path"
+import CustomService, {
+  CUSTOM_MODULE,
+} from "../../../__fixtures__/product/src/modules/custom/service"
+
 jest.setTimeout(30000)
 
 medusaIntegrationTestRunner({
+  cwd: path.join(__dirname, "../../../__fixtures__/product"),
   testSuite: ({ dbConnection, api, getContainer }) => {
     let store
     let appContainer
@@ -2416,6 +2422,97 @@ medusaIntegrationTestRunner({
 
           expect(response.status).toEqual(200)
           expect(response.data.product).toEqual(expectation)
+        })
+      })
+
+      describe("with custom context", () => {
+        it("should receive and use custom context correctly", async () => {
+          const testContext = {
+            custom: {
+              foo: "bar",
+            },
+          }
+
+          const container = getContainer()
+          const customService = container.resolve(
+            CUSTOM_MODULE
+          ) as CustomService
+          const listSpy = jest.spyOn(customService, "list")
+
+          const response = await api.get(`/store/products/${product.id}`, {
+            ...storeHeaders,
+            headers: {
+              ...storeHeaders.headers,
+              "x-query-context": JSON.stringify(testContext),
+            },
+          })
+
+          expect(response.status).toEqual(200)
+          expect(response.data.product).toEqual(
+            expect.objectContaining({
+              id: product.id,
+            })
+          )
+
+          expect(listSpy).toHaveBeenCalled()
+          const filters = listSpy.mock.calls[0]?.[0] as any
+          expect(filters).toEqual(
+            expect.objectContaining({ context: testContext.custom })
+          )
+
+          listSpy.mockRestore()
+        })
+
+        it("should work correctly when both context and pricingContext are present", async () => {
+          const testContext = { custom: { foo: "bar" } }
+
+          const container = getContainer()
+          const customService = container.resolve(
+            CUSTOM_MODULE
+          ) as CustomService
+          const listSpy = jest.spyOn(customService, "list")
+
+          const response = await api.get(
+            `/store/products/${product.id}?fields=*variants.calculated_price&region_id=${region.id}`,
+            {
+              ...storeHeaders,
+              headers: {
+                ...storeHeaders.headers,
+                "x-query-context": JSON.stringify(testContext),
+              },
+            }
+          )
+
+          expect(response.status).toEqual(200)
+          expect(response.data.product).toEqual(
+            expect.objectContaining({
+              id: product.id,
+              variants: [
+                expect.objectContaining({
+                  calculated_price: expect.objectContaining({
+                    id: expect.any(String),
+                    calculated_amount: 3000,
+                    currency_code: "usd",
+                  }),
+                }),
+              ],
+            })
+          )
+
+          expect(
+            response.data.product.variants[0].calculated_price
+          ).toBeDefined()
+          expect(
+            response.data.product.variants[0].calculated_price.calculated_amount
+          ).toBe(3000)
+
+          expect(listSpy).toHaveBeenCalled()
+          const filters = listSpy.mock.calls[0]?.[0] as any
+          expect(filters).toEqual(
+            expect.objectContaining({ context: testContext.custom })
+          )
+
+          listSpy.mockRestore()
         })
       })
     })
