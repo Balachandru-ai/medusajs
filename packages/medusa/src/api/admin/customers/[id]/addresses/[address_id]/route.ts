@@ -16,7 +16,7 @@ import { refetchCustomer } from "../../../helpers"
 import { AdditionalData, HttpTypes } from "@medusajs/framework/types"
 
 export const GET = async (
-  req: AuthenticatedMedusaRequest<HttpTypes.SelectParams>,
+  req: AuthenticatedMedusaRequest<undefined, HttpTypes.SelectParams>,
   res: MedusaResponse<HttpTypes.AdminCustomerAddressResponse>
 ) => {
   const remoteQuery = req.scope.resolve(ContainerRegistrationKeys.REMOTE_QUERY)
@@ -61,7 +61,7 @@ export const POST = async (
 }
 
 export const DELETE = async (
-  req: AuthenticatedMedusaRequest<{}, HttpTypes.SelectParams>,
+  req: AuthenticatedMedusaRequest<undefined, HttpTypes.SelectParams>,
   res: MedusaResponse<HttpTypes.AdminCustomerAddressDeleteResponse>
 ) => {
   const id = req.params.address_id

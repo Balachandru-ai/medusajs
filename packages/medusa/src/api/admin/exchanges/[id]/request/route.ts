@@ -14,7 +14,7 @@ import {
 import { defaultAdminDetailsReturnFields } from "../../../returns/query-config"
 
 export const POST = async (
-  req: AuthenticatedMedusaRequest<{}, HttpTypes.SelectParams>,
+  req: AuthenticatedMedusaRequest<undefined, HttpTypes.SelectParams>,
   res: MedusaResponse<HttpTypes.AdminExchangeRequestResponse>
 ) => {
   const { id } = req.params

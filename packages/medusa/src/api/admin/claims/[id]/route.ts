@@ -7,7 +7,7 @@ import { MedusaError } from "@medusajs/framework/utils"
 import { AdminClaimResponse, HttpTypes } from "@medusajs/framework/types"
 
 export const GET = async (
-  req: AuthenticatedMedusaRequest<{}, HttpTypes.SelectParams>,
+  req: AuthenticatedMedusaRequest<undefined, HttpTypes.SelectParams>,
   res: MedusaResponse<AdminClaimResponse>
 ) => {
   const claim = await refetchEntity({

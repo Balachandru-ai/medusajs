@@ -34,7 +34,7 @@ export const POST = async (
 }
 
 export const DELETE = async (
-  req: MedusaRequest<{}, HttpTypes.SelectParams>,
+  req: MedusaRequest<undefined, HttpTypes.SelectParams>,
   res: MedusaResponse<HttpTypes.StoreLineItemDeleteResponse>
 ) => {
   const id = req.params.line_id

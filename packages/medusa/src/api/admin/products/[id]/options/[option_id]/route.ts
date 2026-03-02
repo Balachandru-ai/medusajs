@@ -12,7 +12,7 @@ import { remapKeysForProduct, remapProductResponse } from "../../../helpers"
 import { AdditionalData, HttpTypes } from "@medusajs/framework/types"
 
 export const GET = async (
-  req: AuthenticatedMedusaRequest<HttpTypes.SelectParams>,
+  req: AuthenticatedMedusaRequest<undefined, HttpTypes.SelectParams>,
   res: MedusaResponse<HttpTypes.AdminProductOptionResponse>
 ) => {
   const productId = req.params.id
@@ -57,7 +57,7 @@ export const POST = async (
 }
 
 export const DELETE = async (
-  req: AuthenticatedMedusaRequest<{}, HttpTypes.SelectParams>,
+  req: AuthenticatedMedusaRequest<undefined, HttpTypes.SelectParams>,
   res: MedusaResponse<HttpTypes.AdminProductOptionDeleteResponse>
 ) => {
   const productId = req.params.id

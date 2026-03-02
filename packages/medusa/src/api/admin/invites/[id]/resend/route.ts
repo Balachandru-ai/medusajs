@@ -5,7 +5,7 @@ import { HttpTypes } from "@medusajs/framework/types"
 import { refetchInvite } from "../../helpers"
 
 export const POST = async (
-  req: MedusaRequest<{}, HttpTypes.SelectParams>,
+  req: MedusaRequest<undefined, HttpTypes.SelectParams>,
   res: MedusaResponse<HttpTypes.AdminInviteResponse>
 ) => {
   const workflow = refreshInviteTokensWorkflow(req.scope)
