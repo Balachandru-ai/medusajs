@@ -1,4 +1,4 @@
-import { pluralize } from "../plurailze"
+import { pluralize } from "../pluralize"
 
 describe("pluralize", function () {
   it("should pluralize any words", function () {
@@ -13,6 +13,8 @@ describe("pluralize", function () {
       "potato",
       "address",
       "info",
+      "rice",
+      "price",
     ]
 
     const expectedOutput = [
@@ -26,6 +28,8 @@ describe("pluralize", function () {
       "potatoes",
       "addresses",
       "info",
+      "rice",
+      "prices",
     ]
 
     words.forEach((word, index) => {
