@@ -935,6 +935,107 @@ medusaIntegrationTestRunner({
             })
           )
         })
+
+        it("should merge quantity: add variant A metadata A then variant A metadata B then variant A metadata A results in 2 line items with merged quantity", async () => {
+          const metadataA = { Size: "S", Color: "Black" }
+          const metadataB = { Size: "S", Color: "White" }
+
+          const shippingProfile =
+            await fulfillmentModule.createShippingProfiles({
+              name: "Test",
+              type: "default",
+            })
+
+          const product = (
+            await api.post(
+              `/admin/products`,
+              {
+                ...productData,
+                shipping_profile_id: shippingProfile.id,
+              },
+              adminHeaders
+            )
+          ).data.product
+
+          // 1. Add variant A, metadata A to cart
+          const cart = (
+            await api.post(
+              `/store/carts`,
+              {
+                email: "tony@stark.com",
+                currency_code: region.currency_code,
+                region_id: region.id,
+                items: [
+                  {
+                    variant_id: product.variants[0].id,
+                    quantity: 1,
+                    metadata: metadataA,
+                  },
+                ],
+              },
+              storeHeaders
+            )
+          ).data.cart
+
+          expect(cart.items).toHaveLength(1)
+          expect(cart.items[0].quantity).toEqual(1)
+          expect(cart.items[0].metadata).toEqual(metadataA)
+
+          // 2. Add variant A, metadata B -> second line item
+          let response = await api.post(
+            `/store/carts/${cart.id}/line-items`,
+            {
+              variant_id: product.variants[0].id,
+              quantity: 1,
+              metadata: metadataB,
+            },
+            storeHeaders
+          )
+
+          expect(response.status).toEqual(200)
+          expect(response.data.cart.items).toHaveLength(2)
+
+          // 3. Add variant A, metadata A again -> merges with first line item (metadata A), merged quantity
+          response = await api.post(
+            `/store/carts/${cart.id}/line-items`,
+            {
+              variant_id: product.variants[0].id,
+              quantity: 2,
+              metadata: metadataA,
+            },
+            storeHeaders
+          )
+
+          expect(response.status).toEqual(200)
+          expect(response.data.cart.items).toHaveLength(2)
+
+          const itemA = response.data.cart.items.find(
+            (item: { metadata?: object }) =>
+              JSON.stringify(item.metadata) === JSON.stringify(metadataA)
+          )
+          const itemB = response.data.cart.items.find(
+            (item: { metadata?: object }) =>
+              JSON.stringify(item.metadata) === JSON.stringify(metadataB)
+          )
+
+          expect(itemA).toEqual(
+            expect.objectContaining({
+              variant_id: product.variants[0].id,
+              quantity: 3,
+              unit_price: 1500,
+              metadata: metadataA,
+            })
+          )
+          expect(itemB).toEqual(
+            expect.objectContaining({
+              variant_id: product.variants[0].id,
+              quantity: 1,
+              unit_price: 1500,
+              metadata: metadataB,
+            })
+          )
+          expect(response.data.cart.subtotal).toEqual(6000)
+        })
       })
 
       describe("POST /store/payment-collections", () => {
