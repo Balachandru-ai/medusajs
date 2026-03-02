@@ -6,6 +6,7 @@ import {
   MedusaError,
   Modules,
   getSelectsAndRelationsFromObjectArray,
+  normalizeUpdateProductRelations,
 } from "@medusajs/framework/utils"
 import { StepResponse, createStep } from "@medusajs/framework/workflows-sdk"
 
@@ -87,7 +88,7 @@ export const updateProductsStep = createStep(
     }
 
     const { selects, relations } = getSelectsAndRelationsFromObjectArray([
-      data.update,
+      normalizeUpdateProductRelations(data.update),
     ])
 
     const prevData = await service.listProducts(data.selector, {

@@ -41,6 +41,7 @@ import {
   MedusaService,
   MessageAggregator,
   Modules,
+  normalizeUpdateProductRelations,
   partitionArray,
   ProductStatus,
   removeUndefined,
@@ -2052,23 +2053,9 @@ export default class ProductModuleService
         })
       }
 
-      if (productData.tag_ids) {
-        ;(productData as any).tags = productData.tag_ids.map((cid) => ({
-          id: cid,
-        }))
-        delete productData.tag_ids
-      }
+      const normalizedProductData = normalizeUpdateProductRelations(productData)
 
-      if (productData.category_ids) {
-        ;(productData as any).categories = productData.category_ids.map(
-          (cid) => ({
-            id: cid,
-          })
-        )
-        delete productData.category_ids
-      }
-
-      normalizedProducts.push(productData)
+      normalizedProducts.push(normalizedProductData as any)
     }
 
     return (
