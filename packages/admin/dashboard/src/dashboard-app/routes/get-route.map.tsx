@@ -1883,14 +1883,23 @@ export function getRouteMap({
             {
               path: "/login",
               lazy: () => import("../../routes/login"),
+              handle: {
+                breadcrumb: () => t("login.title"),
+              },
             },
             {
               path: "/reset-password",
               lazy: () => import("../../routes/reset-password"),
+              handle: {
+                breadcrumb: () => t("resetPassword.title"),
+              },
             },
             {
               path: "/invite",
               lazy: () => import("../../routes/invite"),
+              handle: {
+                breadcrumb: () => t("invite.title"),
+              },
             },
             {
               path: "*",
