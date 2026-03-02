@@ -246,9 +246,11 @@ export const ProductAttributesForm = ({
                 render={({ field }) => {
                   return (
                     <Form.Item>
-                      <Form.Label>{t("fields.countryOfOrigin")}</Form.Label>
+                      <Form.Label optional>
+                        {t("fields.countryOfOrigin")}
+                      </Form.Label>
                       <Form.Control>
-                        <CountrySelect {...field} />
+                        <CountrySelect {...field} allowClear />
                       </Form.Control>
                       <Form.ErrorMessage />
                     </Form.Item>
