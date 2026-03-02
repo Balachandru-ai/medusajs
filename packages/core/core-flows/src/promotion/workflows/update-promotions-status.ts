@@ -2,13 +2,19 @@ import {
   AdditionalData,
   PromotionStatusValues,
 } from "@medusajs/framework/types"
-import { MedusaError, PromotionStatus } from "@medusajs/framework/utils"
+import {
+  MedusaError,
+  PromotionStatus,
+  PromotionWorkflowEvents,
+} from "@medusajs/framework/utils"
 import {
   WorkflowResponse,
   createHook,
   createStep,
   createWorkflow,
+  transform,
 } from "@medusajs/framework/workflows-sdk"
+import { emitEventStep } from "../../common/steps/emit-event"
 import { updatePromotionsStep } from "../steps"
 
 /**
@@ -87,6 +93,21 @@ export const updatePromotionsStatusWorkflow = createWorkflow(
     const promotionStatusUpdated = createHook("promotionStatusUpdated", {
       promotions: updatedPromotions,
       additional_data: input.additional_data,
+    })
+
+    const promotionIdEvents = transform(
+      { updatedPromotions },
+      ({ updatedPromotions }) => {
+        const arr = Array.isArray(updatedPromotions)
+          ? updatedPromotions
+          : [updatedPromotions]
+        return arr?.map((p) => ({ id: p.id })) ?? []
+      }
+    )
+
+    emitEventStep({
+      eventName: PromotionWorkflowEvents.STATUS_UPDATED,
+      data: promotionIdEvents,
     })
 
     return new WorkflowResponse(updatedPromotions, {

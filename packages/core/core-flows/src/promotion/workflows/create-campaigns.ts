@@ -2,12 +2,15 @@ import type {
   AdditionalData,
   CreateCampaignDTO,
 } from "@medusajs/framework/types"
+import { CampaignWorkflowEvents } from "@medusajs/framework/utils"
 import {
   WorkflowData,
   WorkflowResponse,
   createHook,
   createWorkflow,
+  transform,
 } from "@medusajs/framework/workflows-sdk"
+import { emitEventStep } from "../../common/steps/emit-event"
 import { createCampaignsStep } from "../steps"
 
 /**
@@ -64,6 +67,17 @@ export const createCampaignsWorkflow = createWorkflow(
     const campaignsCreated = createHook("campaignsCreated", {
       campaigns: createdCampaigns,
       additional_data: input.additional_data,
+    })
+
+    const campaignIdEvents = transform(
+      { createdCampaigns },
+      ({ createdCampaigns }) =>
+        createdCampaigns.map((c) => ({ id: c.id }))
+    )
+
+    emitEventStep({
+      eventName: CampaignWorkflowEvents.CREATED,
+      data: campaignIdEvents,
     })
 
     return new WorkflowResponse(createdCampaigns, {
