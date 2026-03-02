@@ -32,6 +32,22 @@ export function errorHandler() {
 
     err = formatException(err)
 
+    // Express body-parser throws a SyntaxError with type "entity.parse.failed"
+    // when the request body contains malformed JSON. Catch it early and return
+    // a proper 400 instead of falling through to the default 500 handler.
+    if (
+      err instanceof SyntaxError &&
+      "type" in err &&
+      (err as any).type === "entity.parse.failed"
+    ) {
+      logger.info("Invalid JSON in request body")
+      res.status(400).json({
+        type: MedusaError.Types.INVALID_DATA,
+        message: "Invalid JSON in request body",
+      })
+      return
+    }
+
     const errorType = err.type || err.name
     const errObj = {
       code: err.code,
