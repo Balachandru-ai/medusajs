@@ -840,6 +840,11 @@ export interface CreateOrderShippingMethodAdjustmentDTO {
    * The associated provider's ID.
    */
   provider_id?: string
+
+  /**
+   * The version of the adjustment.
+   */
+  version?: number
 }
 
 /**
