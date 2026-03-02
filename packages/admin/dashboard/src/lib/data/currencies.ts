@@ -569,7 +569,7 @@ export const currencies: Record<string, CurrencyInfo> = {
     code: "RSD",
     name: "Serbian Dinar",
     symbol_native: "дин.",
-    decimal_digits: 0,
+    decimal_digits: 2,
   },
   RUB: {
     code: "RUB",
