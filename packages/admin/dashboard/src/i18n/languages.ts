@@ -24,6 +24,7 @@ import {
   ptBR,
   ro,
   ru,
+  sk,
   th,
   tr,
   uk,
@@ -220,4 +221,10 @@ export const languages: Language[] = [
     ltr: true,
     date_locale: zhTW,
   },
+  {
+    code: "sk",
+    display_name: "Slovenčina",
+    ltr: true,
+    date_locale: sk,
+  }
 ]
