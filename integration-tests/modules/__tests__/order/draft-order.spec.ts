@@ -1,5 +1,6 @@
 import { medusaIntegrationTestRunner } from "@medusajs/test-utils"
 import {
+  IFulfillmentModuleService,
   IInventoryServiceNext,
   IPricingModuleService,
   IProductModuleService,
@@ -37,6 +38,7 @@ medusaIntegrationTestRunner({
     let inventoryModule: IInventoryServiceNext
     let stockLocationModule: IStockLocationServiceNext
     let taxModule: ITaxModuleService
+    let fulfillmentModule: IFulfillmentModuleService
     let remoteLink
 
     beforeAll(async () => {
@@ -48,6 +50,7 @@ medusaIntegrationTestRunner({
       inventoryModule = appContainer.resolve(Modules.INVENTORY)
       stockLocationModule = appContainer.resolve(Modules.STOCK_LOCATION)
       taxModule = appContainer.resolve(Modules.TAX)
+      fulfillmentModule = appContainer.resolve(Modules.FULFILLMENT)
       remoteLink = appContainer.resolve(ContainerRegistrationKeys.REMOTE_LINK)
     })
 
@@ -1667,6 +1670,174 @@ medusaIntegrationTestRunner({
           "USREDUCE_PROD_TYPE"
         )
         expect(response.data.draft_order.items[0].tax_lines[0].rate).toEqual(3)
+      })
+
+      it("should set requires_shipping=true when product has shipping profile but inventory does not require shipping", async () => {
+        // This test validates that requires_shipping is correctly set based on
+        // the product's shipping profile, even when the inventory item has
+        // requires_shipping=false. This specifically tests the fix for issue #14304.
+
+        const region = await regionModuleService.createRegions({
+          name: "US",
+          currency_code: "usd",
+        })
+
+        const salesChannel = await scModuleService.createSalesChannels({
+          name: "Webshop",
+        })
+
+        const location = await stockLocationModule.createStockLocations({
+          name: "Warehouse",
+        })
+
+        // Create a shipping profile
+        const shippingProfile = await fulfillmentModule.createShippingProfiles({
+          name: "Default Shipping",
+          type: "default",
+        })
+
+        const [product] = await productModule.createProducts([
+          {
+            title: "Physical product with shipping profile",
+            status: ProductStatus.PUBLISHED,
+            variants: [
+              {
+                title: "Test variant",
+              },
+            ],
+          },
+        ])
+
+        // Create inventory item with requires_shipping=false
+        // This ensures the test validates shipping profile logic, not inventory fallback
+        const inventoryItem = await inventoryModule.createInventoryItems({
+          sku: "inv-shipping-profile-test",
+          requires_shipping: false,
+        })
+
+        await inventoryModule.createInventoryLevels([
+          {
+            inventory_item_id: inventoryItem.id,
+            location_id: location.id,
+            stocked_quantity: 10,
+            reserved_quantity: 0,
+          },
+        ])
+
+        const [priceSet] = await pricingModule.createPriceSets([
+          {
+            prices: [
+              {
+                amount: 5000,
+                currency_code: "usd",
+              },
+            ],
+          },
+        ])
+
+        await api.post(
+          "/admin/price-preferences",
+          {
+            attribute: "currency_code",
+            value: "usd",
+            is_tax_inclusive: true,
+          },
+          adminHeaders
+        )
+
+        await remoteLink.create([
+          // Link variant to price set
+          {
+            [Modules.PRODUCT]: {
+              variant_id: product.variants[0].id,
+            },
+            [Modules.PRICING]: {
+              price_set_id: priceSet.id,
+            },
+          },
+          // Link sales channel to stock location
+          {
+            [Modules.SALES_CHANNEL]: {
+              sales_channel_id: salesChannel.id,
+            },
+            [Modules.STOCK_LOCATION]: {
+              stock_location_id: location.id,
+            },
+          },
+          // Link variant to inventory item
+          {
+            [Modules.PRODUCT]: {
+              variant_id: product.variants[0].id,
+            },
+            [Modules.INVENTORY]: {
+              inventory_item_id: inventoryItem.id,
+            },
+          },
+          // Link product to shipping profile - this is the critical link being tested
+          {
+            [Modules.PRODUCT]: {
+              product_id: product.id,
+            },
+            [Modules.FULFILLMENT]: {
+              shipping_profile_id: shippingProfile.id,
+            },
+          },
+        ])
+
+        await setupTaxStructure(taxModule)
+
+        const payload = {
+          email: "shipping-profile-test@test.dk",
+          region_id: region.id,
+          sales_channel_id: salesChannel.id,
+          currency_code: "usd",
+          shipping_address: {
+            first_name: "Test",
+            last_name: "User",
+            address_1: "123 Test St",
+            city: "Test City",
+            country_code: "US",
+            postal_code: "12345",
+            phone: "12345",
+          },
+          billing_address: {
+            first_name: "Test",
+            last_name: "User",
+            address_1: "123 Test St",
+            city: "Test City",
+            country_code: "US",
+            postal_code: "12345",
+          },
+          items: [
+            {
+              variant_id: product.variants[0].id,
+              quantity: 1,
+            },
+          ],
+          shipping_methods: [
+            {
+              name: "Standard Shipping",
+              shipping_option_id: "test-option",
+              amount: 500,
+            },
+          ],
+        }
+
+        const response = await api.post(
+          "/admin/draft-orders",
+          payload,
+          adminHeaders
+        )
+
+        expect(response.status).toEqual(200)
+
+        // The key assertion: requires_shipping should be true because the product
+        // has a shipping profile, even though the inventory item has requires_shipping=false
+        const item = response.data.draft_order.items.find(
+          (i: any) => i.variant_id === product.variants[0].id
+        )
+        expect(item).toBeDefined()
+        expect(item.requires_shipping).toEqual(true)
       })
     })
   },
