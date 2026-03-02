@@ -2,6 +2,8 @@ import {
   createPaymentSessionsWorkflow,
   createPaymentSessionsWorkflowId,
 } from "@medusajs/core-flows"
+import { ICartModuleService, IPaymentModuleService, IRegionModuleService } from "@medusajs/types"
+import { Modules } from "@medusajs/utils"
 import { medusaIntegrationTestRunner } from "@medusajs/test-utils"
 import {
   ICustomerModuleService,
@@ -21,6 +23,8 @@ medusaIntegrationTestRunner({
       let appContainer
       let paymentModule: IPaymentModuleService
       let regionModule: IRegionModuleService
+      let cartModule: ICartModuleService
+      let remoteLink
       let customerModule: ICustomerModuleService
       let query
 
@@ -28,13 +32,16 @@ medusaIntegrationTestRunner({
         appContainer = getContainer()
         paymentModule = appContainer.resolve(Modules.PAYMENT)
         regionModule = appContainer.resolve(Modules.REGION)
+        cartModule = appContainer.resolve(Modules.CART)
+        remoteLink = appContainer.resolve("remoteLink")
         customerModule = appContainer.resolve(Modules.CUSTOMER)
         query = appContainer.resolve(ContainerRegistrationKeys.QUERY)
       })
 
-      describe("createPaymentSessionWorkflow", () => {
+      describe("createPaymentSessionsWorkflow", () => {
         let region
         let paymentCollection
+        let cart
         let customer
 
         beforeEach(async () => {
@@ -43,11 +50,31 @@ medusaIntegrationTestRunner({
             name: "US",
           })
 
+          cart = await cartModule.createCarts({
+            region_id: region.id,
+            currency_code: "usd",
+            items: [
+              {
+                quantity: 1,
+                unit_price: 1000,
+                title: "Test Item",
+              }
+            ]
+          })
+
           paymentCollection = await paymentModule.createPaymentCollections({
             currency_code: "usd",
             amount: 1000,
           })
 
+          await remoteLink.create({
+            [Modules.CART]: {
+              cart_id: cart.id,
+            },
+            [Modules.PAYMENT]: {
+              payment_collection_id: paymentCollection.id,
+            },
+            
           customer = await customerModule.createCustomers({
             email: "test@test.com",
             first_name: "Test",
@@ -82,6 +109,28 @@ medusaIntegrationTestRunner({
                   amount: 1000,
                   currency_code: "usd",
                   provider_id: "pp_system_default",
+                  context: expect.objectContaining({
+                    cart: expect.objectContaining({
+                      id: cart.id,
+                      currency_code: "usd",
+                      items: expect.arrayContaining([
+                        expect.objectContaining({
+                          id: expect.any(String),
+                          tax_lines: expect.arrayContaining([]),
+                        })
+                      ]),
+                      total: 1000,
+                      subtotal: 1000,
+                      tax_total: 0,
+                      discount_total: 0,
+                      discount_tax_total: 0,
+                      shipping_total: 0,
+                      shipping_subtotal: 0,
+                      shipping_tax_total: 0, 
+                      item_total: 1000,
+                      item_subtotal: 1000,
+                    }),
+                  }),
                 }),
               ]),
             })

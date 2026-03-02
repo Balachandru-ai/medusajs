@@ -8,6 +8,118 @@ import { ProviderWebhookPayload } from "./mutations"
  */
 export type PaymentAddressDTO = Partial<AddressDTO>
 
+export type PaymentCartDTO = {
+  /**
+   * The ID of the cart in Medusa.
+   */
+  id: string
+
+  /**
+   * The cart's currency code.
+   * 
+   * @example
+   * usd
+   */
+  currency_code: string
+
+  /**
+   * The cart's items.
+   */
+  items: PaymentCartItemDTO[]
+
+  /**
+   * The total of the cart.
+   */
+  total: BigNumberValue
+
+  /**
+   * The subtotal of the cart. (Excluding taxes)
+   */
+  subtotal: BigNumberValue
+
+  /**
+   * The tax total of the cart.
+   */
+  tax_total: BigNumberValue
+
+  /**
+   * The discount total of the cart.
+   */
+  discount_total: BigNumberValue
+
+  /**
+   * The discount tax total of the cart.
+   */
+  discount_tax_total: BigNumberValue
+
+  /**
+   * The gift card total of the cart.
+   */
+  gift_card_total: BigNumberValue
+
+  /**
+   * The gift card tax total of the cart.
+   */
+  gift_card_tax_total: BigNumberValue
+
+  /**
+   * The shipping total of the cart.
+   */
+  shipping_total: BigNumberValue
+
+  /**
+   * The shipping subtotal of the cart.
+   */
+  shipping_subtotal: BigNumberValue
+
+  /**
+   * The shipping tax total of the cart.
+   */
+  shipping_tax_total: BigNumberValue
+}
+
+export type PaymentCartItemDTO = {
+  /**
+   * The ID of the line item.
+   */
+  id: string
+
+  /**
+   * The title of the line item.
+   */
+  title: string
+
+  /**
+   * The line item's quantity in the cart.
+   */
+  quantity: BigNumberValue
+
+  /**
+   * Whether the line item price is tax inclusive.
+   */
+  is_tax_inclusive: boolean
+
+  /**
+   * The unit price of the item.
+   */
+  unit_price: BigNumberValue
+
+  /**
+   * The tax lines of the line item.
+   */
+  tax_lines?: {
+    /**
+     * The tax line's total.
+     */
+    total: BigNumberValue
+
+    /**
+     * The rate of the tax line.
+     */
+    rate: number
+  }[]
+}
+
 /**
  * The customer associated with the payment.
  */
@@ -81,6 +193,11 @@ export type PaymentProviderContext = {
    * Idempotency key for the request, if the payment provider supports it. It will be ignored otherwise.
    */
   idempotency_key?: string
+
+  /**
+   * The cart information in Medusa if available.
+   */
+  cart?: PaymentCartDTO
 }
 
 export type PaymentProviderInput = {
