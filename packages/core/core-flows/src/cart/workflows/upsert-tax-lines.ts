@@ -19,6 +19,7 @@ import { getTranslatedTaxLinesStep } from "../../common/steps/get-translated-tax
 const cartFields = [
   "id",
   "locale",
+  "metadata",
   "currency_code",
   "email",
   "region.id",

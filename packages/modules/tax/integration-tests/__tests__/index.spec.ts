@@ -779,6 +779,32 @@ moduleIntegrationTestRunner<ITaxModuleService>({
         ])
       })
 
+      it("should not have vat when vat_exempt is set", async () => {
+        await setupTaxStructure(service)
+        const item = {
+          id: "item_test",
+          product_id: "product_id_unknown",
+          quantity: 1,
+        }
+        const calculationContext = {
+          address: {
+            country_code: "DE", // Testing with Germany to apply the default country rate
+          },
+          vat_exempt: true,
+        }
+
+        const taxLines = await service.getTaxLines([item], calculationContext)
+
+        expect(taxLines).toEqual([
+          expect.objectContaining({
+            rate_id: expect.any(String),
+            rate: 0, // Expecting 0% rate when vat_exempt is set
+            code: "DE19",
+            name: "Germany Default Rate",
+          }),
+        ])
+      })
+
       it("should delete tax rate", async () => {
         const region = await service.createTaxRegions({
           country_code: "US",

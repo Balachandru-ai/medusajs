@@ -519,6 +519,11 @@ export interface TaxCalculationContext {
      */
     amount: number
   }[]
+
+  /**
+   * Whether the tax lines are exempt from VAT.
+   */
+  vat_exempt: boolean
 }
 
 /**
