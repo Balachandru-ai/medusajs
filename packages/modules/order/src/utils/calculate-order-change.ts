@@ -82,7 +82,11 @@ export class OrderChangeProcessing {
     this.summary = {
       pending_difference: 0,
       current_order_total: this.order.total ?? 0,
-      original_order_total: this.order.total ?? 0,
+      // Preserve the original order total from the existing summary (set when
+      // the order was first created).  Only fall back to the current total when
+      // no summary exists yet (i.e. during order creation).
+      original_order_total:
+        this.order.summary?.original_order_total ?? this.order.total ?? 0,
       transaction_total: transactionTotal,
       paid_total: paid,
       refunded_total: refunded,
