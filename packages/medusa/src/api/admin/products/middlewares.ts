@@ -231,7 +231,7 @@ export const adminProductRoutesMiddlewares: MiddlewareRoute[] = [
       validateAndTransformBody(AdminCreateProductVariant),
       validateAndTransformQuery(
         AdminGetProductParams,
-        QueryConfig.retrieveProductQueryConfig
+        QueryConfig.retrieveProductWithoutVariantsQueryConfig
       ),
     ],
     policies: [
@@ -301,7 +301,7 @@ export const adminProductRoutesMiddlewares: MiddlewareRoute[] = [
       validateAndTransformBody(AdminUpdateProductVariant),
       validateAndTransformQuery(
         AdminGetProductParams,
-        QueryConfig.retrieveProductQueryConfig
+        QueryConfig.retrieveProductWithoutVariantsQueryConfig
       ),
     ],
   },
@@ -311,7 +311,7 @@ export const adminProductRoutesMiddlewares: MiddlewareRoute[] = [
     middlewares: [
       validateAndTransformQuery(
         AdminGetProductParams,
-        QueryConfig.retrieveProductQueryConfig
+        QueryConfig.retrieveProductWithoutVariantsQueryConfig
       ),
     ],
     policies: [
@@ -351,7 +351,7 @@ export const adminProductRoutesMiddlewares: MiddlewareRoute[] = [
       validateAndTransformBody(AdminCreateProductOption),
       validateAndTransformQuery(
         AdminGetProductParams,
-        QueryConfig.retrieveProductQueryConfig
+        QueryConfig.retrieveProductWithoutVariantsQueryConfig
       ),
     ],
   },
@@ -362,7 +362,7 @@ export const adminProductRoutesMiddlewares: MiddlewareRoute[] = [
       validateAndTransformBody(AdminUpdateProductOption),
       validateAndTransformQuery(
         AdminGetProductParams,
-        QueryConfig.retrieveProductQueryConfig
+        QueryConfig.retrieveProductWithoutVariantsQueryConfig
       ),
     ],
   },
@@ -372,7 +372,7 @@ export const adminProductRoutesMiddlewares: MiddlewareRoute[] = [
     middlewares: [
       validateAndTransformQuery(
         AdminGetProductParams,
-        QueryConfig.retrieveProductQueryConfig
+        QueryConfig.retrieveProductWithoutVariantsQueryConfig
       ),
     ],
     policies: [

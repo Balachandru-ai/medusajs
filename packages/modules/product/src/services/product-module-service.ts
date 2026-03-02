@@ -518,12 +518,6 @@ export default class ProductModuleService
       sharedContext
     )
 
-    const allVariants = await this.productVariantService_.list(
-      { product_id: variants.map((v) => v.product_id) },
-      { relations: ["options"] },
-      sharedContext
-    )
-
     if (variants.length !== data.length) {
       throw new MedusaError(
         MedusaError.Types.INVALID_DATA,
@@ -560,6 +554,12 @@ export default class ProductModuleService
       )
 
     if (data.some((d) => !!d.options)) {
+      const allVariants = await this.productVariantService_.list(
+        { product_id: variants.map((v) => v.product_id) },
+        { relations: ["options"] },
+        sharedContext
+      )
+
       ProductModuleService.checkIfVariantWithOptionsAlreadyExists(
         productVariantsWithOptions as any,
         allVariants
