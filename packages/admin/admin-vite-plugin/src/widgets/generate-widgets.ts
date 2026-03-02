@@ -4,9 +4,14 @@ import outdent from "outdent"
 import {
   File,
   isArrayExpression,
+  isIdentifier,
+  isNumericLiteral,
+  isObjectProperty,
   isStringLiteral,
   isTemplateLiteral,
+  isUnaryExpression,
   Node,
+  ObjectProperty,
   parse,
   ParseResult,
   traverse,
@@ -18,6 +23,7 @@ import { getWidgetFilesFromSources } from "./helpers"
 type WidgetConfig = {
   Component: string
   zone: InjectionZone[]
+  rank?: number
 }
 
 type ParsedWidgetConfig = {
@@ -58,7 +64,8 @@ function formatWidget(widget: WidgetConfig): string {
   return outdent`
     {
         Component: ${widget.Component},
-        zone: [${widget.zone.map((z) => `"${z}"`).join(", ")}]
+        zone: [${widget.zone.map((z) => `"${z}"`).join(", ")}],
+        rank: ${widget.rank !== undefined ? widget.rank : "undefined"}
     }
   `
 }
@@ -96,10 +103,10 @@ async function parseFile(
     return null
   }
 
-  let zone: InjectionZone[] | null
+  let widgetConfig: { zone: InjectionZone[]; rank?: number } | null
 
   try {
-    zone = await getWidgetZone(ast, file)
+    widgetConfig = await getWidgetConfig(ast, file)
   } catch (e) {
     logger.error(`An error occurred while traversing the file.`, {
       file,
@@ -108,13 +115,12 @@ async function parseFile(
     return null
   }
 
-  if (!zone) {
-    logger.warn(`'zone' property is missing from the widget config.`, { file })
+  if (!widgetConfig) {
     return null
   }
 
   const import_ = generateImport(file, index)
-  const widget = generateWidget(zone, index)
+  const widget = generateWidget(widgetConfig.zone, widgetConfig.rank, index)
 
   return {
     widget,
@@ -137,18 +143,24 @@ function generateImport(file: string, index: number): string {
   )}, { config as ${generateWidgetConfigName(index)} } from "${path}"`
 }
 
-function generateWidget(zone: InjectionZone[], index: number): WidgetConfig {
+function generateWidget(
+  zone: InjectionZone[],
+  rank: number | undefined,
+  index: number
+): WidgetConfig {
   return {
     Component: generateWidgetComponentName(index),
     zone: zone,
+    rank: rank,
   }
 }
 
-async function getWidgetZone(
+async function getWidgetConfig(
   ast: ParseResult<File>,
   file: string
-): Promise<InjectionZone[] | null> {
+): Promise<{ zone: InjectionZone[]; rank?: number } | null> {
   const zones: string[] = []
+  let rank: number | undefined
 
   /**
    * We need to keep track of whether we have found a zone in the file.
@@ -180,6 +192,7 @@ async function getWidgetZone(
           )
           if (zoneProperty?.type === "ObjectProperty") {
             extractZoneValues(zoneProperty.value, zones, file)
+            rank = extractRankValue(arg.properties)
             zoneFound = true
           }
         }
@@ -208,6 +221,7 @@ async function getWidgetZone(
           )
           if (zoneProperty?.type === "ObjectProperty") {
             extractZoneValues(zoneProperty.value, zones, file)
+            rank = extractRankValue(arg.properties)
             zoneFound = true
           }
         }
@@ -229,7 +243,34 @@ async function getWidgetZone(
     return null
   }
 
-  return validatedZones
+  return { zone: validatedZones, rank }
+}
+
+function extractRankValue(properties: Node[]): number | undefined {
+  const rankProp = properties.find(
+    (p) => isObjectProperty(p) && isIdentifier(p.key, { name: "rank" })
+  ) as ObjectProperty | undefined
+
+  if (!rankProp) {
+    return undefined
+  }
+
+  // Handle positive numbers (e.g., rank: 5)
+  if (isNumericLiteral(rankProp.value)) {
+    return rankProp.value.value
+  }
+
+  // Handle negative numbers (e.g., rank: -1)
+  // Negative numbers are parsed as UnaryExpression with operator "-"
+  if (
+    isUnaryExpression(rankProp.value) &&
+    rankProp.value.operator === "-" &&
+    isNumericLiteral(rankProp.value.argument)
+  ) {
+    return -rankProp.value.argument.value
+  }
+
+  return undefined
 }
 
 function extractZoneValues(value: Node, zones: string[], file: string) {

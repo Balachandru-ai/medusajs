@@ -31,6 +31,7 @@ export type MenuItemExtension = {
 export type WidgetExtension = {
   Component: ComponentType
   zone: InjectionZone[]
+  rank?: number
 }
 
 export type DisplayExtension = {

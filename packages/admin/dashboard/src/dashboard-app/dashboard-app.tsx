@@ -19,6 +19,7 @@ import coreTranslations from "../i18n/translations"
 import { getRouteMap } from "./routes/get-route.map"
 import { createRouteMap, getRouteExtensions } from "./routes/utils"
 import { sortMenuItemsByRank } from "./utils/sort-menu-items-by-rank"
+import { sortWidgetsByRank } from "./utils/sort-widgets-by-rank"
 import {
   ConfigExtension,
   ConfigField,
@@ -98,6 +99,10 @@ export class DashboardApp {
 
   private populateWidgets(plugins: DashboardPlugin[]) {
     const registry = new Map<InjectionZone, React.ComponentType[]>()
+    const tempRegistry = new Map<
+      InjectionZone,
+      { Component: React.ComponentType; rank?: number }[]
+    >()
 
     plugins.forEach((plugin) => {
       const widgets = plugin.widgetModule.widgets
@@ -107,12 +112,24 @@ export class DashboardApp {
 
       widgets.forEach((widget) => {
         widget.zone.forEach((zone) => {
-          if (!registry.has(zone)) {
-            registry.set(zone, [])
+          if (!tempRegistry.has(zone)) {
+            tempRegistry.set(zone, [])
           }
-          registry.get(zone)!.push(widget.Component)
+          tempRegistry.get(zone)!.push({
+            Component: widget.Component,
+            rank: widget.rank,
+          })
         })
       })
+    })
+
+    // Sort widgets by rank and convert to final registry format
+    tempRegistry.forEach((widgets, zone) => {
+      const sorted = sortWidgetsByRank(widgets)
+      registry.set(
+        zone,
+        sorted.map((w) => w.Component)
+      )
     })
 
     return registry
