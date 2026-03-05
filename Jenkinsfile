@@ -4,8 +4,6 @@ pipeline {
   stages {
     stage('Checkout') {
       steps {
-        // If job is "Pipeline script from SCM", Jenkins already checks out.
-        // This makes sure code is present even if job config changes.
         checkout scm
       }
     }
@@ -21,8 +19,9 @@ pipeline {
             # show compose file
             ls -la docker-compose.yml
 
-            docker compose down || true
-            docker compose up -d --build
+            docker-compose version
+            docker-compose down || true
+            docker-compose up -d --build
           '''
         }
       }
