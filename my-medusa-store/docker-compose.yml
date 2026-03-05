@@ -1,0 +1,65 @@
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: medusa_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: medusa-store
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - medusa_network
+
+  redis:
+    image: redis:7-alpine
+    container_name: medusa_redis
+    restart: unless-stopped
+    ports:
+      - "6380:6379"
+    networks:
+      - medusa_network
+
+  medusa:
+    build: .
+    container_name: medusa_backend
+    restart: unless-stopped
+    depends_on:
+      - postgres
+      - redis
+    ports:
+      - "9000:9000"
+      - "5173:5173"
+    environment:
+      - NODE_ENV=development
+      - DATABASE_URL=postgres://postgres:postgres@postgres:5432/medusa-store?sslmode=disable
+      - REDIS_URL=redis://redis:6379
+    volumes:
+      - .:/server
+      - /server/node_modules
+    networks:
+      - medusa_network
+
+  storefront:
+    image: node:20-alpine
+    container_name: medusa_storefront
+    working_dir: /storefront
+    depends_on:
+      - medusa
+    ports:
+      - "8000:8000"
+    volumes:
+      - ../my-medusa-store-storefront:/storefront
+    command: sh -lc "corepack enable && yarn install && yarn dev -p 8000 --hostname 0.0.0.0"
+    networks:
+      - medusa_network
+
+volumes:
+  postgres_data:
+
+networks:
+  medusa_network:
+    driver: bridge
