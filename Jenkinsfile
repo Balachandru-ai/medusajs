@@ -11,18 +11,18 @@ pipeline {
 
         stage('Build Docker Containers') {
             steps {
-                sh '''
-                docker-compose down
-                docker-compose up -d --build
-                '''
+                dir('my-medusa-store') {
+                    sh '''
+                    docker-compose down || true
+                    docker-compose up -d --build
+                    '''
+                }
             }
         }
 
         stage('Verify Containers') {
             steps {
-                sh '''
-                docker ps
-                '''
+                sh 'docker ps'
             }
         }
 
