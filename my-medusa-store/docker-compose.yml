@@ -53,6 +53,9 @@ services:
       - "8000:8000"
     volumes:
       - ../my-medusa-store-storefront:/storefront
+    environment:
+      MEDUSA_BACKEND_URL: http://medusa:9000
+      NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY: pk_1896a89dabbd397f67ad3d4bbcb94c8cc84545fac9024443fe2c99b56089f98f
     command: sh -lc "corepack enable && yarn install && yarn dev -p 8000 --hostname 0.0.0.0"
     networks:
       - medusa_network
