@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: medusa-backend
+  namespace: medusa
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: medusa-backend
+  template:
+    metadata:
+      labels:
+        app: medusa-backend
+    spec:
+      containers:
+      - name: medusa-backend
+        image: medusa-backend:latest
+        imagePullPolicy: Never
+        ports:
+        - containerPort: 9000
+        env:
+        - name: NODE_ENV
+          value: development
+        - name: DATABASE_URL
+          value: postgres://postgres:postgres@postgres:5432/medusa-store
+        - name: REDIS_URL
+          value: redis://redis:6379
+        - name: STORE_CORS
+          value: http://3.87.42.33:8000,http://localhost:8000
+        - name: ADMIN_CORS
+          value: http://3.87.42.33:9000,http://localhost:9000
+        - name: AUTH_CORS
+          value: http://3.87.42.33:9000,http://localhost:9000
+        - name: JWT_SECRET
+          value: supersecret
+        - name: COOKIE_SECRET
+          value: supersecret
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: medusa-backend
+  namespace: medusa
+spec:
+  selector:
+    app: medusa-backend
+  ports:
+  - port: 9000
+    targetPort: 9000
+  type: NodePort
